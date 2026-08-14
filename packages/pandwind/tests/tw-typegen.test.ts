@@ -22,8 +22,11 @@ describe("typegen", () => {
 
 		expect(twTs).toContain('group: { join: "-" }');
 		expect(twTs).toContain('"@": { join: "" }');
-		expect(twTs).not.toContain('"before"');
-		expect(twTs).not.toContain('"sm"');
+		// Only the variants block is checked: `"sm"` legitimately appears in
+		// the generated conflict map (`text-sm`) and `before` in compose keys.
+		const variantsBlock = twTs.slice(0, twTs.indexOf("conflicts:"));
+		expect(variantsBlock).not.toContain('"before"');
+		expect(variantsBlock).not.toContain('"sm"');
 	});
 });
 

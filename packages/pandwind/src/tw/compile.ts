@@ -41,6 +41,14 @@ export interface TwConflictsMeta {
 	[utility: string]: Record<string, string[]>;
 }
 
+/**
+ * Utilities that intentionally compose through a shared CSS property:
+ * `scale-x` + `scale-y` both set `scale`, `translate-x` + `translate-y` both
+ * set `translate`, `blur` + `brightness` both set `filter`. They must never
+ * merge across keys — only same-utility values conflict (last axis wins).
+ */
+export type TwComposeMeta = readonly string[];
+
 const dashCaseRegex = /[A-Z]/g;
 
 function dashCase(key: string): string {
@@ -75,6 +83,7 @@ function visit(
 	styles: TwNestedStyles,
 	variants: TwVariantsMeta,
 	conflicts: TwConflictsMeta | undefined,
+	compose: ReadonlySet<string> | undefined,
 	classes: Emitted[],
 	signatures: Map<string, number>,
 	prefix: string,
@@ -85,14 +94,13 @@ function visit(
 			// A nested object is a variant stack. The child is joined to the
 			// parent with the parent's join separator (e.g. `group` -> `-`).
 			const join =
-				parentName === undefined
-					? ":"
-					: (variants[parentName]?.join ?? ":");
+				parentName === undefined ? ":" : (variants[parentName]?.join ?? ":");
 			const dashed = dashCase(key);
 			visit(
 				value,
 				variants,
 				conflicts,
+				compose,
 				classes,
 				signatures,
 				prefix ? `${prefix}${join}${dashed}` : dashed,
@@ -114,20 +122,48 @@ function visit(
 		const className = prefix ? `${prefix}:${dashKey}` : dashKey;
 
 		if (typeof value === "boolean") {
-			if (value)
-				push(classes, signatures, conflicts, className, prefix, dashKey, "");
+			if (value) {
+				push(
+					classes,
+					signatures,
+					conflicts,
+					compose,
+					className,
+					prefix,
+					dashKey,
+					"",
+				);
+			}
 			continue;
 		}
 
 		if (value === "" || value == null) {
-			push(classes, signatures, conflicts, className, prefix, dashKey, "");
+			push(
+				classes,
+				signatures,
+				conflicts,
+				compose,
+				className,
+				prefix,
+				dashKey,
+				"",
+			);
 			continue;
 		}
 
 		const parts = Array.isArray(value) ? value.map(String) : [String(value)];
 		const compound = COMPOUND_BASES[key];
 		if (compound && parts.some((part) => compound.has(part))) {
-			push(classes, signatures, conflicts, className, prefix, dashKey, "");
+			push(
+				classes,
+				signatures,
+				conflicts,
+				compose,
+				className,
+				prefix,
+				dashKey,
+				"",
+			);
 		}
 
 		for (const part of parts) {
@@ -135,6 +171,7 @@ function visit(
 				classes,
 				signatures,
 				conflicts,
+				compose,
 				part ? `${className}-${part}` : className,
 				prefix,
 				dashKey,
@@ -148,6 +185,7 @@ function push(
 	classes: Emitted[],
 	signatures: Map<string, number>,
 	conflicts: TwConflictsMeta | undefined,
+	compose: ReadonlySet<string> | undefined,
 	className: string,
 	prefix: string,
 	utility: string,
@@ -158,23 +196,49 @@ function push(
 		return;
 	}
 
+	// Opacity-modified colors (`bg-red-500/50`) share the base value's
+	// properties; exact lookup first, then the modifier-stripped form.
 	const props =
-		conflicts[utility]?.[value] ?? conflicts[utility]?.["*"] ?? [];
+		conflicts[utility]?.[value] ??
+		conflicts[utility]?.[value.replace(/\/\d+$/, "")] ??
+		conflicts[utility]?.["*"] ??
+		[];
+
+	// Composing utilities share a CSS property with sibling keys but must
+	// coexist (`scale-x` + `scale-y`): merge only within the same key.
+	if (compose?.has(utility)) {
+		const signature = `${prefix}|~${utility}`;
+		const previous = signatures.get(signature);
+		if (previous !== undefined) {
+			classes[previous]!.className = "";
+			signatures.delete(signature);
+		}
+		classes.push({ className, signature });
+		signatures.set(signature, classes.length - 1);
+		return;
+	}
+
 	if (props.length === 0) {
 		classes.push({ className, signature: EMPTY_SIGNATURE });
 		return;
 	}
 
-	// Last key wins: drop earlier classes that set any of the same
-	// (canonicalized) properties under the same variant prefix.
-	const signature = `${prefix}|${props.join("+")}`;
-	const previous = signatures.get(signature);
-	if (previous !== undefined) {
-		classes[previous]!.className = "";
-		signatures.delete(signature);
+	// Last key wins per property: a later class drops every earlier class
+	// that sets any of the same (canonicalized) property under the same
+	// variant prefix. `p-6` (padding) removes `px-4` (padding-inline) because
+	// their expanded longhand sets overlap.
+	for (const prop of props) {
+		const signature = `${prefix}|${prop}`;
+		const previous = signatures.get(signature);
+		if (previous !== undefined) {
+			classes[previous]!.className = "";
+			signatures.delete(signature);
+		}
 	}
-	classes.push({ className, signature });
-	signatures.set(signature, classes.length - 1);
+	classes.push({ className, signature: EMPTY_SIGNATURE });
+	for (const prop of props) {
+		signatures.set(`${prefix}|${prop}`, classes.length - 1);
+	}
 }
 
 /**
@@ -183,14 +247,26 @@ function push(
  * @param styles   panda-like style object (utility keys, nested variants)
  * @param variants variant metadata from the generated `tw.ts`
  * @param conflicts optional generated conflict map enabling last-wins merging
+ * @param compose optional generated list of composing utility keys
  */
 export function compileStyles(
 	styles: TwNestedStyles,
 	variants: TwVariantsMeta,
 	conflicts?: TwConflictsMeta,
+	compose?: TwComposeMeta,
 ): string {
 	const classes: Emitted[] = [];
-	visit(styles, variants, conflicts, classes, new Map(), "", undefined);
+	const composeSet = compose === undefined ? undefined : new Set(compose);
+	visit(
+		styles,
+		variants,
+		conflicts,
+		composeSet,
+		classes,
+		new Map(),
+		"",
+		undefined,
+	);
 	return classes
 		.map((emitted) => emitted.className)
 		.filter(Boolean)

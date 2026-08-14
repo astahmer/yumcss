@@ -13,6 +13,41 @@ const typed = createTw<Record<string, unknown>>({
 	},
 });
 
+const merged = createTw<Record<string, unknown>>({
+	conflicts: {
+		p: {
+			"*": ["padding-top", "padding-right", "padding-bottom", "padding-left"],
+		},
+		px: { "*": ["padding-left", "padding-right"] },
+		bg: {
+			"*": ["background-color"],
+			"blend-normal": ["background-blend-mode"],
+		},
+		text: {
+			"*": ["font-size", "line-height"],
+			"gray-900": ["color"],
+			center: ["text-align"],
+		},
+		border: {
+			"*": ["border-style", "border-width"],
+			"red-500": ["border-color"],
+			collapse: ["border-collapse"],
+		},
+		opacity: { "*": ["opacity"] },
+	},
+});
+
+const composed = createTw<Record<string, unknown>>({
+	conflicts: {
+		"scale-x": { "*": ["scale"] },
+		"scale-y": { "*": ["scale"] },
+		"translate-x": { "*": ["translate"] },
+		"translate-y": { "*": ["translate"] },
+		bg: { "*": ["background-color"] },
+	},
+	compose: ["scale-x", "scale-y", "translate-x", "translate-y"],
+});
+
 describe("tw utilities", () => {
 	test("plain utilities", () => {
 		expect(tw({ bg: "sky-600" })).toBe("bg-sky-600");
@@ -93,5 +128,48 @@ describe("tw variants", () => {
 		expect(() => typed({ group: { bg: "red-500" } })).toThrow(
 			/requires a nested variant/,
 		);
+	});
+});
+
+describe("tw last-wins merging", () => {
+	test("later keys drop earlier conflicting utilities", () => {
+		expect(merged({ px: "4", p: "6" })).toBe("p-6");
+		expect(merged({ p: "6", px: "4" })).toBe("px-4");
+		expect(merged({ bg: "red-500", border: "2" })).toBe("bg-red-500 border-2");
+	});
+
+	test("overloaded utilities keep non-conflicting values", () => {
+		expect(merged({ text: ["2xl", "gray-900", "center"] })).toBe(
+			"text-2xl text-gray-900 text-center",
+		);
+		expect(merged({ border: ["2", "red-500", "collapse"] })).toBe(
+			"border-2 border-red-500 border-collapse",
+		);
+	});
+
+	test("conflicting values inside one array collapse to the last", () => {
+		expect(merged({ bg: ["red-500", "blue-500"] })).toBe("bg-blue-500");
+	});
+
+	test("variant-scoped utilities do not conflict with base utilities", () => {
+		expect(merged({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
+		expect(merged({ md: { p: "6" }, p: "4" })).toBe("md:p-6 p-4");
+	});
+
+	test("unknown values fall back to the utility default", () => {
+		expect(merged({ p: "6", px: "bogus" })).toBe("px-bogus");
+	});
+
+	test("no conflicts meta means no merging", () => {
+		expect(tw({ px: "4", p: "6" })).toBe("px-4 p-6");
+	});
+
+	test("composing utilities coexist across keys, merge within a key", () => {
+		expect(composed({ scaleX: "2", scaleY: "2" })).toBe("scale-x-2 scale-y-2");
+		expect(composed({ translateX: "4", translateY: "2" })).toBe(
+			"translate-x-4 translate-y-2",
+		);
+		expect(composed({ scaleX: ["2", "4"] })).toBe("scale-x-4");
+		expect(composed({ bg: ["red-500", "blue-500"] })).toBe("bg-blue-500");
 	});
 });

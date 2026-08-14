@@ -313,6 +313,357 @@ function modifierTypeHelpers(): string {
 type WithOpacityModifiers<T extends string> = T | \`\${T}/\${OpacityModifier}\`;`;
 }
 
+/**
+ * Shorthands Tailwind emits whose longhand expansion is needed to detect
+ * conflicts across utilities. `p-4` sets `padding`, `px-4` sets
+ * `padding-inline` — different names, same physical properties, so both must
+ * expand to the same canonical longhands before comparing.
+ */
+const SHORTHAND_EXPANSION: Record<string, string[]> = {
+	padding: ["padding-top", "padding-right", "padding-bottom", "padding-left"],
+	"padding-inline": ["padding-left", "padding-right"],
+	"padding-block": ["padding-top", "padding-bottom"],
+	"padding-inline-start": ["padding-left"],
+	"padding-inline-end": ["padding-right"],
+	"padding-block-start": ["padding-top"],
+	"padding-block-end": ["padding-bottom"],
+	margin: ["margin-top", "margin-right", "margin-bottom", "margin-left"],
+	"margin-inline": ["margin-left", "margin-right"],
+	"margin-block": ["margin-top", "margin-bottom"],
+	"margin-inline-start": ["margin-left"],
+	"margin-inline-end": ["margin-right"],
+	"margin-block-start": ["margin-top"],
+	"margin-block-end": ["margin-bottom"],
+	inset: ["top", "right", "bottom", "left"],
+	"inset-inline": ["left", "right"],
+	"inset-block": ["top", "bottom"],
+	"inset-inline-start": ["left"],
+	"inset-inline-end": ["right"],
+	"inset-block-start": ["top"],
+	"inset-block-end": ["bottom"],
+	gap: ["column-gap", "row-gap"],
+	"border-width": [
+		"border-top-width",
+		"border-right-width",
+		"border-bottom-width",
+		"border-left-width",
+	],
+	"border-style": [
+		"border-top-style",
+		"border-right-style",
+		"border-bottom-style",
+		"border-left-style",
+	],
+	"border-color": [
+		"border-top-color",
+		"border-right-color",
+		"border-bottom-color",
+		"border-left-color",
+	],
+	"border-inline-style": ["border-left-style", "border-right-style"],
+	"border-inline-width": ["border-left-width", "border-right-width"],
+	"border-inline-color": ["border-left-color", "border-right-color"],
+	"border-block-style": ["border-top-style", "border-bottom-style"],
+	"border-block-width": ["border-top-width", "border-bottom-width"],
+	"border-block-color": ["border-top-color", "border-bottom-color"],
+	"border-inline-start-style": ["border-left-style"],
+	"border-inline-start-width": ["border-left-width"],
+	"border-inline-start-color": ["border-left-color"],
+	"border-inline-end-style": ["border-right-style"],
+	"border-inline-end-width": ["border-right-width"],
+	"border-inline-end-color": ["border-right-color"],
+	"border-block-start-style": ["border-top-style"],
+	"border-block-start-width": ["border-top-width"],
+	"border-block-start-color": ["border-top-color"],
+	"border-block-end-style": ["border-bottom-style"],
+	"border-block-end-width": ["border-bottom-width"],
+	"border-block-end-color": ["border-bottom-color"],
+	"scroll-margin": [
+		"scroll-margin-top",
+		"scroll-margin-right",
+		"scroll-margin-bottom",
+		"scroll-margin-left",
+	],
+	"scroll-margin-inline": ["scroll-margin-left", "scroll-margin-right"],
+	"scroll-margin-block": ["scroll-margin-top", "scroll-margin-bottom"],
+	"scroll-margin-inline-start": ["scroll-margin-left"],
+	"scroll-margin-inline-end": ["scroll-margin-right"],
+	"scroll-margin-block-start": ["scroll-margin-top"],
+	"scroll-margin-block-end": ["scroll-margin-bottom"],
+	"scroll-padding": [
+		"scroll-padding-top",
+		"scroll-padding-right",
+		"scroll-padding-bottom",
+		"scroll-padding-left",
+	],
+	"scroll-padding-inline": ["scroll-padding-left", "scroll-padding-right"],
+	"scroll-padding-block": ["scroll-padding-top", "scroll-padding-bottom"],
+	"scroll-padding-inline-start": ["scroll-padding-left"],
+	"scroll-padding-inline-end": ["scroll-padding-right"],
+	"scroll-padding-block-start": ["scroll-padding-top"],
+	"scroll-padding-block-end": ["scroll-padding-bottom"],
+};
+
+/** Property names a compiled candidate actually sets (custom props excluded). */
+function cssProperties(css: string | null): string[] {
+	if (css === null) return [];
+	const props = new Set<string>();
+	for (const match of css.matchAll(/\.([^{}]+)\{([^}]*)\}/g)) {
+		for (const declaration of match[2]!.split(";")) {
+			const property = declaration.split(":")[0]?.trim();
+			// Skip custom properties (`--tw-*`) and at-rule fragments that
+			// Tailwind nests inside class rules (gradient `@supports`).
+			if (
+				property &&
+				!property.startsWith("--") &&
+				/^[a-zA-Z-]+$/.test(property)
+			) {
+				props.add(property);
+			}
+		}
+	}
+	return [...props].sort();
+}
+
+/** Expand shorthands so equivalent longhand sets compare equal. */
+function canonicalProps(properties: string[]): string[] {
+	const expanded = new Set<string>();
+	for (const property of properties) {
+		for (const longhand of SHORTHAND_EXPANSION[property] ?? [property]) {
+			expanded.add(longhand);
+		}
+	}
+	return [...expanded].sort();
+}
+
+/**
+ * Utilities that compose through a shared CSS property and must never merge
+ * across keys. Dash-case, including the negative variants the generator
+ * produces (`-translate-x`, `-space-x`, ...).
+ */
+const COMPOSE_KEYS = new Set([
+	"translate",
+	"translate-x",
+	"translate-y",
+	"translate-z",
+	"-translate",
+	"-translate-x",
+	"-translate-y",
+	"-translate-z",
+	"scale",
+	"scale-x",
+	"scale-y",
+	"scale-z",
+	"-scale",
+	"-scale-x",
+	"-scale-y",
+	"-scale-z",
+	"rotate",
+	"rotate-x",
+	"rotate-y",
+	"rotate-z",
+	"-rotate",
+	"-rotate-x",
+	"-rotate-y",
+	"-rotate-z",
+	"skew",
+	"skew-x",
+	"skew-y",
+	"-skew",
+	"-skew-x",
+	"-skew-y",
+	"blur",
+	"brightness",
+	"contrast",
+	"drop-shadow",
+	"grayscale",
+	"hue-rotate",
+	"invert",
+	"saturate",
+	"sepia",
+	"backdrop-blur",
+	"backdrop-brightness",
+	"backdrop-contrast",
+	"backdrop-grayscale",
+	"backdrop-hue-rotate",
+	"backdrop-invert",
+	"backdrop-opacity",
+	"backdrop-saturate",
+	"backdrop-sepia",
+	"-backdrop-hue-rotate",
+	"-backdrop-invert",
+	"-backdrop-opacity",
+	"-backdrop-saturate",
+	"-backdrop-sepia",
+	"space-x",
+	"space-y",
+	"-space-x",
+	"-space-y",
+	"divide-x",
+	"divide-y",
+	"-divide-x",
+	"-divide-y",
+]);
+
+function pickSamples(values: string[], max: number): string[] {
+	if (values.length <= max) return values;
+	const samples: string[] = [];
+	const stride = (values.length - 1) / (max - 1);
+	for (let index = 0; index < max; index++) {
+		samples.push(values[Math.round(index * stride)]!);
+	}
+	return samples;
+}
+
+function chunk<T>(items: T[], size: number): T[][] {
+	const chunks: T[][] = [];
+	for (let index = 0; index < items.length; index += size) {
+		chunks.push(items.slice(index, index + size));
+	}
+	return chunks;
+}
+
+/**
+ * Build the utility conflict map: utility (dash-case) -> value -> the CSS
+ * properties that class sets (canonicalized). `"*"` is the per-utility
+ * fallback. Only values whose properties differ from the utility's default
+ * are emitted, keeping the generated map small — the overloaded utilities
+ * (`text`, `border`, `bg`) are the ones that need per-value entries.
+ */
+function buildConflicts(
+	system: {
+		candidatesToCss: (candidates: string[]) => (string | null)[];
+		utilities: {
+			keys: (kind: "functional" | "static") => string[];
+			getCompletions: (name: string) => unknown[];
+		};
+	},
+	types: UtilityMap,
+	functionalKeys: string[],
+): {
+	conflicts: Record<string, Record<string, string[]>>;
+	compose: string[];
+} {
+	const functional = new Set(functionalKeys);
+	const completions = new Map<
+		string,
+		Array<{ values: Array<string | null> }>
+	>();
+	const groupValues = new Map<string, Set<string>>();
+	const propByValue = new Map<string, Map<string, string[]>>();
+	const probes: Array<{ utility: string; value: string; candidate: string }> =
+		[];
+
+	for (const name of types.keys()) {
+		if (!functional.has(name)) continue;
+		const groups = system.utilities.getCompletions(name) as Array<{
+			values: Array<string | null>;
+		}>;
+		completions.set(name, groups);
+		const allValues = new Set<string>();
+		for (const group of groups) {
+			const values = group.values.filter(
+				(value): value is string => typeof value === "string" && value !== "",
+			);
+			for (const value of values) allValues.add(value);
+			for (const value of pickSamples(values, 2)) {
+				probes.push({
+					utility: name,
+					value,
+					candidate: `${dashCase(name)}-${value}`,
+				});
+			}
+		}
+		groupValues.set(name, allValues);
+	}
+
+	// Static suffixes merged into a functional key (e.g. `border-collapse` ->
+	// key `border`, value `collapse`) set different properties than the
+	// completions groups, so each is probed individually. Same for curated
+	// prefixes and fallback groups, plus boolean utilities (bare class).
+	for (const [name, values] of types) {
+		const covered = groupValues.get(name) ?? new Set<string>();
+		const uncovered = [...values].filter(
+			(value): value is string => value !== true && !covered.has(value),
+		);
+		for (const value of uncovered) {
+			probes.push({
+				utility: name,
+				value,
+				candidate: `${dashCase(name)}-${value}`,
+			});
+		}
+		if (values.has(true)) {
+			probes.push({ utility: name, value: "", candidate: dashCase(name) });
+		}
+	}
+
+	const sampleProps = new Map<
+		string,
+		Array<{ value: string; props: string[] }>
+	>();
+	for (const batch of chunk(probes, 300)) {
+		const results = system.candidatesToCss(
+			batch.map((probe) => probe.candidate),
+		);
+		batch.forEach((probe, index) => {
+			const result = results[index];
+			if (result === undefined || result === null) return;
+			const props = canonicalProps(cssProperties(result));
+			const samples = sampleProps.get(probe.utility) ?? [];
+			samples.push({ value: probe.value, props });
+			sampleProps.set(probe.utility, samples);
+		});
+	}
+
+	// Group values inherit their group's sampled properties; individual
+	// probes (static suffixes, booleans) override the specific value.
+	for (const [name, groups] of completions) {
+		const byValue = propByValue.get(name) ?? new Map();
+		for (const group of groups) {
+			const values = group.values.filter(
+				(value): value is string => typeof value === "string" && value !== "",
+			);
+			const samples = sampleProps.get(name) ?? [];
+			const groupProps = samples.find((sample) =>
+				values.includes(sample.value),
+			)?.props;
+			if (groupProps === undefined) continue;
+			for (const value of values) byValue.set(value, groupProps);
+		}
+		propByValue.set(name, byValue);
+	}
+	for (const [name, samples] of sampleProps) {
+		const byValue = propByValue.get(name) ?? new Map();
+		for (const sample of samples) byValue.set(sample.value, sample.props);
+		propByValue.set(name, byValue);
+	}
+
+	const conflicts: Record<string, Record<string, string[]>> = {};
+	for (const [name, byValue] of propByValue) {
+		const sorted = [...byValue.entries()].sort(([a], [b]) =>
+			a.localeCompare(b, "en"),
+		);
+		// Prefer a non-empty default so unknown values (arbitrary ring widths,
+		// future theme values) behave like the real utilities, while values
+		// that only set custom properties (`ring-red-500`, `shadow-red-500`)
+		// are recorded as explicit `[]` overrides and never merge.
+		const defaultProps =
+			sorted.find(([, props]) => props.length > 0)?.[1] ?? sorted[0]?.[1] ?? [];
+		const overrides: Record<string, string[]> = {};
+		for (const [value, props] of sorted) {
+			if (value !== "" && props.join(",") !== defaultProps.join(",")) {
+				overrides[value] = props;
+			}
+		}
+		conflicts[dashCase(name)] = { "*": defaultProps, ...overrides };
+	}
+	return {
+		conflicts,
+		compose: [...COMPOSE_KEYS].filter((key) => conflicts[key] !== undefined),
+	};
+}
+
 function getUtilitiesType(
 	types: UtilityMap,
 	modifierCapable: Set<string>,
@@ -365,6 +716,8 @@ function getVariantsType(
 
 function getTwRuntime(
 	variants: Array<{ name: string; join: ":" | "-" | "" }>,
+	conflicts: Record<string, Record<string, string[]>>,
+	compose: string[],
 ): string {
 	const nonDefault = variants
 		.filter(({ join }) => join !== ":")
@@ -372,6 +725,23 @@ function getTwRuntime(
 			({ name, join }) =>
 				`\t\t${tsKey(camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
 		);
+	const conflictEntries = Object.entries(conflicts)
+		.sort(([a], [b]) => a.localeCompare(b, "en"))
+		.map(
+			([utility, byValue]) =>
+				`\t\t${JSON.stringify(utility)}: { ${Object.entries(byValue)
+					.map(
+						([value, props]) =>
+							`${JSON.stringify(value)}: [${props.map((prop) => JSON.stringify(prop)).join(", ")}]`,
+					)
+					.join(", ")} },`,
+		);
+	const composeEntries =
+		compose.length > 0
+			? `\tcompose: [\n${compose
+					.map((key) => `\t\t${JSON.stringify(key)},`)
+					.join("\n")}\n\t],`
+			: "";
 
 	return `import { createTw } from "pandwind/tw";
 import type { WindVariants } from "./types";
@@ -380,6 +750,8 @@ export const tw = createTw<WindVariants>({
 	variants: {
 ${nonDefault.join("\n")}
 	},
+${conflictEntries.length > 0 ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
+${composeEntries}
 });
 `;
 }
@@ -446,6 +818,7 @@ export async function generateDesignSystem(
 	const types = getFunctionalTypes(system);
 	mergeStaticUtilities(system, functionalKeys, types);
 	const modifierCapable = detectModifierUtilities(system, types);
+	const { conflicts, compose } = buildConflicts(system, types, functionalKeys);
 
 	const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
 	for (const variant of system.getVariants()) {
@@ -461,7 +834,7 @@ ${getUtilitiesType(types, modifierCapable)}
 
 ${getVariantsType(variants)}
 `,
-		twTs: getTwRuntime(variants),
+		twTs: getTwRuntime(variants, conflicts, compose),
 		utilityCount: types.size,
 		variantCount: variants.length,
 	};

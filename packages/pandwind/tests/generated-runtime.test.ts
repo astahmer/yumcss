@@ -29,6 +29,17 @@ describe("generated tw runtime", () => {
 		);
 	});
 
+	test("merges conflicting utilities from the generated conflict map", () => {
+		expect(tw({ px: "4", p: "6" })).toBe("p-6");
+		expect(tw({ p: "6", px: "4" })).toBe("px-4");
+		expect(tw({ text: ["2xl", "gray-900", "center"] })).toBe(
+			"text-2xl text-gray-900 text-center",
+		);
+		expect(tw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
+		expect(tw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");
+		expect(tw({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
+	});
+
 	test("safelist matches scanner output and every class compiles", async () => {
 		const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 		const system = await __unstable__loadDesignSystem(css, { base: app });

@@ -19,12 +19,14 @@
  */
 import {
 	compileStyles,
+	type TwComposeMeta,
 	type TwConflictsMeta,
 	type TwNestedStyles,
 	type TwVariantsMeta,
 } from "./compile.ts";
 
 export type {
+	TwComposeMeta,
 	TwConflictsMeta,
 	TwNestedStyles,
 	TwValue,
@@ -35,6 +37,8 @@ export interface TwOptions {
 	variants?: TwVariantsMeta;
 	/** Generated conflict map enabling last-wins merging (see `compile.ts`). */
 	conflicts?: TwConflictsMeta;
+	/** Generated composing utilities that must never merge across keys. */
+	compose?: TwComposeMeta;
 }
 
 /**
@@ -43,7 +47,9 @@ export interface TwOptions {
 export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 	const variants = options.variants ?? {};
 	const conflicts = options.conflicts;
-	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts);
+	const compose = options.compose;
+	return (styles) =>
+		compileStyles(styles as TwNestedStyles, variants, conflicts, compose);
 }
 
 /**
