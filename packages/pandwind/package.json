@@ -7,6 +7,7 @@
 		".": "./src/index.ts",
 		"./css": "./src/css/index.ts",
 		"./preset": "./src/preset/index.ts",
+		"./design": "./src/design/index.ts",
 		"./tw": "./src/tw/index.ts",
 		"./tw/generate": "./src/tw/generate-types.ts",
 		"./tw/collect": "./src/tw/collect.ts",

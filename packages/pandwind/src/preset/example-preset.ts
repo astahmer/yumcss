@@ -57,6 +57,43 @@ const tokens = defineTokens({
 		20: "20px",
 		24: "24px",
 	},
+	fonts: {
+		sans: "ui-sans-serif, system-ui, sans-serif",
+		serif: "ui-serif, Georgia, serif",
+		mono: "ui-monospace, SFMono-Regular, monospace",
+	},
+	fontSizes: {
+		xs: "0.75rem",
+		sm: "0.875rem",
+		base: "1rem",
+		lg: "1.125rem",
+		xl: "1.25rem",
+		"2xl": "1.5rem",
+		"3xl": "1.875rem",
+		"4xl": "2.25rem",
+	},
+	fontWeights: {
+		normal: "400",
+		medium: "500",
+		semibold: "600",
+		bold: "700",
+	},
+	lineHeights: {
+		none: "1",
+		tight: "1.25",
+		snug: "1.375",
+		normal: "1.5",
+		relaxed: "1.625",
+		loose: "2",
+	},
+	letterSpacings: {
+		tighter: "-0.05em",
+		tight: "-0.025em",
+		normal: "0em",
+		wide: "0.025em",
+		wider: "0.05em",
+		widest: "0.1em",
+	},
 });
 
 const semanticTokens = defineTokens({
@@ -80,6 +117,12 @@ const theme = defineTheme({
 			...tokens.spacing,
 			...semanticTokens.spacing,
 		},
+		radii: tokens.radii,
+		fonts: tokens.fonts,
+		fontSizes: tokens.fontSizes,
+		fontWeights: tokens.fontWeights,
+		lineHeights: tokens.lineHeights,
+		letterSpacings: tokens.letterSpacings,
 	},
 });
 
