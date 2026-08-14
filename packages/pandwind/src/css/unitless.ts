@@ -1,4 +1,4 @@
-import { hypenateProperty } from "../lib/hyphenate-property.js";
+import { hypenateProperty } from "../lib/hyphenate-property.ts";
 
 const keys: Record<string, true> = {
 	animationIterationCount: true,

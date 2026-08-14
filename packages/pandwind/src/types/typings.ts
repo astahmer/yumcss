@@ -1,4 +1,4 @@
-import type { AnySelector } from "./selectors.d.js";
+import type { AnySelector } from "./selectors.d.ts";
 
 export interface StyleObject
 	extends Record<string, string | Record<string, unknown> | undefined> {}

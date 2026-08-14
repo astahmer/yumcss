@@ -1,4 +1,4 @@
-import { assign, cssVar, type FlatStyles, flattenStyle } from "../lib/utils.js";
+import { assign, cssVar, type FlatStyles, flattenStyle } from "../lib/utils.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -6,8 +6,8 @@ import type {
 	DefinePresetOptions,
 	StyleObject,
 	TypedStyleObject,
-} from "../types/typings.js";
-import { createHashFn } from "./hash.js";
+} from "../types/typings.ts";
+import { createHashFn } from "./hash.ts";
 
 type CompiledStyles = Record<string, string>;
 type CssStyle = Record<string, string>;

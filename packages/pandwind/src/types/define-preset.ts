@@ -5,9 +5,9 @@ import type {
 	AnySimpleTokens,
 	CssPreset,
 	DefinePresetOptions,
-} from "./typings.js";
+} from "./typings.ts";
 
-export * from "./typings.js";
+export * from "./typings.ts";
 
 export const defineTheme = <TTheme extends DefinePresetOptions>(
 	theme: TTheme,

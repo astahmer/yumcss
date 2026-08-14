@@ -1,5 +1,5 @@
 import { flattie } from "flattie";
-import type { StyleObject } from "../types/typings.js";
+import type { StyleObject } from "../types/typings.ts";
 
 export const assign = <T>(...arr: Array<T>) =>
 	arr.reduce((acc, style) => Object.assign(acc, style), {}) as T;
