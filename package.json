@@ -1,0 +1,17 @@
+{
+	"name": "pandwind-monorepo",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "pnpm --filter pandwind build",
+		"dev": "pnpm --filter example dev",
+		"typecheck": "pnpm -r typecheck",
+		"test": "pnpm --filter pandwind test",
+		"tw:codegen": "pnpm --filter example tw:codegen",
+		"check": "biome check --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"typescript": "^5.9.2"
+	}
+}
