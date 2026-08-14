@@ -14,7 +14,8 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"test:types": "tstyche --target 6.0.3"
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
