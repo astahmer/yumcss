@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-import { pandwindVite } from "pandwind/vite";
+import { examplePreset } from "pandwind/preset";
+import { pandwindCssVite, pandwindVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -8,5 +9,13 @@ export default defineConfig({
 	// so statically-used classes are found naturally. Dynamic `tw()` calls
 	// still work through the runtime and stay covered by the `tw:scan`
 	// safelist.
-	plugins: [pandwindVite(), tailwindcss(), react()],
+	// `pandwindVite` inlines literal `tw()` calls before Tailwind's scanner;
+	// `pandwindCssVite` extracts literal `css()` calls into a generated
+	// stylesheet, served from the virtual `pandwind:css` module.
+	plugins: [
+		pandwindVite(),
+		pandwindCssVite(examplePreset),
+		tailwindcss(),
+		react(),
+	],
 });

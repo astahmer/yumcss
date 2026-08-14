@@ -140,3 +140,5 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 		},
 	};
 }
+
+export { type PandwindCssViteOptions, pandwindCssVite } from "./css.ts";
