@@ -14,14 +14,14 @@ test("css gen simple prop", () => {
 	];
 
 	expect(sheet.process(styles)).toMatchInlineSnapshot(`
-    Map {
-      "color__$red-700" => {
-        "css": ".1p2xix9{color:#9B2C2C}",
-        "id": "color__$red-700",
-        "priority": 3000,
-      },
-    }
-  `);
+		Map {
+		  "color__$red-700" => {
+		    "css": ".\\31 p2xix9{color:#9B2C2C}",
+		    "id": "color__$red-700",
+		    "priority": 3000,
+		  },
+		}
+	`);
 });
 
 test("css gen prop in known pseudo selector", () => {
@@ -60,14 +60,14 @@ test("css gen prop in arbitrary pseudo selector", () => {
 			}),
 		]),
 	).toMatchInlineSnapshot(`
-    Map {
-      "&:hover__color__$red-800" => {
-        "css": ".1wewgbw:hover{color:#822727}",
-        "id": "&:hover__color__$red-800",
-        "priority": 3130,
-      },
-    }
-  `);
+		Map {
+		  "&:hover__color__$red-800" => {
+		    "css": ".\\31 wewgbw:hover{color:#822727}",
+		    "id": "&:hover__color__$red-800",
+		    "priority": 3130,
+		  },
+		}
+	`);
 });
 
 test("css gen prop in arbitrary descendant selector", () => {
@@ -132,14 +132,14 @@ test("css gen prop in unknown at rule", () => {
 		]),
 	).toMatchInlineSnapshot(
 		`
-    Map {
-      "@media (min-width: 640px)__color__$red-800" => {
-        "css": "@media (min-width: 640px){.1u25oza{color:#822727}}",
-        "id": "@media (min-width: 640px)__color__$red-800",
-        "priority": 3200,
-      },
-    }
-  `,
+		Map {
+		  "@media (min-width: 640px)__color__$red-800" => {
+		    "css": "@media (min-width: 640px){.\\31 u25oza{color:#822727}}",
+		    "id": "@media (min-width: 640px)__color__$red-800",
+		    "priority": 3200,
+		  },
+		}
+	`,
 	);
 });
 
@@ -209,14 +209,14 @@ test("css gen prop with multiple selectors in :is", () => {
 		]),
 	).toMatchInlineSnapshot(
 		`
-    Map {
-      "&:is(:active, [data-active=true])__color__$red-800" => {
-        "css": ".1jahbf6:is(:active, [data-active=true]){color:#822727}",
-        "id": "&:is(:active, [data-active=true])__color__$red-800",
-        "priority": 3040,
-      },
-    }
-  `,
+		Map {
+		  "&:is(:active, [data-active=true])__color__$red-800" => {
+		    "css": ".\\31 jahbf6:is(:active, [data-active=true]){color:#822727}",
+		    "id": "&:is(:active, [data-active=true])__color__$red-800",
+		    "priority": 3040,
+		  },
+		}
+	`,
 	);
 });
 

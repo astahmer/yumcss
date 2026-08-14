@@ -221,22 +221,22 @@ test("design class strings match the generated stylesheet", () => {
 		    "priority": 4000,
 		  },
 		  "borderRadius__0.5rem" => {
-		    "css": ".borderRadius__0.5rem{border-radius:0.5rem}",
+		    "css": ".borderRadius__0\\.5rem{border-radius:0.5rem}",
 		    "id": "borderRadius__0.5rem",
 		    "priority": 3000,
 		  },
 		  "backgroundColor__#3182ce" => {
-		    "css": ".backgroundColor__#3182ce{background-color:#3182ce}",
+		    "css": ".backgroundColor__\\#3182ce{background-color:#3182ce}",
 		    "id": "backgroundColor__#3182ce",
 		    "priority": 3000,
 		  },
 		  "color__#FC8181" => {
-		    "css": ".color__#FC8181{color:#FC8181}",
+		    "css": ".color__\\#FC8181{color:#FC8181}",
 		    "id": "color__#FC8181",
 		    "priority": 3000,
 		  },
 		  "_hover__backgroundColor__#2b6cb0" => {
-		    "css": "._hover__backgroundColor__#2b6cb0:hover{background-color:#2b6cb0}",
+		    "css": "._hover__backgroundColor__\\#2b6cb0:hover{background-color:#2b6cb0}",
 		    "id": "_hover__backgroundColor__#2b6cb0",
 		    "priority": 3130,
 		  },

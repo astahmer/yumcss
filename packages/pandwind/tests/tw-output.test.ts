@@ -176,40 +176,40 @@ describe("css with custom tailwind hashFn", () => {
     `);
 
 		expect(sheet.generate([styles])).toMatchInlineSnapshot(`
-      ":root {--colors__red-500: #E53E3E;}
-      :root {--colors__sky-600: #0284C7;}
-      :root {--spacing__1: 1px;}
-      :root {--spacing__12: 12px;}
-      :root {--spacing__16: 16px;}
-      :root {--spacing__2: 2px;}
-      :root {--spacing__20: 20px;}
-      :root {--spacing__24: 24px;}
-      :root {--spacing__3: 3px;}
-      :root {--spacing__4: 4px;}
-      :root {--spacing__6: 6px;}
-      :root {--spacing__8: 8px;}
-      .text-sky-600{color:var(--colors__sky-600)}
-      .hover:text-red-500:hover{color:var(--colors__red-500)}"
-    `);
+			":root {--colors__red-500: #E53E3E;}
+			:root {--colors__sky-600: #0284C7;}
+			:root {--spacing__1: 1px;}
+			:root {--spacing__12: 12px;}
+			:root {--spacing__16: 16px;}
+			:root {--spacing__2: 2px;}
+			:root {--spacing__20: 20px;}
+			:root {--spacing__24: 24px;}
+			:root {--spacing__3: 3px;}
+			:root {--spacing__4: 4px;}
+			:root {--spacing__6: 6px;}
+			:root {--spacing__8: 8px;}
+			.text-sky-600{color:var(--colors__sky-600)}
+			.hover\\:text-red-500:hover{color:var(--colors__red-500)}"
+		`);
 
 		expect(
 			createStylesheet(preset, { debug: false }).generate([styles]),
 		).toMatchInlineSnapshot(`
-        ":root {--101f8i4: 8px;}
-        :root {--145nsom: 4px;}
-        :root {--14tkj9n: 1px;}
-        :root {--19bfonp: 3px;}
-        :root {--1dacso9: 16px;}
-        :root {--1j1b588: 12px;}
-        :root {--1jajvoj: 24px;}
-        :root {--1p1d4j8: 20px;}
-        :root {--1pk9ax3: #E53E3E;}
-        :root {--1ur0fic: 6px;}
-        :root {--eiqbvd: 2px;}
-        :root {--fz3vmc: #0284C7;}
-        .mh21yw{color:var(--fz3vmc)}
-        .1rj13sn:hover{color:var(--1pk9ax3)}"
-      `);
+			":root {--\\31 01f8i4: 8px;}
+			:root {--\\31 45nsom: 4px;}
+			:root {--\\31 4tkj9n: 1px;}
+			:root {--\\31 9bfonp: 3px;}
+			:root {--\\31 dacso9: 16px;}
+			:root {--\\31 j1b588: 12px;}
+			:root {--\\31 jajvoj: 24px;}
+			:root {--\\31 p1d4j8: 20px;}
+			:root {--\\31 pk9ax3: #E53E3E;}
+			:root {--\\31 ur0fic: 6px;}
+			:root {--eiqbvd: 2px;}
+			:root {--fz3vmc: #0284C7;}
+			.mh21yw{color:var(--fz3vmc)}
+			.\\31 rj13sn:hover{color:var(--\\31 pk9ax3)}"
+		`);
 	});
 
 	test("utilities.color", () => {
@@ -254,7 +254,7 @@ describe("css with custom tailwind hashFn", () => {
 
 		sheet.process([styles]);
 		expect(sheet.gen.atomic()).toMatchInlineSnapshot(
-			`".hover:text-sky-600:hover{color:var(--colors__sky-600)}"`,
+			`".hover\\:text-sky-600:hover{color:var(--colors__sky-600)}"`,
 		);
 	});
 
@@ -279,7 +279,7 @@ describe("css with custom tailwind hashFn", () => {
 
 		sheet.process([styles]);
 		expect(sheet.gen.atomic()).toMatchInlineSnapshot(
-			`"@media (min-width: 640px){@media (prefers-color-scheme: dark){.dark:hover:md:text-sky-600:hover{color:var(--colors__sky-600)}}}"`,
+			`"@media (min-width: 640px){@media (prefers-color-scheme: dark){.dark\\:hover\\:md\\:text-sky-600:hover{color:var(--colors__sky-600)}}}"`,
 		);
 	});
 

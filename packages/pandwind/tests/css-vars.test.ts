@@ -49,19 +49,19 @@ test("css tokens simple vars", () => {
 	});
 
 	expect(sheet.generate([styles])).toMatchInlineSnapshot(`
-		":root {--colors__\\$green-500: #60A3BC;}
-		:root {--colors__\\$red-500: #E53E3E;}
-		.color__$green-500{color:var(--colors__\\$green-500)}
-		._hover__color__$red-500:hover{color:var(--colors__\\$red-500)}"
+		":root {--colors__\\\\\\$green-500: #60A3BC;}
+		:root {--colors__\\\\\\$red-500: #E53E3E;}
+		.color__\\$green-500{color:var(--colors__\\\\\\$green-500)}
+		._hover__color__\\$red-500:hover{color:var(--colors__\\\\\\$red-500)}"
 	`);
 
 	expect(
 		createStylesheet(preset, { debug: false }).generate([styles]),
 	).toMatchInlineSnapshot(`
-		":root {--18c7uto: #E53E3E;}
-		:root {--1l8nf6e: #60A3BC;}
-		.1eewoyj{color:var(--1l8nf6e)}
-		.dlzhtx:hover{color:var(--18c7uto)}"
+		":root {--\\31 8c7uto: #E53E3E;}
+		:root {--\\31 l8nf6e: #60A3BC;}
+		.\\31 eewoyj{color:var(--\\31 l8nf6e)}
+		.dlzhtx:hover{color:var(--\\31 8c7uto)}"
 	`);
 });
 
@@ -127,29 +127,29 @@ test("css tokens semantic vars", () => {
 	});
 
 	expect(sheet.generate([styles])).toMatchInlineSnapshot(`
-		":root {--colors__\\$green-500: #60A3BC;}
-		:root {--colors__\\$red-500: #E53E3E;}
+		":root {--colors__\\\\\\$green-500: #60A3BC;}
+		:root {--colors__\\\\\\$red-500: #E53E3E;}
 		:root {--colors__error: #E53E3E;}
 		:root {--colors__success: #60A3BC;}
 		:root {--spacing__20: 20px;}
-		:root {--spacing__button\\.padding: 20px;}
+		:root {--spacing__button\\\\\\.padding: 20px;}
 		.color__error{color:var(--colors__error)}
-		.marginTop__button.padding{margin-top:var(--spacing__button\\.padding)}
+		.marginTop__button\\.padding{margin-top:var(--spacing__button\\\\\\.padding)}
 		._hover__color__success:hover{color:var(--colors__success)}"
 	`);
 
 	expect(
 		createStylesheet(preset, { debug: false }).generate([styles]),
 	).toMatchInlineSnapshot(`
-		":root {--11sszm1: #E53E3E;}
-		:root {--12u3ug6: #60A3BC;}
-		:root {--18c7uto: #E53E3E;}
-		:root {--1l8nf6e: #60A3BC;}
-		:root {--1p1d4j8: 20px;}
+		":root {--\\31 1sszm1: #E53E3E;}
+		:root {--\\31 2u3ug6: #60A3BC;}
+		:root {--\\31 8c7uto: #E53E3E;}
+		:root {--\\31 l8nf6e: #60A3BC;}
+		:root {--\\31 p1d4j8: 20px;}
 		:root {--eztoah: 20px;}
-		.1lmb8rn{color:var(--11sszm1)}
-		.1pemsfc{margin-top:var(--eztoah)}
-		.uuyh3c:hover{color:var(--12u3ug6)}"
+		.\\31 lmb8rn{color:var(--\\31 1sszm1)}
+		.\\31 pemsfc{margin-top:var(--eztoah)}
+		.uuyh3c:hover{color:var(--\\31 2u3ug6)}"
 	`);
 });
 
@@ -217,36 +217,36 @@ test("css tokens semantic conditional vars", () => {
 	});
 
 	expect(sheet.generate([styles])).toMatchInlineSnapshot(`
-    ":root {--colors__error: #2b6cb0;}
-    :root {--colors__success: #ebf8ff;}
-    :root {--colors__\\$blue-500: #ebf8ff;}
-    :root {--colors__\\$blue-700: #2b6cb0;}
-    :root {--colors__\\$green-500: #60A3BC;}
-    :root {--colors__\\$green-700: #3A6271;}
-    :root {--colors__\\$red-500: #E53E3E;}
-    :root {--colors__\\$red-700: #9B2C2C;}
-    .dark {--colors__error: #9B2C2C;}
-    .dark {--colors__success: #3A6271;}
-    .light {--colors__error: #60A3BC;}
-    .light {--colors__success: #60A3BC;}
-    .color__error{color:var(--colors__error)}"
-  `);
+		":root {--colors__error: #2b6cb0;}
+		:root {--colors__success: #ebf8ff;}
+		:root {--colors__\\\\\\$blue-500: #ebf8ff;}
+		:root {--colors__\\\\\\$blue-700: #2b6cb0;}
+		:root {--colors__\\\\\\$green-500: #60A3BC;}
+		:root {--colors__\\\\\\$green-700: #3A6271;}
+		:root {--colors__\\\\\\$red-500: #E53E3E;}
+		:root {--colors__\\\\\\$red-700: #9B2C2C;}
+		.dark {--colors__error: #9B2C2C;}
+		.dark {--colors__success: #3A6271;}
+		.light {--colors__error: #60A3BC;}
+		.light {--colors__success: #60A3BC;}
+		.color__error{color:var(--colors__error)}"
+	`);
 
 	expect(
 		createStylesheet(preset, { debug: false }).generate([styles]),
 	).toMatchInlineSnapshot(`
-      ":root {--11sszm1: #2b6cb0;}
-      :root {--12u3ug6: #ebf8ff;}
-      :root {--15vw4wf: #ebf8ff;}
-      :root {--18c7uto: #E53E3E;}
-      :root {--1l8nf6e: #60A3BC;}
-      :root {--1njbej7: #2b6cb0;}
-      :root {--fe67qj: #3A6271;}
-      :root {--uso9gc: #9B2C2C;}
-      .dark {--11sszm1: #9B2C2C;}
-      .dark {--12u3ug6: #3A6271;}
-      .light {--11sszm1: #60A3BC;}
-      .light {--12u3ug6: #60A3BC;}
-      .1lmb8rn{color:var(--11sszm1)}"
-    `);
+		":root {--\\31 1sszm1: #2b6cb0;}
+		:root {--\\31 2u3ug6: #ebf8ff;}
+		:root {--\\31 5vw4wf: #ebf8ff;}
+		:root {--\\31 8c7uto: #E53E3E;}
+		:root {--\\31 l8nf6e: #60A3BC;}
+		:root {--\\31 njbej7: #2b6cb0;}
+		:root {--fe67qj: #3A6271;}
+		:root {--uso9gc: #9B2C2C;}
+		.dark {--\\31 1sszm1: #9B2C2C;}
+		.dark {--\\31 2u3ug6: #3A6271;}
+		.light {--\\31 1sszm1: #60A3BC;}
+		.light {--\\31 2u3ug6: #60A3BC;}
+		.\\31 lmb8rn{color:var(--\\31 1sszm1)}"
+	`);
 });

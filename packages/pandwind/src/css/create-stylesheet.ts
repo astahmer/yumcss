@@ -1,5 +1,5 @@
 import parser from "postcss-selector-parser";
-import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.js";
+import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type {
 	AnyConditions,
 	CssConfigReturn,
@@ -8,10 +8,15 @@ import type {
 	StyleObject,
 	Token,
 	TokenDeclaration,
-} from "../types/typings.js";
-import type { CreateCssOptions } from "./create-css.js";
-import { createHashFn, dashCase, hashCssVar } from "./hash.js";
-import { getPropertyPriority } from "./property-priorities.js";
+} from "../types/typings.ts";
+import type { CreateCssOptions } from "./create-css.ts";
+import {
+	createHashFn,
+	dashCase,
+	escapeIdentifier,
+	hashCssVar,
+} from "./hash.ts";
+import { getPropertyPriority } from "./property-priorities.ts";
 
 export const createStylesheet = (
 	preset: CssConfigReturn,
@@ -197,7 +202,7 @@ export const createStylesheet = (
 
 			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
-				className: `.${hashFn(orderedKey, style[key]!)}`,
+				className: `.${escapeIdentifier(hashFn(orderedKey, style[key]!))}`,
 			});
 
 			cache.set(pairId, { id: pairId, css, priority: atomic.priority });
