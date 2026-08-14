@@ -746,7 +746,9 @@ function getTwRuntime(
 	return `import { createTw } from "pandwind/tw";
 import type { WindVariants } from "./types";
 
-export const tw = createTw<WindVariants>({
+// The PURE annotation lets bundlers drop the whole module when every tw()
+// call in the app was statically inlined by the vite plugin.
+export const tw = /* @__PURE__ */ createTw<WindVariants>({
 	variants: {
 ${nonDefault.join("\n")}
 	},

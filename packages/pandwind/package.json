@@ -9,7 +9,8 @@
 		"./preset": "./src/preset/index.ts",
 		"./tw": "./src/tw/index.ts",
 		"./tw/generate": "./src/tw/generate-types.ts",
-		"./tw/collect": "./src/tw/collect.ts"
+		"./tw/collect": "./src/tw/collect.ts",
+		"./vite": "./src/vite/index.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
