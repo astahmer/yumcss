@@ -18,7 +18,7 @@ export function DesignApp() {
 					border: "$gray-200",
 					opacity: 95,
 				},
-				$layout: { flow: "stackY", gap: "6" },
+				$layout: { flow: "stackY", gap: 6 },
 				$text: { color: "$gray-900" },
 			})}
 		>
@@ -38,14 +38,14 @@ export function DesignApp() {
 						fill: "$blue-600",
 						border: { color: "$blue-700", width: 1 },
 					},
-					$layout: { flow: "stackX", align: "center", gap: "2" },
+					$layout: { flow: "stackX", align: "center", gap: 2 },
 					$text: { size: "sm", weight: "semibold", color: "$white" },
 					_hover: { $frame: { fill: "$blue-500" } },
 				})}
 			>
 				Design button
 			</button>
-			<div className={css.class({ $layout: { flow: "stackX", gap: "2" } })}>
+			<div className={css.class({ $layout: { flow: "stackX", gap: 2 } })}>
 				<span
 					className={css.class({ $text: { size: "xs", color: "$gray-500" } })}
 				>

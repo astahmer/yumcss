@@ -75,18 +75,19 @@ const makeTokenLookup = (tokens: AnyTokens | undefined): TokenLookup => {
 	};
 };
 
-const toPx = (value: string | number): string =>
-	typeof value === "number" ? `${value}px` : value;
-
 /**
  * A length that becomes `px` when numeric, otherwise a token name or raw
- * length ("50%", "calc(...)"). Numeric checks happen on the ORIGINAL value,
- * before the token lookup stringifies it.
+ * length ("50%", "calc(...)"). Numeric strings that aren't tokens are
+ * treated as px too — designers write "6", not `6`.
  */
 const toLength =
 	(token: TokenLookup, group: string) =>
-	(value: string | number): string =>
-		typeof value === "number" ? `${value}px` : toPx(token(group, value));
+	(value: string | number): string => {
+		if (typeof value === "number") return `${value}px`;
+		const resolved = token(group, value);
+		if (resolved !== value) return resolved;
+		return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+	};
 
 /* ---------------------------------------------------------------------------
  * $frame — the box

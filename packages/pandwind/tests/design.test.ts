@@ -58,6 +58,20 @@ test("resolve $frame — corners, border, blur and axis padding", () => {
 	});
 });
 
+test("numeric strings fall back to px when they are not tokens", () => {
+	expect(
+		resolveDesignStyle(
+			{ $frame: { w: "40" }, $layout: { flow: "stackX", gap: "6" } },
+			tokens,
+		),
+	).toEqual({
+		width: "40px",
+		display: "flex",
+		flexDirection: "row",
+		gap: "6px",
+	});
+});
+
 test("resolve $layout — stack flows, align and gaps", () => {
 	expect(
 		resolveDesignStyle(
