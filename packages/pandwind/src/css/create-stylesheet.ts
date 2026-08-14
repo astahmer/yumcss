@@ -10,25 +10,15 @@ import type {
 	TokenDeclaration,
 } from "../types/typings.ts";
 import type { CreateCssOptions } from "./create-css.ts";
-import {
-	createHashFn,
-	dashCase,
-	escapeIdentifier,
-	hashCssVar,
-} from "./hash.ts";
+import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 
-export const createStylesheet = (
-	preset: CssConfigReturn,
-	options: CreateCssOptions = {},
-) => {
+export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
 	const cache = new Map<string, Rule>();
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 
-	const emptyCondition = Object.keys(preset.conditions).find(
-		(key) => !preset.conditions[key],
-	);
+	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
 
 	const tokensByProp = new Map<string, Set<string>>();
 	const flatTokens = new Map<string, Token>();
@@ -47,10 +37,7 @@ export const createStylesheet = (
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
 			const hash = pairs.join([group, tokenName]);
-			const cssVarHash = hashCssVar(
-				pairs.join([group, tokenName]),
-				Boolean(options.debug),
-			);
+			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), Boolean(options.debug));
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
@@ -64,9 +51,9 @@ export const createStylesheet = (
 					// 	throw new Error(`Unknown condition '${condition}' used in token '${tokenName}'`);
 					// }
 
-					const resolvedList = (
-						Array.isArray(resolved) ? resolved : [resolved]
-					).filter((part): part is string => Boolean(part));
+					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
+						(part): part is string => Boolean(part),
+					);
 					const conditions = createConditionsBucket({
 						className: "",
 						parentSelectors: resolvedList.length ? [] : [":root "],
@@ -82,10 +69,7 @@ export const createStylesheet = (
 					);
 
 					cssVars.set(`${tokenPath}.${condition}`, {
-						declaration: genCSSRule(
-							cssVar.declaration(cssVarHash, value),
-							conditions,
-						),
+						declaration: genCSSRule(cssVar.declaration(cssVarHash, value), conditions),
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
 				}
@@ -139,8 +123,8 @@ export const createStylesheet = (
 					tokensByProp.set(prop, new Set());
 				}
 				const tokenList = tokensByProp.get(prop)!;
-				groupTokens.forEach((token) => {
-					tokenList.add(token);
+				groupTokens.forEach((tokenName) => {
+					tokenList.add(tokenName);
 				});
 
 				groupByProp.set(prop, group);
@@ -192,7 +176,7 @@ export const createStylesheet = (
 				pairs
 					.split(key)
 					.filter((part) => part !== emptyCondition)
-					.sort(),
+					.toSorted(),
 			);
 			const pairId = pairs.concat(orderedKey, style[key]!);
 			if (cache.has(pairId)) continue;
@@ -221,7 +205,7 @@ export const createStylesheet = (
 	const gen = {
 		tokens: () => {
 			return Array.from(cssVars.values())
-				.sort((a, b) => {
+				.toSorted((a, b) => {
 					const prio = a.priority - b.priority;
 					if (prio === 0) return a.declaration.localeCompare(b.declaration);
 					return prio;
@@ -231,7 +215,7 @@ export const createStylesheet = (
 		},
 		atomic: () => {
 			return Array.from(cache.values())
-				.sort((a, b) => a.priority - b.priority)
+				.toSorted((a, b) => a.priority - b.priority)
 				.map((v) => v.css)
 				.join("\n");
 		},
@@ -254,10 +238,7 @@ export const createStylesheet = (
 	};
 };
 
-export const decodeAtomicPath = (
-	presetConditions: AnyConditions,
-	atomicPath: string,
-) => {
+export const decodeAtomicPath = (presetConditions: AnyConditions, atomicPath: string) => {
 	const conditions = createConditionsBucket();
 
 	const parts = pairs.split(atomicPath);
@@ -285,9 +266,7 @@ export const decodeAtomicPath = (
 			if (!prop) {
 				prop = selector;
 			} else {
-				throw new Error(
-					`Unknown condition '${selector}' used in path '${atomicPath}'`,
-				);
+				throw new Error(`Unknown condition '${selector}' used in path '${atomicPath}'`);
 			}
 		});
 
@@ -307,9 +286,7 @@ export const decodeAtomicPath = (
 	};
 };
 
-const createConditionsBucket = (
-	partial?: Partial<ParsedConditions>,
-): ParsedConditions => {
+const createConditionsBucket = (partial?: Partial<ParsedConditions>): ParsedConditions => {
 	return {
 		className: "",
 		selfSelectors: [],
@@ -330,14 +307,12 @@ type Rule = { id: string; css: string; priority: number };
 /**
  * startsWith `&` and not `& `
  */
-const isSelfSelector = (cond: string) =>
-	cond.charCodeAt(0) === 38 && cond.charAt(1) !== " ";
+const isSelfSelector = (cond: string) => cond.charCodeAt(0) === 38 && cond.charAt(1) !== " ";
 
 /**
  * endsWith `&`
  */
-const isParentSelector = (cond: string) =>
-	cond.charCodeAt(cond.length - 1) === 38;
+const isParentSelector = (cond: string) => cond.charCodeAt(cond.length - 1) === 38;
 
 /**
  * startsWith `@`
@@ -356,8 +331,7 @@ interface ParsedConditions {
  * @see https://github.com/facebook/stylex/blob/9cf6d835e2d0b7d05af44f027dfca29dd8ee0abf/packages/shared/src/utils/genCSSRule.js
  */
 function genCSSRule(decls: string, conditions: ParsedConditions): string {
-	const { className, selfSelectors, parentSelectors, selectorLists, atRules } =
-		conditions;
+	const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
 
 	// `["&:active, &[data-active=true]"]`
 	if (selectorLists.length) {
@@ -366,9 +340,7 @@ function genCSSRule(decls: string, conditions: ParsedConditions): string {
 			`${selectorLists.map((list) => {
 				const atomicSelectors = [] as string[];
 				parser((selectors) => {
-					atomicSelectors.push(
-						...selectors.nodes.map((node) => node.toString().trim()),
-					);
+					atomicSelectors.push(...selectors.nodes.map((node) => node.toString().trim()));
 				}).processSync(list);
 
 				return atomicSelectors
@@ -391,10 +363,7 @@ function genCSSRule(decls: string, conditions: ParsedConditions): string {
 
 	const selectors = `${parentSelectors.join("")}${className}${selfSelectors.join("")}`;
 
-	return atRules.reduce(
-		(acc, atRule) => `${atRule}{${acc}}`,
-		`${`${selectors}{${decls}}`}`,
-	);
+	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${`${selectors}{${decls}}`}`);
 }
 
 const isSelectorList = (selector: string) => {

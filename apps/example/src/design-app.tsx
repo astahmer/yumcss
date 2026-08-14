@@ -22,12 +22,10 @@ export function DesignApp() {
 				$text: { color: "$gray-900" },
 			})}
 		>
-			<h1 className={css.class({ $text: { size: "3xl", weight: "bold" } })}>
-				design css()
-			</h1>
+			<h1 className={css.class({ $text: { size: "3xl", weight: "bold" } })}>design css()</h1>
 			<p className={css.class({ $text: { size: "sm", color: "$gray-600" } })}>
-				$frame / $layout / $text — the box, its children and its type. Wrong
-				values are type errors; the compiler is the contract.
+				$frame / $layout / $text — the box, its children and its type. Wrong values are type errors;
+				the compiler is the contract.
 			</p>
 			<button
 				type="button"
@@ -46,11 +44,7 @@ export function DesignApp() {
 				Design button
 			</button>
 			<div className={css.class({ $layout: { flow: "stackX", gap: 2 } })}>
-				<span
-					className={css.class({ $text: { size: "xs", color: "$gray-500" } })}
-				>
-					hover it:
-				</span>
+				<span className={css.class({ $text: { size: "xs", color: "$gray-500" } })}>hover it:</span>
 				<span
 					className={css.class({
 						$text: { size: "xs", color: "$gray-700" },

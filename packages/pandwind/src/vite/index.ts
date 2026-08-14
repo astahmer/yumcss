@@ -63,11 +63,9 @@ function findTwImports(
 		const source = (node as { source?: { value?: string } }).source?.value;
 		if (typeof source !== "string" || !isTwSource(source)) return;
 		info.sources.push(source);
-		for (const specifier of (node as { specifiers?: OxcSpecifier[] })
-			.specifiers ?? []) {
+		for (const specifier of (node as { specifiers?: OxcSpecifier[] }).specifiers ?? []) {
 			if (specifier.type !== "ImportSpecifier") continue;
-			const imported = (specifier as { imported?: { name?: string } }).imported
-				?.name;
+			const imported = (specifier as { imported?: { name?: string } }).imported?.name;
 			const local = (specifier as { local?: { name?: string } }).local?.name;
 			if (imported === "tw" && typeof local === "string") {
 				info.localNames.add(local);
@@ -129,7 +127,10 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 			}
 
 			let config: TwConfig | undefined;
+			// Sequential short-circuit: stop at the first source that resolves
+			// to a generated tw module. Promise.all would load them needlessly.
 			for (const source of imports.sources) {
+				// oxlint-disable-next-line no-await-in-loop
 				config = await loadConfig(this, id, source);
 				if (config !== undefined) break;
 			}

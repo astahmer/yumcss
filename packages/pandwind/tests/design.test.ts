@@ -60,10 +60,7 @@ test("resolve $frame — corners, border, blur and axis padding", () => {
 
 test("numeric strings fall back to px when they are not tokens", () => {
 	expect(
-		resolveDesignStyle(
-			{ $frame: { w: "40" }, $layout: { flow: "stackX", gap: "6" } },
-			tokens,
-		),
+		resolveDesignStyle({ $frame: { w: "40" }, $layout: { flow: "stackX", gap: "6" } }, tokens),
 	).toEqual({
 		width: "40px",
 		display: "flex",
@@ -98,10 +95,7 @@ test("resolve $layout — stack flows, align and gaps", () => {
 
 	// stackX swaps the axes: align stays semantic ("top-left" means top-left).
 	expect(
-		resolveDesignStyle(
-			{ $layout: { flow: "stackX", align: "bottom-right" } },
-			tokens,
-		),
+		resolveDesignStyle({ $layout: { flow: "stackX", align: "bottom-right" } }, tokens),
 	).toEqual({
 		display: "flex",
 		flexDirection: "row",
@@ -112,10 +106,7 @@ test("resolve $layout — stack flows, align and gaps", () => {
 
 test("resolve $layout — grid", () => {
 	expect(
-		resolveDesignStyle(
-			{ $layout: { flow: "grid", cols: 3, rows: 2, gapY: "12" } },
-			tokens,
-		),
+		resolveDesignStyle({ $layout: { flow: "grid", cols: 3, rows: 2, gapY: "12" } }, tokens),
 	).toEqual({
 		display: "grid",
 		gridAutoFlow: "row",
@@ -269,10 +260,7 @@ test("design css().class and css().props compose", () => {
 	).toBe("borderRadius__0.375rem padding__8px fontWeight__700");
 
 	expect(
-		css.props(
-			css({ $frame: { fill: "$blue-500" } }),
-			css({ $text: { color: "$red-300" } }),
-		),
+		css.props(css({ $frame: { fill: "$blue-500" } }), css({ $text: { color: "$red-300" } })),
 	).toEqual({
 		className: "backgroundColor__#3182ce color__#FC8181",
 		style: undefined,

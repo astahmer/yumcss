@@ -1,24 +1,21 @@
 import type { AnySelector } from "./selectors.d.ts";
 
-export interface StyleObject
-	extends Record<string, string | Record<string, unknown> | undefined> {}
+export interface StyleObject extends Record<string, string | Record<string, unknown> | undefined> {}
 
 /* -----------------------------------------------------------------------------
  * properties config
  * -----------------------------------------------------------------------------*/
 
 export interface AnyCssConfig {
-	// biome-ignore lint/suspicious/noExplicitAny: unconstrained user config escape hatch
 	[key: string]: any;
 }
 
-interface AnyCssPropConf<TConfig, TName extends keyof TConfig>
-	extends Record<string, TConfig[TName]> {}
+interface AnyCssPropConf<TConfig, TName extends keyof TConfig> extends Record<
+	string,
+	TConfig[TName]
+> {}
 
-type CssValuesOf<TConfig, TName extends keyof TConfig> = AnyCssPropConf<
-	TConfig,
-	TName
->;
+type CssValuesOf<TConfig, TName extends keyof TConfig> = AnyCssPropConf<TConfig, TName>;
 
 type PropConfigValues<
 	TConfig,
@@ -48,8 +45,7 @@ export interface SimpleToken {
 	hash: string;
 }
 
-export interface SemanticToken<TConds = string>
-	extends Omit<SimpleToken, "value"> {
+export interface SemanticToken<TConds = string> extends Omit<SimpleToken, "value"> {
 	group: string;
 	cssVar: string;
 	value: string | Record<string, TConds>;
@@ -73,10 +69,7 @@ export interface CssPreset<
 	TConfig extends AnyCssConfig = AnyCssConfig,
 	TTokens extends AnyTokens = AnyTokens,
 	TConditions extends AnyConditions = AnyConditions,
-	TProps extends AnyPresetProperties<TConfig, TTokens> = AnyPresetProperties<
-		TConfig,
-		TTokens
-	>,
+	TProps extends AnyPresetProperties<TConfig, TTokens> = AnyPresetProperties<TConfig, TTokens>,
 > {
 	conditions: TConditions;
 	properties: TProps;
@@ -106,18 +99,11 @@ type InferPropValues<TTokens, Value> = Value extends {
 	$tokens: infer TTokenName;
 }
 	? TTokenName extends keyof TTokens
-		?
-				| keyof TTokens[TTokenName]
-				| Exclude<keyof Value, "$strictness" | "$tokens">
+		? keyof TTokens[TTokenName] | Exclude<keyof Value, "$strictness" | "$tokens">
 		: Exclude<keyof Value, "$strictness" | "$tokens">
 	: Exclude<keyof Value, "$strictness" | "$tokens">;
 
-type StrictValue<
-	TConfig,
-	TTokens,
-	TName extends keyof TConfig,
-	Value,
-> = Value extends {
+type StrictValue<TConfig, TTokens, TName extends keyof TConfig, Value> = Value extends {
 	$strictness: infer TStrictness;
 }
 	? TStrictness extends "inherits"
@@ -151,11 +137,9 @@ type ThemeConds<
 	TKeys = keyof TPreset["conditions"],
 > = TKeys extends string ? TKeys : never;
 
-type InitialCssTypesValues<
-	TConfig,
-	TAll,
-	PropName extends keyof TConfig,
-> = TAll extends true ? TConfig[PropName] : never;
+type InitialCssTypesValues<TConfig, TAll, PropName extends keyof TConfig> = TAll extends true
+	? TConfig[PropName]
+	: never;
 
 declare const ErrorSymbol: unique symbol;
 
@@ -188,10 +172,7 @@ export type TypedStyleObject<
 						>,
 						TConds
 					>
-				: ConditionalValue<
-						InitialCssTypesValues<TConfig, TAll, PropName>,
-						TConds
-					>
+				: ConditionalValue<InitialCssTypesValues<TConfig, TAll, PropName>, TConds>
 			: "Not a part of the `TConfig` interface" & {
 					_error: typeof ErrorSymbol;
 				};

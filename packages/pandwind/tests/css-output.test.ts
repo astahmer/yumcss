@@ -112,9 +112,7 @@ test("css gen simple prop", () => {
 		@media (min-width: 1280px){.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__xl__pink[data-attr='test']:disabled, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__xl__pink[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
 
-	expect(
-		createStylesheet(preset, { debug: false }).generate([styles]),
-	).toMatchInlineSnapshot(`
+	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 		"
 		.\\31 an2x2b{border:1px solid red}
 		.o3b2cm{color:#0000ff}

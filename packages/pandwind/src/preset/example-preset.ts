@@ -1,9 +1,5 @@
 import type { StandardProperties } from "csstype";
-import {
-	definePreset,
-	defineTheme,
-	defineTokens,
-} from "../types/define-preset.ts";
+import { definePreset, defineTheme, defineTokens } from "../types/define-preset.ts";
 
 const tokens = defineTokens({
 	colors: {

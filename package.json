@@ -8,10 +8,15 @@
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",
 		"tw:codegen": "pnpm --filter example tw:codegen",
-		"check": "biome check --write"
+		"lint": "oxlint --deny-warnings --report-unused-disable-directives",
+		"lint:fix": "oxlint --fix --deny-warnings --report-unused-disable-directives",
+		"format": "oxfmt --check",
+		"format:fix": "oxfmt",
+		"check": "oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.8",
+		"oxfmt": "0.63.0",
+		"oxlint": "1.78.0",
 		"typescript": "7.0.2"
 	}
 }

@@ -40,7 +40,7 @@ export const createCss = <
 	const transform = (styles: StyleObject | DynamicStyles) => {
 		if ("$input" in styles) {
 			// Omit the $input property before flattening
-			const { $input, ...rest } = styles as DynamicStyles;
+			const { $input: _$input, ...rest } = styles as DynamicStyles;
 
 			// DynamicStyles -> DynamicFn
 			const flat = flattenStyle(rest);
@@ -90,9 +90,7 @@ export const createCss = <
 	};
 
 	// `{ color: "red" }` -> { style: undefined, className: "color__red" }
-	css.props = (
-		...props: Array<CompiledStyles | DynamicReturn>
-	): PropsReturn => {
+	css.props = (...props: Array<CompiledStyles | DynamicReturn>): PropsReturn => {
 		const compiled = [] as Array<CompiledStyles>;
 		const styles = [] as Array<CssStyle>;
 
@@ -108,16 +106,12 @@ export const createCss = <
 
 		return {
 			style: styles.length ? assign(...styles) : undefined,
-			className: compiled.length
-				? Object.values(assign(...compiled)).join(" ")
-				: undefined,
+			className: compiled.length ? Object.values(assign(...compiled)).join(" ") : undefined,
 		};
 	};
 
 	// `{ btn: { color: "red" } }` -> { btn: { color: "color__red" } }
-	css.group = <
-		TGroup extends Record<string, StyleObject | DynamicStyles<StyleObject>>,
-	>(
+	css.group = <TGroup extends Record<string, StyleObject | DynamicStyles<StyleObject>>>(
 		groups: TGroup,
 	) => {
 		const merged: Record<string, CompiledStyles | DynamicFn<AnyInput>> = {};

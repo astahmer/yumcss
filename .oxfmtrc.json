@@ -1,0 +1,11 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"printWidth": 100,
+	"useTabs": true,
+	"ignorePatterns": [
+		"**/apps/example/src/types.d.ts",
+		"**/apps/example/src/pandwind.safelist.ts",
+		"**/apps/example/src/tw.ts",
+		"**/dist/**"
+	]
+}

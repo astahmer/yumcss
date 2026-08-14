@@ -41,18 +41,13 @@ export const resolveDesignStyle = (
 		}
 
 		if (isModuleKey(key)) {
-			Object.assign(
-				out,
-				resolveModule(key, value as Record<string, unknown>, tokens),
-			);
+			Object.assign(out, resolveModule(key, value as Record<string, unknown>, tokens));
 			continue;
 		}
 
 		// Conditions, selectors and raw value-objects (`color: { _hover: "red" }`)
 		// all recurse; plain values pass through untouched.
-		out[key] = isPlainObject(value)
-			? resolveDesignStyle(value, tokens)
-			: (value as string);
+		out[key] = isPlainObject(value) ? resolveDesignStyle(value, tokens) : (value as string);
 	}
 
 	return out;
@@ -112,8 +107,7 @@ const toOverflow = (value: unknown): string => {
 const toSpacingList = (
 	value: string | number | Array<string | number>,
 	toSize: (item: string | number) => string,
-): string =>
-	Array.isArray(value) ? value.map(toSize).join(" ") : toSize(value);
+): string => (Array.isArray(value) ? value.map(toSize).join(" ") : toSize(value));
 
 const toBorder = (
 	value: unknown,
@@ -128,16 +122,10 @@ const toBorder = (
 		width?: number | string;
 		style?: string;
 	};
-	return `${toSize(border.width ?? 1)} ${border.style ?? "solid"} ${token(
-		"colors",
-		border.color,
-	)}`;
+	return `${toSize(border.width ?? 1)} ${border.style ?? "solid"} ${token("colors", border.color)}`;
 };
 
-const resolveFrame = (
-	props: Record<string, unknown>,
-	token: TokenLookup,
-): StyleObject => {
+const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): StyleObject => {
 	const out: StyleObject = {};
 	const toSize = toLength(token, "spacing");
 	const toRadius = toLength(token, "radii");
@@ -156,10 +144,8 @@ const resolveFrame = (
 			out.backgroundColor = token("colors", props.fill as string);
 		}
 	}
-	if (props.border !== undefined)
-		out.border = toBorder(props.border, token, toSize);
-	if (props.blurBg !== undefined)
-		out.backdropFilter = `blur(${props.blurBg}px)`;
+	if (props.border !== undefined) out.border = toBorder(props.border, token, toSize);
+	if (props.blurBg !== undefined) out.backdropFilter = `blur(${props.blurBg}px)`;
 	if (props.pad !== undefined) {
 		out.padding = toSpacingList(props.pad as never, toSize);
 	}
@@ -194,10 +180,7 @@ const X: Record<string, string> = {
 	right: "flex-end",
 };
 
-const resolveLayout = (
-	props: Record<string, unknown>,
-	token: TokenLookup,
-): StyleObject => {
+const resolveLayout = (props: Record<string, unknown>, token: TokenLookup): StyleObject => {
 	const out: StyleObject = {};
 	const flow = props.flow as string | undefined;
 	const toSize = toLength(token, "spacing");
@@ -225,10 +208,8 @@ const resolveLayout = (
 			? (["center", "center"] as const)
 			: ((props.align as string).split("-") as [string, string]);
 		const isHorizontal = flow === "stackX";
-		out.justifyContent =
-			(isHorizontal ? X : Y)[isHorizontal ? xPart : yPart] ?? "center";
-		out.alignItems =
-			(isHorizontal ? Y : X)[isHorizontal ? yPart : xPart] ?? "center";
+		out.justifyContent = (isHorizontal ? X : Y)[isHorizontal ? xPart : yPart] ?? "center";
+		out.alignItems = (isHorizontal ? Y : X)[isHorizontal ? yPart : xPart] ?? "center";
 	}
 
 	if (props.gap !== undefined) out.gap = toSize(props.gap as string | number);
@@ -253,29 +234,21 @@ const TEXT_CASE: Record<string, string> = {
 	title: "capitalize",
 };
 
-const resolveText = (
-	props: Record<string, unknown>,
-	token: TokenLookup,
-): StyleObject => {
+const resolveText = (props: Record<string, unknown>, token: TokenLookup): StyleObject => {
 	const out: StyleObject = {};
 	const toSize = toLength(token, "fontSizes");
 	const toLetter = toLength(token, "letterSpacings");
 
-	if (props.color !== undefined)
-		out.color = token("colors", props.color as string);
-	if (props.font !== undefined)
-		out.fontFamily = token("fonts", props.font as string);
+	if (props.color !== undefined) out.color = token("colors", props.color as string);
+	if (props.font !== undefined) out.fontFamily = token("fonts", props.font as string);
 	if (props.weight !== undefined) {
-		out.fontWeight = String(
-			token("fontWeights", props.weight as string | number),
-		);
+		out.fontWeight = String(token("fontWeights", props.weight as string | number));
 	}
 	if (props.size !== undefined) {
 		out.fontSize = toSize(props.size as string | number);
 	}
 	if (props.align !== undefined) out.textAlign = props.align as string;
-	if (props.case !== undefined)
-		out.textTransform = TEXT_CASE[props.case as string];
+	if (props.case !== undefined) out.textTransform = TEXT_CASE[props.case as string];
 	if (props.truncate === true) {
 		out.overflow = "hidden";
 		out.textOverflow = "ellipsis";
@@ -287,8 +260,7 @@ const resolveText = (
 			| number
 			| { line?: string | number; letter?: string | number };
 		if (typeof spacing === "object") {
-			if (spacing.line !== undefined)
-				out.lineHeight = token("lineHeights", spacing.line);
+			if (spacing.line !== undefined) out.lineHeight = token("lineHeights", spacing.line);
 			if (spacing.letter !== undefined) {
 				out.letterSpacing = toLetter(spacing.letter);
 			}
@@ -307,37 +279,28 @@ const resolveText = (
 					offset?: number | "auto";
 			  };
 		if (typeof decoration === "string") {
-			out.textDecorationLine =
-				decoration === "strikethrough" ? "line-through" : decoration;
+			out.textDecorationLine = decoration === "strikethrough" ? "line-through" : decoration;
 		} else {
-			out.textDecorationLine =
-				decoration.type === "strikethrough" ? "line-through" : "underline";
-			if (decoration.style !== undefined)
-				out.textDecorationStyle = decoration.style;
+			out.textDecorationLine = decoration.type === "strikethrough" ? "line-through" : "underline";
+			if (decoration.style !== undefined) out.textDecorationStyle = decoration.style;
 			if (decoration.color !== undefined) {
 				out.textDecorationColor = token("colors", decoration.color);
 			}
 			if (decoration.thickness !== undefined) {
 				out.textDecorationThickness =
-					decoration.thickness === "auto"
-						? "auto"
-						: `${decoration.thickness}px`;
+					decoration.thickness === "auto" ? "auto" : `${decoration.thickness}px`;
 			}
 			if (decoration.offset !== undefined) {
-				out.textUnderlineOffset =
-					decoration.offset === "auto" ? "auto" : `${decoration.offset}px`;
+				out.textUnderlineOffset = decoration.offset === "auto" ? "auto" : `${decoration.offset}px`;
 			}
 		}
 	}
 	if (props.highlight !== undefined) {
-		const highlight = props.highlight as
-			| string
-			| { text?: string; bg?: string };
+		const highlight = props.highlight as string | { text?: string; bg?: string };
 		if (typeof highlight === "string") {
 			out.backgroundColor = token("colors", highlight);
 		} else {
-			if (highlight.text !== undefined)
-				out.color = token("colors", highlight.text);
+			if (highlight.text !== undefined) out.color = token("colors", highlight.text);
 			if (highlight.bg !== undefined) {
 				out.backgroundColor = token("colors", highlight.bg);
 			}

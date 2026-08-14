@@ -12,10 +12,5 @@ export default defineConfig({
 	// `pandwindVite` inlines literal `tw()` calls before Tailwind's scanner;
 	// `pandwindCssVite` extracts literal `css()` calls into a generated
 	// stylesheet, served from the virtual `pandwind:css` module.
-	plugins: [
-		pandwindVite(),
-		pandwindCssVite(examplePreset),
-		tailwindcss(),
-		react(),
-	],
+	plugins: [pandwindVite(), pandwindCssVite(examplePreset), tailwindcss(), react()],
 });

@@ -1,0 +1,21 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"categories": {
+		"correctness": "error",
+		"suspicious": "warn",
+		"perf": "warn"
+	},
+	"plugins": ["typescript", "unicorn", "import"],
+	"rules": {
+		"typescript/no-non-null-assertion": "off",
+		"unicorn/no-array-for-each": "off",
+		"eslint/no-underscore-dangle": "off",
+		"import/no-unassigned-import": "off"
+	},
+	"ignorePatterns": [
+		"**/apps/example/src/types.d.ts",
+		"**/apps/example/src/pandwind.safelist.ts",
+		"**/apps/example/src/tw.ts",
+		"**/dist/**"
+	]
+}

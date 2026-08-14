@@ -18,9 +18,7 @@ export function CssInJsApp() {
 				ring: ["1", "gray-900/5"],
 			})}
 		>
-			<h1 className={tw({ text: ["2xl", "gray-900"], font: "bold" })}>
-				typed tw()
-			</h1>
+			<h1 className={tw({ text: ["2xl", "gray-900"], font: "bold" })}>typed tw()</h1>
 			<p className={tw({ text: ["sm", "gray-600"], leading: "6" })}>
 				Hover the button:{" "}
 				<code

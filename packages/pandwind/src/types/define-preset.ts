@@ -9,12 +9,9 @@ import type {
 
 export * from "./typings.ts";
 
-export const defineTheme = <TTheme extends DefinePresetOptions>(
-	theme: TTheme,
-) => theme;
+export const defineTheme = <TTheme extends DefinePresetOptions>(theme: TTheme) => theme;
 
 export function definePreset<
-	// biome-ignore lint/suspicious/noExplicitAny: unconstrained user theme
 	TTheme extends DefinePresetOptions<any, any>,
 	TConfig extends TTheme["config"],
 	TTokens extends TTheme["tokens"],
@@ -35,12 +32,7 @@ export const defineSemanticTokens = <
 	tokens: TTokens,
 ) => tokens;
 export const defineConditions = <T extends AnyConditions>(cond: T) => cond;
-export const defineProperties = <
-	// biome-ignore lint/suspicious/noExplicitAny: unconstrained user properties
-	T extends AnyPresetProperties<any, any>,
->(
-	props: T,
-) => props;
+export const defineProperties = <T extends AnyPresetProperties<any, any>>(props: T) => props;
 
 export const define = {
 	theme: defineTheme,

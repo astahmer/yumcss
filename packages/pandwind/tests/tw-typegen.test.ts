@@ -9,8 +9,7 @@ const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 
 describe("typegen", () => {
 	test("generates utilities, variants and runtime metadata", async () => {
-		const { typesDts, twTs, utilityCount, variantCount } =
-			await generateDesignSystem(css, app);
+		const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, app);
 
 		expect(utilityCount).toBeGreaterThan(200);
 		expect(variantCount).toBeGreaterThan(50);
@@ -44,8 +43,6 @@ describe("generated classes compile", () => {
 			"focus-visible:outline-offset-2",
 			"focus-visible:outline-sky-600",
 		];
-		expect(system.candidatesToCss(classes).every((out) => out !== null)).toBe(
-			true,
-		);
+		expect(system.candidatesToCss(classes).every((out) => out !== null)).toBe(true);
 	});
 });

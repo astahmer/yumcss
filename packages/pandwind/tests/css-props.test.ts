@@ -113,9 +113,7 @@ test("css with dynamic styles", () => {
 		},
 	});
 
-	expect(
-		styles.buttonColor({ bg: "blue", fontSize: 10 }),
-	).toMatchInlineSnapshot(`
+	expect(styles.buttonColor({ bg: "blue", fontSize: 10 })).toMatchInlineSnapshot(`
       {
         "compiled": {
           "_hover__backgroundColor": "_hover__backgroundColor__$bgHover",

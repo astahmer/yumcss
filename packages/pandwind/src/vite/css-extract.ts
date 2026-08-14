@@ -19,9 +19,7 @@ import type {
 	StyleObject,
 } from "../types/typings.ts";
 
-export type CssPreset = CssConfigReturn<
-	DefinePresetOptions<AnyCssConfig, AnyTokens>
->;
+export type CssPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 interface ImportNode extends OxcNode {
 	source?: { value?: string };
@@ -40,19 +38,14 @@ interface CallNode extends OxcNode {
 }
 
 /** True when the module `id` should be scanned for css() calls. */
-export const isCssSource = (
-	source: string,
-	matchers: Array<string | RegExp>,
-): boolean => {
+export const isCssSource = (source: string, matchers: Array<string | RegExp>): boolean => {
 	const basename =
 		source
 			.split("/")
 			.pop()
 			?.replace(/\.[jt]sx?$/, "") ?? source;
 	return matchers.some((matcher) =>
-		typeof matcher === "string"
-			? basename === matcher || source === matcher
-			: matcher.test(source),
+		typeof matcher === "string" ? basename === matcher || source === matcher : matcher.test(source),
 	);
 };
 
@@ -94,10 +87,7 @@ export function findCssImports(
 	return names;
 }
 
-const isMemberCall = (
-	callee: OxcNode | null,
-	cssNames: ReadonlySet<string>,
-): boolean => {
+const isMemberCall = (callee: OxcNode | null, cssNames: ReadonlySet<string>): boolean => {
 	if (callee?.type !== "MemberExpression") return false;
 	const object = (callee as { object?: OxcNode | null }).object;
 	if (object?.type !== "Identifier") return false;
@@ -137,19 +127,15 @@ export function extractCssStyles(
 			return;
 		}
 
-		const isDirect =
-			callee.type === "Identifier" && cssNames.has(callee.name as string);
-		const isMember =
-			callee.type === "MemberExpression" && isMemberCall(callee, cssNames);
+		const isDirect = callee.type === "Identifier" && cssNames.has(callee.name as string);
+		const isMember = callee.type === "MemberExpression" && isMemberCall(callee, cssNames);
 		if (!isDirect && !isMember) return;
 		if (call.arguments.length === 0) return;
 
 		for (const argument of call.arguments) {
 			const literal = evalLiteral(argument as Expression);
 			if (typeof literal !== "object" || literal === null) continue;
-			styles.push(
-				resolveDesignStyle(literal as Record<string, unknown>, preset.tokens),
-			);
+			styles.push(resolveDesignStyle(literal as Record<string, unknown>, preset.tokens));
 		}
 	});
 

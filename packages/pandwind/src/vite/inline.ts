@@ -60,9 +60,7 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 				typeof options.conflicts === "object" && options.conflicts !== null
 					? (options.conflicts as TwConflictsMeta)
 					: undefined,
-			compose: Array.isArray(options.compose)
-				? (options.compose as string[])
-				: undefined,
+			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
 		};
 	});
 
@@ -103,11 +101,7 @@ export function inlineTwCalls(
 		}
 		if (call.arguments.length !== 1) return;
 		const styles = evalLiteral(call.arguments[0] as Expression);
-		if (
-			typeof styles !== "object" ||
-			styles === null ||
-			Array.isArray(styles)
-		) {
+		if (typeof styles !== "object" || styles === null || Array.isArray(styles)) {
 			return;
 		}
 		try {
@@ -131,7 +125,7 @@ export function inlineTwCalls(
 
 	if (edits.length === 0) return { code, inlined: 0 };
 	let output = code;
-	for (const edit of [...edits].sort((a, b) => b.start - a.start)) {
+	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
 		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 	}
 	return { code: output, inlined };

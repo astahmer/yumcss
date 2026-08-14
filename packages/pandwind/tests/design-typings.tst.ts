@@ -128,9 +128,7 @@ test("$raw is the escape hatch for everything else", () => {
 });
 
 test("DesignStyleObject is the exported parameter type", () => {
-	const fn = css as (
-		styles: DesignStyleObject<typeof examplePreset>,
-	) => Compiled;
+	const fn = css as (styles: DesignStyleObject<typeof examplePreset>) => Compiled;
 	expect(fn).type.toBeCallableWith({ $frame: { w: "20" } });
 	expect(fn).type.toBeCallableWith({ $layout: { flow: "grid", cols: 3 } });
 });

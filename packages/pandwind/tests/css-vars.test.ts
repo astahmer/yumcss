@@ -55,9 +55,7 @@ test("css tokens simple vars", () => {
 		._hover__color__\\$red-500:hover{color:var(--colors__\\\\\\$red-500)}"
 	`);
 
-	expect(
-		createStylesheet(preset, { debug: false }).generate([styles]),
-	).toMatchInlineSnapshot(`
+	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 		":root {--\\31 8c7uto: #E53E3E;}
 		:root {--\\31 l8nf6e: #60A3BC;}
 		.\\31 eewoyj{color:var(--\\31 l8nf6e)}
@@ -138,9 +136,7 @@ test("css tokens semantic vars", () => {
 		._hover__color__success:hover{color:var(--colors__success)}"
 	`);
 
-	expect(
-		createStylesheet(preset, { debug: false }).generate([styles]),
-	).toMatchInlineSnapshot(`
+	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 		":root {--\\31 1sszm1: #E53E3E;}
 		:root {--\\31 2u3ug6: #60A3BC;}
 		:root {--\\31 8c7uto: #E53E3E;}
@@ -232,9 +228,7 @@ test("css tokens semantic conditional vars", () => {
 		.color__error{color:var(--colors__error)}"
 	`);
 
-	expect(
-		createStylesheet(preset, { debug: false }).generate([styles]),
-	).toMatchInlineSnapshot(`
+	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 		":root {--\\31 1sszm1: #2b6cb0;}
 		:root {--\\31 2u3ug6: #ebf8ff;}
 		:root {--\\31 5vw4wf: #ebf8ff;}

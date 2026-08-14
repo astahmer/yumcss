@@ -89,45 +89,31 @@ describe("tw variants", () => {
 	test("simple nesting", () => {
 		expect(tw({ sm: { py: "12" } })).toBe("sm:py-12");
 		expect(tw({ hover: { bg: "sky-700" } })).toBe("hover:bg-sky-700");
-		expect(tw({ dark: { hover: { bg: "sky-700" } } })).toBe(
-			"dark:hover:bg-sky-700",
-		);
+		expect(tw({ dark: { hover: { bg: "sky-700" } } })).toBe("dark:hover:bg-sky-700");
 	});
 
 	test("dash-joined variants", () => {
-		expect(typed({ group: { hover: { opacity: "100" } } })).toBe(
-			"group-hover:opacity-100",
-		);
+		expect(typed({ group: { hover: { opacity: "100" } } })).toBe("group-hover:opacity-100");
 		expect(typed({ max: { md: { bg: "red-500" } } })).toBe("max-md:bg-red-500");
-		expect(typed({ aria: { checked: { bg: "sky-600" } } })).toBe(
-			"aria-checked:bg-sky-600",
-		);
+		expect(typed({ aria: { checked: { bg: "sky-600" } } })).toBe("aria-checked:bg-sky-600");
 		expect(typed({ data: { "[state=open]": { bg: "sky-600" } } })).toBe(
 			"data-[state=open]:bg-sky-600",
 		);
 	});
 
 	test("empty-joined container variant", () => {
-		expect(typed({ "@": { md: { hover: { bg: "red-500" } } } })).toBe(
-			"@md:hover:bg-red-500",
-		);
+		expect(typed({ "@": { md: { hover: { bg: "red-500" } } } })).toBe("@md:hover:bg-red-500");
 	});
 
 	test("camelCase variant names", () => {
-		expect(
-			tw({ focusVisible: { outline: ["2", "sky-600"], outlineOffset: "2" } }),
-		).toBe(
+		expect(tw({ focusVisible: { outline: ["2", "sky-600"], outlineOffset: "2" } })).toBe(
 			"focus-visible:outline-2 focus-visible:outline-sky-600 focus-visible:outline-offset-2",
 		);
-		expect(tw({ motionReduce: { transition: "none" } })).toBe(
-			"motion-reduce:transition-none",
-		);
+		expect(tw({ motionReduce: { transition: "none" } })).toBe("motion-reduce:transition-none");
 	});
 
 	test("modifier-requiring variants reject direct utilities", () => {
-		expect(() => typed({ group: { bg: "red-500" } })).toThrow(
-			/requires a nested variant/,
-		);
+		expect(() => typed({ group: { bg: "red-500" } })).toThrow(/requires a nested variant/);
 	});
 });
 
@@ -166,9 +152,7 @@ describe("tw last-wins merging", () => {
 
 	test("composing utilities coexist across keys, merge within a key", () => {
 		expect(composed({ scaleX: "2", scaleY: "2" })).toBe("scale-x-2 scale-y-2");
-		expect(composed({ translateX: "4", translateY: "2" })).toBe(
-			"translate-x-4 translate-y-2",
-		);
+		expect(composed({ translateX: "4", translateY: "2" })).toBe("translate-x-4 translate-y-2");
 		expect(composed({ scaleX: ["2", "4"] })).toBe("scale-x-4");
 		expect(composed({ bg: ["red-500", "blue-500"] })).toBe("bg-blue-500");
 	});

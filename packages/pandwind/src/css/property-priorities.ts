@@ -746,10 +746,7 @@ export function getPropertyPriority(key: string): number {
 	}
 
 	if (key.startsWith(":")) {
-		const prop =
-			key.startsWith(":") && key.includes("(")
-				? key.slice(0, key.indexOf("("))
-				: key;
+		const prop = key.startsWith(":") && key.includes("(") ? key.slice(0, key.indexOf("(")) : key;
 
 		return PSEUDO_CLASS_PRIORITIES[prop as keyof PseudoClassPriorities] ?? 40;
 	}

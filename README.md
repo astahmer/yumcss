@@ -53,7 +53,7 @@ PostCSS config, no runtime CSS-in-JS.
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
-- **`pandwindVite()`** — a vite plugin that runs *before* Tailwind's scanner
+- **`pandwindVite()`** — a vite plugin that runs _before_ Tailwind's scanner
   and statically inlines `tw({ ... })` calls with literal arguments into plain
   class strings. The runtime cost becomes zero and the classes are found
   naturally; the whole runtime and conflict map tree-shake out of the bundle
@@ -151,7 +151,7 @@ decoration, highlight). Conditions and selectors nest to any depth.
 ### Static extraction (`pandwindCssVite`)
 
 The css() classes are hashed deterministically; the stylesheet is generated
-from the *same* literal calls at build time, so nothing is accumulated at
+from the _same_ literal calls at build time, so nothing is accumulated at
 runtime:
 
 ```ts
@@ -176,7 +176,7 @@ dynamic class names in plain Tailwind).
 ## Why pandwind exists
 
 The short version of the decisions behind this repo lives in [TODO.md](./TODO.md)
-under *What we deliberately don't do (and why)*. The highlights:
+under _What we deliberately don't do (and why)_. The highlights:
 
 - **No chakra/emotion-style runtime CSS-in-JS** — a mini runtime that resolves
   styles at runtime is exactly the perf and caching cost we're avoiding.

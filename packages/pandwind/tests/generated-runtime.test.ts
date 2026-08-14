@@ -18,12 +18,8 @@ describe("generated tw runtime", () => {
 			"rounded-xl bg-white p-6 shadow-lg",
 		);
 		expect(tw({ sm: { flex: "col" } })).toBe("sm:flex sm:flex-col");
-		expect(tw({ group: { hover: { opacity: "100" } } })).toBe(
-			"group-hover:opacity-100",
-		);
-		expect(tw({ "@": { md: { hover: { bg: "red-500" } } } })).toBe(
-			"@md:hover:bg-red-500",
-		);
+		expect(tw({ group: { hover: { opacity: "100" } } })).toBe("group-hover:opacity-100");
+		expect(tw({ "@": { md: { hover: { bg: "red-500" } } } })).toBe("@md:hover:bg-red-500");
 		expect(tw({ focusVisible: { outline: ["2", "sky-600"] } })).toBe(
 			"focus-visible:outline-2 focus-visible:outline-sky-600",
 		);
@@ -32,9 +28,7 @@ describe("generated tw runtime", () => {
 	test("merges conflicting utilities from the generated conflict map", () => {
 		expect(tw({ px: "4", p: "6" })).toBe("p-6");
 		expect(tw({ p: "6", px: "4" })).toBe("px-4");
-		expect(tw({ text: ["2xl", "gray-900", "center"] })).toBe(
-			"text-2xl text-gray-900 text-center",
-		);
+		expect(tw({ text: ["2xl", "gray-900", "center"] })).toBe("text-2xl text-gray-900 text-center");
 		expect(tw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
 		expect(tw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");
 		expect(tw({ p: "4", md: { p: "6" } })).toBe("p-4 md:p-6");
@@ -48,11 +42,7 @@ describe("generated tw runtime", () => {
 			resolve(app, "src/tw.ts"),
 		);
 
-		expect([...scanned].sort()).toEqual([...pandwindSafelist].sort());
-		expect(
-			system
-				.candidatesToCss([...pandwindSafelist])
-				.every((out) => out !== null),
-		).toBe(true);
+		expect([...scanned].toSorted()).toEqual([...pandwindSafelist].toSorted());
+		expect(system.candidatesToCss([...pandwindSafelist]).every((out) => out !== null)).toBe(true);
 	});
 });

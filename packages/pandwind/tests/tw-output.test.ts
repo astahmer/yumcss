@@ -1,10 +1,7 @@
 import type { StandardProperties } from "csstype";
 import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
-import {
-	createStylesheet,
-	decodeAtomicPath,
-} from "../src/css/create-stylesheet.ts";
+import { createStylesheet, decodeAtomicPath } from "../src/css/create-stylesheet.ts";
 import { pairs } from "../src/lib/utils.ts";
 import { definePreset, defineTokens } from "../src/types/define-preset.ts";
 
@@ -130,10 +127,7 @@ describe("css with custom tailwind hashFn", () => {
 	function tailwindHashFn(key: string, value: string | true): string {
 		const parts = pairs.split(key);
 
-		const prop = decodeAtomicPath(
-			preset.conditions,
-			pairs.join([key, String(value)]),
-		).prop;
+		const prop = decodeAtomicPath(preset.conditions, pairs.join([key, String(value)])).prop;
 		const conds = parts.filter((part) => part !== prop);
 
 		return conds.reduceRight(
@@ -192,9 +186,7 @@ describe("css with custom tailwind hashFn", () => {
 			.hover\\:text-red-500:hover{color:var(--colors__red-500)}"
 		`);
 
-		expect(
-			createStylesheet(preset, { debug: false }).generate([styles]),
-		).toMatchInlineSnapshot(`
+		expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 			":root {--\\31 01f8i4: 8px;}
 			:root {--\\31 45nsom: 4px;}
 			:root {--\\31 4tkj9n: 1px;}

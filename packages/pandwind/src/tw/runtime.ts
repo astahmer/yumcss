@@ -48,8 +48,7 @@ export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 	const variants = options.variants ?? {};
 	const conflicts = options.conflicts;
 	const compose = options.compose;
-	return (styles) =>
-		compileStyles(styles as TwNestedStyles, variants, conflicts, compose);
+	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts, compose);
 }
 
 /**

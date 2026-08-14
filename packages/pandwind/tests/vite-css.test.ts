@@ -4,11 +4,7 @@ import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
-import {
-	extractCssStyles,
-	findCssImports,
-	isCssSource,
-} from "../src/vite/css-extract.ts";
+import { extractCssStyles, findCssImports, isCssSource } from "../src/vite/css-extract.ts";
 
 test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];
@@ -37,9 +33,7 @@ test("extractCssStyles resolves design modules in literal calls", () => {
 		const b = css.class({ $layout: { flow: "stackY", gap: "16" } });
 		const c = css.raw({ $text: { color: "$red-300" } });
 	`;
-	expect(
-		extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset),
-	).toEqual([
+	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([
 		{ width: "20px", backgroundColor: "#3182ce" },
 		{ display: "flex", flexDirection: "column", gap: "16px" },
 		{ color: "#FC8181" },
@@ -53,9 +47,10 @@ test("extractCssStyles skips dynamic calls and processes each argument", () => {
 		const a = css({ $frame: { fill: color } });
 		const b = css({ $frame: { w: "20" } }, { $frame: { h: "20" } });
 	`;
-	expect(
-		extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset),
-	).toEqual([{ width: "20px" }, { height: "20px" }]);
+	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([
+		{ width: "20px" },
+		{ height: "20px" },
+	]);
 });
 
 test("extractCssStyles ignores raw css() from non-matching sources", () => {
@@ -63,9 +58,7 @@ test("extractCssStyles ignores raw css() from non-matching sources", () => {
 		import { other } from "./not-css";
 		const a = other({ $frame: { w: "20" } });
 	`;
-	expect(
-		extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset),
-	).toEqual([]);
+	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([]);
 });
 
 const makeProject = (files: Record<string, string>): string => {
@@ -83,8 +76,7 @@ const loadGenerated = (plugin: ReturnType<typeof pandwindCssVite>): string =>
 
 test("pandwindCssVite generates the stylesheet from scanned files", () => {
 	const dir = makeProject({
-		"src/design.ts":
-			"export const css = (x: unknown) => x; // module that imports stay valid",
+		"src/design.ts": "export const css = (x: unknown) => x; // module that imports stay valid",
 		"src/app.tsx": `
 			import { css } from "./design";
 			export const styles = css({ $frame: { w: "20", fill: "$blue-500" } });

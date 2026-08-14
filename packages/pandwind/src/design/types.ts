@@ -28,9 +28,9 @@ type TokenNames<TTokens, TGroup extends string> =
  * Token names of a group, falling back to a raw `string` when the preset has
  * no tokens for that group (the group is simply unconstrained then).
  */
-type TokensOr<TTokens, TGroup extends string, TFallback> = [
-	TokenNames<TTokens, TGroup>,
-] extends [never]
+type TokensOr<TTokens, TGroup extends string, TFallback> = [TokenNames<TTokens, TGroup>] extends [
+	never,
+]
 	? TFallback
 	: TokenNames<TTokens, TGroup>;
 
@@ -41,10 +41,7 @@ type ColorValue<TTokens> = TokensOr<TTokens, "colors", string>;
  * Token names, a px number, or any open length (`"50%"`, `"calc(...)"`).
  * Numeric tokens (spacing steps like `20`) are usable as numbers.
  */
-type SpaceValue<TTokens> =
-	| TokensOr<TTokens, "spacing", string>
-	| number
-	| (string & {});
+type SpaceValue<TTokens> = TokensOr<TTokens, "spacing", string> | number | (string & {});
 
 /** Token names or a px number (Figma-style corner radius). */
 type RadiusValue<TTokens> = TokensOr<TTokens, "radii", string> | number;
@@ -52,10 +49,7 @@ type RadiusValue<TTokens> = TokensOr<TTokens, "radii", string> | number;
 /** Font-family names are an open set: token names or any string. */
 type FontValue<TTokens> = TokensOr<TTokens, "fonts", string> | (string & {});
 
-type FontSizeValue<TTokens> =
-	| TokensOr<TTokens, "fontSizes", string>
-	| number
-	| (string & {});
+type FontSizeValue<TTokens> = TokensOr<TTokens, "fontSizes", string> | number | (string & {});
 
 type FontWeightValue<TTokens> =
 	| TokensOr<TTokens, "fontWeights", never>
@@ -76,10 +70,7 @@ type FontWeightValue<TTokens> =
 	| "bold"
 	| "black";
 
-type LineHeightValue<TTokens> =
-	| TokensOr<TTokens, "lineHeights", string>
-	| number
-	| (string & {});
+type LineHeightValue<TTokens> = TokensOr<TTokens, "lineHeights", string> | number | (string & {});
 
 type LetterSpacingValue<TTokens> =
 	| TokensOr<TTokens, "letterSpacings", string>
@@ -137,9 +128,7 @@ export interface FrameProps<TTokens extends AnyTokens> {
 }
 
 export type FlowValue = "stackX" | "stackY" | "grid";
-export type AlignValue =
-	| "center"
-	| `${"top" | "center" | "bottom"}-${"left" | "center" | "right"}`;
+export type AlignValue = "center" | `${"top" | "center" | "bottom"}-${"left" | "center" | "right"}`;
 
 /** The children — how the element lays out its content. */
 export interface LayoutProps<TTokens extends AnyTokens> {
@@ -210,9 +199,7 @@ export interface TextProps<TTokens extends AnyTokens> {
 	highlight?: HighlightValue<TTokens>;
 }
 
-export type DesignPreset = CssConfigReturn<
-	DefinePresetOptions<AnyCssConfig, AnyTokens>
->;
+export type DesignPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 /**
  * The design style object: the three `$` modules, available at the top level

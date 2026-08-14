@@ -1,4 +1,3 @@
-/* eslint-disable */
 import type { Pseudos } from "csstype";
 
 type AriaAttributes =
@@ -55,10 +54,7 @@ type ParentSelector = `${DataAttributes | AriaAttributes} &`;
 
 type AtRuleType = "media" | "layer" | "container" | "supports" | "page";
 
-export type AnySelector =
-	| `${string}&`
-	| `&${string}`
-	| `@${AtRuleType}${string}`;
+export type AnySelector = `${string}&` | `&${string}` | `@${AtRuleType}${string}`;
 export type Selectors = AttributeSelector | ParentSelector;
 
 // TODO offer an interface with empty `Selectors` so that it pre-fills the `TConds` type + export this `Selectors` type

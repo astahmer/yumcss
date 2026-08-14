@@ -38,7 +38,7 @@
 - **Split overloaded utilities** — Tailwind puts size, color and alignment
   under one key (`text`). Generate semantic sub-keys (`textColor`, `textSize`,
   `textAlign`) with a key-to-utility mapping so `{ textSize: "2xl",
-  textColor: "gray-900" }` works without arrays.
+textColor: "gray-900" }` works without arrays.
 - **DTCG design-token integration for `tw()`** — tokens -> `@theme` ->
   generated types, so autocomplete is your design system, not all of
   Tailwind. (The css() side already resolves tokens from preset groups.)

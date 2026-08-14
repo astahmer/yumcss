@@ -11,11 +11,9 @@ export const presetConditions = {
 	readOnly: "&:is(:read-only, [data-read-only])",
 	readWrite: "&:read-write",
 	empty: "&:is(:empty, [data-empty])",
-	checked:
-		'&:is(:checked, [data-checked], [aria-checked=true], [data-state="checked"])',
+	checked: '&:is(:checked, [data-checked], [aria-checked=true], [data-state="checked"])',
 	enabled: "&:enabled",
-	expanded:
-		'&:is([aria-expanded=true], [data-expanded], [data-state="expanded"])',
+	expanded: '&:is([aria-expanded=true], [data-expanded], [data-state="expanded"])',
 	highlighted: "&[data-highlighted]",
 
 	before: "&::before",
@@ -46,8 +44,7 @@ export const presetConditions = {
 	peerChecked:
 		'.peer:is(:checked, [data-checked], [aria-checked=true], [data-state="checked"]) ~ &',
 	peerInvalid: ".peer:is(:invalid, [data-invalid], [aria-invalid=true]) ~ &",
-	peerExpanded:
-		'.peer:is([aria-expanded=true], [data-expanded], [data-state="expanded"]) ~ &',
+	peerExpanded: '.peer:is([aria-expanded=true], [data-expanded], [data-state="expanded"]) ~ &',
 	peerPlaceholderShown: ".peer:placeholder-shown ~ &",
 
 	groupFocus: ".group:is(:focus, [data-focus]) &",
@@ -58,8 +55,7 @@ export const presetConditions = {
 	groupDisabled: ".group:is(:disabled, [disabled], [data-disabled]) &",
 	groupChecked:
 		'.group:is(:checked, [data-checked], [aria-checked=true], [data-state="checked"]) &',
-	groupExpanded:
-		'.group:is([aria-expanded=true], [data-expanded], [data-state="expanded"]) &',
+	groupExpanded: '.group:is([aria-expanded=true], [data-expanded], [data-state="expanded"]) &',
 	groupInvalid: ".group:invalid &",
 
 	indeterminate:

@@ -38,11 +38,7 @@ import type {
 	DefinePresetOptions,
 	StyleObject,
 } from "../types/typings.ts";
-import {
-	extractCssStyles,
-	findCssImports,
-	isCssSource,
-} from "./css-extract.ts";
+import { extractCssStyles, findCssImports, isCssSource } from "./css-extract.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -60,19 +56,14 @@ export interface PandwindCssViteOptions {
 	virtualId?: string;
 }
 
-export type CssExtractorPreset = CssConfigReturn<
-	DefinePresetOptions<AnyCssConfig, AnyTokens>
->;
+export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 /**
  * Create the css() static extractor. The preset must be the same object
  * passed to `createDesignCss` in app code — it drives both resolution and
  * token output, so the generated CSS matches the runtime byte-for-byte.
  */
-export function pandwindCssVite(
-	preset: CssExtractorPreset,
-	options: PandwindCssViteOptions = {},
-) {
+export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCssViteOptions = {}) {
 	const matchers = options.cssSources ?? ["css", "design"];
 	const virtualId = options.virtualId ?? "pandwind:css";
 	// The `.css` suffix makes vite's CSS pipeline (and its dev injection)
@@ -80,15 +71,8 @@ export function pandwindCssVite(
 	const resolvedVirtualId = `\0${virtualId}.css`;
 	const root = options.root ?? process.cwd();
 	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
-	const exclude = options.exclude ?? [
-		/node_modules/,
-		/(^|\/)dist(\/|$)/,
-		/\.git/,
-	];
-	const fileCache = new Map<
-		string,
-		{ mtimeMs: number; styles: StyleObject[] }
-	>();
+	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
+	const fileCache = new Map<string, { mtimeMs: number; styles: StyleObject[] }>();
 
 	const isScanned = (file: string): boolean => {
 		if (!include.some((pattern) => pattern.test(file))) return false;

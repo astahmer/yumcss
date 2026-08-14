@@ -1,8 +1,4 @@
-import {
-	type CreateCssOptions,
-	type CssFn,
-	createCss,
-} from "../css/create-css.ts";
+import { type CreateCssOptions, type CssFn, createCss } from "../css/create-css.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
@@ -37,10 +33,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	type Design = DesignStyleObject<TPreset>;
 
 	const resolve = (style: Design): StyleObject =>
-		resolveDesignStyle(
-			style as unknown as Record<string, unknown>,
-			preset.tokens,
-		);
+		resolveDesignStyle(style as unknown as Record<string, unknown>, preset.tokens);
 
 	const css = (...styles: Array<Maybe<Design>>) =>
 		engine(...(styles.filter(Boolean) as Array<Design>).map(resolve));

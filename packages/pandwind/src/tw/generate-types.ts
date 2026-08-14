@@ -154,10 +154,7 @@ function getFunctionalTypes(system: {
 	return types;
 }
 
-function longestFunctionalPrefix(
-	candidate: string,
-	functional: string[],
-): string | undefined {
+function longestFunctionalPrefix(candidate: string, functional: string[]): string | undefined {
 	let best: string | undefined;
 	for (const key of functional) {
 		if (candidate === key || candidate.startsWith(`${key}-`)) {
@@ -178,10 +175,7 @@ function mergeStaticUtilities(
 		const functional = longestFunctionalPrefix(candidate, functionalKeys);
 		if (functional !== undefined) {
 			const values = types.get(functional)!;
-			const suffix =
-				candidate === functional
-					? true
-					: candidate.slice(functional.length + 1);
+			const suffix = candidate === functional ? true : candidate.slice(functional.length + 1);
 			values.add(suffix);
 			continue;
 		}
@@ -192,9 +186,7 @@ function mergeStaticUtilities(
 		);
 		if (curated !== undefined) {
 			const values = types.get(curated) ?? new Set<string | true>();
-			values.add(
-				candidate === curated ? true : candidate.slice(curated.length + 1),
-			);
+			values.add(candidate === curated ? true : candidate.slice(curated.length + 1));
 			types.set(curated, values);
 			continue;
 		}
@@ -211,7 +203,7 @@ function mergeStaticUtilities(
 
 function unionType(values: Iterable<string | true>): string {
 	return Array.from(values)
-		.sort((a, b) => String(a).localeCompare(String(b), "en"))
+		.toSorted((a, b) => String(a).localeCompare(String(b), "en"))
 		.map((value) => (value === true ? "true" : JSON.stringify(value)))
 		.join(" | ");
 }
@@ -270,16 +262,12 @@ function detectModifierUtilities(
 	const probes: Array<{ name: string; candidate: string }> = [];
 	for (const [name, values] of types) {
 		if (!values.size) continue;
-		const samples = [...values]
-			.filter((value): value is string => value !== true)
-			.slice(0, 2);
+		const samples = [...values].filter((value): value is string => value !== true).slice(0, 2);
 		for (const sample of samples) {
 			probes.push({ name, candidate: `${dashCase(name)}-${sample}/50` });
 		}
 	}
-	const results = system.candidatesToCss(
-		probes.map((probe) => probe.candidate),
-	);
+	const results = system.candidatesToCss(probes.map((probe) => probe.candidate));
 	const modifierCapable = new Set<string>();
 	probes.forEach((probe, index) => {
 		if (results[index] !== null) modifierCapable.add(probe.name);
@@ -413,16 +401,12 @@ function cssProperties(css: string | null): string[] {
 			const property = declaration.split(":")[0]?.trim();
 			// Skip custom properties (`--tw-*`) and at-rule fragments that
 			// Tailwind nests inside class rules (gradient `@supports`).
-			if (
-				property &&
-				!property.startsWith("--") &&
-				/^[a-zA-Z-]+$/.test(property)
-			) {
+			if (property && !property.startsWith("--") && /^[a-zA-Z-]+$/.test(property)) {
 				props.add(property);
 			}
 		}
 	}
-	return [...props].sort();
+	return [...props].toSorted();
 }
 
 /** Expand shorthands so equivalent longhand sets compare equal. */
@@ -433,7 +417,7 @@ function canonicalProps(properties: string[]): string[] {
 			expanded.add(longhand);
 		}
 	}
-	return [...expanded].sort();
+	return [...expanded].toSorted();
 }
 
 /**
@@ -545,14 +529,10 @@ function buildConflicts(
 	compose: string[];
 } {
 	const functional = new Set(functionalKeys);
-	const completions = new Map<
-		string,
-		Array<{ values: Array<string | null> }>
-	>();
+	const completions = new Map<string, Array<{ values: Array<string | null> }>>();
 	const groupValues = new Map<string, Set<string>>();
 	const propByValue = new Map<string, Map<string, string[]>>();
-	const probes: Array<{ utility: string; value: string; candidate: string }> =
-		[];
+	const probes: Array<{ utility: string; value: string; candidate: string }> = [];
 
 	for (const name of types.keys()) {
 		if (!functional.has(name)) continue;
@@ -598,14 +578,9 @@ function buildConflicts(
 		}
 	}
 
-	const sampleProps = new Map<
-		string,
-		Array<{ value: string; props: string[] }>
-	>();
+	const sampleProps = new Map<string, Array<{ value: string; props: string[] }>>();
 	for (const batch of chunk(probes, 300)) {
-		const results = system.candidatesToCss(
-			batch.map((probe) => probe.candidate),
-		);
+		const results = system.candidatesToCss(batch.map((probe) => probe.candidate));
 		batch.forEach((probe, index) => {
 			const result = results[index];
 			if (result === undefined || result === null) return;
@@ -625,9 +600,7 @@ function buildConflicts(
 				(value): value is string => typeof value === "string" && value !== "",
 			);
 			const samples = sampleProps.get(name) ?? [];
-			const groupProps = samples.find((sample) =>
-				values.includes(sample.value),
-			)?.props;
+			const groupProps = samples.find((sample) => values.includes(sample.value))?.props;
 			if (groupProps === undefined) continue;
 			for (const value of values) byValue.set(value, groupProps);
 		}
@@ -641,15 +614,12 @@ function buildConflicts(
 
 	const conflicts: Record<string, Record<string, string[]>> = {};
 	for (const [name, byValue] of propByValue) {
-		const sorted = [...byValue.entries()].sort(([a], [b]) =>
-			a.localeCompare(b, "en"),
-		);
+		const sorted = [...byValue.entries()].toSorted(([a], [b]) => a.localeCompare(b, "en"));
 		// Prefer a non-empty default so unknown values (arbitrary ring widths,
 		// future theme values) behave like the real utilities, while values
 		// that only set custom properties (`ring-red-500`, `shadow-red-500`)
 		// are recorded as explicit `[]` overrides and never merge.
-		const defaultProps =
-			sorted.find(([, props]) => props.length > 0)?.[1] ?? sorted[0]?.[1] ?? [];
+		const defaultProps = sorted.find(([, props]) => props.length > 0)?.[1] ?? sorted[0]?.[1] ?? [];
 		const overrides: Record<string, string[]> = {};
 		for (const [value, props] of sorted) {
 			if (value !== "" && props.join(",") !== defaultProps.join(",")) {
@@ -664,10 +634,7 @@ function buildConflicts(
 	};
 }
 
-function getUtilitiesType(
-	types: UtilityMap,
-	modifierCapable: Set<string>,
-): string {
+function getUtilitiesType(types: UtilityMap, modifierCapable: Set<string>): string {
 	const usedAliases = new Set<string>();
 	const aliasBySet = new Map<string, string>();
 	const aliases: string[] = [];
@@ -701,16 +668,12 @@ function getUtilitiesType(
 ${aliases.join("\n")}
 
 interface WindUtilities {
-${lines.sort(alphaSort).join("\n")}
+${lines.toSorted(alphaSort).join("\n")}
 }`;
 }
 
-function getVariantsType(
-	variants: Array<{ name: string; join: ":" | "-" | "" }>,
-): string {
-	const lines = variants.map(
-		({ name }) => `\t${tsKey(camelCaseProperty(name))}?: WindVariants;`,
-	);
+function getVariantsType(variants: Array<{ name: string; join: ":" | "-" | "" }>): string {
+	const lines = variants.map(({ name }) => `\t${tsKey(camelCaseProperty(name))}?: WindVariants;`);
 	return `export type WindVariants = WindUtilities & {\n${lines.join("\n")}\n}`;
 }
 
@@ -726,7 +689,7 @@ function getTwRuntime(
 				`\t\t${tsKey(camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
 		);
 	const conflictEntries = Object.entries(conflicts)
-		.sort(([a], [b]) => a.localeCompare(b, "en"))
+		.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 		.map(
 			([utility, byValue]) =>
 				`\t\t${JSON.stringify(utility)}: { ${Object.entries(byValue)
@@ -738,9 +701,7 @@ function getTwRuntime(
 		);
 	const composeEntries =
 		compose.length > 0
-			? `\tcompose: [\n${compose
-					.map((key) => `\t\t${JSON.stringify(key)},`)
-					.join("\n")}\n\t],`
+			? `\tcompose: [\n${compose.map((key) => `\t\t${JSON.stringify(key)},`).join("\n")}\n\t],`
 			: "";
 
 	return `import { createTw } from "pandwind/tw";
@@ -773,9 +734,7 @@ function detectVariantJoin(
 ): ":" | "-" | "" {
 	const util = "bg-red-500";
 
-	const probes: Array<[":" | "-" | "", string]> = [
-		[":", `${variant.name}:${util}`],
-	];
+	const probes: Array<[":" | "-" | "", string]> = [[":", `${variant.name}:${util}`]];
 
 	const dashSamples = [...new Set(["hover", ...variant.values, "[x]"])]
 		.filter((sample): sample is string => Boolean(sample))
@@ -795,11 +754,9 @@ function detectVariantJoin(
 	return ":";
 }
 
-const alphaSort = (a: string, b: string) =>
-	a.localeCompare(b, "en", { ignorePunctuation: true });
+const alphaSort = (a: string, b: string) => a.localeCompare(b, "en", { ignorePunctuation: true });
 
-const header =
-	"// Generated by pandwind — do not edit. Run `pnpm tw:codegen` to regenerate.";
+const header = "// Generated by pandwind — do not edit. Run `pnpm tw:codegen` to regenerate.";
 
 /**
  * Generate the two artifact files for a CSS entry. Exported so tests and
@@ -849,8 +806,7 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 	const outDir = resolve(base, outDirArg ?? "src");
 
 	const css = readFileSync(cssEntry, "utf8");
-	const { typesDts, twTs, utilityCount, variantCount } =
-		await generateDesignSystem(css, base);
+	const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, base);
 
 	writeFileSync(resolve(outDir, "types.d.ts"), typesDts);
 	writeFileSync(resolve(outDir, "tw.ts"), twTs);
