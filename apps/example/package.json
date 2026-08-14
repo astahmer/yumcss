@@ -1,0 +1,29 @@
+{
+	"name": "example",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"predev": "pnpm tw:codegen && pnpm tw:scan",
+		"dev": "vite",
+		"prebuild": "pnpm tw:codegen && pnpm tw:scan",
+		"build": "tsc -b && vite build",
+		"typecheck": "tsc --noEmit",
+		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts",
+		"tw:scan": "tsx ../../packages/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+	},
+	"dependencies": {
+		"pandwind": "workspace:*",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "^4.3.3",
+		"@types/react": "^19.2.0",
+		"@types/react-dom": "^19.2.0",
+		"@vitejs/plugin-react-swc": "^4.3.0",
+		"tailwindcss": "^4.3.3",
+		"tsx": "^4.20.0",
+		"typescript": "^5.9.2",
+		"vite": "^8.2.1"
+	}
+}
