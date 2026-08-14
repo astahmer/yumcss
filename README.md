@@ -112,6 +112,67 @@ It is the "better stylex + panda" half of the repo: no runtime style
 resolution, merged at object-build time via property priorities. See
 `packages/pandwind/tests/css-*.test.ts` for the behavior contract.
 
+### Design css() — the Figma-inspector vocabulary
+
+`createDesignCss(preset)` returns the same `css()` surface, but the style
+object is the vocabulary designers already think in — borrowed from the
+inspector panels of Figma, Framer and Sketch: ~30 props instead of ~500 CSS
+properties, behind one function.
+
+```ts
+import { createDesignCss } from "pandwind/design";
+
+const css = createDesignCss(examplePreset);
+
+css.class({
+	$frame: { w: "20", h: 40, corners: "lg", fill: "$blue-500", pad: [4, 8] },
+	$layout: { flow: "stackY", gap: 16, align: "center" },
+	$text: { size: "xl", weight: "semibold", color: "$red-300" },
+	_hover: { $text: { color: "$red-400" } },
+});
+```
+
+- **Wrong is a type error.** Every value is a token or a constrained option;
+  colors are strict tokens, so an off-system color or a typo doesn't compile.
+  Raw CSS props only under `$raw` — the escape hatch.
+- **Reads like the Figma inspector.** Styling reads top-to-bottom as intent —
+  you review what it means, not how it works. Designers can contribute in the
+  words they already use.
+- **Token groups come from your preset**: `colors`, `spacing`, `radii`,
+  `fonts`, `fontSizes`, `fontWeights`, `lineHeights`, `letterSpacings`.
+  Missing groups fall back to open strings.
+
+The modules: `$frame` is the box (w, h, corners, fill, border, blurBg, pad,
+padX, padY, overflow, z, opacity — 0-100 like the Figma slider), `$layout`
+is its children (flow, wrap, cols, rows, align, gap, gapX, gapY) and `$text`
+is the type (font, size, weight, color, align, case, truncate, spacing,
+decoration, highlight). Conditions and selectors nest to any depth.
+
+### Static extraction (`pandwindCssVite`)
+
+The css() classes are hashed deterministically; the stylesheet is generated
+from the *same* literal calls at build time, so nothing is accumulated at
+runtime:
+
+```ts
+// vite.config.ts
+import { pandwindCssVite } from "pandwind/vite";
+import { examplePreset } from "./src/preset";
+
+plugins: [pandwindCssVite(examplePreset), ...];
+```
+
+```ts
+// main.tsx — the generated CSS is served as a virtual module
+import "pandwind:css";
+```
+
+The plugin scans source files (like Tailwind's own scanner, and like `tw:scan`
+for the safelist) for literal `css(...)` calls, resolves them through the
+design layer and serves the deduped CSS — tokens plus atomic rules. Dynamic
+calls keep working at runtime but are not extracted (same constraint as
+dynamic class names in plain Tailwind).
+
 ## Why pandwind exists
 
 The short version of the decisions behind this repo lives in [TODO.md](./TODO.md)
@@ -125,16 +186,19 @@ under *What we deliberately don't do (and why)*. The highlights:
   codegen stays plain scripts.
 - **No hand-maintained tailwind-merge config** — conflict rules are generated
   from the engine, so they can't drift from what Tailwind compiles.
+- **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
+  props; everything else lives under `$raw` on purpose.
 
 ## Repo layout
 
 ```
 packages/pandwind/        the library: css engine, tw codegen/runtime, vite plugin
   src/css/                napcss-derived atomic css() engine
+  src/design/             design css() — $frame/$layout/$text vocabulary
   src/tw/                 tw() runtime, oxc scanner, type/codegen
-  src/vite/               pandwindVite() static inliner
+  src/vite/               pandwindVite() tw inliner + pandwindCssVite() extractor
   tests/                  vitest + tstyche suites
-apps/example/             Vite + React app using plain Tailwind, tw() and the plugin
+apps/example/             Vite + React app: plain Tailwind, tw(), design css() and both plugins
 ```
 
 ## Commands
@@ -146,7 +210,7 @@ pnpm test                       # vitest + tstyche
 pnpm typecheck
 pnpm tw:codegen                 # regenerate types.d.ts + tw.ts
 pnpm --filter example tw:scan   # regenerate the safelist
-pnpm --filter example build     # production build (plugin inlines tw() calls)
+pnpm --filter example build     # production build (tw() inlined, css() extracted)
 ```
 
 ## Known limitations
@@ -158,3 +222,11 @@ pnpm --filter example build     # production build (plugin inlines tw() calls)
 - Tailwind overloads utilities like `text-*` (size, color, alignment). One key
   per utility means you use an array: `tw({ text: ["2xl", "gray-900"] })`.
   Semantic sub-keys (`textSize`/`textColor`) are planned.
+- Dynamic `css()` values (variables, `$input`) aren't covered by the static
+  extractor — they need runtime styles, exactly like dynamic Tailwind classes.
+- **What about node_modules?** Same answer as Tailwind: the tw() inliner
+  transforms any module in the graph, but Tailwind's scanner only scans the
+  sources it's configured to scan. Classes used by a library component need
+  `@source inline "../node_modules/..."` or an explicit safelist entry. The
+  css() extractor skips node_modules by default (configurable via
+  `include`/`exclude`).
