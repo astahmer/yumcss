@@ -16,7 +16,7 @@
 
 ## `css()` — atomic CSS-in-JS
 
-- napcss-derived engine: hashed atomic classes, DTCG-style token groups,
+- panda+stylex mix of hashed atomic classes, DTCG-style token groups,
   property-priority merging, condition/selector nesting, `$input` dynamics.
 - `createDesignCss(preset)` — the Figma-inspector surface: `$frame` /
   `$layout` / `$text` (~30 props), strict token typings ("wrong is a type

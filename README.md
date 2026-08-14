@@ -95,7 +95,7 @@ the bundled class strings are already conflict-free.
 
 ## `css()` — atomic CSS-in-JS
 
-The napcss-derived engine: `createCss(preset)` returns a typed `css()` that
+The panda+stylex engine: `createCss(preset)` returns a typed `css()` that
 flattens a style object into hashed atomic classes, with design tokens,
 property-priority merging, variant conditions and a `$input` escape hatch for
 dynamic values.
@@ -193,7 +193,7 @@ under _What we deliberately don't do (and why)_. The highlights:
 
 ```
 packages/pandwind/        the library: css engine, tw codegen/runtime, vite plugin
-  src/css/                napcss-derived atomic css() engine
+  src/css/                panda+stylex mixed atomic css() engine
   src/design/             design css() — $frame/$layout/$text vocabulary
   src/tw/                 tw() runtime, oxc scanner, type/codegen
   src/vite/               pandwindVite() tw inliner + pandwindCssVite() extractor
