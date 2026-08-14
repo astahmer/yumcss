@@ -13,7 +13,8 @@
  * ```
  *
  * The file lives inside the scanned source tree, so Tailwind generates CSS for
- * exactly those classes — and nothing more.
+ * exactly those classes — and nothing more. Parsing uses oxc instead of the TS
+ * compiler API: several times faster, and the only thing we need is the AST.
  *
  * Usage:
  *   tsx collect.ts [tw-entry] [src-dir] [out-file]
@@ -21,62 +22,20 @@
  * All paths are resolved relative to the current working directory.
  */
 
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import ts from "typescript";
+import { parseSync } from "oxc-parser";
+import { evalLiteral, isTwCall, walk } from "./literal.ts";
 
 const SOURCE_EXTENSIONS = /\.(ts|tsx)$/;
 
-function walk(dir: string, files: string[] = []): string[] {
+function walkDir(dir: string, files: string[] = []): string[] {
 	for (const entry of readdirSync(dir, { withFileTypes: true })) {
 		const path = join(dir, entry.name);
-		if (entry.isDirectory()) walk(path, files);
+		if (entry.isDirectory()) walkDir(path, files);
 		else if (SOURCE_EXTENSIONS.test(entry.name)) files.push(path);
 	}
 	return files;
-}
-
-/**
- * Statically evaluate a `tw()` argument. Only pure literal expressions are
- * supported; anything else (variables, spreads, template expressions) makes
- * the call invisible to the scanner — same limitation as dynamic class names
- * in plain Tailwind.
- */
-function evalValue(node: ts.Expression): unknown {
-	if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node))
-		return node.text;
-	if (ts.isNumericLiteral(node)) return Number(node.text);
-	if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
-	if (node.kind === ts.SyntaxKind.FalseKeyword) return false;
-	if (
-		ts.isPrefixUnaryExpression(node) &&
-		node.operator === ts.SyntaxKind.MinusToken &&
-		ts.isNumericLiteral(node.operand)
-	) {
-		return -Number(node.operand.text);
-	}
-	if (ts.isArrayLiteralExpression(node)) {
-		return node.elements.map(evalValue);
-	}
-	if (ts.isObjectLiteralExpression(node)) {
-		const styles: Record<string, unknown> = {};
-		for (const property of node.properties) {
-			if (!ts.isPropertyAssignment(property)) return undefined;
-			const { name } = property;
-			const key =
-				ts.isIdentifier(name) ||
-				ts.isStringLiteral(name) ||
-				ts.isNumericLiteral(name)
-					? name.text
-					: undefined;
-			if (key === undefined) return undefined;
-			const value = evalValue(property.initializer);
-			if (value === undefined) return undefined;
-			styles[key] = value;
-		}
-		return styles;
-	}
-	return undefined;
 }
 
 /**
@@ -94,36 +53,27 @@ export async function collectTwClasses(
 	const classes = new Set<string>();
 
 	for (const file of files) {
-		const source = ts.createSourceFile(
-			file,
-			readFileSync(file, "utf8"),
-			ts.ScriptTarget.Latest,
-			true,
-			file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
-		);
+		const source = readFileSync(file, "utf8");
+		const result = parseSync(file, source, {
+			sourceType: "module",
+			lang: file.endsWith(".tsx") ? "tsx" : "ts",
+		});
 
-		const visit = (node: ts.Node) => {
-			if (
-				ts.isCallExpression(node) &&
-				ts.isIdentifier(node.expression) &&
-				node.expression.text === "tw"
-			) {
-				for (const argument of node.arguments) {
-					const styles = evalValue(argument);
-					if (styles === undefined) continue;
-					try {
-						for (const className of tw(styles).split(" ")) {
-							if (className) classes.add(className);
-						}
-					} catch {
-						// Unrepresentable call (e.g. a modifier variant without a
-						// nested variant) — skip; the runtime will surface it.
+		walk(result.program, (node) => {
+			if (!isTwCall(node)) return;
+			for (const argument of node.arguments) {
+				const styles = evalLiteral(argument);
+				if (styles === undefined) continue;
+				try {
+					for (const className of tw(styles).split(" ")) {
+						if (className) classes.add(className);
 					}
+				} catch {
+					// Unrepresentable call (e.g. a modifier variant without a
+					// nested variant) — skip; the runtime will surface it.
 				}
 			}
-			ts.forEachChild(node, visit);
-		};
-		visit(source);
+		});
 	}
 
 	return [...classes];
@@ -139,7 +89,7 @@ if (process.argv[1]?.endsWith("collect.ts")) {
 	const srcDir = resolve(base, srcDirArg ?? "src");
 	const outFile = resolve(base, outFileArg ?? "src/pandwind.safelist.ts");
 
-	const classes = await collectTwClasses(walk(srcDir), twEntry);
+	const classes = await collectTwClasses(walkDir(srcDir), twEntry);
 	const content = `${header}
 export const pandwindSafelist = [
 ${classes.map((className) => `\t${JSON.stringify(className)},`).join("\n")}

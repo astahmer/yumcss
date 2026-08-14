@@ -1,4 +1,4 @@
-import { type FlatStyles, assign, cssVar, flattenStyle } from "../lib/utils.js";
+import { assign, cssVar, type FlatStyles, flattenStyle } from "../lib/utils.js";
 import type {
 	AnyCssConfig,
 	AnyTokens,

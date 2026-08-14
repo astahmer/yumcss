@@ -1,5 +1,5 @@
 import parser from "postcss-selector-parser";
-import { type FlatStyles, assign, flattenStyle, pairs } from "../lib/utils.js";
+import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.js";
 import type {
 	AnyConditions,
 	CssConfigReturn,
@@ -268,7 +268,7 @@ export const decodeAtomicPath = (
 
 	const value = parts.slice(-1)[0]!;
 
-	let prop: string | undefined = undefined;
+	let prop: string | undefined;
 	const conds = parts.slice(0, -1).reduce((acc, part) => {
 		const resolved = presetConditions[part] ?? part;
 		const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
