@@ -7,6 +7,7 @@ import type {
 	StyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
+import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import { createHashFn } from "./hash.ts";
 
 type CompiledStyles = Record<string, string>;
@@ -14,21 +15,35 @@ type CssStyle = Record<string, string>;
 
 const DYNAMIC = Symbol("dynamic");
 
-export const createCss = <
+/**
+ * Untyped convenience — useful for throwaway styles or before the preset
+ * types are wired up. Values are loose strings / nested objects.
+ */
+export function createCss(options?: CreateCssOptions): CssFn<StyleObject>;
+/** Fully typed against a preset: every value is a token or a constrained option. */
+export function createCss<
 	TPreset extends CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>,
 >(
-	options: CreateCssOptions = {},
-): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>> => {
+	options?: CreateCssOptions,
+): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
+export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 	const debug = options.debug ?? false;
 	const hashFn = options.hashFn ?? createHashFn(debug);
+	const atoms: AtomRegistry = new Map();
 
 	const compile = (style: FlatStyles): CompiledStyles => {
 		const css = {} as CompiledStyles;
 		for (const key in style) {
-			css[key] = hashFn(key, style[key]!);
+			css[key] = register(key, style[key]!);
 		}
 
 		return css;
+	};
+
+	const register = (key: string, value: string) => {
+		const atom = hashFn(key, value);
+		if (!atoms.has(atom)) atoms.set(atom, key);
+		return atom;
 	};
 
 	const compileStyles = (...styles: Array<StyleObject>) => {
@@ -49,11 +64,11 @@ export const createCss = <
 			Object.entries(flat).forEach(([key, value]) => {
 				if (typeof value === "string" && value.startsWith("input>$")) {
 					const varName = value.slice("input>$".length);
-					compiled[key] = hashFn(key, `$${varName}`);
+					compiled[key] = register(key, `$${varName}`);
 					return;
 				}
 
-				compiled[key] = hashFn(key, value);
+				compiled[key] = register(key, value);
 			});
 
 			return (input: AnyInput) => {
@@ -126,8 +141,11 @@ export const createCss = <
 
 	css.input = (name: string) => `input>$${name}` as never;
 
+	// Exposed for createCx: resolve an atom back to its flattened style key.
+	(css as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = atoms;
+
 	return css;
-};
+}
 
 export interface CreateCssOptions {
 	debug?: boolean;

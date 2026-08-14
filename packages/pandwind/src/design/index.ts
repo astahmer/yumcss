@@ -1,4 +1,5 @@
 import { type CreateCssOptions, type CssFn, createCss } from "../css/create-css.ts";
+import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { resolveDesignStyle } from "./resolve.ts";
 import type { DesignPreset, DesignStyleObject } from "./types.ts";
@@ -29,7 +30,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
 ): CssFn<DesignStyleObject<TPreset>> => {
-	const engine = createCss<TPreset>(options) as CssFn<StyleObject>;
+	const engine = createCss(options) as CssFn<StyleObject>;
 	type Design = DesignStyleObject<TPreset>;
 
 	const resolve = (style: Design): StyleObject =>
@@ -55,6 +56,11 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 		}
 		return engine.group(resolved as never);
 	};
+
+	// Share the inner engine's atom registry so cx can resolve design atoms.
+	(css as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (
+		engine as CssFn & { [ATOM_REGISTRY]?: AtomRegistry }
+	)[ATOM_REGISTRY];
 
 	return css as CssFn<Design>;
 };
