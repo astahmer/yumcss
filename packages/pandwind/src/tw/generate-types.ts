@@ -226,18 +226,132 @@ function utilityKey(name: string): string {
 	return name.startsWith("-") ? `"-${camel}"` : JSON.stringify(camel);
 }
 
-function getUtilitiesType(types: UtilityMap): string {
+/** camelCase -> dash-case, matching the runtime's class rendering. */
+function dashCase(name: string): string {
+	return name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+}
+
+const OPACITY_STEPS = [
+	"0",
+	"5",
+	"10",
+	"15",
+	"20",
+	"25",
+	"30",
+	"35",
+	"40",
+	"45",
+	"50",
+	"55",
+	"60",
+	"65",
+	"70",
+	"75",
+	"80",
+	"85",
+	"90",
+	"95",
+	"100",
+];
+
+/**
+ * Utilities that accept an opacity modifier (`bg-red-500/50`), detected by
+ * compiling a sample candidate through Tailwind's own engine. The value type
+ * stays a bounded template-literal union instead of a pre-enumerated
+ * color x step product — TS keeps template unions lazy, so this adds
+ * completions without the TS2589/TS2590 blowup an explicit cross product
+ * would cause.
+ */
+function detectModifierUtilities(
+	system: { candidatesToCss: (candidates: string[]) => (string | null)[] },
+	types: UtilityMap,
+): Set<string> {
+	const probes: Array<{ name: string; candidate: string }> = [];
+	for (const [name, values] of types) {
+		if (!values.size) continue;
+		const samples = [...values]
+			.filter((value): value is string => value !== true)
+			.slice(0, 2);
+		for (const sample of samples) {
+			probes.push({ name, candidate: `${dashCase(name)}-${sample}/50` });
+		}
+	}
+	const results = system.candidatesToCss(
+		probes.map((probe) => probe.candidate),
+	);
+	const modifierCapable = new Set<string>();
+	probes.forEach((probe, index) => {
+		if (results[index] !== null) modifierCapable.add(probe.name);
+	});
+	return modifierCapable;
+}
+
+function aliasName(name: string, used: Set<string>): string {
+	const withoutDash = name.startsWith("-") ? name.slice(1) : name;
+	const pascal = withoutDash
+		.split("-")
+		.filter(Boolean)
+		.map((part) => {
+			// Strip non-identifier characters (`@container` -> `container`).
+			const cleaned = part.replace(/[^A-Za-z0-9_$]/g, "");
+			return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+		})
+		.join("");
+	const base = name.startsWith("-") ? `Negative${pascal}` : pascal;
+	let alias = `${base}Value`;
+	let counter = 2;
+	while (used.has(alias)) alias = `${pascal}Value${counter++}`;
+	used.add(alias);
+	return alias;
+}
+
+function modifierTypeHelpers(): string {
+	const steps = OPACITY_STEPS.map((step) => JSON.stringify(step)).join(" | ");
+	return `type OpacityModifier = ${steps};
+
+type WithOpacityModifiers<T extends string> = T | \`\${T}/\${OpacityModifier}\`;`;
+}
+
+function getUtilitiesType(
+	types: UtilityMap,
+	modifierCapable: Set<string>,
+): string {
+	const usedAliases = new Set<string>();
+	const aliasBySet = new Map<string, string>();
+	const aliases: string[] = [];
 	const lines: string[] = [];
 
 	for (const [name, values] of types) {
 		if (!values.size) continue;
-		const valueType = `${unionType(values)} | (string & {})`;
+		const hasBoolean = values.has(true);
+		// `true` cannot satisfy `T extends string` in `WithOpacityModifiers`,
+		// so boolean-capable utilities (border, ring, container) keep their
+		// boolean out of the template union and re-append it afterwards.
+		const valueType = modifierCapable.has(name)
+			? `WithOpacityModifiers<${unionType([...values].filter((value): value is string => value !== true))} | (string & {})>${hasBoolean ? " | true" : ""}`
+			: `${unionType(values)} | (string & {})`;
+		// Value sets repeat across utilities (the color palette is shared by
+		// bg/text/fill/stroke/...); one alias per distinct set keeps the
+		// generated file and the checker's union instances to a minimum.
+		let alias = aliasBySet.get(valueType);
+		if (alias === undefined) {
+			alias = aliasName(name, usedAliases);
+			aliasBySet.set(valueType, alias);
+			aliases.push(`type ${alias} = ${valueType};`);
+		}
 		// Arrays let a single key emit multiple classes from an overloaded
 		// utility: `{ text: ["2xl", "gray-900"] }` -> "text-2xl text-gray-900".
-		lines.push(`\t${utilityKey(name)}?: ${valueType} | Array<${valueType}>;`);
+		lines.push(`\t${utilityKey(name)}?: ${alias} | Array<${alias}>;`);
 	}
 
-	return `interface WindUtilities {\n${lines.sort(alphaSort).join("\n")}\n}`;
+	return `${modifierTypeHelpers()}
+
+${aliases.join("\n")}
+
+interface WindUtilities {
+${lines.sort(alphaSort).join("\n")}
+}`;
 }
 
 function getVariantsType(
@@ -331,6 +445,7 @@ export async function generateDesignSystem(
 	const functionalKeys = system.utilities.keys("functional");
 	const types = getFunctionalTypes(system);
 	mergeStaticUtilities(system, functionalKeys, types);
+	const modifierCapable = detectModifierUtilities(system, types);
 
 	const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
 	for (const variant of system.getVariants()) {
@@ -342,7 +457,7 @@ export async function generateDesignSystem(
 
 	return {
 		typesDts: `${header}
-${getUtilitiesType(types)}
+${getUtilitiesType(types, modifierCapable)}
 
 ${getVariantsType(variants)}
 `,
