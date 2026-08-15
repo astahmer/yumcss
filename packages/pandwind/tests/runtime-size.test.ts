@@ -7,13 +7,29 @@
  * as a baseline: it's build-time only and must never ride along in the
  * runtime entry — importing it from the css barrel used to drag
  * postcss-selector-parser (~20KB gz) into every app bundle.
+ *
+ * Three layers of protection, so a size change is either intentional or
+ * caught:
+ *
+ * 1. **Hard budgets** (`tests/runtime-budget.json`) — the "not too much"
+ *    contract. Any entry above its committed budget fails, even with `-u`.
+ *    Bump a budget only when the growth is deliberate and reviewed.
+ * 2. **Regression guard** — current sizes are compared to the committed
+ *    baseline snapshot with a small tolerance (1%, floored at 16 min / 8 gz
+ *    bytes), so zlib/gzip noise of a couple of bytes never fails the gate
+ *    but real growth between revisions does.
+ * 3. **Exact snapshot** — the record of truth. After an *intentional*
+ *    change, run `pnpm test:size -u` (or `vitest run runtime-size -u`).
  */
+import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 
 const ROOT = resolve(import.meta.dirname, "..");
+const SNAPSHOT = resolve(ROOT, "tests/snapshots", "runtime-size.json.snap");
+const BUDGET = resolve(ROOT, "tests", "runtime-budget.json");
 
 const bundle = (fixture: string): { min: number; gz: number } => {
 	const result = buildSync({
@@ -27,6 +43,23 @@ const bundle = (fixture: string): { min: number; gz: number } => {
 	});
 	const code = result.outputFiles[0]!.text;
 	return { min: code.length, gz: gzipSync(code).byteLength };
+};
+
+/**
+ * True when running `vitest run -u` / `--update`.
+ *
+ * `process.argv` in a worker only contains node + the worker script, so the
+ * CLI flag must be read from the snapshot state instead: vitest resolves
+ * `-u` once on the server and propagates it to the worker as
+ * `_updateSnapshot === "all"` (default local runs are "new", CI is "none").
+ */
+const updatingSnapshots = (): boolean => {
+	const snapshotState = (
+		expect.getState() as unknown as {
+			snapshotState?: { _updateSnapshot?: string };
+		}
+	).snapshotState;
+	return snapshotState?._updateSnapshot === "all";
 };
 
 test("runtime entries stay stylex-sized", async () => {
@@ -44,14 +77,47 @@ test("runtime entries stay stylex-sized", async () => {
 		"root barrel, cx only": bundle("tree-shake-cx.ts"),
 	};
 
-	await expect(JSON.stringify(sizes, null, 2)).toMatchFileSnapshot(
-		resolve(ROOT, "tests/snapshots", "runtime-size.json.snap"),
-	);
+	// 1. Hard budgets — the committed "not too much" contract.
+	const budgets = JSON.parse(readFileSync(BUDGET, "utf8")) as Record<
+		string,
+		{ min: number; gz: number }
+	>;
+	for (const [name, size] of Object.entries(sizes)) {
+		const budget = budgets[name];
+		expect(budget, `missing budget for "${name}" in tests/runtime-budget.json`).toBeDefined();
+		expect(size.min, `${name}: min ${size.min} exceeds budget ${budget!.min}`).toBeLessThanOrEqual(
+			budget!.min,
+		);
+		expect(size.gz, `${name}: gz ${size.gz} exceeds budget ${budget!.gz}`).toBeLessThanOrEqual(
+			budget!.gz,
+		);
+	}
 
-	expect(sizes["css"].gz).toBeLessThan(2_000);
-	expect(sizes["tw"].gz).toBeLessThan(2_000);
-	expect(sizes["cx"].gz).toBeLessThan(3_000);
-	expect(sizes["all (css+tw+cx)"].gz).toBeLessThan(4_000);
+	// 2. Regression guard vs the committed baseline (noise-tolerant).
+	if (!updatingSnapshots()) {
+		const baseline = JSON.parse(readFileSync(SNAPSHOT, "utf8")) as Record<
+			string,
+			{ min: number; gz: number }
+		>;
+		for (const [name, size] of Object.entries(sizes)) {
+			const base = baseline[name];
+			if (base === undefined) continue;
+			const minCap = base.min + Math.max(16, Math.round(base.min * 0.01));
+			const gzCap = base.gz + Math.max(8, Math.round(base.gz * 0.01));
+			expect(
+				size.min,
+				`${name}: min regressed ${base.min} -> ${size.min} (allow up to ${minCap}; run pnpm test:size -u only for an intentional change)`,
+			).toBeLessThanOrEqual(minCap);
+			expect(
+				size.gz,
+				`${name}: gz regressed ${base.gz} -> ${size.gz} (allow up to ${gzCap}; run pnpm test:size -u only for an intentional change)`,
+			).toBeLessThanOrEqual(gzCap);
+		}
+	}
+
+	// 3. Exact record of truth.
+	await expect(JSON.stringify(sizes, null, 2)).toMatchFileSnapshot(SNAPSHOT);
+
 	// The build-time generator must never ride along in the runtime entry.
 	expect(sizes["all (css+tw+cx)"].gz).toBeLessThan(
 		sizes["stylesheet generator (build-time only)"].gz / 3,
