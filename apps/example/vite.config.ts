@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import { examplePreset } from "pandwind/preset";
 import { pandwindCssVite, pandwindVite } from "pandwind/vite";
 import { defineConfig } from "vite";
+import { twAdapter } from "./src/bridge.ts";
 
 export default defineConfig({
 	// `enforce: "pre"` inlines literal `tw()` calls before Tailwind's scanner,
@@ -12,5 +13,12 @@ export default defineConfig({
 	// `pandwindVite` inlines literal `tw()` calls before Tailwind's scanner;
 	// `pandwindCssVite` extracts literal `css()` calls into a generated
 	// stylesheet, served from the virtual `pandwind:css` module.
-	plugins: [pandwindVite(), pandwindCssVite(examplePreset), tailwindcss(), react()],
+	plugins: [
+		pandwindVite(),
+		// Tailwind mode: css() calls are inlined to the same utilities tw()
+		// emits, so Tailwind's scanner compiles one shared stylesheet.
+		pandwindCssVite(examplePreset, { className: twAdapter }),
+		tailwindcss(),
+		react(),
+	],
 });
