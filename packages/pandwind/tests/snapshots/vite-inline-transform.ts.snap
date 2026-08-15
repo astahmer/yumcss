@@ -1,0 +1,15 @@
+
+import { tw } from "./tw";
+import { css } from "./design";
+import "pandwind:css";
+
+export const mainClasses = "bg-red-500 p-4 hover:bg-blue-600 sm:p-6";
+export const headingClasses = "text-gray-900";
+export const buttonClasses = css.class({
+	$frame: { fill: "$blue-500", corners: "md" },
+	$layout: { flow: "stackX", gap: "2" },
+	$text: { color: "$white", size: "sm" },
+});
+// Consumed at the edge (like a render function would), so the bundler keeps
+// the inlined class strings in the entry chunk.
+console.log(mainClasses, headingClasses, buttonClasses);
