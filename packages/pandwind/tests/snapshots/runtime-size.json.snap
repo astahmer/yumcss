@@ -13,7 +13,7 @@
   },
   "all (css+tw+cx)": {
     "min": 5719,
-    "gz": 2406
+    "gz": 2407
   },
   "stylesheet generator (build-time only)": {
     "min": 82038,
