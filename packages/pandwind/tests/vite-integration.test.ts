@@ -198,6 +198,56 @@ describe("build", () => {
 		expect(css!.source!.toString()).toContain("background-color:#3182ce");
 		expect(css!.source!.toString()).toContain(":root");
 	});
+
+	test("root-barrel imports tree-shake: one API in, one API's code out", async () => {
+		// A real vite production build of an app that imports only css() from
+		// the ROOT `pandwind` barrel must not ship the tw()/cx()/preset code,
+		// and a css-only import must stay far smaller than importing all three.
+		const buildApp = async (source: string): Promise<string> => {
+			const dir = mkdtempSync(join(tmpdir(), "pandwind-shake-"));
+			try {
+				mkdirSync(join(dir, "node_modules"), { recursive: true });
+				symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
+				writeFileSync(join(dir, "app.ts"), source);
+				const result = await build({
+					root: dir,
+					logLevel: "silent",
+					build: {
+						write: false,
+						minify: true,
+						rollupOptions: { input: join(dir, "app.ts") },
+					},
+				});
+				const output = (
+					Array.isArray(result) ? result : "output" in result ? result.output : []
+				) as Array<{ type: "chunk" | "asset"; code?: string }>;
+				return output
+					.filter((chunk) => chunk.type === "chunk")
+					.map((chunk) => chunk.code!)
+					.join("\n");
+			} finally {
+				rmSync(dir, { recursive: true, force: true });
+			}
+		};
+
+		const cssOnly = await buildApp(`
+			import { createCss } from "pandwind";
+			const css = createCss();
+			export const a = css.class({ color: "red", bg: "blue" });
+			console.log(a);
+		`);
+		const allThree = await buildApp(`
+			import { createCss, createCx, createTw } from "pandwind";
+			const css = createCss();
+			const cx = createCx({ css });
+			const tw = createTw({});
+			console.log(cx(tw({ bg: "red-500" }), css.class({ color: "red" })));
+		`);
+
+		expect(cssOnly).not.toContain("createTw");
+		expect(cssOnly).not.toContain("createCx");
+		expect(cssOnly.length).toBeLessThan(allThree.length / 2);
+	});
 });
 
 describe("post-plugin snapshots", () => {

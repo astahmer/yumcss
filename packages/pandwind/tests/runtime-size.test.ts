@@ -36,6 +36,12 @@ test("runtime entries stay stylex-sized", async () => {
 		cx: bundle("runtime-cx.ts"),
 		"all (css+tw+cx)": bundle("runtime-all.ts"),
 		"stylesheet generator (build-time only)": bundle("size-stylesheet.ts"),
+		// Same single-API imports but from the ROOT barrel (`pandwind`) — if
+		// the other engines were not tree-shaken away, these would be as big
+		// as the "all" bundle.
+		"root barrel, css only": bundle("tree-shake-css.ts"),
+		"root barrel, tw only": bundle("tree-shake-tw.ts"),
+		"root barrel, cx only": bundle("tree-shake-cx.ts"),
 	};
 
 	await expect(JSON.stringify(sizes, null, 2)).toMatchFileSnapshot(
@@ -50,4 +56,19 @@ test("runtime entries stay stylex-sized", async () => {
 	expect(sizes["all (css+tw+cx)"].gz).toBeLessThan(
 		sizes["stylesheet generator (build-time only)"].gz / 3,
 	);
+
+	// Root-barrel imports tree-shake down to the single engine: each one is
+	// within 300 gz bytes of its direct subpath import (no barrel overhead)…
+	expect(sizes["root barrel, css only"].gz).toBeLessThan(sizes.css.gz + 300);
+	expect(sizes["root barrel, tw only"].gz).toBeLessThan(sizes.tw.gz + 300);
+	expect(sizes["root barrel, cx only"].gz).toBeLessThan(sizes.cx.gz + 300);
+	// css() and tw() have no cross-dependencies: their root imports must be
+	// clearly smaller than the combined bundle, proving the unused engines
+	// were dropped rather than shipped.
+	expect(sizes["root barrel, css only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz / 2);
+	expect(sizes["root barrel, tw only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz / 2);
+	// cx() depends on the css engine (atom registry), so its root import is
+	// near the css size — but it must still stay well under the combined
+	// bundle: tw()/preset have been shaken out.
+	expect(sizes["root barrel, cx only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz - 400);
 });
