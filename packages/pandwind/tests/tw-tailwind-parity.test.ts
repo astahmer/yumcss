@@ -24,24 +24,23 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { compile, __unstable__loadDesignSystem } from "@tailwindcss/node";
-import postcss from "postcss";
-import type { Root } from "postcss";
-import selectorParser from "postcss-selector-parser";
+import { parse } from "postcss";
 import { beforeAll, describe, expect, test } from "vitest";
 import { createCx } from "../src/cx/index.ts";
 import { canonicalProps } from "../src/tw/generate-types.ts";
 import { compileStyles, type TwNestedStyles, type TwVariantsMeta } from "../src/tw/compile.ts";
 import { createTw } from "../src/tw/runtime.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
+import { rulesForClass, TW_ENTRY } from "./helpers/tailwind-proof.ts";
 
 const APP_DIR = resolve(import.meta.dirname, "../../../apps/example");
-const TW_ENTRY = '@import "tailwindcss";';
 
 /** The committed generated config — the exact artifact the app runs on. */
 function loadTwConfig(): NonNullable<ReturnType<typeof extractTwConfig>> {
 	const source = readFileSync(resolve(APP_DIR, "src/tw.ts"), "utf8");
 	const config = extractTwConfig(source);
-	if (config === undefined) throw new Error("could not extract tw config from apps/example/src/tw.ts");
+	if (config === undefined)
+		throw new Error("could not extract tw config from apps/example/src/tw.ts");
 	return config;
 }
 
@@ -76,25 +75,10 @@ function expectedProps(
 	return byValue[value] ?? byValue[value.replace(/\/\d+$/, "")] ?? byValue["*"] ?? [];
 }
 
-/** Rules whose selector references the class (escaped forms included). */
-function rulesForClass(root: Root, className: string): postcss.Rule[] {
-	const found: postcss.Rule[] = [];
-	root.walkRules((rule) => {
-		let matches = false;
-		selectorParser((selectors) => {
-			selectors.walkClasses((node) => {
-				if (node.value === className) matches = true;
-			});
-		}).processSync(rule.selector);
-		if (matches) found.push(rule);
-	});
-	return found;
-}
-
 /** Standard properties a compiled candidate actually sets, canonicalized. */
 function standardProps(className: string, css: string | null): string[] {
 	if (css === null) return [];
-	const root = postcss.parse(css);
+	const root = parse(css);
 	const props = new Set<string>();
 	for (const rule of rulesForClass(root, className)) {
 		rule.walkDecls((decl) => {
@@ -117,7 +101,10 @@ describe("full design-system sweep", () => {
 		"every Tailwind candidate compiles and the conflict map predicts its properties",
 		{ timeout: 120_000 },
 		async () => {
-			const classList = ds.getClassList().map(([className]) => className);
+			const classList = ds
+				.getClassList()
+				.map(([className]) => className)
+				.filter((className): className is string => className !== undefined);
 			const failures: string[] = [];
 			let verified = 0;
 
@@ -125,7 +112,7 @@ describe("full design-system sweep", () => {
 				const chunk = classList.slice(i, i + 200);
 				const results = ds.candidatesToCss(chunk);
 				chunk.forEach((className, index) => {
-					const css = results[index];
+					const css = results[index] ?? null;
 					if (css === null) {
 						failures.push(`${className}: does not compile`);
 						return;
@@ -136,11 +123,7 @@ describe("full design-system sweep", () => {
 						failures.push(`${className}: no generated utility key covers it`);
 						return;
 					}
-					const expected = expectedProps(
-						decomposed.utility,
-						decomposed.value,
-						config.conflicts,
-					);
+					const expected = expectedProps(decomposed.utility, decomposed.value, config.conflicts);
 					verified += 1;
 					if (JSON.stringify(actual) !== JSON.stringify(expected)) {
 						failures.push(
@@ -177,7 +160,10 @@ describe("tw() corpus", () => {
 			classes: "data-[state=open]:bg-sky-600",
 		},
 		{ styles: { dark: { hover: { bg: "sky-700" } } }, classes: "dark:hover:bg-sky-700" },
-		{ styles: { rounded: "md", border: ["2", "red-500"] }, classes: "rounded-md border-2 border-red-500" },
+		{
+			styles: { rounded: "md", border: ["2", "red-500"] },
+			classes: "rounded-md border-2 border-red-500",
+		},
 		{ styles: { gridCols: "3", gap: "4" }, classes: "grid-cols-3 gap-4" },
 		{ styles: { relative: true, z: "10" }, classes: "relative z-10" },
 		{ styles: { ring: ["1", "gray-900/5"] }, classes: "ring-1 ring-gray-900/5" },
@@ -198,7 +184,7 @@ describe("tw() corpus", () => {
 		const all = corpus.flatMap((entry) => entry.classes.split(" "));
 		const result = await compile(TW_ENTRY, { base: APP_DIR, onDependency: () => {} });
 		const output = result.build(all);
-		const root = postcss.parse(output);
+		const root = parse(output);
 		const missing: string[] = [];
 
 		for (const className of all) {
@@ -227,12 +213,20 @@ describe("cx() merge", () => {
 		skipCompile?: boolean;
 	}> => [
 		{ input: ["bg-red-500", "bg-blue-600"], expected: "bg-blue-600", dropped: ["bg-red-500"] },
-		{ input: ["bg-red-500", tw()({ bg: "blue-600" })], expected: "bg-blue-600", dropped: ["bg-red-500"] },
+		{
+			input: ["bg-red-500", tw()({ bg: "blue-600" })],
+			expected: "bg-blue-600",
+			dropped: ["bg-red-500"],
+		},
 		{ input: ["p-4", "px-8"], expected: "px-8", dropped: ["p-4"] },
 		{ input: ["text-2xl", "text-base"], expected: "text-base", dropped: ["text-2xl"] },
 		{ input: ["text-2xl", "text-gray-900"], expected: "text-2xl text-gray-900" },
 		{ input: ["scale-x-110", "scale-y-125"], expected: "scale-x-110 scale-y-125" },
-		{ input: ["hover:bg-red-500", "hover:bg-blue-600"], expected: "hover:bg-blue-600", dropped: ["hover:bg-red-500"] },
+		{
+			input: ["hover:bg-red-500", "hover:bg-blue-600"],
+			expected: "hover:bg-blue-600",
+			dropped: ["hover:bg-red-500"],
+		},
 		{ input: ["hover:bg-red-500", "bg-green-500"], expected: "hover:bg-red-500 bg-green-500" },
 		{ input: ["flex", "flex-col"], expected: "flex flex-col" },
 		{ input: ["bg-red-500", "my-custom"], expected: "bg-red-500 my-custom", skipCompile: true },
@@ -248,7 +242,7 @@ describe("cx() merge", () => {
 	test("merged output compiles to the survivors' rules and none of the dropped", async () => {
 		const result = await compile(TW_ENTRY, { base: APP_DIR, onDependency: () => {} });
 		for (const entry of getCases()) {
-			const root = postcss.parse(result.build(entry.expected.split(" ")));
+			const root = parse(result.build(entry.expected.split(" ")));
 			if (entry.skipCompile !== true) {
 				for (const className of entry.expected.split(" ")) {
 					expect(
