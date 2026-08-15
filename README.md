@@ -206,6 +206,43 @@ CSS property. `cx()` is what makes them interchangeable in one className;
 emitting the _same_ class name from both APIs is planned (tokens -> `@theme`
 bridge, see TODO).
 
+## Tailwind compatibility — proven, not assumed
+
+Every claim below is checked against the real `tailwindcss` compiler, with
+postcss as an independent parsing oracle — never against pandwind's own output
+parsers. The suites in `packages/pandwind/tests/tw-tailwind-parity.test.ts` and
+`packages/pandwind/tests/css-tw-parity.test.ts` are the proof:
+
+- **Every `tw()` candidate is a real Tailwind class.** All ~23,000 utilities
+  in `getClassList()` compile through `@tailwindcss/node`; nothing fails.
+- **The conflict map predicts exactly what Tailwind emits.** For every
+  candidate, the committed generated map (after canonicalization) predicts
+  precisely the standard properties Tailwind's compiled CSS sets — no
+  sampling, every candidate.
+- **`cx()` output still compiles to the survivors' rules only.** Last-wins,
+  variant-scoped and compose merges are recompiled by real Tailwind and only
+  the surviving classes produce rules.
+- **`css()` and `tw()` emit the same resolved CSS for the same intent.** The
+  atomic engine's hashed classes and Tailwind's literal utilities can never
+  share a class name; what is proven is that for the same logical style
+  (color, background, radius, display, size, hover) both engines resolve to
+  byte-identical `(property, value)` declarations, with the same pseudo-class
+  on variants.
+- **A committed snapshot of real Tailwind output** —
+  `packages/pandwind/tests/snapshots/tw-tailwind-compiled.css.snap` — pins the
+  compiler output the corpus relies on, so an engine upgrade that changes
+  emitted CSS is visible in review.
+
+What is deliberately _not_ asserted:
+
+- byte-identical class names between `css()` atoms and `tw()` utilities
+  (that's the token -> `@theme` bridge in TODO, not a parity claim);
+- Tailwind's internal `--tw-*` custom properties, `@property` blocks and
+  keyframes (implementation details, not authored styles);
+- media-query syntax: Tailwind v4 emits `@media (width >= 40rem)` range
+  queries, presets write `(min-width: 640px)` — semantically equivalent,
+  documented in the test header, not byte-compared.
+
 ## Runtime size
 
 The browser runtime is the three small modules above — no stylesheet

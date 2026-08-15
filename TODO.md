@@ -34,6 +34,12 @@
 - Real-vite integration tests (dev transform, HMR invalidation, build) with
   post-plugin snapshots; runtime-size snapshot keeps the bundle stylex-sized
   (~2.4 KB gz for css+tw+cx).
+- Tailwind-compatibility proof suite: every generated candidate compiles
+  through real Tailwind and the committed conflict map predicts its emitted
+  properties; `cx()` merges recompile to the survivors' rules only; `css()`
+  vs `tw()` emit byte-identical resolved declarations for the same intent
+  (with a committed real-Tailwind output snapshot). See the README section
+  _Tailwind compatibility — proven, not assumed_.
 - `src` uses `.ts` import specifiers, so vite's native config loader (and
   Node's type stripping) work without a bundler step.
 - CSS identifiers (class names, custom properties) are escaped, so hashes
@@ -53,7 +59,9 @@ textColor: "gray-900" }` works without arrays.
   `cx()` merges them at the className level. Emitting the identical class
   from both APIs needs a token->utility bridge (preset tokens -> `@theme`,
   css prop -> utility mapping) so the same declaration compiles to one rule
-  in Tailwind's sheet.
+  in Tailwind's sheet. The parity suite already proves both engines resolve
+  to the same declarations — the remaining work is purely the class-name
+  bridge.
 - **Compile-time `cx()`** — the vite inliner resolves literal `tw()` calls
   today; extending it to literal `cx()` calls (evaluating the merge at build
   time) would make the cx runtime tree-shakeable for static apps.
