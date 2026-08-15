@@ -21,11 +21,14 @@ describe("typegen", () => {
 
 		expect(twTs).toContain('group: { join: "-" }');
 		expect(twTs).toContain('"@": { join: "" }');
-		// Only the variants block is checked: `"sm"` legitimately appears in
-		// the generated conflict map (`text-sm`) and `before` in compose keys.
+		// Every variant is emitted now (default `:` joins included) so the
+		// tailwind css() adapter can look any condition up.
 		const variantsBlock = twTs.slice(0, twTs.indexOf("conflicts:"));
+		expect(variantsBlock).toContain('hover: { join: ":" }');
+		expect(variantsBlock).toContain('sm: { join: ":" }');
+		// `before` stays out of the variants block (pseudo-element, not a
+		// variant) — it can only appear in the conflict map / compose keys.
 		expect(variantsBlock).not.toContain('"before"');
-		expect(variantsBlock).not.toContain('"sm"');
 	});
 });
 

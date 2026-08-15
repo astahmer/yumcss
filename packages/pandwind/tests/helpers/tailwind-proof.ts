@@ -7,6 +7,7 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root, type Rule } from "postcss";
 import selectorParser from "postcss-selector-parser";
+import { resolveVar, themeVariables } from "../../src/tw/theme.ts";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
 export const TW_ENTRY = '@import "tailwindcss";';
@@ -43,26 +44,7 @@ export function selectorTail(selector: string, className: string): string {
 	return tail;
 }
 
-/** Custom-property values from `:root` (Tailwind's theme block). */
-export function themeVariables(root: Root): Map<string, string> {
-	const vars = new Map<string, string>();
-	root.walkRules((rule) => {
-		if (!rule.selector.includes(":root")) return;
-		rule.walkDecls((decl) => {
-			if (decl.prop.startsWith("--")) vars.set(decl.prop, decl.value);
-		});
-	});
-	return vars;
-}
-
-/** Resolve `var(--x)` chains against the theme, honoring fallbacks. */
-export function resolveVar(value: string, vars: Map<string, string>): string {
-	return value.replace(/var\((--[a-zA-Z0-9-]+)(?:,\s*([^)]*))?\)/g, (_match, name, fallback) => {
-		const resolved = vars.get(name);
-		if (resolved === undefined) return fallback?.trim() ?? "";
-		return resolveVar(resolved, vars);
-	});
-}
+export { resolveVar, themeVariables };
 
 /** Compile classes with the real Tailwind engine and parse the output. */
 export async function compileClasses(

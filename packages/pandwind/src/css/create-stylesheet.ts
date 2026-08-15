@@ -3,48 +3,39 @@ import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type {
 	AnyConditions,
 	CssConfigReturn,
-	SemanticToken,
-	SimpleToken,
 	StyleObject,
-	Token,
 	TokenDeclaration,
 } from "../types/typings.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
+import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
 
 export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
 	const cache = new Map<string, Rule>();
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
+	const debug = Boolean(options.debug);
 
 	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
 
-	const tokensByProp = new Map<string, Set<string>>();
-	const flatTokens = new Map<string, Token>();
 	const cssVars = new Map<string, TokenDeclaration>();
 
-	const tokensByGroup = new Map<string, Set<string>>();
-	const groupByProp = new Map<string, string>();
+	const tokenMaps = buildTokenMaps(preset, debug);
 
 	const presetTokens = preset.tokens ?? {};
-	// Pre-compute the tokens for each group
+	// Pre-compute the `:root` token declarations (the class-value maps live
+	// in the shared `buildTokenMaps`).
 	for (const group in presetTokens) {
-		const tokenList = new Set<string>();
-		tokensByGroup.set(group, tokenList);
-
 		for (const tokenName in presetTokens[group]) {
 			const tokenValue = presetTokens[group][tokenName];
 			if (tokenValue === undefined) continue;
-			const hash = pairs.join([group, tokenName]);
-			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), Boolean(options.debug));
+			const cssVarHash = hashCssVar(pairs.join([group, tokenName]), debug);
 			const tokenPath = `${group}.${tokenName}`;
 
 			if (typeof tokenValue === "object") {
 				for (const condition in tokenValue) {
 					const value = tokenValue[condition] as string;
-
-					tokenList.add(tokenName);
 
 					const resolved = preset.conditions[condition];
 					// if (typeof resolved == null) {
@@ -73,28 +64,9 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
 				}
-
-				flatTokens.set(tokenPath, {
-					group,
-					path: tokenPath,
-					name: tokenName,
-					value: tokenValue,
-					hash: hash,
-					cssVar: cssVar.ref(cssVarHash),
-				});
-
 				continue;
 			}
 
-			tokenList.add(tokenName);
-			flatTokens.set(tokenPath, {
-				group,
-				path: tokenPath,
-				name: tokenName,
-				value: tokenValue,
-				hash: hash,
-				cssVar: cssVar.ref(cssVarHash),
-			});
 			cssVars.set(tokenPath, {
 				declaration: genCSSRule(
 					cssVar.declaration(cssVarHash, tokenValue),
@@ -106,65 +78,6 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			});
 		}
 	}
-
-	for (const prop in preset.properties) {
-		if (typeof preset.properties[prop] !== "object") continue;
-
-		for (const token in preset.properties[prop]) {
-			if (token === "$strictness") continue;
-
-			// Add every tokens of that group to the list of tokens for that prop
-			if (token === "$tokens") {
-				const group = preset.properties[prop].$tokens!;
-				const groupTokens = tokensByGroup.get(group);
-				if (!groupTokens) continue;
-
-				if (!tokensByProp.has(prop)) {
-					tokensByProp.set(prop, new Set());
-				}
-				const tokenList = tokensByProp.get(prop)!;
-				groupTokens.forEach((tokenName) => {
-					tokenList.add(tokenName);
-				});
-
-				groupByProp.set(prop, group);
-
-				continue;
-			}
-
-			if (!tokensByProp.has(prop)) {
-				tokensByProp.set(prop, new Set());
-			}
-			const tokenList = tokensByProp.get(prop)!;
-			tokenList.add(token);
-
-			const tokenPath = `${prop}.${token}`;
-			flatTokens.set(tokenPath, {
-				path: tokenPath,
-				name: token,
-				value: preset.properties[prop][token],
-				hash: hashFn(pairs.join([prop, token]), preset.properties[prop][token]),
-			});
-		}
-	}
-
-	const getTokenValue = (prop: string, valueOrTokenName: string): string => {
-		if (!tokensByProp.has(prop)) return valueOrTokenName;
-
-		const tokenList = tokensByProp.get(prop)!;
-		if (!tokenList.has(valueOrTokenName)) return valueOrTokenName;
-
-		const group = groupByProp.get(prop);
-		if (group) {
-			const tokenPath = `${group}.${valueOrTokenName}`;
-			const token = flatTokens.get(tokenPath)! as SemanticToken;
-			return token.cssVar;
-		}
-
-		const tokenPath = `${prop}.${valueOrTokenName}`;
-		const token = flatTokens.get(tokenPath)! as SimpleToken;
-		return token.value;
-	};
 
 	const processFlatStyles = (style: FlatStyles) => {
 		const localCache = new Map<string, Rule>();
@@ -182,7 +95,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			if (cache.has(pairId)) continue;
 
 			const atomic = decodeAtomicPath(preset.conditions, pairId);
-			const value = getTokenValue(atomic.prop!, atomic.value!);
+			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
 
 			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,

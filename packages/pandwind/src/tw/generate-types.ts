@@ -786,12 +786,11 @@ function getTwRuntime(
 	conflicts: Record<string, Record<string, string[]>>,
 	compose: string[],
 ): string {
-	const nonDefault = variants
-		.filter(({ join }) => join !== ":")
-		.map(
-			({ name, join }) =>
-				`\t\t${tsKey(camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
-		);
+	// Every variant is emitted (including `:`-join defaults) so consumers
+	// like the tailwind css() adapter can look any design condition up.
+	const variantEntries = variants.map(
+		({ name, join }) => `\t\t${tsKey(camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
+	);
 	const conflictEntries = Object.entries(conflicts)
 		.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 		.map(
@@ -815,7 +814,7 @@ import type { WindVariants } from "./types";
 // call in the app was statically inlined by the vite plugin.
 export const tw = /* @__PURE__ */ createTw<WindVariants>({
 	variants: {
-${nonDefault.join("\n")}
+${variantEntries.join("\n")}
 	},
 ${conflictEntries.length > 0 ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
 ${composeEntries}

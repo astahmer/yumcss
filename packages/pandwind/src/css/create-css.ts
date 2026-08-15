@@ -16,6 +16,14 @@ type CssStyle = Record<string, string>;
 const DYNAMIC = Symbol("dynamic");
 
 /**
+ * Pluggable class-name strategy. Given a flattened style key (`color`,
+ * `_hover__color`) and the written value, return a class name — or `null`
+ * to fall back to the engine's atomic hashing. The tailwind adapter uses
+ * this to emit literal Tailwind utilities instead of hashed atoms.
+ */
+export type ClassNameStrategy = (key: string, value: string) => string | null;
+
+/**
  * Untyped convenience — useful for throwaway styles or before the preset
  * types are wired up. Values are loose strings / nested objects.
  */
@@ -29,6 +37,7 @@ export function createCss<
 export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 	const debug = options.debug ?? false;
 	const hashFn = options.hashFn ?? createHashFn(debug);
+	const className = options.className;
 	const atoms: AtomRegistry = new Map();
 
 	const compile = (style: FlatStyles): CompiledStyles => {
@@ -41,7 +50,12 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 	};
 
 	const register = (key: string, value: string) => {
-		const atom = hashFn(key, value);
+		const rawValue = String(value);
+		if (className !== undefined) {
+			const custom = className(key, rawValue);
+			if (custom !== null) return custom;
+		}
+		const atom = hashFn(key, rawValue);
 		if (!atoms.has(atom)) atoms.set(atom, key);
 		return atom;
 	};
@@ -150,6 +164,7 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 export interface CreateCssOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
+	className?: ClassNameStrategy;
 }
 
 interface DynamicReturn {
