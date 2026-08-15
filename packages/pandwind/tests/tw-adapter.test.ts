@@ -192,15 +192,15 @@ describe("the tailwind adapter", () => {
 		}
 	});
 
-	test("unrepresentable declarations fall back to atomic hashing, never crash", async () => {
+	test("unrepresentable declarations fail loudly, never silently drop CSS", async () => {
 		const s = await setUp();
-		// Unknown condition (not in the preset nor TW variants) -> atomic atom.
-		const atomic = s.css.class({ madeUpCondition: { color: "$blue-500" } } as never);
-		expect(atomic).not.toContain("text-blue-500");
-		expect(atomic).not.toContain(":");
-		expect(atomic).toMatch(/^[\w-]+$/);
-
-		// Unknown values still produce a class (arbitrary property fallback).
+		// Unknown condition: a clear error, not a CSS-less hashed class.
+		expect(() => s.css.class({ madeUpCondition: { color: "$blue-500" } } as never)).toThrow(
+			/cannot map|no Tailwind variant/,
+		);
+		// `$input` dynamics need the atomic engine's runtime stylesheet.
+		expect(() => s.css.class({ color: "input>$color" } as never)).toThrow(/does not support/);
+		// Unknown values still produce a valid class (arbitrary fallback).
 		expect(() => s.css.class({ color: "not-a-color" } as never)).not.toThrow();
 	});
 });

@@ -98,18 +98,33 @@ export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 
 	return (key, value) => {
 		// `$input` dynamics resolve at runtime against the atomic engine's
-		// generated stylesheet — out of scope for literal Tailwind classes.
-		if (value.startsWith("input>$")) return null;
+		// generated stylesheet — unsupported in tailwind mode. Fail loudly:
+		// silently emitting a hashed atom here would leave the class without
+		// any CSS (the tailwind mode has no atomic sheet).
+		if (value.startsWith("input>$")) {
+			throw new Error(
+				"pandwind: the tailwind adapter does not support `$input` dynamics — " +
+					"use the atomic engine (`createCss()` without a className strategy) for dynamic values",
+			);
+		}
 
 		const parts = key.split("__");
 		const propParts = parts.filter((part) => !isCondition(part));
-		if (propParts.length !== 1) return null;
+		if (propParts.length !== 1) {
+			throw new Error(
+				`pandwind: cannot map '${key}' to a Tailwind utility — the key must contain exactly one CSS property`,
+			);
+		}
 		const propKey = propParts[0]!;
 		const prop = dashCase(propKey);
 		const resolved = resolveValue(propKey, value);
 		const utility = bridge[prop]?.[resolved] ?? `[${prop}:${arbitraryValue(resolved)}]`;
 		const prefix = variantPrefix(parts.filter((part) => isCondition(part)));
-		if (prefix === null) return null;
+		if (prefix === null) {
+			throw new Error(
+				`pandwind: condition '${parts.find((part) => isCondition(part))}' has no Tailwind variant and no preset condition selector`,
+			);
+		}
 		return prefix === "" ? utility : `${prefix}:${utility}`;
 	};
 }
