@@ -30,6 +30,7 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import type { ClassNameStrategy } from "../css/create-css.ts";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import type {
 	AnyCssConfig,
@@ -38,7 +39,7 @@ import type {
 	DefinePresetOptions,
 	StyleObject,
 } from "../types/typings.ts";
-import { extractCssStyles, findCssImports, isCssSource } from "./css-extract.ts";
+import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -54,6 +55,15 @@ export interface PandwindCssViteOptions {
 	root?: string;
 	/** The virtual module id the generated CSS is served under. */
 	virtualId?: string;
+	/**
+	 * Tailwind mode: when a class-name strategy (the `createTwAdapter`
+	 * output) is supplied, literal `css(...)` / `css.class(...)` calls are
+	 * inlined into Tailwind class strings instead of extracted into an
+	 * atomic stylesheet. Tailwind's own scanner then generates the CSS, so
+	 * `css()` and `tw()` share one rule set and the stylesheet cannot grow.
+	 * The virtual `pandwind:css` module serves empty CSS in this mode.
+	 */
+	className?: ClassNameStrategy;
 }
 
 export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
@@ -66,6 +76,7 @@ export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfi
 export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCssViteOptions = {}) {
 	const matchers = options.cssSources ?? ["css", "design"];
 	const virtualId = options.virtualId ?? "pandwind:css";
+	const className = options.className;
 	// The `.css` suffix makes vite's CSS pipeline (and its dev injection)
 	// treat the virtual module as stylesheet, not JavaScript.
 	const resolvedVirtualId = `\0${virtualId}.css`;
@@ -93,6 +104,23 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		}
 		return acc;
 	};
+
+	const transform =
+		className === undefined
+			? undefined
+			: {
+					name: "pandwind:extract-css",
+					enforce: "pre" as const,
+					transform(code: string, id: string) {
+						if (id.includes("node_modules")) return null;
+						if (!isScanned(id)) return null;
+						if (!/\bcss\b/.test(code)) return null;
+						const names = findCssImports(code, id, matchers);
+						if (names.size === 0) return null;
+						const result = inlineCssCalls(code, id, names, preset, className);
+						return result.inlined === 0 ? null : { code: result.code, map: null };
+					},
+				};
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = () => {
@@ -129,12 +157,14 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 	return {
 		name: "pandwind:extract-css",
 		enforce: "pre",
+		...transform,
 		resolveId(source: string) {
 			if (source === virtualId) return resolvedVirtualId;
 			return null;
 		},
 		load(id: string) {
 			if (id !== resolvedVirtualId) return null;
+			if (className !== undefined) return "";
 			const sheet = collect();
 			const tokens = sheet.gen.tokens();
 			const atomic = sheet.gen.atomic();
@@ -147,4 +177,4 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 	};
 }
 
-export { extractCssStyles, findCssImports, isCssSource };
+export { extractCssStyles, findCssImports, inlineCssCalls, isCssSource };

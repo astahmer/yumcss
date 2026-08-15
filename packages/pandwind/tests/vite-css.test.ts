@@ -1,10 +1,16 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { expect, test } from "vitest";
+import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
-import { extractCssStyles, findCssImports, isCssSource } from "../src/vite/css-extract.ts";
+import {
+	extractCssStyles,
+	findCssImports,
+	inlineCssCalls,
+	isCssSource,
+} from "../src/vite/css-extract.ts";
 
 test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];
@@ -59,6 +65,70 @@ test("extractCssStyles ignores raw css() from non-matching sources", () => {
 		const a = other({ $frame: { w: "20" } });
 	`;
 	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([]);
+});
+
+/** Minimal bridge + variants for the tailwind-mode inlining tests. */
+const twMode = () =>
+	createTwAdapter({
+		preset: examplePreset,
+		variants: { hover: { join: ":" }, sm: { join: ":" } },
+		bridge: {
+			color: { "#3182ce": "text-blue-500" },
+			"background-color": { "#E53E3E": "bg-red-500" },
+		},
+	});
+
+test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
+	const code = `
+		import { css } from "./design";
+		const a = css.class({ $text: { color: "$blue-500" } });
+		const b = css({ $frame: { fill: "$red-500" } });
+	`;
+	const result = inlineCssCalls(code, "app.ts", new Set(["css"]), examplePreset, twMode());
+	expect(result.inlined).toBe(2);
+	expect(result.code).toContain('const a = "text-blue-500";');
+	expect(result.code).toContain('const b = {"backgroundColor":"bg-red-500"};');
+});
+
+test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => {
+	const code = `
+		import { css } from "./design";
+		const color = "$blue-500";
+		const a = css.class({ $text: { color } });
+		const b = css.raw({ $text: { color: "$blue-500" } });
+		const c = css.props({});
+		const d = css.class({ $text: { color: "$blue-500" } }, { $frame: { fill: "$red-500" } });
+	`;
+	const result = inlineCssCalls(code, "app.ts", new Set(["css"]), examplePreset, twMode());
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("const a = css.class({ $text: { color } });");
+	expect(result.code).toContain('const b = css.raw({ $text: { color: "$blue-500" } });');
+	expect(result.code).toContain("const c = css.props({});");
+	// Multi-arg class calls are still inlined (merged).
+	expect(result.code).toContain('const d = "text-blue-500 bg-red-500";');
+});
+
+test("pandwindCssVite with className serves empty CSS and inlines calls", () => {
+	const dir = makeProject({
+		"src/app.tsx": `
+			import { css } from "./design";
+			import "pandwind:css";
+			export const a = css.class({ $text: { color: "$blue-500" } });
+		`,
+	});
+	const plugin = pandwindCssVite(examplePreset, {
+		className: twMode(),
+		root: dir,
+	});
+	const result = (plugin.transform as (code: string, id: string) => { code: string } | null).call(
+		null,
+		readFileSync(join(dir, "src/app.tsx"), "utf8"),
+		join(dir, "src/app.tsx"),
+	);
+	expect(result).not.toBeNull();
+	expect(result!.code).toContain('const a = "text-blue-500"');
+	// Tailwind owns the CSS in this mode.
+	expect(loadGenerated(plugin as never)).toBe("");
 });
 
 const makeProject = (files: Record<string, string>): string => {

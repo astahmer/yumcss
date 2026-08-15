@@ -9,6 +9,7 @@
  * module, so no runtime stylesheet accumulation is needed for static calls.
  */
 import { type Expression, parseSync } from "oxc-parser";
+import { createCss, type ClassNameStrategy } from "../css/create-css.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
 import type {
@@ -33,6 +34,8 @@ interface OxcSpecifier {
 }
 
 interface CallNode extends OxcNode {
+	start: number;
+	end: number;
 	callee: OxcNode | null;
 	arguments: unknown[];
 }
@@ -140,4 +143,77 @@ export function extractCssStyles(
 	});
 
 	return styles;
+}
+
+export interface InlineCssResult {
+	code: string;
+	inlined: number;
+}
+
+/**
+ * Tailwind-mode inlining: replace literal `css(...)` / `css.class(...)`
+ * calls by their compiled class output (map literal / class string), so
+ * Tailwind's own scanner generates the CSS and nothing is paid at runtime.
+ * `css.raw(...)`, `css.props(...)`, `css.group(...)` and dynamic calls are
+ * left untouched. The emitted classes come from the same `className`
+ * strategy the runtime binds, so build-time and runtime output match.
+ */
+export function inlineCssCalls(
+	code: string,
+	id: string,
+	cssNames: ReadonlySet<string>,
+	preset: CssPreset,
+	className: ClassNameStrategy,
+): InlineCssResult {
+	if (cssNames.size === 0) return { code, inlined: 0 };
+
+	const engine = createCss({ className });
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	let inlined = 0;
+
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const callee = call.callee;
+
+		let kind: "map" | "class" | null = null;
+		if (callee?.type === "Identifier" && cssNames.has((callee as { name?: string }).name ?? "")) {
+			kind = "map";
+		} else if (callee?.type === "MemberExpression" && isMemberCall(callee, cssNames)) {
+			const member = (callee as { property?: { name?: string } | null }).property?.name;
+			if (member === "class") kind = "class";
+		}
+		if (kind === null) return;
+		if (call.arguments.length === 0) return;
+
+		const styles: Array<Record<string, unknown>> = [];
+		for (const argument of call.arguments) {
+			const literal = evalLiteral(argument as Expression);
+			if (typeof literal !== "object" || literal === null) continue;
+			styles.push(resolveDesignStyle(literal as Record<string, unknown>, preset.tokens));
+		}
+		if (styles.length === 0) return;
+
+		try {
+			const compiled =
+				kind === "class"
+					? engine.class(...(styles as Array<StyleObject>))
+					: engine(...(styles as Array<StyleObject>));
+			edits.push({ start: call.start, end: call.end, text: JSON.stringify(compiled) });
+			inlined++;
+		} catch {
+			// Leave unrepresentable calls for the runtime (never crash builds).
+		}
+	});
+
+	if (inlined === 0) return { code, inlined };
+	let out = code;
+	for (const edit of edits.toReversed()) {
+		out = out.slice(0, edit.start) + edit.text + out.slice(edit.end);
+	}
+	return { code: out, inlined };
 }
