@@ -15,7 +15,7 @@ the **build-time stylesheet generator**, not the browser runtime:
 | what                                       |     min |    gzip |
 | ------------------------------------------ | ------: | ------: |
 | `css()` runtime                            | 2.26 KB | 1.09 KB |
-| `tw()` runtime                             | 1.64 KB | 0.83 KB |
+| `tw()` runtime                             | 1.64 KB | 0.84 KB |
 | `cx()` runtime                             | 4.15 KB | 1.87 KB |
 | all three together                         | 5.72 KB | 2.41 KB |
 | stylesheet generator (**build-time only**) | 82.0 KB | 20.3 KB |
@@ -27,6 +27,33 @@ CSS an app ships is what Tailwind compiles: for the example app that is
 **71.25 KB raw / 12.67 KB gzip**, of which ~60 KB is the utilities layer
 (every used utility plus the 41 safelist classes), ~3.7 KB preflight and
 ~2 KB theme variables.
+
+## Pay-per-API: separate imports, tree-shaken barrel
+
+Each engine is its own subpath export — `pandwind/css`, `pandwind/tw`,
+`pandwind/cx` — and the root `pandwind` barrel is marked `"sideEffects":
+false`, so bundlers drop whichever engines you do not import. Measured with
+esbuild (the size gate in `packages/pandwind/tests/runtime-size.test.ts`) and
+proven again with a real vite production build in
+`packages/pandwind/tests/vite-integration.test.ts`:
+
+| import                      |     min |    gzip | vs all three |
+| --------------------------- | ------: | ------: | -----------: |
+| `pandwind/css` — css() only | 2.26 KB | 1.09 KB |         −55% |
+| `pandwind/tw` — tw() only   | 1.64 KB | 0.84 KB |         −65% |
+| `pandwind/cx` — cx() only   | 4.15 KB | 1.87 KB |         −22% |
+| `pandwind` — css + tw + cx  | 5.72 KB | 2.41 KB |            — |
+
+Two things to know:
+
+- **The barrel costs nothing.** `import { createCss } from "pandwind"` is
+  byte-identical after bundling to `import { createCss } from "pandwind/css"`
+  — the size gate asserts the root-barrel build equals the direct subpath
+  build for each of the three engines.
+- **`cx()` is inherently the biggest single import** because it depends on
+  the css engine's atom registry to resolve hashed atoms — it cannot be
+  smaller than `css()`. `tw()` and `css()` are fully independent: importing
+  one never pulls the other.
 
 ## Browser JS runtimes vs the alternatives
 
