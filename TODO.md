@@ -26,6 +26,14 @@
 - `cx()` — last-wins merge across raw class strings, `tw()` output and css
   atoms via the generated conflict map + css atom registry (variant-scoped,
   compose-aware). Unknown classes are kept verbatim.
+- **Tailwind adapter** — `css()` and `tw()` emit the identical class string
+  for the same intent (`css({ color: "$blue-500" })` ==
+  `tw({ text: "blue-500" })` == `text-blue-500`) via a generated
+  property->utility bridge, so mixing APIs cannot grow Tailwind's stylesheet.
+  Unrepresentable declarations fail loudly instead of emitting CSS-less
+  classes. Proven against real Tailwind output, including a robustness suite
+  (`tests/robustness.test.ts`) that asserts nothing crashes, nothing is
+  silently dropped, and every emitted class still compiles.
 
 ## Tooling
 
@@ -54,17 +62,25 @@ textColor: "gray-900" }` works without arrays.
 - **DTCG design-token integration for `tw()`** — tokens -> `@theme` ->
   generated types, so autocomplete is your design system, not all of
   Tailwind. (The css() side already resolves tokens from preset groups.)
-- **Same class name from `css()` and `tw()`** — today `css({ color: ... })`
-  and `tw({ text: ... })` emit different classes that set the same property;
-  `cx()` merges them at the className level. Emitting the identical class
-  from both APIs needs a token->utility bridge (preset tokens -> `@theme`,
-  css prop -> utility mapping) so the same declaration compiles to one rule
-  in Tailwind's sheet. The parity suite already proves both engines resolve
-  to the same declarations — the remaining work is purely the class-name
-  bridge.
 - **Compile-time `cx()`** — the vite inliner resolves literal `tw()` calls
   today; extending it to literal `cx()` calls (evaluating the merge at build
   time) would make the cx runtime tree-shakeable for static apps.
+- **Faster `cx()` runtime** — BENCH.md shows `cx()` at ~177K ops/sec vs
+  ~4.3M for tailwind-merge: it resolves every token through the atom registry
+  and conflict map (which is what lets it merge css atoms + tw utilities).
+  Optimize the tokenize/lookup path, then move the merge to compile time for
+  literal calls.
+- **Adapter modes** — the tw adapter proves the "one API, swappable output"
+  idea: the same `css()` surface could emit panda-style or stylex-style
+  classes behind a different `ClassNameStrategy` (or a starlight-style
+  string) without changing app code. The `createTwAdapter` contract is the
+  first instance; generalize it once a second consumer appears.
+- **Cross-engine CSS-dedup proof for non-tw modes** — the adapter guarantees
+  one rule per class in tw mode; the equivalent guarantee for panda/stylex
+  modes needs the same bridge + test treatment.
+- **SIZE.md / BENCH.md freshness** — both docs are real local measurements
+  (2026-08-15). Re-run the size gate and the scratch benchmark rig before
+  publishing claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
   already makes literal calls visible, and `tw:scan` covers the rest.
