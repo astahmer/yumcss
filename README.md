@@ -200,10 +200,10 @@ fight over the same `color` property and only one survives. Anything
 unresolvable is kept verbatim, deduplicated by exact string only — when in
 doubt, nothing is dropped.
 
-Note: `css({ color: ... })` and `tw({ text: ... })` produce *different* class
+Note: `css({ color: ... })` and `tw({ text: ... })` produce _different_ class
 names (hashed atoms vs literal Tailwind utilities) that happen to set the same
 CSS property. `cx()` is what makes them interchangeable in one className;
-emitting the *same* class name from both APIs is planned (tokens -> `@theme`
+emitting the _same_ class name from both APIs is planned (tokens -> `@theme`
 bridge, see TODO).
 
 ## Runtime size
