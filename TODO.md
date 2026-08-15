@@ -23,11 +23,17 @@
   error"), `$raw` escape hatch.
 - `pandwindCssVite()` — filesystem scanner resolving literal `css()` calls
   into a generated stylesheet served as a virtual module (`pandwind:css`).
+- `cx()` — last-wins merge across raw class strings, `tw()` output and css
+  atoms via the generated conflict map + css atom registry (variant-scoped,
+  compose-aware). Unknown classes are kept verbatim.
 
 ## Tooling
 
 - All deps pinned to exact latest versions (no `^`).
 - oxc-based parsing everywhere a scanner or static transform exists.
+- Real-vite integration tests (dev transform, HMR invalidation, build) with
+  post-plugin snapshots; runtime-size snapshot keeps the bundle stylex-sized
+  (~2.4 KB gz for css+tw+cx).
 - `src` uses `.ts` import specifiers, so vite's native config loader (and
   Node's type stripping) work without a bundler step.
 - CSS identifiers (class names, custom properties) are escaped, so hashes
@@ -42,6 +48,15 @@ textColor: "gray-900" }` works without arrays.
 - **DTCG design-token integration for `tw()`** — tokens -> `@theme` ->
   generated types, so autocomplete is your design system, not all of
   Tailwind. (The css() side already resolves tokens from preset groups.)
+- **Same class name from `css()` and `tw()`** — today `css({ color: ... })`
+  and `tw({ text: ... })` emit different classes that set the same property;
+  `cx()` merges them at the className level. Emitting the identical class
+  from both APIs needs a token->utility bridge (preset tokens -> `@theme`,
+  css prop -> utility mapping) so the same declaration compiles to one rule
+  in Tailwind's sheet.
+- **Compile-time `cx()`** — the vite inliner resolves literal `tw()` calls
+  today; extending it to literal `cx()` calls (evaluating the merge at build
+  time) would make the cx runtime tree-shakeable for static apps.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
   already makes literal calls visible, and `tw:scan` covers the rest.

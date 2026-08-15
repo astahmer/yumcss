@@ -79,6 +79,9 @@ importers:
       '@types/node':
         specifier: 26.2.0
         version: 26.2.0
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
       tstyche:
         specifier: 7.2.2
         version: 7.2.2(typescript@7.0.2)

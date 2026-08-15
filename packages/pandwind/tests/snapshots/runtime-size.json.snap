@@ -1,0 +1,22 @@
+{
+  "css": {
+    "min": 2177,
+    "gz": 1051
+  },
+  "tw": {
+    "min": 1638,
+    "gz": 837
+  },
+  "cx": {
+    "min": 4071,
+    "gz": 1838
+  },
+  "all (css+tw+cx)": {
+    "min": 5640,
+    "gz": 2380
+  },
+  "stylesheet generator (build-time only)": {
+    "min": 81778,
+    "gz": 20188
+  }
+}

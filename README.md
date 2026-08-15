@@ -173,6 +173,48 @@ design layer and serves the deduped CSS — tokens plus atomic rules. Dynamic
 calls keep working at runtime but are not extracted (same constraint as
 dynamic class names in plain Tailwind).
 
+## `cx()` — merge everything, last-wins
+
+`createCx({ css, variants, conflicts, compose })` merges raw class strings,
+`tw()` output and css atoms into one className with the same conflict
+semantics as a single `tw()` call:
+
+```ts
+import { createTw } from "pandwind/tw";
+import { createCss } from "pandwind/css";
+import { createCx } from "pandwind/cx";
+
+const tw = createTw<WindVariants>({ variants, conflicts, compose });
+const css = createCss();
+const cx = createCx({ css, variants, conflicts, compose });
+
+cx(tw({ bg: "red-500" }), "px-4", css.class({ color: "blue" }), "bg-blue-500");
+// "px-4 bg-blue-500 <color atom>" — bg-red-500 lost to bg-blue-500
+```
+
+Tailwind classes are parsed against the generated conflict map (variant
+scoped, compose-aware, last-wins per canonical CSS property — never a
+hand-maintained twMerge config). css atoms resolve through the engine's atom
+registry, so `tw({ text: "gray-900" })` and `css.class({ color: "red" })`
+fight over the same `color` property and only one survives. Anything
+unresolvable is kept verbatim, deduplicated by exact string only — when in
+doubt, nothing is dropped.
+
+Note: `css({ color: ... })` and `tw({ text: ... })` produce *different* class
+names (hashed atoms vs literal Tailwind utilities) that happen to set the same
+CSS property. `cx()` is what makes them interchangeable in one className;
+emitting the *same* class name from both APIs is planned (tokens -> `@theme`
+bridge, see TODO).
+
+## Runtime size
+
+The browser runtime is the three small modules above — no stylesheet
+generator, no PostCSS, no parser. Measured by `tests/runtime-size.test.ts`
+(esbuild, minified + gzip): `css()` ≈ 1.0 KB, `tw()` ≈ 0.8 KB, `cx()` ≈ 1.8 KB,
+all three together ≈ 2.4 KB gz. The build-time stylesheet generator would add
+~20 KB gz (postcss-selector-parser) and is deliberately not exported from the
+runtime barrel.
+
 ## Why pandwind exists
 
 The short version of the decisions behind this repo lives in [TODO.md](./TODO.md)
@@ -188,6 +230,8 @@ under _What we deliberately don't do (and why)_. The highlights:
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
   props; everything else lives under `$raw` on purpose.
+- **No panda-like runtime bloat** — the shipped runtime is ~2.4 KB gz for
+  css+tw+cx; the stylesheet generator is build-time only.
 
 ## Repo layout
 
