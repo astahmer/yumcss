@@ -392,25 +392,110 @@ const SHORTHAND_EXPANSION: Record<string, string[]> = {
 	"scroll-padding-block-end": ["scroll-padding-bottom"],
 };
 
-/** Property names a compiled candidate actually sets (custom props excluded). */
+/**
+ * Property names a compiled candidate actually sets (custom props excluded).
+ *
+ * Scans the compiled CSS with a brace-aware walker instead of a regex:
+ * Tailwind nests some declarations inside `@supports` blocks (gradients),
+ * and a `/\.[^{}]+\{([^}]*)\}/` pattern dropped every declaration that came
+ * after a nested block inside the same rule. `@property` and `@keyframes`
+ * blocks are skipped — the former is custom-property metadata
+ * (syntax/inherits/initial-value), the latter describes animation keyframes,
+ * neither of which is a style the class itself sets.
+ */
 function cssProperties(css: string | null): string[] {
 	if (css === null) return [];
 	const props = new Set<string>();
-	for (const match of css.matchAll(/\.([^{}]+)\{([^}]*)\}/g)) {
-		for (const declaration of match[2]!.split(";")) {
-			const property = declaration.split(":")[0]?.trim();
-			// Skip custom properties (`--tw-*`) and at-rule fragments that
-			// Tailwind nests inside class rules (gradient `@supports`).
-			if (property && !property.startsWith("--") && /^[a-zA-Z-]+$/.test(property)) {
-				props.add(property);
+
+	let depth = 0;
+	let inSkippedBlock = false;
+	let i = 0;
+	while (i < css.length) {
+		const char = css[i]!;
+
+		// Strings: values can contain braces, colons and semicolons.
+		if (char === '"' || char === "'") {
+			const quote = char;
+			i += 1;
+			while (i < css.length && css[i] !== quote) {
+				if (css[i] === "\\") i += 1;
+				i += 1;
 			}
+			i += 1;
+			continue;
 		}
+
+		// Comments.
+		if (char === "/" && css[i + 1] === "*") {
+			i += 2;
+			while (i < css.length && !(css[i] === "*" && css[i + 1] === "/")) i += 1;
+			i += 2;
+			continue;
+		}
+
+		// Function values (`url(...)`, `var(...)`, gradients): colons inside
+		// parens must not be mistaken for property delimiters.
+		if (char === "(") {
+			let nested = 1;
+			i += 1;
+			while (i < css.length && nested > 0) {
+				if (css[i] === "(") nested += 1;
+				else if (css[i] === ")") nested -= 1;
+				i += 1;
+			}
+			continue;
+		}
+
+		if (char === "{") {
+			const previous = css.slice(0, i).split(/[{}]/).at(-1) ?? "";
+			if (/^@(?:property|keyframes)\b/.test(previous.trimStart())) {
+				inSkippedBlock = true;
+			}
+			depth += 1;
+			i += 1;
+			continue;
+		}
+
+		if (char === "}") {
+			if (depth === 1) inSkippedBlock = false;
+			depth = Math.max(0, depth - 1);
+			i += 1;
+			continue;
+		}
+
+		if (depth === 0 || inSkippedBlock) {
+			i += 1;
+			continue;
+		}
+
+		// Custom properties (`--tw-*`) are Tailwind implementation details,
+		// never styles. Skipping the whole identifier also stops the
+		// declaration pattern from matching the `tw-...` run after the dashes.
+		if (char === "-" && css[i + 1] === "-") {
+			while (i < css.length && /[a-zA-Z0-9-]/.test(css[i]!)) i += 1;
+			continue;
+		}
+
+		// Inside a rule body: capture `property:` at a declaration start.
+		// A single leading dash covers vendor prefixes (`-webkit-*`,
+		// `-moz-*`); custom properties (`--tw-*`) were skipped above.
+		const declaration = /^(-?[a-zA-Z][a-zA-Z0-9-]*)\s*:/.exec(css.slice(i));
+		if (declaration !== null) {
+			props.add(declaration[1]!);
+			i += declaration[0].length;
+			continue;
+		}
+		i += 1;
 	}
 	return [...props].toSorted();
 }
 
-/** Expand shorthands so equivalent longhand sets compare equal. */
-function canonicalProps(properties: string[]): string[] {
+/**
+ * Expand shorthands so equivalent longhand sets compare equal. Exported so
+ * the Tailwind-parity tests canonicalize real compiler output with the exact
+ * table the generated conflict map was built from.
+ */
+export function canonicalProps(properties: string[]): string[] {
 	const expanded = new Set<string>();
 	for (const property of properties) {
 		for (const longhand of SHORTHAND_EXPANSION[property] ?? [property]) {
@@ -489,16 +574,6 @@ const COMPOSE_KEYS = new Set([
 	"-divide-y",
 ]);
 
-function pickSamples(values: string[], max: number): string[] {
-	if (values.length <= max) return values;
-	const samples: string[] = [];
-	const stride = (values.length - 1) / (max - 1);
-	for (let index = 0; index < max; index++) {
-		samples.push(values[Math.round(index * stride)]!);
-	}
-	return samples;
-}
-
 function chunk<T>(items: T[], size: number): T[][] {
 	const chunks: T[][] = [];
 	for (let index = 0; index < items.length; index += size) {
@@ -517,6 +592,7 @@ function chunk<T>(items: T[], size: number): T[][] {
 function buildConflicts(
 	system: {
 		candidatesToCss: (candidates: string[]) => (string | null)[];
+		getClassList: () => Array<[string, unknown]>;
 		utilities: {
 			keys: (kind: "functional" | "static") => string[];
 			getCompletions: (name: string) => unknown[];
@@ -546,7 +622,11 @@ function buildConflicts(
 				(value): value is string => typeof value === "string" && value !== "",
 			);
 			for (const value of values) allValues.add(value);
-			for (const value of pickSamples(values, 2)) {
+			// Probe every value individually: completions groups normally
+			// share properties, but not always (`transition-none` omits
+			// duration/timing while the rest of its group sets all three).
+			// Sampling would let one special value mislabel the whole group.
+			for (const value of values) {
 				probes.push({
 					utility: name,
 					value,
@@ -575,6 +655,30 @@ function buildConflicts(
 		}
 		if (values.has(true)) {
 			probes.push({ utility: name, value: "", candidate: dashCase(name) });
+		}
+	}
+
+	// Functional keys with no completions groups and no static coverage
+	// (`-bg-conic`, `-bg-linear`, `-mask-conic`, ...) still have real
+	// candidates in the class list. Probe every class-list candidate that
+	// decomposes to an uncovered key so the map records their properties
+	// instead of leaving a dead `[]` default.
+	const classList = system.getClassList();
+	const bestPrefixByCandidate = new Map<string, string>();
+	for (const [candidate] of classList) {
+		const best = longestFunctionalPrefix(candidate, functionalKeys);
+		if (best !== undefined) bestPrefixByCandidate.set(candidate, best);
+	}
+	for (const [name, values] of types) {
+		if (!functional.has(name)) continue;
+		const covered = groupValues.get(name) ?? new Set<string>();
+		for (const [candidate, best] of bestPrefixByCandidate) {
+			// Decompose with the global prefix set: `-col-start-1` belongs to
+			// `-col-start`, not `-col`, and `-inset-be-0` to `-inset-be`.
+			if (best !== name) continue;
+			const value = candidate === name ? "" : candidate.slice(name.length + 1);
+			if (value === "" || covered.has(value) || values.has(value)) continue;
+			probes.push({ utility: name, value, candidate });
 		}
 	}
 
