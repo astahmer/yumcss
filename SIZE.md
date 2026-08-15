@@ -74,6 +74,34 @@ pandwind's whole runtime is smaller than stylex's runtime and a fraction of
 panda's; it is ~1/3 of chakra's and ~1/3.5 of tailwind-merge (which only does
 string merging, not style compilation — see [BENCH.md](./BENCH.md)).
 
+## No silent regressions: the runtime size gate
+
+The numbers above are a _contract_, enforced on every `pnpm test` run by
+`packages/pandwind/tests/runtime-size.test.ts` (standalone: `pnpm test:size`
+from `packages/pandwind`). It has three layers, so a size change is either
+caught or explicitly intentional:
+
+1. **Hard budgets** (`packages/pandwind/tests/runtime-budget.json`) — the
+   "not too much" ceiling for every entry. They are checked first and always
+   apply, even when updating snapshots with `-u`. Bump one only when the
+   growth is deliberate and reviewed (there is headroom for noise: css is at
+   2256/1086 against a 2900/1400 budget).
+2. **Regression guard** — current sizes are compared against the committed
+   baseline snapshot (`packages/pandwind/tests/snapshots/runtime-size.json.snap`)
+   with a small tolerance (1%, floored at 16 min / 8 gz bytes). Deterministic
+   builds are byte-stable, so the tolerance only absorbs cross-machine gzip
+   noise; real growth between revisions fails with a message naming the entry
+   and the allowed ceiling.
+3. **Exact snapshot** — the record of truth, updated only by
+   `pnpm test:size -u`. That is the _intentional-change_ path: it skips the
+   regression guard (budgets still apply) and rewrites the baseline, so the
+   next revision's guard compares against the new sizes.
+
+`pnpm test:size -u` is therefore reserved for a deliberate growth: runtime
+work that cannot be shaken out, a new engine, or a consciously accepted
+increase. Everything else — dependency bumps, refactors, typegen changes —
+must keep the numbers where they are.
+
 ## Real CSS output (example app)
 
 `apps/example` builds three pages (`tw()` only, `css()` atomic only,
