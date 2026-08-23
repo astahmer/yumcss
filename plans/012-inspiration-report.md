@@ -227,3 +227,16 @@ Escapes: `AnalyzeOptions.missingCssIgnore` for deliberate foreign classes;
 the lane self-disables when no conflict map is passed. tw() literals stay out
 of scope (typed at call sites). Live run over apps/example reports zero
 warnings. Tests: tests/missing-css.test.ts (9 cases).
+
+### 1a — @theme var pruning (done 2026-08-23)
+
+`src/tw/prune-theme.ts` (+ opt-in `tw:prune` script, README section): the
+scanned `tw()` classes are compiled through the REAL Tailwind engine against
+the full bridge, and the compiled CSS is mined for surviving `--*`
+custom-properties — a var stays only if the compiler referenced it
+(empirical, same "proven not assumed" standard as the parity suites; no
+hand-maintained namespace→utility map). `filterBridgeByUsedVars` keeps
+condition-bound override rules intact. Live result on apps/example:
+**82 → 20 theme vars (-75%)**. Documented caveat matches pandabox: breaks
+dynamic token access; the step is deliberately NOT in predev — run
+`pnpm tw:prune` after codegen when wanted.

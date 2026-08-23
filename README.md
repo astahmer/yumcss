@@ -119,6 +119,11 @@ PostCSS config, no runtime CSS-in-JS.
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
+- **`tw:prune`** — optional post-codegen step: re-compiles the scanned
+  `tw()` classes through the real Tailwind engine and keeps only the theme
+  variables the compiled CSS actually references (the example app drops 82 →
+  20 vars). Caveat: breaks dynamic token access — opt-in, run after
+  `tw:codegen` whenever sources change.
 - **`packages/codemod`** — migrate raw Tailwind authoring onto the pandwind
   APIs (`tw` / `cx` / `css` modes; dry-run + diff by default, idempotent,
   driven by the generated metadata). See
