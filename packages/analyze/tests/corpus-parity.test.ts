@@ -19,7 +19,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { analyzeSource } from "../src/analyze.ts";
 
-const app = resolve(import.meta.dirname, "../../../apps/example");
+const _app = resolve(import.meta.dirname, "../../../apps/example");
 const config = { conflicts: undefined, compose: undefined } as never;
 const corpusDir = resolve(import.meta.dirname, "fixtures/coverage-corpus");
 
@@ -42,13 +42,13 @@ const entries: Array<Entry> = readdirSync(corpusDir)
 	.filter((f) => f.endsWith(".ts"))
 	.toSorted()
 	.map((file) => {
-		const expect = file.split("-")[1] as Entry["expect"];
+		const expectKey = file.split("-")[1] as Entry["expect"];
 		const source = readFileSync(resolve(corpusDir, file), "utf8");
 		const stats = analyzeSource(source, file, {
 			config,
 			importedConstants: IMPORTS[file],
 		});
-		return { file, expect, stats };
+		return { file, expect: expectKey, stats };
 	});
 
 function kindOf(stats: Entry["stats"]): "full" | "partial" | "runtime" {

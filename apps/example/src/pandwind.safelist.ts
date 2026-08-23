@@ -41,4 +41,8 @@ export const pandwindSafelist = [
 	"text-gray-700",
 	"font-medium",
 	"dark:text-gray-300",
+	"bg-surface",
+	"text-left",
+	"rounded-lg",
+	"p-4",
 ] as const;

@@ -28,6 +28,8 @@ function writeJsTwModule(dir: string): string {
 	let src = readFileSync(exampleTwModule, "utf8");
 	src = src.replace(/^import [^\n]*$/gm, "");
 	src = src.replace(/createTw<[^>(]*>\(/, "createTw(");
+	// plain .js fixture: strip TS-only annotations from the generated module
+	src = src.replace("__pandwindConfig: TwOptions = {", "__pandwindConfig = {");
 	const target = join(dir, "tw.js");
 	writeFileSync(target, src);
 	return target;
@@ -47,9 +49,15 @@ describe("pandwindRollup", () => {
 				].join("\n"),
 			);
 
-			const bundle = await rollup({ input: entry, plugins: [pandwindRollup()] });
+			const bundle = await rollup({ input: entry, plugins: [pandwindRollup({})] });
 			const { output } = await bundle.generate({ format: "es" });
-			const code = output.map((chunkOrAsset) => chunkOrAsset.code).join("\n");
+			const code = output
+				.filter(
+					(chunkOrAsset): chunkOrAsset is Extract<typeof chunkOrAsset, { type: "chunk" }> =>
+						chunkOrAsset.type === "chunk",
+				)
+				.map((chunk) => chunk.code)
+				.join("\n");
 
 			expect(code).toContain("p-6 text-sm");
 			expect(code).not.toMatch(/\btw\s*\(/);

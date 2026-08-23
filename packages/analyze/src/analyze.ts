@@ -20,9 +20,7 @@
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseSync } from "oxc-parser";
-import {
-	bindingIsShadowedOrWritten,
-} from "../../pandwind/src/vite/cross-module-consts.ts";
+import { bindingIsShadowedOrWritten } from "../../pandwind/src/vite/cross-module-consts.ts";
 import {
 	collectModuleConstants,
 	evalStaticCx,
@@ -221,8 +219,7 @@ function isSkeletonable(node: unknown, consts: ConstantScope): boolean {
 
 function branchFolds(branch: unknown, consts: ConstantScope): boolean {
 	return (
-		isStatic(evalStaticCx(branch as never, undefined, consts)) ||
-		isSkeletonable(branch, consts)
+		isStatic(evalStaticCx(branch as never, undefined, consts)) || isSkeletonable(branch, consts)
 	);
 }
 
@@ -395,9 +392,7 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 	const filesWithCalls = files.filter((f) => f.cxCalls > 0);
 	const filesEliminated = filesWithCalls.filter((f) => f.cxRuntime === 0).length;
 	const entryEliminatedPct =
-		filesWithCalls.length === 0
-			? 100
-			: Math.round((filesEliminated / filesWithCalls.length) * 100);
+		filesWithCalls.length === 0 ? 100 : Math.round((filesEliminated / filesWithCalls.length) * 100);
 	return {
 		files,
 		totalCxCalls,

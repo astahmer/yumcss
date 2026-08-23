@@ -924,12 +924,12 @@ function getTwRuntime(
 			? `\tcompose: [\n${compose.map((key) => `\t\t${JSON.stringify(key)},`).join("\n")}\n\t],`
 			: "";
 
-	return `import { createTw } from "pandwind/tw";
+	return `import { createTw, type TwOptions } from "pandwind/tw";
 import type { WindVariants } from "./types";
 
 // Metadata export so apps can build a runtime cx() against the SAME
 // generated conflict map the vite plugins use (see createCx in pandwind/cx).
-export const __pandwindConfig = {
+export const __pandwindConfig: TwOptions = {
 	variants: {
 ${variantEntries.join("\n")}
 	},

@@ -15,5 +15,6 @@ createRoot(root).render(
 		<TwApp />
 		<CssInJsApp />
 		<DesignApp />
+		<DogfoodApp />
 	</StrictMode>,
 );

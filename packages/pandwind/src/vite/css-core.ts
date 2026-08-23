@@ -5,16 +5,9 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
-import type {
-	AnyCssConfig,
-	AnyTokens,
-	CssConfigReturn,
-	DefinePresetOptions,
-	StyleObject,
-} from "../types/typings.ts";
+import type { StyleObject } from "../types/typings.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
 

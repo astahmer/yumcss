@@ -52,30 +52,32 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 	const topLevelConsts = new Map<string, Expression>();
 	walk(result.program, (node) => {
 		if (node.type !== "VariableDeclaration" || node.kind !== "const") return;
-		for (const declarator of (node as unknown as {
-			declarations: Array<{ id: { type: string; name?: string }; init: Expression | null | undefined }>;
-		}).declarations) {
+		for (const declarator of (
+			node as unknown as {
+				declarations: Array<{
+					id: { type: string; name?: string };
+					init: Expression | null | undefined;
+				}>;
+			}
+		).declarations) {
 			if (declarator.id.type === "Identifier" && declarator.id.name && declarator.init) {
 				topLevelConsts.set(declarator.id.name, declarator.init);
 			}
 		}
 	});
-	const resolveArg = (argument: Expression): unknown => {
-		let arg = argument;
-		if (
-			arg.type === "Identifier" &&
-			!(arg as unknown as { name?: string }).name?.startsWith("$")
-		) {
-			arg = topLevelConsts.get((arg as unknown as { name: string }).name) ?? arg;
-		}
-		return evalLiteral(arg);
+	const resolveArg = (argument: Expression): Expression => {
+		if (argument.type !== "Identifier") return argument;
+		const name = (argument as unknown as { name?: string }).name;
+		if (name === undefined || name.startsWith("$")) return argument;
+		return (topLevelConsts.get(name) ?? argument) as Expression;
 	};
 	walk(result.program, (node) => {
 		if (config !== undefined || node.type !== "CallExpression") return;
 		const callee = node.callee as OxcNode | null;
 		if (callee?.type !== "Identifier" || callee.name !== "createTw") return;
 		const argument = (node.arguments as Expression[])[0];
-		const literal = resolveArg(argument);
+		if (argument === undefined || argument === null) return;
+		const literal = evalLiteral(resolveArg(argument));
 		if (typeof literal !== "object" || literal === null) return;
 		const options = literal as Record<string, unknown>;
 		const variants = options.variants;

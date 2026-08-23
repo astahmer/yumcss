@@ -20,9 +20,16 @@ import type {
 type TokenNames<TTokens, TGroup extends string> =
 	TTokens extends Record<string, Record<string, unknown>>
 		? TGroup extends keyof TTokens
-			? keyof TTokens[TGroup]
+			? StringValuedKeys<TTokens[TGroup]>
 			: never
 		: never;
+
+/**
+ * Keys whose token value is a plain string. Condition-bound tokens
+ * (`{ base, _dark }`) are consumed through their generated `@theme`
+ * utilities instead — they are not direct design-fill spellings.
+ */
+type StringValuedKeys<T> = { [K in keyof T]: T[K] extends string ? K : never }[keyof T];
 
 /**
  * Token names of a group, falling back to a raw `string` when the preset has

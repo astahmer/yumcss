@@ -125,20 +125,19 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},
-			load(id: string) {
-				return core.load(id);
+		load(id: string) {
+			return core.load(id);
+		},
+		watchChange(id: string) {
+			core.invalidate(id);
+		},
+		vite: {
+			handleHotUpdate(ctx: { file: string }) {
+				core.invalidate(ctx.file);
 			},
-			watchChange(id: string) {
-				core.invalidate(id);
-			},
-			vite: {
-				handleHotUpdate(ctx: { file: string }) {
-					core.invalidate(ctx.file);
-				},
-			},
-		};
-	},
-);
+		},
+	};
+});
 
 /** Rollup slice — `pandwindRollup(...)` is a standard rollup plugin. */
 export const pandwindRollup = pandwindUnplugin.rollup;

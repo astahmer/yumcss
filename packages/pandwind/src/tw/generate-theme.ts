@@ -32,6 +32,9 @@ export type ThemeConditions = Record<string, string | string[]>;
  */
 const THEME_NAMESPACES: Record<string, string> = {
 	colors: "color",
+	// Condition-bound semantic tokens live in their own group but bridge to
+	// the same namespaces, so `--color-surface` needs no special casing.
+	semantic: "color",
 	radii: "radius",
 	shadows: "shadow",
 	container: "container",

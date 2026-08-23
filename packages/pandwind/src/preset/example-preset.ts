@@ -1,5 +1,10 @@
 import type { StandardProperties } from "csstype";
-import { definePreset, defineTheme, defineTokens } from "../types/define-preset.ts";
+import {
+	definePreset,
+	defineSemanticTokens,
+	defineTheme,
+	defineTokens,
+} from "../types/define-preset.ts";
 
 const tokens = defineTokens({
 	colors: {
@@ -108,14 +113,23 @@ const semanticTokens = defineTokens({
 	colors: {
 		success: tokens.colors["$green-500"],
 		error: tokens.colors["$red-500"],
-		// Condition-bound: bridges into @theme as --color-surface plus a `.dark`
-		// override rule (keys are preset condition names).
-		surface: { base: tokens.colors["$gray-50"], _dark: tokens.colors["$gray-900"] },
 	},
 	spacing: {
 		"button.padding": tokens.spacing["20"],
 	},
 });
+
+// Condition-bound tokens live in their own group and use
+// defineSemanticTokens (values keyed by preset condition names). They bridge
+// into @theme as --color-surface plus a `.dark` override rule.
+const conditionBoundTokens = defineSemanticTokens(
+	{ _dark: ".dark &" },
+	{
+		semantic: {
+			surface: { base: tokens.colors["$gray-50"], _dark: tokens.colors["$gray-900"] },
+		},
+	},
+);
 
 const theme = defineTheme({
 	config: {} as StandardProperties,
@@ -123,6 +137,9 @@ const theme = defineTheme({
 		colors: {
 			...tokens.colors,
 			...semanticTokens.colors,
+		},
+		semantic: {
+			...conditionBoundTokens.semantic,
 		},
 		spacing: {
 			...tokens.spacing,

@@ -16,6 +16,7 @@
 		"**/apps/example/src/types.d.ts",
 		"**/apps/example/src/pandwind.safelist.ts",
 		"**/apps/example/src/tw.ts",
-		"**/dist/**"
+		"**/dist/**",
+		"**/packages/analyze/tests/fixtures/**"
 	]
 }
