@@ -1,3 +1,4 @@
+:root {--\35 9djkk: #f9fafb;}
 :root {--\31 01f8i4: 8px;}
 :root {--\31 0fk7ye: ui-serif, Georgia, serif;}
 :root {--\31 1hc82a: #822727;}
@@ -85,6 +86,7 @@
 :root {--xnamp9: #1D3138;}
 :root {--xuj17p: 500;}
 :root {--yowody: ui-sans-serif, system-ui, sans-serif;}
+.dark {--\35 9djkk: #111827;}
 .\39 a0afa{gap:2px}
 .\31 0z44sb{border-radius:0.375rem}
 .\31 xccw59{background-color:#3182ce}
