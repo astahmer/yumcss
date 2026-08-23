@@ -146,6 +146,71 @@ export function extractCssStyles(
 	return styles;
 }
 
+/**
+ * Collect flattened style keys from `css.vars({ ... })` calls so the build
+ * can emit their toggle rules into the sheet. Only the KEY STRUCTURE must
+ * be static — VALUES may be arbitrary expressions (they ride inline styles).
+ * Spreads make a subtree unknowable and are skipped.
+ */
+type OxcProp = {
+	type?: string;
+	key?: { name?: string; value?: string };
+	value?: OxcNode;
+	argument?: OxcNode;
+};
+
+const collectKeysFromObject = (
+	node: OxcNode | null | undefined,
+	prefix: string,
+	out: Set<string>,
+): void => {
+	if (node?.type !== "ObjectExpression") return;
+	for (const prop of (node as { properties?: OxcProp[] }).properties ?? []) {
+		if (prop.type === "SpreadElement") continue;
+		const rawKey = prop.key?.name ?? prop.key?.value;
+		if (typeof rawKey !== "string") continue;
+		const fullKey = prefix === "" ? rawKey : `${prefix}__${rawKey}`;
+		if (prop.value?.type === "ObjectExpression") {
+			collectKeysFromObject(prop.value, fullKey, out);
+		} else {
+			out.add(fullKey);
+		}
+	}
+};
+
+export function extractVarKeys(
+	code: string,
+	id: string,
+	cssNames: ReadonlySet<string>,
+): Array<string> {
+	if (cssNames.size === 0) return [];
+
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const keys = new Set<string>();
+
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const callee = call.callee;
+		if (callee?.type !== "MemberExpression") return;
+		const object = (callee as { object?: OxcNode | null }).object;
+		if (object?.type !== "Identifier" || !cssNames.has((object as { name?: string }).name ?? "")) {
+			return;
+		}
+		const property = (callee as { property?: { name?: string } | null }).property;
+		if ((property?.name ?? "") !== "vars") return;
+
+		for (const argument of call.arguments) {
+			collectKeysFromObject(argument as OxcNode, "", keys);
+		}
+	});
+
+	return [...keys];
+}
+
 export interface InlineCssResult {
 	code: string;
 	inlined: number;

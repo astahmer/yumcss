@@ -79,3 +79,66 @@ in the shipped path.
 
 Green light for implementation per the §1 shape. Remaining pre-build items:
 cx threading type design + vite-pass detection rules + sheet-growth bounds.
+
+## 1b. IMPLEMENTATION OUTCOMES (2026-08-23) — var-inline landed
+
+All layers shipped in one revision:
+
+**Runtime encoding (`src/css/vars.ts` + `create-css.ts`)**
+
+- `css.vars({ color, _hover: { color } })` → `{ class, style }`. Class names
+  deterministic from the flattened key only (no preset needed at runtime):
+  conditions stripped of `_`, sorted alphabetically, joined with `:`;
+  property dashCased. `pw-color`, `pw-hover:color`, `pw-dark:hover:color`.
+- Custom properties: base `--pw-c-<prop>`; override per path
+  `--pw-c-<prop>_<cond_sorted_joined>`. Values ride the returned style
+  object; nothing enters CSS.
+- Design layer (`createDesignCss(...).vars`) resolves `$tokens` first so
+  inline values are concrete.
+
+**cx threading (`src/cx/index.ts`)**
+
+- `CxInput` accepts vars carriers (recognized via the `VARS_ATOMS` symbol —
+  plain objects are never mistaken for carriers).
+- Plain `cx()` keeps its STRING return type; carrier styles are dropped by
+  design. New `cx.vars(...)` companion merges classes exactly like cx AND
+  merges inline styles last-wins per custom property.
+- Conflict merging is key-derived: each carrier atom pushes signatures via
+  the existing `signatureFromCssKey`, so `pw-color` vs `pw-hover:color`
+  coexist (different variant prefixes) while same-scope duplicates collapse
+  last-wins — twMerge parity for variants, free of charge.
+
+**Sheet generation (`create-stylesheet.ts`)**
+
+- `processVarKey(flatKey)` + `gen.varRules()`: one toggle rule per flattened
+  key, declaration = fallback chain across all PREFIXES of the condition
+  path (most specific first, base last). Missing links fall through, so full
+  chains emit regardless of which values an element sets inline. Rules reuse
+  decodeAtomicPath + genCSSRule (preset conditions resolve identically to
+  atoms); deduped + priority-ordered like atomic rules.
+
+**Vite pass (`vite/css-extract.ts` + `css-core.ts`)**
+
+- `extractVarKeys`: structural walker over literal `css.vars({...})` args —
+  collects keys even when VALUES are dynamic identifiers; spreads skip their
+  subtree. Feeds `processVarKey`; `pandwind:css` serves tokens+atomic+varRules.
+
+**Tests** (`tests/css-vars.test.ts`, 16 cases): encoding unit, cx/cx.vars
+differential (string-return preservation, style drop vs carry, last-wins,
+variant coexistence), sheet rules incl. `_dark` parent-selector resolution +
+dedup, real-Tailwind end-to-end proof (generator output compiles; values
+absent from sheet; inline-style composition), vite key collection.
+
+**Size cost** (approved budget raise): css entry 2406→3199 min / 1157→1513 gz
+(+793/+356); cx entry 7512→8650 / 3711 (+1138/+602 — merge-core extraction +
+carrier handling). Budgets now css 3400/1650, cx 9000/3900, all 11000/4900.
+
+**Known limitations / decisions:**
+
+- Condition fallback PRECEDENCE inside a chain is alphabetical (canonical),
+  not specificity-based; cross-condition conflicts resolve by cascade since
+  every condition owns its own scoped rule.
+- Tailwind-adapter mode: `pw-*` classes are unknown to Tailwind's scanner;
+  var-inline targets sheet-backed modes (documented here, no code guard).
+- `cx.vars` skips the whole-input result cache (styles must be re-collected);
+  perf impact nil for realistic use (carriers are rare per call).

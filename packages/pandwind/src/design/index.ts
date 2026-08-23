@@ -45,6 +45,17 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	css.raw = (...styles: Array<Maybe<Design>>) =>
 		engine.raw(...(styles.filter(Boolean) as Array<Design>).map(resolve));
 
+	// Dynamic values ride inline custom properties; design-layer tokens are
+	// resolved first so the inline value is concrete.
+	css.vars = (...styles: Array<Maybe<Design>>) => {
+		const resolvedStyles: StyleObject = {};
+		for (const style of styles) {
+			if (!style) continue;
+			Object.assign(resolvedStyles, resolve(style));
+		}
+		return engine.vars(resolvedStyles as never);
+	};
+
 	css.props = engine.props;
 	css.input = engine.input;
 

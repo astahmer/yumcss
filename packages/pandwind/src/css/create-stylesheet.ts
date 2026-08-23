@@ -6,6 +6,7 @@ import type {
 	StyleObject,
 	TokenDeclaration,
 } from "../types/typings.ts";
+import { escapeVarClass, varClassFor } from "./vars.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
@@ -128,6 +129,41 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		return processFlatStyles(flat);
 	};
 
+	/**
+	 * Var-inline toggle rules (plans/014): one rule per flattened key, whose
+	 * declaration resolves the property through a fallback chain across all
+	 * prefixes of its condition path (most specific first, base last).
+	 * Missing links fall through, so chains are emitted in full regardless
+	 * of which values a given element sets inline.
+	 */
+	const varCache = new Map<string, Rule>();
+	const processVarKey = (flatKey: string): void => {
+		const orderedKey = pairs.join(
+			pairs
+				.split(flatKey)
+				.filter((part) => part !== emptyCondition && part !== "")
+				.toSorted(),
+		);
+		if (orderedKey === "" || varCache.has(orderedKey)) return;
+		const rawParts = orderedKey.split("__").filter((part) => part !== "");
+		// Prop = LAST segment; conditions = the rest, stripped + canonically sorted.
+		const prop = dashCase(rawParts[rawParts.length - 1]!);
+		const condParts = rawParts
+			.slice(0, -1)
+			.map((part) => (part.startsWith("_") ? part.slice(1) : part))
+			.toSorted();
+		let declaration = `var(--pw-c-${prop})`;
+		for (let i = 1; i <= condParts.length; i++) {
+			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
+		}
+		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
+		const css = genCSSRule(`${prop}: ${declaration}`, {
+			...atomic.conditions,
+			className: `.${escapeVarClass(varClassFor(orderedKey))}`,
+		});
+		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
+	};
+
 	const gen = {
 		tokens: () => {
 			return Array.from(cssVars.values())
@@ -141,6 +177,13 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		},
 		atomic: () => {
 			return Array.from(cache.values())
+				.toSorted((a, b) => a.priority - b.priority)
+				.map((v) => v.css)
+				.join("\n");
+		},
+		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
+		varRules: () => {
+			return Array.from(varCache.values())
 				.toSorted((a, b) => a.priority - b.priority)
 				.map((v) => v.css)
 				.join("\n");
@@ -159,6 +202,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 	return {
 		cache,
 		process: processStyles,
+		processVarKey,
 		gen,
 		generate,
 	};

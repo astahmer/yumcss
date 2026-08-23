@@ -15,6 +15,7 @@ import {
 	type ClassNameStrategy,
 } from "./class-name-strategy.ts";
 import { createHashFn } from "./hash.ts";
+import { encodeVars, VARS_ATOMS, type VarAtom, type VarsOutput } from "./vars.ts";
 
 /** @deprecated Legacy callable form — see `ClassNameStrategy` in class-name-strategy.ts. */
 export type { ClassNameFn };
@@ -117,6 +118,23 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 		return compileStyles(...styles);
 	};
 
+	// Dynamic VALUES -> inline custom properties + toggle-rule classes.
+	// `{ color: value }` -> `{ class: "pw-color", style: { "--pw-c-color": value } }`.
+	// The class/style pair rides the element as usual; the VALUE never enters
+	// any generated stylesheet (plans/014 §1).
+	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
+		const flat = flattenStyle(assign(...styles));
+		const { atoms: varAtoms, style: varStyle } = encodeVars(flat);
+		const output: VarsOutput = {
+			class: varAtoms.map((atom) => atom.cls).join(" "),
+			style: varStyle,
+		};
+		if (varAtoms.length > 0) {
+			(output as { [VARS_ATOMS]?: Array<VarAtom> })[VARS_ATOMS] = varAtoms;
+		}
+		return output;
+	};
+
 	// `{ color: "red" }` -> `color__red`
 	css.class = (...styles: Array<StyleObject>) => {
 		return Object.values(compileStyles(...styles)).join(" ");
@@ -200,6 +218,12 @@ type DynamicStyles<
 export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	(...styles: Array<TStyles>): CompiledStyles;
 	class: (...styles: Array<TStyles>) => string;
+	/**
+	 * Dynamic values as inline custom properties (plans/014): returns a
+	 * `{ class, style }` pair. Keys share the css() typings; values are
+	 * delivered inline, so nothing enters the generated stylesheet.
+	 */
+	vars: (...styles: Array<TStyles>) => VarsOutput;
 	raw: (...styles: Array<TStyles>) => StyleObject;
 	props: (...styles: Array<CompiledStyles | DynamicReturn>) => PropsReturn;
 	group: <TGroup extends Record<string, TStyles | DynamicStyles<TStyles>>>(

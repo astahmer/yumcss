@@ -39,6 +39,7 @@
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";
 import { dashCase } from "../css/hash.ts";
+import { VARS_ATOMS, type VarAtom, type VarsOutput } from "../css/vars.ts";
 import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.ts";
 
 export interface CxOptions {
@@ -53,8 +54,14 @@ export interface CxOptions {
 	css?: CssFn<never>;
 }
 
-/** A css() compiled map (`{ color: "1nmpgqu" }`), or a class string. */
-export type CxInput = string | Record<string, string> | false | null | undefined;
+/**
+ * A css() compiled map (`{ color: "1nmpgqu" }`), a class string, or a
+ * `css.vars()` output (recognized via the VARS_ATOMS symbol carrier).
+ */
+export type CxInput = string | Record<string, string> | VarsOutput | false | null | undefined;
+
+/** Re-exported for consumers threading vars outputs through custom helpers. */
+export type { VarsOutput, VarAtom };
 
 /**
  * Memoization cap per cx instance. Real apps use a finite class vocabulary;
@@ -378,9 +385,13 @@ const signatureFromTwClass = (
  * Create the app's `cx` merge function, bound to the same generated tw
  * metadata and css engine the rest of the app uses.
  */
-export function createCx(
-	options: CxOptions = {},
-): (...inputs: Array<CxInput | CxInput[]>) => string {
+export interface CxFn {
+	(...inputs: Array<CxInput | CxInput[]>): string;
+	/** Merge for `css.vars()` outputs: classes + inline custom properties. */
+	vars: (...inputs: Array<CxInput | CxInput[]>) => VarsOutput;
+}
+
+export function createCx(options: CxOptions = {}): CxFn {
 	const conflicts = options.conflicts;
 	const composeSet = options.compose === undefined ? undefined : new Set(options.compose);
 	// First-segment utility index for the cold parse path (built once; the
@@ -429,6 +440,12 @@ export function createCx(
 	// signature, mirroring the previous `{ cls, sigs }` records.
 	const outCls: string[] = [];
 	const outPlan: Array<CompiledSigs | null> = [];
+	/**
+	 * Inline custom properties from `css.vars()` carriers, merged last-wins.
+	 * Always collected (only when carriers appear); surfaced by `cx.vars`,
+	 * ignored by the plain string `cx`.
+	 */
+	const outStyle: Record<string, string> = {};
 	/** Live (not-yet-overridden) signature count per outCls entry. */
 	const outLive: number[] = [];
 	/**
@@ -575,16 +592,54 @@ export function createCx(
 		push(token, null);
 	};
 
+	const pushVarCarrier = (input: VarsOutput): void => {
+		if (input.style !== undefined) Object.assign(outStyle, input.style);
+		const carrierAtoms = (input as { [VARS_ATOMS]?: Array<VarAtom> })[VARS_ATOMS];
+		if (carrierAtoms === undefined) {
+			// Unknown carrier shape — keep the class verbatim.
+			push(input.class ?? "", null);
+			return;
+		}
+		for (const atom of carrierAtoms) {
+			for (const key of atom.keys) {
+				push(atom.cls, resolveAtomSigs(key));
+			}
+		}
+	};
+
 	const pushInput = (input: CxInput) => {
 		if (typeof input === "string") {
 			pushString(input);
 			return;
 		}
 		if (typeof input === "object" && input !== null) {
+			if (VARS_ATOMS in input) {
+				pushVarCarrier(input as VarsOutput);
+				return;
+			}
 			for (const [key, atom] of Object.entries(input)) {
 				push(atom, resolveAtomSigs(key));
 			}
 		}
+	};
+
+	/**
+	 * Merge core shared by the string `cx` and the `cx.vars` companion.
+	 * Returns the merged class string; inline styles accumulate in outStyle.
+	 */
+	const mergeInputs = (inputs: Array<CxInput | CxInput[]>): string => {
+		for (const input of inputs) {
+			if (Array.isArray(input)) {
+				for (const nested of input) pushInput(nested);
+			} else {
+				pushInput(input);
+			}
+		}
+		parts.length = 0;
+		for (let i = 0; i < outCls.length; i++) {
+			if (outCls[i] !== "") parts.push(outCls[i]!);
+		}
+		return parts.join(" ");
 	};
 
 	const cx = (...inputs: Array<CxInput | CxInput[]>): string => {
@@ -617,18 +672,8 @@ export function createCx(
 		ownSid.length = 0;
 		ownIdx.length = 0;
 		opaque.clear();
-		for (const input of inputs) {
-			if (Array.isArray(input)) {
-				for (const nested of input) pushInput(nested);
-			} else {
-				pushInput(input);
-			}
-		}
-		parts.length = 0;
-		for (let i = 0; i < outCls.length; i++) {
-			if (outCls[i] !== "") parts.push(outCls[i]!);
-		}
-		const out = parts.join(" ");
+		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
+		const out = mergeInputs(inputs);
 
 		if (cacheKey !== "") {
 			if (resultCache.size >= RESULT_CACHE_CAP) {
@@ -639,6 +684,25 @@ export function createCx(
 			resultCache.set(cacheKey, { gen, out });
 		}
 		return out;
+	};
+
+	/**
+	 * Companion merge for `css.vars()` outputs: same last-wins class
+	 * merging as `cx`, plus the inline custom properties carried by each
+	 * input (later inputs win per property). The plain string `cx` keeps its
+	 * return type — carriers flowing through it contribute classes only
+	 * (their styles are intentionally dropped; use `cx.vars` to keep them).
+	 */
+	cx.vars = (...inputs: Array<CxInput | CxInput[]>): VarsOutput => {
+		outCls.length = 0;
+		outPlan.length = 0;
+		outLive.length = 0;
+		ownSid.length = 0;
+		ownIdx.length = 0;
+		for (const styleKey of Object.keys(outStyle)) delete outStyle[styleKey];
+		opaque.clear();
+		const cls = mergeInputs(inputs);
+		return { class: cls, style: { ...outStyle } };
 	};
 
 	return cx;

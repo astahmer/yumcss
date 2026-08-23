@@ -6,6 +6,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
+import { extractVarKeys } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import type { StyleObject } from "../types/typings.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
@@ -44,7 +45,10 @@ export function createCssExtractorPluginCore(
 	const root = options.root ?? process.cwd();
 	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
-	const fileCache = new Map<string, { mtimeMs: number; styles: StyleObject[] }>();
+	const fileCache = new Map<
+		string,
+		{ mtimeMs: number; styles: StyleObject[]; varKeys: string[] }
+	>();
 
 	const isScanned = (file: string): boolean => {
 		if (!include.some((pattern) => pattern.test(file))) return false;
@@ -91,16 +95,19 @@ export function createCssExtractorPluginCore(
 			if (!entry || entry.mtimeMs !== mtimeMs) {
 				const code = readFileSync(file, "utf8");
 				const styles: StyleObject[] = [];
+				let varKeys: string[] = [];
 				if (/\bcss\b/.test(code)) {
 					const names = findCssImports(code, file, matchers);
 					if (names.size > 0) {
 						styles.push(...extractCssStyles(code, file, names, preset));
+						varKeys = extractVarKeys(code, file, names);
 					}
 				}
-				entry = { mtimeMs, styles };
+				entry = { mtimeMs, styles, varKeys };
 				fileCache.set(file, entry);
 			}
 			for (const style of entry.styles) sheet.process([style]);
+			for (const key of entry.varKeys) sheet.processVarKey(key);
 		}
 
 		// Drop files that were deleted since the last scan.
@@ -126,7 +133,8 @@ export function createCssExtractorPluginCore(
 			const sheet = collect();
 			const tokens = sheet.gen.tokens();
 			const atomic = sheet.gen.atomic();
-			const body = [tokens, atomic].filter(Boolean).join("\n");
+			const varRules = sheet.gen.varRules();
+			const body = [tokens, atomic, varRules].filter(Boolean).join("\n");
 			if (options.debug !== true) return body;
 			// Dev-only origin manifest: which scanned file feeds how many
 			// style objects into the sheet. Search a class here to find its
@@ -153,4 +161,4 @@ export function createCssExtractorPluginCore(
 }
 
 // Re-exported so callers of the core keep the same surface as css.ts.
-export { extractCssStyles, findCssImports, inlineCssCalls, isCssSource };
+export { extractCssStyles, extractVarKeys, findCssImports, inlineCssCalls, isCssSource };
