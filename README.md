@@ -135,6 +135,11 @@ PostCSS config, no runtime CSS-in-JS.
   candidates, missing-css warnings with editor links) + Design-system tab
   (theme vars, typed utility unions, bridge map, preset tokens). Extend the
   CLI, not the app, when adding metrics.
+- **`tw:scan` CSS mode** — point the out-file at a `.css` path and the
+  scanner emits Tailwind v4 `@source inline(...)` directives instead of a JS
+  safelist module; import it from `tailwind.css` and no generated JS lands in
+  your source tree. Proven to generate identical rules (see
+  `tests/source-inline.test.ts`).
 - **`tw:prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82 →
