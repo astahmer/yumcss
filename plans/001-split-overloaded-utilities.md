@@ -1,11 +1,12 @@
 # Plan 001 — Split overloaded utilities (semantic sub-keys), keeping `text`
 
 ## Goal
+
 Tailwind overloads one key for several CSS concerns (`text` = size + color + align +
 decoration). Generate **additive semantic sub-keys** so this works:
 
 ```ts
-tw({ textSize: "2xl", textColor: "gray-900" }) // "text-2xl text-gray-900"
+tw({ textSize: "2xl", textColor: "gray-900" }); // "text-2xl text-gray-900"
 ```
 
 **Hard constraint:** the existing overloaded keys keep working exactly as today —
@@ -13,9 +14,10 @@ tw({ textSize: "2xl", textColor: "gray-900" }) // "text-2xl text-gray-900"
 close to Tailwind's surface; sub-keys are pure sugar. No removals, no renames.
 
 ## Approach
+
 1. Extend the typegen pipeline (`src/tw/generate-types.ts`, `src/tw/compile.ts`) to
    derive, per overloaded key, a `key -> utility` mapping table (e.g. `textSize ->
-   font-size utilities`, `textColor -> color utilities`). Derive it from data you
+font-size utilities`, `textColor -> color utilities`). Derive it from data you
    already generate (the per-utility property/value unions), do not hand-maintain it.
 2. Runtime (`src/tw/runtime.ts`) resolves sub-keys by rewriting them onto the same
    underlying utilities — identical output strings as if the user had used `text`.
@@ -26,15 +28,43 @@ close to Tailwind's surface; sub-keys are pure sugar. No removals, no renames.
    (`bg`? `border`? `p`?) — split what is genuinely multi-property, skip what is not.
 
 ## Files (territory)
+
 - `src/tw/generate-types.ts`, `src/tw/compile.ts`, `src/tw/runtime.ts`
 - tests: `tests/tw-output.test.ts`, `tests/tw-typegen.test.ts`,
   `tests/tw-tailwind-parity.test.ts`, tstyche typings
 
 ## Gates
+
 - Full gate green: `pnpm test`, `pnpm typecheck`, `pnpm test:types`, oxlint, oxfmt.
 - Byte-identical output proven for old spellings (snapshot/parity suites).
 - If runtime size grows beyond tolerance, refresh via `pnpm test:size -u` and note why.
 
 ## jj discipline
+
 Work only inside your workspace dir. Split/describe logical revisions
 (feat / docs / test separately). Never touch `/Users/astahmer/dev/pandwind`.
+
+## Outcomes
+
+- Single source of truth: `UTILITY_SUBKEYS` in `src/tw/compile.ts` maps sub-key
+  -> base utility (`textColor -> text`, ...). The runtime resolves classes
+  through it and the typegen pipeline imports it, so runtime and generated
+  types can never disagree.
+- Typegen (`expandSubkeys`): after the conflict map is built, each base
+  utility's values are partitioned by the canonical CSS properties they
+  compile to; every disjoint partition becomes a typed sub-key
+  (`TextSizeValue`, `TextColorValue`, `TextAlignValue`, `TextWrapValue`,
+  `TextOverflowValue`). Opacity-modifier capability is probed against the
+  REAL emitted class prefix (base utility), so `textColor` keeps `/50`
+  support. Alias dedup means `textColor` shares the color-palette union with
+  other color utilities.
+- Conflict semantics unchanged: sub-keys look up the BASE's conflict entries,
+  so `{ text: "sm", textSize: "lg" }` merges last-wins while disjoint
+  concerns compose. Legacy spellings are untouched (parity/runtime suites green
+  unmodified).
+- Audit of remaining overloaded utilities (conflict-map scan on the example
+  preset): bg (8 concerns), mask (9), border/decoration/outline/flex/break/
+  snap (3), list/transform/transition (2). NOT split now: concern naming for
+  these is ambiguous (`bg-bottom` -> Position? Attachment?) and would grow the
+  public type surface without a driving consumer. The mechanism generalizes —
+  adding coverage is one line in UTILITY_SUBKEYS (+ optional suffix name).

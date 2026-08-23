@@ -53,12 +53,60 @@ PostCSS config, no runtime CSS-in-JS.
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
+- **`packages/codemod`** — migrate raw Tailwind authoring onto the pandwind
+  APIs (`tw` / `cx` / `css` modes; dry-run + diff by default, idempotent,
+  driven by the generated metadata). See
+  [packages/codemod/README.md](./packages/codemod/README.md).
 - **`pandwindVite()`** — a vite plugin that runs _before_ Tailwind's scanner
   and statically inlines `tw({ ... })` calls with literal arguments into plain
   class strings. The runtime cost becomes zero and the classes are found
   naturally; the whole runtime and conflict map tree-shake out of the bundle
   (the generated `tw.ts` is marked `@__PURE__`). Dynamic calls keep working
   through the runtime and can still be covered by the safelist.
+
+### DTCG design tokens → `@theme` → generated types
+
+Your preset's DTCG token groups are the single source of truth for both
+engines. `tw:codegen --tokens <preset-module>` bridges them into a Tailwind v4
+`@theme {}` block (only real theme namespaces: color, radius, text, leading,
+font-weight, font, tracking — spacing scales and friends are skipped rather
+than guessed) and injects it while generating types:
+
+- the generated `pandwind-theme.css` artifact is imported from your
+  `tailwind.css`, so Tailwind compiles token-backed utilities (`bg-success`,
+  `text-error`) with zero hand-mirroring;
+- the same block is injected during typegen, so token-derived values appear in
+  the generated literal unions next to raw Tailwind values — autocomplete is
+  driven by your design system;
+- no `--tokens` flag (or a preset without bridgeable groups) = byte-identical
+  generated output as before.
+
+```sh
+pnpm tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
+```
+
+The generator accepts any module that default-exports groups or exports an
+object carrying `.tokens` (a full preset works). Deterministic: sorted
+groups/names, hex lower-cased, byte-identical output for identical inputs.
+
+### Semantic sub-keys for overloaded utilities
+
+Tailwind overloads one class prefix for several CSS concerns (`text-2xl` size,
+`text-gray-900` color, `text-center` alignment). pandwind adds narrower
+spellings that resolve onto the same classes:
+
+```ts
+tw({ textSize: "2xl", textColor: "gray-900", textAlign: "center" });
+// "text-2xl text-gray-900 text-center" — no arrays needed
+```
+
+Available sub-keys: `textSize`, `textColor`, `textAlign`, `textWrap`,
+`textOverflow` (all resolve onto `text`). They are derived at codegen time by
+partitioning the base utility's values on the CSS properties they compile to,
+so their autocomplete unions contain only the relevant concern (sizes for
+`textSize`, colors for `textColor`). Conflict semantics are unchanged:
+`{ text: "sm", textSize: "lg" }` merges last-wins, disjoint concerns compose.
+The plain overloaded spellings keep working exactly as before.
 
 ### Variants
 
@@ -206,6 +254,29 @@ Note: with the **tailwind adapter** (below), `css({ color: "$blue-500" })` and
 much of the app is written with each API. `cx()` remains the merge layer for
 raw strings, tw utilities and css atoms in the same className.
 
+### Compile-time `cx()` — tree-shakeable for static apps
+
+When a file imports both tw and cx, `pandwindVite` folds statically-evaluable
+`cx(...)` calls into their final class string at build time — by running the
+merge through a real `createCx(config)` built from the same generated
+metadata, so build output is byte-identical to the runtime by construction
+(and proven differentially in tests/vite-cx-inline.test.ts):
+
+```ts
+// input
+cx(tw({ px: "4", p: "6" }), cond && "hidden", "text-sm");
+// output (cond === false literal)
+("p-6 text-sm");
+```
+
+Supported arguments: string literals, expression-free templates, `false` /
+`null` / `undefined`, nested arrays, and `&&` / `||` / `??` / ternaries over
+statically-known operands. Anything referencing an identifier or
+interpolation keeps the whole call at runtime. css atom objects inside cx are
+not folded yet (they need cross-plugin engine sharing); those calls also stay
+with the runtime. Apps whose calls are all-static can tree-shake the cx
+runtime away entirely.
+
 ## The tailwind adapter — one stylesheet for both APIs
 
 `createTwAdapter({ preset, variants, bridge })` turns `css()` into a
@@ -234,6 +305,34 @@ The generator (`tw:bridge`) sweeps Tailwind's own class list and keeps only
 direct-property utilities that resolve against your `@theme`, so the bridge
 stays small (~36 KB for the example preset) and cannot drift from what
 Tailwind actually compiles.
+
+### Class-name strategies — one API, swappable output
+
+The tailwind adapter is one instance of a general contract:
+`ClassNameStrategy` (see `css/class-name-strategy.ts`). A strategy decides,
+per flattened declaration, which class the engine emits — or returns `null`
+to fall back to atomic hashing. Two flavors exist:
+
+- **External-compiler strategies** (tailwind): their classes are compiled by
+  Tailwind's scanner; nothing joins pandwind's stylesheet.
+- **Sheet-backed strategies** (`sheetBacked: true`): their classes are
+  compiled by pandwind's own generated stylesheet, exactly like hashed
+  atoms — `cx()` merging and the atom registry keep working; only the class
+  spelling changes. `pandwindCssVite({ className })` serves their rules from
+  the `pandwind:css` virtual module as usual.
+
+The bundled second mode is `createNamedAtomsStrategy()` — readable classes
+(`pw-color-red`) instead of hashes, useful when debuggable markup matters
+more than minimal bytes:
+
+```ts
+import { createNamedAtomsStrategy } from "pandwind/css";
+
+const css = createDesignCss(examplePreset, { className: createNamedAtomsStrategy() });
+css.class({ $text: { color: "red" } }); // "pw-color-red" (rule in the generated sheet)
+```
+
+Switching modes is a one-option change; call sites never move.
 
 ## Tailwind compatibility — proven, not assumed
 
@@ -285,8 +384,8 @@ through real Tailwind.
 
 The browser runtime is the three small modules above — no stylesheet
 generator, no PostCSS, no parser. Measured by `tests/runtime-size.test.ts`
-(esbuild, minified + gzip): `css()` ≈ 1.0 KB, `tw()` ≈ 0.8 KB, `cx()` ≈ 1.8 KB,
-all three together ≈ 2.4 KB gz. The build-time stylesheet generator would add
+(esbuild, minified + gzip): `css()` ≈ 1.1 KB, `tw()` ≈ 1.0 KB, `cx()` ≈ 2.9 KB,
+all three together ≈ 3.6 KB gz. The build-time stylesheet generator would add
 ~20 KB gz (postcss-selector-parser) and is deliberately not exported from the
 runtime barrel. Real numbers for the runtime, the example build and the
 alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
@@ -308,7 +407,7 @@ under _What we deliberately don't do (and why)_. The highlights:
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
   props; everything else lives under `$raw` on purpose.
-- **No panda-like runtime bloat** — the shipped runtime is ~2.4 KB gz for
+- **No panda-like runtime bloat** — the shipped runtime is ~3.6 KB gz for
   css+tw+cx; the stylesheet generator is build-time only.
 
 ## Repo layout

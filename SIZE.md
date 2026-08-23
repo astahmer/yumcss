@@ -12,13 +12,13 @@ it after dependency or engine changes.
 The "20 KB" you saw in the previous status update is **JavaScript**, and it is
 the **build-time stylesheet generator**, not the browser runtime:
 
-| what                                       |     min |    gzip |
-| ------------------------------------------ | ------: | ------: |
-| `css()` runtime                            | 2.26 KB | 1.09 KB |
-| `tw()` runtime                             | 1.64 KB | 0.84 KB |
-| `cx()` runtime                             | 4.15 KB | 1.87 KB |
-| all three together                         | 5.72 KB | 2.41 KB |
-| stylesheet generator (**build-time only**) | 82.0 KB | 20.3 KB |
+| what                                       |      min |     gzip |
+| ------------------------------------------ | -------: | -------: |
+| `css()` runtime                            |  2.35 KB |  1.13 KB |
+| `tw()` runtime                             |  2.00 KB |  0.96 KB |
+| `cx()` runtime                             |  6.77 KB |  2.95 KB |
+| all three together                         |  8.72 KB |  3.64 KB |
+| stylesheet generator (**build-time only**) | 80.32 KB | 19.93 KB |
 
 The generator is deliberately not exported from any runtime barrel — there is
 a test asserting the shipped runtime stays under a third of its gzipped size.
@@ -39,10 +39,10 @@ proven again with a real vite production build in
 
 | import                      |     min |    gzip | vs all three |
 | --------------------------- | ------: | ------: | -----------: |
-| `pandwind/css` — css() only | 2.26 KB | 1.09 KB |         −55% |
-| `pandwind/tw` — tw() only   | 1.64 KB | 0.84 KB |         −65% |
-| `pandwind/cx` — cx() only   | 4.15 KB | 1.87 KB |         −22% |
-| `pandwind` — css + tw + cx  | 5.72 KB | 2.41 KB |            — |
+| `pandwind/css` — css() only | 2.35 KB | 1.13 KB |         −73% |
+| `pandwind/tw` — tw() only   | 2.00 KB | 0.96 KB |         −77% |
+| `pandwind/cx` — cx() only   | 6.77 KB | 2.95 KB |         −22% |
+| `pandwind` — css + tw + cx  | 8.72 KB | 3.64 KB |            — |
 
 Two things to know:
 
@@ -62,7 +62,7 @@ target, ESM), with React externalized where it is a peer dependency:
 
 | runtime                                    |     min |    gzip | what ships                              |
 | ------------------------------------------ | ------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 5.72 KB | 2.41 KB | everything                              |
+| pandwind `css()` + `tw()` + `cx()`         | 8.72 KB | 3.64 KB | everything                              |
 | `@stylexjs/stylex` 0.19.0                  | 4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  | 13.4 KB | 5.31 KB | panda's runtime engine + tokens         |
 | `@emotion/css` 11.13.5                     | 15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
@@ -71,7 +71,7 @@ target, ESM), with React externalized where it is a peer dependency:
 | `tokenami`                                 |       0 |      ~0 | compile-time only, nothing ships        |
 
 pandwind's whole runtime is smaller than stylex's runtime and a fraction of
-panda's; it is ~1/3 of chakra's and ~1/3.5 of tailwind-merge (which only does
+panda's; it is under a third of chakra's and about a third of tailwind-merge (which only does
 string merging, not style compilation — see [BENCH.md](./BENCH.md)).
 
 ## No silent regressions: the runtime size gate
@@ -85,7 +85,7 @@ caught or explicitly intentional:
    "not too much" ceiling for every entry. They are checked first and always
    apply, even when updating snapshots with `-u`. Bump one only when the
    growth is deliberate and reviewed (there is headroom for noise: css is at
-   2256/1086 against a 2900/1400 budget).
+   2406/1157 against a 2900/1400 budget).
 2. **Regression guard** — current sizes are compared against the committed
    baseline snapshot (`packages/pandwind/tests/snapshots/runtime-size.json.snap`)
    with a small tolerance (1%, floored at 16 min / 8 gz bytes). Deterministic
