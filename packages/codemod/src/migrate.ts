@@ -13,6 +13,8 @@
 import type { PandwindMeta } from "./meta.ts";
 import { mapClassList, type MappedToken } from "./map.ts";
 import { tokenizeClassList } from "./tokens.ts";
+import { runSourcePasses, type SourceId } from "./sources.ts";
+import { ensureImport, hasCssBinding, SKIP_MARKER_DEFAULT } from "./shared.ts";
 
 export type MigrateMode = "tw" | "cx" | "css" | "keep";
 
@@ -30,9 +32,9 @@ export interface TransformOptions {
 	mode: MigrateMode;
 	file: string;
 	skipMarker?: string;
+	/** Source-library detectors to run before the mode pass (default none). */
+	sources?: ReadonlyArray<SourceId>;
 }
-
-const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
 
 interface Edit {
 	start: number;
@@ -109,16 +111,6 @@ function serializeObject(node: ObjectNode, indent: string): string {
 		})
 		.join("\n");
 	return `{\n${inner}\n${indent}}`;
-}
-
-function ensureImport(code: string, statement: string): string {
-	if (code.includes(statement)) return code;
-	const importBlock = /^(\s*import[^\n]*\n)+/.exec(code);
-	if (importBlock !== null) {
-		const at = importBlock[0].length;
-		return code.slice(0, at) + statement + "\n" + code.slice(at);
-	}
-	return statement + "\n" + code;
 }
 
 /* ------------------------------------------------------------------ */
@@ -250,10 +242,6 @@ function transformCx(
 const camelProperty = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
-function hasCssBinding(code: string): boolean {
-	return /\b(?:const|let|var)\s+css\b|createDesignCss\(|createCss\(/.test(code);
-}
-
 function transformCss(
 	source: string,
 	meta: PandwindMeta,
@@ -358,7 +346,42 @@ export function transformSource(
 	meta: PandwindMeta,
 	options: TransformOptions,
 ): TransformResult {
-	switch (options.mode) {
+	if (options.sources !== undefined && options.sources.length > 0) {
+		const marker = options.skipMarker ?? SKIP_MARKER_DEFAULT;
+		const sourceAcc: TransformResult = {
+			code: source,
+			changed: false,
+			converted: 0,
+			unmappedTokens: [],
+			skippedByMarker: 0,
+		};
+		sourceAcc.code = runSourcePasses(
+			source,
+			meta,
+			options.sources,
+			{ marker, file: options.file },
+			sourceAcc,
+		);
+		const afterSources = sourceAcc;
+		const modeResult = runMode(options.mode, afterSources.code, meta, options);
+		return {
+			code: modeResult.code,
+			changed: modeResult.code !== source,
+			converted: afterSources.converted + modeResult.converted,
+			unmappedTokens: [...afterSources.unmappedTokens, ...modeResult.unmappedTokens],
+			skippedByMarker: afterSources.skippedByMarker + modeResult.skippedByMarker,
+		};
+	}
+	return runMode(options.mode, source, meta, options);
+}
+
+function runMode(
+	mode: MigrateMode,
+	source: string,
+	meta: PandwindMeta,
+	options: TransformOptions,
+): TransformResult {
+	switch (mode) {
 		case "tw":
 			return transformTw(source, meta, options);
 		case "cx":

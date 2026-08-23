@@ -10,7 +10,25 @@ pnpm codemod "src/**/*.tsx" --to=tw
 
 # preview exact diffs, then apply
 pnpm codemod "src/**/*.tsx" --to=tw --diff --write
+
+# also migrate away from a source library (repeatable / comma-separated)
+pnpm codemod "src/**/*.tsx" --from=styled-components,stylex,panda --to=css --diff --write
 ```
+
+## Source libraries (`--from=`)
+
+Detectors that rewrite other styling libraries onto pandwind APIs BEFORE the
+mode pass runs. Off by default.
+
+| source               | what it converts                                                                                                                                                                                                                                   | flagged (not converted)                                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `styled-components`  | `styled.tag`\`...\`` with only flat literal declarations → `tw({...})` when the bridge maps every declaration to typed keys, else `css.class({...})`. JSX usages are rewritten to the intrinsic tag with `className={Name}` (static classNames merge via `cx`). The styled-components import is removed. | interpolated templates, nested selectors/media queries, `styled(<Component>)` inheritance                   |
+| `stylex`             | `stylex.create({ name: { literalProps } })` → plain object of `css.class({...})` values; `stylex.props(a, b)` → `cx(a, b)`. The stylex import is removed.                                                                                              | pseudo/`:hover`, media queries, non-literal values                                                           |
+| `panda`              | `css({ literalProps })` and base-only `cva({...})` → `css.class({...})` (keys must be known CSS properties).                                                                                                                                            | panda shorthands (`bg`, `p`, ...), `tokens.*` references, spreads, `cva` with variants                        |
+
+All three require an existing pandwind `css()` binding in the file (same rule
+as `--to=css`) — the codemod never invents an import for your app's css
+factory.
 
 ## Modes
 

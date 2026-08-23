@@ -108,9 +108,6 @@ const semanticTokens = defineTokens({
 	colors: {
 		success: tokens.colors["$green-500"],
 		error: tokens.colors["$red-500"],
-		// Condition-bound: bridges into @theme as --color-surface plus a `.dark`
-		// override rule (keys are preset condition names).
-		surface: { base: tokens.colors["$gray-50"], _dark: tokens.colors["$gray-900"] },
 	},
 	spacing: {
 		"button.padding": tokens.spacing["20"],

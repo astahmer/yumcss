@@ -13,6 +13,7 @@ import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadMetaFromSources, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
+import { parseSourceList } from "./sources.ts";
 
 interface CliArgs {
 	patterns: string[];
@@ -21,6 +22,7 @@ interface CliArgs {
 	write: boolean;
 	metaDir: string;
 	skipMarker: string;
+	sources: ReturnType<typeof parseSourceList>;
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -31,6 +33,7 @@ function parseArgs(argv: string[]): CliArgs {
 		write: false,
 		metaDir: "",
 		skipMarker: "pandwind:migrate-skip",
+		sources: [],
 	};
 	for (const arg of argv) {
 		if (arg.startsWith("--to=")) {
@@ -47,6 +50,8 @@ function parseArgs(argv: string[]): CliArgs {
 			args.metaDir = arg.slice("--meta=".length);
 		} else if (arg.startsWith("--skip-marker=")) {
 			args.skipMarker = arg.slice("--skip-marker=".length);
+		} else if (arg.startsWith("--from=")) {
+			args.sources = parseSourceList(arg.slice("--from=".length));
 		} else if (arg.startsWith("--")) {
 			throw new Error(`codemod: unknown flag '${arg}'`);
 		} else {
@@ -56,7 +61,7 @@ function parseArgs(argv: string[]): CliArgs {
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod: no input patterns given.\n" +
-				"usage: pandwind-codemod <globs...> --to=tw|cx|css|keep [--diff] [--write] [--meta=<dir>]",
+				"usage: pandwind-codemod <globs...> --to=tw|cx|css|keep [--diff] [--write] [--meta=<dir>]\n      [--from=styled-components,stylex,panda]",
 		);
 	}
 	return args;
@@ -191,6 +196,7 @@ function main(): void {
 			mode: args.mode,
 			file: relative,
 			skipMarker: args.skipMarker,
+			sources: args.sources,
 		});
 		totalConverted += result.converted;
 		totalUnmapped += result.unmappedTokens.length;
