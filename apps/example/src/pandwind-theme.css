@@ -43,6 +43,7 @@
 	--color-white: #ffffff;
 	--color-error: #e53e3e;
 	--color-success: #60a3bc;
+	--color-surface: #f9fafb;
 	--text-2xl: 1.5rem;
 	--text-3xl: 1.875rem;
 	--text-4xl: 2.25rem;
@@ -80,3 +81,8 @@
 	--radius-sm: 0.125rem;
 	--radius-xl: 0.75rem;
 }
+
+/* Condition-bound token overrides */
+	.dark {
+		--color-surface: #111827;
+	}

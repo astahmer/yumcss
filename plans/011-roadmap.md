@@ -59,3 +59,20 @@ parked with notes.
   pipeline is the seed of this; park until core API stabilizes.
 - **"panda-cloud" analytics**: token/utility usage dashboards — `analyze`
   CLI is step one; a hosted/studio UI is step N.
+
+### §5 Outcomes — codemod sources (2026-08-23)
+
+- New `--from=styled-components,stylex,panda` flag (opt-in, off by default);
+  source passes run before the --to mode pass and compose with it.
+- styled-components: flat literal `styled.tag\`...\``→ typed`tw({...})`when the bridge covers every declaration, else`css.class({...})` fallback;
+JSX usages rewritten to the intrinsic tag (`className={Name}`, static
+  classNames merged via cx); styled-components import removed.
+- stylex: `create({ name: { literalProps } })` → object of `css.class(...)`;
+  `stylex.props(...)` → `cx(...)`; import removed.
+- panda: literal `css({...})` and base-only `cva({...})` → `css.class({...})`.
+- Flagged-not-converted (marker inserted, idempotent): interpolated
+  templates, nested selectors/media/pseudo, non-literal values,
+  `styled(<Component>)`, panda shorthands + `tokens.*` refs, cva variants.
+- Known limitation discovered: the generated bridge has NO plain `color`
+  property section (colors resolve through theme variables), so styled→tw
+  typed mapping for colors falls back to css atoms — documented behavior.

@@ -927,15 +927,19 @@ function getTwRuntime(
 	return `import { createTw } from "pandwind/tw";
 import type { WindVariants } from "./types";
 
-// The PURE annotation lets bundlers drop the whole module when every tw()
-// call in the app was statically inlined by the vite plugin.
-export const tw = /* @__PURE__ */ createTw<WindVariants>({
+// Metadata export so apps can build a runtime cx() against the SAME
+// generated conflict map the vite plugins use (see createCx in pandwind/cx).
+export const __pandwindConfig = {
 	variants: {
 ${variantEntries.join("\n")}
 	},
 ${conflictEntries.length > 0 ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
 ${composeEntries}
-});
+};
+
+// The PURE annotation lets bundlers drop the whole module when every tw()
+// call in the app was statically inlined by the vite plugin.
+export const tw = /* @__PURE__ */ createTw<WindVariants>(__pandwindConfig);
 `;
 }
 
