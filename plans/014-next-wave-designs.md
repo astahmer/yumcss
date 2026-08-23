@@ -166,3 +166,14 @@ one unmatched file; base keeps shared+unmatched only; chunks carry
 exclusives; manifest maps both routes; unknown route resolves null/empty;
 HMR invalidation refreshes the owning chunk. All pre-existing vite/css
 tests stay green (option off = byte-identical behavior).
+
+## 4a. Devtools extension — research verdict (2026-08-23)
+
+Full brief in `/research.md` (knowledge-based, unverified-flagged). Verdict:
+**do NOT build a custom extension yet.** Generic extensions resolve hashed
+atomic classes' declarations but can never show source-file origin without
+our manifest; built-in DevTools covers ~90% of computed/matched-rule needs.
+Before any build decision: run the 15-min empirical checklist
+(research.md §"How to verify empirically") and spike the zero-code path —
+emitting `/*# sourceMappingURL= */` with .tsx sources in dev builds, which
+Chromium's Styles pane may surface natively.
