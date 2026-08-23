@@ -19,7 +19,7 @@ export default defineConfig({
 	// `pandwindCssVite` extracts literal `css()` calls into a generated
 	// stylesheet, served from the virtual `pandwind:css` module.
 	plugins: [
-		pandwindVite({ css: { engine } }),
+		pandwindVite({ css: { preset: examplePreset, engine } }),
 		// Tailwind mode: css() calls are inlined to the same utilities tw()
 		// emits, so Tailwind's scanner compiles one shared stylesheet.
 		pandwindCssVite(examplePreset, { engine }),
