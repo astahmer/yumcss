@@ -270,3 +270,56 @@ export function buildThemeBlock(
 		? overrideCss
 		: `${themeBlock}\n\n/* Condition-bound token overrides */\n${overrideCss}`;
 }
+
+/**
+ * Declared theme scopes (plans/015): scope name -> theme-variable bindings.
+ *
+ * ```ts
+ * themes: {
+ * 	dark: { "--color-surface": "#0b0b10" },
+ * }
+ * ```
+ *
+ * Keys are FULL custom-property names (leading `--` required) so emission is
+ * a 1:1 mirror of the `@theme` block — no namespace guessing. Utilities keep
+ * referencing `var(--color-surface)`; switching happens purely by cascade
+ * scope (`[data-theme="…"]` re-binds the property), which is why theme
+ * switches never change utility CSS.
+ */
+export type ThemeScopeMap = Record<string, Record<string, string>>;
+
+/**
+ * Render declared theme scopes as deterministic `[data-theme="…"]` override
+ * blocks. Scopes and bindings are sorted; entries that are not
+ * `"--name": "value"` bindings are warned about and skipped (never guessed).
+ * Returns "" when nothing valid remains — callers append nothing, so output
+ * stays byte-stable for presets without declared themes.
+ */
+export function buildThemeScopes(
+	themes: ThemeScopeMap | undefined,
+	warn: (message: string) => void = () => {},
+): string {
+	if (themes === undefined || typeof themes !== "object") return "";
+	const blocks: string[] = [];
+	for (const scope of Object.keys(themes).toSorted()) {
+		const vars = themes[scope];
+		if (vars === null || typeof vars !== "object" || Array.isArray(vars)) {
+			warn(`pandwind: theme scope "${scope}" is not an object — skipped`);
+			continue;
+		}
+		const lines: string[] = [];
+		for (const name of Object.keys(vars).toSorted()) {
+			const value = vars[name];
+			if (typeof value !== "string" || value === "" || !name.startsWith("--")) {
+				warn(
+					`pandwind: theme scope "${scope}" entry "${name}" is not a theme variable binding ('"--name": "value"' expected) — skipped`,
+				);
+				continue;
+			}
+			lines.push(`\t${name}: ${value};`);
+		}
+		if (lines.length === 0) continue;
+		blocks.push(`[data-theme="${scope}"] {\n${lines.join("\n")}\n}`);
+	}
+	return blocks.join("\n");
+}

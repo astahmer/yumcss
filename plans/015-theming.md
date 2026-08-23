@@ -47,3 +47,37 @@ Reject unless A hits a wall (e.g. themes differing in structure, not values).
 
 Planning. Implementation only after kumo/8bitcn ports land (they provide the
 real-world corpus to validate against).
+
+## Status update (2026-08-23) — L1+L2+theme scopes IMPLEMENTED
+
+- `buildThemeScopes` / `resolveThemes`: tokens modules may declare
+  `themes: { <scope>: { "--var": value } }`; codegen emits sorted, warning-on-invalid
+  `[data-theme="…"]` override blocks appended to the bridge. Byte-stable when absent.
+- Real-Tailwind proofs in tests/theme-scopes.test.ts: utility keeps its var()
+  reference; scope block survives compilation AFTER the @theme :root default;
+  presets without themes unchanged.
+- analyze --css reports per-scope delta bytes.
+
+### Layering with var-inline (composition contract)
+
+Scopes bind custom properties at SELECTOR scope; var-inline binds at ELEMENT
+scope via inline style. CSS cascade rules make these compose without any
+coordination: element inline style beats every selector-scoped binding, so a
+`css.vars({ color: $c })` call always wins over whatever `[data-theme]`
+sets for that element, while non-inline siblings keep following the active
+theme. No fallback-chain changes needed.
+
+### L3 component tier — designed follow-up (not yet implemented)
+
+Data model: component-scope alias blocks re-binding semantic vars at class
+scope — `.button { --sm-button-bg: var(--color-primary); }`. Author names map
+dotted->dashed under an explicit namespace (`button.bg` -> `--sm-button-bg`)
+to avoid Tailwind namespace collisions. Emission reuses the same deterministic
+block mechanics (sorted, warn+skip invalid/unresolvable refs, cycle-detect
+recursive aliases). Utilities keep referencing only L1/L2; restyling a
+component never touches theme or utilities.
+Open questions before building: (1) do component classes opt in explicitly
+(`class="pandwind-component button"`) or does the alias block attach to a
+user-chosen selector string? (2) do aliases need variant support
+(`button.bg_hover`) or is flat enough for v1? (3) where do alias declarations
+live — preset module alongside themes?

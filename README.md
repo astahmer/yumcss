@@ -125,6 +125,11 @@ PostCSS config, no runtime CSS-in-JS.
   shared atoms and unmatched files stay in the global sheet; a virtual
   `pandwind:css-manifest` module exports the route -> id map. Default
   remains one global stylesheet.
+- **Theming** — declare theme scopes on your tokens module
+  (`themes: { dark: { "--color-surface": "#0b0b10" } }`) and codegen emits
+  deterministic `[data-theme="…"]` override blocks next to the `@theme`
+  bridge. Utilities keep referencing `var(--color-surface)`; switching is a
+  `data-theme` attribute flip with zero utility CSS changes.
 - **`tw:prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82 →
