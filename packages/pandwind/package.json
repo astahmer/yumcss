@@ -32,12 +32,14 @@
 		"flattie": "1.1.1",
 		"oxc-parser": "0.144.0",
 		"postcss-selector-parser": "7.1.5",
-		"tailwindcss": "4.3.3"
+		"tailwindcss": "4.3.3",
+		"unplugin": "3.3.0"
 	},
 	"devDependencies": {
 		"@types/node": "26.2.0",
 		"esbuild": "0.28.2",
 		"postcss": "8.5.26",
+		"rollup": "4.62.5",
 		"tailwind-merge": "3.6.0",
 		"tstyche": "7.2.2",
 		"typescript": "7.0.2",

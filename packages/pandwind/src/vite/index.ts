@@ -72,7 +72,7 @@ export interface PandwindViteOptions {
 	};
 }
 
-interface Resolver {
+export interface Resolver {
 	resolve(
 		source: string,
 		importer: string,
@@ -118,10 +118,6 @@ interface OxcSpecifier {
 	type: string;
 }
 
-/**
- * Create the vite plugin. The transform is idempotent: already-inlined string
- * literals are never tw calls, so repeated runs are safe.
- */
 /** Source-matcher shared by the tw and cx import detection. */
 /** Parse a module and return its program node (for const-binding scans). */
 function parseProgramForConsts(code: string, id: string): OxcNode {
@@ -147,7 +143,29 @@ function matchesSource(
 	return basename(source).replace(/\.[jt]sx?$/, "") === fallbackBasename;
 }
 
-export function pandwindVite(options: PandwindViteOptions = {}) {
+/**
+ * Bundler-agnostic core of the inline-tw plugin: everything except the
+ * vite-specific `this` resolver binding. Shared by `pandwindVite` and the
+ * unplugin adapters (`pandwindUnplugin`, `pandwindRollup`, ...) which supply
+ * their own config-resolution strategy.
+ */
+export interface InlineTwPluginCore {
+	name: string;
+	/**
+	 * `resolver` is optional: bundlers with a module graph (vite/rollup)
+	 * pass their native resolver; simpler integrations pass nothing and the
+	 * caller has already resolved configs some other way.
+	 */
+	transform(
+		code: string,
+		id: string,
+		resolver?: Resolver,
+	): Promise<{ code: string; map: null } | null>;
+	/** Drop cached analysis for `file` so propagated constants stay fresh. */
+	invalidate(file: string): void;
+}
+
+export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
 
 	const cssFold = options.css
@@ -187,8 +205,7 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 
 	return {
 		name: "pandwind:inline-tw",
-		enforce: "pre",
-		async transform(this: Resolver, code: string, id: string) {
+		async transform(code: string, id: string, resolver?: Resolver) {
 			if (id.includes("node_modules")) return null;
 			if (options.exclude?.some((pattern) => pattern.test(id))) return null;
 			if (!/\b(tw|cx)\b/.test(code)) return null;
@@ -200,13 +217,14 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 				// output provably identical to the runtime merge.
 				return null;
 			}
+			if (resolver === undefined) return null;
 
 			let config: TwConfig | undefined;
 			// Sequential short-circuit: stop at the first source that resolves
 			// to a generated tw module. Promise.all would load them needlessly.
 			for (const source of imports.sources) {
 				// oxlint-disable-next-line no-await-in-loop
-				config = await loadConfig(this, id, source);
+				config = await loadConfig(resolver, id, source);
 				if (config !== undefined) break;
 			}
 			if (config === undefined) return null;
@@ -242,9 +260,27 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 
 			return inlined === 0 ? null : { code: working, map: null };
 		},
+		invalidate(file: string) {
+			crossModuleResolver.invalidate(file);
+		},
+	};
+}
+
+/**
+ * Create the vite plugin. The transform is idempotent: already-inlined string
+ * literals are never tw calls, so repeated runs are safe.
+ */
+export function pandwindVite(options: PandwindViteOptions = {}) {
+	const core = createInlineTwPluginCore(options);
+	return {
+		name: core.name,
+		enforce: "pre",
+		transform(this: Resolver, code: string, id: string) {
+			return core.transform(code, id, this);
+		},
 		handleHotUpdate(ctx: { file: string }) {
 			// Re-analyze changed modules so propagated constants stay fresh.
-			crossModuleResolver.invalidate(ctx.file);
+			core.invalidate(ctx.file);
 		},
 	};
 }

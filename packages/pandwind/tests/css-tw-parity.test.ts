@@ -178,13 +178,19 @@ describe("generated stylesheet validity", () => {
 
 		const props = new Set<string>();
 		parsed!.walkRules((rule) => {
-			// `:root` rules hold the token variables — those are custom
-			// properties by design. Every other rule must only set standard
-			// CSS properties, proving the generated sheet is plain CSS.
-			if (rule.selector.includes(":root")) return;
+			// Token variables live in dedicated carrier rules (`:root`, plus
+			// condition-bound semantic-token overrides like `.dark`) — custom
+			// properties by design. A rule that ONLY declares custom props is
+			// such a carrier and is skipped; any rule mixing standard CSS
+			// properties must not leak custom properties into them.
+			const decls: Array<{ prop: string }> = [];
 			rule.walkDecls((decl) => {
-				props.add(decl.prop);
+				decls.push(decl);
 			});
+			if (decls.length > 0 && decls.every((d) => d.prop.startsWith("--"))) return;
+			for (const decl of decls) {
+				props.add(decl.prop);
+			}
 		});
 		for (const prop of props) {
 			expect(prop.startsWith("--"), `${prop} should be a standard property`).toBe(false);
