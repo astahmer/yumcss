@@ -119,6 +119,12 @@ PostCSS config, no runtime CSS-in-JS.
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
+- **Per-route CSS splitting (opt-in)** — `pandwindCssVite(preset,
+{ splitByRoute: [{ match: /\/routes\/admin\//, name: "admin" }] })`
+  serves route-exclusive atoms from `pandwind:css?route=<name>` while
+  shared atoms and unmatched files stay in the global sheet; a virtual
+  `pandwind:css-manifest` module exports the route -> id map. Default
+  remains one global stylesheet.
 - **`tw:prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82 →

@@ -13,6 +13,10 @@ import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts"
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
 
+/** Priority-ordered copy of a rule cache's values. */
+const byPriority = <T extends { priority: number }>(values: Iterable<T>): Array<T> =>
+	Array.from(values).toSorted((a, b) => a.priority - b.priority);
+
 export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
 	const cache = new Map<string, Rule>();
 
@@ -176,18 +180,26 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 				.join("\n");
 		},
 		atomic: () => {
-			return Array.from(cache.values())
-				.toSorted((a, b) => a.priority - b.priority)
+			return byPriority(cache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
+		/**
+		 * Atomic rules WITH their identity (`id` = the pairId dedupe key).
+		 * Per-route splitting (plans/014 §2) uses these to diff which rules
+		 * each route bucket produces without re-parsing emitted CSS.
+		 */
+		atomicEntries: () =>
+			byPriority(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
 		varRules: () => {
-			return Array.from(varCache.values())
-				.toSorted((a, b) => a.priority - b.priority)
+			return byPriority(varCache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
+		/** Var toggle rules with identity — see atomicEntries. */
+		varEntries: () =>
+			byPriority(varCache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 	};
 
 	const generate = (styles: Array<StyleObject>) => {

@@ -23,6 +23,16 @@ export interface CssExtractorCore {
 	invalidate(file: string): void;
 }
 
+/** Join sheet sections into one CSS document, dropping empties. */
+const render = (
+	atomic: Array<{ css: string }>,
+	vars: Array<{ css: string }>,
+	tokens: string,
+): string =>
+	[tokens, atomic.map((e) => e.css).join("\n"), vars.map((e) => e.css).join("\n")]
+		.filter(Boolean)
+		.join("\n");
+
 export function createCssExtractorPluginCore(
 	preset: CssExtractorPreset,
 	options: PandwindCssViteOptions = {},
@@ -49,6 +59,10 @@ export function createCssExtractorPluginCore(
 		string,
 		{ mtimeMs: number; styles: StyleObject[]; varKeys: string[] }
 	>();
+	const routes = options.splitByRoute ?? [];
+	const COMMON_BUCKET = "__common__";
+	const resolvedManifestId = `\0${virtualId}-manifest.js`;
+	const routeChunkId = (name: string): string => `\0${virtualId}.css?route=${name}`;
 
 	const isScanned = (file: string): boolean => {
 		if (!include.some((pattern) => pattern.test(file))) return false;
@@ -82,6 +96,32 @@ export function createCssExtractorPluginCore(
 					const result = inlineCssCalls(code, id, names, preset, className);
 					return result.inlined === 0 ? null : { code: result.code, map: null };
 				};
+
+	/** Render the full single-sheet body (default mode / debug manifest). */
+	const collectBody = (): string => {
+		const sheet = collect();
+		const tokens = sheet.gen.tokens();
+		const atomic = sheet.gen.atomic();
+		const varRules = sheet.gen.varRules();
+		const body = [tokens, atomic, varRules].filter(Boolean).join("\n");
+		if (options.debug !== true) return body;
+		// Dev-only origin manifest: which scanned file feeds how many
+		// style objects into the sheet. Search a class here to find its
+		// candidate files; zero prod cost (flag off by default).
+		const manifest = [...fileCache.entries()]
+			.toSorted((a, b) => a[0].localeCompare(b[0]))
+			.map(
+				([file, entry]) =>
+					`/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`,
+			)
+			.join("\n");
+		return (
+			`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
+			(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
+			"\n\n" +
+			body
+		);
+	};
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = () => {
@@ -118,40 +158,155 @@ export function createCssExtractorPluginCore(
 		return sheet;
 	};
 
+	/** Cached styles/var-keys for one file (re-scanning on mtime change). */
+	const scanFile = (file: string): { styles: StyleObject[]; varKeys: string[] } => {
+		let entry = fileCache.get(file);
+		const mtimeMs = statSync(file).mtimeMs;
+		if (!entry || entry.mtimeMs !== mtimeMs) {
+			const code = readFileSync(file, "utf8");
+			const styles: StyleObject[] = [];
+			let varKeys: string[] = [];
+			if (/\bcss\b/.test(code)) {
+				const names = findCssImports(code, file, matchers);
+				if (names.size > 0) {
+					styles.push(...extractCssStyles(code, file, names, preset));
+					varKeys = extractVarKeys(code, file, names);
+				}
+			}
+			entry = { mtimeMs, styles, varKeys };
+			fileCache.set(file, entry);
+		}
+		return entry;
+	};
+
+	interface BucketSheet {
+		tokens: string;
+		atomicIds: Set<string>;
+		varIds: Set<string>;
+		atomic: Array<{ id: string; css: string; priority: number }>;
+		vars: Array<{ id: string; css: string; priority: number }>;
+	}
+
+	/** Build a sheet from ONLY the given files and list its rule identities. */
+	const buildBucket = (files: Array<string>): BucketSheet => {
+		const sheet = createStylesheet(preset, { className });
+		for (const file of files) {
+			const entry = scanFile(file);
+			for (const style of entry.styles) sheet.process([style]);
+			for (const key of entry.varKeys) sheet.processVarKey(key);
+		}
+		const atomic = sheet.gen.atomicEntries();
+		const vars = sheet.gen.varEntries();
+		// Ids are namespaced by kind ("a:"/"v:") so the shared-rule
+		// intersection can count them in one map without collisions.
+		return {
+			tokens: sheet.gen.tokens(),
+			atomicIds: new Set(atomic.map((e) => `a:${e.id}`)),
+			varIds: new Set(vars.map((e) => `v:${e.id}`)),
+			atomic,
+			vars,
+		};
+	};
+
+	/**
+	 * Per-route splitting (plans/014 §2, opt-in via splitByRoute). Each file
+	 * belongs to the FIRST matching route; unmatched files are common. Rules
+	 * produced by >=2 route buckets are shared -> common chunk (together with
+	 * every common-bucket rule); the rest stay route-exclusive. Tokens are
+	 * preset-derived and identical everywhere -> common chunk.
+	 */
+	const collectSplit = (): { common: string; routes: Map<string, string> } => {
+		const commonFiles: Array<string> = [];
+		const routeFiles = new Map<string, Array<string>>();
+		for (const route of routes) routeFiles.set(route.name, []);
+		for (const file of walkFiles(root)) {
+			const hit = routes.find((r) => r.match.test(file));
+			if (hit === undefined) commonFiles.push(file);
+			else routeFiles.get(hit.name)!.push(file);
+		}
+
+		const buckets = new Map<string, BucketSheet>();
+		for (const [name, files] of routeFiles) buckets.set(name, buildBucket(files));
+		buckets.set(COMMON_BUCKET, buildBucket(commonFiles));
+
+		// Shared = produced by >=2 ROUTE buckets (the common bucket is common
+		// by definition, handled below).
+		const seenIn = new Map<string, number>();
+		for (const [name, bucket] of buckets) {
+			if (name === COMMON_BUCKET) continue;
+			for (const id of [...bucket.atomicIds, ...bucket.varIds]) {
+				seenIn.set(id, (seenIn.get(id) ?? 0) + 1);
+			}
+		}
+		const sharedIds = new Set([...seenIn.entries()].filter(([, n]) => n >= 2).map(([id]) => id));
+
+		const pickCommon = (
+			entries: BucketSheet["atomic"],
+			kind: "a" | "v",
+		): Array<{ css: string; priority: number }> =>
+			entries.filter((e) => sharedIds.has(`${kind}:${e.id}`));
+
+		const commonBucket = buckets.get(COMMON_BUCKET)!;
+		const anyBucket = buckets.get(routes[0]!.name)!;
+		const commonAtomic = [
+			...pickCommon(anyBucket.atomic, "a"),
+			...commonBucket.atomic.map((e) => ({ ...e, id: `a:${e.id}` })),
+		].toSorted((a, b) => a.priority - b.priority);
+		const commonVars = [
+			...pickCommon(anyBucket.vars, "v"),
+			...commonBucket.vars.map((e) => ({ ...e, id: `v:${e.id}` })),
+		].toSorted((a, b) => a.priority - b.priority);
+
+		const common = render(commonAtomic, commonVars, commonBucket.tokens || anyBucket.tokens);
+
+		const out = new Map<string, string>();
+		for (const [name, bucket] of buckets) {
+			if (name === COMMON_BUCKET) continue;
+			const atomic = bucket.atomic.filter((e) => !sharedIds.has(`a:${e.id}`));
+			const vars = bucket.vars.filter((e) => !sharedIds.has(`v:${e.id}`));
+			out.set(name, render(atomic, vars, ""));
+		}
+		return { common, routes: out };
+	};
+
 	return {
 		name: "pandwind:extract-css",
 		transform,
 		resolveId(source: string) {
 			if (source === virtualId) return resolvedVirtualId;
+			if (source === `${virtualId}-manifest`) return resolvedManifestId;
+			if (routes.length > 0 && source.startsWith(`${virtualId}?route=`)) {
+				const name = decodeURIComponent(source.slice(`${virtualId}?route=`.length));
+				if (routes.some((r) => r.name === name)) return routeChunkId(name);
+			}
 			return null;
 		},
 		load(id: string) {
-			if (id !== resolvedVirtualId) return null;
 			// External-compiler modes serve empty CSS; sheet-backed strategies
 			// still need the generated stylesheet (with their class names).
-			if (className !== undefined && strategy?.sheetBacked !== true) return "";
-			const sheet = collect();
-			const tokens = sheet.gen.tokens();
-			const atomic = sheet.gen.atomic();
-			const varRules = sheet.gen.varRules();
-			const body = [tokens, atomic, varRules].filter(Boolean).join("\n");
-			if (options.debug !== true) return body;
-			// Dev-only origin manifest: which scanned file feeds how many
-			// style objects into the sheet. Search a class here to find its
-			// candidate files; zero prod cost (flag off by default).
-			const manifest = [...fileCache.entries()]
-				.toSorted((a, b) => a[0].localeCompare(b[0]))
-				.map(
-					([file, entry]) =>
-						`/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`,
-				)
-				.join("\n");
-			return (
-				`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
-				(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
-				"\n\n" +
-				body
-			);
+			const emptyMode = className !== undefined && strategy?.sheetBacked !== true;
+
+			if (id === resolvedVirtualId) {
+				if (emptyMode) return "";
+				if (routes.length === 0) return collectBody();
+				return collectSplit().common;
+			}
+
+			if (routes.length > 0 && id === resolvedManifestId) {
+				const map = Object.fromEntries(routes.map((r) => [r.name, `${virtualId}?route=${r.name}`]));
+				return (
+					`// pandwind per-route CSS splitting (plans/014 \u00a72) — route -> virtual module id.\n` +
+					`export const routeSheets = ${JSON.stringify(map, null, "\t")} as const;\n` +
+					`export default routeSheets;\n`
+				);
+			}
+
+			if (routes.length > 0 && id.startsWith(`\0${virtualId}.css?route=`)) {
+				if (emptyMode) return "";
+				const name = decodeURIComponent(id.slice(`\0${virtualId}.css?route=`.length));
+				return collectSplit().routes.get(name) ?? "";
+			}
+			return null;
 		},
 		invalidate(file: string) {
 			// The next load re-scans the changed file.

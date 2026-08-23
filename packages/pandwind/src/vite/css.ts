@@ -52,6 +52,16 @@ export interface PandwindCssViteOptions {
 	exclude?: RegExp[];
 	/** Files to scan, as regexes matched against the absolute path. */
 	include?: RegExp[];
+	/**
+	 * Opt-in per-route CSS splitting (plans/014 §2). Each file belongs to
+	 * the FIRST route whose `match` regex hits its absolute path; unmatched
+	 * files feed the common chunk. Atoms used by more than one route (and
+	 * all common-bucket atoms) stay in the base `pandwind:css` sheet;
+	 * route-exclusive atoms are served from `pandwind:css?route=<name>`.
+	 * The virtual module `pandwind:css-manifest` exports the route -> id
+	 * map. Off by default: without this option one global sheet is served.
+	 */
+	splitByRoute?: Array<{ match: RegExp; name: string }>;
 	/** Prepend a dev-only origin manifest comment to the generated sheet. */
 	debug?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */

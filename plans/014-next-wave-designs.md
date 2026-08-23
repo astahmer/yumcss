@@ -142,3 +142,27 @@ carrier handling). Budgets now css 3400/1650, cx 9000/3900, all 11000/4900.
   var-inline targets sheet-backed modes (documented here, no code guard).
 - `cx.vars` skips the whole-input result cache (styles must be re-collected);
   perf impact nil for realistic use (carriers are rare per call).
+
+## 2a. Per-route splitting Outcomes (implemented 2026-08-23)
+
+`splitByRoute: [{ match: RegExp, name: string }]` on `pandwindCssVite`
+(first-match wins per file; unmatched files are common). Mechanics:
+
+- `createStylesheet.gen` gained `atomicEntries()` / `varEntries()`
+  (rule identity = the internal dedupe key, plus priority) so route buckets
+  can be diffed without parsing emitted CSS.
+- `collectSplit()` builds one bucket sheet per route (+ common bucket),
+  intersects rule ids: rules produced by >=2 ROUTE buckets are shared ->
+  common chunk; common-bucket rules and preset tokens always common.
+  Ids are namespaced by kind ("a:"/"v:") before intersection.
+- Virtual modules: base `pandwind:css` serves the common chunk;
+  `pandwind:css?route=<name>` serves exclusives;
+  `pandwind:css-manifest` is a JS module exporting
+  `routeSheets: Record<name, id>` for app wiring.
+- HMR unchanged: `handleHotUpdate` -> invalidate -> next load re-scans.
+
+Tests (`tests/css-split-by-route.test.ts`): two routes sharing one atom +
+one unmatched file; base keeps shared+unmatched only; chunks carry
+exclusives; manifest maps both routes; unknown route resolves null/empty;
+HMR invalidation refreshes the owning chunk. All pre-existing vite/css
+tests stay green (option off = byte-identical behavior).
