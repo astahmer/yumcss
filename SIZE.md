@@ -16,9 +16,9 @@ the **build-time stylesheet generator**, not the browser runtime:
 | ------------------------------------------ | -------: | -------: |
 | `css()` runtime                            |  2.35 KB |  1.13 KB |
 | `tw()` runtime                             |  2.00 KB |  0.96 KB |
-| `cx()` runtime                             |  6.88 KB |  3.02 KB |
-| all three together                         |  8.83 KB |  3.73 KB |
-| stylesheet generator (**build-time only**) | 80.32 KB | 19.93 KB |
+| `cx()` runtime                             |  7.51 KB |  3.29 KB |
+| all three together                         |  9.51 KB |  4.02 KB |
+| stylesheet generator (**build-time only**) | 82.25 KB | 20.41 KB |
 
 The generator is deliberately not exported from any runtime barrel — there is
 a test asserting the shipped runtime stays under a third of its gzipped size.
@@ -41,8 +41,8 @@ proven again with a real vite production build in
 | --------------------------- | ------: | ------: | -----------: |
 | `pandwind/css` — css() only | 2.35 KB | 1.13 KB |         −73% |
 | `pandwind/tw` — tw() only   | 2.00 KB | 0.96 KB |         −77% |
-| `pandwind/cx` — cx() only   | 6.88 KB | 3.02 KB |         −22% |
-| `pandwind` — css + tw + cx  | 8.72 KB | 3.64 KB |            — |
+| `pandwind/cx` — cx() only   | 7.51 KB | 3.29 KB |         −21% |
+| `pandwind` — css + tw + cx  | 9.51 KB | 4.02 KB |            — |
 
 Two things to know:
 
@@ -62,7 +62,7 @@ target, ESM), with React externalized where it is a peer dependency:
 
 | runtime                                    |     min |    gzip | what ships                              |
 | ------------------------------------------ | ------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 8.83 KB | 3.73 KB | everything                              |
+| pandwind `css()` + `tw()` + `cx()`         | 9.51 KB | 4.02 KB | everything                              |
 | `@stylexjs/stylex` 0.19.0                  | 4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  | 13.4 KB | 5.31 KB | panda's runtime engine + tokens         |
 | `@emotion/css` 11.13.5                     | 15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
@@ -86,11 +86,10 @@ caught or explicitly intentional:
 1. **Hard budgets** (`packages/pandwind/tests/runtime-budget.json`) — the
    "not too much" ceiling for every entry. They are checked first and always
    apply, even when updating snapshots with `-u`. Bump one only when the
-   growth is deliberate and reviewed. Headroom as of the bitset-signature
-   landing (measured / budget): css 2406/2900 min & 1157/1400 gz (~17% free),
-   tw 2043/2100 min (~3% free) & 985/1100 gz, cx 7049/7200 min (~2% free) &
-   3092/3100 gz (**8 bytes** — the next cx/tw feature will need a reviewed
-   budget bump), all three 9046/9200 min & 3816/3900 gz. The budget file is
+   growth is deliberate and reviewed. Headroom as of the cold-path cx pass
+   (measured / budget): css 2406/2900 min & 1157/1400 gz (~17% free),
+   tw 2043/2100 min (~3% free) & 985/1100 gz, cx 7512/7900 min (~5% free) &
+   3287/3400 gz, all three 9511/9900 min & 4015/4200 gz. The budget file is
    comment-free JSON (loaded with `JSON.parse`), so this paragraph is the
    canonical headroom record.
 2. **Regression guard** — current sizes are compared against the committed

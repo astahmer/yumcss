@@ -85,3 +85,42 @@ vzlnuuvp 78d9347epwpsrnpm 0e961d45 "feat(analyze): pandwind analyze — fold-cov
 - Known limitation: cross-module importedConstants are not resolved by the
   CLI yet (same-module constants are) — needs the ModuleConstRegistry from
   the vite plugin state threaded through; noted for a follow-up.
+
+## E. Outcomes — cx cold-path allocation pass (2026-08-23)
+
+Profiled the cold shape (`node --cpu-prof`, unique-token long pairs): cost was
+spread across parseUtility's per-dash slice+map-miss walk (~12% self),
+cachedCompile Map churn (~12%), per-call orchestration (~27%) and GC (~8%).
+
+Changes in `src/cx/index.ts` (behavior byte-identical; parity/fuzz/golden
+suites green unmodified):
+
+1. **First-segment utility index** (`buildUtilIndex`): conflict-map keys
+   bucketed by their first dash segment, longest-key-first per bucket.
+   parseUtility now tries only real candidates via `startsWith` instead of
+   slicing at every dash position and missing the map. Ordering preserves
+   the old right-to-left longest-key-wins semantics exactly.
+2. **Flat-array ownership**: the interned-sid → outCls-index `Map` became
+   parallel number arrays with swap-remove (signature counts per call are
+   tiny, linear scans beat hashing).
+3. **Scratch signature arrays** (`scopedSigs`): signatureFromTwClass results
+   land in one reusable array consumed synchronously by compileSigs — no
+   per-token `.map` closures.
+   (Kept the arbitrary-value regexes: a manual-scanner detour measured
+   ~1 KB minified for <2% CPU — wrong trade.)
+4. cx() call orchestration unchanged.
+
+Numbers (cx-bench.mts cold shape, machine noisy between runs):
+
+| metric                                   | before      | after                                      |
+| ---------------------------------------- | ----------- | ------------------------------------------ |
+| cold unique pairs, official bench median | 82K ops/sec | 92–135K across runs (best quiet run ~135K) |
+| cpu-prof harness shape                   | 45K ops/sec | 125–156K                                   |
+
+The ≥1.5x target is met on quiet runs but not reliably under load; remaining
+cost is inherent caching machinery (whole-input key join + result-cache
+insert per unique input) plus parseUtility's residual candidate scan.
+
+Size cost is real and deliberate: cx entry 6922→7512 min / 3056→3287 gz.
+Budgets raised with review: cx 7200/3100→7900/3400, all-three
+9200/3900→9900/4200. Snapshot + SIZE.md refreshed.

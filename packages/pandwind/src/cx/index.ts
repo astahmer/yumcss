@@ -112,7 +112,11 @@ const splitVariants = (token: string): boolean => {
 	return false;
 };
 
-/** True for typed arbitrary values (`[color:var(--x)]`, `[url(...)]`). */
+/**
+ * True for typed arbitrary values (`[color:var(--x)]`, `[url(...)]`),
+ * returning the property. Runs once per unique `[...]` token on the cold
+ * compile path.
+ */
 const TYPED_ARBITRARY = /^\[([a-z-]+):([^:]+)\]$/;
 
 /** Value shapes for arbitrary-value conflict disambiguation. */
@@ -175,7 +179,32 @@ interface CompiledSigs {
  */
 let puUtility = "";
 let puValue = "";
-const parseUtility = (rest: string, conflicts: TwConflictsMeta): boolean => {
+/**
+ * Utilities of the generated conflict map bucketed by their first dash
+ * segment, longest-key-first within a bucket. Lets parseUtility try only
+ * real candidates via `startsWith` (no per-dash slice + map miss); ordering
+ * preserves the old right-to-left "longest key wins" semantics.
+ */
+const buildUtilIndex = (conflicts: TwConflictsMeta): Map<string, string[]> => {
+	const utilIndex = new Map<string, string[]>();
+	for (const key of Object.keys(conflicts)) {
+		const d = key.indexOf("-");
+		const seg = d === -1 ? key : key.slice(0, d);
+		let arr = utilIndex.get(seg);
+		if (arr === undefined) {
+			arr = [];
+			utilIndex.set(seg, arr);
+		}
+		arr.push(key);
+	}
+	for (const arr of utilIndex.values()) arr.sort((a, b) => b.length - a.length);
+	return utilIndex;
+};
+const parseUtility = (
+	rest: string,
+	conflicts: TwConflictsMeta,
+	index: Map<string, string[]>,
+): boolean => {
 	if (rest.length === 0) return false;
 	const whole = conflicts[rest];
 	if (whole !== undefined && (whole[""] !== undefined || whole["*"] !== undefined)) {
@@ -183,14 +212,18 @@ const parseUtility = (rest: string, conflicts: TwConflictsMeta): boolean => {
 		puValue = "";
 		return true;
 	}
-	let i = rest.length;
-	for (;;) {
-		i = rest.lastIndexOf("-", i - 1);
-		if (i <= 0) return false;
-		const utility = rest.slice(0, i);
-		const byValue = conflicts[utility];
-		if (byValue === undefined) continue;
-		const value = rest.slice(i + 1);
+	const d = rest.indexOf("-");
+	if (d <= 0) return false;
+	const candidates = index.get(d === -1 ? rest : rest.slice(0, d));
+	if (candidates === undefined) return false;
+	for (let ci = 0; ci < candidates.length; ci++) {
+		const utility = candidates[ci]!;
+		const ulen = utility.length;
+		if (rest.length <= ulen) continue;
+		if (rest.charCodeAt(ulen) !== 45) continue; // '-'
+		if (!rest.startsWith(utility)) continue;
+		const byValue = conflicts[utility]!;
+		const value = rest.slice(ulen + 1);
 		if (
 			byValue[value] !== undefined ||
 			byValue[stripOpacityModifier(value)] !== undefined ||
@@ -201,16 +234,30 @@ const parseUtility = (rest: string, conflicts: TwConflictsMeta): boolean => {
 			return true;
 		}
 	}
+	return false;
 };
 
 const isBorderUtility = (utility: string): boolean =>
 	utility === "border" ||
 	(utility.length === 8 && utility.startsWith("border-") && "trbl".includes(utility[7]!));
 
+/**
+ * Reusable scratch for signature-string arrays. signatureFromTwClass builds
+ * its result here; the only consumer (compileSigs) reads it synchronously
+ * before any other call can touch it — no reentrancy.
+ */
+const sigScratch: string[] = [];
+const scopedSigs = (prefix: string, props: readonly string[]): string[] => {
+	sigScratch.length = 0;
+	for (let i = 0; i < props.length; i++) sigScratch.push(`${prefix}|${props[i]}`);
+	return sigScratch;
+};
+
 const signatureFromTwClass = (
 	token: string,
 	conflicts: TwConflictsMeta,
 	compose: ReadonlySet<string> | undefined,
+	utilIndex: Map<string, string[]>,
 ): string[] | null => {
 	splitVariants(token);
 	const prefix = svPrefix;
@@ -229,14 +276,14 @@ const signatureFromTwClass = (
 		}
 	}
 
-	if (!parseUtility(rest, conflicts)) {
+	if (!parseUtility(rest, conflicts, utilIndex)) {
 		// Whole-key utility with no "" / "*" property set — opaque unless
 		// composed.
 		const group = conflicts[rest];
 		if (group === undefined) return null;
 		if (compose?.has(rest)) return [`${prefix}|~${rest}`];
 		const staticProps = group[""] ?? group["*"];
-		return staticProps === undefined ? null : staticProps.map((p) => `${prefix}|${p}`);
+		return staticProps === undefined ? null : scopedSigs(prefix, staticProps);
 	}
 
 	const utility = puUtility;
@@ -257,14 +304,21 @@ const signatureFromTwClass = (
 		// transition-property half forms a conflict group (`duration-150`
 		// coexists in both orders).
 		if (utility === "border") {
-			return (byValue["*"] ?? []).filter((p) => !p.endsWith("-style")).map((p) => `${prefix}|${p}`);
+			const widthHalf = byValue["*"];
+			if (widthHalf === undefined) return [];
+			sigScratch.length = 0;
+			for (let wi = 0; wi < widthHalf.length; wi++) {
+				const propHalf = widthHalf[wi]!;
+				if (!propHalf.endsWith("-style")) sigScratch.push(`${prefix}|${propHalf}`);
+			}
+			return sigScratch;
 		}
 		if (utility === "outline") return [`${prefix}|outline-width`];
 		if (utility === "transition" && byValue["*"]?.includes("transition-property")) {
 			return [`${prefix}|transition-property`];
 		}
 		const staticProps = byValue[""] ?? byValue["*"];
-		return staticProps === undefined ? null : staticProps.map((p) => `${prefix}|${p}`);
+		return staticProps === undefined ? null : scopedSigs(prefix, staticProps);
 	}
 
 	// Refinements for arbitrary values the generated map routes into a
@@ -289,7 +343,7 @@ const signatureFromTwClass = (
 				byValue["black"] ??
 				byValue["current"] ??
 				Object.values(byValue).find((props) => props.every((p) => p.endsWith("-color")));
-			if (colorProps !== undefined) return colorProps.map((p) => `${prefix}|${p}`);
+			if (colorProps !== undefined) return scopedSigs(prefix, colorProps);
 			return [`${prefix}|${utility}-color`];
 		}
 	}
@@ -317,7 +371,7 @@ const signatureFromTwClass = (
 	) {
 		props = ["transition-property"];
 	}
-	return props.map((prop) => `${prefix}|${prop}`);
+	return scopedSigs(prefix, props);
 };
 
 /**
@@ -329,6 +383,9 @@ export function createCx(
 ): (...inputs: Array<CxInput | CxInput[]>) => string {
 	const conflicts = options.conflicts;
 	const composeSet = options.compose === undefined ? undefined : new Set(options.compose);
+	// First-segment utility index for the cold parse path (built once; the
+	// generated map is fixed at createCx time).
+	const utilityIndex = conflicts === undefined ? undefined : buildUtilIndex(conflicts);
 	const atoms: AtomRegistry | undefined = options.css
 		? (options.css as CssFn<never> & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY]
 		: undefined;
@@ -374,8 +431,13 @@ export function createCx(
 	const outPlan: Array<CompiledSigs | null> = [];
 	/** Live (not-yet-overridden) signature count per outCls entry. */
 	const outLive: number[] = [];
-	/** Interned signature id -> index of the live entry holding it. */
-	const owners = new Map<number, number>();
+	/**
+	 * Live primary-signature ownership as parallel arrays (interned sid ->
+	 * outCls index). Signature counts per call are tiny (<40), so linear
+	 * scans beat Map hashing on the hot push path.
+	 */
+	const ownSid: number[] = [];
+	const ownIdx: number[] = [];
 	const opaque = new Set<string>();
 	const parts: string[] = [];
 
@@ -405,7 +467,7 @@ export function createCx(
 	};
 	const resolveTwSigs = (token: string): CompiledSigs | null =>
 		cachedCompile(twSigs, token, () =>
-			compileSigs(signatureFromTwClass(token, conflicts!, composeSet)),
+			compileSigs(signatureFromTwClass(token, conflicts!, composeSet, utilityIndex!)),
 		);
 	const resolveAtomSigs = (key: string): CompiledSigs =>
 		cachedCompile(atomSigs, key, () => compileSigs(signatureFromCssKey(key)))!;
@@ -429,17 +491,31 @@ export function createCx(
 		// only when its LAST live signature is overridden. The plan's ids run
 		// primaries-first then pre-expanded directional kills — the exact
 		// order the previous implementation applied them.
-		for (const sid of plan.all) {
-			const previous = owners.get(sid);
-			if (previous === undefined) continue;
-			owners.delete(sid);
+		const all = plan.all;
+		for (let ai = 0; ai < all.length; ai++) {
+			const sid = all[ai]!;
+			let k = 0;
+			for (; k < ownSid.length; k++) {
+				if (ownSid[k] === sid) break;
+			}
+			if (k >= ownSid.length) continue;
+			const previous = ownIdx[k]!;
+			// Swap-remove keeps the arrays compact without reindexing others.
+			const last = ownSid.length - 1;
+			ownSid[k] = ownSid[last]!;
+			ownIdx[k] = ownIdx[last]!;
+			ownSid.pop();
+			ownIdx.pop();
 			if (--outLive[previous]! === 0) outCls[previous] = "";
 		}
 		const index = outCls.length;
 		outCls.push(cls);
 		outPlan.push(plan);
 		outLive.push(plan.primaries);
-		for (let i = 0; i < plan.primaries; i++) owners.set(plan.all[i]!, index);
+		for (let i = 0; i < plan.primaries; i++) {
+			ownSid.push(all[i]!);
+			ownIdx.push(index);
+		}
 	};
 
 	/**
@@ -538,7 +614,8 @@ export function createCx(
 		outCls.length = 0;
 		outPlan.length = 0;
 		outLive.length = 0;
-		owners.clear();
+		ownSid.length = 0;
+		ownIdx.length = 0;
 		opaque.clear();
 		for (const input of inputs) {
 			if (Array.isArray(input)) {
