@@ -1,0 +1,386 @@
+/**
+ * `pandwind analyze` — fold-coverage reporting.
+ *
+ * Runs the same vite folding passes the build uses (tw() inlining followed
+ * by cx() inlining with constant propagation and partial conditional
+ * folding) over source files, and reports how much class-merging work was
+ * eliminated at build time versus left to the runtime.
+ *
+ * Counting model:
+ *
+ * - total cx calls are counted on the ORIGINAL module (the passes never add
+ *   or remove call sites);
+ * - per-call foldability is classified with the engine's own evaluator
+ *   (`evalStaticCx`), mirroring `inlineCxCalls`' decision logic: every
+ *   argument static -> full fold; exactly one dynamic conditional whose
+ *   branches are both static -> partial fold; otherwise runtime;
+ * - "full"/"partial" totals are cross-checked against the actual passes'
+ *   eliminated counts (see analyze.test.ts).
+ */
+import { globSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { parseSync } from "oxc-parser";
+import {
+	collectModuleConstants,
+	evalStaticCx,
+	type ConstantScope,
+	type KnownConstant,
+} from "../../pandwind/src/vite/cx-inline.ts";
+import { extractTwConfig, inlineTwCalls, type TwConfig } from "../../pandwind/src/vite/inline.ts";
+import { walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
+
+export interface AnalyzeOptions {
+	/** Generated tw module config (conflicts/compose/variants metadata). */
+	config: TwConfig;
+	/** Local names bound to the generated tw function. Default: ["tw"]. */
+	twNames?: ReadonlySet<string>;
+}
+
+export interface CallSite {
+	line: number;
+	reason: string;
+}
+
+export interface FileFoldStats {
+	file: string;
+	cxCalls: number;
+	cxFoldedFull: number;
+	cxFoldedPartial: number;
+	cxRuntime: number;
+	runtimeSites: Array<CallSite>;
+	twCalls: number;
+	twFolded: number;
+}
+
+export interface FoldSummary {
+	files: Array<FileFoldStats>;
+	totalCxCalls: number;
+	fullFolded: number;
+	partialFolded: number;
+	runtimeCalls: number;
+	eliminatedPct: number;
+	totalTwCalls: number;
+	twFolded: number;
+}
+
+type FoldKind = "full" | "partial" | "runtime";
+
+interface CallInfo {
+	start: number;
+	kind: FoldKind;
+	reason: string;
+	args: unknown[];
+}
+
+/** The evaluator's NOT_STATIC sentinel, derived from a known-dynamic probe. */
+const NOT_STATIC: unknown = (() => {
+	const probe = parseSync("probe.ts", `unknownRuntimeValue`, { sourceType: "module", lang: "ts" });
+	let sentinel: unknown;
+	walk(probe.program as unknown as OxcNode, (node) => {
+		if ((node as { type?: string }).type !== "ExpressionStatement") return;
+		sentinel = evalStaticCx((node as { expression?: unknown }).expression as never);
+	});
+	return sentinel;
+})();
+
+function isStatic(value: unknown): boolean {
+	return value !== NOT_STATIC;
+}
+
+interface ParsedModule {
+	program: OxcNode;
+	consts: ConstantScope;
+	cxNames: Set<string>;
+	twNames: Set<string>;
+	calls: Array<CallInfo & { name: string }>;
+	lineStarts: Array<number>;
+}
+
+function parseModule(source: string, file: string): ParsedModule {
+	const parsed = parseSync(file, source, {
+		sourceType: "module",
+		lang: file.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const program = parsed.program as unknown as OxcNode;
+
+	const imported = new Map<string, string>();
+	walk(program, (node) => {
+		if ((node as { type?: string }).type !== "ImportDeclaration") return;
+		for (const specifier of (node as { specifiers?: Array<Record<string, unknown>> }).specifiers ??
+			[]) {
+			const spec = specifier as {
+				type?: string;
+				imported?: { name?: string };
+				local?: { name?: string };
+			};
+			if (spec.type !== "ImportSpecifier") continue;
+			const importedName = (spec.imported?.name ?? "") as string;
+			const local = spec.local?.name ?? "";
+			if (importedName === "cx" || importedName === "tw") imported.set(local, importedName);
+		}
+	});
+
+	// Modules analyzed directly often use the conventional local names
+	// without an explicit helper import — mirror the coverage-harness
+	// convention and always recognize `cx` / `tw`.
+	const cxNames = new Set([
+		"cx",
+		...[...imported.entries()].filter(([, v]) => v === "cx").map(([k]) => k),
+	]);
+	const twNames = new Set([
+		"tw",
+		...[...imported.entries()].filter(([, v]) => v === "tw").map(([k]) => k),
+	]);
+	const consts = collectModuleConstants(program);
+
+	const lineStarts: Array<number> = [0];
+	for (let i = 0; i < source.length; i++) {
+		if (source[i] === "\n") lineStarts.push(i + 1);
+	}
+
+	const calls: Array<CallInfo & { name: string }> = [];
+	walk(program, (node) => {
+		if ((node as { type?: string }).type !== "CallExpression") return;
+		const call = node as {
+			callee?: { type?: string; name?: string };
+			arguments?: unknown[];
+			start?: number;
+		};
+		if (call.callee?.type !== "Identifier") return;
+		const name = call.callee.name ?? "";
+		if (!cxNames.has(name) && !twNames.has(name)) return;
+
+		if (twNames.has(name)) {
+			calls.push({
+				start: call.start ?? 0,
+				kind: "full",
+				reason: "",
+				args: call.arguments ?? [],
+				name,
+			});
+			return;
+		}
+		const clsfy = classify(call.arguments ?? [], consts, call.start ?? 0, name);
+		calls.push(clsfy);
+	});
+
+	return { program, consts, cxNames, twNames, calls, lineStarts };
+}
+
+/** Mirror of inlineCxCalls' per-call decision. */
+function classify(
+	args: unknown[],
+	consts: ConstantScope,
+	start: number,
+	name: string,
+): CallInfo & { name: string } {
+	let dynamicConditional: { index: number; arg: unknown } | undefined;
+	for (let i = 0; i < args.length; i++) {
+		const value = evalStaticCx(args[i] as never, undefined, consts);
+		if (isStatic(value)) continue;
+		const t = (args[i] as { type?: string })?.type;
+		if (
+			dynamicConditional === undefined &&
+			(t === "ConditionalExpression" || t === "LogicalExpression")
+		) {
+			dynamicConditional = { index: i, arg: args[i] };
+			continue;
+		}
+		return { start, kind: "runtime", reason: explain(args), args, name };
+	}
+	if (dynamicConditional !== undefined) {
+		// Partial fold requires BOTH branches static (test may be dynamic).
+		const cond = dynamicConditional.arg as {
+			consequent?: unknown;
+			alternate?: unknown;
+			left?: unknown;
+			right?: unknown;
+		};
+		const branches = [
+			(cond as { consequent?: unknown }).consequent,
+			(cond as { alternate?: unknown }).alternate,
+			(cond as { left?: unknown }).left,
+			(cond as { right?: unknown }).right,
+		].filter((b): b is unknown => b !== undefined && b !== null);
+		const allBranchesStatic = branches.every(
+			(b) =>
+				isStatic(evalStaticCx(b as never, undefined, consts)) ||
+				// nested conditionals recurse via buildSkeleton at build time
+				(b as { type?: string })?.type === "ConditionalExpression",
+		);
+		if (!allBranchesStatic) {
+			return { start, kind: "runtime", reason: "conditional with non-static branches", args, name };
+		}
+		return { start, kind: "partial", reason: "", args, name };
+	}
+	// All args static: full fold — unless a css()/unknown helper call is
+	// among them without a fold context (the pass leaves those alone).
+	const hasUnknownCall = args.some((a) => (a as { type?: string })?.type === "CallExpression");
+	if (hasUnknownCall) {
+		return { start, kind: "runtime", reason: "unresolved helper call argument", args, name };
+	}
+	return { start, kind: "full", reason: "", args, name };
+}
+
+function explain(args: unknown[]): string {
+	for (const arg of args) {
+		if ((arg as { type?: string })?.type === "SpreadElement") return "spread argument";
+	}
+	let conditionals = 0;
+	for (const arg of args) {
+		const t = (arg as { type?: string })?.type;
+		if (t === "ConditionalExpression" || t === "LogicalExpression") conditionals++;
+	}
+	if (conditionals > 1) return "multiple dynamic conditionals";
+	if (args.some((a) => (a as { type?: string })?.type === "ArrowFunctionExpression"))
+		return "function argument";
+	if (
+		args.some(
+			(a) =>
+				(a as { type?: string })?.type === "TemplateLiteral" &&
+				(a as { expressions?: unknown[] }).expressions?.length,
+		)
+	) {
+		return "runtime template interpolation";
+	}
+	if (args.some((a) => (a as { type?: string })?.type === "MemberExpression"))
+		return "member expression value";
+	if (args.some((a) => (a as { type?: string })?.type === "CallExpression"))
+		return "dynamic helper call";
+	return "unknown runtime value";
+}
+
+/**
+ * Analyze one module. `file` is only used for reporting (paths as given).
+ */
+export function analyzeSource(
+	source: string,
+	file: string,
+	options: AnalyzeOptions,
+): FileFoldStats {
+	const mod = parseModule(source, file);
+
+	const runtimeSites: Array<CallSite> = [];
+	let cxFoldedFull = 0;
+	let cxFoldedPartial = 0;
+	let cxRuntime = 0;
+	let cxTotal = 0;
+	let twCalls = 0;
+	let twFolded = 0;
+
+	const working = inlineTwCalls(source, file, options.config, options.twNames ?? new Set(["tw"]));
+	twFolded = working.inlined;
+
+	for (const call of mod.calls) {
+		const site = { line: lineOf(mod.lineStarts, call.start), reason: call.reason };
+		if (mod.twNames.has(call.name)) {
+			twCalls++;
+			continue;
+		}
+		cxTotal++;
+		if (call.kind === "full") cxFoldedFull++;
+		else if (call.kind === "partial") cxFoldedPartial++;
+		else {
+			cxRuntime++;
+			runtimeSites.push(site);
+		}
+	}
+
+	return {
+		file,
+		cxCalls: cxTotal,
+		cxFoldedFull,
+		cxFoldedPartial,
+		cxRuntime,
+		runtimeSites,
+		twCalls,
+		twFolded,
+	};
+}
+
+function lineOf(lineStarts: Array<number>, offset: number): number {
+	let lo = 0;
+	let hi = lineStarts.length - 1;
+	while (lo < hi) {
+		const mid = (lo + hi + 1) >> 1;
+		if ((lineStarts[mid] ?? 0) <= offset) lo = mid;
+		else hi = mid - 1;
+	}
+	return lo + 1;
+}
+
+/** Load a generated tw module's config from disk. */
+export function loadTwConfig(twPath: string): TwConfig {
+	const config = extractTwConfig(readFileSync(twPath, "utf8"));
+	if (config === undefined) {
+		throw new Error(`pandwind analyze: could not extract tw config from ${twPath}`);
+	}
+	return config;
+}
+
+/** Collect unique .ts/.tsx files matching globs under root (no node_modules). */
+export function collectFiles(patterns: Array<string>, root: string): Array<string> {
+	const files = new Set<string>();
+	for (const pattern of patterns) {
+		const matches = globSync(pattern, { cwd: root }) as unknown[];
+		for (const match of matches) {
+			if (typeof match !== "string") continue;
+			if (match.includes("node_modules")) continue;
+			if (!match.endsWith(".ts") && !match.endsWith(".tsx")) continue;
+			files.add(resolve(root, match));
+		}
+	}
+	return [...files].toSorted();
+}
+
+/** Aggregate per-file stats into totals. */
+export function summarize(files: Array<FileFoldStats>): FoldSummary {
+	const totalCxCalls = files.reduce((acc, f) => acc + f.cxCalls, 0);
+	const fullFolded = files.reduce((acc, f) => acc + f.cxFoldedFull, 0);
+	const partialFolded = files.reduce((acc, f) => acc + f.cxFoldedPartial, 0);
+	const runtimeCalls = files.reduce((acc, f) => acc + f.cxRuntime, 0);
+	const totalTwCalls = files.reduce((acc, f) => acc + f.twCalls, 0);
+	const twFolded = files.reduce((acc, f) => acc + f.twFolded, 0);
+	const eliminated =
+		totalCxCalls === 0 ? 100 : Math.round(((fullFolded + partialFolded) / totalCxCalls) * 100);
+	return {
+		files,
+		totalCxCalls,
+		fullFolded,
+		partialFolded,
+		runtimeCalls,
+		eliminatedPct: eliminated,
+		totalTwCalls,
+		twFolded,
+	};
+}
+
+/** Human-readable report. */
+export function formatReport(summary: FoldSummary): string {
+	const lines: Array<string> = [];
+	lines.push("pandwind analyze — fold coverage");
+	lines.push("");
+	lines.push(
+		`${"file".padEnd(40)} ${"cx full/part/runtime".padStart(20)} ${"tw folded".padStart(12)}`,
+	);
+	for (const f of summary.files) {
+		const cxCell = `${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`;
+		lines.push(
+			`${f.file.slice(0, 40).padEnd(40)} ${cxCell.padStart(20)} ${(f.twFolded + "/" + f.twCalls).padStart(12)}`,
+		);
+		for (const site of f.runtimeSites) {
+			lines.push(`    ^ ${f.file}:${site.line} — ${site.reason}`);
+		}
+	}
+	lines.push("");
+	lines.push(
+		`cx(): ${summary.eliminatedPct}% of ${summary.totalCxCalls} calls eliminated at build time` +
+			` (${summary.fullFolded} fully, ${summary.partialFolded} partially; ${summary.runtimeCalls} at runtime)`,
+	);
+	if (summary.totalTwCalls > 0) {
+		lines.push(`tw(): ${summary.twFolded}/${summary.totalTwCalls} calls inlined`);
+	}
+	return lines.join("\n");
+}
+
+export type { KnownConstant };
