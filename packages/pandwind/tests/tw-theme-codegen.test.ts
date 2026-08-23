@@ -19,12 +19,17 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
 	buildThemeBlock,
+	createConditionResolver,
 	normalizeThemeValue,
 	themeNamespaceFor,
 	themeTokenName,
 	themeVarsFromTokens,
 } from "../src/tw/generate-theme.ts";
-import { generateDesignSystem, resolveTokenGroups } from "../src/tw/generate-types.ts";
+import {
+	generateDesignSystem,
+	resolvePresetConditions,
+	resolveTokenGroups,
+} from "../src/tw/generate-types.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const srcDir = resolve(app, "src");
@@ -130,5 +135,123 @@ describe("typegen integration", () => {
 		const b = await generateDesignSystem(css, srcDir, { themeBlock: THEME_BLOCK });
 		expect(a.typesDts).toBe(b.typesDts);
 		expect(a.twTs).toBe(b.twTs);
+	});
+});
+
+describe("condition-bound semantic tokens (probed against real tailwindcss 4.3.3)", () => {
+	// Probe results backing these expectations (plan 010 section D):
+	// - nesting @theme inside .dark silently flattens to :root — never emit;
+	// - plain-CSS custom-property overrides cascade into var()-based
+	//   utilities for selector, media AND compound (media + pseudo)
+	//   conditions — verified through the real compiler.
+
+	const CONDITIONS = {
+		dark: ".dark &",
+		sm: "@media (min-width: 640px)",
+		hover: "&:hover",
+		supportHover: ["@media (hover: hover) and (pointer: fine)", "&:hover"],
+	};
+	const resolver = createConditionResolver(CONDITIONS);
+
+	test("condition resolver maps every part shape", () => {
+		expect(resolver("dark")).toEqual({ selectors: [".dark"], atRules: [] });
+		expect(resolver("sm")).toEqual({ selectors: [], atRules: ["@media (min-width: 640px)"] });
+		expect(resolver("hover")).toEqual({ selectors: [":root:hover"], atRules: [] });
+		expect(resolver("supportHover")).toEqual({
+			selectors: [":root:hover"],
+			atRules: ["@media (hover: hover) and (pointer: fine)"],
+		});
+		expect(resolver("unknown-condition")).toBeNull();
+	});
+
+	test("base lands in @theme, variants become standalone override rules", () => {
+		const groups = {
+			colors: { success: { base: "#60A3BC", dark: "#2C7A7B", hover: "#90BFD0" } },
+		};
+		const themeCss = buildThemeBlock(groups, resolver);
+		expect(themeCss).toContain("@theme {\n\t--color-success: #60a3bc;\n}");
+		expect(themeCss).toContain(".dark {\n\t\t--color-success: #2c7a7b;\n\t}");
+		expect(themeCss).toContain(":root:hover {\n\t\t--color-success: #90bfd0;\n\t}");
+	});
+
+	test("compound conditions nest media around the selector rule", () => {
+		const themeCss = buildThemeBlock(
+			{ colors: { success: { base: "#60a3bc", supportHover: "#2c7a7b" } } },
+			resolver,
+		);
+		expect(themeCss).toContain("@media (hover: hover) and (pointer: fine) {");
+		expect(themeCss.indexOf("@media (hover: hover)")).toBeLessThan(themeCss.indexOf(":root:hover"));
+	});
+
+	test("unresolvable variant drops the WHOLE token (no partial semantics)", () => {
+		const themeCss = buildThemeBlock(
+			{
+				colors: {
+					good: "#123456",
+					bad: { base: "#60a3bc", mysteryCondition: "#2c7a7b" },
+				},
+			},
+			resolver,
+		);
+		expect(themeCss).toContain("--color-good");
+		expect(themeCss).not.toContain("--color-bad");
+	});
+
+	test("flat string tokens are unaffected when a resolver is supplied", () => {
+		const before = buildThemeBlock({ colors: { "$blue-500": "#3182CE" } });
+		const after = buildThemeBlock({ colors: { "$blue-500": "#3182CE" } }, resolver);
+		expect(after).toBe(before);
+	});
+
+	test("deterministic output", () => {
+		const groups = {
+			colors: { success: { base: "#60A3BC", dark: "#2C7A7B", sm: "#4299E1" } },
+		};
+		expect(buildThemeBlock(groups, resolver)).toBe(buildThemeBlock(groups, resolver));
+	});
+});
+
+describe("resolvePresetConditions", () => {
+	test("finds the conditions record on an exported preset-like object", () => {
+		const preset = { tokens: { colors: { x: "#123123" } }, conditions: { dark: ".dark &" } };
+		expect(resolvePresetConditions({ examplePreset: preset })).toEqual({ dark: ".dark &" });
+	});
+
+	test("returns undefined when no object carries conditions", () => {
+		expect(resolvePresetConditions({ somethingElse: { foo: "bar" } })).toBeUndefined();
+	});
+});
+
+describe("typegen with condition-bound theme block", () => {
+	const CONDITIONS = { dark: ".dark &" };
+	const THEME_BLOCK = buildThemeBlock(
+		{ colors: { success: { base: "#60a3bc", dark: "#2c7a7b" } } },
+		createConditionResolver(CONDITIONS),
+	);
+
+	test("injected overrides keep token utilities in the generated unions", async () => {
+		const { typesDts } = await generateDesignSystem(css, srcDir, { themeBlock: THEME_BLOCK });
+		expect(typesDts).toContain("success");
+	});
+
+	test("the emitted artifact carries the override rules verbatim", async () => {
+		expect(THEME_BLOCK).toContain(".dark {");
+		expect(THEME_BLOCK).toContain("--color-success: #2c7a7b;");
+	});
+
+	test("emitted overrides survive real Tailwind compilation", async () => {
+		const { compile } = await import("@tailwindcss/node");
+		const res = await compile(`@import "tailwindcss";\n${THEME_BLOCK}`, {
+			base: srcDir,
+			onDependency: () => {},
+		});
+		const out = res.build(["bg-success"]) as string;
+		// Base value in :root (from @theme) AND the .dark override rule
+		// survive real compilation; the utility references the var so the
+		// cascade applies whichever condition matches at runtime.
+		expect(out).toContain(":root, :host {");
+		expect(out).toContain(".dark {");
+		expect(out).toContain("--color-success: #2c7a7b");
+		expect(out).toContain("background-color: var(--color-success)");
 	});
 });

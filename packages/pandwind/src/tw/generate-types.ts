@@ -21,7 +21,13 @@ import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
-import { buildThemeBlock, themeVarsFromTokens, type ThemeTokenGroups } from "./generate-theme.ts";
+import {
+	buildThemeBlock,
+	createConditionResolver,
+	type ThemeConditions,
+	themeVarsFromTokens,
+	type ThemeTokenGroups,
+} from "./generate-theme.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
@@ -971,6 +977,40 @@ function detectVariantJoin(
 const alphaSort = (a: string, b: string) => a.localeCompare(b, "en", { ignorePunctuation: true });
 
 /**
+ * Find preset condition definitions (`Record<string, string | string[]>`)
+ * inside an imported tokens/preset module: the first object carrying a
+ * `.conditions` record whose values are strings or arrays of strings.
+ */
+export function resolvePresetConditions(
+	module: Record<string, unknown>,
+): ThemeConditions | undefined {
+	const candidates: unknown[] = [
+		module.default,
+		...Object.entries(module)
+			.filter(([name]) => name !== "default")
+			.map(([, value]) => value),
+	];
+	for (const candidate of candidates) {
+		if (candidate === null || typeof candidate !== "object") continue;
+		const obj = candidate as Record<string, unknown>;
+		const cond = obj.conditions;
+		if (cond === null || typeof cond !== "object") continue;
+		const values = Object.values(cond as Record<string, unknown>);
+		if (
+			values.length > 0 &&
+			values.every(
+				(v) =>
+					typeof v === "string" ||
+					(Array.isArray(v) && v.every((part) => typeof part === "string")),
+			)
+		) {
+			return cond as ThemeConditions;
+		}
+	}
+	return undefined;
+}
+
+/**
  * Find DTCG token groups inside an imported tokens/preset module: the first
  * export (default first) that either is a groups object itself or carries a
  * `.tokens` field with at least one theme-namespace-bridged group.
@@ -1083,13 +1123,17 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 		const { pathToFileURL } = await import("node:url");
 		const module = await import(pathToFileURL(resolve(base, String(tokensModulePath))).href);
 		const groups = resolveTokenGroups(module as Record<string, unknown>);
+		const conditions = resolvePresetConditions(module as Record<string, unknown>);
 		if (groups === undefined) {
 			throw new Error(
 				`pandwind tw:codegen: no bridgeable token groups found in ${String(tokensModulePath)} ` +
 					"(looked at default export and every named export for a .tokens field or raw DTCG groups)",
 			);
 		}
-		themeBlock = buildThemeBlock(groups);
+		themeBlock = buildThemeBlock(
+			groups,
+			conditions ? createConditionResolver(conditions) : undefined,
+		);
 	}
 
 	const css = readFileSync(cssEntry, "utf8");
