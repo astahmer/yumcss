@@ -1,0 +1,69 @@
+name: PR report
+
+# Posts/updates a sticky PR comment with the runtime-size table delta vs the
+# base branch and the cx() fold-coverage percentage. Purely informational:
+# every failure after checkout/install is caught and reported inside the
+# comment (or logged) — the workflow never turns red over reporting problems.
+#
+# Requires no secrets beyond the automatic GITHUB_TOKEN. On fork PRs the
+# token is read-only; the comment step detects 403/404 responses and exits 0.
+
+on:
+  pull_request:
+    paths:
+      - "packages/pandwind/**"
+      - "packages/codemod/**"
+      - "apps/example/**"
+      - ".github/workflows/pr-report.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-report-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The base tree is checked out INSIDE the working directory so a single
+      # pnpm install serves both measurements: all module resolution happens
+      # from the HEAD checkout, the base dir only supplies source files.
+      - name: Check out base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base-checkout
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Measure and post report
+        id: measure
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          BASE_REF_NAME: ${{ github.base_ref }}
+          BASE_DIR: base-checkout
+        # tsx comes from apps/example's devDependencies; module resolution for
+        # oxc-parser flows through packages/pandwind's own node_modules.
+        run: pnpm --filter example exec tsx ../../.github/scripts/pr-report.mjs
+        # Fail-open: reporting problems must never fail the workflow.
+        continue-on-error: true
