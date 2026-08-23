@@ -67,92 +67,18 @@ virtual-module regeneration overhead rather than class-string cost. Measure
 to confirm, fix what is legitimately fixable in the LANE (not by gaming),
 re-run those cells + vanilla, report before/after. Never modify pandwind
 sources.
-xxtolqlt 3b17e71f "docs(changelog): grouped entries for the 2026-08-22 and 2026-08-23 development waves" (rebase destination)
-### D. Outcomes (2026-08-23) — probe results + implementation
+pwpsrnpm 0e961d45 "feat(analyze): pandwind analyze — fold-coverage CLI" (rebase destination)
+## F. Outcomes
 
-Probe method: real tailwindcss 4.3.3 via `compile()` from @tailwindcss/node
-(same oracle as the parity suites), candidate `bg-success` with a bridged
-`--color-success`.
-
-| probe                                                        | result                                                                            |
-| -----------------------------------------------------
-### B. Outcomes (2026-08-23)
-
-- New tests/css-dedup-parity.test.ts: parameterized battery over the two
-  sheet-backed modes (default hash, named-atoms). Per mode asserts:
-  one-rule-per-class (per atom + global duplicate check), resolved
-  declarations equal intent, and cx() survivor recompilation for last-wins,
-  disjoint-coexistence and variant-scoped scenarios. Cross-mode test proves
-  named-atoms resolves byte-identically to hash mode.
-- Class matching handles three selector spellings: raw runtime class,
-  postcss-normalized escapes, and CSS identifier escaping of leading digits
-  (`1k0rf5x` -> `.\31 k0rf5x` via escapeIdentifier).
-- **Pre-existing engine divergence found (pinned by an expected-fail test,
-  NOT fixed — test-only change):** runtime atoms register under the WRITTEN
-  flatten key order while createStylesheet canonicalizes condition parts by
-  sorting them. Inverted condition nesting
-  (`css({ color: { _hover: "red" } })` instead of
-  `css({ _hover: { color: "red" } })`) therefore emits a stylesheet rule
-  keyed differently from the registered runtime atom -> missing CSS in hash
-  mode. Canonical authoring is unaffected; named-atoms is immune (the
-  strategy applies the same sort). Recommend a follow-up engine fix:
-  apply the same sort in css.register (one-line canonicalization) + flip the
-  pinned test to positive.
-
-### D. Outcomes (2026-08-23) — probe results + implementation
-
-Probe method: real tailwindcss 4.3.3 via `compile()` from @tailwindcss/node
-(same oracle as the parity suites), candidate `bg-success` with a bridged
-`--color-success`.
-
-| probe                                                        | result                                                                            |
-| -----------------------------------------------------
-### E. Outcomes (2026-08-23)
-
-Implemented (all behavior-neutral, parity/fuzz/golden suites green unmodified):
-
-- Fused tokenizer: tokenization inlined into the push pass — no intermediate
-  token array and no split-cache Map churn (tokensCache removed entirely;
-  warm shapes unaffected: short pair 3.35M / long pair 1.75M ops/sec, same
-  as pre-round within noise).
-- Allocation-free scratch slots for splitVariants/parseUtility results
-  (previously one throwaway object per parsed token), lastIndexOf dash
-  descent instead of a char loop, closure-free whole-input cache check,
-  regex-free border-utility test, regex-free arbitrary-value shape tests
-  (isLengthLike/isColorLike with exact-parity fallbacks to the original
-  regexes).
-
-Measured cold path (cx(coldA[i], coldB[i]), 8-round interleaved A/B vs the
-pre-round implementation): new median range 48K–128K, old 52K–119K across
-bursts; best-of bursts 128K (new) vs 119K (old). **Target >=1.5x was NOT
-met** — machine load variance (burst medians swing +-50% on identical code)
-exceeds the effect size, and the effect itself measured roughly +0..15%.
-
-Why the target is structurally hard: cold cost is dominated by irreducible
-per-unique-token work — string slices for utility/value, signature-string
-construction + interning hash, twSigs Map insert, CompiledSigs retention —
-all required by the parity constraint (string-keyed generated maps). GC
-accounted for only ~11% of profile; compute is spread thinly across parse/
-intern/push rather than concentrated in one optimizable kernel.
-
-Path to >1.5x (follow-up candidates, larger redesigns):
-Final kept state (2026-08-23, after trimming the parts that regressed):
-
-- Kept: fused tokenizer (tokensCache removed entirely), scratch-slot
-  splitVariants/parseUtility, lastIndexOf dash descent, closure-free cache
-  check, regex-free border test. Reverted during review: two-strike cache
-  admission (measurably slower — extra Set hash per unique key exceeded the
-  saved Map insert) and manual isLengthLike/isColorLike scanners (added bytes,
-  no measurable perf win; original regexes restored).
-- Measured on the committed cx-bench.mts (quiet machine, best-of):
-  short pair 7.06M ops/sec, long pair 2.88M, long single 21.3M,
-  cold unique-token pairs 130K (pre-round interleaved A/B old-vs-new:
-  old best-burst 119K vs new 132K => roughly +7..10%, NOT the 1.5x target).
-- Size: cx entry 7049 -> 6922 min / 3056 gz (net SHRINK of 127 bytes).
-- Parity/fuzz/golden suites green unmodified; full gate green.
-
-1. Trie over the generated conflicts map built once per config — parse by
-   walking chars without substring allocation until a terminal value check.
-2. Precompile conflict metadata at tw() codegen time into flat typed arrays,
-   removing runtime parsing of the map entirely.
-3. Numeric property-family bitsets replacing string interning end-to-end.
+- packages/analyze: `analyzeSource` (per-call classification mirroring
+  inlineCxCalls' decision via evalStaticCx + collectModuleConstants),
+  `collectFiles` (globSync-based, node_modules skipped, .ts/.tsx only),
+  `summarize`, `formatReport`. CLI: globs default to all .ts/.tsx under
+  ./src; flags --tw <generated tw.ts>, --json, --root.
+- Cross-check test asserts classified eliminated counts equal the real
+  passes' inlined counts on a mixed module (full/partial/runtime).
+- Root wiring: `pnpm analyze` runs against apps/example with the generated
+  tw.ts. Verified live: example's 8 tw() calls report 8/8 inlined.
+- Known limitation: cross-module importedConstants are not resolved by the
+  CLI yet (same-module constants are) — needs the ModuleConstRegistry from
+  the vite plugin state threaded through; noted for a follow-up.
