@@ -32,6 +32,8 @@ export interface CssBudget {
 	perPrefix: Array<{ prefix: string; rules: number }>;
 }
 
+const unescape = (c: string): string => c.replace(/\\/g, "");
+
 const prefixOf = (selector: string): string => {
 	// Strip escape noise and pseudo tails: `.sm\:hover\:bg-red-500:hover` ->
 	// "sm:hover:bg". Good enough for a budget breakdown.
@@ -68,7 +70,6 @@ export async function cssBudget(options: {
 		});
 		return text;
 	})();
-	const unescape = (c: string): string => c.replace(/\\/g, "");
 	const live = new Set<string>();
 	for (const candidate of classes) {
 		const plain = unescape(candidate);

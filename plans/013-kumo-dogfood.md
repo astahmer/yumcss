@@ -93,3 +93,43 @@ port is now purely mechanical: `--write --meta=/tmp/kumo-meta` on a branch,
 swap `@tailwindcss/vite` wiring, run their vitest suite. Remaining codemod
 enhancement worth doing first: support `data-[…]` variants via the escape
 hatch instead of keeping verbatim.
+
+## Port result (2026-08-23, full --write migration)
+
+Executed on branch `pandwind-migration` of the kumo clone
+(/tmp/pandwind-kumo-dogfood): codemod `--to=tw --meta=/tmp/kumo-meta --write`
+over packages/kumo/src → 103 files scanned · 54 changed · 293 call sites
+converted · 107 tokens kept verbatim (by-design: arbitraries,
+data-[...] variants, legacy spellings).
+
+### 1:1 CSS check — VERDICT: 1:1 parity
+
+Method (`packages/analyze/css-parity-kumo.mts`): BEFORE = every string-literal
+token from pristine sources; AFTER = tw({...}) calls re-evaluated through the
+REAL pandwind runtime (`createTw` with the kumo-generated config) plus
+remaining verbatim literals. Both candidate sets (~4.7k each) compiled through
+real Tailwind with kumo's theme; diffed as normalized rule sets
+(selector+sorted declarations).
+
+Result (shared warm compiler instance): **867 rules before, 867 after,
+identical=867, missing=0, extra=0**. Byte delta ≈ 0 (±180 B across runs is a
+candidate-order artifact of Tailwind's cold vs warm internal registry — first
+build after `compile()` may miss late-registered utilities, so comparisons
+must share one compiler instance; noted as methodology).
+
+### Codemod bugs found & fixed during the port
+
+1. **FIXED — `ensureImport` multi-line import corruption** (shared.ts): the
+   import-header regex was single-line-aware, so files whose FIRST import was
+   multi-line got the pandwind imports injected INSIDE the braces → **27 of
+   54 written files failed to parse**. Rewrote as a stateful line scan
+   (open-import until specifier-quote terminator). All 41 codemod tests +
+   parse-check over the written tree pass (1 pre-existing-broken file
+   remains, see #2).
+2. **KNOWN ISSUE (unfixed) — classNameMatches ignores string/comment
+   context**: the regex converts `className='…'` occurrences inside string
+   literals and comments too. Observed damage: a vitest `it("… className=
+'contents' …")` test name rewritten to invalid syntax, and a JSDoc example
+   converted inside a comment (its classes then vanish from AST-based
+   extraction). Fix sketch: linear scan tracking quote/comment state up to
+   match index, skip when inside.
