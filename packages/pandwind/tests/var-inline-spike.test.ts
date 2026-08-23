@@ -10,7 +10,7 @@
  * because both classes set the same property.
  */
 import { compile, __unstable__loadDesignSystem } from "@tailwindcss/node";
-import { parse, type Root, type Rule } from "postcss";
+import { parse, type Root } from "postcss";
 import { describe, expect, test } from "vitest";
 
 const SHEET = `

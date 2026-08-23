@@ -35,7 +35,7 @@ export interface CssBudget {
 const prefixOf = (selector: string): string => {
 	// Strip escape noise and pseudo tails: `.sm\:hover\:bg-red-500:hover` ->
 	// "sm:hover:bg". Good enough for a budget breakdown.
-	const cls = /\.([A-Za-z0-9_\\:\[\]\/\-\.\%]+)/.exec(selector)?.[1] ?? selector;
+	const cls = new RegExp("\\.([A-Za-z0-9_:[\\]/\\-.%]+)").exec(selector)?.[1] ?? selector;
 	return cls.replace(/\\/g, "");
 };
 
@@ -51,8 +51,6 @@ export async function cssBudget(options: {
 	const built = compiled.build(classes);
 	const root: Root = parse(built);
 
-	const rules =
-		root.nodes?.filter((n): n is Exclude<Root["nodes"][number], undefined> => true) ?? [];
 	const perPrefixMap = new Map<string, number>();
 	let liveRules = 0;
 	root.walkRules((rule) => {
@@ -60,7 +58,6 @@ export async function cssBudget(options: {
 		const key = prefixOf(rule.selector);
 		perPrefixMap.set(key, (perPrefixMap.get(key) ?? 0) + 1);
 	});
-	void rules;
 
 	// Dead-candidate detection: a candidate is alive when its unescaped
 	// class name appears in some compiled selector.
