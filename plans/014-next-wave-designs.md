@@ -177,3 +177,30 @@ Before any build decision: run the 15-min empirical checklist
 (research.md §"How to verify empirically") and spike the zero-code path —
 emitting `/*# sourceMappingURL= */` with .tsx sources in dev builds, which
 Chromium's Styles pane may surface natively.
+
+## 4b. Studio overhaul + panda-cloud feature mining (2026-08-24)
+
+User feedback: studio looked basic; default must be the design-system
+showcase; stats page added; polish required (it showcases a CSS lib).
+
+Landed in apps/inspector:
+
+- **Design system tab (default)**: color swatch grids from preset groups +
+  semantic tokens (dual base/_dark swatches for condition-bound tokens,
+  click-to-copy), resolution chains ($surface ← $green-500 ← #60A3BC),
+  typography previews rendered at real size (font sizes/weights/families/
+  line-heights/tracking), proportional spacing bars, radii boxes,
+  categorized @theme vars, typed unions table.
+- **Stats tab**: fold-coverage cards, css budget bars by prefix, sortable +
+  filterable per-file table, missing-css/runtime site lists.
+- Polish: dark-first theme, accent from the example palette, sticky header,
+  hover/loading/error/empty states designed; zero console errors verified
+  via Playwright against the live dev server.
+
+**panda-cloud mining verdict**: ADOPTED — overview-dashboard layout pattern
+(stat cards + drilldown tables) and the token-analyzer's per-file coverage
+concept (already covered by our fold-coverage per-file table; a literal-vs-
+token COVERAGE % like panda's would need source-level style accounting we
+don't track yet — noted as future analyze work, not faked). REJECTED —
+snapshot import/diff flows and tRPC server stack (out of scope for a
+read-only local tool over existing artifacts).
