@@ -30,6 +30,72 @@ export function Card() {
 }
 ```
 
+## Quickstart (fresh app)
+
+pandwind ships **source** (`.ts` entry points) and expects a bundler that
+compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
+
+```sh
+pnpm add pandwind
+```
+
+**1. Preset** — define your design system once (`src/preset.ts`): tokens,
+radii, conditions. See `packages/pandwind/src/preset/example-preset.ts` for a
+complete example (`defineTokens` / `defineTheme` / `definePreset`).
+
+**2. Codegen** — generate the typed `tw()` runtime + `@theme` bridge from your
+`tailwind.css`:
+
+```jsonc
+// package.json
+{
+	"scripts": {
+		"tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
+		"tw:bridge": "tsx node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+	},
+}
+```
+
+```sh
+pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan
+```
+
+This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
+`src/pandwind-theme.css` (the token bridge — import it from your
+`tailwind.css`). The `--tokens` flag feeds your preset's DTCG token groups in;
+drop it if you don't use tokens.
+
+**3. Vite plugins** — fold literal calls at build time:
+
+```ts
+// vite.config.ts
+import { pandwindVite } from "pandwind/vite";
+import { createTwAdapter } from "pandwind/tw";
+import examplePreset from "./src/preset"; // or however you expose the preset
+
+export default {
+	plugins: [
+		pandwindVite({
+			preset: examplePreset,
+			// optional: css() atoms compile to Tailwind classes too
+			className: createTwAdapter({/* bridge + variants from generated files */}),
+		}),
+	],
+};
+```
+
+Without `className` the atomic engine emits hashed classes compiled by
+`pandwindCssVite`; with the adapter everything compiles through Tailwind —
+same API either way.
+
+**4. Use it** — `tw()` for typed utilities, `css()` / `createDesignCss` for
+atomic styles, `cx()` to merge both. Plain strings keep working everywhere.
+
+Subpath map: `pandwind/css`, `/tw`, `/cx`, `/preset`, `/design`, `/vite`
+(runtime); `pandwind/codegen/{types,theme,collect}` (build-time codegen
+helpers). `generate-bridge` stays CLI-only (it executes on import).
+
 ## `tw()` — typed Tailwind classes
 
 `tw()` takes a Panda-like object, types it against your real Tailwind design
