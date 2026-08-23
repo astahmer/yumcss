@@ -1,0 +1,73 @@
+/** Shared payload contract between the node-side gatherer and the UI. */
+
+export interface ThemeVar {
+	name: string;
+	value: string;
+}
+
+export interface UtilityUnion {
+	key: string;
+	count: number;
+	sample: Array<string>;
+	/** True when the union carries the `(string & {})` escape hatch. */
+	openEnded: boolean;
+}
+
+export interface TokenSection {
+	id: string;
+	label: string;
+	entries: Array<{ name: string; value: string }>;
+}
+
+export interface CoverageFile {
+	file: string;
+	eliminatedPct: number;
+	cxCalls: number;
+	cxFoldedFull: number;
+	cxFoldedPartial: number;
+	cxRuntime: number;
+	missingCssCount: number;
+}
+
+export interface MissingSite {
+	file: string;
+	line: number;
+	token: string;
+}
+
+export interface StudioPayload {
+	meta: { root: string };
+	coverage: {
+		eliminatedPct: number;
+		entryEliminatedPct: number;
+		totalCxCalls: number;
+		fullFolded: number;
+		partialFolded: number;
+		runtimeCalls: number;
+		totalTwCalls: number;
+		twFolded: number;
+		totalMissingCss: number;
+		files: Array<CoverageFile>;
+		runtimeSites: Array<MissingSite>;
+		missingCssSites: Array<MissingSite>;
+		budget: {
+			cssBytes: number;
+			cssGzipBytes: number;
+			rules: number;
+			liveCandidates: number;
+			deadCandidates: number;
+			deadSample: Array<string>;
+			perPrefix: Array<{ prefix: string; rules: number }>;
+		};
+	};
+	designSystem: {
+		themeVars: Array<ThemeVar>;
+		utilities: Array<UtilityUnion>;
+		variantCount: number;
+		conflictUtilities: number;
+		composeUtilities: number;
+		bridgeProperties: number;
+		bridgeMappings: number;
+		tokenSections: Array<TokenSection>;
+	};
+}

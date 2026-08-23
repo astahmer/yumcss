@@ -1,0 +1,25 @@
+{
+	"name": "inspector",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"pandwind": "workspace:*",
+		"react": "19.2.8",
+		"react-dom": "19.2.8"
+	},
+	"devDependencies": {
+		"@types/node": "26.2.0",
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4",
+		"@vitejs/plugin-react-swc": "4.3.3",
+		"tsx": "4.23.12",
+		"typescript": "7.0.2",
+		"vite": "8.2.1",
+		"vitest": "4.1.10"
+	}
+}

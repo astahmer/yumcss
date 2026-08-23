@@ -130,6 +130,11 @@ PostCSS config, no runtime CSS-in-JS.
   deterministic `[data-theme="…"]` override blocks next to the `@theme`
   bridge. Utilities keep referencing `var(--color-surface)`; switching is a
   `data-theme` attribute flip with zero utility CSS changes.
+- **`pnpm inspect`** — pandwind studio: a local read-only dashboard over the
+  analyze machinery. Coverage tab (fold elimination, CSS budget, dead
+  candidates, missing-css warnings with editor links) + Design-system tab
+  (theme vars, typed utility unions, bridge map, preset tokens). Extend the
+  CLI, not the app, when adding metrics.
 - **`tw:prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82 →
