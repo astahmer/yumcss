@@ -209,10 +209,19 @@ function transformStyledComponents(
 ): string {
 	const edits: Array<Edit> = [];
 	const needsCx = { value: false };
-	let working = source;
 
+	// Flags are EDITS (line insertions at the original offset), not immediate
+	// mutations — otherwise a flag that follows a conversion in the same file
+	// would be discarded when applyEdits rebuilds from the pristine source.
 	const flag = (at: number, reason: string): void => {
-		working = insertSkipMarker(working, at, reason, options.marker);
+		const lineStart = source.lastIndexOf("\n", Math.max(0, at - 1)) + 1;
+		const indentMatch = /^\s*/.exec(source.slice(lineStart));
+		const indent = indentMatch ? indentMatch[0] : "";
+		edits.push({
+			start: lineStart,
+			end: lineStart,
+			text: `${indent}// ${options.marker} (${reason})\n`,
+		});
 		result.skippedByMarker++;
 	};
 
@@ -232,7 +241,6 @@ function transformStyledComponents(
 			result.skippedByMarker++;
 			continue;
 		}
-		void working;
 		if (tag === undefined || !INTRINSIC_TAGS.has(tag)) {
 			flag(start, "styled(<Component>) wrappers stay as-is (component inheritance)");
 			continue;
@@ -270,7 +278,7 @@ function transformStyledComponents(
 		if (name !== "") edits.push(...jsxUsageEdits(source, name, tag, needsCx));
 	}
 
-	if (edits.length === 0) return working;
+	if (edits.length === 0) return source;
 	// The hasCssBinding gate guarantees the file already binds a pandwind
 	// css factory — no import is injected, only the styled-components one is
 	// dropped.

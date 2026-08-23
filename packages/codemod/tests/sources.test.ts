@@ -122,6 +122,60 @@ const Extended = styled(Base)\`
 	});
 });
 
+// Corpus ported from astahmer/pandabox codemods (styled2panda fixtures,
+// plans/012 §1d): same input shapes, asserting OUR documented behavior.
+describe("styled2panda corpus parity", () => {
+	test("import transform: the styled-components import is removed on conversion", () => {
+		const result = styled(`
+import styled from 'styled-components';
+
+const Link = styled.a\`
+	background: papayawhip;
+	color: #bf4f74;
+\`;`);
+		expect(result.converted).toBe(1);
+		expect(result.code).not.toContain("from 'styled-components'");
+		expect(result.code).toContain("css.class({");
+	});
+
+	test("cross-component selector interpolation (${Link}:hover &) is flagged, not converted", () => {
+		const result = styled(`
+import styled from 'styled-components'
+
+const Icon = styled.svg\`
+	width: 48px;
+\${Link}:hover & {
+	fill: rebeccapurple;
+}
+\`;`);
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		// the original template survives untouched
+		expect(result.code).toContain("rebeccapurple");
+	});
+
+	test("composition file: flat siblings convert while styled(<Component>) stays as-is", () => {
+		const result = styled(`
+import styled from 'styled-components'
+
+const Button = styled.button\`
+	color: #BF4F74;
+	font-size: 1em;
+	margin: 1em;
+\`;
+
+const TomatoButton = styled(Button)\`
+	color: tomato;
+	border-color: tomato;
+\`;`);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain("css.class({"); // Button converted
+		expect(result.code).toContain("styled(Button)"); // inheritance kept
+		expect(result.code).toContain("component inheritance");
+	});
+});
+
 describe("stylex source", () => {
 	test("literal stylex.create becomes an object of css.class values", () => {
 		const result = stylex(`
