@@ -116,6 +116,9 @@ importers:
       postcss-selector-parser:
         specifier: 7.1.5
         version: 7.1.5
+      react:
+        specifier: '>=18.0.0'
+        version: 19.2.8
       tailwindcss:
         specifier: 4.3.3
         version: 4.3.3
@@ -126,6 +129,9 @@ importers:
       '@types/node':
         specifier: 26.2.0
         version: 26.2.0
+      '@types/react':
+        specifier: 19.2.8
+        version: 19.2.8
       esbuild:
         specifier: 0.28.2
         version: 0.28.2
@@ -1141,6 +1147,9 @@ packages:
 
   '@types/react@19.2.18':
     resolution: {integrity: sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==}
+
+  '@types/react@19.2.8':
+    resolution: {integrity: sha512-3MbSL37jEchWZz2p2mjntRZtPt837ij10ApxKfgmXCTuHWagYg7iA5bqPw6C8BMPfwidlvfPI/fxOc42HLhcyg==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -2329,6 +2338,10 @@ snapshots:
       '@types/react': 19.2.18
 
   '@types/react@19.2.18':
+    dependencies:
+      csstype: 3.2.3
+
+  '@types/react@19.2.8':
     dependencies:
       csstype: 3.2.3
 

@@ -9,6 +9,8 @@
 		"./css": "./src/css/index.ts",
 		"./cx": "./src/cx/index.ts",
 		"./preset": "./src/preset/index.ts",
+		"./stack": "./src/stack/index.ts",
+		"./stack/react": "./src/stack/react.tsx",
 		"./design": "./src/design/index.ts",
 		"./tw": "./src/tw/index.ts",
 		"./tw/generate": "./src/tw/generate-types.ts",
@@ -37,6 +39,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "26.2.0",
+		"@types/react": "19.2.8",
 		"esbuild": "0.28.2",
 		"postcss": "8.5.26",
 		"rollup": "4.62.5",
@@ -47,6 +50,12 @@
 		"vitest": "4.1.10"
 	},
 	"peerDependencies": {
+		"react": ">=18.0.0",
 		"typescript": ">=5.5.0"
+	},
+	"peerDependenciesMeta": {
+		"react": {
+			"optional": true
+		}
 	}
 }
