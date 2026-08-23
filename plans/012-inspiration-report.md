@@ -206,3 +206,24 @@ build beyond those.
 | 5   | @theme var pruning (1a)              | S                      | smaller shipped CSS, documented caveat   |
 | 6   | styled-components fixtures port (1d) | S                      | feeds committed codemod roadmap          |
 | 7   | studio dashboard (4a)                | L                      | park until analyze matures               |
+
+---
+
+## Follow-up outcomes
+
+### 1b — analyze missing-CSS warnings (done 2026-08-23)
+
+`packages/analyze` now reports statically-known class tokens that resolve to
+NO Tailwind candidate ("runtime class without CSS"): for every fully/partially
+folded cx() call, string arguments are tokenized (variant prefixes stripped
+bracket-aware) and checked against the generated conflict map (whole-key,
+utility+value, opacity modifier, `*` fallback). Arbitrary-value brackets pass
+by construction; unknown variant prefixes are flagged; tokens with no map
+entry land in the new `missingCss` per-file list + `totalMissingCss` summary
+field (JSON schema unchanged otherwise), rendered as
+`missing-css: ...` lines by the human report.
+
+Escapes: `AnalyzeOptions.missingCssIgnore` for deliberate foreign classes;
+the lane self-disables when no conflict map is passed. tw() literals stay out
+of scope (typed at call sites). Live run over apps/example reports zero
+warnings. Tests: tests/missing-css.test.ts (9 cases).
