@@ -70,3 +70,26 @@ codebase yet.
 - **8bitcn → full pandwind**: codegen its theme, then migrate hot surfaces
   onto `css()`/`cx()` so the stylesheet generation replaces Tailwind's —
   exercises the css-side pipeline end to end.
+
+## Target-theme codegen result (2026-08-23, later)
+
+Ran `tw:codegen` + `generate-bridge` against Kumo's OWN theme
+(`/tmp/kumo-meta`: tailwind.css = tailwindcss import + theme-kumo.css):
+414 utilities / 88 variants, ALL `kumo-*` semantic colors
+(kumo-brand, kumo-placeholder, kumo-canvas…) present in the generated
+unions; bridge wrote 68 properties.
+
+Re-measured codemod with that metadata: **107 → 107 verbatim** — unchanged,
+and that is the INFORMATIVE result: the verbatim set was never a metadata
+gap. Sampling shows it is entirely by-design conservative keeps:
+
+- arbitrary values (`left-[19px]`, `w-[calc(100%-2rem)]`)
+- data-attribute variants (`data-[expanded]:opacity-100`,
+  `group-data-[state=collapsed]/sidebar:hidden`) — base-ui state styling
+- legacy spellings (`flex-shrink-0`)
+
+Conclusion: the migration blocker list for kumo is EMPTY on metadata. A full
+port is now purely mechanical: `--write --meta=/tmp/kumo-meta` on a branch,
+swap `@tailwindcss/vite` wiring, run their vitest suite. Remaining codemod
+enhancement worth doing first: support `data-[…]` variants via the escape
+hatch instead of keeping verbatim.
