@@ -15,6 +15,15 @@ import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { collectTwClasses } from "../../pandwind/src/tw/collect.ts";
 
+/** One declared theme scope's extra cost (plans/015). */
+export interface ThemeScopeDelta {
+	scope: string;
+	/** Bytes of the override block (author CSS shipped as-is). */
+	bytes: number;
+	/** Custom-property bindings in the block. */
+	vars: number;
+}
+
 export interface CssBudget {
 	/** Classes scanned from source that produced at least one rule. */
 	liveCandidates: number;
@@ -30,6 +39,8 @@ export interface CssBudget {
 	rules: number;
 	/** Rules per top-level utility prefix (`bg`, `flex`, `md:hover:bg`…), top 15. */
 	perPrefix: Array<{ prefix: string; rules: number }>;
+	/** Per-theme-scope extra cost, when a theme bridge was supplied. */
+	themeScopes: Array<ThemeScopeDelta>;
 }
 
 const unescape = (c: string): string => c.replace(/\\/g, "");
@@ -77,6 +88,20 @@ export async function cssBudget(options: {
 	}
 	const dead = classes.filter((c) => !live.has(c));
 
+	const themeScopes: Array<ThemeScopeDelta> = [];
+	if (options.themeCss !== undefined) {
+		const scopeRegex = /\[data-theme="([^"]+)"\]\s*\{([^}]*)\}/g;
+		for (const match of options.themeCss.matchAll(scopeRegex)) {
+			const body = match[2] ?? "";
+			themeScopes.push({
+				scope: match[1] ?? "?",
+				bytes: Buffer.byteLength(match[0] ?? ""),
+				vars: (body.match(/--[/\w-]+\s*:/g) ?? []).length,
+			});
+		}
+		themeScopes.sort((a, b) => a.scope.localeCompare(b.scope));
+	}
+
 	const perPrefix = [...perPrefixMap.entries()]
 		.map(([prefix, count]) => ({ prefix, rules: count }))
 		.toSorted((a, b) => b.rules - a.rules)
@@ -90,6 +115,7 @@ export async function cssBudget(options: {
 		cssGzipBytes: gzipSync(Buffer.from(built)).byteLength,
 		rules: liveRules,
 		perPrefix,
+		themeScopes,
 	};
 }
 
@@ -108,6 +134,15 @@ export function formatCssBudget(budget: CssBudget): string {
 		lines.push("top prefixes:");
 		for (const { prefix, rules } of budget.perPrefix) {
 			lines.push(`    ${prefix.padEnd(30)} ${rules}`);
+		}
+	}
+	if (budget.themeScopes.length > 0) {
+		const totalBytes = budget.themeScopes.reduce((acc, t) => acc + t.bytes, 0);
+		lines.push(
+			`theme scopes: ${budget.themeScopes.length} (+${(totalBytes / 1024).toFixed(2)} KB total)`,
+		);
+		for (const t of budget.themeScopes) {
+			lines.push(`    ${t.scope.padEnd(20)} ${t.vars} vars · ${(t.bytes / 1024).toFixed(2)} KB`);
 		}
 	}
 	if (budget.deadCandidates > 0) {
