@@ -57,9 +57,15 @@ importers:
 
   packages/analyze:
     dependencies:
+      '@tailwindcss/node':
+        specifier: 4.3.3
+        version: 4.3.3
       pandwind:
         specifier: workspace:*
         version: link:../pandwind
+      postcss:
+        specifier: 8.5.26
+        version: 8.5.26
     devDependencies:
       '@types/node':
         specifier: 26.2.0

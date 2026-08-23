@@ -25,13 +25,13 @@ function seed(files: Record<string, string>) {
 }
 
 describe("runCli --json", () => {
-	test("emits the versioned machine-readable document", () => {
+	test("emits the versioned machine-readable document", async () => {
 		seed({
 			"a.ts": 'export const a = cx("px-2", "py-4");',
 			"b.ts": `export const b = cx(active ? "bg-blue-600" : "bg-gray-100", "p-4");`,
 			"c.ts": `export const c = cx(props.tone, "p-4");`,
 		});
-		const output = runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
+		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
 		const doc = JSON.parse(output) as Record<string, unknown>;
 
 		expect(doc["schema"]).toBe(ANALYZE_JSON_SCHEMA);
@@ -63,9 +63,9 @@ describe("runCli --json", () => {
 		expect(doc["eliminatedPct"]).toBe(67); // round(2/3 * 100)
 	});
 
-	test("without --json the same invocation prints the human table", () => {
+	test("without --json the same invocation prints the human table", async () => {
 		seed({ "a.ts": 'export const a = cx("px-2", "py-4");' });
-		const human = runCli(["**/*.ts", "--tw", twPath, "--root", root]);
+		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
 		expect(human).toContain("pandwind analyze — fold coverage");
 		expect(human).not.toContain('"schema"');
 	});

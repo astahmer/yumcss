@@ -17,12 +17,14 @@ import {
 	summarize,
 	type FoldSummary,
 } from "./analyze.ts";
+import { cssBudget, formatCssBudget } from "./css-budget.ts";
 
 interface CliArgs {
 	patterns: Array<string>;
 	twPath: string;
 	json: boolean;
 	root: string;
+	css: boolean;
 	constantsPath?: string;
 }
 
@@ -33,12 +35,15 @@ function parseArgs(argv: Array<string>): CliArgs {
 	const patterns: Array<string> = [];
 	let twPath = "src/tw.ts";
 	let json = false;
+	let css = false;
 	let root = process.cwd();
 	let constantsPath: string | undefined;
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
 		if (arg === "--tw") {
 			twPath = argv[++i] ?? twPath;
+		} else if (arg === "--css") {
+			css = true;
 		} else if (arg === "--json") {
 			json = true;
 		} else if (arg === "--root") {
@@ -49,7 +54,7 @@ function parseArgs(argv: Array<string>): CliArgs {
 			patterns.push(arg);
 		}
 	}
-	return { patterns, twPath: resolve(root, twPath), json, root, constantsPath };
+	return { patterns, twPath: resolve(root, twPath), json, css, root, constantsPath };
 }
 
 /**
@@ -57,7 +62,7 @@ function parseArgs(argv: Array<string>): CliArgs {
  * document). Pure apart from filesystem reads — tests assert on the return
  * value instead of spying on console.log.
  */
-export function runCli(argv: Array<string>): string {
+export async function runCli(argv: Array<string>): Promise<string> {
 	const args = parseArgs(argv);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
 	const config = loadTwConfig(args.twPath);
@@ -76,14 +81,34 @@ export function runCli(argv: Array<string>): string {
 	);
 	const summary: FoldSummary = summarize(stats);
 
+	if (args.css) {
+		// CSS budget lane — compiles the scanned tw() surface through the
+		// real engine. Needs the generated tw runtime (same file the app
+		// imports) and optionally the @theme bridge for token utilities.
+		const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
+		let themeCss: string | undefined;
+		try {
+			themeCss = readFileSync(themeCssPath, "utf8");
+		} catch {
+			themeCss = undefined;
+		}
+		const budget = await cssBudget({
+			files: files.map((f) => resolve(args.root, f)),
+			twEntry: args.twPath,
+			themeCss,
+			base: args.root,
+		});
+		return formatCssBudget(budget);
+	}
+
 	if (args.json) {
 		return JSON.stringify({ schema: ANALYZE_JSON_SCHEMA, ...summary }, null, 2);
 	}
 	return formatReport(summary);
 }
 
-function main(): void {
-	console.log(runCli(process.argv.slice(2)));
+async function main(): Promise<void> {
+	console.log(await runCli(process.argv.slice(2)));
 }
 
 const invokedDirectly =
