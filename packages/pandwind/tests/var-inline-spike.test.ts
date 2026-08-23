@@ -31,7 +31,9 @@ async function rulesFor(sheet: string, classes: string[]): Promise<Root> {
 function colorDeclarations(root: Root): string[] {
 	const out: string[] = [];
 	root.walkRules((rule) => {
-		rule.walkDecls("color", (decl) => out.push(`${rule.selector} :: ${decl.value}`));
+		rule.walkDecls("color", (decl) => {
+			out.push(`${rule.selector} :: ${decl.value}`);
+		});
 	});
 	return out;
 }
@@ -64,6 +66,7 @@ describe("var-inline spike — real Tailwind compilation", () => {
 		root.walkDecls((decl) => {
 			if (decl.value.includes("#ff0000")) sawValue = true;
 		});
+		void 0;
 		expect(sawValue).toBe(false);
 	});
 });

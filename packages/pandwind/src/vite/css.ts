@@ -52,6 +52,8 @@ export interface PandwindCssViteOptions {
 	exclude?: RegExp[];
 	/** Files to scan, as regexes matched against the absolute path. */
 	include?: RegExp[];
+	/** Prepend a dev-only origin manifest comment to the generated sheet. */
+	debug?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */
 	root?: string;
 	/** The virtual module id the generated CSS is served under. */

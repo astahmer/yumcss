@@ -126,7 +126,21 @@ export function createCssExtractorPluginCore(
 			const sheet = collect();
 			const tokens = sheet.gen.tokens();
 			const atomic = sheet.gen.atomic();
-			return [tokens, atomic].filter(Boolean).join("\n");
+			const body = [tokens, atomic].filter(Boolean).join("\n");
+			if (options.debug !== true) return body;
+			// Dev-only origin manifest: which scanned file feeds how many
+			// style objects into the sheet. Search a class here to find its
+			// candidate files; zero prod cost (flag off by default).
+			const manifest = [...fileCache.entries()]
+				.toSorted((a, b) => a[0].localeCompare(b[0]))
+				.map(([file, entry]) => `/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`)
+				.join("\n");
+			return (
+				`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
+				(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
+				"\n\n" +
+				body
+			);
 		},
 		invalidate(file: string) {
 			// The next load re-scans the changed file.
