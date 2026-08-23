@@ -65,3 +65,17 @@ Dev-build only (`pandwindVite({ debug: true })`): emitted rules carry
 and dev overlay helper lists the origin of classes under the cursor. Steal:
 panda debug / stylex devtools. No prod cost — flag off by default, zero code
 in the shipped path.
+
+## 1a. Spike RESULTS (2026-08-23) — encoding VERIFIED
+
+`tests/var-inline-spike.test.ts` proves against the real compiler:
+
+- base atom `.pw-color { color: var(--pw-c-color) }` compiles;
+- hover variant compiles WITH the fallback chain
+  (`var(--pw-c-color_hover, var(--pw-c-color))`);
+- values never appear in emitted CSS (inline-delivery only, zero injection);
+- coexisting classes keep per-selector rules (cx last-wins maps onto source
+  order as today).
+
+Green light for implementation per the §1 shape. Remaining pre-build items:
+cx threading type design + vite-pass detection rules + sheet-growth bounds.
