@@ -44,3 +44,29 @@ class strings stay verbatim per contract; no crashes.
 ## Non-goals
 
 - No changes to kumo itself; the clone stays disposable (`/tmp`).
+
+## Second target — 8bitcn-ui (2026-08-23)
+
+`github.com/TheOrcDev/8bitcn-ui` cloned to `/tmp/pandwind-8bit-dogfood`
+(Next.js + Tailwind v4 retro-UI library). Same dry-run, example metadata:
+
+| metric               | --to=tw  | --to=css  |
+| -------------------- | -------- | --------- |
+| files scanned        | 238      | 44 (ui/*) |
+| files changed        | 182      | 0         |
+| call sites converted | **1650** | 0         |
+| tokens verbatim      | 891      | 235       |
+
+`--report` output: 1650/1650 sites through pandwind (100%), 891 verbatim
+tokens = 8-bit theme specifics (`shadow-[4px_4px_0px]` arbitraries, custom
+palette) — same story as kumo: codegen against the TARGET's own theme first.
+css-mode is 0 by design there: no css() bindings exist in a raw-Tailwind
+codebase yet.
+
+### Proposed API split for the two ports
+
+- **kumo → `tw()` typed layer** (design-system consumers keep the Tailwind
+  engine; pandwind adds typing + compile-time folding).
+- **8bitcn → full pandwind**: codegen its theme, then migrate hot surfaces
+  onto `css()`/`cx()` so the stylesheet generation replaces Tailwind's —
+  exercises the css-side pipeline end to end.
