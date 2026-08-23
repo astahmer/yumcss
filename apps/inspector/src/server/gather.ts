@@ -99,8 +99,14 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 		).tokens ?? {};
 	const tokenSections: Array<TokenSection> = flattenTokenGroups(presetTokens, {
 		colors: "Colors",
-		spacing: "Spacing",
 		semantic: "Semantic (condition-bound)",
+		spacing: "Spacing",
+		radii: "Radii",
+		fonts: "Font families",
+		fontSizes: "Font sizes",
+		fontWeights: "Font weights",
+		lineHeights: "Line heights",
+		letterSpacings: "Letter spacings",
 	});
 
 	return {

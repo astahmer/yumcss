@@ -70,3 +70,96 @@ export const parseBridgeStats = (source: string): { properties: number; mappings
 	const mappings = [...source.matchAll(/^\t\t"/gm)].length;
 	return { properties, mappings };
 };
+
+/**
+ * Bucket a @theme custom-property name into its preview category.
+ * Covers the Tailwind v4 namespace conventions the example preset emits.
+ */
+export type ThemeVarCategory =
+	| "color"
+	| "font-size"
+	| "font-weight"
+	| "font-family"
+	| "tracking"
+	| "leading"
+	| "radius"
+	| "shadow"
+	| "spacing"
+	| "other";
+
+export const categorizeThemeVar = (name: string): ThemeVarCategory => {
+	if (name.startsWith("--color-")) return "color";
+	if (name.startsWith("--text-")) return "font-size";
+	if (name.startsWith("--font-weight-")) return "font-weight";
+	if (name.startsWith("--font-")) return "font-family";
+	if (name.startsWith("--tracking-")) return "tracking";
+	if (name.startsWith("--leading-")) return "leading";
+	if (name.startsWith("--radius-")) return "radius";
+	if (name.startsWith("--shadow-")) return "shadow";
+	if (name.startsWith("--spacing")) return "spacing";
+	return "other";
+};
+
+export const groupThemeVars = (
+	vars: Array<ThemeVar>,
+): Record<ThemeVarCategory, Array<ThemeVar>> => {
+	const out = {
+		color: [],
+		"font-size": [],
+		"font-weight": [],
+		"font-family": [],
+		tracking: [],
+		leading: [],
+		radius: [],
+		shadow: [],
+		spacing: [],
+		other: [],
+	} as Record<ThemeVarCategory, Array<ThemeVar>>;
+	for (const v of vars) out[categorizeThemeVar(v.name)].push(v);
+	return out;
+};
+
+const CONDITION_MARKER = " ⛭ condition-bound";
+
+/**
+ * Split a flattened token entry back into its parts: condition-bound
+ * entries carry a JSON payload before the marker; plain values pass
+ * through untouched.
+ */
+export const splitTokenValue = (
+	value: string,
+): { conditionBound: boolean; json: Record<string, string> | null; raw: string } => {
+	if (!value.endsWith(CONDITION_MARKER)) {
+		return { conditionBound: false, json: null, raw: value };
+	}
+	const jsonPart = value.slice(0, -CONDITION_MARKER.length);
+	try {
+		return {
+			conditionBound: true,
+			json: JSON.parse(jsonPart) as Record<string, string>,
+			raw: value,
+		};
+	} catch {
+		// truncated payload — surface what we have
+		return { conditionBound: true, json: null, raw: jsonPart };
+	}
+};
+
+/**
+ * Follow `$name` references through a raw-token lookup until a literal
+ * value is reached (`$green-500` -> `#60A3BC`). Cycles and unknown refs
+ * terminate the chain; the starting value is always chain[0].
+ */
+export const resolveChain = (value: string, lookup: ReadonlyMap<string, string>): Array<string> => {
+	const chain = [value];
+	const seen = new Set([value]);
+	let current = value;
+	while (current.startsWith("$")) {
+		const next = lookup.get(current);
+		if (next === undefined || seen.has(next)) break;
+		seen.add(next);
+		chain.push(next);
+		current = next;
+	}
+	return chain;
+};

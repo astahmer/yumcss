@@ -1,9 +1,13 @@
 import { describe, expect, test } from "vitest";
 import {
+	categorizeThemeVar,
 	flattenTokenGroups,
+	groupThemeVars,
 	parseBridgeStats,
 	parseThemeVars,
 	parseUtilityUnions,
+	resolveChain,
+	splitTokenValue,
 } from "./parsers.ts";
 
 describe("parseThemeVars", () => {
@@ -54,5 +58,66 @@ describe("parseBridgeStats", () => {
 		const src =
 			'export const bridge = {\n\tbottom: {\n\t\t"0": "bottom-0",\n\t\t"1px": "bottom-1",\n\t},\n\tcolor: {\n\t\t"red": "text-red-500",\n\t},\n};';
 		expect(parseBridgeStats(src)).toEqual({ properties: 2, mappings: 3 });
+	});
+});
+
+describe("categorizeThemeVar / groupThemeVars", () => {
+	test("maps tailwind v4 namespaces to preview categories", () => {
+		expect(categorizeThemeVar("--color-red-500")).toBe("color");
+		expect(categorizeThemeVar("--text-2xl")).toBe("font-size");
+		expect(categorizeThemeVar("--font-weight-bold")).toBe("font-weight");
+		expect(categorizeThemeVar("--font-sans")).toBe("font-family");
+		expect(categorizeThemeVar("--tracking-wide")).toBe("tracking");
+		expect(categorizeThemeVar("--leading-tight")).toBe("leading");
+		expect(categorizeThemeVar("--radius-lg")).toBe("radius");
+		expect(categorizeThemeVar("--shadow-drop")).toBe("shadow");
+		expect(categorizeThemeVar("--spacing")).toBe("spacing");
+		expect(categorizeThemeVar("--mystery")).toBe("other");
+	});
+	test("groupThemeVars buckets and preserves order", () => {
+		const grouped = groupThemeVars([
+			{ name: "--color-a", value: "#fff" },
+			{ name: "--text-sm", value: "0.875rem" },
+			{ name: "--color-b", value: "#000" },
+		]);
+		expect(grouped.color.map((v) => v.name)).toEqual(["--color-a", "--color-b"]);
+		expect(grouped["font-size"]).toHaveLength(1);
+	});
+});
+
+describe("splitTokenValue", () => {
+	test("plain values pass through", () => {
+		expect(splitTokenValue("#fff")).toEqual({ conditionBound: false, json: null, raw: "#fff" });
+	});
+	test("condition-bound payloads parse back to JSON", () => {
+		const out = splitTokenValue('{"base":"#fff","_dark":"#000"} ⛭ condition-bound');
+		expect(out.conditionBound).toBe(true);
+		expect(out.json).toEqual({ base: "#fff", _dark: "#000" });
+	});
+	test("truncated payloads keep the raw text", () => {
+		const out = splitTokenValue('{"base":"#f ⛭ condition-bound');
+		expect(out.conditionBound).toBe(true);
+		expect(out.json).toBeNull();
+	});
+});
+
+describe("resolveChain", () => {
+	test("follows $refs to literals", () => {
+		const lookup = new Map([
+			["$green-500", "#60A3BC"],
+			["$surface", "$green-500"],
+		]);
+		expect(resolveChain("$surface", lookup)).toEqual(["$surface", "$green-500", "#60A3BC"]);
+	});
+	test("unknown ref terminates without loop", () => {
+		expect(resolveChain("$nope", new Map())).toEqual(["$nope"]);
+		const cyc = new Map([
+			["$a", "$b"],
+			["$b", "$a"],
+		]);
+		expect(resolveChain("$a", cyc)).toEqual(["$a", "$b"]);
+	});
+	test("literals are single-element chains", () => {
+		expect(resolveChain("#ffffff", new Map())).toEqual(["#ffffff"]);
 	});
 });
