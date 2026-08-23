@@ -23,13 +23,18 @@ interface CliArgs {
 	twPath: string;
 	json: boolean;
 	root: string;
+	constantsPath?: string;
 }
+
+/** Version tag stamped into `--json` output for consumers. */
+export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/1";
 
 function parseArgs(argv: Array<string>): CliArgs {
 	const patterns: Array<string> = [];
 	let twPath = "src/tw.ts";
 	let json = false;
 	let root = process.cwd();
+	let constantsPath: string | undefined;
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
 		if (arg === "--tw") {
@@ -38,31 +43,47 @@ function parseArgs(argv: Array<string>): CliArgs {
 			json = true;
 		} else if (arg === "--root") {
 			root = resolve(process.cwd(), argv[++i] ?? ".");
+		} else if (arg === "--constants") {
+			constantsPath = resolve(process.cwd(), argv[++i] ?? "");
 		} else if (arg !== undefined) {
 			patterns.push(arg);
 		}
 	}
-	return { patterns, twPath: resolve(root, twPath), json, root };
+	return { patterns, twPath: resolve(root, twPath), json, root, constantsPath };
 }
 
-function main(): void {
-	const args = parseArgs(process.argv.slice(2));
+/**
+ * Run the CLI and return the exact text it would print (human table or JSON
+ * document). Pure apart from filesystem reads — tests assert on the return
+ * value instead of spying on console.log.
+ */
+export function runCli(argv: Array<string>): string {
+	const args = parseArgs(argv);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
 	const config = loadTwConfig(args.twPath);
+	const importedConstants = args.constantsPath
+		? (JSON.parse(readFileSync(args.constantsPath, "utf8")) as Record<string, string>)
+		: undefined;
 	const files = collectFiles(patterns, args.root).filter(
 		(f) => f.endsWith(".ts") || f.endsWith(".tsx"),
 	);
 
 	const stats = files.map((file) =>
-		analyzeSource(readFileSync(file, "utf8"), file.replace(args.root + "/", ""), { config }),
+		analyzeSource(readFileSync(file, "utf8"), file.replace(args.root + "/", ""), {
+			config,
+			importedConstants,
+		}),
 	);
 	const summary: FoldSummary = summarize(stats);
 
 	if (args.json) {
-		console.log(JSON.stringify(summary, null, 2));
-		return;
+		return JSON.stringify({ schema: ANALYZE_JSON_SCHEMA, ...summary }, null, 2);
 	}
-	console.log(formatReport(summary));
+	return formatReport(summary);
+}
+
+function main(): void {
+	console.log(runCli(process.argv.slice(2)));
 }
 
 const invokedDirectly =

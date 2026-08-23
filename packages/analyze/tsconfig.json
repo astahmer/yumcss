@@ -4,5 +4,8 @@
 		"types": ["node"],
 		"moduleResolution": "bundler"
 	},
-	"include": ["src", "tests"]
+	"include": ["src", "tests"],
+	// Fixture sources intentionally reference undefined identifiers (they
+	// model real app code) and are only ever parsed, never typechecked.
+	"exclude": ["tests/fixtures"]
 }

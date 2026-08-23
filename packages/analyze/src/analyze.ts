@@ -21,6 +21,9 @@ import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseSync } from "oxc-parser";
 import {
+	bindingIsShadowedOrWritten,
+} from "../../pandwind/src/vite/cross-module-consts.ts";
+import {
 	collectModuleConstants,
 	evalStaticCx,
 	type ConstantScope,
@@ -34,6 +37,13 @@ export interface AnalyzeOptions {
 	config: TwConfig;
 	/** Local names bound to the generated tw function. Default: ["tw"]. */
 	twNames?: ReadonlySet<string>;
+	/**
+	 * Pre-resolved cross-module constants (`name -> exported string value`),
+	 * mirroring inlineCxCalls' `importedConstants` option. Bindings that are
+	 * shadowed or written anywhere in the module stay dynamic. Module-local
+	 * declarations always win over imported values.
+	 */
+	importedConstants?: Readonly<Record<string, string>>;
 }
 
 export interface CallSite {
@@ -43,6 +53,8 @@ export interface CallSite {
 
 export interface FileFoldStats {
 	file: string;
+	/** Share of cx calls eliminated at build time (full + partial), %. */
+	eliminatedPct: number;
 	cxCalls: number;
 	cxFoldedFull: number;
 	cxFoldedPartial: number;
@@ -61,6 +73,12 @@ export interface FoldSummary {
 	eliminatedPct: number;
 	totalTwCalls: number;
 	twFolded: number;
+	/** Files where every cx call folded (entry-level counting). */
+	filesEliminated: number;
+	/** Files containing at least one cx call. */
+	filesWithCalls: number;
+	/** Entry-level elimination — matches the vite-cx-coverage harness. */
+	entryEliminatedPct: number;
 }
 
 type FoldKind = "full" | "partial" | "runtime";
@@ -96,7 +114,11 @@ interface ParsedModule {
 	lineStarts: Array<number>;
 }
 
-function parseModule(source: string, file: string): ParsedModule {
+function parseModule(
+	source: string,
+	file: string,
+	importedConstants?: Readonly<Record<string, string>>,
+): ParsedModule {
 	const parsed = parseSync(file, source, {
 		sourceType: "module",
 		lang: file.endsWith(".tsx") ? "tsx" : "ts",
@@ -131,7 +153,18 @@ function parseModule(source: string, file: string): ParsedModule {
 		"tw",
 		...[...imported.entries()].filter(([, v]) => v === "tw").map(([k]) => k),
 	]);
-	const consts = collectModuleConstants(program);
+	const localScope = collectModuleConstants(program);
+	// Imported cross-module constants merge UNDER the module's own scope —
+	// same-module declarations always win — and bindings that are shadowed
+	// or written anywhere stay dynamic (mirrors inlineCxCalls/mergeImported).
+	const consts: ConstantScope = new Map();
+	if (importedConstants !== undefined) {
+		for (const [name, value] of Object.entries(importedConstants)) {
+			if (bindingIsShadowedOrWritten(program, name)) continue;
+			consts.set(name, { value, declStart: -1 });
+		}
+	}
+	for (const [name, known] of localScope) consts.set(name, known);
 
 	const lineStarts: Array<number> = [0];
 	for (let i = 0; i < source.length; i++) {
@@ -167,6 +200,32 @@ function parseModule(source: string, file: string): ParsedModule {
 	return { program, consts, cxNames, twNames, calls, lineStarts };
 }
 
+/**
+ * Mirror of buildSkeleton's acceptance rules: can this conditional be
+ * partially folded? Ternaries require both branches; `&&` requires only the
+ * right side (the left is the kept-dynamic test). Nested conditionals recurse.
+ */
+function isSkeletonable(node: unknown, consts: ConstantScope): boolean {
+	const t = (node as { type?: string })?.type;
+	if (t === "ConditionalExpression") {
+		return (
+			branchFolds((node as { consequent?: unknown }).consequent, consts) &&
+			branchFolds((node as { alternate?: unknown }).alternate, consts)
+		);
+	}
+	if (t === "LogicalExpression" && (node as { operator?: string }).operator === "&&") {
+		return branchFolds((node as { right?: unknown }).right, consts);
+	}
+	return false;
+}
+
+function branchFolds(branch: unknown, consts: ConstantScope): boolean {
+	return (
+		isStatic(evalStaticCx(branch as never, undefined, consts)) ||
+		isSkeletonable(branch, consts)
+	);
+}
+
 /** Mirror of inlineCxCalls' per-call decision. */
 function classify(
 	args: unknown[],
@@ -189,26 +248,11 @@ function classify(
 		return { start, kind: "runtime", reason: explain(args), args, name };
 	}
 	if (dynamicConditional !== undefined) {
-		// Partial fold requires BOTH branches static (test may be dynamic).
-		const cond = dynamicConditional.arg as {
-			consequent?: unknown;
-			alternate?: unknown;
-			left?: unknown;
-			right?: unknown;
-		};
-		const branches = [
-			(cond as { consequent?: unknown }).consequent,
-			(cond as { alternate?: unknown }).alternate,
-			(cond as { left?: unknown }).left,
-			(cond as { right?: unknown }).right,
-		].filter((b): b is unknown => b !== undefined && b !== null);
-		const allBranchesStatic = branches.every(
-			(b) =>
-				isStatic(evalStaticCx(b as never, undefined, consts)) ||
-				// nested conditionals recurse via buildSkeleton at build time
-				(b as { type?: string })?.type === "ConditionalExpression",
-		);
-		if (!allBranchesStatic) {
+		// Partial folding mirrors buildSkeleton exactly: ternaries need
+		// both BRANCHES skeletonizable (the test may stay dynamic); an
+		// `&&` chain needs only its RIGHT side (the left is the kept-
+		// dynamic test). `||` / `??` never partially fold.
+		if (!isSkeletonable(dynamicConditional.arg, consts)) {
 			return { start, kind: "runtime", reason: "conditional with non-static branches", args, name };
 		}
 		return { start, kind: "partial", reason: "", args, name };
@@ -258,7 +302,7 @@ export function analyzeSource(
 	file: string,
 	options: AnalyzeOptions,
 ): FileFoldStats {
-	const mod = parseModule(source, file);
+	const mod = parseModule(source, file, options.importedConstants);
 
 	const runtimeSites: Array<CallSite> = [];
 	let cxFoldedFull = 0;
@@ -288,6 +332,8 @@ export function analyzeSource(
 
 	return {
 		file,
+		eliminatedPct:
+			cxTotal === 0 ? 100 : Math.round(((cxFoldedFull + cxFoldedPartial) / cxTotal) * 100),
 		cxCalls: cxTotal,
 		cxFoldedFull,
 		cxFoldedPartial,
@@ -343,6 +389,15 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 	const twFolded = files.reduce((acc, f) => acc + f.twFolded, 0);
 	const eliminated =
 		totalCxCalls === 0 ? 100 : Math.round(((fullFolded + partialFolded) / totalCxCalls) * 100);
+	// Entry-level metric (matches the vite-cx-coverage harness): a FILE counts
+	// as eliminated when every cx call inside it folds. Single-call corpora
+	// make both metrics coincide.
+	const filesWithCalls = files.filter((f) => f.cxCalls > 0);
+	const filesEliminated = filesWithCalls.filter((f) => f.cxRuntime === 0).length;
+	const entryEliminatedPct =
+		filesWithCalls.length === 0
+			? 100
+			: Math.round((filesEliminated / filesWithCalls.length) * 100);
 	return {
 		files,
 		totalCxCalls,
@@ -352,6 +407,9 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 		eliminatedPct: eliminated,
 		totalTwCalls,
 		twFolded,
+		filesEliminated,
+		filesWithCalls: filesWithCalls.length,
+		entryEliminatedPct,
 	};
 }
 

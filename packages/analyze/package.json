@@ -4,7 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"corpus": "tsx src/cli.ts \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
 	},
 	"dependencies": {
 		"pandwind": "workspace:*"

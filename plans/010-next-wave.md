@@ -68,6 +68,9 @@ to confirm, fix what is legitimately fixable in the LANE (not by gaming),
 re-run those cells + vanilla, report before/after. Never modify pandwind
 sources.
 txxlvmmm ece00ee2 "test(tw): real-Tailwind compilation proof for condition-bound semantic tokens" (rebase destination)
+pwpsrnpm 0e961d45 "feat(analyze): pandwind analyze — fold-coverage CLI" (rebase destination)
+vzlnuuvp 78d9347epwpsrnpm 0e961d45 "feat(analyze): pandwind analyze — fold-coverage CLI" (rebase destination)
+
 ## F. Outcomes
 
 - packages/analyze: `analyzeSource` (per-call classification mirroring
