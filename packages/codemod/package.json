@@ -7,6 +7,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"oxc-parser": "0.144.0",
 		"pandwind": "workspace:*"
 	},
 	"devDependencies": {

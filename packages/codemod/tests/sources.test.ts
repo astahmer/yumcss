@@ -176,6 +176,42 @@ const TomatoButton = styled(Button)\`
 	});
 });
 
+// Context awareness: patterns inside comments and string literals are
+// documentation/examples, not code — they must be left untouched.
+describe("context awareness", () => {
+	test("a styled.div pattern inside a comment is not converted or mangled", () => {
+		const source = `${CSS_BINDING}
+// docs: const Fake = styled.div\`color: red;\`;
+export const Icon = styled.div\`
+	color: blue;
+\`;`;
+		const result = transformSource(source, meta, {
+			mode: "keep",
+			file: "c.tsx",
+			sources: ["styled-components"],
+		});
+		expect(result.converted).toBe(1); // only the REAL component
+		expect(result.code).toContain("// docs: const Fake = styled.div");
+		expect(result.code).not.toContain("Fake = css.class");
+	});
+
+	test("a styled.div example inside a string literal is left untouched", () => {
+		const source = `${CSS_BINDING}
+const snippet = "const Fake = styled.div\`color: red;\`";
+export const Card = styled.div\`
+	color: blue;
+\`;`;
+		const result = transformSource(source, meta, {
+			mode: "keep",
+			file: "s.tsx",
+			sources: ["styled-components"],
+		});
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('snippet = "const Fake = styled.div');
+		expect(result.code).not.toContain('snippet = "const Fake = css.class');
+	});
+});
+
 describe("stylex source", () => {
 	test("literal stylex.create becomes an object of css.class values", () => {
 		const result = stylex(`

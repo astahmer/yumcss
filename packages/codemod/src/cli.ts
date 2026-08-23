@@ -346,5 +346,7 @@ function main(): void {
 		}
 	}
 }
-
-main();
+// Run only when invoked as the CLI entry — importing the module from
+// tests must not execute the program.
+const invokedDirectly = /cli\.mts?$/.test(process.argv[1] ?? "");
+if (invokedDirectly) void main();

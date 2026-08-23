@@ -85,6 +85,9 @@ importers:
 
   packages/codemod:
     dependencies:
+      oxc-parser:
+        specifier: 0.144.0
+        version: 0.144.0
       pandwind:
         specifier: workspace:*
         version: link:../pandwind

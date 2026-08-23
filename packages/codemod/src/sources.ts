@@ -16,6 +16,8 @@
  * - idempotent: converted output no longer matches any detector, flagged
  *   regions are skipped via the marker.
  */
+import { parseSync } from "oxc-parser";
+import { walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
 import type { PandwindMeta } from "./meta.ts";
 import { mapToken } from "./map.ts";
 import type { MappedToken } from "./map.ts";
@@ -201,6 +203,87 @@ function renderCall(callee: string, entries: Array<[string, string]>): string {
 
 const STYLED_TEMPLATE_REGEX = /\bstyled\s*(?:\.\s*(\w+)|\(\s*(\w+)\s*\))\s*(`(?:[^`\\]|\\.)*`)/g;
 
+/**
+ * Source ranges that must NEVER be treated as code: comments and every
+ * string literal / template literal that is not a styled tagged template.
+ * The styled detectors are regexes over raw text, so without this mask a
+ * comment mentioning `styled.div` or an example embedded in a string gets
+ * converted/mangled.
+ *
+ * Returns a sorted list of [start, end) pairs plus an O(1)-ish membership
+ * test. Parsed once per file with oxc — the same parser the vite passes
+ * use, so ranges are exact.
+ */
+function computeExcludedRanges(
+	source: string,
+	file: string,
+): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
+	const parsed = parseSync(file, source, {
+		sourceType: "module",
+		lang: file.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const excluded: Array<[number, number]> = [];
+	for (const comment of (
+		parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }
+	).comments ?? []) {
+		if (typeof comment.start === "number" && typeof comment.end === "number") {
+			excluded.push([comment.start, comment.end]);
+		}
+	}
+	// Tagged templates whose tag is `styled` (any member/call form) are CODE
+	// the detector may act on — their quasi is exempted from the mask.
+	const styledQuasis: Array<[number, number]> = [];
+	walk(parsed.program as unknown as OxcNode, (node) => {
+		const n = node as {
+			type?: string;
+			start?: number;
+			end?: number;
+			tag?: { start?: number; end?: number };
+			quasi?: { start?: number; end?: number };
+		};
+		if (typeof n.start !== "number" || typeof n.end !== "number") return;
+		if (n.type === "Comment") {
+			excluded.push([n.start, n.end]);
+			return;
+		}
+		if (n.type === "TaggedTemplateExpression" && n.tag !== undefined) {
+			const tagText = source.slice(n.tag.start ?? 0, n.tag.end ?? 0);
+			const quasi = n.quasi;
+			if (
+				/^\s*styled\b/.test(tagText) &&
+				typeof quasi?.start === "number" &&
+				typeof quasi.end === "number"
+			) {
+				styledQuasis.push([quasi.start, quasi.end]);
+			}
+			return;
+		}
+		if (n.type === "Literal" || n.type === "TemplateLiteral") {
+			excluded.push([n.start, n.end]);
+		}
+	});
+	// Drop exemptions from the mask.
+	const filtered = excluded.filter(
+		([start, end]) => !styledQuasis.some(([qs, qe]) => start >= qs && end <= qe),
+	);
+	filtered.sort((a, b) => a[0] - b[0]);
+	return {
+		excluded: filtered,
+		isExcluded(start: number): boolean {
+			let lo = 0;
+			let hi = filtered.length - 1;
+			while (lo <= hi) {
+				const mid = (lo + hi) >> 1;
+				const [s, e] = filtered[mid]!;
+				if (start < s) hi = mid - 1;
+				else if (start >= e) lo = mid + 1;
+				else return true;
+			}
+			return false;
+		},
+	};
+}
+
 function transformStyledComponents(
 	source: string,
 	meta: PandwindMeta,
@@ -209,6 +292,7 @@ function transformStyledComponents(
 ): string {
 	const edits: Array<Edit> = [];
 	const needsCx = { value: false };
+	const mask = computeExcludedRanges(source, options.file);
 
 	// Flags are EDITS (line insertions at the original offset), not immediate
 	// mutations — otherwise a flag that follows a conversion in the same file
@@ -227,6 +311,7 @@ function transformStyledComponents(
 
 	for (const match of source.matchAll(STYLED_TEMPLATE_REGEX)) {
 		const start = match.index ?? 0;
+		if (mask.isExcluded(start)) continue; // inside a comment or string
 		const end = start + match[0].length;
 		const tag = match[1];
 		const body = match[3]!.slice(1, -1);
@@ -275,7 +360,7 @@ function transformStyledComponents(
 		result.converted++;
 		edits.push({ start, end, text: replacement });
 
-		if (name !== "") edits.push(...jsxUsageEdits(source, name, tag, needsCx));
+		if (name !== "") edits.push(...jsxUsageEdits(source, name, tag, needsCx, mask));
 	}
 
 	if (edits.length === 0) return source;
@@ -294,11 +379,13 @@ function jsxUsageEdits(
 	name: string,
 	tag: string,
 	needsCxRef: { value: boolean },
+	mask: { isExcluded(start: number): boolean },
 ): Array<Edit> {
 	const edits: Array<Edit> = [];
 	const tagRegex = new RegExp(`<(\\/?)\\s*${name}\\b([^>]*)>`, "g");
 	for (const match of source.matchAll(tagRegex)) {
 		const start = match.index ?? 0;
+		if (mask.isExcluded(start)) continue; // JSX mention inside comment/string
 		const end = start + match[0].length;
 		const closing = match[1] === "/";
 		const attrs = match[2] ?? "";

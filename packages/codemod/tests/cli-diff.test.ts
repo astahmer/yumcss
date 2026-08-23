@@ -22,6 +22,6 @@ describe("unifiedDiff", () => {
 		const out = unifiedDiff(before, after, "f.ts");
 		expect(out).toContain("-two");
 		expect(out).toContain("+TWO");
-		expect(out.match(/@@/g)).toHaveLength(1);
+		expect(out.match(/^@@/gm)).toHaveLength(1); // one hunk header
 	});
 });
