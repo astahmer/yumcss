@@ -156,11 +156,12 @@ export interface ConditionalVar {
  * Split token groups into plain vars and condition-bound variants.
  *
  * String values become plain vars; object values are condition-bound
- * (`{ base?: "#x", dark?: "#y", ... }`). The `base` key bridges into
- * `@theme`; every other key must resolve via the condition resolver. If ANY
- * variant of a token fails to resolve, that whole token is dropped — a
- * partially-bridged token would silently disagree with css() under some
- * conditions.
+ * (`{ base: "#x", dark?: "#y", ... }`). The `base` key is REQUIRED and
+ * bridges into `@theme`; every other key must resolve via the condition
+ * resolver. A token is dropped entirely when its `base` is missing (real
+ * Tailwind cannot compile a utility for an undeclared variable) or when ANY
+ * variant fails to resolve — a partially-bridged token would silently
+ * disagree with css() under some conditions.
  */
 export function splitTokens(
 	groups: ThemeTokenGroups,
@@ -185,6 +186,12 @@ export function splitTokens(
 			if (raw === null || typeof raw !== "object" || Array.isArray(raw)) continue;
 			if (resolveCondition === undefined) continue; // condition-bound needs a resolver
 
+			// A `base` value is REQUIRED for object-shaped tokens. Without it
+			// the variable never reaches @theme, so real Tailwind does not
+			// recognize the utility at all (verified against tailwindcss 4.3.x:
+			// unknown candidates compile to zero rules) — emitting the
+			// overrides alone would ship dead CSS. Skipped entirely instead,
+			// matching the "never partially-bridge" policy above.
 			const varName = `--${namespace}-${name}`;
 			const nextFlat: ThemeVar[] = [];
 			const nextCond: ConditionalVar[] = [];
@@ -213,10 +220,13 @@ export function splitTokens(
 				});
 				usable = true;
 			}
-			if (usable && (nextFlat.length > 0 || nextCond.length > 0)) {
-				flatVars.push(...nextFlat);
-				conditionalVars.push(...nextCond);
+			if (!usable || nextFlat.length === 0) {
+				// No base => skip the whole token (see note above); a base-less
+				// override set cannot cascade from anything.
+				continue;
 			}
+			flatVars.push(...nextFlat);
+			conditionalVars.push(...nextCond);
 		}
 	}
 	return { flatVars, conditionalVars };
