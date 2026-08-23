@@ -10,7 +10,10 @@
 		"typescript/no-non-null-assertion": "off",
 		"unicorn/no-array-for-each": "off",
 		"eslint/no-underscore-dangle": "off",
-		"import/no-unassigned-import": "off"
+		"import/no-unassigned-import": "off",
+		"pandwind-extraction/no-spreads": "warn",
+		"pandwind-extraction/no-dynamic-values": "warn",
+		"pandwind-extraction/no-multiple-conditionals": "warn"
 	},
 	"ignorePatterns": [
 		"**/apps/example/src/types.d.ts",
@@ -18,5 +21,23 @@
 		"**/apps/example/src/tw.ts",
 		"**/dist/**",
 		"**/packages/analyze/tests/fixtures/**"
+	],
+	"jsPlugins": ["./lint/pandwind-extraction.plugin.js"],
+	"overrides": [
+		{
+			"files": [
+				"**/tests/**",
+				"**/*.test.*",
+				"**/*.tst.*",
+				"**/fixtures/**",
+				"**/dist/**",
+				"**/*.mts"
+			],
+			"rules": {
+				"pandwind-extraction/no-spreads": "off",
+				"pandwind-extraction/no-dynamic-values": "off",
+				"pandwind-extraction/no-multiple-conditionals": "off"
+			}
+		}
 	]
 }

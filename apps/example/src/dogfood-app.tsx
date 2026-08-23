@@ -24,6 +24,9 @@ export function DogfoodApp() {
 				className={cx(
 					CARD_BASE,
 					"p-6",
+					// Intentional runtime cx() dogfood (css atom + dynamic conditional):
+					// everything else in the app folds at build time.
+					// oxlint-disable-next-line pandwind-extraction/no-dynamic-values
 					css.class({ $text: { color: "$green-500", weight: "semibold" } }),
 					emphasized && "ring-2 ring-sky-500/40",
 				)}
