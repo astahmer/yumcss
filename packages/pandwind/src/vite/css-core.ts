@@ -133,7 +133,10 @@ export function createCssExtractorPluginCore(
 			// candidate files; zero prod cost (flag off by default).
 			const manifest = [...fileCache.entries()]
 				.toSorted((a, b) => a[0].localeCompare(b[0]))
-				.map(([file, entry]) => `/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`)
+				.map(
+					([file, entry]) =>
+						`/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`,
+				)
 				.join("\n");
 			return (
 				`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
