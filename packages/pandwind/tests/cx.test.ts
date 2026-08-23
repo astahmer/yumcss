@@ -36,7 +36,9 @@ describe("tw class merging across calls", () => {
 		expect(cx("bg-red-500", "bg-blue-500")).toBe("bg-blue-500");
 		expect(cx("bg-blue-500", "bg-red-500")).toBe("bg-red-500");
 		expect(cx("px-4", "p-6")).toBe("p-6");
-		expect(cx("p-6", "px-4")).toBe("px-4");
+		// twMerge ground truth: a later SUB-group (px) does not supersede the
+		// earlier full-group p — p-6 survives on its uncovered top/bottom.
+		expect(cx("p-6", "px-4")).toBe("p-6 px-4");
 	});
 
 	test("non-conflicting classes coexist", () => {
@@ -45,7 +47,9 @@ describe("tw class merging across calls", () => {
 
 	test("variant scoping keeps both", () => {
 		expect(cx("p-4", "md:p-6")).toBe("p-4 md:p-6");
-		expect(cx("p-4", "md:p-6", "md:px-2")).toBe("p-4 md:px-2");
+		// twMerge parity: within the md scope, px only covers left/right of
+		// p-6, so md:p-6 survives on its top/bottom.
+		expect(cx("p-4", "md:p-6", "md:px-2")).toBe("p-4 md:p-6 md:px-2");
 	});
 
 	test("same variant conflicts resolve last-wins", () => {

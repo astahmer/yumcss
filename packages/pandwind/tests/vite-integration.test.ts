@@ -13,6 +13,7 @@ import { dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { build, createServer, type ViteDevServer } from "vite";
 import { examplePreset } from "../src/preset/example-preset.ts";
+import { escapeIdentifier } from "../src/css/hash.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { pandwindVite } from "../src/vite/index.ts";
 
@@ -47,9 +48,22 @@ import { examplePreset } from "pandwind/preset";
 export const css = createDesignCss(examplePreset);
 `;
 
+const CX_SOURCE = `
+import { createCx } from "pandwind/cx";
+
+export const cx = /* @__PURE__ */ createCx({
+	conflicts: {
+		p: { "*": ["padding-top", "padding-right", "padding-bottom", "padding-left"] },
+		px: { "*": ["padding-left", "padding-right"] },
+		bg: { "*": ["background-color"] },
+	},
+});
+`;
+
 const APP_SOURCE = `
 import { tw } from "./tw";
 import { css } from "./design";
+import { cx } from "./cx";
 import "pandwind:css";
 
 export const mainClasses = tw({
@@ -64,9 +78,12 @@ export const buttonClasses = css.class({
 	$layout: { flow: "stackX", gap: "2" },
 	$text: { color: "$white", size: "sm" },
 });
+// Mixed tw-string + css-atom merge call: folds entirely at build time
+// (plan 007 item A) — the atom's rule lands in the generated stylesheet.
+export const mixedClasses = cx("px-2", css.class({ color: "#0BC5EA" }));
 // Consumed at the edge (like a render function would), so the bundler keeps
 // the inlined class strings in the entry chunk.
-console.log(mainClasses, headingClasses, buttonClasses);
+console.log(mainClasses, headingClasses, buttonClasses, mixedClasses);
 `;
 
 interface Project {
@@ -80,6 +97,7 @@ const makeProject = (): Project => {
 	const files: Record<string, string> = {
 		"src/tw.ts": TW_SOURCE,
 		"src/design.ts": DESIGN_SOURCE,
+		"src/cx.ts": CX_SOURCE,
 		"src/app.ts": APP_SOURCE,
 	};
 	for (const [name, content] of Object.entries(files)) {
@@ -92,7 +110,7 @@ const makeProject = (): Project => {
 	symlinkSync(PACKAGE_ROOT, join(dir, "node_modules/pandwind"), "dir");
 	return {
 		dir,
-		inlinePlugin: pandwindVite(),
+		inlinePlugin: pandwindVite({ css: { preset: examplePreset } }),
 		cssPlugin: pandwindCssVite(examplePreset, { root: dir }),
 	};
 };
@@ -128,6 +146,15 @@ describe("dev server", () => {
 		expect(result!.code).not.toContain("tw({");
 	});
 
+	test("mixed tw + css.class cx() call folds completely (plan 007 item A)", async () => {
+		const result = await server.transformRequest("/src/app.ts");
+		expect(result?.code).toBeDefined();
+		// The cx() call is gone entirely — no runtime merge for this file.
+		expect(result!.code).not.toContain("cx(");
+		// The folded string contains the tw part plus the css atom class.
+		expect(result!.code).toMatch(/"px-2 [A-Za-z0-9_-]+"/);
+	});
+
 	test("virtual stylesheet serves deduped tokens + atomic rules", async () => {
 		const result = await server.transformRequest(virtualId);
 		expect(result?.code).toBeDefined();
@@ -139,6 +166,22 @@ describe("dev server", () => {
 		expect(css).toContain("gap:2px");
 		// one rule per declaration — the repeated rules collapsed
 		expect(css.match(/background-color:#3182ce/g)).toHaveLength(1);
+	});
+
+	test("the stylesheet contains a rule for the css atom folded inside cx()", async () => {
+		const app = await server.transformRequest("/src/app.ts");
+		// Extract the folded atom from `"px-2 <atom>"`.
+		const match = /"px-2 ([A-Za-z0-9_-]+)"/.exec(app!.code!);
+		expect(match).not.toBeNull();
+		const atom = match![1]!;
+
+		const sheet = (await server.transformRequest(virtualId))!.code!;
+		// color:$cyan-500 resolves to #0BC5EA and only the folded literal
+		// uses it, so exactly one rule must exist and carry the atom class.
+		expect(sheet.match(/color:#0BC5EA/g)).toHaveLength(1);
+		const rule = sheet.split("}").find((block) => block.includes("color:#0BC5EA"))!;
+		// Selectors escape leading digits (`1pucx05` -> `.\\31 pucx05`).
+		expect(rule).toContain(escapeIdentifier(atom));
 	});
 });
 
@@ -192,6 +235,8 @@ describe("build", () => {
 		const code = js.map((chunk) => chunk.code!).join("\n");
 		expect(code).toContain("bg-red-500 p-4 hover:bg-blue-600 sm:p-6");
 		expect(code).not.toContain("tw({");
+		// The mixed cx() call folded too — no runtime merge call survives.
+		expect(code).not.toContain("cx(");
 
 		const css = output.find((chunk) => chunk.type === "asset" && chunk.fileName.endsWith(".css"));
 		expect(css).toBeDefined();

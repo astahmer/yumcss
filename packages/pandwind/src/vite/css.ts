@@ -30,8 +30,9 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import type { ClassNameStrategy } from "../css/create-css.ts";
+import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createStylesheet } from "../css/create-stylesheet.ts";
+import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -40,6 +41,7 @@ import type {
 	StyleObject,
 } from "../types/typings.ts";
 import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
+import type { PandwindEngineContext } from "./engine-context.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -62,8 +64,19 @@ export interface PandwindCssViteOptions {
 	 * atomic stylesheet. Tailwind's own scanner then generates the CSS, so
 	 * `css()` and `tw()` share one rule set and the stylesheet cannot grow.
 	 * The virtual `pandwind:css` module serves empty CSS in this mode.
+	 *
+	 * Sheet-backed strategies (e.g. `createNamedAtomsStrategy`) also swap
+	 * the emitted class names, but their classes are compiled by this
+	 * plugin's own generated stylesheet — the virtual module serves it.
 	 */
-	className?: ClassNameStrategy;
+	className?: AnyClassNameStrategy;
+	/**
+	 * Shared engine context (createPandwindEngineContext). When supplied it
+	 * must carry the same preset, and its class-name strategy wins over
+	 * `className` — pass the SAME context to `pandwindVite({ css })` to wire
+	 * both plugins to one configuration source.
+	 */
+	engine?: PandwindEngineContext;
 }
 
 export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
@@ -74,9 +87,18 @@ export type CssExtractorPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfi
  * token output, so the generated CSS matches the runtime byte-for-byte.
  */
 export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCssViteOptions = {}) {
+	if (options.engine !== undefined && options.engine.preset !== preset) {
+		throw new Error(
+			"pandwindCssVite: options.engine carries a different preset than the one passed " +
+				"directly — they must be identical for build-time and runtime output to match",
+		);
+	}
 	const matchers = options.cssSources ?? ["css", "design"];
 	const virtualId = options.virtualId ?? "pandwind:css";
-	const className = options.className;
+	const className = options.engine?.className ?? options.className;
+	const strategy = normalizeStrategy(className);
+	// External-compiler modes (tailwind): the sheet stays empty. Sheet-backed
+	// strategies still get the generated stylesheet — with their class names.
 	// The `.css` suffix makes vite's CSS pipeline (and its dev injection)
 	// treat the virtual module as stylesheet, not JavaScript.
 	const resolvedVirtualId = `\0${virtualId}.css`;
@@ -124,7 +146,7 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
 	const collect = () => {
-		const sheet = createStylesheet(preset);
+		const sheet = createStylesheet(preset, { className });
 		const seen = new Set<string>();
 
 		for (const file of walkFiles(root)) {
@@ -164,7 +186,9 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		},
 		load(id: string) {
 			if (id !== resolvedVirtualId) return null;
-			if (className !== undefined) return "";
+			// External-compiler modes serve empty CSS; sheet-backed strategies
+			// still need the generated stylesheet (with their class names).
+			if (className !== undefined && strategy?.sheetBacked !== true) return "";
 			const sheet = collect();
 			const tokens = sheet.gen.tokens();
 			const atomic = sheet.gen.atomic();

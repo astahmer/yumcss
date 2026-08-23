@@ -7,6 +7,7 @@ import type {
 	TokenDeclaration,
 } from "../types/typings.ts";
 import type { CreateCssOptions } from "./create-css.ts";
+import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
@@ -16,6 +17,18 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
+
+	// Sheet-backed strategies own the class names of the declarations they
+	// map — the generated selectors must match what the runtime emits.
+	// Non-sheet-backed strategies (tailwind) keep the sheet untouched.
+	const sheetStrategy = normalizeStrategy(options.className);
+	const classNameFor = (orderedKey: string, rawValue: string): string => {
+		if (sheetStrategy?.sheetBacked === true) {
+			const named = sheetStrategy.toClassName(orderedKey, rawValue);
+			if (named !== null) return named;
+		}
+		return escapeIdentifier(hashFn(orderedKey, rawValue));
+	};
 
 	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
 
@@ -99,7 +112,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 
 			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
-				className: `.${escapeIdentifier(hashFn(orderedKey, style[key]!))}`,
+				className: `.${classNameFor(orderedKey, style[key]!)}`,
 			});
 
 			cache.set(pairId, { id: pairId, css, priority: atomic.priority });

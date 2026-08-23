@@ -9,7 +9,8 @@
  * module, so no runtime stylesheet accumulation is needed for static calls.
  */
 import { type Expression, parseSync } from "oxc-parser";
-import { createCss, type ClassNameStrategy } from "../css/create-css.ts";
+import { createCss } from "../css/create-css.ts";
+import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
 import type {
@@ -163,7 +164,7 @@ export function inlineCssCalls(
 	id: string,
 	cssNames: ReadonlySet<string>,
 	preset: CssPreset,
-	className: ClassNameStrategy,
+	className: AnyClassNameStrategy,
 ): InlineCssResult {
 	if (cssNames.size === 0) return { code, inlined: 0 };
 

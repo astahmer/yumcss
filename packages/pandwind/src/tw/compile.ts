@@ -65,6 +65,57 @@ const COMPOUND_BASES: Record<string, Set<string>> = {
 	flex: new Set(["col", "row", "col-reverse", "row-reverse"]),
 };
 
+/**
+ * Semantic sub-keys for overloaded utilities — additive sugar that keeps the
+ * plain Tailwind spelling working.
+ *
+ * Tailwind overloads one class prefix for several unrelated CSS concerns:
+ * `text-2xl` (size), `text-gray-900` (color) and `text-center` (alignment)
+ * share the `text` key. A sub-key names the concern explicitly and resolves
+ * onto the SAME underlying utility, so `{ textSize: "2xl" }` emits exactly
+ * `text-2xl`:
+ *
+ * ```ts
+ * tw({ textSize: "2xl", textColor: "gray-900" }); // "text-2xl text-gray-900"
+ * ```
+ *
+ * Conflict semantics come from the generated per-property conflict map of
+ * the BASE utility: `{ text: "sm", textSize: "lg" }` merges last-wins
+ * (both set font-size), while `{ textSize: "2xl", textColor: "gray-900" }`
+ * composes (disjoint properties).
+ *
+ * The typegen pipeline imports this table so generated types expose exactly
+ * these spellings — one source of truth for runtime and types.
+ */
+export const UTILITY_SUBKEYS: Readonly<Record<string, string>> = {
+	textColor: "text",
+	textOverflow: "text",
+	textAlign: "text",
+	textSize: "text",
+	textWrap: "text",
+	// bg family (unambiguous concerns only — see plans/007 item C Outcomes):
+	bgColor: "bg",
+	bgImage: "bg",
+	bgSize: "bg",
+	bgPosition: "bg",
+	bgRepeat: "bg",
+	bgAttachment: "bg",
+	// border family:
+	borderColor: "border",
+	borderWidth: "border",
+	borderStyle: "border",
+	// outline family:
+	outlineColor: "outline",
+	outlineWidth: "outline",
+	outlineStyle: "outline",
+	// decoration family (the API's key for `decoration-*` utilities; the
+	// line concern lives under separate keys like `underline`/`no`/`line`,
+	// so there is no overloaded base to split there):
+	decorationColor: "decoration",
+	decorationStyle: "decoration",
+	decorationThickness: "decoration",
+};
+
 function isNestedStyles(value: TwValue | TwNestedStyles): value is TwNestedStyles {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -111,25 +162,27 @@ function visit(
 			);
 		}
 
-		const dashKey = dashCase(key);
-		const className = prefix ? `${prefix}:${dashKey}` : dashKey;
+		// Sub-keys resolve onto their base utility: `textSize` emits `text-*`
+		// classes and shares the base's conflict-map entries.
+		const utility = UTILITY_SUBKEYS[key] ?? dashCase(key);
+		const className = prefix ? `${prefix}:${utility}` : utility;
 
 		if (typeof value === "boolean") {
 			if (value) {
-				push(classes, signatures, conflicts, compose, className, prefix, dashKey, "");
+				push(classes, signatures, conflicts, compose, className, prefix, utility, "");
 			}
 			continue;
 		}
 
 		if (value === "" || value == null) {
-			push(classes, signatures, conflicts, compose, className, prefix, dashKey, "");
+			push(classes, signatures, conflicts, compose, className, prefix, utility, "");
 			continue;
 		}
 
 		const parts = Array.isArray(value) ? value.map(String) : [String(value)];
 		const compound = COMPOUND_BASES[key];
 		if (compound && parts.some((part) => compound.has(part))) {
-			push(classes, signatures, conflicts, compose, className, prefix, dashKey, "");
+			push(classes, signatures, conflicts, compose, className, prefix, utility, "");
 		}
 
 		for (const part of parts) {
@@ -140,7 +193,7 @@ function visit(
 				compose,
 				part ? `${className}-${part}` : className,
 				prefix,
-				dashKey,
+				utility,
 				part,
 			);
 		}

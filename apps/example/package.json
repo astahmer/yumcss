@@ -8,7 +8,7 @@
 		"prebuild": "pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts",
+		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts",
 		"tw:bridge": "tsx ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
 		"tw:scan": "tsx ../../packages/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	},

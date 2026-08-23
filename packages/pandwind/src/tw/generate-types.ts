@@ -17,9 +17,11 @@
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { camelCaseProperty } from "./camelcase-property.ts";
+import { UTILITY_SUBKEYS } from "./compile.ts";
+import { buildThemeBlock, themeVarsFromTokens, type ThemeTokenGroups } from "./generate-theme.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
@@ -208,12 +210,117 @@ function unionType(values: Iterable<string | true>): string {
 		.join(" | ");
 }
 
+/**
+ * Property-signature -> sub-key suffix. Signatures are the canonicalized
+ * (sorted) longhand list a value compiles to. Known signatures get readable
+ * names; anything else falls back to PascalCasing the joined properties.
+ */
+/**
+ * Explicit property-signature -> sub-key suffix mappings.
+ *
+ * This table is also the WHITELIST: `expandSubkeys` only emits a sub-key
+ * for a partition whose exact signature appears here. That keeps the
+ * generated interface and the runtime `UTILITY_SUBKEYS` in agreement by
+ * construction — overloaded concerns we deliberately do not split
+ * (`background-blend-mode`/`-clip`/`-origin`, `border-collapse`, bare
+ * outline resets) simply get no entry and stay on the base union only.
+ */
+const SUBKEY_SUFFIXES: Record<string, string> = {
+	color: "Color",
+	"font-size,line-height": "Size",
+	"text-align": "Align",
+	"text-overflow": "Overflow",
+	"text-wrap": "Wrap",
+	// bg family:
+	"background-attachment": "Attachment",
+	"background-color": "Color",
+	"background-image": "Image",
+	"background-position": "Position",
+	"background-repeat": "Repeat",
+	"background-size": "Size",
+	// border family (widths compile style+width together in v4):
+	"border-bottom-color,border-left-color,border-right-color,border-top-color": "Color",
+	"border-bottom-style,border-bottom-width,border-left-style,border-left-width,border-right-style,border-right-width,border-top-style,border-top-width":
+		"Width",
+	"border-bottom-style,border-left-style,border-right-style,border-top-style": "Style",
+	// outline family (bare resets keep compiling offset+style together — skipped):
+	"outline-color": "Color",
+	"outline-style": "Style",
+	"outline-style,outline-width": "Width",
+	// decoration family (box-decoration-break stays on the base):
+	"text-decoration-color": "Color",
+	"text-decoration-style": "Style",
+	"text-decoration-thickness": "Thickness",
+};
+
+/**
+ * Add semantic sub-key entries (`textColor`, `textSize`, ...) to the utility
+ * map, derived from the generated conflict map: the base utility's values
+ * are partitioned by the CSS properties they compile to, and each disjoint
+ * partition becomes one typed sub-key whose values are exactly that concern.
+ *
+ * Purely additive — existing keys keep their full unions; sub-keys only add
+ * narrower spellings that emit the same classes (runtime resolution in
+ * `compile.ts` UTILITY_SUBKEYS).
+ */
+function expandSubkeys(
+	types: UtilityMap,
+	conflicts: Record<string, Record<string, string[]>>,
+): void {
+	// base utility (dash-case) -> sub-keys pointing at it.
+	const subsByBase = new Map<string, string[]>();
+	for (const [subkey, base] of Object.entries(UTILITY_SUBKEYS)) {
+		const dashBase = dashCase(base);
+		const subs = subsByBase.get(dashBase) ?? [];
+		subs.push(subkey);
+		subsByBase.set(dashBase, subs);
+	}
+
+	for (const [dashBase] of subsByBase) {
+		const byValue = conflicts[dashBase];
+		if (byValue === undefined) continue;
+		const values = types.get(dashBase);
+		if (values === undefined || !values.size) continue;
+
+		const defaultProps = byValue["*"] ?? [];
+		// Partition values by compiled property signature. Boolean/empty
+		// (the bare class) stays on the base key only.
+		const partitions = new Map<string, Set<string | true>>();
+		for (const value of values) {
+			if (value === true || value === "") continue;
+			const props = byValue[value] ?? defaultProps;
+			if (props.length === 0) continue;
+			const signature = [...props].toSorted().join(",");
+			const partition = partitions.get(signature) ?? new Set<string | true>();
+			partition.add(value);
+			partitions.set(signature, partition);
+		}
+
+		// Only split concerns we explicitly named in SUBKEY_SUFFIXES — the
+		// table is the whitelist as well as the naming source, so the
+		// generated interface never advertises a sub-key the runtime does
+		// not resolve. Unnamed partitions stay on the base union only.
+		const usedSuffixes = new Set<string>();
+		for (const [signature, partition] of partitions) {
+			let suffix = SUBKEY_SUFFIXES[signature];
+			if (suffix === undefined) continue;
+			while (usedSuffixes.has(suffix)) suffix = `${suffix}Alt`;
+			usedSuffixes.add(suffix);
+
+			types.set(`${camelCaseProperty(dashBase)}${suffix}`, partition);
+		}
+	}
+}
+
 /** Emits a bare identifier when valid, quoted otherwise (`@max`, `-translateX`). */
 function tsKey(name: string): string {
 	return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name) ? name : JSON.stringify(name);
 }
 
 function utilityKey(name: string): string {
+	// Generated sub-key names (textColor) are already camelCase identifiers;
+	// camelCaseProperty would flatten them (textcolor).
+	if (!name.includes("-")) return JSON.stringify(name);
 	const camel = camelCaseProperty(name.startsWith("-") ? name.slice(1) : name);
 	return name.startsWith("-") ? `"-${camel}"` : JSON.stringify(camel);
 }
@@ -262,9 +369,13 @@ function detectModifierUtilities(
 	const probes: Array<{ name: string; candidate: string }> = [];
 	for (const [name, values] of types) {
 		if (!values.size) continue;
+		// Sub-keys emit the BASE utility's class (`textColor: "x"` ->
+		// `text-x`), so opacity-modifier probing must use the real class
+		// prefix — probing `text-color-x/50` would wrongly report incapable.
+		const utility = UTILITY_SUBKEYS[name] ?? dashCase(name);
 		const samples = [...values].filter((value): value is string => value !== true).slice(0, 2);
 		for (const sample of samples) {
-			probes.push({ name, candidate: `${dashCase(name)}-${sample}/50` });
+			probes.push({ name, candidate: `${utility}-${sample}/50` });
 		}
 	}
 	const results = system.candidatesToCss(probes.map((probe) => probe.candidate));
@@ -859,7 +970,43 @@ function detectVariantJoin(
 
 const alphaSort = (a: string, b: string) => a.localeCompare(b, "en", { ignorePunctuation: true });
 
+/**
+ * Find DTCG token groups inside an imported tokens/preset module: the first
+ * export (default first) that either is a groups object itself or carries a
+ * `.tokens` field with at least one theme-namespace-bridged group.
+ */
+export function resolveTokenGroups(module: Record<string, unknown>): ThemeTokenGroups | undefined {
+	const candidates: Array<{ groups: unknown }> = [
+		{ groups: module.default },
+		{ groups: module.tokenGroups },
+		...Object.entries(module)
+			.filter(([name]) => name !== "default")
+			.map(([, value]) => ({ groups: value })),
+	];
+	for (const { groups: candidate } of candidates) {
+		if (candidate === null || typeof candidate !== "object") continue;
+		const obj = candidate as Record<string, unknown>;
+		const groups = obj.tokens !== null && typeof obj.tokens === "object" ? obj.tokens : obj;
+		if (groups === null || typeof groups !== "object") continue;
+		if (themeVarsFromTokens(groups as ThemeTokenGroups).length > 0) {
+			return groups as ThemeTokenGroups;
+		}
+	}
+	return undefined;
+}
+
 const header = "// Generated by pandwind — do not edit. Run `pnpm tw:codegen` to regenerate.";
+
+export interface GenerateDesignSystemOptions {
+	/**
+	 * A generated `@theme {}` block (see generate-theme.ts) injected into the
+	 * CSS before Tailwind loads it. Token-derived utilities then flow into
+	 * the generated types like any other utility, so tw() autocomplete is
+	 * driven by your design system's tokens. Omitted (or empty) = unchanged
+	 * behavior.
+	 */
+	themeBlock?: string;
+}
 
 /**
  * Generate the two artifact files for a CSS entry. Exported so tests and
@@ -868,19 +1015,24 @@ const header = "// Generated by pandwind — do not edit. Run `pnpm tw:codegen` 
 export async function generateDesignSystem(
 	css: string,
 	base: string,
+	options: GenerateDesignSystemOptions = {},
 ): Promise<{
 	typesDts: string;
 	twTs: string;
 	utilityCount: number;
 	variantCount: number;
 }> {
-	const system = await __unstable__loadDesignSystem(css, { base });
+	const effectiveCss = options.themeBlock ? `${css}\n${options.themeBlock}` : css;
+	const system = await __unstable__loadDesignSystem(effectiveCss, { base });
 
 	const functionalKeys = system.utilities.keys("functional");
 	const types = getFunctionalTypes(system);
 	mergeStaticUtilities(system, functionalKeys, types);
-	const modifierCapable = detectModifierUtilities(system, types);
 	const { conflicts, compose } = buildConflicts(system, types, functionalKeys);
+	// Sub-keys need the conflict map's per-value properties; modifier
+	// detection must see them so `textColor` inherits opacity modifiers.
+	expandSubkeys(types, conflicts);
+	const modifierCapable = detectModifierUtilities(system, types);
 
 	const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
 	for (const variant of system.getVariants()) {
@@ -903,18 +1055,55 @@ ${getVariantsType(variants)}
 }
 
 if (process.argv[1]?.endsWith("generate-types.ts")) {
-	const [cssEntryArg, outDirArg] = process.argv.slice(2);
+	const positional: string[] = [];
+	let tokensModulePath: string | undefined;
+	const args = process.argv.slice(2);
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (arg === "--tokens") {
+			tokensModulePath = args[++i];
+		} else if (arg !== undefined) {
+			positional.push(arg);
+		}
+	}
+
 	const base = process.cwd();
-	const cssEntry = resolve(base, cssEntryArg ?? "src/tailwind.css");
-	const outDir = resolve(base, outDirArg ?? "src");
+	const cssEntry = resolve(base, positional[0] ?? "src/tailwind.css");
+	const outDir = resolve(base, positional[1] ?? "src");
+	// Relative `@import`s (e.g. the generated pandwind-theme.css) resolve
+	// against the CSS entry's directory, not the invocation cwd.
+	const cssBase = dirname(cssEntry);
+
+	// Optional DTCG token groups -> @theme bridge. Accepts a bare groups
+	// object, `{ tokens }`, or any exported object carrying a `.tokens`
+	// field (e.g. a full preset). The first export yielding bridgeable
+	// groups wins.
+	let themeBlock = "";
+	if (tokensModulePath !== undefined) {
+		const { pathToFileURL } = await import("node:url");
+		const module = await import(pathToFileURL(resolve(base, String(tokensModulePath))).href);
+		const groups = resolveTokenGroups(module as Record<string, unknown>);
+		if (groups === undefined) {
+			throw new Error(
+				`pandwind tw:codegen: no bridgeable token groups found in ${String(tokensModulePath)} ` +
+					"(looked at default export and every named export for a .tokens field or raw DTCG groups)",
+			);
+		}
+		themeBlock = buildThemeBlock(groups);
+	}
 
 	const css = readFileSync(cssEntry, "utf8");
-	const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, base);
+	const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, cssBase, {
+		themeBlock,
+	});
 
 	writeFileSync(resolve(outDir, "types.d.ts"), typesDts);
 	writeFileSync(resolve(outDir, "tw.ts"), twTs);
+	if (themeBlock) writeFileSync(resolve(outDir, "pandwind-theme.css"), `${themeBlock}\n`);
 
 	console.log(
-		`pandwind: generated types.d.ts (${utilityCount} utilities, ${variantCount} variants) and tw.ts from ${cssEntry}`,
+		`pandwind: generated types.d.ts (${utilityCount} utilities, ${variantCount} variants) and tw.ts from ${cssEntry}${
+			themeBlock ? " + pandwind-theme.css (@theme bridge from DTCG tokens)" : ""
+		}`,
 	);
 }

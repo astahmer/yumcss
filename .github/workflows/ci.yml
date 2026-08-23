@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The runtime-size regression gate (three layers: hard budgets,
+      # tolerance guard, exact snapshot) runs inside `pandwind test`.
+      - name: Test (includes runtime-size gate)
+        run: pnpm --filter pandwind test
+
+      - name: Type tests (tstyche)
+        run: pnpm --filter pandwind test:types
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint (oxlint)
+        run: pnpm lint
+
+      - name: Format check (oxfmt)
+        run: pnpm format

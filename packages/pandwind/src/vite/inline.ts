@@ -17,7 +17,8 @@ import {
 	type TwNestedStyles,
 	type TwVariantsMeta,
 } from "../tw/compile.ts";
-import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
+import { evalLiteral, type LiteralConstantScope, type OxcNode, walk } from "../tw/literal.ts";
+import { collectModuleConstants, type ConstantScope } from "./cx-inline.ts";
 
 export interface TwConfig {
 	variants: TwVariantsMeta;
@@ -75,19 +76,32 @@ export interface InlineResult {
 /**
  * Replace `tw({ ... })` calls with literal arguments by their compiled class
  * string. `twNames` are the local bindings imported from the generated tw
- * module (including aliases). Returns the transformed code and the number of
- * calls inlined; unrepresentable calls are left for the runtime.
+ * module (including aliases). Module-level constants (see
+ * `collectModuleConstants`) participate: property values referencing proven
+ * constants fold like literals. Returns the transformed code and the number
+ * of calls inlined; unrepresentable calls are left for the runtime.
  */
 export function inlineTwCalls(
 	code: string,
 	id: string,
 	config: TwConfig,
 	twNames: ReadonlySet<string>,
+	importedConstants?: ConstantScope,
 ): InlineResult {
 	const result = parseSync(id, code, {
 		sourceType: "module",
 		lang: id.endsWith(".tsx") ? "tsx" : "ts",
 	});
+	// evalLiteral consumes RAW constant values, not the {value, declStart}
+	// records the cx evaluator uses for its TDZ position guard.
+	const importedScope: ConstantScope = importedConstants ?? new Map();
+	const consts: LiteralConstantScope = new Map([
+		// Cross-module imported constants sit under same-module declarations.
+		...[...importedScope].map(([name, known]) => [name, known.value] as const),
+		...[...collectModuleConstants(result.program as unknown as OxcNode)].map(
+			([name, known]) => [name, known.value] as const,
+		),
+	]);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
 
@@ -100,7 +114,7 @@ export function inlineTwCalls(
 			return;
 		}
 		if (call.arguments.length !== 1) return;
-		const styles = evalLiteral(call.arguments[0] as Expression);
+		const styles = evalLiteral(call.arguments[0] as Expression, consts);
 		if (typeof styles !== "object" || styles === null || Array.isArray(styles)) {
 			return;
 		}

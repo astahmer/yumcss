@@ -3,13 +3,17 @@ import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
 import { generateDesignSystem } from "../src/tw/generate-types.ts";
+import { UTILITY_SUBKEYS } from "../src/tw/compile.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 
 describe("typegen", () => {
 	test("generates utilities, variants and runtime metadata", async () => {
-		const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, app);
+		const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(
+			css,
+			resolve(app, "src"),
+		);
 
 		expect(utilityCount).toBeGreaterThan(200);
 		expect(variantCount).toBeGreaterThan(50);
@@ -18,6 +22,41 @@ describe("typegen", () => {
 		expect(typesDts).toContain('"flex"?:');
 		expect(typesDts).toContain("hover?: WindVariants");
 		expect(typesDts).toContain("group?: WindVariants");
+
+		// Semantic sub-keys for overloaded utilities: additive, narrower
+		// spellings derived from the conflict map's property partitions.
+		expect(typesDts).toContain('"textColor"?:');
+		expect(typesDts).toContain('"textSize"?:');
+		expect(typesDts).toContain('"textAlign"?:');
+		const sizeValues = typesDts.match(/type TextSizeValue = ([^;]*);/)?.[1] ?? "";
+		expect(sizeValues).toContain('"2xl"');
+		expect(sizeValues).not.toContain('"gray-900"');
+		const alignValues = typesDts.match(/type TextAlignValue = ([^;]*);/)?.[1] ?? "";
+		expect(alignValues).toContain('"center"');
+		expect(alignValues).not.toContain('"2xl"');
+
+		// bg / border / outline / decoration sub-key families (plan 007 item C):
+		expect(typesDts).toContain('"bgColor"?:');
+		expect(typesDts).toContain('"bgSize"?:');
+		expect(typesDts).toContain('"borderWidth"?:');
+		expect(typesDts).toContain('"outlineColor"?:');
+		expect(typesDts).toContain('"decorationThickness"?:');
+		const bgColorValues = typesDts.match(/"bgColor"\?: (\w+)/)?.[1] ?? "";
+		const bgColorUnion = typesDts.match(new RegExp(`type ${bgColorValues} = ([^;]*);`))?.[1] ?? "";
+		expect(bgColorUnion).toContain('"red-500"');
+		// concerns we deliberately do not split stay OUT of the color partition
+		expect(bgColorUnion).not.toContain('"cover"');
+		expect(bgColorUnion).not.toContain('"no-repeat"');
+		expect(bgColorUnion).not.toContain('"blend-normal"');
+		const borderWidthValues = typesDts.match(/type BorderWidthValue = ([^;]*);/)?.[1] ?? "";
+		expect(borderWidthValues).toContain('"2"');
+		expect(borderWidthValues).not.toContain('"dashed"');
+
+		// every runtime sub-key must be advertised by the generated interface —
+		// the SUBKEY_SUFFIXES whitelist keeps the two sides in agreement.
+		for (const key of Object.keys(UTILITY_SUBKEYS)) {
+			expect(typesDts, `missing generated type for sub-key ${key}`).toContain(`"${key}"?:`);
+		}
 
 		expect(twTs).toContain('group: { join: "-" }');
 		expect(twTs).toContain('"@": { join: "" }');
@@ -34,7 +73,7 @@ describe("typegen", () => {
 
 describe("generated classes compile", () => {
 	test("runtime-style candidates are valid Tailwind", async () => {
-		const system = await __unstable__loadDesignSystem(css, { base: app });
+		const system = await __unstable__loadDesignSystem(css, { base: resolve(app, "src") });
 		const classes = [
 			"group-hover:opacity-100",
 			"max-md:bg-red-500",

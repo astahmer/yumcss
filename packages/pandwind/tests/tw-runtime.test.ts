@@ -117,6 +117,42 @@ describe("tw variants", () => {
 	});
 });
 
+describe("tw semantic sub-keys (overloaded utilities)", () => {
+	test("sub-keys resolve onto the base utility's classes", () => {
+		expect(tw({ textSize: "2xl" })).toBe("text-2xl");
+		expect(tw({ textColor: "gray-900" })).toBe("text-gray-900");
+		expect(tw({ textAlign: "center" })).toBe("text-center");
+		expect(tw({ textWrap: "balance" })).toBe("text-balance");
+		expect(tw({ textOverflow: "ellipsis" })).toBe("text-ellipsis");
+	});
+
+	test("disjoint concerns compose without arrays", () => {
+		expect(tw({ textSize: "2xl", textColor: "gray-900", textAlign: "center" })).toBe(
+			"text-2xl text-gray-900 text-center",
+		);
+	});
+
+	test("sub-keys work under variant nesting and with arrays/modifiers", () => {
+		expect(typed({ group: { hover: { textColor: "sky-600" } } })).toBe("group-hover:text-sky-600");
+		expect(tw({ textColor: ["gray-900/50", "red-500"] })).toBe("text-gray-900/50 text-red-500");
+	});
+
+	test("same-concern conflicts merge last-wins through the base's map", () => {
+		// both spellings set font-size -> later wins, whichever spelling is later
+		expect(merged({ text: "sm", textSize: "lg" })).toBe("text-lg");
+		expect(merged({ textSize: "lg", text: "sm" })).toBe("text-sm");
+		// size vs color are disjoint -> coexist in both orders
+		expect(merged({ textSize: "lg", textColor: "gray-900" })).toBe("text-lg text-gray-900");
+		expect(merged({ textColor: "gray-900", textSize: "lg" })).toBe("text-gray-900 text-lg");
+	});
+
+	test("legacy overloaded spelling is untouched", () => {
+		expect(tw({ text: "2xl" })).toBe("text-2xl");
+		expect(tw({ text: "center" })).toBe("text-center");
+		expect(tw({ text: ["2xl", "gray-900"] })).toBe("text-2xl text-gray-900");
+	});
+});
+
 describe("tw last-wins merging", () => {
 	test("later keys drop earlier conflicting utilities", () => {
 		expect(merged({ px: "4", p: "6" })).toBe("p-6");
@@ -155,5 +191,64 @@ describe("tw last-wins merging", () => {
 		expect(composed({ translateX: "4", translateY: "2" })).toBe("translate-x-4 translate-y-2");
 		expect(composed({ scaleX: ["2", "4"] })).toBe("scale-x-4");
 		expect(composed({ bg: ["red-500", "blue-500"] })).toBe("bg-blue-500");
+	});
+});
+
+describe("tw semantic sub-keys — bg / border / outline / decoration families", () => {
+	test("bg family sub-keys resolve onto bg-* classes", () => {
+		expect(tw({ bgColor: "red-500" })).toBe("bg-red-500");
+		expect(tw({ bgImage: "gradient-to-t" })).toBe("bg-gradient-to-t");
+		expect(tw({ bgSize: "cover" })).toBe("bg-cover");
+		expect(tw({ bgPosition: "center" })).toBe("bg-center");
+		expect(tw({ bgRepeat: "no-repeat" })).toBe("bg-no-repeat");
+		expect(tw({ bgAttachment: "fixed" })).toBe("bg-fixed");
+	});
+
+	test("border family sub-keys resolve onto border-* classes", () => {
+		expect(tw({ borderColor: "red-500" })).toBe("border-red-500");
+		expect(tw({ borderWidth: "2" })).toBe("border-2");
+		expect(tw({ borderStyle: "dashed" })).toBe("border-dashed");
+	});
+
+	test("outline family sub-keys resolve onto outline-* classes", () => {
+		expect(tw({ outlineColor: "red-500" })).toBe("outline-red-500");
+		expect(tw({ outlineWidth: "2" })).toBe("outline-2");
+		expect(tw({ outlineStyle: "dashed" })).toBe("outline-dashed");
+	});
+
+	test("decoration family sub-keys resolve onto decoration-* classes", () => {
+		expect(tw({ decorationColor: "red-500" })).toBe("decoration-red-500");
+		expect(tw({ decorationStyle: "dashed" })).toBe("decoration-dashed");
+		expect(tw({ decorationThickness: "4" })).toBe("decoration-4");
+	});
+
+	test("disjoint concerns within one family compose", () => {
+		expect(tw({ bgColor: "red-500", bgSize: "cover", bgRepeat: "no-repeat" })).toBe(
+			"bg-red-500 bg-cover bg-no-repeat",
+		);
+		expect(tw({ borderWidth: "2", borderColor: "red-500", borderStyle: "solid" })).toBe(
+			"border-2 border-red-500 border-solid",
+		);
+	});
+
+	test("base vs sub-key merges last-wins through the base's map", () => {
+		expect(merged({ bg: "red-500", bgColor: "blue-500" })).toBe("bg-blue-500");
+		expect(merged({ bgColor: "blue-500", bg: "red-500" })).toBe("bg-red-500");
+		// width (style+width signature) vs color are disjoint -> coexist
+		expect(merged({ borderWidth: "2", borderColor: "red-500" })).toBe("border-2 border-red-500");
+		expect(merged({ borderColor: "red-500", borderWidth: "2" })).toBe("border-red-500 border-2");
+	});
+
+	test("sub-keys work under variant nesting and with arrays/modifiers", () => {
+		expect(typed({ group: { hover: { bgColor: "sky-600" } } })).toBe("group-hover:bg-sky-600");
+		expect(tw({ borderColor: ["red-500/50", "blue-500"] })).toBe(
+			"border-red-500/50 border-blue-500",
+		);
+	});
+
+	test("legacy overloaded spellings stay untouched", () => {
+		expect(tw({ bg: "cover" })).toBe("bg-cover");
+		expect(tw({ bg: ["red-500", "no-repeat"] })).toBe("bg-red-500 bg-no-repeat");
+		expect(tw({ border: "2" })).toBe("border-2");
 	});
 });

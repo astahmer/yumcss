@@ -8,20 +8,22 @@ import type {
 	TypedStyleObject,
 } from "../types/typings.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
+import {
+	normalizeStrategy,
+	type AnyClassNameStrategy,
+	type ClassNameFn,
+	type ClassNameStrategy,
+} from "./class-name-strategy.ts";
 import { createHashFn } from "./hash.ts";
+
+/** @deprecated Legacy callable form — see `ClassNameStrategy` in class-name-strategy.ts. */
+export type { ClassNameFn };
+export type { AnyClassNameStrategy, ClassNameStrategy };
 
 type CompiledStyles = Record<string, string>;
 type CssStyle = Record<string, string>;
 
 const DYNAMIC = Symbol("dynamic");
-
-/**
- * Pluggable class-name strategy. Given a flattened style key (`color`,
- * `_hover__color`) and the written value, return a class name — or `null`
- * to fall back to the engine's atomic hashing. The tailwind adapter uses
- * this to emit literal Tailwind utilities instead of hashed atoms.
- */
-export type ClassNameStrategy = (key: string, value: string) => string | null;
 
 /**
  * Untyped convenience — useful for throwaway styles or before the preset
@@ -37,7 +39,8 @@ export function createCss<
 export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 	const debug = options.debug ?? false;
 	const hashFn = options.hashFn ?? createHashFn(debug);
-	const className = options.className;
+	const strategy = normalizeStrategy(options.className);
+	const sheetBacked = strategy?.sheetBacked === true;
 	const atoms: AtomRegistry = new Map();
 
 	const compile = (style: FlatStyles): CompiledStyles => {
@@ -51,9 +54,15 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 
 	const register = (key: string, value: string) => {
 		const rawValue = String(value);
-		if (className !== undefined) {
-			const custom = className(key, rawValue);
-			if (custom !== null) return custom;
+		if (strategy !== undefined) {
+			const custom = strategy.toClassName(key, rawValue);
+			if (custom !== null) {
+				// Sheet-backed strategies compile through this engine's own
+				// stylesheet, so their classes join the atom registry — that is
+				// what keeps cx() merging and the generated rules working.
+				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, key);
+				return custom;
+			}
 		}
 		const atom = hashFn(key, rawValue);
 		if (!atoms.has(atom)) atoms.set(atom, key);
@@ -164,7 +173,7 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 export interface CreateCssOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
-	className?: ClassNameStrategy;
+	className?: AnyClassNameStrategy;
 }
 
 interface DynamicReturn {

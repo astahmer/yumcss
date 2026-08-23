@@ -776,6 +776,11 @@ export const bridge = {
 		"600": "font-semibold",
 		"700": "font-bold",
 	},
+	"font-family": {
+		"ui-monospace, SFMono-Regular, monospace": "font-mono",
+		"ui-sans-serif, system-ui, sans-serif": "font-sans",
+		"ui-serif, Georgia, serif": "font-serif",
+	},
 	"column-gap": {
 		"0.125rem": "gap-x-0.5",
 		"0.25rem": "gap-x-1",
@@ -1256,12 +1261,13 @@ export const bridge = {
 	"border-radius": {
 		"0": "rounded-none",
 		"0.125rem": "rounded-sm",
+		"0.25rem": "rounded-base",
 		"0.375rem": "rounded-md",
 		"0.5rem": "rounded-lg",
 		"0.75rem": "rounded-xl",
 		"1.5rem": "rounded-3xl",
 		"1rem": "rounded-2xl",
-		"calc(infinity * 1px)": "rounded-full",
+		"9999px": "rounded-full",
 	},
 	scale: { none: "scale-none" },
 	"font-size": {

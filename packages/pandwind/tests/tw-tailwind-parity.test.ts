@@ -93,7 +93,7 @@ let ds: Awaited<ReturnType<typeof __unstable__loadDesignSystem>>;
 
 beforeAll(async () => {
 	config = loadTwConfig();
-	ds = await __unstable__loadDesignSystem(TW_ENTRY, { base: APP_DIR });
+	ds = await __unstable__loadDesignSystem(TW_ENTRY, { base: resolve(APP_DIR, "src") });
 });
 
 describe("full design-system sweep", () => {
@@ -218,7 +218,9 @@ describe("cx() merge", () => {
 			expected: "bg-blue-600",
 			dropped: ["bg-red-500"],
 		},
-		{ input: ["p-4", "px-8"], expected: "px-8", dropped: ["p-4"] },
+		// cx v2 twMerge parity: a later sub-group (px) does not supersede the
+		// full-group p — verified against real tailwind-merge.
+		{ input: ["p-4", "px-8"], expected: "p-4 px-8" },
 		{ input: ["text-2xl", "text-base"], expected: "text-base", dropped: ["text-2xl"] },
 		{ input: ["text-2xl", "text-gray-900"], expected: "text-2xl text-gray-900" },
 		{ input: ["scale-x-110", "scale-y-125"], expected: "scale-x-110 scale-y-125" },

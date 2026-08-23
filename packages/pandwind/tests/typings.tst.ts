@@ -19,6 +19,15 @@ test("utility keys and values come from the design system", () => {
 	expect(tw({ gridCols: "2", minH: "screen" })).type.toBe<string>();
 });
 
+test("semantic sub-keys accept their concern's values", () => {
+	// Autocomplete-precision sugar: each sub-key's union is narrowed to its
+	// concern (asserted in tw-typegen.test.ts), while the open-ended
+	// `(string & {})` escape hatch keeps arbitrary values valid, same as the
+	// base utilities.
+	expect(tw({ textSize: "2xl", textColor: "gray-900", textAlign: "center" })).type.toBe<string>();
+	expect(tw({ hover: { textColor: "sky-600/50" } })).type.toBe<string>();
+});
+
 test("nested variants stack to arbitrary depth", () => {
 	expect(
 		tw({
@@ -48,6 +57,25 @@ test("argument variants require a nested variant", () => {
 
 test("value unions stay open-ended (escape hatch)", () => {
 	expect(tw({ rounded: "bogus-arbitrary" })).type.toBe<string>();
+});
+
+test("bg / border / outline / decoration sub-keys are typed and accept real values", () => {
+	expect(tw({ bgColor: "red-500", bgSize: "cover" })).type.toBe<string>();
+	expect(
+		tw({ bgPosition: "center", bgRepeat: "no-repeat", bgAttachment: "fixed" }),
+	).type.toBe<string>();
+	expect(
+		tw({ borderWidth: "2", borderColor: "red-500", borderStyle: "dashed" }),
+	).type.toBe<string>();
+	expect(
+		tw({ outlineWidth: "2", outlineColor: "red-500", outlineStyle: "dashed" }),
+	).type.toBe<string>();
+	expect(
+		tw({ decorationColor: "red-500", decorationStyle: "dashed", decorationThickness: "4" }),
+	).type.toBe<string>();
+	expect(tw({ hover: { bgColor: "sky-600/50" } })).type.toBe<string>();
+	// sub-keys remain open-ended like their bases
+	expect(tw({ bgColor: "bogus-arbitrary" })).type.toBe<string>();
 });
 
 test("WindVariants is the parameter type of the generated tw", () => {

@@ -36,7 +36,7 @@ describe("generated tw runtime", () => {
 
 	test("safelist matches scanner output and every class compiles", async () => {
 		const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
-		const system = await __unstable__loadDesignSystem(css, { base: app });
+		const system = await __unstable__loadDesignSystem(css, { base: resolve(app, "src") });
 		const scanned = await collectTwClasses(
 			[resolve(app, "src/css-in-js-app.tsx")],
 			resolve(app, "src/tw.ts"),

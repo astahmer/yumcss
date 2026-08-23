@@ -25,7 +25,7 @@
  *   few declarations only.
  */
 import { dashCase } from "../css/hash.ts";
-import type { ClassNameStrategy } from "../css/create-css.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createTokenResolver } from "../css/tokens.ts";
 import type { AnyConditions, CssConfigReturn } from "../types/typings.ts";
 import type { UtilityBridge } from "./bridge.ts";
@@ -96,35 +96,41 @@ export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 		return prefix;
 	};
 
-	return (key, value) => {
-		// `$input` dynamics resolve at runtime against the atomic engine's
-		// generated stylesheet — unsupported in tailwind mode. Fail loudly:
-		// silently emitting a hashed atom here would leave the class without
-		// any CSS (the tailwind mode has no atomic sheet).
-		if (value.startsWith("input>$")) {
-			throw new Error(
-				"pandwind: the tailwind adapter does not support `$input` dynamics — " +
-					"use the atomic engine (`createCss()` without a className strategy) for dynamic values",
-			);
-		}
+	return {
+		name: "tailwind",
+		// Not sheet-backed: Tailwind's own scanner/compiler generates the CSS
+		// for these utilities, so the classes must stay out of the atom
+		// registry and out of any generated pandwind stylesheet.
+		toClassName(key, value) {
+			// `$input` dynamics resolve at runtime against the atomic engine's
+			// generated stylesheet — unsupported in tailwind mode. Fail loudly:
+			// silently emitting a hashed atom here would leave the class without
+			// any CSS (the tailwind mode has no atomic sheet).
+			if (value.startsWith("input>$")) {
+				throw new Error(
+					"pandwind: the tailwind adapter does not support `$input` dynamics — " +
+						"use the atomic engine (`createCss()` without a className strategy) for dynamic values",
+				);
+			}
 
-		const parts = key.split("__");
-		const propParts = parts.filter((part) => !isCondition(part));
-		if (propParts.length !== 1) {
-			throw new Error(
-				`pandwind: cannot map '${key}' to a Tailwind utility — the key must contain exactly one CSS property`,
-			);
-		}
-		const propKey = propParts[0]!;
-		const prop = dashCase(propKey);
-		const resolved = resolveValue(propKey, value);
-		const utility = bridge[prop]?.[resolved] ?? `[${prop}:${arbitraryValue(resolved)}]`;
-		const prefix = variantPrefix(parts.filter((part) => isCondition(part)));
-		if (prefix === null) {
-			throw new Error(
-				`pandwind: condition '${parts.find((part) => isCondition(part))}' has no Tailwind variant and no preset condition selector`,
-			);
-		}
-		return prefix === "" ? utility : `${prefix}:${utility}`;
+			const parts = key.split("__");
+			const propParts = parts.filter((part) => !isCondition(part));
+			if (propParts.length !== 1) {
+				throw new Error(
+					`pandwind: cannot map '${key}' to a Tailwind utility — the key must contain exactly one CSS property`,
+				);
+			}
+			const propKey = propParts[0]!;
+			const prop = dashCase(propKey);
+			const resolved = resolveValue(propKey, value);
+			const utility = bridge[prop]?.[resolved] ?? `[${prop}:${arbitraryValue(resolved)}]`;
+			const prefix = variantPrefix(parts.filter((part) => isCondition(part)));
+			if (prefix === null) {
+				throw new Error(
+					`pandwind: condition '${parts.find((part) => isCondition(part))}' has no Tailwind variant and no preset condition selector`,
+				);
+			}
+			return prefix === "" ? utility : `${prefix}:${utility}`;
+		},
 	};
 }

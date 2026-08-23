@@ -152,7 +152,8 @@ describe("the tailwind adapter", () => {
 		);
 		expect(merged).toContain("bg-blue-500");
 		expect(merged).not.toContain("bg-red-500");
-		expect(merged).not.toContain("p-4");
+		// cx v2 twMerge parity: later px-2 only covers left/right of p-4.
+		expect(merged).toContain("p-4");
 		expect(merged).toContain("px-2");
 	});
 

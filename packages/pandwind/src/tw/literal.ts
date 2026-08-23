@@ -23,22 +23,56 @@ export function walk(node: unknown, visit: (node: OxcNode) => void): void {
 }
 
 /**
+ * Optional module-level constant scope for `evalLiteral`: name -> known
+ * value. Only values proven constant by the caller (see the cx inliner's
+ * `collectModuleConstants`) should be passed — evalLiteral trusts it.
+ */
+export type LiteralConstantScope = ReadonlyMap<string, unknown>;
+
+/**
  * Statically evaluate a literal expression. Only pure literal values are
  * supported; anything else (variables, spreads, template interpolation)
  * returns `undefined`, making the enclosing call invisible to extraction —
  * the same limitation as dynamic class names in plain Tailwind.
+ *
+ * With `consts`, module-level constant bindings participate: Identifier
+ * references resolve through the scope, and template interpolations / `+
+ * concatenations of known strings fold accordingly. Unknown identifiers
+ * still return `undefined`.
  */
-export function evalLiteral(node: Expression | undefined): unknown {
+export function evalLiteral(node: Expression | undefined, consts?: LiteralConstantScope): unknown {
 	if (!node) return undefined;
 	switch (node.type) {
 		case "Literal":
 			return node.value;
-		case "TemplateLiteral": {
-			if (node.expressions.length !== 0 || node.quasis.length !== 1) {
-				return undefined;
+		case "Identifier": {
+			const name = (node as unknown as { name?: string }).name;
+			if (consts !== undefined && typeof name === "string") {
+				const known = consts.get(name);
+				if (known !== undefined) return known;
 			}
-			const cooked = node.quasis[0]?.value.cooked;
-			return cooked ?? node.quasis[0]?.value.raw;
+			return undefined;
+		}
+		case "TemplateLiteral": {
+			const hasExpressions = node.expressions.length !== 0;
+			if (hasExpressions && consts === undefined) return undefined;
+			if (node.quasis.length !== node.expressions.length + 1) return undefined;
+			let out = node.quasis[0]?.value.cooked ?? node.quasis[0]?.value.raw ?? "";
+			for (let i = 0; i < node.expressions.length; i++) {
+				const value = evalLiteral(node.expressions[i], consts);
+				if (typeof value !== "string") return undefined;
+				out += value;
+				out += node.quasis[i + 1]?.value.cooked ?? node.quasis[i + 1]?.value.raw ?? "";
+			}
+			return out;
+		}
+		case "BinaryExpression": {
+			if (consts === undefined || node.operator !== "+") return undefined;
+			const left = evalLiteral(node.left, consts);
+			if (typeof left !== "string") return undefined;
+			const right = evalLiteral(node.right, consts);
+			if (typeof right !== "string") return undefined;
+			return left + right;
 		}
 		case "UnaryExpression": {
 			if (node.operator !== "-" || node.argument.type !== "Literal") {
@@ -53,7 +87,7 @@ export function evalLiteral(node: Expression | undefined): unknown {
 				if (element === null || element.type === "SpreadElement") {
 					return undefined;
 				}
-				const value = evalLiteral(element);
+				const value = evalLiteral(element, consts);
 				if (value === undefined) return undefined;
 				values.push(value);
 			}
@@ -79,7 +113,7 @@ export function evalLiteral(node: Expression | undefined): unknown {
 							? key.value
 							: undefined;
 				if (name === undefined) return undefined;
-				const value = evalLiteral(property.value);
+				const value = evalLiteral(property.value, consts);
 				if (value === undefined) return undefined;
 				styles[name] = value;
 			}
