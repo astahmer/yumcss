@@ -423,6 +423,17 @@ Switching modes is a one-option change; call sites never move.
 
 ## Tailwind compatibility — proven, not assumed
 
+### Container queries
+
+Container-query variants work through the whole stack, proven in
+`packages/pandwind/tests/container-variants.test.ts`: nested keys emit the
+escaped classes (`{"@md": { p: "4" }}` -> `@md\\:p-4`), `cx()` scopes them
+distinctly from base (a later base `bg` never kills an `@md:` override and
+vice versa), and real Tailwind compiles them inside `@container (...)`
+at-rules. Typegen exposes the functional forms (`@`, `@min`, `@max`) as
+variant keys; concrete sizes like `@md` ride the open escape hatch. Mark the
+parent with Tailwind's `@container` class as usual.
+
 Every claim below is checked against the real `tailwindcss` compiler, with
 postcss as an independent parsing oracle — never against pandwind's own output
 parsers. The suites in `packages/pandwind/tests/tw-tailwind-parity.test.ts` and
