@@ -384,8 +384,8 @@ through real Tailwind.
 
 The browser runtime is the three small modules above — no stylesheet
 generator, no PostCSS, no parser. Measured by `tests/runtime-size.test.ts`
-(esbuild, minified + gzip): `css()` ≈ 1.1 KB, `tw()` ≈ 1.0 KB, `cx()` ≈ 2.9 KB,
-all three together ≈ 3.6 KB gz. The build-time stylesheet generator would add
+(esbuild, minified + gzip): `css()` ≈ 1.1 KB, `tw()` ≈ 1.0 KB, `cx()` ≈ 3.0 KB,
+all three together ≈ 3.7 KB gz. The build-time stylesheet generator would add
 ~20 KB gz (postcss-selector-parser) and is deliberately not exported from the
 runtime barrel. Real numbers for the runtime, the example build and the
 alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
@@ -407,7 +407,7 @@ under _What we deliberately don't do (and why)_. The highlights:
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
   props; everything else lives under `$raw` on purpose.
-- **No panda-like runtime bloat** — the shipped runtime is ~3.6 KB gz for
+- **No panda-like runtime bloat** — the shipped runtime is ~3.7 KB gz for
   css+tw+cx; the stylesheet generator is build-time only.
 
 ## Repo layout

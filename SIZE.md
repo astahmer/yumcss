@@ -1,6 +1,6 @@
 # Bundle & stylesheet sizes — measured, not guessed
 
-Last measured: 2026-08-15, local macOS (arm64), Node v24.18.1, esbuild 0.28.2.
+Last measured: 2026-08-23, local macOS (arm64), Node v24.19.0, esbuild 0.28.2.
 All numbers below come from real builds on this machine (esbuild `bundle +
 minify`, gzip level 6 for the raw bytes; vite reports its own gzip for the
 example app). This is local-build evidence — re-run the commands in
@@ -16,8 +16,8 @@ the **build-time stylesheet generator**, not the browser runtime:
 | ------------------------------------------ | -------: | -------: |
 | `css()` runtime                            |  2.35 KB |  1.13 KB |
 | `tw()` runtime                             |  2.00 KB |  0.96 KB |
-| `cx()` runtime                             |  6.77 KB |  2.95 KB |
-| all three together                         |  8.72 KB |  3.64 KB |
+| `cx()` runtime                             |  6.88 KB |  3.02 KB |
+| all three together                         |  8.83 KB |  3.73 KB |
 | stylesheet generator (**build-time only**) | 80.32 KB | 19.93 KB |
 
 The generator is deliberately not exported from any runtime barrel — there is
@@ -41,7 +41,7 @@ proven again with a real vite production build in
 | --------------------------- | ------: | ------: | -----------: |
 | `pandwind/css` — css() only | 2.35 KB | 1.13 KB |         −73% |
 | `pandwind/tw` — tw() only   | 2.00 KB | 0.96 KB |         −77% |
-| `pandwind/cx` — cx() only   | 6.77 KB | 2.95 KB |         −22% |
+| `pandwind/cx` — cx() only   | 6.88 KB | 3.02 KB |         −22% |
 | `pandwind` — css + tw + cx  | 8.72 KB | 3.64 KB |            — |
 
 Two things to know:
@@ -62,7 +62,7 @@ target, ESM), with React externalized where it is a peer dependency:
 
 | runtime                                    |     min |    gzip | what ships                              |
 | ------------------------------------------ | ------: | ------: | --------------------------------------- |
-| pandwind `css()` + `tw()` + `cx()`         | 8.72 KB | 3.64 KB | everything                              |
+| pandwind `css()` + `tw()` + `cx()`         | 8.83 KB | 3.73 KB | everything                              |
 | `@stylexjs/stylex` 0.19.0                  | 4.06 KB | 1.74 KB | runtime only (compile happens in babel) |
 | `@pandacss/core` 1.12.0 generated `css()`  | 13.4 KB | 5.31 KB | panda's runtime engine + tokens         |
 | `@emotion/css` 11.13.5                     | 15.3 KB | 6.25 KB | emotion core (chakra's engine)          |
@@ -70,9 +70,11 @@ target, ESM), with React externalized where it is a peer dependency:
 | `tailwind-merge` 3.6.0                     | 27.0 KB | 8.47 KB | the merge function alone                |
 | `tokenami`                                 |       0 |      ~0 | compile-time only, nothing ships        |
 
-pandwind's whole runtime is smaller than stylex's runtime and a fraction of
-panda's; it is under a third of chakra's and about a third of tailwind-merge (which only does
-string merging, not style compilation — see [BENCH.md](./BENCH.md)).
+pandwind's whole runtime is a fraction of panda's, under a third of chakra's,
+and about a third of tailwind-merge (which only does string merging, not
+style compilation — see [BENCH.md](./BENCH.md)). It is larger than stylex's
+shipped runtime, whose compile happens in babel — the honest comparison is
+[BENCH.md](./BENCH.md) runtime throughput, where pandwind wins.
 
 ## No silent regressions: the runtime size gate
 
@@ -84,8 +86,13 @@ caught or explicitly intentional:
 1. **Hard budgets** (`packages/pandwind/tests/runtime-budget.json`) — the
    "not too much" ceiling for every entry. They are checked first and always
    apply, even when updating snapshots with `-u`. Bump one only when the
-   growth is deliberate and reviewed (there is headroom for noise: css is at
-   2406/1157 against a 2900/1400 budget).
+   growth is deliberate and reviewed. Headroom as of the bitset-signature
+   landing (measured / budget): css 2406/2900 min & 1157/1400 gz (~17% free),
+   tw 2043/2100 min (~3% free) & 985/1100 gz, cx 7049/7200 min (~2% free) &
+   3092/3100 gz (**8 bytes** — the next cx/tw feature will need a reviewed
+   budget bump), all three 9046/9200 min & 3816/3900 gz. The budget file is
+   comment-free JSON (loaded with `JSON.parse`), so this paragraph is the
+   canonical headroom record.
 2. **Regression guard** — current sizes are compared against the committed
    baseline snapshot (`packages/pandwind/tests/snapshots/runtime-size.json.snap`)
    with a small tolerance (1%, floored at 16 min / 8 gz bytes). Deterministic
