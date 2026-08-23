@@ -124,3 +124,34 @@ insert per unique input) plus parseUtility's residual candidate scan.
 Size cost is real and deliberate: cx entry 6922→7512 min / 3056→3287 gz.
 Budgets raised with review: cx 7200/3100→7900/3400, all-three
 9200/3900→9900/4200. Snapshot + SIZE.md refreshed.
+
+## H. Outcomes — bench lane gap investigated, no rewiring warranted (2026-08-23)
+
+Investigation lives in `/Users/astahmer/dev/css-in-js-bench` (branch
+`scratch/pandwind-buildtime-lane`, commit `116a1f5`,
+`techs/pandwind-buildtime/PERF-NOTES.md`).
+
+Root cause of the tabs/multifile/product-grid losses vs vanilla: **markup
+weight, not wiring**. Utility-CSS lanes emit the full utility list per
+element (~3.7 KB rendered HTML vs vanilla's ~0.5 KB two semantic class
+names); renderToString cost scales with bytes. The tailwind-merge lane shows
+the same categorical loss. Folded output verified fully static in dist
+(module-scope `tw({...})` constants compile to plain strings; zero runtime
+merge work remains).
+
+Per-KB-normalized throughput puts pandwind-buildtime AHEAD of every utility
+lane (2.19× tw-merge on tabs, 2.88× multifile, 2.94× product-grid).
+
+Re-measured medians (microbench re-run, this session):
+
+| case                  | vanilla | pandwind-buildtime | tailwind-merge | pw/vanilla |
+| --------------------- | ------: | -----------------: | -------------: | ---------: |
+| tabs                  |   98.6K |              88.8K |          46.5K |      0.90× |
+| multifile-composition |  143.5K |              90.8K |          42.6K |      0.63× |
+| product-grid          |  187.4K |             203.2K |         129.0K |  **1.08×** |
+| realistic-button      |  632.6K |             785.2K |         349.1K |      1.24× |
+
+vs the plan-baseline ratios (0.39×/0.46×/0.68×) the lane already closed most
+of the gap via the earlier build-time folding work. Remaining deficit vs
+vanilla is categorical to utility-style markup; nothing legitimately fixable
+in the lane without gaming the benchmark.
