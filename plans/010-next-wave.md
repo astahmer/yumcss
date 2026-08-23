@@ -67,3 +67,26 @@ virtual-module regeneration overhead rather than class-string cost. Measure
 to confirm, fix what is legitimately fixable in the LANE (not by gaming),
 re-run those cells + vanilla, report before/after. Never modify pandwind
 sources.
+
+### B. Outcomes (2026-08-23)
+
+- New tests/css-dedup-parity.test.ts: parameterized battery over the two
+  sheet-backed modes (default hash, named-atoms). Per mode asserts:
+  one-rule-per-class (per atom + global duplicate check), resolved
+  declarations equal intent, and cx() survivor recompilation for last-wins,
+  disjoint-coexistence and variant-scoped scenarios. Cross-mode test proves
+  named-atoms resolves byte-identically to hash mode.
+- Class matching handles three selector spellings: raw runtime class,
+  postcss-normalized escapes, and CSS identifier escaping of leading digits
+  (`1k0rf5x` -> `.\31 k0rf5x` via escapeIdentifier).
+- **Pre-existing engine divergence found (pinned by an expected-fail test,
+  NOT fixed — test-only change):** runtime atoms register under the WRITTEN
+  flatten key order while createStylesheet canonicalizes condition parts by
+  sorting them. Inverted condition nesting
+  (`css({ color: { _hover: "red" } })` instead of
+  `css({ _hover: { color: "red" } })`) therefore emits a stylesheet rule
+  keyed differently from the registered runtime atom -> missing CSS in hash
+  mode. Canonical authoring is unaffected; named-atoms is immune (the
+  strategy applies the same sort). Recommend a follow-up engine fix:
+  apply the same sort in css.register (one-line canonicalization) + flip the
+  pinned test to positive.
