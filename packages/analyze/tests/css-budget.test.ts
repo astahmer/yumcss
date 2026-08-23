@@ -54,9 +54,11 @@ describe("theme delta parsing", () => {
 [data-theme="hc"] {
 	--color-surface: #000;
 }`;
-		const scopes = [...themeCss.matchAll(/\[data-theme="([^"]+)"\]\s*\{([^}]*)\}/g)].map(
-			(m) => ({ scope: m[1] ?? "?", bytes: Buffer.byteLength(m[0] ?? ""), vars: (m[2]?.match(/--[/\w-]+\s*:/g) ?? []).length }),
-		);
+		const scopes = [...themeCss.matchAll(/\[data-theme="([^"]+)"\]\s*\{([^}]*)\}/g)].map((m) => ({
+			scope: m[1] ?? "?",
+			bytes: Buffer.byteLength(m[0] ?? ""),
+			vars: (m[2]?.match(/--[/\w-]+\s*:/g) ?? []).length,
+		}));
 		expect(scopes).toEqual([
 			{ scope: "dark", bytes: expect.any(Number), vars: 2 },
 			{ scope: "hc", bytes: expect.any(Number), vars: 1 },
