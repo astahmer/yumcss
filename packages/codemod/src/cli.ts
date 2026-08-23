@@ -320,31 +320,46 @@ function main(): void {
 	);
 
 	if (args.report) {
-		// Migration-completeness score: how much of the scanned class-string
-		// surface flows through pandwind APIs vs what stays manual.
-		const totalSkipped = fileResults.reduce((acc, f) => acc + f.result.skippedByMarker, 0);
-		const totalVerbatim = fileResults.reduce((acc, f) => acc + f.result.unmappedTokens.length, 0);
-		const manualWork = fileResults.filter(
-			(f) => f.result.skippedByMarker > 0 || f.result.unmappedTokens.length > 0,
-		);
-		const totalSites = totalConverted + totalSkipped;
-		console.log("\nmigration report:");
-		console.log(
-			`  call sites through pandwind: ${totalConverted}/${totalSites}` +
-				(totalSites > 0 ? ` (${Math.round((totalConverted / totalSites) * 100)}%)` : ""),
-		);
-		console.log(`  flagged for manual work: ${totalSkipped} site(s)`);
-		console.log(`  tokens kept verbatim (unknown to metadata): ${totalVerbatim}`);
-		if (manualWork.length > 0) {
-			console.log("  files needing attention:");
-			for (const f of manualWork.slice(0, 20)) {
-				console.log(
-					`    - ${f.relative}: ${f.result.skippedByMarker} flagged, ${f.result.unmappedTokens.length} verbatim`,
-				);
-			}
-			if (manualWork.length > 20) console.log(`    … and ${manualWork.length - 20} more`);
-		}
+		console.log(buildReport(fileResults));
 	}
+}
+
+export interface ReportEntry {
+	relative: string;
+	result: TransformResult;
+}
+
+/**
+ * Migration-completeness score: how much of the scanned class-string
+ * surface flows through pandwind APIs vs what stays manual. Pure so the
+ * math is unit-testable without spawning the CLI.
+ */
+export function buildReport(fileResults: Array<ReportEntry>): string {
+	const totalConverted = fileResults.reduce((acc, f) => acc + f.result.converted, 0);
+	const totalSkipped = fileResults.reduce((acc, f) => acc + f.result.skippedByMarker, 0);
+	const totalVerbatim = fileResults.reduce((acc, f) => acc + f.result.unmappedTokens.length, 0);
+	const manualWork = fileResults.filter(
+		(f) => f.result.skippedByMarker > 0 || f.result.unmappedTokens.length > 0,
+	);
+	const totalSites = totalConverted + totalSkipped;
+	const lines: Array<string> = [];
+	lines.push("migration report:");
+	lines.push(
+		`  call sites through pandwind: ${totalConverted}/${totalSites}` +
+			(totalSites > 0 ? ` (${Math.round((totalConverted / totalSites) * 100)}%)` : ""),
+	);
+	lines.push(`  flagged for manual work: ${totalSkipped} site(s)`);
+	lines.push(`  tokens kept verbatim (unknown to metadata): ${totalVerbatim}`);
+	if (manualWork.length > 0) {
+		lines.push("  files needing attention:");
+		for (const f of manualWork.slice(0, 20)) {
+			lines.push(
+				`    - ${f.relative}: ${f.result.skippedByMarker} flagged, ${f.result.unmappedTokens.length} verbatim`,
+			);
+		}
+		if (manualWork.length > 20) lines.push(`    … and ${manualWork.length - 20} more`);
+	}
+	return lines.join("\n");
 }
 // Run only when invoked as the CLI entry — importing the module from
 // tests must not execute the program.
