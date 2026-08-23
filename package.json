@@ -7,6 +7,7 @@
 		"dev": "pnpm --filter example dev",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",
+		"codemod": "pnpm --filter pandwind-codemod exec tsx src/cli.ts",
 		"tw:codegen": "pnpm --filter example tw:codegen",
 		"lint": "oxlint --deny-warnings --report-unused-disable-directives",
 		"lint:fix": "oxlint --fix --deny-warnings --report-unused-disable-directives",
