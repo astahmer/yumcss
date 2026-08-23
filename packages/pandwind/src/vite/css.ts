@@ -113,6 +113,10 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		handleHotUpdate(ctx: { file: string }) {
 			core.invalidate(ctx.file);
 		},
+		/** Programmatic invalidation (tests, custom HMR wiring). */
+		invalidate(file: string) {
+			core.invalidate(file);
+		},
 	};
 }
 

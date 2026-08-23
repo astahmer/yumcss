@@ -7,7 +7,7 @@
  * module resolution and the virtual stylesheet module are exercised the way
  * a real app runs them.
  */
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
@@ -206,6 +206,70 @@ describe("HMR", () => {
 		server.moduleGraph.invalidateAll();
 		const served = await server.transformRequest(virtualId);
 		expect(served!.code).toContain("background-color:#60A3BC");
+	});
+
+	test("a file ADDED to the scanned tree appears on the next load", async () => {
+		const added = join(project.dir, "src/added-late.ts");
+		writeFileSync(
+			added,
+			'import { css } from "./design";\ncss({ $frame: { fill: "$red-500" } });\n',
+		);
+		try {
+			project.cssPlugin.invalidate(added);
+			project.cssPlugin.handleHotUpdate({ file: added });
+			const after = project.cssPlugin.load("\0pandwind:css.css") as string;
+			expect(after.toLowerCase()).toContain("background-color:#e53e3e"); // red-500
+		} finally {
+			rmSync(added, { force: true });
+			project.cssPlugin.invalidate(added);
+			project.cssPlugin.handleHotUpdate({ file: added });
+		}
+	});
+
+	test("a DELETED file's atoms leave the sheet on the next load", async () => {
+		const doomed = join(project.dir, "src/doomed.ts");
+		writeFileSync(
+			doomed,
+			'import { css } from "./design";\ncss({ $frame: { fill: "$amber-500" } });\n',
+		);
+		project.cssPlugin.handleHotUpdate({ file: doomed });
+		expect(project.cssPlugin.load("\0pandwind:css.css")).toContain("amber");
+
+		rmSync(doomed, { force: true });
+		// Deleted files are dropped because the walker no longer sees them;
+		// the change hook triggers the rescan.
+		project.cssPlugin.handleHotUpdate({ file: join(project.dir, "src/app.ts") });
+		const after = project.cssPlugin.load("\0pandwind:css.css") as string;
+		expect(after.toLowerCase()).not.toContain("amber-500");
+	});
+
+	test("invalidate() picks up new content even when mtime is unchanged", async () => {
+		const frozen = join(project.dir, "src/frozen.ts");
+		writeFileSync(
+			frozen,
+			'import { css } from "./design";\ncss({ $frame: { fill: "$red-500" } });\n',
+		);
+		project.cssPlugin.invalidate(frozen);
+		project.cssPlugin.handleHotUpdate({ file: frozen });
+		const withRed = project.cssPlugin.load("\0pandwind:css.css") as string;
+		expect(withRed.toLowerCase()).toContain("background-color:#e53e3e"); // red-500
+
+		// Rewrite content, then pin the old mtime back so a naive
+		// mtime-only cache would serve the stale entry.
+		const staleMtime = statSync(frozen).mtimeMs - 5_000;
+		writeFileSync(
+			frozen,
+			'import { css } from "./design";\ncss({ $frame: { fill: "$green-500" } });\n',
+		);
+		utimesSync(frozen, staleMtime / 1000, staleMtime / 1000);
+
+		project.cssPlugin.invalidate(frozen);
+		const after = project.cssPlugin.load("\0pandwind:css.css") as string;
+		expect(after.toLowerCase()).toContain("background-color:#60a3bc"); // green-500
+		expect(after.toLowerCase()).not.toContain("background-color:#e53e3e");
+
+		rmSync(frozen, { force: true });
+		project.cssPlugin.handleHotUpdate({ file: frozen });
 	});
 });
 
