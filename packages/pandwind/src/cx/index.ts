@@ -87,19 +87,29 @@ const signatureFromCssKey = (key: string): string[] => {
 
 /**
  * Split `sm:hover:bg-blue-500` into its variant chain and the utility class.
- * `:` inside `[...]` arbitrary values is ignored (`bg-[url(https://x)]`).
+ * Always succeeds — tokens without variants yield an empty prefix. `:`
+ * inside `[...]` arbitrary values is ignored (`bg-[url(https://x)]`).
+ *
+ * Allocation-free: results land in module scratch slots (consumed
+ * immediately by the caller — no reentrancy).
  */
-const splitVariants = (token: string): { prefix: string; rest: string } => {
+let svPrefix = "";
+let svRest = "";
+const splitVariants = (token: string): boolean => {
 	let depth = 0;
 	for (let i = 0; i < token.length; i++) {
 		const char = token[i];
 		if (char === "[") depth++;
 		else if (char === "]") depth--;
 		else if (char === ":" && depth === 0) {
-			return { prefix: token.slice(0, i), rest: token.slice(i + 1) };
+			svPrefix = token.slice(0, i);
+			svRest = token.slice(i + 1);
+			return true;
 		}
 	}
-	return { prefix: "", rest: token };
+	svPrefix = "";
+	svRest = token;
+	return false;
 };
 
 /** True for typed arbitrary values (`[color:var(--x)]`, `[url(...)]`). */
@@ -156,42 +166,55 @@ interface CompiledSigs {
  * Parse a utility class (`bg-sky-600`, `-top-4`, `flex`, `w-[3.5rem]`) into
  * its generated-map key and value. Splitting right-to-left prefers the
  * longest matching key (`translate-x-1/2` -> `translate-x`, not `translate`),
- * mirroring how the runtime looks up its own dash-cased keys. Returns null
+ * mirroring how the runtime looks up its own dash-cased keys. Returns false
  * when the class has no generated entry — the caller keeps it opaque.
+ *
+ * Allocation-free: results land in module scratch slots (consumed
+ * immediately by the caller — no reentrancy). The dash scan descends via
+ * lastIndexOf instead of a char loop — only dash positions matter.
  */
-const parseUtility = (
-	rest: string,
-	conflicts: TwConflictsMeta,
-): { utility: string; value: string } | null => {
-	if (rest.length === 0) return null;
+let puUtility = "";
+let puValue = "";
+const parseUtility = (rest: string, conflicts: TwConflictsMeta): boolean => {
+	if (rest.length === 0) return false;
 	const whole = conflicts[rest];
 	if (whole !== undefined && (whole[""] !== undefined || whole["*"] !== undefined)) {
-		return { utility: rest, value: "" };
+		puUtility = rest;
+		puValue = "";
+		return true;
 	}
-	for (let i = rest.length - 1; i >= 0; i--) {
-		if (rest[i] !== "-") continue;
+	let i = rest.length;
+	for (;;) {
+		i = rest.lastIndexOf("-", i - 1);
+		if (i <= 0) return false;
 		const utility = rest.slice(0, i);
-		const value = rest.slice(i + 1);
-		if (utility === "") continue;
 		const byValue = conflicts[utility];
 		if (byValue === undefined) continue;
+		const value = rest.slice(i + 1);
 		if (
 			byValue[value] !== undefined ||
 			byValue[stripOpacityModifier(value)] !== undefined ||
 			byValue["*"] !== undefined
 		) {
-			return { utility, value };
+			puUtility = utility;
+			puValue = value;
+			return true;
 		}
 	}
-	return null;
 };
+
+const isBorderUtility = (utility: string): boolean =>
+	utility === "border" ||
+	(utility.length === 8 && utility.startsWith("border-") && "trbl".includes(utility[7]!));
 
 const signatureFromTwClass = (
 	token: string,
 	conflicts: TwConflictsMeta,
 	compose: ReadonlySet<string> | undefined,
 ): string[] | null => {
-	const { prefix, rest } = splitVariants(token);
+	splitVariants(token);
+	const prefix = svPrefix;
+	const rest = svRest;
 
 	// Typed arbitrary `[prop:value]` — its own conflict group per property,
 	// disjoint from theme utilities (`px-4` and `[padding-left:2px]`
@@ -206,9 +229,7 @@ const signatureFromTwClass = (
 		}
 	}
 
-	const parsed = parseUtility(rest, conflicts);
-
-	if (parsed === null) {
+	if (!parseUtility(rest, conflicts)) {
 		// Whole-key utility with no "" / "*" property set — opaque unless
 		// composed.
 		const group = conflicts[rest];
@@ -218,7 +239,8 @@ const signatureFromTwClass = (
 		return staticProps === undefined ? null : staticProps.map((p) => `${prefix}|${p}`);
 	}
 
-	const { utility, value } = parsed;
+	const utility = puUtility;
+	const value = puValue;
 
 	if (compose?.has(utility)) {
 		return [`${prefix}|~${utility}`];
@@ -258,7 +280,7 @@ const signatureFromTwClass = (
 			// a color — tailwind-merge splits them the same way by shape.
 			return [`${prefix}|${COLOR_LIKE.test(value.slice(1)) ? "color" : "font-size"}`];
 		}
-		if (/^border(-[trbl])?$/.test(utility)) {
+		if (isBorderUtility(utility)) {
 			// `border-[3px]` is a width, `border-[#eee]` a color; reuse the
 			// map's own color props so arbitrary and named colors land in the
 			// SAME conflict group (`border-b-[#eeb524]` vs `border-b-black`).
@@ -283,7 +305,7 @@ const signatureFromTwClass = (
 		props = ["font-size"];
 	} else if (
 		value !== "" &&
-		/^border(-[trbl])?$/.test(utility) &&
+		isBorderUtility(utility) &&
 		byValue[value] === undefined &&
 		props.some((p) => p.endsWith("-style"))
 	) {
@@ -317,8 +339,6 @@ export function createCx(
 	// with `outPlan`.
 	const twSigs = new Map<string, CompiledSigs | null>();
 	const atomSigs = new Map<string, CompiledSigs>();
-	/** Whole-input split memo: splitting depends only on the string itself. */
-	const tokensCache = new Map<string, string[]>();
 	/** Signature-string interning: the push path only ever sees integers. */
 	const sigIds = new Map<string, number>();
 	const idOf = (sig: string): number => {
@@ -423,19 +443,14 @@ export function createCx(
 	};
 
 	/**
-	 * Tokenize one input string into its token list (memoized — splitting
-	 * depends only on the string, so the list can be shared across calls).
-	 * ASCII whitespace is split manually — the regex path is only needed for
-	 * non-ASCII characters (JS `\s` also matches unicode spaces like
-	 * \u00a0), keeping output byte-identical while avoiding regex + slice
-	 * allocation on the hot path.
+	 * Fused tokenizer: walks the input once, resolving/pushing each token as
+	 * it is cut (no intermediate token array, no split-cache bookkeeping).
+	 * ASCII whitespace splits manually; non-ASCII falls back to the
+	 * spec-equivalent regex so output stays byte-identical.
 	 */
-	const tokenize = (input: string): string[] => {
-		const cached = tokensCache.get(input);
-		if (cached !== undefined) return cached;
-		const tokens: string[] = [];
-		const len = input.length;
+	const pushString = (input: string): void => {
 		let asciiOnly = true;
+		const len = input.length;
 		for (let s = 0; s < len; s++) {
 			if (input.charCodeAt(s) > 126) {
 				asciiOnly = false;
@@ -443,36 +458,32 @@ export function createCx(
 			}
 		}
 		if (!asciiOnly) {
-			// Unicode whitespace possible anywhere: spec-equivalent regex.
 			for (const token of input.split(/\s+/)) {
-				if (token !== "") tokens.push(token);
+				if (token !== "") pushToken(token);
 			}
-		} else {
-			let start = -1;
-			let i = 0;
-			while (i <= len) {
-				let isSep: boolean;
-				if (i === len) {
-					isSep = true;
-				} else {
-					const code = input.charCodeAt(i);
-					isSep =
-						code === 32 || code === 9 || code === 10 || code === 11 || code === 12 || code === 13;
-				}
-				if (isSep) {
-					if (start !== -1) {
-						tokens.push(input.slice(start, i));
-						start = -1;
-					}
-				} else if (start === -1) {
-					start = i;
-				}
-				i++;
-			}
+			return;
 		}
-		if (tokensCache.size >= SIGS_CACHE_CAP) tokensCache.clear();
-		tokensCache.set(input, tokens);
-		return tokens;
+		let start = -1;
+		let i = 0;
+		while (i <= len) {
+			let isSep: boolean;
+			if (i === len) {
+				isSep = true;
+			} else {
+				const code = input.charCodeAt(i);
+				isSep =
+					code === 32 || code === 9 || code === 10 || code === 11 || code === 12 || code === 13;
+			}
+			if (isSep) {
+				if (start !== -1) {
+					pushToken(input.slice(start, i));
+					start = -1;
+				}
+			} else if (start === -1) {
+				start = i;
+			}
+			i++;
+		}
 	};
 
 	const pushToken = (token: string) => {
@@ -490,8 +501,7 @@ export function createCx(
 
 	const pushInput = (input: CxInput) => {
 		if (typeof input === "string") {
-			const tokens = tokenize(input);
-			for (let i = 0; i < tokens.length; i++) pushToken(tokens[i]!);
+			pushString(input);
 			return;
 		}
 		if (typeof input === "object" && input !== null) {
@@ -507,7 +517,14 @@ export function createCx(
 		// live registry state beyond the generation guard).
 		let cacheKey = "";
 		const gen = atoms?.size ?? 0;
-		if (inputs.length > 0 && inputs.every((input) => typeof input === "string")) {
+		let allStrings = inputs.length > 0;
+		for (let i = 0; i < inputs.length; i++) {
+			if (typeof inputs[i] !== "string") {
+				allStrings = false;
+				break;
+			}
+		}
+		if (allStrings) {
 			cacheKey = inputs.join("\u0000");
 			const cached = resultCache.get(cacheKey);
 			if (cached !== undefined && cached.gen === gen) {
