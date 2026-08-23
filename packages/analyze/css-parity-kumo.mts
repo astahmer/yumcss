@@ -31,7 +31,7 @@ const twFn = createTw({
 	compose: meta.compose,
 } as never);
 
-	const TOKEN = /^[a-zA-Z@][a-zA-Z0-9_:/[\].\-%#()=!]*$/;
+const TOKEN = /^[a-zA-Z@][a-zA-Z0-9_:/[\].\-%#()=!]*$/;
 const literalTokens = (src: string): Set<string> => {
 	const out = new Set<string>();
 	for (const m of src.matchAll(/"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'/g)) {

@@ -133,3 +133,51 @@ must share one compiler instance; noted as methodology).
    converted inside a comment (its classes then vanish from AST-based
    extraction). Fix sketch: linear scan tracking quote/comment state up to
    match index, skip when inside.
+
+## 8bitcn port result (2026-08-23)
+
+Executed per the kumo recipe against `/tmp/pandwind-8bit-dogfood`
+(branch `pandwind-migration`):
+
+1. **Target-theme metadata**: `/tmp/8bit-meta/tailwind.css` = tailwindcss
+   import + `@custom-variant dark` + full `app/globals.css` body (fumadocs-ui
+   imports stripped — docs-only, not theme-critical; the `@theme inline` var
+   indirection to `:root`/`.dark` works as-is). Generated: 414 utilities /
+   88 variants / 68-property bridge; 8bit semantic tokens (primary,
+   destructive, sidebar-_, chart-_) all present in the unions.
+2. **Migration**: `codemod --write --to=tw --meta=/tmp/8bit-meta` →
+   238 files scanned · 182 written · **1650 call sites converted** · 891
+   verbatim keeps. Committed on the clone's branch.
+
+### 1:1 CSS check (`packages/analyze/css-parity-8bit.mts` pattern)
+
+- BEFORE = pristine literal tokens extracted from className attrs + cn()/cva()
+  args (AST-based): **1643 candidates**.
+- AFTER = tw({...}) re-evaluated through the generated runtime via
+  collectTwClasses + every static string that survived migration: 1814
+  candidates.
+- Both compiled through REAL Tailwind with 8bit's own theme:
+
+| metric              |  before |            after |
+| ------------------- | ------: | ---------------: |
+| generated CSS bytes | 231,890 | 232,310 (+0.18%) |
+| gzip bytes          |  30,653 |           30,710 |
+| rules               |    1639 |             1639 |
+
+Rule-set diff: **5 missing / 5 extra**, all Tailwind property-registration
+artifacts (`--tw-border-style` / `--tw-ring-shadow` var emission ordering
+when candidates are coalesced into one build) — not missing utilities.
+Token-level: only 3 apparent "drops" (`border-t-2`, `border-l-2`,
+`after:inset-0`) and all are false positives — they became `borderT: "2"`,
+`borderL: "2"`, `after: { inset: "0" }` object keys and compile back to the
+same rules.
+
+**Verdict: 1:1 CSS parity within noise (±0.18% bytes, identical rule count).**
+
+### Known issues carried from the kumo run
+
+- ensureImport multi-line corruption (fixed in nklnnply) initially corrupted
+  52 of these files too; the clean tree was produced by resetting and
+  re-running the fixed codemod — parse-check over the final tree: 0 errors.
+- classNameMatches string/comment context issue still open (see Port result
+  section above).
