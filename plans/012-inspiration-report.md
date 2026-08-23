@@ -240,3 +240,11 @@ condition-bound override rules intact. Live result on apps/example:
 **82 → 20 theme vars (-75%)**. Documented caveat matches pandabox: breaks
 dynamic token access; the step is deliberately NOT in predev — run
 `pnpm tw:prune` after codegen when wanted.
+
+### 4b — pandwind-mcp: REJECTED (2026-08-23, user decision)
+
+Dropped from the ranking. Rationale: pandwind's contract is checked-in text
+artifacts (types.d.ts, tw.ts, conflict map) — agents already have editor
+types, grep, and `analyze`; conflict checks are a 5-line node -e against the
+runtime. An MCP server wraps queries the filesystem already answers and adds
+a permanent package to keep in sync.
