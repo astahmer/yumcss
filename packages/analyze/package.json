@@ -8,8 +8,8 @@
 		"corpus": "tsx src/cli.ts \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
 	},
 	"dependencies": {
-		"pandwind": "workspace:*",
 		"@tailwindcss/node": "4.3.3",
+		"pandwind": "workspace:*",
 		"postcss": "8.5.26"
 	},
 	"devDependencies": {

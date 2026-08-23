@@ -51,7 +51,8 @@ export async function cssBudget(options: {
 	const built = compiled.build(classes);
 	const root: Root = parse(built);
 
-	const rules = root.nodes?.filter((n): n is Exclude<Root["nodes"][number], undefined> => true) ?? [];
+	const rules =
+		root.nodes?.filter((n): n is Exclude<Root["nodes"][number], undefined> => true) ?? [];
 	const perPrefixMap = new Map<string, number>();
 	let liveRules = 0;
 	root.walkRules((rule) => {
@@ -99,8 +100,12 @@ export function formatCssBudget(budget: CssBudget): string {
 	const lines: string[] = [];
 	lines.push("pandwind analyze — css budget (real-Tailwind compilation)");
 	lines.push("");
-	lines.push(`generated css: ${(budget.cssBytes / 1024).toFixed(2)} KB min / ${(budget.cssGzipBytes / 1024).toFixed(2)} KB gzip`);
-	lines.push(`rules: ${budget.rules} · candidates live/dead: ${budget.liveCandidates}/${budget.deadCandidates}`);
+	lines.push(
+		`generated css: ${(budget.cssBytes / 1024).toFixed(2)} KB min / ${(budget.cssGzipBytes / 1024).toFixed(2)} KB gzip`,
+	);
+	lines.push(
+		`rules: ${budget.rules} · candidates live/dead: ${budget.liveCandidates}/${budget.deadCandidates}`,
+	);
 	if (budget.perPrefix.length > 0) {
 		lines.push("top prefixes:");
 		for (const { prefix, rules } of budget.perPrefix) {
