@@ -95,7 +95,7 @@ export function normalizeThemeValue(value: string): string {
 	return value.replace(/#[0-9a-fA-F]{3,8}\b/g, (hex) => hex.toLowerCase());
 }
 
-interface ThemeVar {
+export interface ThemeVar {
 	name: string;
 	value: string;
 }
@@ -362,7 +362,7 @@ const dashedKey = (key: string): string =>
 		.replace(/-{2,}/g, "-")
 		.replace(/^-+|-+$/g, "");
 
-const componentVarName = (key: string): string => {
+export const componentVarName = (key: string): string => {
 	if (key.startsWith("--")) return key;
 	const dashed = dashedKey(key);
 	return key.includes(".") || dashed.startsWith("color-") ? `--${dashed}` : `--color-${dashed}`;
