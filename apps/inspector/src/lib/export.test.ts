@@ -55,6 +55,12 @@ const payload: StudioPayload = {
 			deadSample: ["py-0.5"],
 			perPrefix: [{ prefix: "bg", rules: 12 }],
 		},
+		shape: {
+			totalRules: 0,
+			totalBytes: 0,
+			categories: [],
+			specificity: [],
+		},
 	},
 	classDrillDown: [{ candidate: "px-2", rules: [] }],
 	designSystem: {

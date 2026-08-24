@@ -482,6 +482,47 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 				))}
 			</section>
 
+			{c.shape !== undefined && (
+				<section>
+					<h2>stylesheet shape</h2>
+					<p className="muted">
+						{c.shape.totalRules} rules ·{" "}
+						{kb(c.shape.totalBytes)} compiled
+					</p>
+					{c.shape.categories.map((cat) => {
+						const maxBytes = Math.max(
+							...c.shape.categories.map((x) => x.bytes),
+							1,
+						);
+						return (
+							<div key={cat.category} className="shape-cat">
+								<div className="shape-head">
+									<strong>{cat.category}</strong>
+									<span>
+										{cat.rules} rules · {kb(cat.bytes)}
+									</span>
+								</div>
+								<Bar label="bytes" value={cat.bytes} max={maxBytes} />
+								<div className="shape-values">
+									{cat.topValues.map((tv) => (
+										<span key={tv.value} className="chip">
+											{tv.value} ×{tv.count}
+										</span>
+									))}
+								</div>
+							</div>
+						);
+					})}
+					<h3>specificity distribution</h3>
+					{(() => {
+						const maxSpec = Math.max(...c.shape.specificity.map((x) => x.rules), 1);
+						return c.shape.specificity.map((b) => (
+							<Bar key={b.label} label={`id:${b.label}`} value={b.rules} max={maxSpec} />
+						));
+					})()}
+				</section>
+			)}
+
 			<section>
 				<h2>per-file fold coverage</h2>
 				<table>

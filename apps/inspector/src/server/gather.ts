@@ -7,7 +7,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../../../../packages/analyze/src/analyze.ts";
 import { runCli } from "../../../../packages/analyze/src/cli.ts";
-import { classRules, cssBudget } from "../../../../packages/analyze/src/css-budget.ts";
+import {
+	classRules,
+	cssBudget,
+	sheetShape,
+} from "../../../../packages/analyze/src/css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import type { StudioPayload, TokenSection } from "../types.ts";
 import {
@@ -61,7 +65,14 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 	} catch {
 		themeCss = "";
 	}
-	const budget = await cssBudget({
+	const budgetPromise = cssBudget({
+		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
+		twEntry: appSrc("tw.ts"),
+		themeCss: themeCss || undefined,
+		base: appSrc("."),
+	});
+	const budget = await budgetPromise;
+	const shape = await sheetShape({
 		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
@@ -137,6 +148,7 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 			runtimeSites,
 			missingCssSites,
 			budget,
+			shape,
 		},
 		classDrillDown,
 		designSystem: {

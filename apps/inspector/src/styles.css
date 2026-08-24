@@ -453,3 +453,22 @@ a:hover {
 		transform: rotate(360deg);
 	}
 }
+
+/* shape dashboard */
+.shape-cat { margin-bottom: 14px; }
+.shape-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: 4px;
+}
+.shape-head span { color: var(--muted, #888); font-size: 12px; }
+.shape-values { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip {
+	background: color-mix(in srgb, currentColor 8%, transparent);
+	border-radius: 6px;
+	padding: 2px 8px;
+	font-size: 12px;
+	font-family: var(--mono, monospace);
+}
+h3 { margin: 18px 0 8px; }

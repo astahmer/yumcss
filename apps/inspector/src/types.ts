@@ -35,6 +35,26 @@ export interface MissingSite {
 	token: string;
 }
 
+
+export interface ShapeCategory {
+	category: string;
+	rules: number;
+	bytes: number;
+	topValues: Array<{ value: string; count: number }>;
+}
+
+export interface SpecificityBucket {
+	label: string;
+	rules: number;
+}
+
+export interface SheetShape {
+	totalRules: number;
+	totalBytes: number;
+	categories: Array<ShapeCategory>;
+	specificity: Array<SpecificityBucket>;
+}
+
 export interface StudioPayload {
 	meta: { root: string };
 	coverage: {
@@ -59,6 +79,7 @@ export interface StudioPayload {
 			deadSample: Array<string>;
 			perPrefix: Array<{ prefix: string; rules: number }>;
 		};
+		shape: SheetShape;
 	};
 	classDrillDown: Array<{
 		candidate: string;
