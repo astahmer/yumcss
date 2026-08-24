@@ -37,6 +37,8 @@ export interface CssBudget {
 	cssGzipBytes: number;
 	/** Number of rules in the compiled sheet. */
 	rules: number;
+	/** Component scope-block rules (`.pwc-*`) present in the theme bridge. */
+	componentScopeRules: number;
 	/** Rules per top-level utility prefix (`bg`, `flex`, `md:hover:bg`…), top 15. */
 	perPrefix: Array<{ prefix: string; rules: number }>;
 	/** Per-theme-scope extra cost, when a theme bridge was supplied. */
@@ -58,6 +60,7 @@ export async function cssBudget(options: {
 	themeCss?: string;
 	base: string;
 }): Promise<CssBudget> {
+	const componentScopeRules = (options.themeCss?.match(/\.pwc-[a-z0-9-]+[^{]*{/g) ?? []).length;
 	const classes = await collectTwClasses(options.files, options.twEntry);
 	const cssInput = `@import "tailwindcss";\n${options.themeCss ?? ""}\n`;
 	const compiled = await compile(cssInput, { base: options.base, onDependency: () => {} });
@@ -114,6 +117,7 @@ export async function cssBudget(options: {
 		cssBytes: Buffer.byteLength(built),
 		cssGzipBytes: gzipSync(Buffer.from(built)).byteLength,
 		rules: liveRules,
+		componentScopeRules,
 		perPrefix,
 		themeScopes,
 	};
@@ -130,6 +134,9 @@ export function formatCssBudget(budget: CssBudget): string {
 	lines.push(
 		`rules: ${budget.rules} · candidates live/dead: ${budget.liveCandidates}/${budget.deadCandidates}`,
 	);
+	if (budget.componentScopeRules > 0) {
+		lines.push(`component scopes (.pwc-*): ${budget.componentScopeRules} rule(s)`);
+	}
 	if (budget.perPrefix.length > 0) {
 		lines.push("top prefixes:");
 		for (const { prefix, rules } of budget.perPrefix) {

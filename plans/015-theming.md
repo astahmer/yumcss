@@ -81,3 +81,33 @@ Open questions before building: (1) do component classes opt in explicitly
 user-chosen selector string? (2) do aliases need variant support
 (`button.bg_hover`) or is flat enough for v1? (3) where do alias declarations
 live — preset module alongside themes?
+
+## Outcomes — L3 component tier IMPLEMENTED (2026-08-24, model A)
+
+Scope-override model A as approved. `buildComponentScopes` in
+src/tw/generate-theme.ts + `resolveComponents` in generate-types.ts:
+
+- Authoring: `components: { button: { primary: "$color-brand" } }` on the
+  tokens module. Key mapping (documented, no guessing beyond these):
+  `--verbatim` keys pass through; dotted keys keep their group
+  (`text.muted` -> `--text-muted`); plain keys land in the color namespace
+  (`primary` -> `--color-primary`), matching the brief's example.
+- Values: raw strings or `$refs` into the vars bridged THIS run (unknown
+  refs / self-cycles warn+skip). Condition-bound values resolve via preset
+  conditions; a failed variant drops only that variant (no dead-utility
+  risk — the semantic variable always exists; differs from splitTokens'
+  whole-token skip by documented necessity).
+- Emission: sorted `.pwc-<component> { --var: value; }` blocks appended to
+  the bridge; condition variants render as chained selectors
+  (`.pwc-button:hover`, `.pwc-button.dark`) with at-rule wrapping.
+  Byte-stable when no components declared.
+- Proofs (tests/component-scopes.test.ts, real Tailwind): override rule +
+  var()-referencing utility both compile; `[data-theme]` scopes coexist;
+  values never leak outside their binding; determinism; loud skips for
+  unknown refs/cycles/invalid names (7 tests).
+- analyze --css reports `.pwc-*` scope-rule count.
+
+Design notes vs the earlier sketch: the "explicit opt-in class" open
+question resolved to the generated `.pwc-<name>` class (namespaced, no
+user-selector injection); variant support (`button.bg_hover`) IS included
+via condition-bound authoring rather than deferred.

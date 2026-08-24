@@ -147,7 +147,11 @@ agent ever ships.
   (`themes: { dark: { "--color-surface": "#0b0b10" } }`) and codegen emits
   deterministic `[data-theme="…"]` override blocks next to the `@theme`
   bridge. Utilities keep referencing `var(--color-surface)`; switching is a
-  `data-theme` attribute flip with zero utility CSS changes.
+  `data-theme` attribute flip with zero utility CSS changes. Component
+  tokens (L3) stack on top: declare `components: { button: { primary:
+"$color-brand" } }` and codegen emits `.pwc-button { --color-primary:
+… }` scope classes — every existing utility restyles per component, and
+  theme scopes compose naturally (`[data-theme]` × `.pwc-*`).
 - **`pnpm inspect`** — pandwind studio: a local read-only dashboard over the
   analyze machinery. Coverage tab (fold elimination, CSS budget, dead
   candidates, missing-css warnings with editor links) + Design-system tab

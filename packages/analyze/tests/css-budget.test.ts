@@ -11,6 +11,7 @@ const budget = (over: Partial<CssBudget>): CssBudget => ({
 	cssBytes: 4096,
 	cssGzipBytes: 1024,
 	rules: 20,
+	componentScopeRules: 0,
 	perPrefix: [],
 	themeScopes: [],
 	...over,
