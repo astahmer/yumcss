@@ -61,7 +61,13 @@ export interface PandwindCssViteOptions {
 	 * The virtual module `pandwind:css-manifest` exports the route -> id
 	 * map. Off by default: without this option one global sheet is served.
 	 */
-	splitByRoute?: Array<{ match: RegExp; name: string }>;
+	splitByRoute?: Array<{ match: RegExp; name: string; /** Built HTML entry (root-relative) to inline this route's critical CSS into at build time. Requires inlineCritical. */ html?: string }>;
+	/**
+	 * Critical-CSS inlining (plans/014 §2a): at build time, write each
+	 * route's chunk (common + exclusive) into the entry HTML given by that
+	 * route's `html` path. Opt-in; capBytes guards oversized payloads.
+	 */
+	inlineCritical?: true | { capBytes?: number };
 	/** Prepend a dev-only origin manifest comment to the generated sheet. */
 	debug?: boolean;
 	/** Directory scanned for css() calls. Defaults to process.cwd(). */

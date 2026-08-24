@@ -214,3 +214,31 @@ download plumbing).
 Residual: Stats-tab export buttons (coverage JSON + Markdown report) —
 serializers already exist (`coverageToJson`, `coverageToMarkdown`), only the
 UI wiring in `StatsView` remains; plus CSV format if wanted.
+
+## 2a. Critical-CSS extraction (implemented 2026-08-24)
+
+"Critical" here = per-route stylesheet chunk inlined into the matching HTML
+entry's <head> at BUILD time, so first paint needs zero stylesheet requests.
+Builds on splitByRoute: a route's critical payload = COMMON chunk (shared
+atoms + tokens — dedup means route chunks exclude them) + that route's
+exclusive chunk.
+
+Mechanism:
+
+- `splitByRoute` entries gain an optional `html` path (relative to root).
+- New opt-in option `inlineCritical: true | { capBytes?: number }`
+  (default cap 64 KB per route).
+- At `closeBundle` (builds only): for each route with `html`, read the
+  written HTML file, skip if already tagged (`data-pw-critical`) or if the
+  combined payload exceeds the cap (leave an HTML comment explaining), else
+  insert `<style data-pw-critical="<route>">common+route</style>` right
+  after `<head>`. Pure logic lives in src/vite/critical-css.ts
+  (renderCriticalHtml) so it is unit-testable without vite.
+
+Caveats (documented, honest):
+
+- If the app ALSO <link>s the same sheet, rules are duplicated (harmless
+  visually, costs bytes) — inline-critical consumers should drop the link
+  for fully-covered routes.
+- Dev mode is untouched: dev keeps the virtual-module flow; injection is
+  build-only by design (HMR would fight the rewritten files).
