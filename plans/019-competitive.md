@@ -79,3 +79,59 @@ Legend: ✅ first-class · ⚠️ partial/different shape · ❌ absent · n/a n
 - `stefan-karger/solid-ui` (1.5k★) — demand signal for the Solid adapter.
 - `vunguyentuan/vscode-css-variables` (196★) — autocomplete approach worth
   studying if/when we do an editor extension.
+
+## Studio/inspector landscape (2026-08-24 scan)
+
+Scope correction to this plan: this section compares DESIGN-SYSTEM
+INSPECTOR/STUDIO/explorer tools — what `apps/inspector` actually competes
+with — not general CSS-in-JS engines (table above). Popularity/activity via
+GitHub API + npm (2026-08-24).
+
+| tool                                                              | paid/OSS            | what it shows                                               | data source                        | previews                             | analytics                  | integration effort for us                                                          |
+| ----------------------------------------------------------------- | ------------------- | ----------------------------------------------------------- | ---------------------------------- | ------------------------------------ | -------------------------- | ---------------------------------------------------------------------------------- |
+| panda studio (`@pandacss/studio` 1.12.0, active)                  | OSS                 | tokens, recipes, patterns explorer                          | panda config + generated artifacts | good (rendered examples)             | minimal                    | n/a — panda-locked; pattern reference                                              |
+| unocss inspector (inside unocss, 18.9k★, very active)             | OSS                 | per-class matched rules, generated CSS, module graph, REPL  | dev-time build graph + built css   | rule-centric, no component previews  | per-utility sizes          | **M** — its per-class drill-down is the pattern to adopt                           |
+| master-css inspector (`@master/css`, hybrid OSS/cloud)            | ⚠️ hybrid           | live-app style application stats                            | runtime DOM observation            | live-app                             | sizes/timing               | L — runtime model differs from ours                                                |
+| storybook controls/docs (90.9k★, very active)                     | OSS                 | interactive component playgrounds, prop controls, docs      | stories (component code)           | excellent — real rendered components | none                       | **M/L** — requires stories; could iframe example app                               |
+| style-dictionary v5 (Amazon, OSS, active)                         | OSS                 | build system only, no UI (minimal playground)               | token config                       | none                                 | none                       | n/a — overlaps our codegen, not the UI                                             |
+| cssstats (2.8k★, STALE — last publish 2022)                       | OSS                 | stylesheet stats viz (bytes, decls, complexity)             | parsed CSS file                    | charts                               | CSS-shape only             | dead; our `--css` lane supersedes                                                  |
+| wallace-cli / projectwallace (640★ core, active; hosted app paid) | OSS core + paid app | rich CSS analytics reports (specificity, complexity, sizes) | CSS file                           | chart-heavy reports                  | strong CSS-shape analytics | **S/M** — parser (`@projectwallace/css-parser`, active) reusable for our Stats tab |
+| Tokens Studio for Figma (1.6k★ plugin, freemium)                  | freemium            | token AUTHORING in Figma, GitHub sync                       | design tool                        | design-side                          | none                       | **S** — DTCG import/export already near-compatible                                 |
+| Specify (paid SaaS)                                               | paid                | design-token distribution/governance pipeline               | design+code APIs                   | dashboards                           | governance                 | different category (pipeline, not inspector); watch only                           |
+| Supernova.io (paid SaaS)                                          | paid                | design-system docs + token distribution                     | design tools + exports             | docs-grade                           | governance                 | effectively dormant (last npm publish 2024-05)                                     |
+| Backlight.dev (paid)                                              | paid                | in-browser component studio                                 | repo                               | full IDE-like                        | none                       | SHUT DOWN (~2023) — cautionary tale for standalone studios                         |
+
+### Features THEY have that our studio lacks (honest)
+
+1. **Per-class rule drill-down**: click a utility → see every rule/matched
+   candidate + generated CSS (unocss inspector's core interaction).
+2. **Live component previews**: storybook renders REAL components with prop
+   controls; ours shows metadata tables only.
+3. **CSS-shape analytics charts**: specificity/complexity/declaration
+   distributions (wallace, cssstats heritage).
+4. **Design-tool sync**: Tokens Studio pushes Figma variables ↔ code;
+   Specify distributes tokens to N platforms with governance.
+5. **Multi-format distribution**: Specify/Supernova emit iOS/Android/web
+   from one source.
+
+### What WE have that none of them can
+
+Generated-from-real-build data (every number derives from the actual
+compiled artifact, not config claims) plus analytics none of them attempt:
+fold-coverage (build-time merge elimination %), missing-css/dead-candidate
+detection, emitted-CSS budget with per-theme deltas — and the verification
+commands ship in-band (the agents.json direction).
+
+### Ranked adopt-list for our studio
+
+1. **Per-class rule drill-down** (M, unocss pattern): sheet already has the
+   rules; wire atomicEntries → searchable class index → rule panel.
+2. **DTCG import dialog** (S, Tokens Studio parity): paste/upload a DTCG JSON
+   → feeds analyze/prune/theme-scope flows; parser mostly exists.
+3. **CSS-shape charts** (S/M, wallace-style): reuse `@projectwallace/
+css-parser` against the compiled sheet for specificity/complexity views.
+4. **Component preview panes** (M/L): iframe the example app routes with
+   query-selected classes — real rendering without a storybook dependency.
+
+Deliberately not chased: Figma bidirectional sync, multi-platform token
+distribution, hosted SaaS — pipeline products, not inspector features.
