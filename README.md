@@ -152,6 +152,11 @@ agent ever ships.
 "$color-brand" } }` and codegen emits `.pwc-button { --color-primary:
 … }` scope classes — every existing utility restyles per component, and
   theme scopes compose naturally (`[data-theme]` × `.pwc-*`).
+- **`pnpm playground`** — live in-browser editor: type `tw()` / `css()` /
+  `cx()` expressions and see the merged class string, fold verdict
+  (full/partial/runtime) and conflict-merge visualization instantly.
+  Per-example routes, URL-hash sharing, Monaco + Shiki. Styled with
+  pandwind itself.
 - **`pnpm inspect`** — pandwind studio: a local read-only dashboard over the
   analyze machinery. Coverage tab (fold elimination, CSS budget, dead
   candidates, missing-css warnings with editor links) + Design-system tab

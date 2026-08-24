@@ -9,6 +9,7 @@
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",
 		"codemod": "pnpm --filter pandwind-codemod exec tsx src/cli.ts",
 		"inspect": "pnpm --filter inspector dev",
+		"playground": "pnpm --filter playground dev",
 		"tw:codegen": "pnpm --filter example tw:codegen",
 		"analyze": "pnpm --filter pandwind-analyze exec tsx src/cli.ts --root \"$PWD\" --tw apps/example/src/tw.ts 'apps/example/src/**/*.ts' 'apps/example/src/**/*.tsx'",
 		"lint": "oxlint --deny-warnings --report-unused-disable-directives",
