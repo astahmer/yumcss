@@ -18,6 +18,7 @@ import {
 	type FoldSummary,
 } from "./analyze.ts";
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
+import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 
 interface CliArgs {
 	patterns: Array<string>;
@@ -25,6 +26,7 @@ interface CliArgs {
 	json: boolean;
 	root: string;
 	css: boolean;
+	githubAnnotations: boolean;
 	constantsPath?: string;
 }
 
@@ -36,6 +38,7 @@ function parseArgs(argv: Array<string>): CliArgs {
 	let twPath = "src/tw.ts";
 	let json = false;
 	let css = false;
+	let githubAnnotations = false;
 	let root = process.cwd();
 	let constantsPath: string | undefined;
 	for (let i = 0; i < argv.length; i++) {
@@ -44,6 +47,8 @@ function parseArgs(argv: Array<string>): CliArgs {
 			twPath = argv[++i] ?? twPath;
 		} else if (arg === "--css") {
 			css = true;
+		} else if (arg === "--github-annotations") {
+			githubAnnotations = true;
 		} else if (arg === "--json") {
 			json = true;
 		} else if (arg === "--root") {
@@ -54,7 +59,7 @@ function parseArgs(argv: Array<string>): CliArgs {
 			patterns.push(arg);
 		}
 	}
-	return { patterns, twPath: resolve(root, twPath), json, css, root, constantsPath };
+	return { patterns, twPath: resolve(root, twPath), json, css, githubAnnotations, root, constantsPath };
 }
 
 /**
@@ -103,6 +108,11 @@ export async function runCli(argv: Array<string>): Promise<string> {
 
 	if (args.json) {
 		return JSON.stringify({ schema: ANALYZE_JSON_SCHEMA, ...summary }, null, 2);
+	}
+	if (args.githubAnnotations) {
+		const annotations = collectAnnotations(summary, undefined);
+		const truncated = false;
+		return formatAnnotations(annotations, truncated);
 	}
 	return formatReport(summary);
 }
