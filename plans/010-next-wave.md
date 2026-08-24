@@ -155,3 +155,28 @@ vs the plan-baseline ratios (0.39×/0.46×/0.68×) the lane already closed most
 of the gap via the earlier build-time folding work. Remaining deficit vs
 vanilla is categorical to utility-style markup; nothing legitimately fixable
 in the lane without gaming the benchmark.
+
+### Cold-path round 2 (2026-08-24) — fused ASCII pass
+
+Scope steered tight (context budget): only optimization (a) landed.
+`pushString` now walks once — tokens are pushed as they are cut, and a
+non-ASCII char aborts to the spec-equivalent regex split over the
+UNCONSUMED remainder only. This removes the full extra pre-scan pass per
+input string AND fixes a latent double-push hazard a naive fusion would
+have had (caught by the cx-fuzz idempotency test during development:
+"flex items-é" would have pushed "flex" twice).
+
+Measurement honesty: the whole round-2 window ran on a machine shared
+with a parallel build worker — absolute cold numbers are contention-
+polluted (medians swung 27K–124K across runs). Correctness is fully
+verified (parity/fuzz/golden + full suite green); the runtime-size gate
+shows the change SHRANK cx by ~31 bytes (snapshot refreshed). Structural
+argument stands: one fewer O(n) pass per input string on every call.
+
+Untried future work:
+
+- (b) in-place survivor compaction of outCls before join (drop the second
+  parts array)
+- (c) parseUtility per-first-character index (re-profile after b)
+- (d) resultCache key-building alternatives
+  Measurements for any of these must be taken on an idle machine.

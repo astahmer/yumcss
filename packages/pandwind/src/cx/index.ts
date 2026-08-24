@@ -542,31 +542,32 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 * spec-equivalent regex so output stays byte-identical.
 	 */
 	const pushString = (input: string): void => {
-		let asciiOnly = true;
+		// Single-pass fused walk: tokens are pushed as they are cut; the first
+		// non-ASCII char aborts to the spec-equivalent regex split (re-walking
+		// from the start — non-ASCII inputs are rare enough that the extra
+		// pass only exists on their path).
 		const len = input.length;
-		for (let s = 0; s < len; s++) {
-			if (input.charCodeAt(s) > 126) {
-				asciiOnly = false;
-				break;
-			}
-		}
-		if (!asciiOnly) {
-			for (const token of input.split(/\s+/)) {
-				if (token !== "") pushToken(token);
-			}
-			return;
-		}
 		let start = -1;
 		let i = 0;
 		while (i <= len) {
-			let isSep: boolean;
 			if (i === len) {
-				isSep = true;
-			} else {
-				const code = input.charCodeAt(i);
-				isSep =
-					code === 32 || code === 9 || code === 10 || code === 11 || code === 12 || code === 13;
+				if (start !== -1) {
+					pushToken(input.slice(start, i));
+				}
+				return;
 			}
+			const code = input.charCodeAt(i);
+			if (code > 126) {
+				// Abort to the spec-equivalent split for the UNCONSUMED
+				// remainder only — tokens before this point are already
+				// pushed, and `start` marks any in-flight partial token.
+				for (const token of input.slice(start === -1 ? i : start).split(/\s+/)) {
+					if (token !== "") pushToken(token);
+				}
+				return;
+			}
+			const isSep =
+				code === 32 || code === 9 || code === 10 || code === 11 || code === 12 || code === 13;
 			if (isSep) {
 				if (start !== -1) {
 					pushToken(input.slice(start, i));
