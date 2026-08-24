@@ -24,9 +24,7 @@ function Shell({ children }: { children: ReactNode }) {
 					bgColor: "gray-950",
 				})}
 			>
-				<span className={tw({ textSize: "lg", textColor: "white" })}>
-					pandwind playground
-				</span>
+				<span className={tw({ textSize: "lg", textColor: "white" })}>pandwind playground</span>
 				<nav className={tw({ flex: true, gap: "3" })}>
 					{NAV.map((item) => (
 						<Link
