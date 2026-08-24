@@ -3,18 +3,23 @@
  * sheet-backed strategy modes), virtual-module `resolveId`/`load`, and cache
  * invalidation. Shared by `pandwindCssVite` and the unplugin adapters.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import { extractVarKeys } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import type { StyleObject } from "../types/typings.ts";
+import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
 
 export type { CssExtractorPreset };
 
 export interface CssExtractorCore {
+	/** Vite hook: capture the command so closeBundle only runs on builds. */
+	configResolved(config: { command?: "build" | "serve" }): void;
+	/** Build-only: inline route critical chunks into configured HTML entries. */
+	closeBundle(): void;
 	name: string;
 	/** Present only in tailwind / sheet-backed strategy modes. */
 	transform?(code: string, id: string): { code: string; map: null } | null;
@@ -269,8 +274,45 @@ export function createCssExtractorPluginCore(
 		return { common, routes: out };
 	};
 
+	let command: "build" | "serve" | undefined;
+	const inlineCritical = options.inlineCritical;
+	const isBuild = (): boolean => command === "build";
+
 	return {
 		name: "pandwind:extract-css",
+		configResolved(config) {
+			command = config.command;
+		},
+		closeBundle() {
+			if (!isBuild()) return;
+			if (inlineCritical === undefined) return; // off by default
+			const cap =
+				inlineCritical === undefined
+					? undefined
+					: inlineCritical === true
+						? undefined
+						: inlineCritical.capBytes;
+			for (const route of routes) {
+				if (route.html === undefined) continue;
+				const htmlPath = resolve(root, route.html);
+				let html: string;
+				try {
+					html = readFileSync(htmlPath, "utf8");
+				} catch {
+					continue; // no such entry — nothing to inline into
+				}
+				const split = collectSplit();
+				const css = `${split.common}
+${split.routes.get(route.name) ?? ""}`;
+				const result = renderCriticalHtml({
+					html,
+					routeName: route.name,
+					css,
+					capBytes: cap,
+				});
+				if (result.ok) writeFileSync(htmlPath, result.html);
+			}
+		},
 		transform,
 		resolveId(source: string) {
 			if (source === virtualId) return resolvedVirtualId;

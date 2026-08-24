@@ -125,6 +125,13 @@ PostCSS config, no runtime CSS-in-JS.
   shared atoms and unmatched files stay in the global sheet; a virtual
   `pandwind:css-manifest` module exports the route -> id map. Default
   remains one global stylesheet.
+- **Critical-CSS inlining (opt-in)** — add `html` paths to your routes and
+  `inlineCritical: true`: at build time each entry's `<head>` gets the
+  route's full stylesheet (common + exclusive chunks) inlined as a marked
+  `<style>` tag, so first paint needs zero stylesheet requests. Capped per
+  route (64 KB default) and skipped loudly on overflow; dev mode untouched.
+  Drop the matching `<link>` for fully-covered routes to avoid duplicate
+  delivery.
 - **Theming** — declare theme scopes on your tokens module
   (`themes: { dark: { "--color-surface": "#0b0b10" } }`) and codegen emits
   deterministic `[data-theme="…"]` override blocks next to the `@theme`

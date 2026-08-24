@@ -61,7 +61,11 @@ export interface PandwindCssViteOptions {
 	 * The virtual module `pandwind:css-manifest` exports the route -> id
 	 * map. Off by default: without this option one global sheet is served.
 	 */
-	splitByRoute?: Array<{ match: RegExp; name: string; /** Built HTML entry (root-relative) to inline this route's critical CSS into at build time. Requires inlineCritical. */ html?: string }>;
+	splitByRoute?: Array<{
+		match: RegExp;
+		name: string;
+		/** Built HTML entry (root-relative) to inline this route's critical CSS into at build time. Requires inlineCritical. */ html?: string;
+	}>;
 	/**
 	 * Critical-CSS inlining (plans/014 §2a): at build time, write each
 	 * route's chunk (common + exclusive) into the entry HTML given by that
@@ -110,6 +114,8 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		name: core.name,
 		enforce: "pre" as const,
 		transform: core.transform,
+		configResolved: core.configResolved?.bind(core),
+		closeBundle: core.closeBundle?.bind(core),
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},

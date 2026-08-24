@@ -54,6 +54,10 @@ export function renderCriticalHtml(options: RenderCriticalOptions): RenderCritic
 	return {
 		ok: true,
 		bytes,
-		html: html.slice(0, headMatch.index + headMatch[0].length) + "\n" + tag + html.slice(headMatch.index + headMatch[0].length),
+		html:
+			html.slice(0, headMatch.index + headMatch[0].length) +
+			"\n" +
+			tag +
+			html.slice(headMatch.index + headMatch[0].length),
 	};
 }
