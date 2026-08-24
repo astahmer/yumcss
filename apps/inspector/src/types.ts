@@ -35,7 +35,6 @@ export interface MissingSite {
 	token: string;
 }
 
-
 export interface ShapeCategory {
 	category: string;
 	rules: number;

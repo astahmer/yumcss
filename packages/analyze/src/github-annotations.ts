@@ -23,7 +23,12 @@ export interface Annotation {
 
 /** Property values: delimiters must be percent-encoded. */
 const escapeProperty = (value: string): string =>
-	value.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A").replace(/:/g, "%3A").replace(/,/g, "%2C");
+	value
+		.replace(/%/g, "%25")
+		.replace(/\r/g, "%0D")
+		.replace(/\n/g, "%0A")
+		.replace(/:/g, "%3A")
+		.replace(/,/g, "%2C");
 /** Message data: only %, CR and LF are encoded (GitHub convention). */
 const escapeData = (value: string): string =>
 	value.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
@@ -54,7 +59,9 @@ export function formatAnnotations(annotations: Array<Annotation>, truncated: boo
 			`::warning file=${escapeProperty(a.file)},line=${a.line},title=${escapeProperty(a.title)}::${escapeData(a.message)}`,
 	);
 	if (truncated) {
-		lines.push(`::warning title=pandwind::annotation cap (${MAX_ANNOTATIONS}) reached — output truncated`);
+		lines.push(
+			`::warning title=pandwind::annotation cap (${MAX_ANNOTATIONS}) reached — output truncated`,
+		);
 	}
 	return lines.join("\n");
 }

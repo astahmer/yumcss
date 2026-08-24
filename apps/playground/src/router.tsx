@@ -1,16 +1,11 @@
 import { Link, createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
-import type { ReactNode } from "react";
 import { tw } from "./tw.ts";
+import { EXAMPLES } from "./lib/examples.ts";
+import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
 
-const NAV = [
-	{ path: "/", label: "Basics" },
-	{ path: "/conflicts", label: "Conflicts" },
-	{ path: "/semantic-tokens", label: "Semantic tokens" },
-	{ path: "/responsive", label: "Responsive" },
-	{ path: "/atoms", label: "css() atoms" },
-];
+const NAV = EXAMPLES.map((example) => ({ path: example.path, label: example.title }));
 
-function Shell({ children }: { children: ReactNode }) {
+function Shell() {
 	return (
 		<div className={tw({ minH: "screen", flex: "col" })}>
 			<header
@@ -42,30 +37,23 @@ function Shell({ children }: { children: ReactNode }) {
 					))}
 				</nav>
 			</header>
-			<main className={tw({ grow: true, overflow: "hidden" })}>{children}</main>
+			<main className={tw({ grow: true, overflow: "hidden" })}>
+				<Outlet />
+			</main>
 		</div>
 	);
 }
 
-function Placeholder() {
-	return (
-		<div className={tw({ p: "8", textColor: "gray-300" })}>
-			<p className={tw({ textColor: "gray-300" })}>Building the playground…</p>
-		</div>
-	);
-}
+const rootRoute = createRootRoute({ component: Shell });
 
-const rootRoute = createRootRoute({ component: () => <Outlet /> });
-
-const page = (path: string) =>
-	createRoute({ getParentRoute: () => rootRoute, path, component: Placeholder });
-
-export const routeTree = rootRoute.addChildren([
-	page("/"),
-	page("/conflicts"),
-	page("/semantic-tokens"),
-	page("/responsive"),
-	page("/atoms"),
-]);
+export const routeTree = rootRoute.addChildren(
+	EXAMPLES.map((example) =>
+		createRoute({
+			getParentRoute: () => rootRoute,
+			path: example.path,
+			component: () => <PlaygroundPage def={example} />,
+		}),
+	),
+);
 
 export const router = createRouter({ routeTree });

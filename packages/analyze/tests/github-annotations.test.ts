@@ -26,9 +26,7 @@ describe("github-annotations", () => {
 			[{ file: "a,b.ts", line: 3, title: "missing-css", message: 'no candidate for "x:y"' }],
 			false,
 		);
-		expect(out).toBe(
-			'::warning file=a%2Cb.ts,line=3,title=missing-css::no candidate for "x:y"',
-		);
+		expect(out).toBe('::warning file=a%2Cb.ts,line=3,title=missing-css::no candidate for "x:y"');
 	});
 
 	test("truncation note appended when flagged", () => {

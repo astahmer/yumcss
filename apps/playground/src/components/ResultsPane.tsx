@@ -97,7 +97,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 									py: "0.5",
 									rounded: "sm",
 									border: true,
-									...{},
+									borderColor: "white/10",
 								})}
 							>
 								<span className={FOLD_STYLES[props.result.fold] ?? ""}>
@@ -109,8 +109,6 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 							{props.result.foldNote}
 						</p>
 					</div>
-
-					<div className={tw({ ...{}, grow: true })} />
 
 					<div className={PANE}>
 						<div className={HEAD}>

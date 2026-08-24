@@ -50,7 +50,11 @@ function payload(overrides: {
 	};
 }
 
-const entry = (ts: string, p: StudioPayload): HistoryEntry => ({ timestamp: ts, parent: null, payload: p });
+const entry = (ts: string, p: StudioPayload): HistoryEntry => ({
+	timestamp: ts,
+	parent: null,
+	payload: p,
+});
 
 describe("diffRuns", () => {
 	test("computes coverage and budget deltas", () => {

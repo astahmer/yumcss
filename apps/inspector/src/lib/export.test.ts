@@ -172,7 +172,6 @@ test("downloadFile creates an object URL, sets filename, clicks, revokes", () =>
 	expect(revoke).toHaveBeenCalledWith("blob:x");
 });
 
-
 import { coverageToHtml } from "./export.ts";
 
 describe("coverageToHtml", () => {

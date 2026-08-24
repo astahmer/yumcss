@@ -1,4 +1,4 @@
-import Editor from "@monaco-editor/react";
+import MonacoEditor from "@monaco-editor/react";
 import { tw } from "../tw.ts";
 
 const PANE =
@@ -22,7 +22,7 @@ export function EditorPane(props: { code: string; onChange: (next: string) => vo
 				<span className={tw({ textSize: "xs", textColor: "gray-500" })}>⌘/Ctrl + Enter to run</span>
 			</div>
 			<div className={tw({ grow: true, overflow: "hidden" })}>
-				<Editor
+				<MonacoEditor
 					height="100%"
 					defaultLanguage="typescript"
 					theme="vs-dark"

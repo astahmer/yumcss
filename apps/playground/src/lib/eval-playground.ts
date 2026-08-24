@@ -11,11 +11,8 @@
  * It exists so authors can experiment locally; it is not a security
  * boundary and must never run third-party code.
  */
-import { parseSync, type Expression } from "oxc-parser";
-import {
-	collectModuleConstants,
-	evalStaticCx,
-} from "../../../../packages/pandwind/src/vite/cx-inline.ts";
+import { parseSync } from "oxc-parser";
+import { collectModuleConstants } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
 import type { ConstantScope } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
 
 export interface PlaygroundSuccess {

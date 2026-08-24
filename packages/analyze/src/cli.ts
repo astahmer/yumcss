@@ -59,7 +59,15 @@ function parseArgs(argv: Array<string>): CliArgs {
 			patterns.push(arg);
 		}
 	}
-	return { patterns, twPath: resolve(root, twPath), json, css, githubAnnotations, root, constantsPath };
+	return {
+		patterns,
+		twPath: resolve(root, twPath),
+		json,
+		css,
+		githubAnnotations,
+		root,
+		constantsPath,
+	};
 }
 
 /**

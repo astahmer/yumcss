@@ -120,15 +120,15 @@ const htmlEsc = (value: string): string =>
  */
 export function coverageToHtml(data: StudioPayload, generatedAt: string): string {
 	const c = data.coverage;
-	const row = (cells: Array<string>): string => `<tr>${cells.map((cell) => `<td>${htmlEsc(cell)}</td>`).join("")}</tr>`;
+	const row = (cells: Array<string>): string =>
+		`<tr>${cells.map((cell) => `<td>${htmlEsc(cell)}</td>`).join("")}</tr>`;
 	const files = c.files
-		.map(
-			(f) =>
-				row([
-					f.file,
-					`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`,
-					f.missingCssCount > 0 ? String(f.missingCssCount) : "",
-				]),
+		.map((f) =>
+			row([
+				f.file,
+				`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`,
+				f.missingCssCount > 0 ? String(f.missingCssCount) : "",
+			]),
 		)
 		.join("\n");
 	const missing = c.missingCssSites.length

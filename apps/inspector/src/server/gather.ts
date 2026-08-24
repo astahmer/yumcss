@@ -7,11 +7,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../../../../packages/analyze/src/analyze.ts";
 import { runCli } from "../../../../packages/analyze/src/cli.ts";
-import {
-	classRules,
-	cssBudget,
-	sheetShape,
-} from "../../../../packages/analyze/src/css-budget.ts";
+import { classRules, cssBudget, sheetShape } from "../../../../packages/analyze/src/css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import type { StudioPayload, TokenSection } from "../types.ts";
 import {

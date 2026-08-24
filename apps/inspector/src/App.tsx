@@ -485,49 +485,58 @@ function HistoryView(props: {
 					compare
 				</button>
 			</section>
-			{props.diffData !== null && (() => {
-				const d = diffRuns(props.diffData.a, props.diffData.b);
-				return (
-					<section>
-						<h2>
-							diff — older ({props.diffData.a.timestamp}) → newer ({props.diffData.b.timestamp})
-						</h2>
-						<table>
-							<thead>
-								<tr>
-									<th>metric</th>
-									<th>before</th>
-									<th>after</th>
-									<th>delta</th>
-								</tr>
-							</thead>
-							<tbody>
-								{[...d.coverage, ...d.budget].map((m) => (
-									<tr key={m.label}>
-										<td>{m.label}</td>
-										<td>{m.before}</td>
-										<td>{m.after}</td>
-										<td>{m.delta > 0 ? "+" : ""}{m.delta}</td>
+			{props.diffData !== null &&
+				(() => {
+					const d = diffRuns(props.diffData.a, props.diffData.b);
+					return (
+						<section>
+							<h2>
+								diff — older ({props.diffData.a.timestamp}) → newer ({props.diffData.b.timestamp})
+							</h2>
+							<table>
+								<thead>
+									<tr>
+										<th>metric</th>
+										<th>before</th>
+										<th>after</th>
+										<th>delta</th>
 									</tr>
-								))}
-								<tr>
-									<td>missing-css delta</td>
-									<td />
-									<td />
-									<td>{d.missingCssDelta > 0 ? "+" : ""}{d.missingCssDelta}</td>
-								</tr>
-							</tbody>
-						</table>
-						{(d.resolvedDead.length > 0 || d.newDead.length > 0) && (
-							<>
-								<h3>dead candidates</h3>
-								{d.resolvedDead.length > 0 && <p className="good">resolved: {d.resolvedDead.join(", ")}</p>}
-								{d.newDead.length > 0 && <p className="warn">new: {d.newDead.join(", ")}</p>}
-							</>
-						)}
-					</section>
-				);
-			})()}
+								</thead>
+								<tbody>
+									{[...d.coverage, ...d.budget].map((m) => (
+										<tr key={m.label}>
+											<td>{m.label}</td>
+											<td>{m.before}</td>
+											<td>{m.after}</td>
+											<td>
+												{m.delta > 0 ? "+" : ""}
+												{m.delta}
+											</td>
+										</tr>
+									))}
+									<tr>
+										<td>missing-css delta</td>
+										<td />
+										<td />
+										<td>
+											{d.missingCssDelta > 0 ? "+" : ""}
+											{d.missingCssDelta}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							{(d.resolvedDead.length > 0 || d.newDead.length > 0) && (
+								<>
+									<h3>dead candidates</h3>
+									{d.resolvedDead.length > 0 && (
+										<p className="good">resolved: {d.resolvedDead.join(", ")}</p>
+									)}
+									{d.newDead.length > 0 && <p className="warn">new: {d.newDead.join(", ")}</p>}
+								</>
+							)}
+						</section>
+					);
+				})()}
 		</div>
 	);
 }
@@ -599,14 +608,10 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 				<section>
 					<h2>stylesheet shape</h2>
 					<p className="muted">
-						{c.shape.totalRules} rules ·{" "}
-						{kb(c.shape.totalBytes)} compiled
+						{c.shape.totalRules} rules · {kb(c.shape.totalBytes)} compiled
 					</p>
 					{c.shape.categories.map((cat) => {
-						const maxBytes = Math.max(
-							...c.shape.categories.map((x) => x.bytes),
-							1,
-						);
+						const maxBytes = Math.max(...c.shape.categories.map((x) => x.bytes), 1);
 						return (
 							<div key={cat.category} className="shape-cat">
 								<div className="shape-head">
@@ -729,7 +734,10 @@ export function App() {
 		setHistoryError(null);
 		try {
 			const [ea, eb] = await Promise.all([fetchHistoryRun(a), fetchHistoryRun(b)]);
-			setDiffData({ a: { timestamp: a, parent: null, payload: ea }, b: { timestamp: b, parent: null, payload: eb } });
+			setDiffData({
+				a: { timestamp: a, parent: null, payload: ea },
+				b: { timestamp: b, parent: null, payload: eb },
+			});
 		} catch (e) {
 			setHistoryError((e as Error).message);
 		}
@@ -837,14 +845,22 @@ ${themeVarsToCss(data)}}
 									<>
 										<button
 											onClick={() =>
-												downloadFile("pandwind-coverage.json", coverageToJson(data), "application/json")
+												downloadFile(
+													"pandwind-coverage.json",
+													coverageToJson(data),
+													"application/json",
+												)
 											}
 										>
 											coverage — JSON
 										</button>
 										<button
 											onClick={() =>
-												downloadFile("pandwind-report.md", coverageToMarkdown(data), "text/markdown")
+												downloadFile(
+													"pandwind-report.md",
+													coverageToMarkdown(data),
+													"text/markdown",
+												)
 											}
 										>
 											report — Markdown
