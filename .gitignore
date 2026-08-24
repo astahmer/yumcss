@@ -3,3 +3,6 @@ dist/
 .DS_Store
 *.tsbuildinfo
 .jj/
+
+# studio run history (local snapshots)
+apps/inspector/.studio-history/

@@ -472,3 +472,9 @@ a:hover {
 	font-family: var(--mono, monospace);
 }
 h3 { margin: 18px 0 8px; }
+
+label { cursor: pointer; }
+button:disabled { opacity: 0.5; }
+.good { color: var(--good, #4ade80); }
+.warn { color: var(--warn, #fbbf24); }
+.muted { color: var(--muted, #888); }

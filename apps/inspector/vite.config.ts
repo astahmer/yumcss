@@ -1,6 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig, type Plugin } from "vite";
 import { gather } from "./src/server/gather.ts";
+import { listRuns, persistRun, readRun } from "./src/server/history.ts";
 
 /** Dev-server middleware: GET /api/data rebuilds the studio payload. */
 const studioApi = (): Plugin => ({
@@ -10,12 +11,28 @@ const studioApi = (): Plugin => ({
 			void (async () => {
 				res.setHeader("content-type", "application/json");
 				try {
-					res.end(JSON.stringify(await gather()));
+					const payload = await gather();
+					persistRun(process.cwd(), payload);
+					res.end(JSON.stringify(payload));
 				} catch (error) {
 					res.statusCode = 500;
 					res.end(JSON.stringify({ error: String(error) }));
 				}
 			})();
+		});
+		// Run history: list all snapshots, or fetch one via /api/history?run=<ts>
+		server.middlewares.use("/api/history", (req, res, next) => {
+			if (req.method !== "GET") return next();
+			const url = new URL(req.url ?? "/", "http://x");
+			res.setHeader("content-type", "application/json");
+			const runTs = url.searchParams.get("run");
+			if (runTs !== null) {
+				const run = readRun(process.cwd(), runTs);
+				if (run === null) res.statusCode = 404;
+				res.end(JSON.stringify(run ?? { error: "not found" }));
+				return;
+			}
+			res.end(JSON.stringify(listRuns(process.cwd())));
 		});
 	},
 });

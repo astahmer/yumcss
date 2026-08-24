@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchData, kb, vscodeLink } from "./lib/api.ts";
+import {
+	fetchData,
+	fetchHistoryList,
+	fetchHistoryRun,
+	kb,
+	vscodeLink,
+	type HistoryListItem,
+} from "./lib/api.ts";
+import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
 import {
 	groupThemeVars,
@@ -9,7 +17,7 @@ import {
 } from "./server/parsers.ts";
 import type { StudioPayload, ThemeVar, TokenSection } from "./types.ts";
 
-type Tab = "design" | "stats";
+type Tab = "design" | "stats" | "history";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -419,6 +427,102 @@ function ClassDrillDown(props: { data: StudioPayload; query: string }) {
 
 /* ---------------------------------- stats tab ---------------------------------- */
 
+function HistoryView(props: {
+	list: Array<HistoryListItem> | null;
+	error: string | null;
+	diffPair: { a: string; b: string } | null;
+	diffData: { a: HistoryEntry; b: HistoryEntry } | null;
+	setDiffPair: (pair: { a: string; b: string }) => void;
+	loadDiff: (a: string, b: string) => void;
+}) {
+	return (
+		<div>
+			{props.error !== null && <p className="error">{props.error}</p>}
+			{(props.list ?? []).length < 2 && props.error === null && (
+				<p className="muted">need at least 2 runs — hit refresh to snapshot another one.</p>
+			)}
+			{props.diffPair !== null && props.diffPair.a === props.diffPair.b && (
+				<p className="muted">select two different runs to compare</p>
+			)}
+			<section>
+				<h2>runs</h2>
+				{(props.list ?? []).map((run) => (
+					<label key={run.timestamp} style={{ display: "block", margin: "4px 0" }}>
+						<input
+							type="radio"
+							name="hist-a"
+							checked={props.diffPair?.a === run.timestamp}
+							onChange={() =>
+								props.setDiffPair({ a: run.timestamp, b: props.diffPair?.b ?? run.timestamp })
+							}
+						/>
+						{" A "}
+						<input
+							type="radio"
+							name="hist-b"
+							checked={props.diffPair?.b === run.timestamp}
+							onChange={() =>
+								props.setDiffPair({ b: run.timestamp, a: props.diffPair?.a ?? run.timestamp })
+							}
+						/>
+						{" B — "}
+						{run.timestamp}
+					</label>
+				))}
+				<button
+					disabled={props.diffPair === null || props.diffPair.a === props.diffPair.b}
+					onClick={() => props.diffPair && props.loadDiff(props.diffPair.a, props.diffPair.b)}
+				>
+					compare
+				</button>
+			</section>
+			{props.diffData !== null && (() => {
+				const d = diffRuns(props.diffData.a, props.diffData.b);
+				return (
+					<section>
+						<h2>
+							diff — older ({props.diffData.a.timestamp}) → newer ({props.diffData.b.timestamp})
+						</h2>
+						<table>
+							<thead>
+								<tr>
+									<th>metric</th>
+									<th>before</th>
+									<th>after</th>
+									<th>delta</th>
+								</tr>
+							</thead>
+							<tbody>
+								{[...d.coverage, ...d.budget].map((m) => (
+									<tr key={m.label}>
+										<td>{m.label}</td>
+										<td>{m.before}</td>
+										<td>{m.after}</td>
+										<td>{m.delta > 0 ? "+" : ""}{m.delta}</td>
+									</tr>
+								))}
+								<tr>
+									<td>missing-css delta</td>
+									<td />
+									<td />
+									<td>{d.missingCssDelta > 0 ? "+" : ""}{d.missingCssDelta}</td>
+								</tr>
+							</tbody>
+						</table>
+						{(d.resolvedDead.length > 0 || d.newDead.length > 0) && (
+							<>
+								<h3>dead candidates</h3>
+								{d.resolvedDead.length > 0 && <p className="good">resolved: {d.resolvedDead.join(", ")}</p>}
+								{d.newDead.length > 0 && <p className="warn">new: {d.newDead.join(", ")}</p>}
+							</>
+						)}
+					</section>
+				);
+			})()}
+		</div>
+	);
+}
+
 function StatsView(props: { data: StudioPayload; query: string }) {
 	const c = props.data.coverage;
 	const [sortKey, setSortKey] = useState<"file" | "eliminatedPct" | "cxRuntime">("eliminatedPct");
@@ -596,6 +700,10 @@ export function App() {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [query, setQuery] = useState("");
+	const [historyList, setHistoryList] = useState<Array<HistoryListItem> | null>(null);
+	const [diffPair, setDiffPair] = useState<{ a: string; b: string } | null>(null);
+	const [diffData, setDiffData] = useState<{ a: HistoryEntry; b: HistoryEntry } | null>(null);
+	const [historyError, setHistoryError] = useState<string | null>(null);
 
 	const refresh = useCallback(() => {
 		setLoading(true);
@@ -607,6 +715,24 @@ export function App() {
 	}, []);
 
 	useEffect(refresh, [refresh]);
+
+	const loadDiff = useCallback(async (a: string, b: string) => {
+		setHistoryError(null);
+		try {
+			const [ea, eb] = await Promise.all([fetchHistoryRun(a), fetchHistoryRun(b)]);
+			setDiffData({ a: { timestamp: a, parent: null, payload: ea }, b: { timestamp: b, parent: null, payload: eb } });
+		} catch (e) {
+			setHistoryError((e as Error).message);
+		}
+	}, []);
+
+	useEffect(() => {
+		if (tab !== "history") return;
+		setHistoryError(null);
+		fetchHistoryList()
+			.then(setHistoryList)
+			.catch((e: Error) => setHistoryError(e.message));
+	}, [tab]);
 	const queryChange = useCallback((v: string) => setQuery(v), []);
 
 	let body: React.ReactNode;
@@ -627,6 +753,15 @@ export function App() {
 		body =
 			tab === "design" ? (
 				<DesignSystemView data={data} query={query} queryChange={queryChange} />
+			) : tab === "history" ? (
+				<HistoryView
+					list={historyList}
+					error={historyError}
+					diffPair={diffPair}
+					diffData={diffData}
+					setDiffPair={setDiffPair}
+					loadDiff={loadDiff}
+				/>
 			) : (
 				<StatsView data={data} query={query} />
 			);
@@ -644,6 +779,9 @@ export function App() {
 					</button>
 					<button className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
 						Stats
+					</button>
+					<button className={tab === "history" ? "active" : ""} onClick={() => setTab("history")}>
+						History
 					</button>
 					<button onClick={refresh} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
