@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchData, kb, vscodeLink } from "./lib/api.ts";
+import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
 import {
 	groupThemeVars,
 	resolveChain,
@@ -66,8 +67,12 @@ function Bar(props: { label: string; value: number; max: number; suffix?: string
 
 /* ------------------------------ design system tab ------------------------------ */
 
-function ColorSwatches(props: { section: TokenSection; rawColors: Map<string, string> }) {
-	const swatches = props.section.entries.map((entry) => {
+function ColorSwatches(props: {
+	section: TokenSection;
+	rawColors: Map<string, string>;
+	matches: (text: string) => boolean;
+}) {
+	const swatches = filterNamed(props.section.entries, props.matches).map((entry) => {
 		const split = splitTokenValue(entry.value);
 		if (split.conditionBound && split.json !== null) {
 			return { name: entry.name, modes: split.json, chain: [entry.name] };
@@ -128,8 +133,7 @@ function DesignSystemView(props: {
 	queryChange: (v: string) => void;
 }) {
 	const d = props.data.designSystem;
-	const q = props.query.toLowerCase();
-	const matchText = (text: string): boolean => text.toLowerCase().includes(q);
+	const matchText = makeTextMatcher(props.query);
 
 	const sectionsById = new Map(d.tokenSections.map((s) => [s.id, s]));
 	const rawColors = new Map<string, string>();
@@ -188,6 +192,7 @@ function DesignSystemView(props: {
 					entries: sectionsById.get("colors")?.entries ?? [],
 				}}
 				rawColors={rawColors}
+				matches={matchText}
 			/>
 			{sectionsById.get("semantic") !== undefined && (
 				<ColorSwatches
@@ -197,7 +202,8 @@ function DesignSystemView(props: {
 						entries: sectionsById.get("semantic")?.entries ?? [],
 					}}
 					rawColors={rawColors}
-				/>
+				matches={matchText}
+			/>
 			)}
 
 			<section id="sec-typography">
@@ -220,7 +226,7 @@ function DesignSystemView(props: {
 
 				<h3>weights</h3>
 				<div className="chip-row">
-					{weightEntries.map((e) => (
+					{filterNamed(weightEntries, matchText).map((e) => (
 						<span className="chip" key={e.name} style={{ fontWeight: Number(e.value) }}>
 							{e.name} {e.value}
 						</span>
@@ -229,7 +235,7 @@ function DesignSystemView(props: {
 
 				<h3>families</h3>
 				<div className="family-list">
-					{familyEntries.map((e) => (
+					{filterNamed(familyEntries, matchText).map((e) => (
 						<div className="type-size-row" key={e.name}>
 							<span className="type-size-sample" style={{ fontFamily: e.value }}>
 								{e.name}: Pandwind studio preview 123
@@ -244,10 +250,13 @@ function DesignSystemView(props: {
 						<h3>line heights & letter spacings</h3>
 						<table>
 							<tbody>
-								{[
-									...lineHeightEntries.map((x) => ({ ...x, _k: "lh-" + x.name })),
-									...trackingEntries.map((x) => ({ ...x, _k: "ls-" + x.name })),
-								].map((e) => (
+								{filterNamed(
+									[
+										...lineHeightEntries.map((x) => ({ ...x, _k: "lh-" + x.name })),
+										...trackingEntries.map((x) => ({ ...x, _k: "ls-" + x.name })),
+									],
+									matchText,
+								).map((e) => (
 									<tr key={e._k}>
 										<td>
 											<code>{e.name}</code>
