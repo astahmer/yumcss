@@ -19,6 +19,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
+import { buildAgentsDocument } from "./agents-json.ts";
+import { extractTwConfig } from "../vite/inline.ts";
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
 import {
@@ -1124,11 +1126,14 @@ ${getVariantsType(variants)}
 if (process.argv[1]?.endsWith("generate-types.ts")) {
 	const positional: string[] = [];
 	let tokensModulePath: string | undefined;
+	let agentsFlag = false;
 	const args = process.argv.slice(2);
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
 		if (arg === "--tokens") {
 			tokensModulePath = args[++i];
+		} else if (arg === "--agents") {
+			agentsFlag = true;
 		} else if (arg !== undefined) {
 			positional.push(arg);
 		}
@@ -1175,6 +1180,20 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 
 	writeFileSync(resolve(outDir, "types.d.ts"), typesDts);
 	writeFileSync(resolve(outDir, "tw.ts"), twTs);
+	if (agentsFlag) {
+		// plans/014 §5 — machine-readable capability file for AI agents,
+		// derived from the artifacts this run just generated.
+		const agentsConfig = extractTwConfig(twTs);
+		if (agentsConfig === undefined)
+			throw new Error("pandwind tw:codegen: could not extract config for agents.json");
+		const doc = buildAgentsDocument({
+			typesDts,
+			config: agentsConfig,
+			themeBlock,
+			artifactDir: outDir,
+		});
+		writeFileSync(resolve(outDir, "pandwind.agents.json"), `${JSON.stringify(doc, null, "\t")}\n`);
+	}
 	if (themeBlock) writeFileSync(resolve(outDir, "pandwind-theme.css"), `${themeBlock}\n`);
 
 	console.log(

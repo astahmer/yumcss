@@ -104,6 +104,17 @@ PostCSS config, no runtime CSS-in-JS.
 
 ### How it works
 
+**Agent-ready by construction.** Run codegen with `--agents` and pandwind also
+emits `pandwind.agents.json`: a versioned machine-readable capability file
+every utility key with its literal value union (capped, with counts), the
+variant set, conflict families, compose list, theme scopes and semantic
+tokens — plus the exact commands an agent runs to verify its own output
+(`typecheck`, `analyze --json`, the missing-css gate). Generic conventions
+(design.md-style docs) describe intent and can drift from reality; this file
+is _derived from the compiled design system on every run_, contains only what
+provably exists, and wrong classes are caught as TypeScript errors before an
+agent ever ships.
+
 - **`tw:codegen`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates two files next to it:
   - `types.d.ts` — one key per utility with literal value unions (including
