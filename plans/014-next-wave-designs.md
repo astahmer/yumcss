@@ -242,3 +242,19 @@ Caveats (documented, honest):
   for fully-covered routes.
 - Dev mode is untouched: dev keeps the virtual-module flow; injection is
   build-only by design (HMR would fight the rewritten files).
+
+## 5. pandwind.agents.json — schema design (planned emission)
+
+Opt-in flag `--agents` on tw:codegen emits a versioned machine-readable capability file next to types.d.ts:
+
+    { "schema": "pandwind.agents/1",
+      "utilities": { "<key>": { "values": [...capped literal unions + "valueCount"], "arbitrary": bool, "variants": [...] } },
+      "semanticTokens": { "<name>": "<resolved value chain>" },
+      "themeScopes": ["[data-theme=dark]", ...],
+      "conflictsSummary": { "<key>": ["<property family>", ...] },
+      "compose": [...],
+      "workflows": { "verifyTypes": "pnpm typecheck", "verifyCoverage": "pnpm analyze --json", "missingCssGate": "analyze totalMissingCss === 0" },
+      "constraints": "API frozen; unknown classes kept-but-unstyled; wrong utility = type error; skip-loudly policy",
+      "artifactMap": { "types.d.ts": "unions", "tw.ts": "runtime config", "bridge.ts": "css->utility mapping", "pandwind-theme.css": "theme vars" } }
+
+Positioning vs design.md/impeccable/astryx: those are static conventions that can drift from the build; this file is DERIVED from the compiled design system each codegen run (provably true), includes only what exists, and ships verification commands so agent output is checkable. Emission point: generate-types.ts main flow after generateDesignSystem, reusing types/variants/conflicts/compose already in scope.
