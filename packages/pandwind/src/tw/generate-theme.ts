@@ -323,3 +323,173 @@ export function buildThemeScopes(
 	}
 	return blocks.join("\n");
 }
+
+/**
+ * Declared component scopes (plans/015 L3, scope-override model A):
+ * component name -> semantic-var overrides bound to a generated
+ * `.pwc-<name>` class.
+ *
+ * ```ts
+ * components: {
+ * 	button: { primary: "$color-brand" },        // -> .pwc-button { --color-primary: var(--color-brand) }
+ * 	card: { border: "#e5e5e5" },                // raw values pass through
+ * 	card2: { "text.muted": { base: "#888", dark: "#aaa" } }, // condition-bound
+ * }
+ * ```
+ *
+ * Key → custom-property mapping (no guessing beyond these three documented
+ * forms): `"--name"` stays verbatim; dotted keys keep their own group
+ * (`"text.muted"` -> `--text-muted`); plain keys land in the color
+ * namespace (`"primary"` -> `--color-primary`), matching how semantic
+ * colors dominate component styling.
+ *
+ * Values may be raw strings, `"$ref"` references to EXISTING `@theme`
+ * variables (emitted as `var(--…)`; unknown refs and self-cycles are warned
+ * about and skipped — never guessed), or condition-bound objects whose
+ * non-base conditions resolve through the preset condition resolver
+ * (unresolvable variants drop that variant with a warning; the base stays —
+ * unlike splitTokens' whole-token skip, because a component override can
+ * never produce a dead utility: the semantic variable always exists).
+ */
+export type ComponentScopeMap = Record<string, Record<string, unknown>>;
+
+const dashedKey = (key: string): string =>
+	key
+		.replace(/\.([a-z0-9])/g, "-$1")
+		.replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+		.toLowerCase()
+		.replace(/[^a-z0-9-]+/g, "-")
+		.replace(/-{2,}/g, "-")
+		.replace(/^-+|-+$/g, "");
+
+const componentVarName = (key: string): string => {
+	if (key.startsWith("--")) return key;
+	const dashed = dashedKey(key);
+	return key.includes(".") || dashed.startsWith("color-") ? `--${dashed}` : `--color-${dashed}`;
+};
+
+/** Chain a resolver-produced selector onto the component class. */
+const scopeSelector = (cls: string, selector: string): string => {
+	if (selector === ":root") return cls;
+	const rest = selector.replace(/^:root/, "");
+	if (rest === "") return cls;
+	if (rest.startsWith(":")) return `${cls}${rest}`;
+	// Compound class/attribute selectors chain directly; anything exotic
+	// falls back to a descendant relationship.
+	if (rest.startsWith(".") || rest.startsWith("[")) return `${cls}${rest}`;
+	return `${cls} ${rest}`;
+};
+
+/**
+ * Render the `.pwc-<component>` scope blocks. Deterministic: components,
+ * keys and condition keys sorted; identical inputs yield identical output.
+ * Returns "" when nothing valid remains, so presets without component
+ * tokens keep byte-stable bridges.
+ */
+export function buildComponentScopes(
+	components: ComponentScopeMap | undefined,
+	existingVars: ReadonlySet<string>,
+	resolveCondition: ((name: string) => ResolvedConditionParts | null) | undefined,
+	warn: (message: string) => void = () => {},
+): string {
+	if (components === undefined || typeof components !== "object") return "";
+	const blocks: string[] = [];
+	for (const name of Object.keys(components).toSorted()) {
+		if (!/^[a-z][a-z0-9-]*$/.test(name)) {
+			warn(`pandwind: component "${name}" is not a valid class name ([a-z][a-z0-9-]*) — skipped`);
+			continue;
+		}
+		const vars = components[name];
+		if (vars === null || typeof vars !== "object" || Array.isArray(vars)) {
+			warn(`pandwind: component "${name}" is not an object — skipped`);
+			continue;
+		}
+		const cls = `.pwc-${name}`;
+		const lines: string[] = [];
+		const conditionalRules: string[] = [];
+		for (const key of Object.keys(vars).toSorted()) {
+			const varName = componentVarName(key);
+			if (!/^--[a-z0-9-]+$/.test(varName) || varName === "--") {
+				warn(`pandwind: component "${name}" key "${key}" maps to an invalid custom property — skipped`);
+				continue;
+			}
+			const raw = vars[key];
+
+			if (raw !== null && typeof raw === "object" && !Array.isArray(raw)) {
+				// Condition-bound override set. Unlike splitTokens, a failed
+				// variant only drops THAT variant: the semantic variable
+				// already exists in @theme, so a partial component override
+				// can never ship dead CSS.
+				if (resolveCondition === undefined) {
+					warn(
+						`pandwind: component "${name}" key "${key}" is condition-bound but no preset conditions resolve — skipped`,
+					);
+					continue;
+				}
+				const entries = raw as Record<string, unknown>;
+				for (const condKey of Object.keys(entries).toSorted()) {
+					const value = entries[condKey];
+					if (typeof value !== "string" || value === "") continue;
+					const resolvedValue = resolveComponentValue(value, varName, existingVars, warn, name, key);
+					if (resolvedValue === null) continue;
+					if (condKey === "base") {
+						lines.push(`\t${varName}: ${resolvedValue};`);
+						continue;
+					}
+					const parts = resolveCondition(condKey);
+					if (parts === null || (parts.atRules.length === 0 && parts.selectors.length === 0)) {
+						warn(
+							`pandwind: component "${name}" key "${key}" variant "${condKey}" does not resolve through preset conditions — variant skipped`,
+						);
+						continue;
+					}
+					const decls = parts.selectors
+						.map((sel) => scopeSelector(cls, sel))
+						.map((scoped) => `\t${scoped} {\n\t\t${varName}: ${resolvedValue};\n\t}`)
+						.join("\n");
+					let css = decls;
+					for (const atRule of parts.atRules.toReversed()) css = `${atRule} {\n${css}\n}`;
+					conditionalRules.push(css);
+				}
+				continue;
+			}
+
+			const resolvedValue = resolveComponentValue(raw, varName, existingVars, warn, name, key);
+			if (resolvedValue !== null) lines.push(`\t${varName}: ${resolvedValue};`);
+		}
+		if (lines.length === 0 && conditionalRules.length === 0) continue;
+		const block = lines.length === 0 ? "" : `${cls} {\n${lines.join("\n")}\n}`;
+		blocks.push([block, ...conditionalRules].filter(Boolean).join("\n"));
+	}
+	return blocks.join("\n");
+}
+
+/**
+ * Resolve one component-token VALUE: `$ref` -> var() against existing @theme
+ * variables (unknown refs and self-cycles warn + skip), raw strings pass
+ * through normalization.
+ */
+function resolveComponentValue(
+	value: unknown,
+	varName: string,
+	existingVars: ReadonlySet<string>,
+	warn: (message: string) => void,
+	component: string,
+	key: string,
+): string | null {
+	if (typeof value !== "string" || value === "") {
+		warn(`pandwind: component "${component}" key "${key}" is not a non-empty string or condition-bound object — skipped`);
+		return null;
+	}
+	if (!value.startsWith("$")) return normalizeThemeValue(value);
+	const target = `--${dashedKey(value.slice(1))}`;
+	if (!existingVars.has(target)) {
+		warn(`pandwind: component "${component}" key "${key}" references $${value.slice(1)} which does not exist in @theme — skipped`);
+		return null;
+	}
+	if (target === varName) {
+		warn(`pandwind: component "${component}" key "${key}" references itself — cycle skipped`);
+		return null;
+	}
+	return `var(${target})`;
+}
