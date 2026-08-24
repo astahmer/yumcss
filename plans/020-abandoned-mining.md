@@ -62,3 +62,23 @@ CLI structure is plain commander-style - nothing new.
 
 gradient-picker (UI concern), cli structure (nothing new), billing/member
 entities (product-specific), tRPC setup (we're CLI-first).
+
+## Outcomes (2026-08-24) — adopts #1 and #2 landed
+
+1. **Reference-DAG computation** (`src/tw/token-graph.ts`, `buildTokenGraph`):
+   nodes across raw/semantic/scope/component tiers; edges consumer ->
+   dependency from inline `var()` refs, `[data-theme]` bindings, component
+   override targets and `$ref`s. Computes every cycle (self-loops included —
+   a key overriding exactly the variable it references is invalid at
+   computed-value time and is marked as a self-loop on the VARIABLE node,
+   agreeing with buildComponentScopes' skip-loudly emission), orphaned raws
+   (unreferenced by other tokens; direct utility usage invisible by design),
+   per-component reachability (BFS), dangling refs (missing from @theme).
+2. **Studio "token graph" view**: layered SVG (component / scope / semantic /
+   raw columns), tier-colored nodes, cycle edges in red, click-to-inspect
+   with reachability + warnings. Payload via gather.ts -> tokenGraph.
+3. Follow-up found during dev: cx-bench.mts used toLocaleString() ->
+   locale-dependent output broke the smoke parser under non-en locales;
+   fixed to deterministic grouping.
+4. Residual: example preset declares no themes/components, so its studio
+   graph shows the raw tier only - add fixture declarations when demoing.
