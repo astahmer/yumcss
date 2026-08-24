@@ -9,6 +9,7 @@ import { collectFiles, loadTwConfig } from "../../../../packages/analyze/src/ana
 import { runCli } from "../../../../packages/analyze/src/cli.ts";
 import { classRules, cssBudget, sheetShape } from "../../../../packages/analyze/src/css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
+import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
 import type { StudioPayload, TokenSection } from "../types.ts";
 import {
 	flattenTokenGroups,
@@ -128,8 +129,15 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 		letterSpacings: "Letter spacings",
 	});
 
+	const tokenGraph = buildTokenGraph({
+		flatVars: themeVars,
+		themes: (examplePreset as unknown as { themes?: never }).themes,
+		components: (examplePreset as unknown as { components?: never }).components,
+	});
+
 	return {
 		meta: { root },
+		tokenGraph,
 		coverage: {
 			eliminatedPct: summary.eliminatedPct,
 			entryEliminatedPct: summary.entryEliminatedPct,

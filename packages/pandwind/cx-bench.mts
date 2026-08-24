@@ -51,6 +51,9 @@ const LONG_B = [
 	"hover:bg-red-600",
 ].join(" ");
 
+/** Locale-independent thousands grouping - the smoke test parses this output. */
+const groupDigits = (n: number): string => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
 function measure(label: string, fn: () => void, samples = 15) {
 	const medians: number[] = [];
 	// warmup
@@ -67,7 +70,7 @@ function measure(label: string, fn: () => void, samples = 15) {
 	}
 	medians.sort((a, b) => a - b);
 	console.log(
-		`${label}: median ${Math.round(medians[Math.floor(medians.length / 2)]).toLocaleString()} ops/sec  (min ${Math.round(medians[0]).toLocaleString()}, max ${Math.round(medians[medians.length - 1]).toLocaleString()})`,
+		`${label}: median ${groupDigits(Math.round(medians[Math.floor(medians.length / 2)]))} ops/sec  (min ${groupDigits(Math.round(medians[0]))}, max ${groupDigits(Math.round(medians[medians.length - 1]))})`,
 	);
 }
 

@@ -72,7 +72,7 @@ describe("buildTokenGraph", () => {
 			]),
 		});
 		expect(g.cycles.length).toBeGreaterThanOrEqual(1);
-		const flattened = g.cycles.flat().sort();
+		const flattened = g.cycles.flat().toSorted();
 		expect(flattened).toContain("--x");
 		expect(flattened).toContain("--y");
 	});

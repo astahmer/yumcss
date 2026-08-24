@@ -24,9 +24,9 @@ import {
 	splitTokenValue,
 	type ThemeVarCategory,
 } from "./server/parsers.ts";
-import type { StudioPayload, ThemeVar, TokenSection } from "./types.ts";
+import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 
-type Tab = "design" | "stats" | "history";
+type Tab = "design" | "stats" | "history" | "graph";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -706,6 +706,136 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 	);
 }
 
+/* --------------------------------- token graph --------------------------------- */
+
+const TIER_ORDER: Array<TokenTier> = ["component", "scope", "semantic", "raw"];
+const TIER_COLOR: Record<TokenTier, string> = {
+	component: "#7c5cff",
+	scope: "#d97706",
+	semantic: "#0ea5e9",
+	raw: "#64748b",
+};
+const NODE_W = 190;
+const NODE_H = 26;
+const COL_W = 250;
+const ROW_H = 38;
+
+function TokenGraphView({ graph }: { graph: TokenGraph }) {
+	const [selected, setSelected] = useState<string | null>(null);
+	if (graph.nodes.length === 0) {
+		return (
+			<div className="wrap">
+				<h2>token graph</h2>
+				<p className="muted">no theme variables found in the generated bridge.</p>
+			</div>
+		);
+	}
+	const columns = TIER_ORDER.map((tier) =>
+		graph.nodes.filter((n) => n.tier === tier).toSorted((a, b) => a.label.localeCompare(b.label)),
+	).filter((col) => col.length > 0);
+	const width = columns.length * COL_W + 80;
+	const height = Math.max(...columns.map((c) => c.length)) * ROW_H + 60;
+
+	const pos = new Map<string, { x: number; y: number }>();
+	columns.forEach((col, ci) => {
+		col.forEach((node, ri) => {
+			pos.set(node.id, { x: ci * COL_W + 40, y: (height - col.length * ROW_H) / 2 + ri * ROW_H });
+		});
+	});
+
+	const byId = new Map(graph.nodes.map((n) => [n.id, n]));
+	const cyclesSet = new Set(graph.cycles.flat());
+
+	return (
+		<div className="wrap">
+			<h2>token graph</h2>
+			<p className="muted">
+				{graph.nodes.length} nodes · {graph.edges.length} edges · {graph.cycles.length} cycle(s) ·{" "}
+				{graph.dangling.length} dangling · {graph.orphans.length} orphaned raws
+			</p>
+			{selected !== null && byId.has(selected) ? (
+				<div className="card">
+					<div className="card-value">{selected}</div>
+					<div className="card-sub">
+						tier: {byId.get(selected)!.tier}
+						{graph.reachability[selected] !== undefined
+							? ` · resolves to: ${graph.reachability[selected]!.join(", ")}`
+							: ""}
+						{cyclesSet.has(selected) ? " · ⚠ part of a cycle (skipped at emission)" : ""}
+						{graph.dangling.includes(selected) ? " · ⚠ dangling reference" : ""}
+					</div>
+				</div>
+			) : null}
+			<svg
+				width="100%"
+				viewBox={`0 0 ${width} ${height}`}
+				style={{ background: "transparent", minWidth: `${width}px` }}
+				role="img"
+				aria-label="token reference graph"
+			>
+				<defs>
+					<marker
+						id="tg-arrow"
+						viewBox="0 0 10 10"
+						refX="9"
+						refY="5"
+						markerWidth="6"
+						markerHeight="6"
+						orient="auto-start-reverse"
+					>
+						<path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+					</marker>
+				</defs>
+				{graph.edges.map((e) => {
+					const a = pos.get(e.from);
+					const b = pos.get(e.to);
+					if (a === undefined || b === undefined) return null;
+					const x1 = a.x + NODE_W;
+					const y1 = a.y + NODE_H / 2;
+					const x2 = b.x;
+					const y2 = b.y + NODE_H / 2;
+					const isCycle = cyclesSet.has(e.from) && cyclesSet.has(e.to);
+					return (
+						<path
+							key={`${e.from}->${e.to}`}
+							d={`M ${x1} ${y1} C ${x1 + COL_W / 2} ${y1}, ${x2 - COL_W / 2} ${y2}, ${x2 - 4} ${y2}`}
+							fill="none"
+							stroke={isCycle ? "#ef4444" : "#94a3b8"}
+							strokeWidth={isCycle ? 1.8 : 1}
+							markerEnd="url(#tg-arrow)"
+							opacity={0.7}
+						/>
+					);
+				})}
+				{[...pos.entries()].map(([id, p]) => {
+					const node = byId.get(id)!;
+					const isCyc = cyclesSet.has(id);
+					return (
+						<g
+							key={id}
+							transform={`translate(${p.x}, ${p.y})`}
+							style={{ cursor: "pointer" }}
+							onClick={() => setSelected(id)}
+						>
+							<rect
+								width={NODE_W}
+								height={NODE_H}
+								rx={6}
+								fill={isCyc ? "#450a0a" : "#111827"}
+								stroke={TIER_COLOR[node.tier] ?? "#64748b"}
+								strokeWidth={isCyc ? 2 : 1}
+							/>
+							<text x={8} y={17} fill="#e5e7eb" fontSize={11} fontFamily="monospace">
+								{node.label.length > 28 ? `${node.label.slice(0, 27)}…` : node.label}
+							</text>
+						</g>
+					);
+				})}
+			</svg>
+		</div>
+	);
+}
+
 /* ------------------------------------- app ------------------------------------- */
 
 export function App() {
@@ -768,7 +898,9 @@ export function App() {
 		);
 	} else {
 		body =
-			tab === "design" ? (
+			tab === "graph" ? (
+				<TokenGraphView graph={data.tokenGraph} />
+			) : tab === "design" ? (
 				<DesignSystemView data={data} query={query} queryChange={queryChange} />
 			) : tab === "history" ? (
 				<HistoryView
@@ -793,6 +925,9 @@ export function App() {
 				<nav>
 					<button className={tab === "design" ? "active" : ""} onClick={() => setTab("design")}>
 						Design system
+					</button>
+					<button className={tab === "graph" ? "active" : ""} onClick={() => setTab("graph")}>
+						token graph
 					</button>
 					<button className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
 						Stats

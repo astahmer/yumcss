@@ -1,5 +1,27 @@
 /** Shared payload contract between the node-side gatherer and the UI. */
 
+export type TokenTier = "raw" | "semantic" | "scope" | "component";
+
+export interface TokenGraphNode {
+	id: string;
+	tier: TokenTier;
+	label: string;
+}
+
+export interface TokenGraphEdge {
+	from: string;
+	to: string;
+}
+
+export interface TokenGraph {
+	nodes: Array<TokenGraphNode>;
+	edges: Array<TokenGraphEdge>;
+	cycles: Array<Array<string>>;
+	orphans: Array<string>;
+	reachability: Record<string, Array<string>>;
+	dangling: Array<string>;
+}
+
 export interface ThemeVar {
 	name: string;
 	value: string;
@@ -84,6 +106,7 @@ export interface StudioPayload {
 		candidate: string;
 		rules: Array<{ selector: string; declarations: string }>;
 	}>;
+	tokenGraph: TokenGraph;
 	designSystem: {
 		themeVars: Array<ThemeVar>;
 		utilities: Array<UtilityUnion>;

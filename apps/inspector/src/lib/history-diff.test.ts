@@ -12,6 +12,7 @@ function payload(overrides: {
 }): StudioPayload {
 	return {
 		meta: { root: "/repo" },
+		tokenGraph: { nodes: [], edges: [], cycles: [], orphans: [], reachability: {}, dangling: [] },
 		coverage: {
 			eliminatedPct: overrides.eliminatedPct ?? 40,
 			entryEliminatedPct: 35,
