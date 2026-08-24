@@ -1,0 +1,35 @@
+{
+	"name": "playground",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"predev": "pnpm tw:codegen && pnpm tw:bridge",
+		"dev": "vite",
+		"prebuild": "pnpm tw:codegen && pnpm tw:bridge",
+		"build": "tsc --noEmit && vite build",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts"
+	},
+	"dependencies": {
+		"@monaco-editor/react": "4.7.0",
+		"@tanstack/react-router": "1.170.32",
+		"oxc-parser": "0.144.0",
+		"pandwind": "workspace:*",
+		"react": "19.2.8",
+		"react-dom": "19.2.8",
+		"shiki": "4.4.3"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "4.3.3",
+		"@types/node": "26.2.0",
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4",
+		"@vitejs/plugin-react-swc": "4.3.3",
+		"tailwindcss": "4.3.3",
+		"tsx": "4.23.12",
+		"typescript": "7.0.2",
+		"vite": "8.2.1",
+		"vitest": "4.1.10"
+	}
+}
