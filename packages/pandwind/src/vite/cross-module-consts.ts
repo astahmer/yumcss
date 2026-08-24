@@ -29,6 +29,7 @@
 import { readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { type Expression, parseSync } from "oxc-parser";
+import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
 
@@ -147,59 +148,11 @@ export function collectImportBindings(program: OxcNode): ImportBinding[] {
  * True when `name` is shadowed or written anywhere in the consumer besides
  * its own import specifier — such a binding must not propagate (the runtime
  * value could differ from the exported constant).
+ *
+ * Implementation lives in `./ast-walk.ts` (pure, browser-safe); re-exported
+ * here for backwards compatibility.
  */
-export function bindingIsShadowedOrWritten(program: OxcNode, name: string): boolean {
-	for (const node of iterAll(program)) {
-		switch ((node as { type?: string }).type) {
-			case "VariableDeclarator":
-			case "FunctionDeclaration":
-			case "ClassDeclaration":
-			case "CatchClause": {
-				const id =
-					(node as { id?: OxcNode | null; param?: OxcNode | null }).id ??
-					(node as { param?: OxcNode | null }).param;
-				if ((id as { name?: string } | undefined)?.name === name) return true;
-				break;
-			}
-			case "Property": {
-				// Destructured bindings (`function F({ NAME }`) bind through
-				// shorthand properties.
-				const prop = node as { shorthand?: boolean; key?: { name?: string } };
-				if (prop.shorthand === true && prop.key?.name === name) return true;
-				break;
-			}
-			case "AssignmentExpression": {
-				let target: OxcNode | undefined = (node as { left?: OxcNode }).left;
-				while (target && (target as { type?: string }).type === "MemberExpression") {
-					target = (target as { object?: OxcNode | null }).object ?? undefined;
-				}
-				if (
-					(target as { type?: string }).type === "Identifier" &&
-					(target as { name?: string }).name === name
-				) {
-					return true;
-				}
-				break;
-			}
-			default:
-				break;
-		}
-	}
-	return false;
-}
-
-function* iterAll(node: OxcNode): Generator<OxcNode> {
-	const queue: unknown[] = [node];
-	for (let head = 0; head < queue.length; head++) {
-		const current = queue[head];
-		if (Array.isArray(current)) {
-			queue.push(...current);
-		} else if (current !== null && typeof current === "object") {
-			yield current as OxcNode;
-			queue.push(...Object.values(current as Record<string, unknown>));
-		}
-	}
-}
+export { bindingIsShadowedOrWritten };
 
 /** Resolves consumer import bindings to propagated string constants. */
 export interface CrossModuleResolver {

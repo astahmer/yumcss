@@ -3,6 +3,9 @@ import { defineConfig, type Plugin } from "vite";
 import { gather } from "./src/server/gather.ts";
 import { listRuns, persistRun, readRun } from "./src/server/history.ts";
 
+// History lives at <package dir>/.studio-history/ — see history.ts.
+const pkgRoot = process.cwd();
+
 /** Dev-server middleware: GET /api/data rebuilds the studio payload. */
 const studioApi = (): Plugin => ({
 	name: "studio-api",
@@ -12,7 +15,7 @@ const studioApi = (): Plugin => ({
 				res.setHeader("content-type", "application/json");
 				try {
 					const payload = await gather();
-					persistRun(process.cwd(), payload);
+					persistRun(pkgRoot, payload);
 					res.end(JSON.stringify(payload));
 				} catch (error) {
 					res.statusCode = 500;
@@ -27,12 +30,12 @@ const studioApi = (): Plugin => ({
 			res.setHeader("content-type", "application/json");
 			const runTs = url.searchParams.get("run");
 			if (runTs !== null) {
-				const run = readRun(process.cwd(), runTs);
+				const run = readRun(pkgRoot, runTs);
 				if (run === null) res.statusCode = 404;
 				res.end(JSON.stringify(run ?? { error: "not found" }));
 				return;
 			}
-			res.end(JSON.stringify(listRuns(process.cwd())));
+			res.end(JSON.stringify(listRuns(pkgRoot)));
 		});
 	},
 });

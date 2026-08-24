@@ -1,14 +1,18 @@
 /**
  * Run-history persistence: every successful studio gather is written as a
  * versioned snapshot (timestamp + payload + parent pointer, plans/020
- * shape) under apps/inspector/.studio-history/ (gitignored).
+ * shape) under <inspector package dir>/.studio-history/ (gitignored).
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { StudioPayload } from "../types.ts";
 import type { HistoryEntry } from "../lib/history-diff.ts";
 
-const HISTORY_DIR = (root: string): string => join(root, "apps", "inspector", ".studio-history");
+/**
+ * Root = the inspector package directory (= vite's cwd: `pnpm inspect` runs
+ * with cwd = apps/inspector, never assume the monorepo root).
+ */
+const HISTORY_DIR = (root: string): string => join(root, ".studio-history");
 
 export function persistRun(root: string, payload: StudioPayload): string {
 	const dir = HISTORY_DIR(root);

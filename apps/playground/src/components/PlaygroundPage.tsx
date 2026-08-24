@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
 import type { ExampleDef } from "../lib/examples.ts";
@@ -8,6 +8,7 @@ import { css as designCss } from "../css.ts";
 import { examplePreset } from "pandwind/preset";
 import { EditorPane } from "./EditorPane.tsx";
 import { ResultsPane } from "./ResultsPane.tsx";
+import { GhostButton } from "./ui.tsx";
 
 /** Component-like dynamics available inside evaluated code as `props`. */
 const SANDBOX_PROPS = { active: true, tone: "red-600" };
@@ -34,7 +35,6 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		return props.def.code;
 	});
 	const [result, setResult] = useState(() => evalPlayground(makeInput(code)));
-
 	const run = useCallback(
 		(source: string) => {
 			setResult(evalPlayground(makeInput(source)));
@@ -44,9 +44,15 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		[props.def.code],
 	);
 
-	useEffect(() => {
-		run(code);
-	}, []);
+	// Live evaluation: re-run shortly after every edit; ⌘↵ runs immediately.
+	const onChange = useCallback(
+		(source: string) => {
+			setCode(source);
+			window.clearTimeout(debounceRef.current);
+			debounceRef.current = window.setTimeout(() => run(source), 300);
+		},
+		[run],
+	);
 
 	useEffect(() => {
 		const handler = (event: KeyboardEvent) => {
@@ -56,17 +62,34 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 		return () => window.removeEventListener("keydown", handler);
 	}, [code, run]);
 
-	const resultPane = useMemo(() => <ResultsPane result={result} />, [result]);
+	// Flush a pending debounced run on unmount only — clearing on every
+	// re-render would cancel the run scheduled by the last keystroke.
+	const debounceRef = useRef<number>(0);
+	useEffect(() => () => window.clearTimeout(debounceRef.current), []);
+
+	const dirty = code.trim() !== props.def.code.trim();
+	const reset = useCallback(() => {
+		window.clearTimeout(debounceRef.current);
+		setCode(props.def.code);
+		run(props.def.code);
+	}, [props.def.code, run]);
 
 	return (
-		<div className={tw({ flex: "col", h: "full", p: "4", gap: "3" })}>
-			<div>
-				<h1 className={tw({ textSize: "lg", textColor: "white" })}>{props.def.title}</h1>
-				<p className={tw({ textSize: "sm", textColor: "gray-400" })}>{props.def.blurb}</p>
+		<div className="flex h-full min-h-0 flex-col gap-3 p-4">
+			<div className="flex h-6 shrink-0 items-center justify-between">
+				<div className="flex items-baseline gap-3">
+					<h1 className="text-[13px] font-medium text-zinc-200">{props.def.title}</h1>
+					<p className="hidden text-[12px] text-zinc-600 md:block">{props.def.blurb}</p>
+				</div>
+				{dirty && (
+					<GhostButton onClick={reset} title="Restore the example code">
+						reset
+					</GhostButton>
+				)}
 			</div>
-			<div className={tw({ flex: true, gap: "3", grow: true, minH: "0" })}>
-				<EditorPane code={code} onChange={setCode} />
-				{resultPane}
+			<div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+				<EditorPane code={code} onChange={onChange} onRun={() => run(code)} className="min-h-72" />
+				<ResultsPane result={result} />
 			</div>
 		</div>
 	);

@@ -283,24 +283,37 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		return result;
 	};
 	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
-	const css = ((...args: Array<unknown>) => {
-		recordArgs(args);
-		const result = input.css(...(args as never[]));
-		recordTokens(result);
-		if (
-			typeof result === "string" &&
-			args.length > 0 &&
-			typeof args[0] === "object" &&
-			args[0] !== null &&
-			input.resolveCss !== undefined
-		) {
-			const decls = input.resolveCss(args[0] as Record<string, unknown>);
-			if (decls !== undefined && Object.keys(decls).length > 0) {
-				atomDeclarations.push({ cls: result, decls });
+	/**
+	 * Instrumented css() binding. `method` selects a namespaced variant
+	 * (`.class` / `.raw`) — the wrapper must expose the SAME surface as the
+	 * real css() or sandbox code calling `css.class({...})` would crash.
+	 */
+	const cssBinding =
+		(method?: "class" | "raw") =>
+		(...args: Array<unknown>): unknown => {
+			recordArgs(args);
+			const result =
+				method === undefined
+					? input.css(...(args as never[]))
+					: (input.css[method] as (...a: Array<never>) => unknown)(...(args as never[]));
+			recordTokens(result);
+			if (
+				typeof result === "string" &&
+				args.length > 0 &&
+				typeof args[0] === "object" &&
+				args[0] !== null &&
+				input.resolveCss !== undefined
+			) {
+				const decls = input.resolveCss(args[0] as Record<string, unknown>);
+				if (decls !== undefined && Object.keys(decls).length > 0) {
+					atomDeclarations.push({ cls: result, decls });
+				}
 			}
-		}
-		return result;
-	}) as EvalInput["css"];
+			return result;
+		};
+	const css = cssBinding() as EvalInput["css"];
+	css.class = cssBinding("class") as EvalInput["css"]["class"];
+	css.raw = cssBinding("raw") as EvalInput["css"]["raw"];
 	const cx = (...callInputs: Array<never>) => {
 		recordArgs(callInputs);
 		const result = input.cx(...callInputs);
@@ -308,10 +321,8 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		return result;
 	};
 
-	console.error("DBG body:", JSON.stringify(prepared.body));
 	const fn = new Function("tw", "css", "cx", "props", `"use strict";\n${prepared.body}`);
 	const raw = fn(tw, css, cx, input.props ?? {});
-	console.error("DBG raw:", typeof raw, String(raw));
 	if (typeof raw !== "string") {
 		return { ok: false, error: "the final expression did not produce a class string" };
 	}

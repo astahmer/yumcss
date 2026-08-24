@@ -43,7 +43,7 @@
  * stays dynamic (it yields a style map, not classes).
  */
 import { type Expression, parseSync } from "oxc-parser";
-import { bindingIsShadowedOrWritten } from "./cross-module-consts.ts";
+import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import { createCx, type CxInput } from "../cx/index.ts";
 import { ATOM_REGISTRY } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";

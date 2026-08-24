@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "pnpm --filter pandwind build",
+		"build": "pnpm -r --if-present build",
 		"dev": "pnpm --filter example dev",
 		"typecheck": "pnpm -r typecheck",
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",

@@ -1,0 +1,6 @@
+# Static-host headers (Cloudflare Pages / Netlify convention).
+# oxc-parser's wasm binding needs a cross-origin-isolated page:
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
