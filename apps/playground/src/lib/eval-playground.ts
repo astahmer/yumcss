@@ -32,6 +32,8 @@ export interface PlaygroundSuccess {
 	fold: "full" | "partial" | "runtime";
 	/** Why the fold verdict is what it is. */
 	foldNote: string;
+	/** Resolved declarations per css() literal call (class -> declarations). */
+	atomDeclarations: Array<{ cls: string; decls: Record<string, string> }>;
 }
 
 export type PlaygroundResult = PlaygroundSuccess | { ok: false; error: string };
@@ -240,6 +242,11 @@ export interface EvalInput {
 	cx: (...inputs: Array<never>) => string;
 	/** Available inside evaluated code as `props` (component-like dynamics). */
 	props?: Record<string, unknown>;
+	/**
+	 * Resolves a css() literal style object into final declarations
+	 * (design-layer resolution against the preset tokens).
+	 */
+	resolveCss?: (style: Record<string, unknown>) => Record<string, string>;
 }
 
 /** Evaluate playground code. Throws nothing — errors come back as data. */
@@ -278,10 +285,23 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		recordTokens(result);
 		return result;
 	};
+	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
 	const css = ((...args: Array<unknown>) => {
 		recordArgs(args);
 		const result = input.css(...(args as never[]));
 		recordTokens(result);
+		if (
+			typeof result === "string" &&
+			args.length > 0 &&
+			typeof args[0] === "object" &&
+			args[0] !== null &&
+			input.resolveCss !== undefined
+		) {
+			const decls = input.resolveCss(args[0] as Record<string, unknown>);
+			if (decls !== undefined && Object.keys(decls).length > 0) {
+				atomDeclarations.push({ cls: result, decls });
+			}
+		}
 		return result;
 	}) as EvalInput["css"];
 	const cx = (...callInputs: Array<never>) => {
@@ -312,5 +332,6 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		killed,
 		fold: foldInfo.fold,
 		foldNote: foldInfo.note,
+		atomDeclarations,
 	};
 }
