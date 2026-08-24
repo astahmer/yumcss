@@ -171,3 +171,16 @@ test("downloadFile creates an object URL, sets filename, clicks, revokes", () =>
 	expect(anchor.click).toHaveBeenCalledTimes(1);
 	expect(revoke).toHaveBeenCalledWith("blob:x");
 });
+
+
+import { coverageToHtml } from "./export.ts";
+
+describe("coverageToHtml", () => {
+	test("self-contained report embeds stats, files and missing-css", () => {
+		const html = coverageToHtml(payload, "2026-01-01T00:00:00Z");
+		expect(html).toContain("<!doctype html>");
+		expect(html).toContain("<b>46%</b>");
+		expect(html).toContain("<td>a.tsx</td>");
+		expect(html).not.toContain("@import");
+	});
+});

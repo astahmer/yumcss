@@ -478,3 +478,36 @@ button:disabled { opacity: 0.5; }
 .good { color: var(--good, #4ade80); }
 .warn { color: var(--warn, #fbbf24); }
 .muted { color: var(--muted, #888); }
+
+/* export dropdown */
+.export-menu { position: relative; }
+.export-menu summary {
+	list-style: none;
+	cursor: pointer;
+	padding: 0.35rem 0.7rem;
+	border: 1px solid #2c2c34;
+	border-radius: 6px;
+	color: inherit;
+}
+.export-menu summary::-webkit-details-marker { display: none; }
+.export-menu[open] summary { background: #1d1d24; }
+.export-items {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 4px);
+	min-width: 220px;
+	display: flex;
+	flex-direction: column;
+	background: #17171c;
+	border: 1px solid #2c2c34;
+	border-radius: 8px;
+	z-index: 20;
+	box-shadow: 0 8px 24px rgb(0 0 0 / 45%);
+}
+.export-items button {
+	all: unset;
+	cursor: pointer;
+	padding: 0.5rem 0.9rem;
+	font-size: 0.85rem;
+}
+.export-items button:hover { background: #22222a; }

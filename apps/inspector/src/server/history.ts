@@ -33,7 +33,7 @@ export function listRuns(root: string): Array<HistoryEntry> {
 		.filter((f) => f.endsWith(".json"))
 		.map((f) => f.slice(0, -5))
 		.toSorted()
-		.reverse()
+		.toReversed()
 		.map((ts) => {
 			try {
 				return JSON.parse(readFileSync(join(dir, `${ts}.json`), "utf8")) as HistoryEntry;

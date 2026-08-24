@@ -8,6 +8,15 @@ import {
 	type HistoryListItem,
 } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
+import {
+	coverageToHtml,
+	coverageToJson,
+	coverageToMarkdown,
+	downloadFile,
+	themeVarsToCss,
+	tokensToDtcg,
+	utilitiesToJson,
+} from "./lib/export.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
 import {
 	groupThemeVars,
@@ -786,6 +795,76 @@ export function App() {
 					<button onClick={refresh} disabled={loading} title="re-run analysis">
 						{loading ? "…" : "⟳ refresh"}
 					</button>
+					{data !== null && !loading && (
+						<details className="export-menu">
+							<summary>⬇ export</summary>
+							<div className="export-items">
+								{tab === "design" ? (
+									<>
+										<button
+											onClick={() =>
+												downloadFile("pandwind-tokens.json", tokensToDtcg(data), "application/json")
+											}
+										>
+											tokens — DTCG JSON
+										</button>
+										<button
+											onClick={() => {
+												downloadFile(
+													"pandwind-theme-vars.css",
+													`:root {
+${themeVarsToCss(data)}}
+`,
+													"text/css",
+												);
+											}}
+										>
+											theme vars — CSS
+										</button>
+										<button
+											onClick={() =>
+												downloadFile(
+													"pandwind-unions.json",
+													utilitiesToJson(data),
+													"application/json",
+												)
+											}
+										>
+											unions — JSON
+										</button>
+									</>
+								) : (
+									<>
+										<button
+											onClick={() =>
+												downloadFile("pandwind-coverage.json", coverageToJson(data), "application/json")
+											}
+										>
+											coverage — JSON
+										</button>
+										<button
+											onClick={() =>
+												downloadFile("pandwind-report.md", coverageToMarkdown(data), "text/markdown")
+											}
+										>
+											report — Markdown
+										</button>
+										<button
+											onClick={() =>
+												downloadFile(
+													"pandwind-report.html",
+													coverageToHtml(data, new Date().toISOString()),
+													"text/html",
+												)
+											}
+										>
+											report — HTML (self-contained)
+										</button>
+									</>
+								)}
+							</div>
+						</details>
+					)}
 				</nav>
 			</header>
 			{body}

@@ -110,3 +110,57 @@ export function downloadFile(filename: string, content: string, mime = "applicat
 	anchor.click();
 	URL.revokeObjectURL(url);
 }
+
+const htmlEsc = (value: string): string =>
+	value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * Self-contained HTML report (wallace-style): the whole studio payload
+ * rendered into one static file — shareable offline, no server needed.
+ */
+export function coverageToHtml(data: StudioPayload, generatedAt: string): string {
+	const c = data.coverage;
+	const row = (cells: Array<string>): string => `<tr>${cells.map((cell) => `<td>${htmlEsc(cell)}</td>`).join("")}</tr>`;
+	const files = c.files
+		.map(
+			(f) =>
+				row([
+					f.file,
+					`${f.cxFoldedFull}/${f.cxFoldedPartial}/${f.cxRuntime}`,
+					f.missingCssCount > 0 ? String(f.missingCssCount) : "",
+				]),
+		)
+		.join("\n");
+	const missing = c.missingCssSites.length
+		? c.missingCssSites.map((m) => row([m.file, String(m.line), m.token])).join("\n")
+		: `<tr><td colspan="3">none</td></tr>`;
+	return `<!doctype html>
+<html><head><meta charset="utf-8"><title>pandwind report</title>
+<style>
+	body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 2rem; background: #101014; color: #e8e8ea; }
+	h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
+	table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+	td, th { text-align: left; padding: 0.35rem 0.6rem; border-bottom: 1px solid #26262c; }
+	th { color: #9a9aa2; font-weight: 500; }
+	.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+	.card { background: #17171c; border-radius: 8px; padding: 1rem; }
+	.card b { display: block; font-size: 1.5rem; }
+	code { color: #7cc4ff; }
+</style></head><body>
+<h1>pandwind report <small style="color:#777">${htmlEsc(generatedAt)}</small></h1>
+<div class="cards">
+	<div class="card"><b>${c.eliminatedPct}%</b>cx eliminated (${c.totalCxCalls} calls)</div>
+	<div class="card"><b>${c.twFolded}/${c.totalTwCalls}</b>tw calls inlined</div>
+	<div class="card"><b>${(c.budget.cssBytes / 1024).toFixed(2)} KB</b>CSS min (${(c.budget.cssGzipBytes / 1024).toFixed(2)} KB gz)</div>
+	<div class="card"><b>${c.budget.rules}</b>rules · ${c.budget.deadCandidates} dead candidates</div>
+	<div class="card"><b>${c.totalMissingCss}</b>missing-css sites</div>
+</div>
+<h2>Per-file fold coverage</h2>
+<table><tr><th>file</th><th>cx full/partial/runtime</th><th>missing-css</th></tr>
+${files}</table>
+<h2>Missing CSS</h2>
+<table><tr><th>file</th><th>line</th><th>token</th></tr>
+${missing}</table>
+</body></html>
+`;
+}
