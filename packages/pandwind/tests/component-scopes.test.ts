@@ -6,10 +6,7 @@
 import { __unstable__loadDesignSystem, compile } from "@tailwindcss/node";
 import { parse } from "postcss";
 import { describe, expect, test } from "vitest";
-import {
-	buildComponentScopes,
-	type ComponentScopeMap,
-} from "../src/tw/generate-theme.ts";
+import { buildComponentScopes, type ComponentScopeMap } from "../src/tw/generate-theme.ts";
 
 const warn_messages = (): { warns: Array<string>; warn: (m: string) => void } => {
 	const warns: Array<string> = [];

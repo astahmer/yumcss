@@ -410,7 +410,9 @@ export function buildComponentScopes(
 		for (const key of Object.keys(vars).toSorted()) {
 			const varName = componentVarName(key);
 			if (!/^--[a-z0-9-]+$/.test(varName) || varName === "--") {
-				warn(`pandwind: component "${name}" key "${key}" maps to an invalid custom property — skipped`);
+				warn(
+					`pandwind: component "${name}" key "${key}" maps to an invalid custom property — skipped`,
+				);
 				continue;
 			}
 			const raw = vars[key];
@@ -430,7 +432,14 @@ export function buildComponentScopes(
 				for (const condKey of Object.keys(entries).toSorted()) {
 					const value = entries[condKey];
 					if (typeof value !== "string" || value === "") continue;
-					const resolvedValue = resolveComponentValue(value, varName, existingVars, warn, name, key);
+					const resolvedValue = resolveComponentValue(
+						value,
+						varName,
+						existingVars,
+						warn,
+						name,
+						key,
+					);
 					if (resolvedValue === null) continue;
 					if (condKey === "base") {
 						lines.push(`\t${varName}: ${resolvedValue};`);
@@ -478,13 +487,17 @@ function resolveComponentValue(
 	key: string,
 ): string | null {
 	if (typeof value !== "string" || value === "") {
-		warn(`pandwind: component "${component}" key "${key}" is not a non-empty string or condition-bound object — skipped`);
+		warn(
+			`pandwind: component "${component}" key "${key}" is not a non-empty string or condition-bound object — skipped`,
+		);
 		return null;
 	}
 	if (!value.startsWith("$")) return normalizeThemeValue(value);
 	const target = `--${dashedKey(value.slice(1))}`;
 	if (!existingVars.has(target)) {
-		warn(`pandwind: component "${component}" key "${key}" references $${value.slice(1)} which does not exist in @theme — skipped`);
+		warn(
+			`pandwind: component "${component}" key "${key}" references $${value.slice(1)} which does not exist in @theme — skipped`,
+		);
 		return null;
 	}
 	if (target === varName) {

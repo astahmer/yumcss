@@ -1071,7 +1071,9 @@ export function resolveThemes(module: Record<string, unknown>): ThemeScopeMap | 
  * module: the first export carrying a `components` object wins, mirroring
  * resolveThemes candidate order.
  */
-export function resolveComponents(module: Record<string, unknown>): Record<string, Record<string, unknown>> | undefined {
+export function resolveComponents(
+	module: Record<string, unknown>,
+): Record<string, Record<string, unknown>> | undefined {
 	const candidates: unknown[] = [
 		module.default,
 		...Object.entries(module)
