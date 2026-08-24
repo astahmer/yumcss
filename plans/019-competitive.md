@@ -80,7 +80,68 @@ Legend: ✅ first-class · ⚠️ partial/different shape · ❌ absent · n/a n
 - `vunguyentuan/vscode-css-variables` (196★) — autocomplete approach worth
   studying if/when we do an editor extension.
 
-## Studio/inspector landscape (2026-08-24 scan)
+## Studio/inspector/CLI landscape — DEEP SCAN (2026-08-24, supersedes the first-pass below)
+
+Scope: tools that compete with `apps/inspector` (web studio) AND the
+`analyze` CLI/analyzer lane. Method: GitHub stars crawl of
+github.com/astahmer?tab=stars (30 repos, 2 pages, no pagination beyond),
+npm registry metadata (version + last publish), live docs where reachable.
+
+### Web UIs / inspectors
+
+| tool                                   | OSS/paid               | what it shows                                                  | standout feature worth stealing                                             | maintenance signal   | relevance                                                      |
+| -------------------------------------- | ---------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------- | -------------------------------------------------------------- |
+| unocss inspector (in unocss 66.8.1)    | OSS                    | per-class matched rules, module graph, REPL, per-utility sizes | click a utility -> every rule + generated CSS inline (per-class drill-down) | very active (weekly) | **HIGH** — the interaction pattern our Design-system tab lacks |
+| panda studio (@pandacss/studio 1.12.0) | OSS                    | token/recipe/pattern explorer from config+artifacts            | rendered component previews per token                                       | active               | **MED** — preview quality bar; we do analytics they don't      |
+| storybook controls/docs (90.9k★)       | OSS                    | real rendered components w/ prop controls                      | live previews beat metadata tables                                          | very active          | MED/L — iframe example-app demos into studio                   |
+| master-css inspector                   | hybrid                 | runtime DOM style application stats                            | live-app observation                                                        | active               | LOW — runtime model differs                                    |
+| Backlight.dev                          | paid (SHUT DOWN ~2023) | in-browser component IDE                                       | cautionary: standalone studios need to ride existing dev servers            | dead                 | lesson only                                                    |
+
+### CLI analyzers / CSS stats
+
+| tool                                    | OSS/paid                  | what it analyzes                                                       | standout feature                                          | maintenance signal | relevance                                                                                                          |
+| --------------------------------------- | ------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| wallace-cli 4.0.3 / projectwallace      | OSS core, hosted app paid | full CSS-shape analytics (specificity, complexity, decl distributions) | chart-heavy shareable reports                             | active (2026-08)   | **HIGH** — @projectwallace/css-parser (active, "optimized for CSS inspection") could power richer Stats-tab charts |
+| analyze-css 2.4.48                      | OSS                       | selector complexity + performance-oriented metrics                     | perf-focused metric set (selectors per rule, duplication) | active (2026-08)   | **MED** — borrow metric taxonomy for --css lane                                                                    |
+| stylelint 17.x (+ statistics formatter) | OSS                       | lint + aggregate stats via formatter                                   | convention enforcement at scale                           | very active        | MED — our oxlint plugin covers the pandwind-specific half                                                          |
+| size-limit 13.x                         | OSS                       | size budgets with CI annotations                                       | FAILS CI on budget breach + posts PR comments             | very active        | **HIGH** — adopt its PR-comment pattern for our size/css gates                                                     |
+| css-audit 0.0.1                         | OSS                       | syntax-tree audit                                                      | —                                                         | dead (2022)        | none                                                                                                               |
+
+### Devtools extensions
+
+| tool                                             | state                                    | note                                                                        |
+| ------------------------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------- |
+| CSS Overview (Chrome built-in, removed/archived) | archived by Chromium                     | was the reference for stylesheet-shape dashboards; gap reopened for tooling |
+| VisBug 0.1.14                                    | stale (2022 npm; extension still usable) | design-manipulation overlay, not analysis                                   |
+| Atomic CSS Devtools                              | evaluated separately (research.md)       | pending empirical checklist                                                 |
+
+### Stars-sourced additions (astahmer?tab=stars, 30 repos crawled)
+
+CSS/token-relevant finds are thin: cloudflare/kumo (ported ✅),
+neobrutalism/neobrutalism (CSS style reference for demo pages),
+pqoqubbw/icons + heroicons-animated (icon-set candidates for studio UI).
+No inspector/analyzer tooling in stars — honest negative.
+
+### Feature gaps THEY have that our studio lacks (updated)
+
+1. Per-class rule drill-down (unocss) — still the #1 gap.
+2. Live rendered component previews (storybook) — vs our metadata tables.
+3. Shareable/static report export as HTML file (wallace-style self-contained report).
+4. CI annotations on PRs (size-limit pattern) — our PR bot posts tables but not line annotations.
+5. CSS-shape charts (specificity/complexity distributions) via @projectwallace/css-parser.
+6. History persistence: diff-between-runs over time (nobody does this well either — opportunity).
+
+### Ranked build-list (supersedes the earlier ranked list)
+
+1. Per-class drill-down in studio (M) — atomicEntries already exist.
+2. Self-contained HTML report export (S) — extend the export button: single-file report with inlined JSON + charts.
+3. Size-limit-style CI annotation for size + missing-css gates (S/M).
+4. Stats-tab charts via @projectwallace/css-parser (M).
+5. Run-history persistence (M/L) — store analyze payloads per commit id, diff view.
+
+---
+
+## Studio/inspector landscape (2026-08-24 scan) — SUPERSEDED by deep scan above
 
 Scope correction to this plan: this section compares DESIGN-SYSTEM
 INSPECTOR/STUDIO/explorer tools — what `apps/inspector` actually competes
