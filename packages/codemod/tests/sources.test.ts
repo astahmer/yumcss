@@ -371,3 +371,34 @@ describe("safety rails across sources", () => {
 		expect(second.code).toBe(first.code);
 	});
 });
+
+describe("data-[...] arbitrary variants", () => {
+	test("map through the escape hatch when the base utility is known", () => {
+		const result = transformSource(
+			`export const App = () => <div className="data-[expanded]:opacity-100 data-[closed]:opacity-0" />;`,
+			meta,
+			{ mode: "tw", file: "dv.tsx" },
+		);
+		expect(result.unmappedTokens).toEqual([]);
+		expect(result.code).toContain('"data-[expanded]": {');
+		expect(result.code).toContain('"data-[closed]": {');
+	});
+
+	test("named-group data variants keep their group qualifier", () => {
+		const result = transformSource(
+			`export const App = () => <div className="group-data-[state=collapsed]/sidebar:px-0" />;`,
+			meta,
+			{ mode: "tw", file: "gv.tsx" },
+		);
+		expect(result.code).toContain('"group-data-[state=collapsed]/sidebar": {');
+	});
+
+	test("arbitrary variant + unknown base utility still stays verbatim", () => {
+		const result = transformSource(
+			`export const App = () => <div className="data-[expanded]:totally-unknown-util" />;`,
+			meta,
+			{ mode: "tw", file: "uv.tsx" },
+		);
+		expect(result.unmappedTokens).toHaveLength(1);
+	});
+});

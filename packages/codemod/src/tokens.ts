@@ -95,6 +95,16 @@ export function parseVariants(
 			i++;
 			continue;
 		}
+		// Arbitrary / data-attribute variants (`data-[expanded]`,
+		// `group-data-[state=x]/sidebar`) are not in the generated variant set
+		// but ARE valid tw() object keys (the generated types carry an open
+		// nesting escape hatch). Accept them verbatim as variant keys instead
+		// of dooming the whole token to verbatim-keep.
+		if (/^(?:(?:group|peer)-)?(?:data|aria)-\[[^\]]+\](?:\/[\w-]+)?$/.test(segment)) {
+			variants.push(segment);
+			i++;
+			continue;
+		}
 		break; // Unknown leading segment — treat the rest as the utility.
 	}
 	return { variants, rest: segments.slice(i).join(":") };

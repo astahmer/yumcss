@@ -181,3 +181,12 @@ same rules.
   re-running the fixed codemod — parse-check over the final tree: 0 errors.
 - classNameMatches string/comment context issue still open (see Port result
   section above).
+
+## Residual closed — data-[...] variants (2026-08-24)
+
+parseVariants now accepts arbitrary data/aria variant segments
+(`data-[expanded]`, `group-data-[state=x]/sidebar`) as verbatim tw() object
+keys — the generated types carry an open nesting escape hatch so quoted
+bracket keys typecheck. Base utilities still need bridge/conflict knowledge;
+unknown bases keep the old verbatim-with-reason behavior. The top kumo
+residual is closed.
