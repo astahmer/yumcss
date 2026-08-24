@@ -204,3 +204,13 @@ token COVERAGE % like panda's would need source-level style accounting we
 don't track yet — noted as future analyze work, not faked). REJECTED —
 snapshot import/diff flows and tRPC server stack (out of scope for a
 read-only local tool over existing artifacts).
+
+## 4b. Studio export — residual note (2026-08-24)
+
+Landed: Design-system tab export bar (tokens as DTCG JSON, @theme vars as
+:root css, utility unions JSON) with tested serializers in
+`apps/inspector/src/lib/export.ts` (8 tests incl. DTCG typing, round-trip,
+download plumbing).
+Residual: Stats-tab export buttons (coverage JSON + Markdown report) —
+serializers already exist (`coverageToJson`, `coverageToMarkdown`), only the
+UI wiring in `StatsView` remains; plus CSV format if wanted.

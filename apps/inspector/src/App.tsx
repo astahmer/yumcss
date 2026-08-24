@@ -202,8 +202,8 @@ function DesignSystemView(props: {
 						entries: sectionsById.get("semantic")?.entries ?? [],
 					}}
 					rawColors={rawColors}
-				matches={matchText}
-			/>
+					matches={matchText}
+				/>
 			)}
 
 			<section id="sec-typography">
