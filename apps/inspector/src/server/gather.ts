@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../../../../packages/analyze/src/analyze.ts";
 import { runCli } from "../../../../packages/analyze/src/cli.ts";
-import { cssBudget } from "../../../../packages/analyze/src/css-budget.ts";
+import { classRules, cssBudget } from "../../../../packages/analyze/src/css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import type { StudioPayload, TokenSection } from "../types.ts";
 import {
@@ -68,6 +68,18 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 		base: appSrc("."),
 	});
 
+	// Per-class rule drill-down data (capped: the UI searches, not paginates).
+	const drills = await classRules({
+		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
+		twEntry: appSrc("tw.ts"),
+		themeCss: themeCss || undefined,
+		base: appSrc("."),
+	});
+	const classDrillDown = drills.slice(0, 400).map((d) => ({
+		candidate: d.candidate,
+		rules: d.rules.slice(0, 8),
+	}));
+
 	const files = summary.files.map((f) => ({
 		file: f.file,
 		eliminatedPct: f.eliminatedPct,
@@ -126,6 +138,7 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 			missingCssSites,
 			budget,
 		},
+		classDrillDown,
 		designSystem: {
 			themeVars,
 			utilities,

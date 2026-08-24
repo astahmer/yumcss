@@ -157,3 +157,63 @@ export function formatCssBudget(budget: CssBudget): string {
 	}
 	return lines.join("\n");
 }
+
+export interface ClassRule {
+	selector: string;
+	declarations: string;
+}
+
+export interface ClassDrillDown {
+	candidate: string;
+	/** Rules whose selector references this candidate (escaped forms included). */
+	rules: Array<ClassRule>;
+}
+
+const unescapeCandidate = (candidate: string): string => {
+	// Compiled selectors escape special chars (`:` -> `\:`). Compare on the
+	// base class (variant prefixes are part of the escaped selector too).
+	const [base] = candidate.split(":");
+	return base!.replace(/\\/g, "").replace(/[.*+?^${}()|[\]]/g, "\\$&");
+};
+
+/**
+ * Per-class rule drill-down (unocss inspector steal): for every scanned
+ * candidate, the rules the real compiler emitted for it. Matching is
+ * selector-substring based on the unescaped base class — variant-scoped
+ * rules (`:hover` tails, media wrappers) attach to their base class.
+ */
+export async function classRules(options: {
+	files: Array<string>;
+	twEntry: string;
+	themeCss?: string;
+	base: string;
+}): Promise<Array<ClassDrillDown>> {
+	const classes = await collectTwClasses(options.files, options.twEntry);
+	const cssInput = `@import "tailwindcss";\n${options.themeCss ?? ""}\n`;
+	const compiled = await compile(cssInput, { base: options.base, onDependency: () => {} });
+	const built = compiled.build(classes);
+	const root: Root = parse(built);
+
+	const compiledRules: Array<{ selector: string; text: string; plain: string }> = [];
+	root.walkRules((rule) => {
+		compiledRules.push({
+			selector: rule.selector,
+			text: rule.toString(),
+			plain: rule.selector.replace(/\\/g, ""),
+		});
+	});
+
+	const out: Array<ClassDrillDown> = [];
+	for (const candidate of classes) {
+		const pattern = unescapeCandidate(candidate.split(":").pop() ?? candidate);
+		if (pattern === "") continue;
+		const rules: Array<ClassRule> = [];
+		for (const rule of compiledRules) {
+			if (rule.plain.includes(pattern)) {
+				rules.push({ selector: rule.selector, declarations: rule.text });
+			}
+		}
+		if (rules.length > 0) out.push({ candidate, rules });
+	}
+	return out.toSorted((a, b) => b.rules.length - a.rules.length);
+}

@@ -23,6 +23,8 @@ const payload: StudioPayload = {
 		twFolded: 104,
 		totalMissingCss: 1,
 		files: [
+			// classDrillDown asserted separately
+
 			{
 				file: "a.tsx",
 				eliminatedPct: 100,
@@ -54,6 +56,7 @@ const payload: StudioPayload = {
 			perPrefix: [{ prefix: "bg", rules: 12 }],
 		},
 	},
+	classDrillDown: [{ candidate: "px-2", rules: [] }],
 	designSystem: {
 		themeVars: [
 			{ name: "--color-blue-500", value: "#3b82f6" },

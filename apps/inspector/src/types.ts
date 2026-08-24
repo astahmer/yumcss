@@ -60,6 +60,10 @@ export interface StudioPayload {
 			perPrefix: Array<{ prefix: string; rules: number }>;
 		};
 	};
+	classDrillDown: Array<{
+		candidate: string;
+		rules: Array<{ selector: string; declarations: string }>;
+	}>;
 	designSystem: {
 		themeVars: Array<ThemeVar>;
 		utilities: Array<UtilityUnion>;

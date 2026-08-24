@@ -380,6 +380,43 @@ function DesignSystemView(props: {
 	);
 }
 
+/* ------------------------------ class drill-down ------------------------------ */
+
+function ClassDrillDown(props: { data: StudioPayload; query: string }) {
+	const [open, setOpen] = useState<string | null>(null);
+	const q = props.query.toLowerCase();
+	const entries = props.data.classDrillDown.filter((d) => d.candidate.toLowerCase().includes(q));
+
+	if (entries.length === 0) return null;
+
+	return (
+		<section>
+			<h2>class drill-down — rules per candidate</h2>
+			<p className="hint">
+				every rule the real Tailwind compiler emitted for a scanned class. click to expand.
+			</p>
+			<ul className="sites">
+				{entries.map((d) => (
+					<li key={d.candidate}>
+						<button
+							type="button"
+							className="linklike"
+							onClick={() => setOpen(open === d.candidate ? null : d.candidate)}
+						>
+							<code>{d.candidate}</code> — {d.rules.length} rule(s)
+						</button>
+						{open === d.candidate && (
+							<pre className="rules">
+								{d.rules.map((r) => `${r.selector} {\n  ${r.declarations}\n}`).join("\n")}
+							</pre>
+						)}
+					</li>
+				))}
+			</ul>
+		</section>
+	);
+}
+
 /* ---------------------------------- stats tab ---------------------------------- */
 
 function StatsView(props: { data: StudioPayload; query: string }) {
@@ -472,6 +509,8 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 					</tbody>
 				</table>
 			</section>
+
+			<ClassDrillDown data={props.data} query={props.query} />
 
 			{c.missingCssSites.length > 0 && (
 				<section>
