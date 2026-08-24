@@ -196,3 +196,9 @@ css-parser` against the compiled sheet for specificity/complexity views.
 
 Deliberately not chased: Figma bidirectional sync, multi-platform token
 distribution, hosted SaaS — pipeline products, not inspector features.
+
+## Studio v3 residual notes (2026-08-24)
+
+- DONE: feature 1 per-class rule drill-down (analyze `classRules()` + studio Coverage panel, playwright-verifiable).
+- NOT DONE (remaining from the deep-scan ranked list): 2. CSS Overview-style shape dashboard (property-category distributions, specificity histogram) 3. history persistence + run diff (plans/020 adopt #3: snapshot entries with parent pointer) 4. self-contained HTML report export 5. analyze --github-annotations
+- Implementation notes for whoever picks these up: cssBudget/classRules in packages/analyze/src/css-budget.ts are the data source; gather.ts wires payload (coverage.classDrillDown); UI in apps/inspector/src/App.tsx.
