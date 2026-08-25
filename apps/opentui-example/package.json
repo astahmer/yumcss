@@ -1,0 +1,22 @@
+{
+	"name": "opentui-example",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "bun run src/index.tsx",
+		"typecheck": "tsc --noEmit",
+		"test": "bash test/e2e.sh"
+	},
+	"dependencies": {
+		"@opentui/core": "0.4.1",
+		"@opentui/react": "0.4.1",
+		"pandwind": "workspace:*",
+		"react": "19.2.6"
+	},
+	"devDependencies": {
+		"@types/bun": "1.3.14",
+		"@types/react": "19.2.8",
+		"typescript": "7.0.2"
+	}
+}
