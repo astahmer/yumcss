@@ -153,6 +153,14 @@ stylesheet handles them natively.
   lives in `packages/pandwind/tests/backends-parity.test.ts`; each backend's
   value policy is pinned in `tests/backends-react-native.test.ts`,
   `tests/backends-opentui.test.ts` and `tests/backends-object.test.ts`.
+- **E2E is real, per target** — each backend has a sandbox app that consumes
+  it and asserts rendered output on a genuine host (`pnpm test` inside each):
+
+  | App                    | Host                                                                      | Proves                                                                                                                          |
+  | ---------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+  | `apps/css-example`     | vite + real Chromium (playwright-core)                                    | computed styles from atomic classes, cx conflict resolution, atom dedup                                                         |
+  | `apps/rn-example`      | react-native-web + real Chromium                                          | emitted RN style objects processed by a real RN-semantics host: per-side shorthand expansion, `_dark` runtime toggle round-trip |
+  | `apps/opentui-example` | real `@opentui/core` renderer (bun), headless span assertions + PTY smoke | exact token colors in rendered spans, border glyphs, `_dark` swap, cell insets                                                  |
 
 Canvas remains deferred (plan 021 step 5): draw-call styling has no layout
 and paint-state semantics — it gets built when something actually needs it.

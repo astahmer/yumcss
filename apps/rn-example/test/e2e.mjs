@@ -12,8 +12,22 @@
 import { createRequire } from "node:module";
 import { spawn } from "node:child_process";
 
-const require = createRequire(import.meta.url);
-const { chromium } = require("/Users/astahmer/dev/vitrine-app/node_modules/playwright-core");
+let chromium;
+for (const base of [
+	new URL("../node_modules/", import.meta.url),
+	new URL("../../../", import.meta.url),
+]) {
+	try {
+		chromium = createRequire(base)("playwright-core").chromium;
+		break;
+	} catch {
+		/* try next */
+	}
+}
+if (!chromium) throw new Error("playwright-core not resolvable");
+
+// Sequential awaits are the point of an ordered e2e scenario.
+// oxlint-disable eslint/no-await-in-loop
 
 const PORT = 4611;
 const BASE_URL = `http://localhost:${PORT}/`;
@@ -21,9 +35,7 @@ const TIMEOUT = 30_000;
 
 const failures = [];
 const check = (name, actual, expected) => {
-	const ok = Object.entries(expected).every(
-		([prop, want]) => actual[prop] === want,
-	);
+	const ok = Object.entries(expected).every(([prop, want]) => actual[prop] === want);
 	if (ok) {
 		console.log(`PASS ${name}`);
 	} else {
@@ -45,6 +57,7 @@ let browser;
 try {
 	// wait for the dev server
 	const deadline = Date.now() + TIMEOUT;
+	// Sequential by design: poll the dev server until it answers.
 	let up = false;
 	while (Date.now() < deadline && !up) {
 		try {

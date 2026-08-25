@@ -37,10 +37,11 @@ export function App() {
 	});
 
 	// cx merge: conflicting backgroundColors — the later style wins (#3182ce).
-	const merged = cx(
-		css({ $frame: { fill: "$gray-100", pad: 2 } }),
-		css({ $frame: { fill: "$blue-500" } }),
-	);
+	// Module constants keep the build-time extractor happy; the cx call itself
+	// still exercises the runtime merge path.
+	const mergeBase = css({ $frame: { fill: "$gray-100", pad: 2 } });
+	const mergeOverlay = css({ $frame: { fill: "$blue-500" } });
+	const merged = cx(mergeBase, mergeOverlay);
 
 	return (
 		<View testID="screen" style={{ flex: 1, padding: 16, gap: 12 }}>

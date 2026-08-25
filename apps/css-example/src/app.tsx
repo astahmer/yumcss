@@ -10,6 +10,11 @@ import { css } from "./design.ts";
  */
 const cx = createCx({ css: css as unknown as CssFn<never> });
 
+// Module constants so the build-time extractor sees literal call sites; the
+// cx() below still exercises the runtime conflict-resolution path.
+const cardCLose = css.class({ $frame: { fill: "$red-500" } });
+const cardCWin = css.class({ $frame: { fill: "$gray-800" } });
+
 export function App() {
 	return (
 		<main style={{ fontFamily: "monospace" }}>
@@ -30,10 +35,7 @@ export function App() {
 			<section
 				data-testid="card-c"
 				data-expected="rgb(31, 41, 55)"
-				className={cx(
-					css.class({ $frame: { fill: "$red-500" } }),
-					css.class({ $frame: { fill: "$gray-800" } }),
-				)}
+				className={cx(cardCLose, cardCWin)}
 			>
 				C — cx conflict resolution, later wins ($gray-800)
 			</section>

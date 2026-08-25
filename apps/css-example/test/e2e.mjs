@@ -4,6 +4,9 @@
 // calls in app source are extracted by pandwindCssVite into the atomic
 // stylesheet, class hashes match at runtime, cx resolves conflicts
 // (later wins), and identical literals dedup to one shared class.
+
+// Sequential awaits are the point of an ordered e2e scenario.
+// oxlint-disable eslint/no-await-in-loop
 import { createRequire } from "node:module";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
@@ -11,7 +14,6 @@ import { setTimeout as delay } from "node:timers/promises";
 const PORT = 4610;
 const PAGE_URL = `http://localhost:${PORT}/`;
 
-const require = createRequire(import.meta.url);
 let playwrightCore;
 for (const base of [
 	new URL("../node_modules/", import.meta.url),
