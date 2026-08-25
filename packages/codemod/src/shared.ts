@@ -1,6 +1,25 @@
 /** Small helpers shared between the mode passes and the source passes. */
+import { dirname, join, relative } from "node:path";
 
 export const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
+
+/**
+ * Relative import specifier from `file`'s directory to `<metaDir>/<moduleName>`.
+ * Both `file` and `metaDir` are repo-root-relative — `path.relative` resolves
+ * relative inputs against the same cwd on both sides, so the offset between
+ * them is correct regardless of what that cwd actually is.
+ *
+ * `pandwind/tw` and `pandwind/cx` only export generic, unconfigured
+ * fallbacks (no design-system conflicts/variants wired in — `pandwind/cx`
+ * doesn't even export a `cx`), so migrated call sites must import the app's
+ * own generated module instead of the package subpath.
+ */
+export function relativeModuleImport(file: string, metaDir: string, moduleName: string): string {
+	const target = join(metaDir, moduleName).replaceAll("\\", "/");
+	let path = relative(dirname(file), target).replaceAll("\\", "/");
+	if (!path.startsWith(".")) path = `./${path}`;
+	return path;
+}
 
 export function ensureImport(code: string, statement: string): string {
 	if (code.includes(statement)) return code;

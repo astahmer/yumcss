@@ -92,10 +92,11 @@ if (process.argv[1]?.endsWith("collect.ts")) {
 	// the app imports the generated file from its tailwind.css. Prefer this
 	// mode when the app does not want generated JS in its source tree.
 	if (outFile.endsWith(".css")) {
+		const cssHeader = `/* ${header.replace(/^\/\/\s*/, "")} */`;
 		const inlineLines = classes
 			.map((className) => `@source inline(${JSON.stringify(className)});`)
 			.join("\n");
-		const cssContent = `${header}\n\n${inlineLines}\n`;
+		const cssContent = `${cssHeader}\n\n${inlineLines}\n`;
 		writeFileSync(outFile, cssContent);
 		console.log(`pandwind: wrote ${classes.length} @source inline directives to ${outFile}`);
 		process.exit(0);

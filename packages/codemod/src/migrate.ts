@@ -14,7 +14,12 @@ import type { PandwindMeta } from "./meta.ts";
 import { mapClassList, type MappedToken } from "./map.ts";
 import { tokenizeClassList } from "./tokens.ts";
 import { runSourcePasses, type SourceId } from "./sources.ts";
-import { ensureImport, hasCssBinding, SKIP_MARKER_DEFAULT } from "./shared.ts";
+import {
+	ensureImport,
+	hasCssBinding,
+	relativeModuleImport,
+	SKIP_MARKER_DEFAULT,
+} from "./shared.ts";
 
 export type MigrateMode = "tw" | "cx" | "css" | "keep";
 
@@ -32,6 +37,14 @@ export interface TransformOptions {
 	mode: MigrateMode;
 	file: string;
 	skipMarker?: string;
+	/**
+	 * Repo-root-relative directory holding the app's generated `tw.ts` /
+	 * `cx.ts`. When set, injected imports point at that app module via a
+	 * relative specifier instead of the generic `pandwind/tw` / `pandwind/cx`
+	 * package fallbacks (unconfigured — no design-system conflicts/variants,
+	 * and `pandwind/cx` has no `cx` export at all).
+	 */
+	metaDir?: string;
 	/** Source-library detectors to run before the mode pass (default none). */
 	sources?: ReadonlyArray<SourceId>;
 }
@@ -64,10 +77,15 @@ function classNameMatches(
 	const matches: Array<{ full: string; classString: string; start: number }> = [];
 	const regex = /\bclassName\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*"([^"]*)"\s*\})/g;
 	for (const match of source.matchAll(regex)) {
+		const index = match.index ?? 0;
+		// `el.className = "..."` is a plain DOM property assignment, not a
+		// JSX attribute — the tw()/css() replacements emit `={ ... }`, which
+		// is JSX-expression-container syntax and invalid outside JSX.
+		if (/\.\s*$/.test(source.slice(0, index))) continue;
 		matches.push({
 			full: match[0],
 			classString: match[1] ?? match[2] ?? match[3] ?? "",
-			start: match.index ?? 0,
+			start: index,
 		});
 	}
 	return matches;
@@ -78,13 +96,24 @@ function classNameMatches(
 /* ------------------------------------------------------------------ */
 
 interface ObjectNode {
-	entries: Array<{ key: string; value: string | true | ObjectNode }>;
+	entries: Array<{ key: string; value: string | true | ObjectNode | Array<string | true> }>;
 }
 
+const isObjectNode = (value: ObjectNode["entries"][number]["value"]): value is ObjectNode =>
+	typeof value === "object" && !Array.isArray(value);
+
+/**
+ * Multiple raw classes can map onto the same tw() key at the same nesting
+ * level (`ring-1` + `ring-gray-900/5` both key onto `ring` — width and
+ * color are disjoint values of one overloaded utility). Pushing a second
+ * plain entry would silently shadow the first in the emitted object
+ * literal, so same-key collisions merge into the array form the tw()
+ * runtime accepts instead.
+ */
 function insertMapped(root: ObjectNode, mapped: MappedToken): void {
 	let node = root;
 	for (const variant of mapped.variants) {
-		const existing = node.entries.find((e) => e.key === variant && typeof e.value === "object");
+		const existing = node.entries.find((e) => e.key === variant && isObjectNode(e.value));
 		if (existing !== undefined) {
 			node = existing.value as ObjectNode;
 		} else {
@@ -92,6 +121,13 @@ function insertMapped(root: ObjectNode, mapped: MappedToken): void {
 			node.entries.push({ key: variant, value: created });
 			node = created;
 		}
+	}
+	const existingLeaf = node.entries.find((e) => e.key === mapped.key && !isObjectNode(e.value));
+	if (existingLeaf !== undefined) {
+		existingLeaf.value = Array.isArray(existingLeaf.value)
+			? [...existingLeaf.value, mapped.value]
+			: [existingLeaf.value as string | true, mapped.value];
+		return;
 	}
 	node.entries.push({ key: mapped.key, value: mapped.value });
 }
@@ -101,9 +137,10 @@ function serializeObject(node: ObjectNode, indent: string): string {
 	const inner = node.entries
 		.map((entry) => {
 			const key = /^[A-Za-z_$][\w$]*$/.test(entry.key) ? entry.key : JSON.stringify(entry.key);
-			const value =
-				typeof entry.value === "object"
-					? serializeObject(entry.value, `${indent}\t`)
+			const value = isObjectNode(entry.value)
+				? serializeObject(entry.value, `${indent}\t`)
+				: Array.isArray(entry.value)
+					? `[${entry.value.map((v) => (v === true ? "true" : JSON.stringify(v))).join(", ")}]`
 					: entry.value === true
 						? "true"
 						: JSON.stringify(entry.value);
@@ -160,8 +197,18 @@ function transformTw(
 	}
 
 	if (edits.length > 0) {
-		let code = ensureImport(applyEdits(source, edits), 'import { tw } from "pandwind/tw";');
-		if (needsCx) code = ensureImport(code, 'import { cx } from "pandwind/cx";');
+		const twSource =
+			options.metaDir !== undefined
+				? relativeModuleImport(options.file, options.metaDir, "tw")
+				: "pandwind/tw";
+		let code = ensureImport(applyEdits(source, edits), `import { tw } from "${twSource}";`);
+		if (needsCx) {
+			const cxSource =
+				options.metaDir !== undefined
+					? relativeModuleImport(options.file, options.metaDir, "cx")
+					: "pandwind/cx";
+			code = ensureImport(code, `import { cx } from "${cxSource}";`);
+		}
 		return { ...result, code, changed: code !== source };
 	}
 	return result;
@@ -171,7 +218,10 @@ function transformTw(
 /* Mode: cx (clsx / classnames / tailwind-merge -> cx)                 */
 /* ------------------------------------------------------------------ */
 
-export function rewriteClsxImports(code: string): {
+export function rewriteClsxImports(
+	code: string,
+	cxImportSource = "pandwind/cx",
+): {
 	code: string;
 	renamed: string[];
 	removedImports: number;
@@ -197,7 +247,7 @@ export function rewriteClsxImports(code: string): {
 	);
 
 	if (renamed.length > 0) {
-		code = ensureImport(code, 'import { cx } from "pandwind/cx";');
+		code = ensureImport(code, `import { cx } from "${cxImportSource}";`);
 		for (const name of renamed) {
 			if (name !== "cx") code = code.replace(new RegExp(`\\b${name}\\b`, "g"), "cx");
 		}
@@ -221,7 +271,11 @@ function transformCx(
 		? source.replace(wrapperRegex, (_m, args: string) => `cx(${args.trim()})`)
 		: source;
 
-	const imports = rewriteClsxImports(working);
+	const cxImportSource =
+		options.metaDir !== undefined
+			? relativeModuleImport(options.file, options.metaDir, "cx")
+			: "pandwind/cx";
+	const imports = rewriteClsxImports(working, cxImportSource);
 	converted += imports.renamed.length;
 	working = imports.code;
 

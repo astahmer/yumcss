@@ -28,7 +28,8 @@ import {
 	type KnownConstant,
 } from "../../pandwind/src/vite/cx-inline.ts";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "../../pandwind/src/vite/inline.ts";
-import { walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
+import { compileStyles, type TwNestedStyles } from "../../pandwind/src/tw/compile.ts";
+import { evalLiteral, walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
 
 export interface AnalyzeOptions {
 	/** Generated tw module config (conflicts/compose/variants metadata). */
@@ -135,6 +136,7 @@ interface ParsedModule {
 function parseModule(
 	source: string,
 	file: string,
+	config: TwConfig,
 	importedConstants?: Readonly<Record<string, string>>,
 ): ParsedModule {
 	const parsed = parseSync(file, source, {
@@ -211,7 +213,7 @@ function parseModule(
 			});
 			return;
 		}
-		const clsfy = classify(call.arguments ?? [], consts, call.start ?? 0, name);
+		const clsfy = classify(call.arguments ?? [], consts, call.start ?? 0, name, twNames, config);
 		calls.push(clsfy);
 	});
 
@@ -243,13 +245,52 @@ function branchFolds(branch: unknown, consts: ConstantScope): boolean {
 	);
 }
 
+/**
+ * The real vite pipeline inlines `tw({ ... })` calls to plain string
+ * literals BEFORE the cx() pass runs (see pandwindVite's transform order),
+ * so a `cx(tw({...}), "str")` argument is only a foldable string to the
+ * production build. `evalStaticCx` itself never resolves tw() calls (only
+ * css() ones) — mirror the inlining decision here, on the untouched AST, so
+ * classification matches the build without re-parsing shifted text (which
+ * would throw off every reported line number after the fold point).
+ */
+function resolveTwArg(
+	node: unknown,
+	twNames: ReadonlySet<string>,
+	config: TwConfig,
+	consts: ConstantScope,
+): unknown {
+	const call = node as { type?: string; callee?: OxcNode; arguments?: unknown[] } | undefined;
+	if (call?.type !== "CallExpression") return node;
+	const callee = call.callee as { type?: string; name?: string } | undefined;
+	if (callee?.type !== "Identifier" || !twNames.has(callee.name ?? "")) return node;
+	if ((call.arguments?.length ?? 0) !== 1) return node;
+	const literalScope = new Map([...consts].map(([n, known]) => [n, known.value]));
+	const styles = evalLiteral(call.arguments![0] as never, literalScope);
+	if (typeof styles !== "object" || styles === null || Array.isArray(styles)) return node;
+	try {
+		const compiled = compileStyles(
+			styles as TwNestedStyles,
+			config.variants,
+			config.conflicts,
+			config.compose,
+		);
+		return { type: "Literal", value: compiled };
+	} catch {
+		return node; // Invalid style object — stays dynamic, same as inlineTwCalls.
+	}
+}
+
 /** Mirror of inlineCxCalls' per-call decision. */
 function classify(
-	args: unknown[],
+	rawArgs: unknown[],
 	consts: ConstantScope,
 	start: number,
 	name: string,
+	twNames: ReadonlySet<string>,
+	config: TwConfig,
 ): CallInfo & { name: string } {
+	const args = rawArgs.map((arg) => resolveTwArg(arg, twNames, config, consts));
 	let dynamicConditional: { index: number; arg: unknown } | undefined;
 	for (let i = 0; i < args.length; i++) {
 		const value = evalStaticCx(args[i] as never, undefined, consts);
@@ -319,7 +360,7 @@ export function analyzeSource(
 	file: string,
 	options: AnalyzeOptions,
 ): FileFoldStats {
-	const mod = parseModule(source, file, options.importedConstants);
+	const mod = parseModule(source, file, options.config, options.importedConstants);
 
 	const runtimeSites: Array<CallSite> = [];
 	let cxFoldedFull = 0;

@@ -66,7 +66,7 @@ export function createTwAdapter(options: TwAdapterOptions): ClassNameStrategy {
 	const preset = options.preset;
 	const conditions: AnyConditions | undefined = preset?.conditions;
 	const resolveValue =
-		preset === undefined ? (prop: string, value: string) => value : createTokenResolver(preset);
+		preset === undefined ? (_prop: string, value: string) => value : createTokenResolver(preset);
 
 	const isCondition = (part: string): boolean => {
 		if (conditions !== undefined && conditions[part] !== undefined) return true;

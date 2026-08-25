@@ -869,13 +869,13 @@ function getUtilitiesType(types: UtilityMap, modifierCapable: Set<string>): stri
 
 	for (const [name, values] of types) {
 		if (!values.size) continue;
-		const hasBoolean = values.has(true);
 		// `true` cannot satisfy `T extends string` in `WithOpacityModifiers`,
-		// so boolean-capable utilities (border, ring, container) keep their
-		// boolean out of the template union and re-append it afterwards.
+		// so it never goes into the template union — it's appended (once,
+		// below) to the interface entry directly instead.
+		const stringValues = [...values].filter((value): value is string => value !== true);
 		const valueType = modifierCapable.has(name)
-			? `WithOpacityModifiers<${unionType([...values].filter((value): value is string => value !== true))} | (string & {})>${hasBoolean ? " | true" : ""}`
-			: `${unionType(values)} | (string & {})`;
+			? `WithOpacityModifiers<${unionType(stringValues)} | (string & {})>`
+			: `${unionType(stringValues)} | (string & {})`;
 		// Value sets repeat across utilities (the color palette is shared by
 		// bg/text/fill/stroke/...); one alias per distinct set keeps the
 		// generated file and the checker's union instances to a minimum.
@@ -885,9 +885,15 @@ function getUtilitiesType(types: UtilityMap, modifierCapable: Set<string>): stri
 			aliasBySet.set(valueType, alias);
 			aliases.push(`type ${alias} = ${valueType};`);
 		}
+		// The runtime accepts a bare boolean flag on every key — a utility's
+		// own empty-value form, or a slot in a collision-merge array (see
+		// `tw/compile.ts`'s array handling) — regardless of whether this
+		// key's own completion probe happened to surface a distinct bare
+		// candidate. The type always allows it too, so it never falls behind
+		// what `tw()` actually does at runtime.
 		// Arrays let a single key emit multiple classes from an overloaded
 		// utility: `{ text: ["2xl", "gray-900"] }` -> "text-2xl text-gray-900".
-		lines.push(`\t${utilityKey(name)}?: ${alias} | Array<${alias}>;`);
+		lines.push(`\t${utilityKey(name)}?: ${alias} | true | Array<${alias} | true>;`);
 	}
 
 	return `${modifierTypeHelpers()}
@@ -899,9 +905,35 @@ ${lines.toSorted(alphaSort).join("\n")}
 }`;
 }
 
-function getVariantsType(variants: Array<{ name: string; join: ":" | "-" | "" }>): string {
-	const lines = variants.map(({ name }) => `\t${tsKey(camelCaseProperty(name))}?: WindVariants;`);
-	return `export type WindVariants = WindUtilities & {\n${lines.join("\n")}\n}`;
+function getVariantsType(
+	variants: Array<{ name: string; join: ":" | "-" | "" }>,
+	utilityKeyNames: ReadonlySet<string>,
+): string {
+	// A few Tailwind names are both a plain utility (`placeholder-gray-400`
+	// sets a value) and a pseudo-element/class variant (`placeholder:` nests
+	// further rules). `WindUtilities & { name?: WindVariants }` would
+	// silently INTERSECT both declarations of the same key into one type no
+	// value (plain or nested) can satisfy — exclude those keys from the
+	// intersection and give them an explicit union instead.
+	const collisions = variants
+		.map(({ name }) => tsKey(camelCaseProperty(name)))
+		.filter((key) => utilityKeyNames.has(key.replace(/^"|"$/g, "")));
+	const lines = variants.map(({ name }) => {
+		const key = tsKey(camelCaseProperty(name));
+		return collisions.includes(key)
+			? `\t${key}?: WindVariants | WindUtilities[${key}];`
+			: `\t${key}?: WindVariants;`;
+	});
+	// Arbitrary data-attribute / aria variants (`data-[expanded]`,
+	// `group-data-[state=x]/sidebar`) aren't enumerable at codegen time —
+	// the bracket contents are open-ended — but they're still valid
+	// selectors the codemod (and hand-authored tw() calls) nest under. A
+	// template-literal index signature accepts exactly that shape; named
+	// variant keys above never match this pattern, so it doesn't widen them.
+	const arbitraryVariantIndex =
+		'\t[key: `${"" | "group-" | "peer-"}${"data" | "aria"}-[${string}]${"" | `/${string}`}`]: WindVariants;';
+	const base = collisions.length > 0 ? `Omit<WindUtilities, ${collisions.join(" | ")}>` : "WindUtilities";
+	return `export type WindVariants = ${base} & {\n${lines.join("\n")}\n${arbitraryVariantIndex}\n}`;
 }
 
 function getTwRuntime(
@@ -1138,11 +1170,15 @@ export async function generateDesignSystem(
 		});
 	}
 
+	const utilityKeyNames = new Set(
+		[...types.keys()].map((name) => utilityKey(name).replace(/^"|"$/g, "")),
+	);
+
 	return {
 		typesDts: `${header}
 ${getUtilitiesType(types, modifierCapable)}
 
-${getVariantsType(variants)}
+${getVariantsType(variants, utilityKeyNames)}
 `,
 		twTs: getTwRuntime(variants, conflicts, compose),
 		utilityCount: types.size,

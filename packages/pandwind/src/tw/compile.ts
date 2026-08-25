@@ -14,7 +14,7 @@
  * ```
  */
 
-export type TwValue = string | boolean | number | Array<string | number>;
+export type TwValue = string | boolean | number | Array<string | number | boolean>;
 export interface TwNestedStyles extends Record<string, TwValue | TwNestedStyles> {}
 
 /**
@@ -179,9 +179,16 @@ function visit(
 			continue;
 		}
 
-		const parts = Array.isArray(value) ? value.map(String) : [String(value)];
+		// Array values can mix plain values with a bare boolean flag (e.g. a
+		// compound base's implied class merged alongside an explicit value by
+		// the codemod's collision handling) — `true` must resolve to the
+		// bare utility exactly like the scalar boolean branch above, not the
+		// literal string "true".
+		const rawParts = Array.isArray(value) ? value : [value];
+		const hasBareFlag = rawParts.includes(true);
+		const parts = rawParts.filter((part) => typeof part !== "boolean").map(String);
 		const compound = COMPOUND_BASES[key];
-		if (compound && parts.some((part) => compound.has(part))) {
+		if (hasBareFlag || (compound && parts.some((part) => compound.has(part)))) {
 			push(classes, signatures, conflicts, compose, className, prefix, utility, "");
 		}
 

@@ -18,11 +18,21 @@ import {
 	parseUtilityUnions,
 } from "./parsers.ts";
 
-const APP = "apps/example";
+const DEFAULT_APP = "apps/example";
 
-/** Build the full studio payload for the given repo root (default: this repo). */
+/**
+ * Build the full studio payload for the given repo root (default: this repo).
+ *
+ * Override target via env vars to point the studio at an external project:
+ *   INSPECTOR_ROOT=/path/to/other-repo INSPECTOR_APP=packages/geos pnpm dev
+ * `INSPECTOR_APP` is resolved as `<root>/<app>/src`. Artifacts specific to the
+ * pandwind dogfood app (examplePreset tokens, bridge.ts, pandwind-theme.css)
+ * are optional and degrade to empty when the target app doesn't have them.
+ */
 export async function gather(repoRoot?: string): Promise<StudioPayload> {
-	const root = repoRoot ?? resolve(import.meta.dirname, "../../../..");
+	const root = repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
+	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
+	const isDogfoodApp = APP === DEFAULT_APP;
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
 
 	// --- coverage: the CLI is the single interface to fold analysis.
@@ -108,15 +118,21 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 	const themeVars = parseThemeVars(themeCss);
 	const utilities = parseUtilityUnions(readFileSync(appSrc("types.d.ts"), "utf8"));
 	const config = loadTwConfig(appSrc("tw.ts"));
-	const bridgeSource = readFileSync(appSrc("bridge.ts"), "utf8");
+	let bridgeSource = "";
+	try {
+		bridgeSource = readFileSync(appSrc("bridge.ts"), "utf8");
+	} catch {
+		bridgeSource = "";
+	}
 	const bridgeStats = parseBridgeStats(bridgeSource);
 
-	const presetTokens =
-		(
-			examplePreset as unknown as {
-				tokens?: Record<string, Record<string, unknown>>;
-			}
-		).tokens ?? {};
+	const presetTokens = isDogfoodApp
+		? ((
+				examplePreset as unknown as {
+					tokens?: Record<string, Record<string, unknown>>;
+				}
+			).tokens ?? {})
+		: {};
 	const tokenSections: Array<TokenSection> = flattenTokenGroups(presetTokens, {
 		colors: "Colors",
 		semantic: "Semantic (condition-bound)",
@@ -131,8 +147,10 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 
 	const tokenGraph = buildTokenGraph({
 		flatVars: themeVars,
-		themes: (examplePreset as unknown as { themes?: never }).themes,
-		components: (examplePreset as unknown as { components?: never }).components,
+		themes: isDogfoodApp ? (examplePreset as unknown as { themes?: never }).themes : undefined,
+		components: isDogfoodApp
+			? (examplePreset as unknown as { components?: never }).components
+			: undefined,
 	});
 
 	return {

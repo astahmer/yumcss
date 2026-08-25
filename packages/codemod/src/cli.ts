@@ -8,7 +8,7 @@
  * files. `--diff` prints unified diffs; `--write` applies. The two are not
  * mutually exclusive — `--diff --write` shows the diffs while writing.
  */
-import { readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadMetaFromSources, type PandwindMeta } from "./meta.ts";
@@ -249,15 +249,16 @@ function findRepoRoot(): string {
 function main(): void {
 	const args = parseArgs(process.argv.slice(2));
 	const root = findRepoRoot();
-	const metaDir =
-		args.metaDir !== "" ? resolve(root, args.metaDir) : resolve(root, "apps/example/src");
+	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
+	const metaDir = resolve(root, metaDirRelative);
 
 	let meta: PandwindMeta;
 	try {
+		const bridgePath = resolve(metaDir, "bridge.ts");
 		meta = loadMetaFromSources({
 			typesDtsPath: resolve(metaDir, "types.d.ts"),
 			twTsPath: resolve(metaDir, "tw.ts"),
-			bridgePath: resolve(metaDir, "bridge.ts"),
+			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
 		});
 	} catch (error) {
 		console.error(
@@ -292,6 +293,7 @@ function main(): void {
 		const result: TransformResult = transformSource(source, meta, {
 			mode: args.mode,
 			file: relative,
+			metaDir: metaDirRelative,
 			skipMarker: args.skipMarker,
 			sources: args.sources,
 		});
@@ -363,5 +365,5 @@ export function buildReport(fileResults: Array<ReportEntry>): string {
 }
 // Run only when invoked as the CLI entry — importing the module from
 // tests must not execute the program.
-const invokedDirectly = /cli\.mts?$/.test(process.argv[1] ?? "");
+const invokedDirectly = /cli\.[mc]?[tj]sx?$/.test(process.argv[1] ?? "");
 if (invokedDirectly) void main();

@@ -73,7 +73,12 @@ function parseInterfaceKeys(
 	const body = extractBlock(typesDts, /interface WindUtilities\b/);
 	if (body === undefined) throw new Error("codemod: no `interface WindUtilities` in types.d.ts");
 	const entries: Array<{ key: string; valueType: string | undefined }> = [];
-	const entryRegex = /"([^"]+)"\?:\s*([A-Za-z_$][\w$]*)\s*(?:\|\s*Array<([A-Za-z_$][\w$]*)>)?\s*;/g;
+	// Every entry is `"key"?: Alias | true | Array<Alias | true>;` — `true`
+	// tolerates the runtime's universal bare-boolean-flag support (see
+	// tw/compile.ts) regardless of whether this key's own completion probe
+	// surfaced a distinct bare candidate.
+	const entryRegex =
+		/"([^"]+)"\?:\s*([A-Za-z_$][\w$]*)\s*\|\s*true\s*(?:\|\s*Array<([A-Za-z_$][\w$]*)\s*\|\s*true>)?\s*;/g;
 	for (const match of body.matchAll(entryRegex)) {
 		entries.push({ key: match[1]!, valueType: match[2] });
 	}
