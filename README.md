@@ -520,7 +520,8 @@ all three together ≈ 3.7 KB gz. The build-time stylesheet generator would add
 runtime barrel. Real numbers for the runtime, the example build and the
 alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
 [SIZE.md](./SIZE.md); per-call runtime benchmarks against those same
-alternatives live in [BENCH.md](./BENCH.md).
+alternatives live in [BENCH.md](./BENCH.md). Lowering the same design system
+to React Native / OpenTUI style objects lives in [BACKENDS.md](./BACKENDS.md).
 
 ## Why pandwind exists
 

@@ -1,9 +1,10 @@
 # Plan 021 — Multi-target style backends (CSS / RN StyleSheet / canvas / TUI)
 
-**Status: in progress — steps 1–3 landed 2026-08-25 (IR + css backend
-extraction, object-emitting skeleton, `pandwind/react-native`); step 4
-(opentui) next. Design decisions approved 2026-08-25; implementation
-not started (needs explicit go-ahead per AGENTS.md).**
+**Status: steps 1–4 and 6 landed 2026-08-25 (IR + css backend extraction,
+object-emitting skeleton, `pandwind/react-native`, `pandwind/opentui`, docs
+
+- parity suites); canvas deferred pending a concrete consumer. Design
+  decisions approved 2026-08-25; implementation go-ahead recorded in session.
 
 ## Context
 
@@ -211,6 +212,16 @@ Remaining (smaller):
         condition-policy + stable-identity/cx tests (`backends-react-native.test.ts`).
         Note: export is `pandwind/react-native` (module `src/rn.ts`, avoids the
         `react-native.ts` vs `react-native/` resolution clash).
+  - [x] opentui (step 4): value/unit policy (`cellSize` default 4,
+        px→cells via round(px/cellSize), rem ×16), boolean border model,
+        condition-policy + stable-identity/cx tests
+        (`tests/backends-opentui.test.ts`). Vocabulary subset enforced at
+        runtime as structural plain-object typing (no @opentui imports);
+        module `src/opentui.ts` avoids resolution clashes.
+  - [x] Cross-backend parity suite `packages/pandwind/tests/backends-parity.test.ts`:
+        cx merge later-wins-per-property vs css-backend semantics, token-value
+        consistency across targets, condition-policy parity (css conditions
+        are stylesheet-scoped atoms vs object backends' eager strict resolvers).
 - [x] No new required user-facing API for existing web apps (zero-churn upgrade;
       object backends are additive subpath exports).
 
