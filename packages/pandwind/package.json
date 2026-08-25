@@ -19,6 +19,7 @@
 		"./codegen/types": "./src/tw/generate-types.ts",
 		"./codegen/theme": "./src/tw/generate-theme.ts",
 		"./codegen/collect": "./src/tw/collect.ts",
+		"./react-native": "./src/rn.ts",
 		"./package.json": "./package.json"
 	},
 	"scripts": {

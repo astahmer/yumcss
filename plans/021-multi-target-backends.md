@@ -1,6 +1,8 @@
 # Plan 021 — Multi-target style backends (CSS / RN StyleSheet / canvas / TUI)
 
-**Status: planning doc — design decisions approved 2026-08-25; implementation
+**Status: in progress — steps 1–3 landed 2026-08-25 (IR + css backend
+extraction, object-emitting skeleton, `pandwind/react-native`); step 4
+(opentui) next. Design decisions approved 2026-08-25; implementation
 not started (needs explicit go-ahead per AGENTS.md).**
 
 ## Context
@@ -200,11 +202,17 @@ Remaining (smaller):
 
 ## Acceptance criteria
 
-- [ ] css backend behind the new interface: existing suites (parity, adapter,
-      named-atoms) green byte-identical.
+- [x] css backend behind the new interface: existing suites (parity, adapter,
+      named-atoms) green byte-identical (step 1, size baseline +91 B min for the
+      seam — intentional, sanctioned via `pnpm test:size -u`).
 - [ ] Each new backend: vocabulary-subset typing, condition policy tests,
       cx merge parity tests against the css backend semantics.
-- [ ] No new required user-facing API for existing web apps (zero-churn upgrade).
+  - [x] react-native (step 3): value/unit policy + shorthand expansion +
+        condition-policy + stable-identity/cx tests (`backends-react-native.test.ts`).
+        Note: export is `pandwind/react-native` (module `src/rn.ts`, avoids the
+        `react-native.ts` vs `react-native/` resolution clash).
+- [x] No new required user-facing API for existing web apps (zero-churn upgrade;
+      object backends are additive subpath exports).
 
 ## Decisions log
 
