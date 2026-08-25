@@ -7,14 +7,13 @@ import type {
 	StyleObject,
 	TypedStyleObject,
 } from "../types/typings.ts";
+import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
-import {
-	normalizeStrategy,
-	type AnyClassNameStrategy,
-	type ClassNameFn,
-	type ClassNameStrategy,
+import type {
+	AnyClassNameStrategy,
+	ClassNameFn,
+	ClassNameStrategy,
 } from "./class-name-strategy.ts";
-import { createHashFn } from "./hash.ts";
 import { encodeVars, VARS_ATOMS, type VarAtom, type VarsOutput } from "./vars.ts";
 
 /** @deprecated Legacy callable form — see `ClassNameStrategy` in class-name-strategy.ts. */
@@ -38,36 +37,18 @@ export function createCss<
 	options?: CreateCssOptions,
 ): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
 export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
-	const debug = options.debug ?? false;
-	const hashFn = options.hashFn ?? createHashFn(debug);
-	const strategy = normalizeStrategy(options.className);
-	const sheetBacked = strategy?.sheetBacked === true;
-	const atoms: AtomRegistry = new Map();
+	// The web backend owns declaration lowering (hash/strategy/atom registry,
+	// plans/021); everything below is the css surface built on top of it.
+	const backend = createCssBackend(options);
+	const atoms = backend.atoms;
 
 	const compile = (style: FlatStyles): CompiledStyles => {
 		const css = {} as CompiledStyles;
 		for (const key in style) {
-			css[key] = register(key, style[key]!);
+			css[key] = backend.declare(key, style[key]!);
 		}
 
 		return css;
-	};
-
-	const register = (key: string, value: string) => {
-		const rawValue = String(value);
-		if (strategy !== undefined) {
-			const custom = strategy.toClassName(key, rawValue);
-			if (custom !== null) {
-				// Sheet-backed strategies compile through this engine's own
-				// stylesheet, so their classes join the atom registry — that is
-				// what keeps cx() merging and the generated rules working.
-				if (sheetBacked && !atoms.has(custom)) atoms.set(custom, key);
-				return custom;
-			}
-		}
-		const atom = hashFn(key, rawValue);
-		if (!atoms.has(atom)) atoms.set(atom, key);
-		return atom;
 	};
 
 	const compileStyles = (...styles: Array<StyleObject>) => {
@@ -88,11 +69,11 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 			Object.entries(flat).forEach(([key, value]) => {
 				if (typeof value === "string" && value.startsWith("input>$")) {
 					const varName = value.slice("input>$".length);
-					compiled[key] = register(key, `$${varName}`);
+					compiled[key] = backend.declare(key, `$${varName}`);
 					return;
 				}
 
-				compiled[key] = register(key, value);
+				compiled[key] = backend.declare(key, value);
 			});
 
 			return (input: AnyInput) => {
@@ -188,11 +169,8 @@ export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
 	return css;
 }
 
-export interface CreateCssOptions {
-	debug?: boolean;
-	hashFn?: (key: string, value: string | true) => string;
-	className?: AnyClassNameStrategy;
-}
+/** Backend options (plans/021): forwarded to the css backend unchanged. */
+export interface CreateCssOptions extends CssBackendOptions {}
 
 interface DynamicReturn {
 	[DYNAMIC]: true;
