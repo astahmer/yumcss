@@ -20,6 +20,7 @@
 		"./codegen/theme": "./src/tw/generate-theme.ts",
 		"./codegen/collect": "./src/tw/collect.ts",
 		"./react-native": "./src/rn.ts",
+		"./opentui": "./src/opentui.ts",
 		"./package.json": "./package.json"
 	},
 	"scripts": {
