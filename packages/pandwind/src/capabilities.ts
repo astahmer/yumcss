@@ -51,8 +51,9 @@ export const CSS_IN_JS_CAPABILITIES = [
 	},
 	{
 		feature: "ssr-hydration",
-		status: "unsupported",
-		detail: "No runtime sheet extraction and client hydration contract exists yet.",
+		status: "partial",
+		detail:
+			"css.vars() is serializable and server-safe; runtime sheet extraction and hydration adapters are not shipped.",
 	},
 	{
 		feature: "bundler-integration",

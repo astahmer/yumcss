@@ -30,7 +30,7 @@ ordering, and a testable integration contract.
 | Theme scopes            | Static      | Theme and component token scopes are emitted as deterministic CSS blocks.                                         |
 | Global rules            | Unsupported | No first-class authored global-rule primitive yet.                                                                |
 | Keyframes and font-face | Unsupported | No first-class authored animation/font primitive yet.                                                             |
-| SSR and hydration       | Unsupported | A runtime sheet extraction/hydration contract is not implemented yet.                                             |
+| SSR and hydration       | Partial     | `css.vars()` is serializable and server-safe; runtime sheet extraction/hydration remains host-owned.              |
 | Bundlers/frameworks     | Partial     | Vite and generic unplugin adapters exist; framework-specific proof is still being added.                          |
 | Source provenance       | Partial     | Debug names and analyzer data exist; generated rules are not yet source-addressable end to end.                   |
 
