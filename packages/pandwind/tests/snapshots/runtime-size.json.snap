@@ -1,34 +1,34 @@
 {
   "css": {
-    "min": 3397,
-    "gz": 1599
+    "min": 3399,
+    "gz": 1601
   },
   "tw": {
     "min": 2092,
     "gz": 1013
   },
   "cx": {
-    "min": 8819,
-    "gz": 3767
+    "min": 8823,
+    "gz": 3779
   },
   "all (css+tw+cx)": {
-    "min": 10867,
-    "gz": 4518
+    "min": 10871,
+    "gz": 4515
   },
   "stylesheet generator (build-time only)": {
     "min": 83267,
     "gz": 20775
   },
   "root barrel, css only": {
-    "min": 3397,
-    "gz": 1599
+    "min": 3399,
+    "gz": 1601
   },
   "root barrel, tw only": {
     "min": 2092,
     "gz": 1013
   },
   "root barrel, cx only": {
-    "min": 8819,
-    "gz": 3764
+    "min": 8823,
+    "gz": 3771
   }
 }
