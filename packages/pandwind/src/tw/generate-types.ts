@@ -932,7 +932,8 @@ function getVariantsType(
 	// variant keys above never match this pattern, so it doesn't widen them.
 	const arbitraryVariantIndex =
 		'\t[key: `${"" | "group-" | "peer-"}${"data" | "aria"}-[${string}]${"" | `/${string}`}`]: WindVariants;';
-	const base = collisions.length > 0 ? `Omit<WindUtilities, ${collisions.join(" | ")}>` : "WindUtilities";
+	const base =
+		collisions.length > 0 ? `Omit<WindUtilities, ${collisions.join(" | ")}>` : "WindUtilities";
 	return `export type WindVariants = ${base} & {\n${lines.join("\n")}\n${arbitraryVariantIndex}\n}`;
 }
 
