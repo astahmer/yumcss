@@ -539,10 +539,10 @@ interface WindUtilities {
 	"z"?: ZValue | true | Array<ZValue | true>;
 }
 
-export type WindVariants = Omit<WindUtilities, not | placeholder> & {
+export type WindVariants = Omit<WindUtilities, "not" | "placeholder"> & {
 	"*"?: WindVariants;
 	"**"?: WindVariants;
-	not?: WindVariants | WindUtilities[not];
+	not?: WindVariants | WindUtilities["not"];
 	group?: WindVariants;
 	peer?: WindVariants;
 	firstLetter?: WindVariants;
@@ -550,7 +550,7 @@ export type WindVariants = Omit<WindUtilities, not | placeholder> & {
 	marker?: WindVariants;
 	selection?: WindVariants;
 	file?: WindVariants;
-	placeholder?: WindVariants | WindUtilities[placeholder];
+	placeholder?: WindVariants | WindUtilities["placeholder"];
 	backdrop?: WindVariants;
 	detailsContent?: WindVariants;
 	before?: WindVariants;

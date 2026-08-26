@@ -920,8 +920,9 @@ function getVariantsType(
 		.filter((key) => utilityKeyNames.has(key.replace(/^"|"$/g, "")));
 	const lines = variants.map(({ name }) => {
 		const key = tsKey(camelCaseProperty(name));
+		const property = key.replace(/^"|"$/g, "");
 		return collisions.includes(key)
-			? `\t${key}?: WindVariants | WindUtilities[${key}];`
+			? `\t${key}?: WindVariants | WindUtilities[${JSON.stringify(property)}];`
 			: `\t${key}?: WindVariants;`;
 	});
 	// Arbitrary data-attribute / aria variants (`data-[expanded]`,
@@ -932,8 +933,11 @@ function getVariantsType(
 	// variant keys above never match this pattern, so it doesn't widen them.
 	const arbitraryVariantIndex =
 		'\t[key: `${"" | "group-" | "peer-"}${"data" | "aria"}-[${string}]${"" | `/${string}`}`]: WindVariants;';
+	const collisionProperties = collisions.map((key) => JSON.stringify(key.replace(/^"|"$/g, "")));
 	const base =
-		collisions.length > 0 ? `Omit<WindUtilities, ${collisions.join(" | ")}>` : "WindUtilities";
+		collisionProperties.length > 0
+			? `Omit<WindUtilities, ${collisionProperties.join(" | ")}>`
+			: "WindUtilities";
 	return `export type WindVariants = ${base} & {\n${lines.join("\n")}\n${arbitraryVariantIndex}\n}`;
 }
 

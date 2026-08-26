@@ -18,14 +18,14 @@ test("createCss binds ordinary properties and preset token values", () => {
 test("createCss rejects properties and token values outside the preset", () => {
 	expect(
 		css({
-			// @ts-expect-error
+			// @ts-expect-error does not exist in type
 			boxShadow: "lg",
 		}),
 	).type.toBe<Compiled>();
 
 	expect(
 		css({
-			// @ts-expect-error
+			// @ts-expect-error not assignable
 			backgroundColor: "not-a-color",
 		}),
 	).type.toBe<Compiled>();
