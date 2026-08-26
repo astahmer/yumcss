@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - apps/*
+  - examples/*
 allowBuilds:
   "@swc/core": true
   esbuild: true
