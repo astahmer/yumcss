@@ -1,0 +1,33 @@
+{
+	"name": "@pandwind/lint-plugin",
+	"version": "0.0.1",
+	"keywords": [
+		"atomic-css",
+		"lint-plugin",
+		"oxlint"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/astahmer/pandwind.git",
+		"directory": "packages/lint-plugin"
+	},
+	"files": [
+		"src",
+		"README.md",
+		"LICENSE"
+	],
+	"type": "module",
+	"main": "./src/index.js",
+	"exports": {
+		".": "./src/index.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true,
+		"registry": "https://registry.npmjs.org/"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

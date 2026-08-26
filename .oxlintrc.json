@@ -22,7 +22,7 @@
 		"**/dist/**",
 		"**/packages/analyze/tests/fixtures/**"
 	],
-	"jsPlugins": ["./lint/pandwind-extraction.plugin.js"],
+	"jsPlugins": ["./packages/lint-plugin/src/index.js"],
 	"overrides": [
 		{
 			"files": [
