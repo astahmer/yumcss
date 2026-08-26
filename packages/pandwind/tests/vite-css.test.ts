@@ -6,11 +6,29 @@ import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import {
+	extractCssSources,
 	extractCssStyles,
 	findCssImports,
 	inlineCssCalls,
 	isCssSource,
 } from "../src/vite/css-extract.ts";
+
+test("extractCssSources records stable call provenance without changing styles", () => {
+	const code = `\n\nimport { css as design } from "./design";\nconst a = design.class({ $text: { color: "$blue-500" } });`;
+	const sources = extractCssSources(code, "/src/card.tsx", new Set(["design"]), examplePreset);
+
+	expect(sources).toHaveLength(1);
+	expect(sources[0]).toMatchObject({
+		style: { color: "#3182ce" },
+		provenance: {
+			file: "/src/card.tsx",
+			line: 4,
+			column: 11,
+			callKind: "css.class",
+		},
+	});
+	expect(sources[0]!.provenance.end).toBeGreaterThan(sources[0]!.provenance.start);
+});
 
 test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];

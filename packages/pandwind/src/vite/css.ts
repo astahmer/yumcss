@@ -40,7 +40,13 @@ import type {
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
-import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
+import {
+	extractCssSources,
+	extractCssStyles,
+	findCssImports,
+	inlineCssCalls,
+	isCssSource,
+} from "./css-extract.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -132,4 +138,4 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 	};
 }
 
-export { extractCssStyles, findCssImports, inlineCssCalls, isCssSource };
+export { extractCssSources, extractCssStyles, findCssImports, inlineCssCalls, isCssSource };

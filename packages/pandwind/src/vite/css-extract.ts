@@ -41,6 +41,20 @@ interface CallNode extends OxcNode {
 	arguments: unknown[];
 }
 
+export interface CssSourceProvenance {
+	file: string;
+	start: number;
+	end: number;
+	line: number;
+	column: number;
+	callKind: "css" | "css.class" | "css.raw";
+}
+
+export interface ExtractedCssStyle {
+	style: StyleObject;
+	provenance: CssSourceProvenance;
+}
+
 /** True when the module `id` should be scanned for css() calls. */
 export const isCssSource = (source: string, matchers: Array<string | RegExp>): boolean => {
 	const basename =
@@ -111,19 +125,19 @@ const isMemberCall = (callee: OxcNode | null, cssNames: ReadonlySet<string>): bo
  * values) are skipped — they need runtime styles, exactly like dynamic class
  * names in plain Tailwind.
  */
-export function extractCssStyles(
+export function extractCssSources(
 	code: string,
 	id: string,
 	cssNames: ReadonlySet<string>,
 	preset: CssPreset,
-): Array<StyleObject> {
+): Array<ExtractedCssStyle> {
 	if (cssNames.size === 0) return [];
 
 	const result = parseSync(id, code, {
 		sourceType: "module",
 		lang: id.endsWith(".tsx") ? "tsx" : "ts",
 	});
-	const styles: Array<StyleObject> = [];
+	const sources: Array<ExtractedCssStyle> = [];
 
 	walk(result.program, (node) => {
 		if (node.type !== "CallExpression") return;
@@ -137,15 +151,35 @@ export function extractCssStyles(
 		const isMember = callee.type === "MemberExpression" && isMemberCall(callee, cssNames);
 		if (!isDirect && !isMember) return;
 		if (call.arguments.length === 0) return;
+		const member = isMember
+			? (callee.property as { name?: string } | null | undefined)?.name
+			: undefined;
+		const callKind = isDirect ? "css" : (`css.${member}` as "css.class" | "css.raw");
+		const before = code.slice(0, call.start);
+		const line = before.split("\n").length;
+		const column = call.start - (before.lastIndexOf("\n") + 1) + 1;
 
 		for (const argument of call.arguments) {
 			const literal = evalLiteral(argument as Expression);
 			if (typeof literal !== "object" || literal === null) continue;
-			styles.push(resolveDesignStyle(literal as Record<string, unknown>, preset.tokens));
+			sources.push({
+				style: resolveDesignStyle(literal as Record<string, unknown>, preset.tokens),
+				provenance: { file: id, start: call.start, end: call.end, line, column, callKind },
+			});
 		}
 	});
 
-	return styles;
+	return sources;
+}
+
+/** Backwards-compatible style-only view for callers that do not need provenance. */
+export function extractCssStyles(
+	code: string,
+	id: string,
+	cssNames: ReadonlySet<string>,
+	preset: CssPreset,
+): Array<StyleObject> {
+	return extractCssSources(code, id, cssNames, preset).map(({ style }) => style);
 }
 
 /**

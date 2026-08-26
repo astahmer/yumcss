@@ -8,10 +8,15 @@ import { join, resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import { extractVarKeys } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
-import type { StyleObject } from "../types/typings.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
-import { extractCssStyles, findCssImports, inlineCssCalls, isCssSource } from "./css-extract.ts";
+import {
+	extractCssSources,
+	extractCssStyles,
+	findCssImports,
+	inlineCssCalls,
+	isCssSource,
+} from "./css-extract.ts";
 
 export type { CssExtractorPreset };
 
@@ -62,7 +67,7 @@ export function createCssExtractorPluginCore(
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
 	const fileCache = new Map<
 		string,
-		{ mtimeMs: number; styles: StyleObject[]; varKeys: string[] }
+		{ mtimeMs: number; sources: ReturnType<typeof extractCssSources>; varKeys: string[] }
 	>();
 	const routes = options.splitByRoute ?? [];
 	const COMMON_BUCKET = "__common__";
@@ -115,9 +120,15 @@ export function createCssExtractorPluginCore(
 		// candidate files; zero prod cost (flag off by default).
 		const manifest = [...fileCache.entries()]
 			.toSorted((a, b) => a[0].localeCompare(b[0]))
-			.map(
-				([file, entry]) =>
-					`/*   ${file.replace(root + "/", "")} — ${entry.styles.length} style object(s) */`,
+			.map(([file, entry]) =>
+				entry.sources.length === 0
+					? `/*   ${file.replace(root + "/", "")} — no static css calls */`
+					: entry.sources
+							.map(
+								({ provenance }) =>
+									`/*   ${file.replace(root + "/", "")}:${provenance.line}:${provenance.column} ${provenance.callKind} */`,
+							)
+							.join("\n"),
 			)
 			.join("\n");
 		return (
@@ -139,19 +150,19 @@ export function createCssExtractorPluginCore(
 			const mtimeMs = statSync(file).mtimeMs;
 			if (!entry || entry.mtimeMs !== mtimeMs) {
 				const code = readFileSync(file, "utf8");
-				const styles: StyleObject[] = [];
+				let sources: ReturnType<typeof extractCssSources> = [];
 				let varKeys: string[] = [];
 				if (/\bcss\b/.test(code)) {
 					const names = findCssImports(code, file, matchers);
 					if (names.size > 0) {
-						styles.push(...extractCssStyles(code, file, names, preset));
+						sources = extractCssSources(code, file, names, preset);
 						varKeys = extractVarKeys(code, file, names);
 					}
 				}
-				entry = { mtimeMs, styles, varKeys };
+				entry = { mtimeMs, sources, varKeys };
 				fileCache.set(file, entry);
 			}
-			for (const style of entry.styles) sheet.process([style]);
+			for (const { style } of entry.sources) sheet.process([style]);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 		}
 
@@ -164,21 +175,23 @@ export function createCssExtractorPluginCore(
 	};
 
 	/** Cached styles/var-keys for one file (re-scanning on mtime change). */
-	const scanFile = (file: string): { styles: StyleObject[]; varKeys: string[] } => {
+	const scanFile = (
+		file: string,
+	): { sources: ReturnType<typeof extractCssSources>; varKeys: string[] } => {
 		let entry = fileCache.get(file);
 		const mtimeMs = statSync(file).mtimeMs;
 		if (!entry || entry.mtimeMs !== mtimeMs) {
 			const code = readFileSync(file, "utf8");
-			const styles: StyleObject[] = [];
+			let sources: ReturnType<typeof extractCssSources> = [];
 			let varKeys: string[] = [];
 			if (/\bcss\b/.test(code)) {
 				const names = findCssImports(code, file, matchers);
 				if (names.size > 0) {
-					styles.push(...extractCssStyles(code, file, names, preset));
+					sources = extractCssSources(code, file, names, preset);
 					varKeys = extractVarKeys(code, file, names);
 				}
 			}
-			entry = { mtimeMs, styles, varKeys };
+			entry = { mtimeMs, sources, varKeys };
 			fileCache.set(file, entry);
 		}
 		return entry;
@@ -197,7 +210,7 @@ export function createCssExtractorPluginCore(
 		const sheet = createStylesheet(preset, { className });
 		for (const file of files) {
 			const entry = scanFile(file);
-			for (const style of entry.styles) sheet.process([style]);
+			for (const { style } of entry.sources) sheet.process([style]);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 		}
 		const atomic = sheet.gen.atomicEntries();
@@ -358,4 +371,11 @@ ${split.routes.get(route.name) ?? ""}`;
 }
 
 // Re-exported so callers of the core keep the same surface as css.ts.
-export { extractCssStyles, extractVarKeys, findCssImports, inlineCssCalls, isCssSource };
+export {
+	extractCssSources,
+	extractCssStyles,
+	extractVarKeys,
+	findCssImports,
+	inlineCssCalls,
+	isCssSource,
+};
