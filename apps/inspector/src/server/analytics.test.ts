@@ -1,6 +1,6 @@
 /** Pure analytics tests — no I/O (plans/023 #6). */
 import { describe, expect, test } from "vitest";
-import { analyzeStyleUsage } from "./analytics.ts";
+import { analyzeStyleUsage, buildPruneChangeset, computeContrastWarnings } from "./analytics.ts";
 
 const files = [
 	{
@@ -53,5 +53,68 @@ describe("analyzeStyleUsage", () => {
 		expect(kinds.dark).toBe("media");
 		expect(report.conditionBreakdown.pseudo).toBeGreaterThanOrEqual(1);
 		expect(report.conditionBreakdown.responsive).toBeGreaterThanOrEqual(1);
+	});
+});
+
+describe("contrast warnings", () => {
+	const tokens = { "gray-100": "#f3f4f6", "gray-800": "#1f2937", "blue-500": "#3182ce" };
+
+	test("pairs text/background within one call site and flags low ratio", () => {
+		const fixtureFiles = [
+			{
+				file: "a.tsx",
+				content: `const card = css.class({ backgroundColor: "$gray-100", color: "$blue-500" });`,
+			},
+		];
+		const w = computeContrastWarnings(fixtureFiles, tokens);
+		expect(w.length).toBe(1);
+		expect(w[0]!.fg).toBe("$blue-500");
+		expect(w[0]!.bg).toBe("$gray-100");
+		// #3182ce on #f3f4f6 ~ 3.7 - fails normal text, passes large
+		expect(w[0]!.ratio).toBeGreaterThan(3);
+		expect(w[0]!.ratio).toBeLessThan(4.5);
+		expect(w[0]!.severity).toBe("fail-normal");
+	});
+
+	test("passing pairs produce no warnings", () => {
+		const fixtureFiles = [
+			{
+				file: "a2.tsx",
+				content: `css.class({ backgroundColor: "$gray-100", color: "$gray-800" });`,
+			},
+		];
+		expect(computeContrastWarnings(fixtureFiles, tokens)).toEqual([]);
+	});
+
+	test("flags low contrast with severity by threshold", () => {
+		const fixtureFiles = [
+			{
+				file: "b.tsx",
+				content: `css.class({ backgroundColor: "$gray-100", color: "$gray-100" });`,
+			},
+		];
+		const w = computeContrastWarnings(fixtureFiles, tokens);
+		expect(w[0]!.ratio).toBe(1);
+		expect(w[0]!.severity).toBe("fail-large");
+	});
+
+	test("unresolvable values are skipped", () => {
+		const fixtureFiles = [
+			{ file: "c.tsx", content: `css.class({ backgroundColor: someVar, color: "currentColor" })` },
+		];
+		expect(computeContrastWarnings(fixtureFiles, tokens)).toEqual([]);
+	});
+});
+
+describe("prune changeset", () => {
+	test("generates changeset markdown listing unused tokens", () => {
+		const content = buildPruneChangeset(["$unused-a", "$unused-b"], "docs-app");
+		expect(content).toContain('---\n"pandwind": patch\n---');
+		expect(content).toContain("Remove 2 unused design token(s)");
+		expect(content).toContain("- `$unused-a`");
+	});
+
+	test("returns null when nothing to prune", () => {
+		expect(buildPruneChangeset([])).toBeNull();
 	});
 });

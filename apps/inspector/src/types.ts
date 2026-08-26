@@ -48,6 +48,27 @@ export interface StyleUsageReport {
 	conditionBreakdown: Record<"responsive" | "pseudo" | "media" | "other", number>;
 }
 
+/** WCAG contrast finding for one foreground/background pair in one file. */
+export interface ContrastWarning {
+	file: string;
+	/** Authored values as written (tokens stay tokens). */
+	fg: string;
+	bg: string;
+	/** WCAG contrast ratio, rounded to 2 decimals. */
+	ratio: number;
+	/** "fail-large" = below even the 3.0 large-text threshold. */
+	severity: "fail-normal" | "fail-large";
+}
+
+/** One persisted point of the studio analytics time series. */
+export interface AnalyticsHistoryPoint {
+	timestamp: string;
+	eliminatedPct: number;
+	totalCalls: number;
+	sitesScanned: number | null;
+	unusedTokens: number | null;
+}
+
 export interface UtilityUnion {
 	key: string;
 	count: number;
@@ -132,6 +153,7 @@ export interface StudioPayload {
 		candidate: string;
 		rules: Array<{ selector: string; declarations: string }>;
 	}>;
+	contrastWarnings?: ContrastWarning[];
 	tokenGraph: TokenGraph;
 	designSystem: {
 		themeVars: Array<ThemeVar>;

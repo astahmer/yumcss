@@ -11,7 +11,7 @@ import { classRules, cssBudget, sheetShape } from "../../../../packages/analyze/
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
 import type { StudioPayload, ThemeVar, TokenSection } from "../types.ts";
-import { analyzeStyleUsage } from "./analytics.ts";
+import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,
 	parseBridgeStats,
@@ -175,6 +175,13 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 	);
 	const analytics = analyzeStyleUsage(appSourceFiles, tokenUniverse);
 
+	// WCAG contrast: resolve every preset color value once, pair text/bg
+	// within the same call-site scope.
+	const contrastWarnings = computeContrastWarnings(
+		appSourceFiles,
+		(presetTokens.colors as Record<string, string> | undefined) ?? {},
+	);
+
 	const tokenGraph = buildTokenGraph({
 		flatVars: mergedThemeVars,
 		themes: isDogfoodApp ? (examplePreset as unknown as { themes?: never }).themes : undefined,
@@ -204,6 +211,7 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 		},
 		classDrillDown,
 		analytics,
+		contrastWarnings,
 		cssCrawl: {
 			files: crawled.files.length,
 			unresolved: crawled.unresolved.slice(0, 20),

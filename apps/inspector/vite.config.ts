@@ -1,7 +1,9 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig, type Plugin } from "vite";
 import { gather } from "./src/server/gather.ts";
-import { listRuns, persistRun, readRun } from "./src/server/history.ts";
+import { buildPruneChangeset } from "./src/server/analytics.ts";
+import { persistAnalyticsSnapshot, readAnalyticsSeries } from "./src/server/analytics-history.ts";
+import { persistRun } from "./src/server/history.ts";
 
 // History lives at <package dir>/.studio-history/ — see history.ts.
 const pkgRoot = process.cwd();
@@ -10,6 +12,38 @@ const pkgRoot = process.cwd();
 const studioApi = (): Plugin => ({
 	name: "studio-api",
 	configureServer(server) {
+		// Analytics time series (oldest first). Snapshots are appended on each
+		// studio refresh when INSPECTOR_HISTORY=1. NOTE: these MUST be registered
+		// before the generic /api/analytics handler below — connect matches by
+		// prefix, so /api/analytics would swallow /api/analytics/*.
+		server.middlewares.use("/api/analytics/history", (req, res, next) => {
+			if (req.method !== "GET") return next();
+			res.setHeader("content-type", "application/json");
+			res.end(JSON.stringify(readAnalyticsSeries(pkgRoot)));
+		});
+
+		// Prune-changeset generation: read-only, returns .changeset content for
+		// the caller to write. POST because it re-gathers.
+		server.middlewares.use("/api/analytics/prune-changeset", (req, res, next) => {
+			if (req.method !== "POST") return next();
+			void (async () => {
+				try {
+					const payload = await gather();
+					const unused = payload.analytics?.unusedTokens ?? [];
+					res.setHeader("content-type", "application/json");
+					res.end(
+						JSON.stringify({
+							count: unused.length,
+							content: buildPruneChangeset(unused),
+						}),
+					);
+				} catch (error) {
+					res.statusCode = 500;
+					res.end(JSON.stringify({ error: String(error) }));
+				}
+			})();
+		});
+
 		server.middlewares.use("/api/analytics", (_req, res) => {
 			void (async () => {
 				try {
@@ -28,26 +62,15 @@ const studioApi = (): Plugin => ({
 				try {
 					const payload = await gather();
 					persistRun(pkgRoot, payload);
+					if (process.env.INSPECTOR_HISTORY === "1") {
+						persistAnalyticsSnapshot(pkgRoot, payload);
+					}
 					res.end(JSON.stringify(payload));
 				} catch (error) {
 					res.statusCode = 500;
 					res.end(JSON.stringify({ error: String(error) }));
 				}
 			})();
-		});
-		// Run history: list all snapshots, or fetch one via /api/history?run=<ts>
-		server.middlewares.use("/api/history", (req, res, next) => {
-			if (req.method !== "GET") return next();
-			const url = new URL(req.url ?? "/", "http://x");
-			res.setHeader("content-type", "application/json");
-			const runTs = url.searchParams.get("run");
-			if (runTs !== null) {
-				const run = readRun(pkgRoot, runTs);
-				if (run === null) res.statusCode = 404;
-				res.end(JSON.stringify(run ?? { error: "not found" }));
-				return;
-			}
-			res.end(JSON.stringify(listRuns(pkgRoot)));
 		});
 	},
 });

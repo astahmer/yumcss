@@ -32,3 +32,28 @@ export async function fetchHistoryRun(timestamp: string): Promise<StudioPayload>
 	if (body.error !== undefined) throw new Error(body.error);
 	return body;
 }
+
+export interface PruneChangeset {
+	count: number;
+	content: string | null;
+}
+
+export async function fetchPruneChangeset(): Promise<PruneChangeset> {
+	const res = await fetch("/api/analytics/prune-changeset", { method: "POST" });
+	if (!res.ok) throw new Error(`prune-changeset api failed: ${res.status}`);
+	return (await res.json()) as PruneChangeset;
+}
+
+export interface AnalyticsHistoryPoint {
+	timestamp: string;
+	eliminatedPct: number;
+	totalCalls: number;
+	sitesScanned: number | null;
+	unusedTokens: number | null;
+}
+
+export async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoint>> {
+	const res = await fetch("/api/analytics/history");
+	if (!res.ok) throw new Error(`analytics history api failed: ${res.status}`);
+	return (await res.json()) as Array<AnalyticsHistoryPoint>;
+}

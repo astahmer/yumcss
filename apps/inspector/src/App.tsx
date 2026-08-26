@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+	fetchAnalyticsHistory,
 	fetchData,
 	fetchHistoryList,
 	fetchHistoryRun,
+	fetchPruneChangeset,
 	kb,
 	vscodeLink,
+	type AnalyticsHistoryPoint,
 	type HistoryListItem,
 } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
@@ -960,7 +963,171 @@ function UsageView(props: { data: StudioPayload }) {
 					</>
 				)}
 			</section>
+			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
+			<PruneChangesetView unusedCount={a.unusedTokens.length} />
+			<AnalyticsHistoryChart />
 		</div>
+	);
+}
+
+/* ------------------------------- analytics extras ------------------------------ */
+
+function ContrastWarningsView({
+	warnings,
+}: {
+	warnings: NonNullable<StudioPayload["contrastWarnings"]>;
+}) {
+	if (warnings.length === 0) {
+		return (
+			<section>
+				<h2>wcag contrast</h2>
+				<p className="muted">no text/background pairs below 4.5:1 found.</p>
+			</section>
+		);
+	}
+	return (
+		<section>
+			<h2>wcag contrast — {warnings.length} warning(s)</h2>
+			<p className="muted">
+				text/background pairs within one call site. &lt;4.5 fails normal text; &lt;3 also fails
+				large text.
+			</p>
+			<table>
+				<thead>
+					<tr>
+						<th>ratio</th>
+						<th>severity</th>
+						<th>text</th>
+						<th>background</th>
+						<th>file</th>
+					</tr>
+				</thead>
+				<tbody>
+					{warnings.map((w, i) => (
+						<tr key={i}>
+							<td style={{ color: w.severity === "fail-large" ? "#ef4444" : "#d97706" }}>
+								{w.ratio.toFixed(2)}
+							</td>
+							<td>{w.severity}</td>
+							<td>{w.fg}</td>
+							<td>{w.bg}</td>
+							<td>{w.file}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</section>
+	);
+}
+
+function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
+	const [content, setContent] = useState<string | null>(null);
+	const [busy, setBusy] = useState(false);
+	const [copied, setCopied] = useState(false);
+	const generate = (): void => {
+		setBusy(true);
+		fetchPruneChangeset()
+			.then((r) => setContent(r.content))
+			.finally(() => setBusy(false));
+	};
+	const copy = (): void => {
+		if (content === null) return;
+		void navigator.clipboard.writeText(content).then(() => {
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		});
+	};
+	return (
+		<section>
+			<h2>prune changeset</h2>
+			<p className="muted">
+				generates a .changeset file proposing removal of the {unusedCount} zero-use token(s).
+				read-only: nothing is written server-side.
+			</p>
+			<button onClick={generate} disabled={busy || unusedCount === 0}>
+				{busy ? "generating…" : `generate changeset (${unusedCount})`}
+			</button>{" "}
+			{content !== null && (
+				<button onClick={copy}>{copied ? "copied ✓" : "copy to clipboard"}</button>
+			)}
+			{content !== null && <pre className="card">{content}</pre>}
+		</section>
+	);
+}
+
+const HISTORY_W = 560;
+const HISTORY_H = 90;
+
+function AnalyticsHistoryChart() {
+	const [series, setSeries] = useState<Array<AnalyticsHistoryPoint> | null>(null);
+	const [error, setError] = useState<string | null>(null);
+	useEffect(() => {
+		fetchAnalyticsHistory()
+			.then(setSeries)
+			.catch((e: Error) => setError(e.message));
+	}, []);
+	if (error !== null) {
+		return (
+			<section>
+				<h2>trend</h2>
+				<p className="muted">{error} (enable INSPECTOR_HISTORY=1 to record snapshots)</p>
+			</section>
+		);
+	}
+	if (series === null || series.length < 2) {
+		return (
+			<section>
+				<h2>trend</h2>
+				<p className="muted">
+					need at least 2 recorded snapshots — run with INSPECTOR_HISTORY=1 and refresh twice.
+				</p>
+			</section>
+		);
+	}
+	const n = series.length;
+	const x = (i: number): number => (n === 1 ? HISTORY_W / 2 : (i / (n - 1)) * HISTORY_W);
+	const yElim = (v: number): number => HISTORY_H - (v / 100) * HISTORY_H;
+	const maxCalls = Math.max(...series.map((p) => p.totalCalls), 1);
+	const yCalls = (v: number): number => HISTORY_H - (v / maxCalls) * HISTORY_H;
+	const elimPath = series
+		.map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${yElim(p.eliminatedPct)}`)
+		.join(" ");
+	const callsPath = series
+		.map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${yCalls(p.totalCalls)}`)
+		.join(" ");
+	return (
+		<section>
+			<h2>trend — {n} snapshots</h2>
+			<svg
+				width="100%"
+				viewBox={`0 0 ${HISTORY_W} ${HISTORY_H + 24}`}
+				style={{ minWidth: `${HISTORY_W}px` }}
+				role="img"
+				aria-label="analytics trend chart"
+			>
+				<path d={elimPath} fill="none" stroke="#7c5cff" strokeWidth={2} />
+				<path d={callsPath} fill="none" stroke="#0ea5e9" strokeWidth={2} opacity={0.8} />
+				{series.map((p, i) => (
+					<g key={p.timestamp}>
+						<circle cx={x(i)} cy={yElim(p.eliminatedPct)} r={3} fill="#7c5cff">
+							<title>{`${p.timestamp.slice(0, 19)} · eliminated ${p.eliminatedPct}%`}</title>
+						</circle>
+						<circle cx={x(i)} cy={yCalls(p.totalCalls)} r={3} fill="#0ea5e9">
+							<title>{`${p.timestamp.slice(0, 19)} · calls ${p.totalCalls}`}</title>
+						</circle>
+					</g>
+				))}
+				<text x={4} y={12} fill="#7c5cff" fontSize={10}>
+					eliminated %
+				</text>
+				<text x={110} y={12} fill="#0ea5e9" fontSize={10}>
+					call sites
+				</text>
+			</svg>
+			<p className="muted">
+				first {series[0]!.timestamp.slice(0, 19)} · last {series[n - 1]!.timestamp.slice(0, 19)}
+			</p>
+		</section>
 	);
 }
 
