@@ -87,6 +87,19 @@ describe("collectFiles", () => {
 });
 
 describe("runCli --json missing-css + cssBudget fields", () => {
+	test("arbitraryValues aggregates off-design-system sites like missingCss", async () => {
+		seed({ "ar.ts": `export const ar = cx("px-2", "w-[13px]");` });
+		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
+		const doc = JSON.parse(output) as {
+			missingCss: { count: number };
+			arbitraryValues: { count: number; sites: Array<{ file: string; token: string }> };
+		};
+		// Arbitrary values compile — they are NOT missing-css sites.
+		expect(doc.missingCss.count).toBe(0);
+		expect(doc.arbitraryValues.count).toBe(1);
+		expect(doc.arbitraryValues.sites[0]).toMatchObject({ file: "ar.ts", token: "w-[13px]" });
+	});
+
 	test("missingCss aggregates per-file sites with count + bounded sample", async () => {
 		// "bogus-flag-999" is not a known utility -> missing-CSS site.
 		seed({ "m.ts": `export const m = cx("px-2", "bogus-flag-999");` });

@@ -19,7 +19,7 @@
  * and the vite plugin share one instance:
  *
  *   import { twAdapter } from "./bridge";
- *   export const css = createDesignCss(examplePreset, { className: twAdapter });
+ *   export const dcss = createDesignCss(examplePreset, { className: twAdapter });
  *   // vite.config.ts
  *   plugins: [pandwindCssVite(examplePreset, { className: twAdapter }), ...]
  */

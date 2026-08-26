@@ -8,4 +8,6 @@ import { examplePreset } from "pandwind/preset";
  * `pandwindCssVite` in vite.config.ts so build-time extraction and runtime
  * hashes agree byte-for-byte.
  */
-export const css = createDesignCss(examplePreset);
+// Convention: design-lane instances are named `dcss` (distinct from engine
+// css() instances).
+export const dcss = createDesignCss(examplePreset);

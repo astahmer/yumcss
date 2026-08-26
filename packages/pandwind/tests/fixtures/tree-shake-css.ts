@@ -1,6 +1,6 @@
-// Import from the ROOT barrel (`pandwind`) while using only the css() API —
-// the bundler must drop tw()/cx()/preset, not ship them.
-import { createCss } from "../../src/index.ts";
+// css() lives ONLY on its subpath (`pandwind/css`) since the root export
+// was curated down to tw+cx — importing here must not drag tw()/preset in.
+import { createCss } from "../../src/css/index.ts";
 
 const css = createCss();
 

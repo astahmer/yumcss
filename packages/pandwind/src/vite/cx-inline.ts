@@ -50,6 +50,8 @@ import type { CssFn } from "../css/create-css.ts";
 import { evalLiteral, type OxcNode } from "../tw/literal.ts";
 import type { TwConfig } from "./inline.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
+import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
+import type { OnUnresolved } from "./inline.ts";
 
 interface CallNode extends OxcNode {
 	start: number;
@@ -458,6 +460,8 @@ function* iterAll(root: unknown): Generator<OxcNode> {
 export interface InlineResult {
 	code: string;
 	inlined: number;
+	/** Folded class tokens outside the design system (onUnresolved lane). */
+	unresolved?: UnresolvedToken[];
 }
 
 /* ------------------------------------------------------------------ *
@@ -580,6 +584,8 @@ export interface InlineCxCallsOptions {
 	 * true). Disabled only by the fold-coverage harness.
 	 */
 	partialFold?: boolean;
+	/** Collect folded tokens outside the design system (onUnresolved lane). */
+	onUnresolved?: OnUnresolved;
 }
 
 /**
@@ -644,6 +650,9 @@ export function inlineCxCalls(
 	});
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
+	const checkUnresolved = options.onUnresolved !== undefined && options.onUnresolved !== "off";
+	const lines = checkUnresolved ? createLineIndex(code) : undefined;
+	const unresolved: UnresolvedToken[] = [];
 
 	const mergeInputs = (inputs: CxInput[]): string | undefined => {
 		try {
@@ -697,6 +706,9 @@ export function inlineCxCalls(
 				text: JSON.stringify(merged),
 			});
 			inlined++;
+			if (lines !== undefined) {
+				unresolved.push(...collectUnresolvedTokens(merged, lines.lineOf(call.start), config));
+			}
 			return;
 		}
 
@@ -722,5 +734,5 @@ export function inlineCxCalls(
 	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
 		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 	}
-	return { code: output, inlined };
+	return { code: output, inlined, unresolved };
 }

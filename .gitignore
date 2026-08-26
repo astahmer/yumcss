@@ -6,3 +6,5 @@ dist/
 
 # studio run history (local snapshots)
 apps/inspector/.studio-history/
+docs/.astro/
+docs/dist/

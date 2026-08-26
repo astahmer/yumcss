@@ -2,6 +2,8 @@ packages:
   - packages/*
   - apps/*
   - examples/*
+  - docs
 allowBuilds:
   "@swc/core": true
   esbuild: true
+  sharp: true

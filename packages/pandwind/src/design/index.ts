@@ -13,9 +13,9 @@ import type { DesignPreset, DesignStyleObject } from "./types.ts";
  * against the preset tokens. Raw CSS props only under `$raw`.
  *
  * ```ts
- * const css = createDesignCss(examplePreset);
+ * const dcss = createDesignCss(examplePreset);
  *
- * css.class({
+ * dcss.class({
  *   $frame: { w: "20", corners: "lg", fill: "$blue-500", pad: [4, 8] },
  *   $layout: { flow: "stackY", gap: "16", align: "center" },
  *   $text: { size: "20", weight: "600", color: "$red-300" },

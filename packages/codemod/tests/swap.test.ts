@@ -491,3 +491,66 @@ describe("extra token formats", () => {
 		expect(vars).toContain('"blue-500": "#3182ce"');
 	});
 });
+
+/* ------------------------------------------------------------------ */
+/* full swap matrix: from {tw, css, design} x to {css.class, design, tw} */
+/* ------------------------------------------------------------------ */
+
+describe("full swap matrix (9 pairs)", () => {
+	const sources = {
+		tw: `const a = tw({ bgColor: "blue-500", hover: { rounded: "md" } });`,
+		css: `const b = css.class({ backgroundColor: "#3182ce", borderRadius: "0.375rem" });`,
+		design: `const c = css.class({ $frame: { fill: "$blue-500", corners: "md" } });`,
+	};
+	const targets = ["css.class", "design", "tw"] as const;
+
+	for (const from of ["tw", "css", "design"] as const) {
+		for (const to of targets) {
+			test(`${from} -> ${to}`, () => {
+				const result = runSwapRaw(
+					`${WITH_CSS}${
+						from === "tw" ? sources.tw : from === "css" ? sources.css : sources.design
+					}`,
+					meta,
+					{
+						from,
+						to,
+						file: "t.tsx",
+						metaDir: "apps/example/src",
+					},
+				);
+				// Every pair converts at least one call site; nothing silently dropped.
+				expect(result.converted).toBe(1);
+				expect(result.code.length).toBeGreaterThan(20);
+			});
+		}
+	}
+});
+
+test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => {
+	const dir = mkdtempSync(resolve(tmpdir(), "pw-codemod-panda-"));
+	const file = resolve(dir, "card.tsx");
+	writeFileSync(
+		file,
+		`import { css } from "./design.ts";\nexport const card = css.class({ backgroundColor: "#3182ce" });\n`,
+	);
+	const repoRoot = resolve(import.meta.dirname, "../../..");
+	execFileSync(
+		"pnpm",
+		[
+			"exec",
+			"tsx",
+			"src/cli.ts",
+			"swap",
+			"--from=auto",
+			"--to=panda",
+			"--write",
+			`--meta=${resolve(repoRoot, "apps/example/src")}`,
+			file,
+		],
+		{ cwd: resolve(import.meta.dirname, ".."), stdio: "pipe" },
+	);
+	const after = readFileSync(file, "utf8");
+	expect(after).toContain('css({ backgroundColor: "blue.500" })');
+	expect(after).toContain('import { css } from "styled-system/css";');
+});

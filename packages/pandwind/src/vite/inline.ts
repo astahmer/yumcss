@@ -19,6 +19,7 @@ import {
 } from "../tw/compile.ts";
 import { evalLiteral, type LiteralConstantScope, type OxcNode, walk } from "../tw/literal.ts";
 import { collectModuleConstants, type ConstantScope } from "./cx-inline.ts";
+import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
 
 export interface TwConfig {
 	variants: TwVariantsMeta;
@@ -98,6 +99,20 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 export interface InlineResult {
 	code: string;
 	inlined: number;
+	/** Folded class tokens outside the design system (onUnresolved lane). */
+	unresolved?: UnresolvedToken[];
+}
+
+/**
+ * Fail-fast policy for folded class tokens outside the design system —
+ * arbitrary `[...]` values and tokens Tailwind will not compile. Collection
+ * only runs when the mode is set; the plugin core owns reporting.
+ */
+export type OnUnresolved = "warn" | "error" | "off";
+
+export interface UnresolvedOptions {
+	/** Collect unresolved tokens for the plugin's onUnresolved lane. */
+	onUnresolved?: OnUnresolved;
 }
 
 /**
@@ -114,6 +129,7 @@ export function inlineTwCalls(
 	config: TwConfig,
 	twNames: ReadonlySet<string>,
 	importedConstants?: ConstantScope,
+	options?: UnresolvedOptions,
 ): InlineResult {
 	const result = parseSync(id, code, {
 		sourceType: "module",
@@ -131,6 +147,9 @@ export function inlineTwCalls(
 	]);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
+	const checkUnresolved = options?.onUnresolved !== undefined && options.onUnresolved !== "off";
+	const lines = checkUnresolved ? createLineIndex(code) : undefined;
+	const unresolved: UnresolvedToken[] = [];
 
 	walk(result.program, (node) => {
 		if (node.type !== "CallExpression") return;
@@ -158,6 +177,9 @@ export function inlineTwCalls(
 				text: JSON.stringify(compiled),
 			});
 			inlined++;
+			if (lines !== undefined) {
+				unresolved.push(...collectUnresolvedTokens(compiled, lines.lineOf(call.start), config));
+			}
 		} catch {
 			// Invalid style object (e.g. modifier variant without a nested
 			// variant) — leave the call so the runtime surfaces the error.
@@ -169,5 +191,5 @@ export function inlineTwCalls(
 	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
 		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 	}
-	return { code: output, inlined };
+	return { code: output, inlined, unresolved };
 }

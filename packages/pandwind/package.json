@@ -16,6 +16,7 @@
 		"./tw/generate": "./src/tw/generate-types.ts",
 		"./tw/collect": "./src/tw/collect.ts",
 		"./vite": "./src/vite/index.ts",
+		"./unplugin": "./src/unplugin.ts",
 		"./codegen/types": "./src/tw/generate-types.ts",
 		"./codegen/theme": "./src/tw/generate-theme.ts",
 		"./codegen/collect": "./src/tw/collect.ts",

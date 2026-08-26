@@ -1,19 +1,19 @@
 import { type CssFn } from "pandwind/css";
 import { createCx } from "pandwind/cx";
 import { cardBClass } from "./card-b.ts";
-import { css } from "./design.ts";
+import { dcss } from "./design.ts";
 
 /**
  * cx merges class strings and resolves atom conflicts (later wins): it reads
  * the design engine's atom registry to know which properties each dropped
  * class would have set.
  */
-const cx = createCx({ css: css as unknown as CssFn<never> });
+const cx = createCx({ css: dcss as unknown as CssFn<never> });
 
 // Module constants so the build-time extractor sees literal call sites; the
 // cx() below still exercises the runtime conflict-resolution path.
-const cardCLose = css.class({ $frame: { fill: "$red-500" } });
-const cardCWin = css.class({ $frame: { fill: "$gray-800" } });
+const cardCLose = dcss.class({ $frame: { fill: "$red-500" } });
+const cardCWin = dcss.class({ $frame: { fill: "$gray-800" } });
 
 export function App() {
 	return (
@@ -23,7 +23,7 @@ export function App() {
 			<section
 				data-testid="card-a"
 				data-style-id="shared-card"
-				className={css.class({
+				className={dcss.class({
 					$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 				})}
 			>
@@ -42,7 +42,7 @@ export function App() {
 			<section
 				data-testid="card-d"
 				data-style-id="shared-card"
-				className={css.class({
+				className={dcss.class({
 					$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
 				})}
 			>

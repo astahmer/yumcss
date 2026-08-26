@@ -19,4 +19,6 @@ What is always welcome (no pushback needed):
   design note first (see plans/) AND an explicit maintainer go-ahead.
 
 Current approved-but-not-built examples of the bar: var-inline strategy
-(dynamic values only), per-page CSS splitting (opt-in).
+(dynamic values only). Per-page CSS splitting already shipped
+(`splitByRoute` / `inlineCritical` on `pandwindCssVite`) — treat it as part of
+the frozen surface now.
