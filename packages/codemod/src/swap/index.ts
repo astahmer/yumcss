@@ -29,7 +29,7 @@ export const SWAP_TARGETS = Object.keys(EMITTERS);
 export type SwapTarget = "css.class" | "design" | "tw" | "tailwind" | "panda" | "stylex";
 import type { SwapIR } from "./ir.ts";
 
-export const SWAP_SOURCES = ["auto", "tw", "css", "design"] as const;
+export const SWAP_SOURCES = ["auto", "tw", "css", "design", "panda"] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
 
 export type SwapMissResolver = (
@@ -37,6 +37,8 @@ export type SwapMissResolver = (
 ) => Array<{ prop: string; value: string }> | null;
 
 export { createEngineMissResolver } from "./engine.ts";
+export { runPandaMigration } from "./panda-migrate.ts";
+export { inferCommonRoot } from "./panda-migrate.ts";
 export type { TwMissResolver } from "./engine.ts";
 
 export interface SwapOptions {
@@ -247,6 +249,10 @@ export interface SwapCliArgs {
 	tokenize: boolean;
 	sort: boolean;
 	dedup: boolean;
+	/** Output folder for --from=panda project migration (default "pandwind"). */
+	outDir: string;
+	/** Regenerate existing panda migration modules. */
+	force: boolean;
 }
 
 export function parseSwapArgs(argv: string[]): SwapCliArgs {
@@ -264,6 +270,8 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		tokenize: false,
 		sort: false,
 		dedup: false,
+		outDir: "",
+		force: false,
 	};
 	for (const arg of argv) {
 		if (arg.startsWith("--from=")) {
@@ -285,6 +293,12 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		} else if (arg === "--write") args.write = true;
 		else if (arg === "--diff") args.diff = true;
 		else if (arg === "--report") args.report = true;
+		else if (arg.startsWith("--out=")) args.outDir = arg.slice("--out=".length);
+		else if (arg === "--force") args.force = true;
+		else if (arg === "--engine") args.engine = true;
+		else if (arg === "--tokenize") args.tokenize = true;
+		else if (arg === "--sort") args.sort = true;
+		else if (arg === "--dedup") args.dedup = true;
 		else if (arg.startsWith("--token-refs=")) {
 			const value = arg.slice("--token-refs=".length) as TokenRefMode;
 			if (!["off", "bare", "group"].includes(value)) {
@@ -295,14 +309,14 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		else if (arg.startsWith("--skip-marker=")) args.skipMarker = arg.slice("--skip-marker=".length);
 		else if (arg.startsWith("--")) {
 			throw new Error(
-				`codemod swap: unknown flag '${arg}' (--write --diff --report --from= --to= --meta= --skip-marker=)`,
+				`codemod swap: unknown flag '${arg}' (--write --diff --report --force --from= --to= --meta= --out= --skip-marker= --token-refs= --engine --tokenize --sort --dedup)`,
 			);
 		} else args.patterns.push(arg);
 	}
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod swap: no input patterns given.\n" +
-				"usage: pandwind-codemod swap --from=<auto|tw|css|design> --to=<css.class|design|tw> [--write] [--diff] [--report] [--meta=<dir>] <globs...>",
+				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
 		);
 	}
 	return args;

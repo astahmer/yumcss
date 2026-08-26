@@ -148,21 +148,39 @@ interface Scope {
  * all on ONE line: `{ prop: v, _hover: { prop: v } }`.
  */
 function renderInlineScopes(scopes: Array<Scope>, sort = false): string {
-	const parts: string[] = [];
-	for (const scope of scopes) {
-		const entries = sort ? sortByCanonicalOrder(scope.entries) : scope.entries;
-		const body = entries.map((e) => `${e.prop}: ${formatValue(e.value)}`).join(", ");
-		if (scope.conditions.length === 0) {
-			parts.push(body); // top-level props merge into the call's own object
-			continue;
-		}
-		let nested = `{ ${body} }`;
-		for (let i = scope.conditions.length - 1; i >= 0; i--) {
-			nested = `_${scope.conditions[i]}: ${nested}`;
-		}
-		parts.push(nested);
+	interface ScopeNode {
+		entries: SwapEntry[];
+		children: Map<string, ScopeNode>;
 	}
-	return parts.join(", ");
+	const root: ScopeNode = { entries: [], children: new Map() };
+	for (const scope of scopes) {
+		let node = root;
+		for (const condition of scope.conditions) {
+			let child = node.children.get(condition);
+			if (child === undefined) {
+				child = { entries: [], children: new Map() };
+				node.children.set(condition, child);
+			}
+			node = child;
+		}
+		node.entries.push(...scope.entries);
+	}
+
+	const renderNode = (node: ScopeNode): string => {
+		const entries = sort ? sortByCanonicalOrder(node.entries) : node.entries;
+		const parts = entries.map(
+			(e) =>
+				`${e.prop.startsWith("--") ? JSON.stringify(e.prop) : e.prop}: ${formatValue(e.value)}`,
+		);
+		for (const [condition, child] of [...node.children.entries()].toSorted(([a], [b]) =>
+			a.localeCompare(b),
+		)) {
+			parts.push(`_${condition}: { ${renderNode(child)} }`);
+		}
+		return parts.join(", ");
+	};
+
+	return renderNode(root);
 }
 
 const wrapCall = (callee: string, inner: string): string => `${callee}({ ${inner} })`;

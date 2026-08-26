@@ -146,6 +146,14 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 				skipWsAndComments();
 				if (body[i] === ",") {
 					i++;
+					// tolerate trailing commas before the closing brace
+					const lookahead = i;
+					skipWsAndComments();
+					if (body[i] === "}") {
+						i++;
+						return obj;
+					}
+					i = lookahead;
 					continue;
 				}
 				if (body[i] === "}") {
