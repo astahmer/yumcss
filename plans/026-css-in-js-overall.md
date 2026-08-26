@@ -114,15 +114,15 @@ the flat path does not become ambiguous.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Public API growth | Minimal and design-reviewed | Preserve pandwind's small surface and avoid a recipe-style expansion |
-| Static/runtime split | Static extraction first, runtime sheet only for proven dynamic cases | Keeps ordinary output small and makes runtime cost explicit |
-| CSS identity | Deterministic structural identity plus source metadata | Class names remain stable while diagnostics can identify origins |
-| SSR insertion | Adapter-owned extraction/hydration contract | Avoid hidden DOM globals and support streaming hosts |
-| Framework breadth | Shared core plus tested fixtures | Do not claim support based only on unplugin compilation |
-| Release/publishing | Deferred | User explicitly requested no release work in this wave |
-| Recipes/composition | Deferred to dedicated session | User explicitly requested this exclusion |
+| Choice               | Decision                                                             | Rationale                                                            |
+| -------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Public API growth    | Minimal and design-reviewed                                          | Preserve pandwind's small surface and avoid a recipe-style expansion |
+| Static/runtime split | Static extraction first, runtime sheet only for proven dynamic cases | Keeps ordinary output small and makes runtime cost explicit          |
+| CSS identity         | Deterministic structural identity plus source metadata               | Class names remain stable while diagnostics can identify origins     |
+| SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                 |
+| Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation              |
+| Release/publishing   | Deferred                                                             | User explicitly requested no release work in this wave               |
+| Recipes/composition  | Deferred to dedicated session                                        | User explicitly requested this exclusion                             |
 
 ## What this allows
 
@@ -219,10 +219,10 @@ schema version.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-08-26 | Work in a new jj workspace | Keep this wave isolated from existing runtime and codemod workspaces |
-| 2026-08-26 | Implement revisions 1–5 only | User selected the first five roadmap revisions |
-| 2026-08-26 | Defer recipes/composition | User will handle that in a separate dedicated session |
-| 2026-08-26 | Defer release/publishing | User explicitly requested no release work yet |
-| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions |
+| Date       | Decision                                   | Rationale                                                            |
+| ---------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces |
+| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                       |
+| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                |
+| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                        |
+| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions    |

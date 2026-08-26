@@ -1,0 +1,68 @@
+/**
+ * Internal capability vocabulary shared by the CSS-in-JS scorecard,
+ * diagnostics, and future adapter reports.
+ *
+ * This is intentionally not exported from a public package entry point. It is
+ * a contract for describing behavior, not another app-facing styling API.
+ */
+export type CapabilityStatus = "static" | "runtime" | "partial" | "unsupported";
+
+export interface CapabilityRecord {
+	readonly feature: string;
+	readonly status: CapabilityStatus;
+	readonly detail: string;
+}
+
+export const CSS_IN_JS_CAPABILITIES = [
+	{
+		feature: "typed-general-css",
+		status: "partial",
+		detail: "The design vocabulary is typed; the general css lane needs a preset-bound contract.",
+	},
+	{
+		feature: "atomic-css",
+		status: "static",
+		detail: "Literal declarations become deterministic deduplicated atomic rules.",
+	},
+	{
+		feature: "static-extraction",
+		status: "static",
+		detail: "Literal css calls can be extracted by the bundler plugin.",
+	},
+	{
+		feature: "dynamic-values",
+		status: "runtime",
+		detail: "css.vars provides inline custom properties for values known only at runtime.",
+	},
+	{
+		feature: "theme-scopes",
+		status: "static",
+		detail: "Theme and component token scopes are emitted as deterministic CSS blocks.",
+	},
+	{
+		feature: "global-rules",
+		status: "unsupported",
+		detail: "No first-class authored global-rule primitive exists yet.",
+	},
+	{
+		feature: "keyframes-font-face",
+		status: "unsupported",
+		detail: "No first-class authored keyframes or font-face primitive exists yet.",
+	},
+	{
+		feature: "ssr-hydration",
+		status: "unsupported",
+		detail: "No runtime sheet extraction and client hydration contract exists yet.",
+	},
+	{
+		feature: "bundler-integration",
+		status: "partial",
+		detail: "Vite and unplugin adapters exist; framework-specific fixtures are still needed.",
+	},
+	{
+		feature: "source-provenance",
+		status: "partial",
+		detail:
+			"Debug names and analyzer data exist, but emitted rules are not source-addressable yet.",
+	},
+] as const satisfies readonly CapabilityRecord[];
