@@ -3,10 +3,16 @@
  *
  * Usage:
  *   node --import tsx src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
+ *   node --import tsx src/cli.ts swap --from=<auto|tw|css|design> \
+ *        --to=<css.class|design|tw> [--write] [--diff] [--report] <globs...>
  *
  * Default is analysis mode: reports what WOULD change without touching
  * files. `--diff` prints unified diffs; `--write` applies. The two are not
  * mutually exclusive — `--diff --write` shows the diffs while writing.
+ *
+ * The `swap` subcommand converts BETWEEN pandwind APIs (plans/022): tw()
+ * object literals, css.class()/css() literals and the design vocabulary,
+ * plus outbound emission to plain tailwind classes via the tw target.
  */
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
@@ -14,6 +20,8 @@ import { resolve } from "node:path";
 import { loadMetaFromSources, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
+import * as swapImport from "./swap/index.ts";
+import * as tokenSetModule from "./swap/token-set.ts";
 
 interface CliArgs {
 	patterns: string[];
@@ -25,7 +33,6 @@ interface CliArgs {
 	skipMarker: string;
 	sources: ReturnType<typeof parseSourceList>;
 }
-
 function parseArgs(argv: string[]): CliArgs {
 	const args: CliArgs = {
 		patterns: [],
@@ -246,6 +253,86 @@ function findRepoRoot(): string {
 	}
 }
 
+function mainSwap(argv: string[]): void {
+	const args = swapImport.parseSwapArgs(argv);
+	const root = findRepoRoot();
+	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
+	const metaDir = resolve(root, metaDirRelative);
+
+	let meta: PandwindMeta;
+	try {
+		const bridgePath = resolve(metaDir, "bridge.ts");
+		meta = loadMetaFromSources({
+			typesDtsPath: resolve(metaDir, "types.d.ts"),
+			twTsPath: resolve(metaDir, "tw.ts"),
+			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
+		});
+	} catch (error) {
+		console.error(
+			`codemod swap: failed to load generated metadata from ${metaDir}\n` +
+				"  run `pnpm tw:codegen && pnpm tw:bridge` first, or pass --meta=<dir>\n" +
+				`  (${(error as Error).message})`,
+		);
+		process.exitCode = 1;
+		return;
+	}
+
+	const filePaths = expandPatterns(args.patterns, root);
+	if (filePaths.length === 0) {
+		console.error("codemod swap: no matching files");
+		process.exitCode = 1;
+		return;
+	}
+
+	let totalConverted = 0;
+	let totalChanged = 0;
+	let totalResiduals = 0;
+	for (const file of filePaths) {
+		const relative = file.slice(root.length + 1);
+		let source: string;
+		try {
+			source = readFileSync(file, "utf8");
+		} catch {
+			continue;
+		}
+		const result = swapImport.runSwap(source, meta, {
+			from: args.from,
+			to: args.to,
+			file: relative,
+			metaDir: metaDirRelative,
+			skipMarker: args.skipMarker,
+		});
+		totalConverted += result.converted;
+		totalResiduals += result.unmappedTokens.length;
+		if (!result.changed) {
+			console.log(`${relative}: no changes`);
+			continue;
+		}
+		totalChanged++;
+		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
+		if (args.write) writeFileSync(file, result.code);
+		console.log(
+			`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
+				`${result.unmappedTokens.length} residual(s), ${result.skippedByMarker} skipped by marker`,
+		);
+	}
+
+	console.log(
+		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
+			`${totalConverted} swapped · ${totalResiduals} residual(s) · swap ${args.from}->${args.to} · ` +
+			(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+	);
+
+	if (args.report) {
+		const lines = [
+			"swap report:",
+			`  call sites through the target API: ${totalConverted}`,
+			`  residuals needing attention: ${totalResiduals}`,
+		];
+		console.log(lines.join("\n"));
+	}
+}
+
 function main(): void {
 	const args = parseArgs(process.argv.slice(2));
 	const root = findRepoRoot();
@@ -363,7 +450,65 @@ export function buildReport(fileResults: Array<ReportEntry>): string {
 	}
 	return lines.join("\n");
 }
+/**
+ * Token-config conversions (plans/022): DTCG JSON <-> @theme css <->
+ * definePreset <-> panda.config tokens. One TokenSet IR in between.
+ */
+async function mainTokens(argv: string[]): Promise<void> {
+	let from: string | undefined;
+	let to: string | undefined;
+	let input: string | undefined;
+	let out: string | undefined;
+	for (const arg of argv) {
+		if (arg.startsWith("--from=")) from = arg.slice("--from=".length);
+		else if (arg.startsWith("--to=")) to = arg.slice("--to=".length);
+		else if (arg.startsWith("--out=")) out = arg.slice("--out=".length);
+		else if (!arg.startsWith("--")) input = arg;
+		else throw new Error(`codemod tokens: unknown flag '${arg}' (--from= --to= --out=)`);
+	}
+	const formats = ["dtcg", "theme", "panda", "preset"];
+	if (from === undefined || !formats.includes(from) || input === undefined) {
+		throw new Error(
+			"usage: pandwind-codemod tokens --from=<dtcg|theme|panda|preset> --to=<dtcg|theme|panda|preset> <file> [--out=<file>]",
+		);
+	}
+	to = to ?? from;
+
+	const ts = await import("node:fs");
+	const T = tokenSetModule;
+	let set: import("./swap/token-set.ts").TokenSet;
+	if (from === "dtcg") set = T.fromDtcgJson(ts.readFileSync(input, "utf8"));
+	else if (from === "theme") set = T.fromThemeCss(ts.readFileSync(input, "utf8"));
+	else if (from === "panda") set = await T.fromPandaConfig(resolve(input));
+	else set = await T.fromDefinePreset(resolve(input));
+
+	const groupCount = Object.keys(set.groups).length;
+	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
+
+	let result: string;
+	if (to === "dtcg") result = T.toDtcgJson(set);
+	else if (to === "theme") result = T.toThemeCss(set);
+	else if (to === "panda") result = T.toPandaConfigSnippet(set);
+	else result = T.toDefinePresetSnippet(set);
+
+	if (out !== undefined) {
+		writeFileSync(resolve(out), result);
+		console.log(
+			`codemod tokens: ${groupCount} group(s), ${tokenCount} token(s) -> ${resolve(out)}`,
+		);
+	} else {
+		process.stdout.write(result);
+		console.error(
+			`\n// ${groupCount} group(s), ${tokenCount} token(s), converted ${from} -> ${to}`,
+		);
+	}
+}
+
 // Run only when invoked as the CLI entry — importing the module from
 // tests must not execute the program.
 const invokedDirectly = /cli\.[mc]?[tj]sx?$/.test(process.argv[1] ?? "");
-if (invokedDirectly) void main();
+if (invokedDirectly) {
+	if (process.argv[2] === "swap") mainSwap(process.argv.slice(3));
+	else if (process.argv[2] === "tokens") void mainTokens(process.argv.slice(3));
+	else void main();
+}

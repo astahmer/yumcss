@@ -1,0 +1,66 @@
+/**
+ * Token-reference helpers (plans/022 follow-up): map resolved values /
+ * authored `$token` strings onto TARGET-library token references.
+ *
+ * References are derived from the app's own DTCG preset (the same source
+ * the bridge was generated from), so `#3182ce` -> `blue.500` ->
+ * `colors.blue.500` always round-trips against the design system the call
+ * sites were written for.
+ */
+
+import { examplePreset } from "../../../pandwind/src/preset/example-preset.ts";
+
+/** How emitted token references are qualified. */
+export type TokenRefMode = "off" | "bare" | "group";
+
+/** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
+export function normalizeTokenKey(key: string): string {
+	return key.replace(/^\$/, "").replace(/-/g, ".");
+}
+
+/** group -> lowercase resolved value -> normalized ref (WeakMap-cached). */
+const inverseCache = new WeakMap<object, Map<string, Map<string, string>>>();
+function inverseGroups(): Map<string, Map<string, string>> {
+	const cacheKey = examplePreset.tokens as object;
+	let cached = inverseCache.get(cacheKey);
+	if (cached !== undefined) return cached;
+	const groups = new Map<string, Map<string, string>>();
+	for (const [group, values] of Object.entries(
+		examplePreset.tokens as Record<string, Record<string, unknown>>,
+	)) {
+		const inverse = new Map<string, string>();
+		for (const [tokenKey, tokenValue] of Object.entries(values)) {
+			if (typeof tokenValue !== "string") continue;
+			if (!inverse.has(tokenValue.toLowerCase())) {
+				inverse.set(tokenValue.toLowerCase(), normalizeTokenKey(tokenKey));
+			}
+		}
+		groups.set(group, inverse);
+	}
+	inverseCache.set(cacheKey, groups);
+	return groups;
+}
+
+/**
+ * Authored `$blue-500` -> `blue.500` (group unknowable without resolution).
+ * Returns null for non-token strings.
+ */
+export function authoredTokenRef(value: string): string | null {
+	if (!value.startsWith("$")) return null;
+	return normalizeTokenKey(value);
+}
+
+/** Resolved value -> ref by searching the preset groups (`#3182ce` -> `blue.500`). */
+export function resolvedTokenRef(groups: ReadonlyArray<string>, value: string): string | null {
+	const lower = value.toLowerCase();
+	for (const group of groups) {
+		const hit = inverseGroups().get(group)?.get(lower);
+		if (hit !== undefined) return hit;
+	}
+	return null;
+}
+
+/** Qualify a bare ref with its group (`blue.500` -> `colors.blue.500`). */
+export function qualifyRef(ref: string, group: string): string {
+	return `${group}.${ref}`;
+}

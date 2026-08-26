@@ -49,5 +49,10 @@ export function ensureImport(code: string, statement: string): string {
 }
 
 export function hasCssBinding(code: string): boolean {
-	return /\b(?:const|let|var)\s+css\b|createDesignCss\(|createCss\(/.test(code);
+	return (
+		/\b(?:const|let|var)\s+css\b|createDesignCss\(|createCss\(/.test(code) ||
+		// A bare named import of `css` also binds the engine in scope
+		// (e.g. apps re-exporting their design instance).
+		/import\s*\{[^}]*\bcss\b[^}]*}\s*from/.test(code)
+	);
 }

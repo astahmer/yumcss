@@ -55,7 +55,7 @@ interface Edit {
 	text: string;
 }
 
-function applyEdits(source: string, edits: Array<Edit>): string {
+export function applyEdits(source: string, edits: Array<Edit>): string {
 	let output = source;
 	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
 		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);

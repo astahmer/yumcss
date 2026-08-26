@@ -61,7 +61,12 @@ function applyEdits(source: string, edits: Array<Edit>): string {
 }
 
 /** Insert a skip-marker comment line above the line containing `index`. */
-function insertSkipMarker(source: string, index: number, reason: string, marker: string): string {
+export function insertSkipMarker(
+	source: string,
+	index: number,
+	reason: string,
+	marker: string,
+): string {
 	const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
 	const indentMatch = /^\s*/.exec(source.slice(lineStart));
 	const indent = indentMatch ? indentMatch[0] : "";
@@ -89,7 +94,7 @@ function propertyValueIndex(meta: PandwindMeta): Map<string, string> {
  * property list (the latter covers utilities the bridge scopes out, e.g.
  * `color` when values resolve through theme variables). */
 /** kebab-case CSS property -> camelCase object key. */
-const camelProperty = (prop: string): string =>
+export const camelProperty = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
 function knownProperties(meta: PandwindMeta): Set<string> {
@@ -107,7 +112,7 @@ function knownProperties(meta: PandwindMeta): Set<string> {
 }
 
 /** Brace-matched extraction of the balanced block starting at `open`. */
-function matchBlock(source: string, open: number): { body: string; end: number } | null {
+export function matchBlock(source: string, open: number): { body: string; end: number } | null {
 	let depth = 0;
 	for (let i = open; i < source.length; i++) {
 		if (source[i] === "{") depth++;
@@ -214,7 +219,7 @@ const STYLED_TEMPLATE_REGEX = /\bstyled\s*(?:\.\s*(\w+)|\(\s*(\w+)\s*\))\s*(`(?:
  * test. Parsed once per file with oxc — the same parser the vite passes
  * use, so ranges are exact.
  */
-function computeExcludedRanges(
+export function computeExcludedRanges(
 	source: string,
 	file: string,
 ): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
@@ -459,7 +464,6 @@ function transformStylex(
 		if (unwrapped === null) continue;
 		const parsed = parseStylexEntries(unwrapped.body);
 		if (parsed === null) {
-			console.error("DBG parse failed; unwrapped:", JSON.stringify(unwrapped.body));
 			working = insertSkipMarker(
 				working,
 				match.index ?? 0,

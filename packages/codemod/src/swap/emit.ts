@@ -1,0 +1,430 @@
+/**
+ * Swap emitters (plans/022): SwapIR -> target-API source text.
+ *
+ * One function per target API; adding a library means one more exported
+ * emitter + one registry line in ./index.ts. Every emitter returns the
+ * replacement text PLUS the residuals it could not represent — runSwap
+ * turns those into skip markers, so nothing is ever silently dropped.
+ *
+ * Output style: SINGLE-LINE call sites. The codemod never pretty-prints —
+ * most call sites are one-liners in real code and the user reformats via
+ * their own tooling afterwards.
+ */
+import type { PandwindMeta } from "../meta.ts";
+import { mapToken } from "../map.ts";
+import { examplePreset } from "../../../pandwind/src/preset/example-preset.ts";
+import type { SwapEntry, SwapIR } from "./ir.ts";
+import type { TokenRefMode } from "./tokens.ts";
+
+export interface EmitterContext {
+	/** 1-based ordinal of the call site within the current file pass. */
+	index: number;
+	/** How token references are emitted ("off" = resolved literals). */
+	tokenRefs?: TokenRefMode;
+}
+
+export interface EmitterResult {
+	text: string;
+	residuals: SwapIR["residuals"];
+	/** File-level statements to inject after imports (structural targets). */
+	headers?: string[];
+	/** Module imports the emitted code requires. */
+	imports?: string[];
+}
+
+export type Emitter = (ir: SwapIR, meta: PandwindMeta, ctx: EmitterContext) => EmitterResult;
+
+const conditionKey = (conditions: string[]): string =>
+	conditions.length === 0 ? "" : conditions.join("__");
+
+const formatValue = (value: unknown): string =>
+	typeof value === "string"
+		? JSON.stringify(value)
+		: Array.isArray(value)
+			? `[${value.map((v) => formatValue(v)).join(", ")}]`
+			: String(value);
+
+/* ------------------------------------------------------------------ */
+/* shared nesting renderer — single-line scopes                        */
+/* ------------------------------------------------------------------ */
+
+function groupByConditions(entries: SwapEntry[]): Map<string, SwapEntry[]> {
+	const groups = new Map<string, SwapEntry[]>();
+	for (const entry of entries) {
+		const key = conditionKey(entry.conditions);
+		const list = groups.get(key);
+		if (list === undefined) groups.set(key, [entry]);
+		else list.push(entry);
+	}
+	return groups;
+}
+
+interface Scope {
+	entries: SwapEntry[];
+	conditions: string[];
+}
+
+/**
+ * Render scopes as inline `{ ... }` bodies nested under `_condition:` keys,
+ * all on ONE line: `{ prop: v, _hover: { prop: v } }`.
+ */
+function renderInlineScopes(scopes: Array<Scope>): string {
+	const parts = scopes.map((scope) => {
+		let body = `{ ${scope.entries.map((e) => `${e.prop}: ${formatValue(e.value)}`).join(", ")} }`;
+		for (let i = scope.conditions.length - 1; i >= 0; i--) {
+			body = `_${scope.conditions[i]}: ${body}`;
+		}
+		return body;
+	});
+	return parts.join(", ");
+}
+
+const wrapCall = (callee: string, inner: string): string => `${callee}({ ${inner} })`;
+
+/* ------------------------------------------------------------------ */
+/* css.class                                                           */
+/* ------------------------------------------------------------------ */
+
+export const emitCssClass: Emitter = (ir) => {
+	const groups = groupByConditions(ir.entries);
+	const inner = renderInlineScopes(
+		[...groups.values()].map((entries) => ({
+			entries,
+			conditions: entries[0]?.conditions ?? [],
+		})),
+	);
+	const text = inner.length > 0 ? wrapCall("css.class", inner) : "";
+	return { text, residuals: [] };
+};
+
+/* ------------------------------------------------------------------ */
+/* tw()                                                                */
+/* ------------------------------------------------------------------ */
+
+const camel = (prop: string): string =>
+	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
+
+/** Forward bridge: camelProp|value -> utility class (WeakMap-cached). */
+const forwardIndexCache = new WeakMap<PandwindMeta, Map<string, string>>();
+function forwardIndex(meta: PandwindMeta): Map<string, string> {
+	let index = forwardIndexCache.get(meta);
+	if (index !== undefined) return index;
+	index = new Map();
+	for (const [utilityClass, { property, value }] of meta.bridgeInverse) {
+		const key = `${camel(property).toLowerCase()}|${String(value).toLowerCase()}`;
+		if (!index.has(key)) index.set(key, utilityClass);
+	}
+	forwardIndexCache.set(meta, index);
+	return index;
+}
+
+const DATA_ARIA_VARIANT = /^(?:group|peer)-(?:data|aria)-\[/;
+
+function isKnownVariant(meta: PandwindMeta, name: string): boolean {
+	return meta.variants.has(name) || DATA_ARIA_VARIANT.test(name) || name === "*" || name === "**";
+}
+
+interface TwSlot {
+	key: string;
+	value: string | true;
+}
+type TwTree = Map<string, TwTree | TwSlot[]>;
+
+function insertIntoTree(meta: PandwindMeta, tree: TwTree, entry: SwapEntry): string | null {
+	let node = tree;
+	for (const condition of entry.conditions) {
+		if (!isKnownVariant(meta, condition)) {
+			return `variant "${condition}" is not a generated tw variant`;
+		}
+		let child = node.get(condition);
+		if (child === undefined || Array.isArray(child)) {
+			child = new Map();
+			node.set(condition, child as TwTree);
+		}
+		node = child as TwTree;
+	}
+	const utility = forwardIndex(meta).get(
+		`${entry.prop.toLowerCase()}|${String(entry.value).toLowerCase()}`,
+	);
+	if (utility === undefined) {
+		return `no utility for ${entry.prop}: ${String(entry.value)} (bridge miss)`;
+	}
+	const mapped = mapToken(utility, meta);
+	if (mapped === null) {
+		return `utility "${utility}" has no typed tw() key`;
+	}
+	const slots = node.get("");
+	if (slots === undefined) node.set("", [{ key: mapped.key, value: mapped.value }]);
+	else (slots as TwSlot[]).push({ key: mapped.key, value: mapped.value });
+	return null;
+}
+
+function renderTwInline(tree: TwTree): string {
+	const parts: string[] = [];
+	for (const [name, child] of tree) {
+		if (Array.isArray(child)) {
+			for (const slot of child) {
+				parts.push(`${slot.key}: ${formatValue(slot.value)}`);
+			}
+			continue;
+		}
+		parts.push(`${JSON.stringify(name)}: { ${renderTwInline(child)} }`);
+	}
+	return parts.join(", ");
+}
+
+export const emitTwObject: Emitter = (ir, meta) => {
+	const residuals: SwapIR["residuals"] = [];
+	const tree: TwTree = new Map();
+	let placed = 0;
+	for (const entry of ir.entries) {
+		const error = insertIntoTree(meta, tree, entry);
+		if (error !== null) {
+			residuals.push({
+				kind: error.startsWith("variant") ? "unrepresentable" : "unknown-value",
+				text: `${entry.prop}: ${String(entry.value)}`,
+				hint: error,
+			});
+		} else placed++;
+	}
+	if (placed === 0 && ir.entries.length > 0) return { text: "", residuals };
+	const text = placed > 0 ? `tw({ ${renderTwInline(tree)} })` : "";
+	return { text, residuals };
+};
+
+/* ------------------------------------------------------------------ */
+/* design vocabulary                                                   */
+/* ------------------------------------------------------------------ */
+
+/** Inverted preset tokens: group -> lowercase resolved value -> token key. */
+const inverseTokensCache = new WeakMap<object, Map<string, Map<string, string>>>();
+function inverseTokens(): Map<string, Map<string, string>> {
+	const cacheKey = examplePreset.tokens as object;
+	let cached = inverseTokensCache.get(cacheKey);
+	if (cached !== undefined) return cached;
+	const groups = new Map<string, Map<string, string>>();
+	for (const [group, values] of Object.entries(
+		examplePreset.tokens as Record<string, Record<string, unknown>>,
+	)) {
+		const inverse = new Map<string, string>();
+		for (const [tokenKey, tokenValue] of Object.entries(values)) {
+			if (typeof tokenValue !== "string") continue;
+			// RAW keys on purpose: $frame/$text values are consumed by
+			// resolveDesignStyle again, so `$blue-500`/`lg` must round-trip
+			// verbatim. Normalized refs are an external-target concern.
+			if (!inverse.has(tokenValue.toLowerCase())) {
+				inverse.set(tokenValue.toLowerCase(), tokenKey);
+			}
+		}
+		groups.set(group, inverse);
+	}
+	inverseTokensCache.set(cacheKey, groups);
+	return groups;
+}
+
+/**
+ * Translate a resolved CSS value into a design-vocabulary token reference.
+ * With tokenRefs "group", emits qualified refs (`colors.blue.500`).
+ */
+function toDesignTokenRef(
+	groups: ReadonlyArray<string>,
+	value: string,
+	mode: TokenRefMode,
+	fallbackGroup: string,
+): string | number | null {
+	for (const group of groups) {
+		const hit = inverseTokens().get(group)?.get(value.toLowerCase());
+		if (hit !== undefined) {
+			if (mode === "group") return `${group}.${hit}`;
+			// Bare spacing keys are numbers in the vocabulary (pad: [4, 8]).
+			return /^\d+$/.test(hit) ? Number(hit) : hit;
+		}
+	}
+	void fallbackGroup;
+	return null;
+}
+
+const splitList = (value: string): string[] | null => {
+	const parts = value.trim().split(/\s+/);
+	return parts.every((p) => p !== "") ? parts : null;
+};
+
+interface DesignScope {
+	frame: Array<[string, unknown]>;
+	layout: Array<[string, unknown]>;
+	text: Array<[string, unknown]>;
+	raw: Array<[string, unknown]>;
+}
+
+function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): boolean {
+	const str = typeof entry.value === "string" ? entry.value : String(entry.value);
+
+	switch (entry.prop) {
+		case "width":
+			scope.frame.push(["w", str]);
+			return true;
+		case "height":
+			scope.frame.push(["h", str]);
+			return true;
+		case "backgroundColor":
+		case "background": {
+			const ref = toDesignTokenRef(["colors"], str, mode, "colors");
+			if (ref === null) return false;
+			scope.frame.push(["fill", ref]);
+			return true;
+		}
+		case "borderRadius": {
+			const list = splitList(str);
+			if (list === null) return false;
+			const refs = list.map((part) => toDesignTokenRef(["radii"], part, mode, "radii"));
+			if (refs.some((r) => r === null)) return false;
+			scope.frame.push(["corners", refs.length === 1 ? (refs[0] as string) : (refs as string[])]);
+			return true;
+		}
+		case "padding": {
+			const list = splitList(str);
+			if (list === null) return false;
+			const refs = list.map((part) => toDesignTokenRef(["spacing"], part, mode, "spacing"));
+			if (refs.some((r) => r === null)) return false;
+			scope.frame.push(["pad", refs.length === 1 ? refs[0] : refs]);
+			return true;
+		}
+		case "paddingInline":
+		case "paddingBlock": {
+			const ref = toDesignTokenRef(["spacing"], str, mode, "spacing");
+			if (ref === null) return false;
+			scope.frame.push([entry.prop === "paddingInline" ? "padX" : "padY", ref]);
+			return true;
+		}
+		case "overflow":
+			scope.frame.push(["overflow", str]);
+			return true;
+		case "zIndex":
+			scope.frame.push(["z", str]);
+			return true;
+		case "opacity":
+			scope.frame.push(["opacity", str]);
+			return true;
+		case "gap":
+		case "columnGap":
+		case "rowGap": {
+			const ref = toDesignTokenRef(["spacing"], str, mode, "spacing");
+			if (ref === null) return false;
+			scope.layout.push([
+				entry.prop === "gap" ? "gap" : entry.prop === "columnGap" ? "gapX" : "gapY",
+				ref,
+			]);
+			return true;
+		}
+		case "flexWrap": {
+			if (str === "wrap") {
+				scope.layout.push(["wrap", true]);
+				return true;
+			}
+			return str === "nowrap"; // default value — drop silently
+		}
+		case "color": {
+			const ref = toDesignTokenRef(["colors"], str, mode, "colors");
+			if (ref === null) return false;
+			scope.text.push(["color", ref]);
+			return true;
+		}
+		case "fontSize": {
+			const ref = toDesignTokenRef(["fontSizes"], str, mode, "fontSizes");
+			if (ref === null) return false;
+			scope.text.push(["size", ref]);
+			return true;
+		}
+		case "fontWeight": {
+			const ref = toDesignTokenRef(["fontWeights"], str, mode, "fontWeights");
+			if (ref === null) return false;
+			scope.text.push(["weight", ref]);
+			return true;
+		}
+		case "fontFamily": {
+			const ref = toTokenRef(["fonts"], str, mode, "fonts");
+			if (ref === null) return false;
+			scope.text.push(["font", ref]);
+			return true;
+		}
+		case "textDecorationLine": {
+			if (str === "underline" || str === "strikethrough" || str === "none") {
+				scope.text.push(["decoration", str]);
+				return true;
+			}
+			return false;
+		}
+		default:
+			return false;
+	}
+}
+
+// alias kept so both call shapes above stay valid if one is renamed later
+const toTokenRef = toDesignTokenRef;
+
+export const emitDesignVocab: Emitter = (ir, _meta, ctx) => {
+	const residuals: SwapIR["residuals"] = [];
+	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
+	const groups = groupByConditions(ir.entries);
+	const parts: string[] = [];
+	for (const entries of groups.values()) {
+		const conditions = entries[0]?.conditions ?? [];
+		const scope: DesignScope = { frame: [], layout: [], text: [], raw: [] };
+		// display:flex + flexDirection pair into $layout.flow; anything else
+		// (display:block, grid, lone flexDirection…) falls to $raw.
+		const displayFlex = entries.find((e) => e.prop === "display" && e.value === "flex");
+		const direction = entries.find((e) => e.prop === "flexDirection");
+		const flow =
+			direction?.value === "row" ? "stackX" : direction?.value === "column" ? "stackY" : null;
+		const flexPaired = displayFlex !== undefined && flow !== null;
+		if (flexPaired) scope.layout.push(["flow", flow as string]);
+		for (const entry of entries) {
+			if (entry.prop === "display" || entry.prop === "flexDirection") {
+				if (!flexPaired) {
+					scope.raw.push([entry.prop, entry.value]);
+					residuals.push({
+						kind: "unknown-value",
+						text: `${entry.prop}: ${String(entry.value)}`,
+						hint: "display/flex-direction outside the designer vocabulary",
+					});
+				}
+				continue;
+			}
+			if (!placeEntry(entry, scope, mode)) {
+				scope.raw.push([entry.prop, entry.value]);
+				residuals.push({
+					kind: "unknown-value",
+					text: `${entry.prop}: ${String(entry.value)}`,
+					hint: "outside the designer vocabulary — placed in $raw",
+				});
+			}
+		}
+		const modules: string[] = [];
+		const renderModule = (name: string, pairs: Array<[string, unknown]>): void => {
+			if (pairs.length === 0) return;
+			modules.push(`${name}: { ${pairs.map(([k, v]) => `${k}: ${formatValue(v)}`).join(", ")} }`);
+		};
+		renderModule("$frame", scope.frame);
+		renderModule("$layout", scope.layout);
+		renderModule("$text", scope.text);
+		renderModule("$raw", scope.raw);
+		if (modules.length === 0) continue;
+		let body = modules.join(", ");
+		for (let i = conditions.length - 1; i >= 0; i--) {
+			body = `_${conditions[i]}: { ${body} }`;
+		}
+		parts.push(body);
+	}
+	const text = parts.length > 0 ? `css.class({ ${parts.join(", ")} })` : "";
+	return { text, residuals };
+};
+
+/* ------------------------------------------------------------------ */
+
+export const SWAP_EMITTERS: Record<"css.class" | "design" | "tw", Emitter> = {
+	"css.class": emitCssClass,
+	design: emitDesignVocab,
+	tw: emitTwObject,
+};
+
+export type CoreTarget = keyof typeof SWAP_EMITTERS;
