@@ -53,6 +53,24 @@ describe("css.vars — encoding", () => {
 		expect(out.style).toEqual({ "--pw-c-color_dark_hover": "x" });
 	});
 
+	test("finite numbers are serialized for SSR-safe inline styles", () => {
+		const out = css.vars({ opacity: 0.5, zIndex: -2 } as never);
+		expect(out.style).toEqual({ "--pw-c-opacity": "0.5", "--pw-c-z-index": "-2" });
+		expect(JSON.parse(JSON.stringify(out))).toEqual({
+			class: "pw-opacity pw-z-index",
+			style: { "--pw-c-opacity": "0.5", "--pw-c-z-index": "-2" },
+		});
+	});
+
+	test("non-finite and structural values are omitted instead of becoming CSS", () => {
+		const out = css.vars({
+			opacity: Number.NaN,
+			color: true,
+		} as never);
+		expect(out.class).toBe("");
+		expect(out.style).toEqual({});
+	});
+
 	test("carrier metadata is embedded for cx recognition", () => {
 		const out = css.vars({ color: "red" });
 		expect(VARS_ATOMS in out).toBe(true);

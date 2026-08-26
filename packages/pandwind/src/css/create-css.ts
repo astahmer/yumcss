@@ -3,7 +3,6 @@ import type {
 	AnyCssConfig,
 	AnyTokens,
 	CssConfigReturn,
-	CssPreset,
 	DefinePresetOptions,
 	StyleObject,
 	TypedStyleObject,
@@ -47,7 +46,7 @@ export function createCss(
 	presetOrOptions: CreateCssOptions | TypedPreset = {},
 	options: CreateCssOptions = {},
 ): CssFn<StyleObject> {
-	const isPreset = (value: CreateCssOptions | TypedPreset): value is CssPreset =>
+	const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
 		typeof value === "object" &&
 		value !== null &&
 		"conditions" in value &&

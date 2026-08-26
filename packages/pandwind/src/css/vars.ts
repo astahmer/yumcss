@@ -87,9 +87,10 @@ export const escapeVarClass = (cls: string): string => cls.replace(/:/g, "\\:");
 /**
  * Encode a `css.vars()` input into atoms + inline style.
  *
- * Only string values become custom properties (booleans are structural
- * markers from nesting, numbers are stringified). Deterministic: identical
- * inputs yield byte-identical output.
+ * Strings and finite numbers become custom properties (booleans are
+ * structural markers from nesting). Unsupported values are skipped rather
+ * than serialized into invalid CSS. Deterministic: identical inputs yield
+ * byte-identical output.
  */
 export const encodeVars = (
 	flat: FlatStyles,
@@ -98,12 +99,12 @@ export const encodeVars = (
 	const style: Record<string, string> = {};
 	for (const key of Object.keys(flat).toSorted()) {
 		const raw = flat[key];
-		if (typeof raw !== "string") continue;
+		if (typeof raw === "boolean" || raw !== raw) continue;
 		const { conditions, prop } = splitKey(key);
-		if (prop === "") continue;
+		if (!prop) continue;
 		const cls = varClassFor(key);
 		atoms.push({ cls, keys: [key] });
-		style[customPropFor(prop, conditions)] = raw;
+		style[customPropFor(prop, conditions)] = `${raw}`;
 	}
 	return { atoms, style };
 };

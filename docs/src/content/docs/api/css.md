@@ -91,6 +91,20 @@ const { class: widthClass, style } = css.vars({ w: value }); // value = runtime 
 `cx()` understands `vars()` outputs natively (they carry their atoms via an
 internal symbol), so they merge with everything else last-wins.
 
+`css.vars()` is SSR-safe data, not a DOM side effect: both `class` and `style`
+are ordinary serializable values that can be rendered on the server and
+hydrated unchanged on the client. String values and finite numbers become
+custom properties; booleans, `NaN`, and other unsupported runtime
+values are omitted. The generated toggle rule always falls back from the most
+specific condition to the base custom property, so transitions and other
+browser CSS can consume the same property normally.
+
+The general lane does not currently author global rules, keyframes, `@font-face`,
+cascade layers, `@supports`, or `@property` definitions. These are explicit
+capability boundaries rather than silently approximated declarations; use a
+normal CSS entry for them until a minimal, extraction-aware contract is
+designed.
+
 `css.raw()` is the opposite trade: it skips atom compilation entirely and
 returns the style object as-is. Use it for targets whose components take
 inline `style` objects instead of classes (React Native, opentui), or when
