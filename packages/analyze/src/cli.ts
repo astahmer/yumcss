@@ -94,8 +94,48 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	);
 	const summary: FoldSummary = summarize(stats);
 
-	if (args.css) {
-		// CSS budget lane — compiles the scanned tw() surface through the
+	if (args.json) {
+		// Machine consumers (the reusable analyze-comment workflow) need the
+		// missing-CSS lane and the CSS size budget in the same document.
+		const missingSites = stats.flatMap((s) =>
+			s.missingCss.map((m) => ({ file: s.file, line: m.line, token: m.token })),
+		);
+		let cssBudgetJson: Record<string, unknown> | undefined;
+		if (args.css) {
+			const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
+			let themeCss: string | undefined;
+			try {
+				themeCss = readFileSync(themeCssPath, "utf8");
+			} catch {
+				themeCss = undefined;
+			}
+			const budget = await cssBudget({
+				files: files.map((f) => resolve(args.root, f)),
+				twEntry: args.twPath,
+				themeCss,
+				base: args.root,
+			});
+			cssBudgetJson = {
+				liveCandidates: budget.liveCandidates,
+				deadCandidates: budget.deadCandidates,
+				cssBytes: budget.cssBytes,
+				cssGzipBytes: budget.cssGzipBytes,
+				rules: budget.rules,
+			};
+		}
+		return JSON.stringify(
+			{
+				schema: ANALYZE_JSON_SCHEMA,
+				...summary,
+				missingCss: { count: missingSites.length, sites: missingSites.slice(0, 50) },
+				...(cssBudgetJson !== undefined ? { cssBudget: cssBudgetJson } : {}),
+			},
+			null,
+			2,
+		);
+	}
+	if (args.css && !args.json) {
+		// CSS budget lane (human format; --json embeds the budget above) — compiles the scanned tw() surface through the
 		// real engine. Needs the generated tw runtime (same file the app
 		// imports) and optionally the @theme bridge for token utilities.
 		const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
@@ -114,9 +154,6 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		return formatCssBudget(budget);
 	}
 
-	if (args.json) {
-		return JSON.stringify({ schema: ANALYZE_JSON_SCHEMA, ...summary }, null, 2);
-	}
 	if (args.githubAnnotations) {
 		const annotations = collectAnnotations(summary, undefined);
 		const truncated = false;

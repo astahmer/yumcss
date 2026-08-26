@@ -43,3 +43,21 @@ jobs:
 
       - name: Format check (oxfmt)
         run: pnpm format
+
+  # Preview tarballs for every PR (pkg.pr.new) — installable without merging.
+  # Source-published packages need no build step; failures are non-blocking.
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - run: npx pkg-pr-new publish './packages/pandwind' './packages/codemod' './packages/analyze' './packages/lint-plugin'

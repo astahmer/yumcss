@@ -85,3 +85,27 @@ describe("collectFiles", () => {
 		expect(files).toEqual([...files].toSorted());
 	});
 });
+
+describe("runCli --json missing-css + cssBudget fields", () => {
+	test("missingCss aggregates per-file sites with count + bounded sample", async () => {
+		// "bogus-flag-999" is not a known utility -> missing-CSS site.
+		seed({ "m.ts": `export const m = cx("px-2", "bogus-flag-999");` });
+		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
+		const doc = JSON.parse(output) as {
+			missingCss: { count: number; sites: Array<{ file: string; token: string }> };
+		};
+		expect(doc.missingCss.count).toBeGreaterThanOrEqual(1);
+		expect(doc.missingCss.sites.length).toBe(doc.missingCss.count);
+		expect(doc.missingCss.sites[0]?.token).toContain("bogus");
+	});
+
+	test("--css embeds the byte budget in the JSON document", async () => {
+		seed({ "a.ts": `export const a = tw({ bg: "blue-500" });` });
+		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json", "--css"]);
+		const doc = JSON.parse(output) as { cssBudget?: Record<string, number> };
+		expect(doc.cssBudget).toBeDefined();
+		expect(doc.cssBudget?.cssBytes).toBeGreaterThan(0);
+		expect(typeof doc.cssBudget?.cssGzipBytes).toBe("number");
+		expect(typeof doc.cssBudget?.rules).toBe("number");
+	});
+});

@@ -1,7 +1,37 @@
 {
 	"name": "pandwind-analyze",
-	"private": true,
+	"version": "0.1.0",
+	"keywords": [
+		"analysis",
+		"coverage",
+		"css",
+		"size-budget",
+		"tailwind"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/astahmer/pandwind.git",
+		"directory": "packages/pandwind-analyze"
+	},
+	"bin": {
+		"pandwind-analyze": "./src/cli.ts"
+	},
+	"files": [
+		"src",
+		"README.md",
+		"LICENSE"
+	],
 	"type": "module",
+	"exports": {
+		".": "./src/cli.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true,
+		"registry": "https://registry.npmjs.org/"
+	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
@@ -18,5 +48,8 @@
 		"tsx": "4.23.12",
 		"typescript": "7.0.2",
 		"vitest": "4.1.10"
+	},
+	"engines": {
+		"node": ">=20"
 	}
 }

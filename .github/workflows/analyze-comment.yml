@@ -1,0 +1,134 @@
+# Reusable PR-comment workflow for the pandwind analyze CLI (plans/023 #5).
+#
+# Consumes `pandwind analyze --json` from HEAD and the base ref, diffs CSS
+# size, and posts/updates ONE sticky PR comment (marker-keyed so re-runs edit
+# in place). Purely informational: reporting failures never turn the run red.
+#
+# Consumption from another repository:
+#
+#   jobs:
+#     analyze:
+#       uses: pandwind/.github/.github/workflows/analyze-comment.yml@main
+#       with:
+#         base-ref: main
+#         working-directory: .
+#         app-dir: apps/example
+#       secrets:
+#         github-token: ${{ secrets.GITHUB_TOKEN }}
+#
+# On pull_request events the PR number is auto-detected; for workflow_dispatch
+# pass `pr-number` explicitly to target a comment thread.
+
+name: Analyze comment
+
+on:
+  workflow_call:
+    inputs:
+      base-ref:
+        description: Branch to diff against
+        type: string
+        default: main
+      working-directory:
+        description: Checkout subdirectory the repo lives in
+        type: string
+        default: "."
+      app-dir:
+        description: App dir containing src/ with the generated tw.ts
+        type: string
+        default: apps/example
+      patterns:
+        description: Analyze file globs (relative to app-dir)
+        type: string
+        default: "src/**/*.{ts,tsx}"
+      pr-number:
+        description: PR number for dispatch runs (auto-detected on pull_request)
+        type: string
+        default: ""
+    secrets:
+      github-token:
+        required: false
+  workflow_dispatch:
+    inputs:
+      base-ref:
+        description: Branch to diff against
+        type: string
+        default: main
+      working-directory:
+        description: Checkout subdirectory the repo lives in
+        type: string
+        default: "."
+      app-dir:
+        description: App dir containing src/ with the generated tw.ts
+        type: string
+        default: apps/example
+      patterns:
+        description: Analyze file globs (relative to app-dir)
+        type: string
+        default: "src/**/*.{ts,tsx}"
+      pr-number:
+        description: PR number to comment on (empty = report only, no comment)
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: analyze-comment-${{ inputs.pr-number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.base-ref }}
+          path: base-checkout
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Measure HEAD and base
+        env:
+          APP_DIR: ${{ inputs.app-dir }}
+          PATTERNS: ${{ inputs.patterns }}
+          WORK_DIR: ${{ inputs.working-directory }}
+        run: |
+          set -e
+          RUN="pnpm --filter example exec tsx"
+          if [ "$WORK_DIR" != "." ]; then cd "$WORK_DIR"; fi
+          "$RUN" ../../packages/analyze/src/cli.ts "$PATTERNS" \
+            --tw "../../$APP_DIR/src/tw.ts" --root "../../$APP_DIR" \
+            --json --css > /tmp/analyze-head.json
+          "$RUN" ../../packages/analyze/src/cli.ts "$PATTERNS" \
+            --tw "../../base-checkout/$APP_DIR/src/tw.ts" \
+            --root "../../base-checkout/$APP_DIR" \
+            --json --css > /tmp/analyze-base.json || \
+            echo '{"schema":"pandwind.analyze/1"}' > /tmp/analyze-base.json
+
+      - name: Post / update PR comment
+        env:
+          GH_TOKEN: ${{ secrets.github-token || secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr-number || github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          BASE_REF_NAME: ${{ inputs.base-ref }}
+        run: |
+          pnpm --filter example exec tsx ../../.github/scripts/analyze-comment.mjs \
+            /tmp/analyze-head.json /tmp/analyze-base.json
+        continue-on-error: true
