@@ -3,20 +3,22 @@
  * entry points (runCli / cssBudget / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
-import { readFileSync } from "node:fs";
+import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../../../../packages/analyze/src/analyze.ts";
 import { runCli } from "../../../../packages/analyze/src/cli.ts";
 import { classRules, cssBudget, sheetShape } from "../../../../packages/analyze/src/css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
-import type { StudioPayload, TokenSection } from "../types.ts";
+import type { StudioPayload, ThemeVar, TokenSection } from "../types.ts";
+import { analyzeStyleUsage } from "./analytics.ts";
 import {
 	flattenTokenGroups,
 	parseBridgeStats,
 	parseThemeVars,
 	parseUtilityUnions,
 } from "./parsers.ts";
+import { crawlCssImports } from "./theme-crawl.ts";
 
 const DEFAULT_APP = "apps/example";
 
@@ -116,7 +118,6 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 	);
 
 	// --- design system: generated artifacts + preset tokens.
-	const themeVars = parseThemeVars(themeCss);
 	const utilities = parseUtilityUnions(readFileSync(appSrc("types.d.ts"), "utf8"));
 	const config = loadTwConfig(appSrc("tw.ts"));
 	let bridgeSource = "";
@@ -146,8 +147,36 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 		letterSpacings: "Letter spacings",
 	});
 
+	// --- transitive css imports: @theme tokens live in imported files too
+	// (e.g. styles.css does `@import 'shadcn/tailwind.css'`).
+	let entryCss: string[] = [];
+	try {
+		// collectFiles filters to .ts/.tsx by design — glob css directly.
+		entryCss = globSync("**/*.css", { cwd: resolve(root, APP, "src") }).map((f) =>
+			resolve(root, APP, "src", f),
+		);
+	} catch {
+		entryCss = [];
+	}
+	const crawled = crawlCssImports(entryCss, root);
+	const crawledVars = new Map<string, ThemeVar>();
+	for (const file of crawled.contents) {
+		for (const v of parseThemeVars(file.content)) crawledVars.set(v.name, v);
+	}
+	for (const v of parseThemeVars(themeCss)) crawledVars.set(v.name, v);
+	const mergedThemeVars = [...crawledVars.values()];
+
+	// --- usage analytics over the app's styling call sites.
+	const appSourceFiles = collectFiles(["**/*.{ts,tsx}"], root)
+		.filter((f) => f.includes(`${APP}/src`))
+		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
+	const tokenUniverse = Object.entries(presetTokens).flatMap(([group, values]) =>
+		Object.keys(values as Record<string, unknown>).map((k) => `${group}/${k}`),
+	);
+	const analytics = analyzeStyleUsage(appSourceFiles, tokenUniverse);
+
 	const tokenGraph = buildTokenGraph({
-		flatVars: themeVars,
+		flatVars: mergedThemeVars,
 		themes: isDogfoodApp ? (examplePreset as unknown as { themes?: never }).themes : undefined,
 		components: isDogfoodApp
 			? (examplePreset as unknown as { components?: never }).components
@@ -174,8 +203,13 @@ export async function gather(repoRoot?: string): Promise<StudioPayload> {
 			shape,
 		},
 		classDrillDown,
+		analytics,
+		cssCrawl: {
+			files: crawled.files.length,
+			unresolved: crawled.unresolved.slice(0, 20),
+		},
 		designSystem: {
-			themeVars,
+			themeVars: mergedThemeVars,
 			utilities,
 			variantCount: Object.keys(config.variants ?? {}).length,
 			conflictUtilities: Object.keys(config.conflicts ?? {}).length,

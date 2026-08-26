@@ -6,16 +6,37 @@ import type { ThemeVar, TokenSection, UtilityUnion } from "../types.ts";
  * Parse `@theme { --name: value; }` lines from a generated bridge document.
  * Non-theme content (override rules etc.) is ignored.
  */
+/**
+ * Parse `@theme [modifier] { --name: value; }` blocks from any css source.
+ * Handles multiple blocks, modifiers (`inline`, `default`, `static`, …),
+ * brace-matched bodies (the old single-block index scan missed every file
+ * whose block wasn't literally `@theme {` on one line).
+ */
 export const parseThemeVars = (bridgeCss: string): Array<ThemeVar> => {
-	const start = bridgeCss.indexOf("@theme {");
-	if (start === -1) return [];
-	const open = bridgeCss.indexOf("{", start);
-	const close = bridgeCss.indexOf("\n}", open);
-	const body = bridgeCss.slice(open + 1, close === -1 ? undefined : close);
 	const vars: Array<ThemeVar> = [];
-	for (const line of body.split("\n")) {
-		const match = /^\s*(--[\w-]+)\s*:\s*(.+?);?\s*$/.exec(line);
-		if (match !== null) vars.push({ name: match[1]!, value: match[2]! });
+	const seen = new Set<string>();
+	for (const header of bridgeCss.matchAll(/@theme[^{]*\{/g)) {
+		const open = header.index! + header[0].length - 1;
+		let depth = 0;
+		let end = bridgeCss.length;
+		for (let i = open; i < bridgeCss.length; i++) {
+			if (bridgeCss[i] === "{") depth++;
+			else if (bridgeCss[i] === "}") {
+				depth--;
+				if (depth === 0) {
+					end = i;
+					break;
+				}
+			}
+		}
+		const body = bridgeCss.slice(open + 1, end);
+		for (const line of body.split("\n")) {
+			const match = /^\s*(--[\w-]+)\s*:\s*(.+?);?\s*$/.exec(line);
+			if (match !== null && !seen.has(match[1]!)) {
+				seen.add(match[1]!);
+				vars.push({ name: match[1]!, value: match[2]! });
+			}
+		}
 	}
 	return vars;
 };

@@ -26,7 +26,7 @@ import {
 } from "./server/parsers.ts";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 
-type Tab = "design" | "stats" | "history" | "graph";
+type Tab = "design" | "stats" | "history" | "graph" | "usage";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -836,6 +836,134 @@ function TokenGraphView({ graph }: { graph: TokenGraph }) {
 	);
 }
 
+/* ---------------------------------- usage tab ---------------------------------- */
+
+const pct = (n: number): string => `${n}`;
+
+function UsageView(props: { data: StudioPayload }) {
+	const a = props.data.analytics;
+	const crawl = props.data.cssCrawl;
+	if (a === undefined) {
+		return (
+			<div>
+				<p className="muted">no analytics in this snapshot — hit refresh.</p>
+			</div>
+		);
+	}
+	return (
+		<div>
+			<section>
+				<h2>usage overview</h2>
+				<p className="muted">
+					{a.sitesScanned} styling call site(s) scanned
+					{crawl !== undefined && ` · ${crawl.files} css file(s) crawled`}
+					{crawl !== undefined &&
+						crawl.unresolved.length > 0 &&
+						` · ${crawl.unresolved.length} unresolved import(s)`}
+				</p>
+				<table>
+					<tbody>
+						<tr>
+							<th>responsive</th>
+							<td>{pct(a.conditionBreakdown.responsive)}</td>
+							<th>pseudo</th>
+							<td>{pct(a.conditionBreakdown.pseudo)}</td>
+							<th>media</th>
+							<td>{pct(a.conditionBreakdown.media)}</td>
+							<th>other</th>
+							<td>{pct(a.conditionBreakdown.other)}</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+			<section>
+				<h2>top properties</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>property</th>
+							<th>uses</th>
+						</tr>
+					</thead>
+					<tbody>
+						{a.topProperties.map((p) => (
+							<tr key={p.name}>
+								<td>{p.name}</td>
+								<td>{p.count}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</section>
+			<section>
+				<h2>property + value combos</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>combo</th>
+							<th>uses</th>
+						</tr>
+					</thead>
+					<tbody>
+						{a.topPropertyValues.map((c) => (
+							<tr key={c.combo}>
+								<td>{c.combo}</td>
+								<td>{c.count}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</section>
+			<section>
+				<h2>conditions</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>condition</th>
+							<th>kind</th>
+							<th>uses</th>
+						</tr>
+					</thead>
+					<tbody>
+						{a.conditions.map((c) => (
+							<tr key={c.name}>
+								<td>{c.name}</td>
+								<td>{c.kind}</td>
+								<td>{c.count}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</section>
+			<section>
+				<h2>token usage</h2>
+				<table>
+					<thead>
+						<tr>
+							<th>token</th>
+							<th>uses</th>
+						</tr>
+					</thead>
+					<tbody>
+						{a.tokenUsage.slice(0, 20).map((t) => (
+							<tr key={t.name}>
+								<td>{t.name}</td>
+								<td>{t.count}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+				{a.unusedTokens.length > 0 && (
+					<>
+						<h3>unused tokens ({a.unusedTokens.length}) — pruning candidates</h3>
+						<p className="muted">{a.unusedTokens.slice(0, 40).join(", ")}</p>
+					</>
+				)}
+			</section>
+		</div>
+	);
+}
+
 /* ------------------------------------- app ------------------------------------- */
 
 export function App() {
@@ -900,6 +1028,8 @@ export function App() {
 		body =
 			tab === "graph" ? (
 				<TokenGraphView graph={data.tokenGraph} />
+			) : tab === "usage" ? (
+				<UsageView data={data} />
 			) : tab === "design" ? (
 				<DesignSystemView data={data} query={query} queryChange={queryChange} />
 			) : tab === "history" ? (
@@ -931,6 +1061,9 @@ export function App() {
 					</button>
 					<button className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
 						Stats
+					</button>
+					<button className={tab === "usage" ? "active" : ""} onClick={() => setTab("usage")}>
+						Usage
 					</button>
 					<button className={tab === "history" ? "active" : ""} onClick={() => setTab("history")}>
 						History

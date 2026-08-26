@@ -10,6 +10,18 @@ const pkgRoot = process.cwd();
 const studioApi = (): Plugin => ({
 	name: "studio-api",
 	configureServer(server) {
+		server.middlewares.use("/api/analytics", (_req, res) => {
+			void (async () => {
+				try {
+					const payload = await gather();
+					res.end(JSON.stringify(payload.analytics ?? {}));
+				} catch (error) {
+					res.statusCode = 500;
+					res.end(JSON.stringify({ error: String(error) }));
+				}
+			})();
+		});
+
 		server.middlewares.use("/api/data", (_req, res) => {
 			void (async () => {
 				res.setHeader("content-type", "application/json");

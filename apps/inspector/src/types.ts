@@ -27,6 +27,27 @@ export interface ThemeVar {
 	value: string;
 }
 
+export interface UsageCount {
+	name: string;
+	count: number;
+}
+
+export interface ConditionUsage {
+	name: string;
+	count: number;
+	kind: "responsive" | "pseudo" | "media" | "other";
+}
+
+export interface StyleUsageReport {
+	sitesScanned: number;
+	tokenUsage: UsageCount[];
+	unusedTokens: string[];
+	topProperties: UsageCount[];
+	topPropertyValues: Array<{ combo: string; count: number }>;
+	conditions: ConditionUsage[];
+	conditionBreakdown: Record<"responsive" | "pseudo" | "media" | "other", number>;
+}
+
 export interface UtilityUnion {
 	key: string;
 	count: number;
@@ -78,6 +99,11 @@ export interface SheetShape {
 
 export interface StudioPayload {
 	meta: { root: string };
+	analytics?: import("./server/analytics.ts").StyleUsageReport;
+	cssCrawl?: {
+		files: number;
+		unresolved: Array<{ from: string; specifier: string }>;
+	};
 	coverage: {
 		eliminatedPct: number;
 		entryEliminatedPct: number;
