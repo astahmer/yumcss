@@ -253,7 +253,7 @@ function findRepoRoot(): string {
 	}
 }
 
-function mainSwap(argv: string[]): void {
+async function mainSwap(argv: string[]): Promise<void> {
 	const args = swapImport.parseSwapArgs(argv);
 	const root = findRepoRoot();
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
@@ -282,6 +282,20 @@ function mainSwap(argv: string[]): void {
 		console.error("codemod swap: no matching files");
 		process.exitCode = 1;
 		return;
+	}
+
+	// Wired for the upcoming --engine resolution pass; unused until then.
+	let _engineResolver: import("./swap/engine.ts").TwMissResolver | undefined;
+	if (args.engine) {
+		_engineResolver = await swapImport
+			.createEngineMissResolver({
+				css: readFileSync(resolve(metaDir, "tailwind.css"), "utf8"),
+				base: metaDir,
+			})
+			.catch((error: unknown) => {
+				console.error(`codemod swap: --engine failed to boot (${(error as Error).message})`);
+				return undefined;
+			});
 	}
 
 	let totalConverted = 0;
@@ -466,7 +480,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 		else if (!arg.startsWith("--")) input = arg;
 		else throw new Error(`codemod tokens: unknown flag '${arg}' (--from= --to= --out=)`);
 	}
-	const formats = ["dtcg", "theme", "panda", "preset"];
+	const formats = ["dtcg", "theme", "panda", "preset", "sd", "figma", "rootcss", "stylex"];
 	if (from === undefined || !formats.includes(from) || input === undefined) {
 		throw new Error(
 			"usage: pandwind-codemod tokens --from=<dtcg|theme|panda|preset> --to=<dtcg|theme|panda|preset> <file> [--out=<file>]",
@@ -479,7 +493,12 @@ async function mainTokens(argv: string[]): Promise<void> {
 	let set: import("./swap/token-set.ts").TokenSet;
 	if (from === "dtcg") set = T.fromDtcgJson(ts.readFileSync(input, "utf8"));
 	else if (from === "theme") set = T.fromThemeCss(ts.readFileSync(input, "utf8"));
-	else if (from === "panda") set = await T.fromPandaConfig(resolve(input));
+	else if (from === "sd") set = T.importStyleDictionary(ts.readFileSync(input, "utf8"));
+	else if (from === "figma") set = T.importFigmaTokens(ts.readFileSync(input, "utf8"));
+	else if (from === "rootcss") set = T.importRootCss(ts.readFileSync(input, "utf8"));
+	else if (from === "stylex") {
+		throw new Error("codemod tokens: --from=stylex is not supported (export-only format)");
+	} else if (from === "panda") set = await T.fromPandaConfig(resolve(input));
 	else set = await T.fromDefinePreset(resolve(input));
 
 	const groupCount = Object.keys(set.groups).length;
@@ -488,6 +507,10 @@ async function mainTokens(argv: string[]): Promise<void> {
 	let result: string;
 	if (to === "dtcg") result = T.toDtcgJson(set);
 	else if (to === "theme") result = T.toThemeCss(set);
+	else if (to === "sd") result = T.exportStyleDictionary(set);
+	else if (to === "figma") result = T.exportFigmaTokens(set);
+	else if (to === "rootcss") result = T.exportRootCss(set);
+	else if (to === "stylex") result = T.exportStylexVars(set);
 	else if (to === "panda") result = T.toPandaConfigSnippet(set);
 	else result = T.toDefinePresetSnippet(set);
 
@@ -508,7 +531,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 // tests must not execute the program.
 const invokedDirectly = /cli\.[mc]?[tj]sx?$/.test(process.argv[1] ?? "");
 if (invokedDirectly) {
-	if (process.argv[2] === "swap") mainSwap(process.argv.slice(3));
+	if (process.argv[2] === "swap") void mainSwap(process.argv.slice(3));
 	else if (process.argv[2] === "tokens") void mainTokens(process.argv.slice(3));
 	else void main();
 }

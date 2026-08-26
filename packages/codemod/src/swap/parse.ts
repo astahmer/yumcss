@@ -19,9 +19,10 @@ import type { PandwindMeta } from "../meta.ts";
 import { UTILITY_SUBKEYS } from "../../../pandwind/src/tw/compile.ts";
 import { flattenStyle } from "../../../pandwind/src/lib/utils.ts";
 import { resolveDesignStyle } from "../../../pandwind/src/design/resolve.ts";
-import { examplePreset } from "../../../pandwind/src/preset/example-preset.ts";
+import { examplePreset } from "pandwind/preset";
 import { matchBlock } from "../sources.ts";
 import type { SwapIR } from "./ir.ts";
+import { resolvedAuthoredToken } from "./tokens.ts";
 
 /* ------------------------------------------------------------------ */
 /* literal object parser                                               */
@@ -244,6 +245,7 @@ function walkTwEntries(
 	obj: LiteralObject,
 	conditions: string[],
 	ir: SwapIR,
+	_missResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null,
 ): void {
 	for (const { key, value } of obj.keys) {
 		if (isVariantKey(meta, key)) {
@@ -255,7 +257,7 @@ function walkTwEntries(
 				});
 				continue;
 			}
-			walkTwEntries(meta, value, [...conditions, key], ir);
+			walkTwEntries(meta, value, [...conditions, key], ir, _missResolver);
 			continue;
 		}
 		const parts = Array.isArray(value) ? value : [value];
@@ -274,6 +276,14 @@ function walkTwEntries(
 		for (const cls of emitted) {
 			const bridgeHit = meta.bridgeInverse.get(cls);
 			if (bridgeHit === undefined) {
+				// --engine: resolve through the real Tailwind engine when wired.
+				const resolved = _missResolver?.(cls);
+				if (resolved !== undefined && resolved !== null && resolved.length > 0) {
+					for (const decl of resolved) {
+						ir.entries.push({ conditions, prop: camelProp(decl.prop), value: decl.value });
+					}
+					continue;
+				}
 				ir.residuals.push({
 					kind: "unknown-value",
 					text: cls,
@@ -301,6 +311,7 @@ export function parseTwCalls(
 	source: string,
 	meta: PandwindMeta,
 	excluded: (start: number) => boolean,
+	_missResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null,
 ): Array<{ start: number; end: number; ir: SwapIR }> {
 	const out: Array<{ start: number; end: number; ir: SwapIR }> = [];
 	for (const match of source.matchAll(TW_CALL_REGEX)) {
@@ -322,7 +333,7 @@ export function parseTwCalls(
 			continue;
 		}
 		const ir: SwapIR = { entries: [], residuals: [] };
-		walkTwEntries(meta, parsed, [], ir);
+		walkTwEntries(meta, parsed, [], ir, _missResolver);
 		out.push({ start, end: block.end, ir });
 	}
 	return out;
@@ -368,6 +379,7 @@ function flattenToIr(flat: Record<string, unknown>): SwapIR {
 export function parseCssLiterals(
 	source: string,
 	excluded: (start: number) => boolean,
+	options: { tokenize?: boolean } = {},
 ): Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> {
 	const out: Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> =
 		[];
@@ -398,9 +410,18 @@ export function parseCssLiterals(
 			const style: Record<string, unknown> = {};
 			for (const { key, value } of parsed.keys) style[key] = toPlain(value);
 			const design = Object.keys(style).some((k) => k.startsWith("$"));
-			const ir = design
+			let ir = design
 				? flattenToIr(resolveDesignStyle(style, examplePreset.tokens) as never)
 				: flattenToIr(style);
+			if (!design && options.tokenize === true) {
+				// Tokenize-this: raw values with an authored preset token become
+				// $token references (#3182ce -> $blue-500).
+				for (const entry of ir.entries) {
+					if (typeof entry.value !== "string") continue;
+					const authored = resolvedAuthoredToken(entry.value);
+					if (authored !== null) entry.value = authored;
+				}
+			}
 			out.push({ start, end: block.end, ir, design, binding: bindingName });
 		}
 	};

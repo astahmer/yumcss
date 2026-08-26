@@ -358,3 +358,136 @@ describe("TokenSet conversions", () => {
 		expect(set.groups.colors?.["blue-500"]).toBe("#3182ce");
 	});
 });
+
+/* ------------------------------------------------------------------ */
+/* engine / tokenize / sort / dedup                                    */
+/* ------------------------------------------------------------------ */
+
+import { staticMissResolver } from "../src/swap/engine.ts";
+import { dedupLiteralCallSites } from "../src/swap/index.ts";
+
+describe("--engine: bridge-miss resolution", () => {
+	test("non-preset values convert when the engine resolver knows the utility", () => {
+		const result = runSwapRaw(`${WITH_CSS}const x = tw({ bgColor: "sky-600" });`, meta, {
+			from: "auto",
+			to: "css.class",
+			file: "t.tsx",
+			metaDir: "apps/example/src",
+			engineResolver: staticMissResolver({
+				"bg-sky-600": [{ prop: "background-color", value: "#0284c7" }],
+			}),
+		});
+		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
+		expect(result.code).toContain('backgroundColor: "#0284c7"');
+	});
+
+	test("without a resolver the same site stays flagged (regression guard)", () => {
+		const result = swapTo(`const x = tw({ bgColor: "sky-600" });`, "css.class");
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+	});
+
+	test("real Tailwind engine resolves an arbitrary non-preset utility", async () => {
+		const { createEngineMissResolver } = await import("../src/swap/engine.ts");
+		const engineResolve = await createEngineMissResolver({
+			css: `@theme {\n\t--color-sky-600: #0284c7;\n}`,
+			base: import.meta.dirname + "/..",
+		});
+		const decls = engineResolve("bg-sky-600");
+		expect(decls?.length).toBeGreaterThan(0);
+		expect(decls![0]!.prop).toBe("backgroundColor");
+	});
+});
+
+describe("--tokenize: raw values -> authored $tokens", () => {
+	test("raw hex rewrites to the authored preset token", () => {
+		const result = runSwapRaw(
+			`import { css } from "./design.ts";\nconst card = css.class({ backgroundColor: "#3182ce" });`,
+			meta,
+			{ from: "css", to: "css.class", file: "t.tsx", metaDir: "apps/example/src", tokenize: true },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('backgroundColor: "$blue-500"');
+	});
+});
+
+describe("--sort: canonical property order", () => {
+	test("emitted scopes sort canonically (color after borderRadius)", () => {
+		const result = runSwapRaw(
+			`${WITH_CSS}const c = css.class({ $text: { color: "$gray-900" }, $frame: { corners: "$md", fill: "$blue-500" } });`,
+			meta,
+			{ from: "auto", to: "css.class", file: "t.tsx", metaDir: "apps/example/src", sort: true },
+		);
+		const call = result.code.slice(result.code.indexOf("css.class"));
+		expect(call.indexOf("borderRadius")).toBeLessThan(call.indexOf("backgroundColor"));
+		expect(call.indexOf("backgroundColor")).toBeLessThan(call.lastIndexOf("color"));
+	});
+});
+
+describe("--dedup: repeated identical literals hoist to a constant", () => {
+	test("duplicate call sites collapse into one module constant", () => {
+		const code = dedupLiteralCallSites(
+			`import { css } from "./design.ts";\nexport const a = css.class({ backgroundColor: "#3182ce" });\nexport const b = css.class({ backgroundColor: "#3182ce" });\nexport const c = css.class({ backgroundColor: "#000000" });`,
+		);
+		expect(code).toContain('const pwStyle1 = css.class({ backgroundColor: "#3182ce" });');
+		expect(code.match(/pwStyle1/g)?.length).toBeGreaterThanOrEqual(3); // def + 2 refs
+		expect(code).not.toContain("b = css.class");
+		expect(code).toContain('"#000000"'); // unique site untouched
+	});
+
+	test("dedup applies even when the swap itself cannot convert", () => {
+		const source = `import { css } from "./design.ts";\nexport const a = css.class({ backgroundColor: "#abc123" });\nexport const b = css.class({ backgroundColor: "#abc123" });`;
+		const result = runSwapRaw(source, meta, {
+			from: "auto",
+			to: "tw",
+			file: "t.tsx",
+			metaDir: "apps/example/src",
+			dedup: true,
+		});
+		expect(result.code).toContain("pwStyle1");
+	});
+});
+
+/* ------------------------------------------------------------------ */
+/* extra token formats (Style Dictionary / Figma / :root css / stylex) */
+/* ------------------------------------------------------------------ */
+
+describe("extra token formats", () => {
+	const fixture = JSON.stringify({
+		colors: { blue: { 500: { $value: "#3182ce" } } },
+		spacing: { 4: { $value: "4px" } },
+	});
+	const set = T.fromDtcgJson(fixture);
+
+	test("style dictionary round-trips and infers color type", () => {
+		const sd = T.exportStyleDictionary(set);
+		expect(sd).toContain('"value": "#3182ce"');
+		expect(sd).toContain('"type": "color"');
+		const back = T.importStyleDictionary(sd);
+		expect(back.groups).toEqual(set.groups);
+	});
+
+	test("figma tokens round-trips with types always set", () => {
+		const fig = T.exportFigmaTokens(set);
+		expect(fig).toContain('"type": "color"');
+		expect(fig).toContain('"type": "spacing"');
+		const back = T.importFigmaTokens(fig);
+		expect(back.groups).toEqual(set.groups);
+	});
+
+	test(":root css round-trips through the prefix map", () => {
+		const cssOut = T.exportRootCss(set);
+		expect(cssOut).toContain("--color-blue-500: #3182ce;");
+		expect(cssOut).toContain("--spacing-4: 4px;");
+		const back = T.importRootCss(cssOut);
+		expect(back.groups).toEqual(set.groups);
+	});
+
+	test("stylex defineVars emits one export per group", () => {
+		const vars = T.exportStylexVars(set);
+		expect(vars).toContain('import { defineVars } from "@stylexjs/stylex";');
+		expect(vars).toContain("export const colors = defineVars({");
+		expect(vars).toContain('"blue-500": "#3182ce"');
+	});
+});

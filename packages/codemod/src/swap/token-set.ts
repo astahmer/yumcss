@@ -229,3 +229,202 @@ export function toDefinePresetSnippet(set: TokenSet): string {
 		"",
 	].join("\n");
 }
+
+/* ------------------------------------------------------------------ */
+/* Style Dictionary v4                                                 */
+/* ------------------------------------------------------------------ */
+
+const HEX_OR_RGB = /^#|^rgb|^hsl/i;
+
+function walkStyleDictionary(node: unknown, path: string[], out: TokenSet): void {
+	if (typeof node !== "object" || node === null) return;
+	const record = node as Record<string, unknown>;
+	const rawValue = (record as { value?: unknown }).value;
+	if (typeof rawValue === "string") {
+		const group = path[0] ?? "misc";
+		const key = path.slice(1).join("-");
+		const groups = out.groups[group] ?? (out.groups[group] = {});
+		if (groups[key] === undefined) groups[key] = rawValue;
+		return;
+	}
+	for (const [segment, child] of Object.entries(record)) {
+		walkStyleDictionary(child, [...path, segment], out);
+	}
+}
+
+/** Style Dictionary v4 JSON — leaves are `{ value, type? }` objects. */
+export function importStyleDictionary(text: string): TokenSet {
+	const out: TokenSet = { groups: {} };
+	walkStyleDictionary(JSON.parse(text), [], out);
+	return out;
+}
+
+/** Inverse: nests keys by `-`, infers `type: "color"` for hex/rgb values. */
+export function exportStyleDictionary(set: TokenSet): string {
+	const root: Record<string, unknown> = {};
+	for (const [group, values] of Object.entries(set.groups)) {
+		const groupNode: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(values)) {
+			let node = groupNode;
+			const segments = key.split("-");
+			for (const segment of segments.slice(0, -1)) {
+				node[segment] = (node[segment] as Record<string, unknown>) ?? {};
+				node = node[segment] as Record<string, unknown>;
+			}
+			const leaf: Record<string, string> = { value };
+			if (HEX_OR_RGB.test(value)) leaf.type = "color";
+			node[segments[segments.length - 1]!] = leaf;
+		}
+		root[group] = groupNode;
+	}
+	return `${JSON.stringify(root, null, "\t")}\n`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Figma Tokens plugin JSON                                            */
+/* ------------------------------------------------------------------ */
+
+const FIGMA_TYPE_TO_GROUP: Record<string, string> = {
+	color: "colors",
+	spacing: "spacing",
+	borderRadius: "radii",
+	fontSizes: "fontSizes",
+	fontWeights: "fontWeights",
+};
+const GROUP_TO_FIGMA_TYPE: Record<string, string> = {
+	colors: "color",
+	spacing: "spacing",
+	radii: "borderRadius",
+	fontSizes: "fontSizes",
+	fontWeights: "fontWeights",
+};
+
+function walkFigma(node: unknown, path: string[], out: TokenSet): void {
+	if (typeof node !== "object" || node === null) return;
+	const record = node as Record<string, unknown>;
+	const rawValue = (record as { value?: unknown }).value;
+	const rawType = (record as { type?: unknown }).type;
+	if (typeof rawValue === "string") {
+		const mapped = typeof rawType === "string" ? FIGMA_TYPE_TO_GROUP[rawType] : undefined;
+		const group = mapped ?? path[0] ?? "misc";
+		// The top-level segment is the file's container node, not part of the
+		// token name (the group already came from the leaf's `type`).
+		const key = path.slice(1).join("-");
+		const groups = out.groups[group] ?? (out.groups[group] = {});
+		if (groups[key] === undefined) groups[key] = rawValue;
+		return;
+	}
+	for (const [segment, child] of Object.entries(record)) {
+		walkFigma(child, [...path, segment], out);
+	}
+}
+
+/** Figma Tokens plugin JSON — leaves `{ value, type }`, type maps the group. */
+export function importFigmaTokens(text: string): TokenSet {
+	const out: TokenSet = { groups: {} };
+	walkFigma(JSON.parse(text), [], out);
+	return out;
+}
+
+function figmaTypeFor(group: string): string {
+	return GROUP_TO_FIGMA_TYPE[group] ?? group;
+}
+
+/** Inverse: `{ value, type }` leaves with the type always set. */
+export function exportFigmaTokens(set: TokenSet): string {
+	const root: Record<string, unknown> = {};
+	for (const [group, values] of Object.entries(set.groups)) {
+		const groupNode: Record<string, unknown> = {};
+		const type = figmaTypeFor(group);
+		for (const [key, value] of Object.entries(values)) {
+			let node = groupNode;
+			const segments = key.split("-");
+			for (const segment of segments.slice(0, -1)) {
+				node[segment] = (node[segment] as Record<string, unknown>) ?? {};
+				node = node[segment] as Record<string, unknown>;
+			}
+			node[segments[segments.length - 1]!] = { value, type };
+		}
+		root[group] = groupNode;
+	}
+	return `${JSON.stringify(root, null, "\t")}\n`;
+}
+
+/* ------------------------------------------------------------------ */
+/* flat :root custom properties                                        */
+/* ------------------------------------------------------------------ */
+
+/** Balanced-brace extraction of every `:root { ... }` body. */
+function rootBlocks(text: string): string[] {
+	const blocks: string[] = [];
+	const regex = /:root\s*\{/g;
+	for (const match of text.matchAll(regex)) {
+		const open = (match.index ?? 0) + match[0].length - 1;
+		let depth = 0;
+		for (let i = open; i < text.length; i++) {
+			if (text[i] === "{") depth++;
+			else if (text[i] === "}") {
+				depth--;
+				if (depth === 0) {
+					blocks.push(text.slice(open + 1, i));
+					break;
+				}
+			}
+		}
+	}
+	return blocks;
+}
+
+/**
+ * Custom properties declared in `:root` blocks only, using the @theme
+ * prefix mapping (`--color-blue-500` -> colors["blue-500"]).
+ */
+export function importRootCss(text: string): TokenSet {
+	const out: TokenSet = { groups: {} };
+	for (const block of rootBlocks(text)) {
+		for (const match of block.matchAll(/--([\w-]+)\s*:\s*([^;}]+)[;}]/g)) {
+			const rawName = match[1]!;
+			const dot = rawName.indexOf("-");
+			const prefix = dot === -1 ? rawName : rawName.slice(0, dot);
+			const rest = dot === -1 ? "" : rawName.slice(dot + 1);
+			const group = THEME_PREFIX_TO_GROUP[prefix] ?? prefix;
+			const groups = out.groups[group] ?? (out.groups[group] = {});
+			if (groups[rest] === undefined) groups[rest] = match[2]!.trim();
+		}
+	}
+	return out;
+}
+
+/** Flat custom properties in a single `:root` block. */
+export function exportRootCss(set: TokenSet): string {
+	const lines: string[] = [":root {"];
+	for (const [group, values] of Object.entries(set.groups)) {
+		const prefix = GROUP_TO_THEME_PREFIX[group] ?? group;
+		for (const [key, value] of Object.entries(values)) {
+			lines.push(`\t--${prefix}-${key}: ${value};`);
+		}
+	}
+	lines.push("}");
+	return `${lines.join("\n")}\n`;
+}
+
+/* ------------------------------------------------------------------ */
+/* stylex defineVars (export-only)                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One `defineVars({...})` export per group. Importer intentionally NOT
+ * provided — stylex configs are code consumed by the stylex compiler, and
+ * no consumer asked for that direction yet.
+ */
+export function exportStylexVars(set: TokenSet): string {
+	const blocks = Object.entries(set.groups)
+		.map(([group, values]) => {
+			const body = Object.entries(values)
+				.map(([k, v]) => `\t${JSON.stringify(k)}: ${JSON.stringify(v)},`)
+				.join("\n");
+			return `export const ${group} = defineVars({\n${body}\n});`;
+		})
+		.join("\n\n");
+	return `import { defineVars } from "@stylexjs/stylex";\n\n${blocks}\n`;
+}

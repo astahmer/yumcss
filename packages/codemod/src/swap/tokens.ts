@@ -8,7 +8,7 @@
  * sites were written for.
  */
 
-import { examplePreset } from "../../../pandwind/src/preset/example-preset.ts";
+import { examplePreset } from "pandwind/preset";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
@@ -63,4 +63,20 @@ export function resolvedTokenRef(groups: ReadonlyArray<string>, value: string): 
 /** Qualify a bare ref with its group (`blue.500` -> `colors.blue.500`). */
 export function qualifyRef(ref: string, group: string): string {
 	return `${group}.${ref}`;
+}
+
+/**
+ * Resolved value -> AUTHORED preset token (`#3182ce` -> `$blue-500`).
+ * Searches every group; returns the raw key form used by pandwind call sites.
+ */
+export function resolvedAuthoredToken(value: string): string | null {
+	const lower = value.toLowerCase();
+	for (const values of Object.values(
+		examplePreset.tokens as Record<string, Record<string, unknown>>,
+	)) {
+		for (const [tokenKey, tokenValue] of Object.entries(values)) {
+			if (typeof tokenValue === "string" && tokenValue.toLowerCase() === lower) return tokenKey;
+		}
+	}
+	return null;
 }

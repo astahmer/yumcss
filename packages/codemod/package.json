@@ -1,12 +1,44 @@
 {
 	"name": "pandwind-codemod",
-	"private": true,
+	"version": "0.1.0",
+	"keywords": [
+		"codemod",
+		"css",
+		"migration",
+		"panda-css",
+		"stylex",
+		"tailwind"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/astahmer/pandwind.git",
+		"directory": "packages/pandwind-codemod"
+	},
+	"bin": {
+		"pandwind-codemod": "./src/cli.ts"
+	},
+	"files": [
+		"src",
+		"README.md",
+		"LICENSE"
+	],
 	"type": "module",
+	"exports": {
+		".": "./src/cli.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true,
+		"registry": "https://registry.npmjs.org/"
+	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
 	},
 	"dependencies": {
+		"@tailwindcss/node": "4.3.3",
 		"oxc-parser": "0.144.0",
 		"pandwind": "workspace:*"
 	},
@@ -14,5 +46,8 @@
 		"@types/node": "26.2.0",
 		"typescript": "7.0.2",
 		"vitest": "4.1.10"
+	},
+	"engines": {
+		"node": ">=20"
 	}
 }

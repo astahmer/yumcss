@@ -99,9 +99,16 @@ pnpm codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
 pnpm codemod tokens --from=preset --to=panda src/preset.ts
 ```
 
-Formats: `dtcg` (JSON with `$value` leaves), `theme` (@theme custom
-properties), `panda` (config `theme[.extend].tokens`, `{ value }` leaves),
-`preset` (a module exporting a definePreset output — imported dynamically).
+| format    | direction     | shape                                                           |
+| --------- | ------------- | --------------------------------------------------------------- |
+| `dtcg`    | import+export | W3C DTCG JSON with `$value` leaves                              |
+| `theme`   | import+export | tailwind `@theme { --color-x: … }` custom properties            |
+| `panda`   | import+export | config `theme[.extend].tokens` with `{ value }` leaves          |
+| `preset`  | import+export | a module exporting a definePreset output (imported dynamically) |
+| `sd`      | import+export | Style Dictionary v4 JSON, `{ value, type? }` leaves             |
+| `figma`   | import+export | Figma Tokens plugin JSON, `{ value, type }` leaves              |
+| `rootcss` | import+export | flat `:root { --color-x: … }` custom properties                 |
+| `stylex`  | export-only   | `defineVars({...})` module (one export per group)               |
 
 ## Modes
 

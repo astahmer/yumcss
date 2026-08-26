@@ -12,7 +12,7 @@
  */
 import type { PandwindMeta } from "../meta.ts";
 import { mapToken } from "../map.ts";
-import { examplePreset } from "../../../pandwind/src/preset/example-preset.ts";
+import { examplePreset } from "pandwind/preset";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
 
@@ -21,6 +21,85 @@ export interface EmitterContext {
 	index: number;
 	/** How token references are emitted ("off" = resolved literals). */
 	tokenRefs?: TokenRefMode;
+	/** Canonical CSS property-order sorting inside emitted scopes. */
+	sort?: boolean;
+}
+
+/**
+ * Canonical CSSOM-ish property order (layout -> box -> border -> background ->
+ * text -> visual -> misc). Unknown props sort after known ones, alphabetically.
+ */
+const CANONICAL_PROP_ORDER: Record<string, number> = {};
+[
+	"display",
+	"flexDirection",
+	"flexWrap",
+	"flex",
+	"flexGrow",
+	"alignItems",
+	"justifyContent",
+	"gap",
+	"rowGap",
+	"columnGap",
+	"gridTemplateColumns",
+	"position",
+	"top",
+	"right",
+	"bottom",
+	"left",
+	"zIndex",
+	"width",
+	"height",
+	"minWidth",
+	"minHeight",
+	"maxWidth",
+	"maxHeight",
+	"margin",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
+	"padding",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"overflow",
+	"borderRadius",
+	"border",
+	"borderWidth",
+	"borderStyle",
+	"borderColor",
+	"background",
+	"backgroundColor",
+	"backgroundImage",
+	"boxShadow",
+	"opacity",
+	"fontFamily",
+	"fontSize",
+	"fontWeight",
+	"lineHeight",
+	"letterSpacing",
+	"textAlign",
+	"textTransform",
+	"textDecorationLine",
+	"color",
+	"cursor",
+	"transition",
+].forEach((prop, i) => {
+	CANONICAL_PROP_ORDER[prop] = i;
+});
+
+/** Sort entries by canonical order; unknowns after knowns, alphabetical. */
+export function sortByCanonicalOrder(entries: SwapEntry[]): SwapEntry[] {
+	return entries.toSorted((a, b) => {
+		const ia = CANONICAL_PROP_ORDER[a.prop];
+		const ib = CANONICAL_PROP_ORDER[b.prop];
+		if (ia !== undefined && ib !== undefined) return ia - ib;
+		if (ia !== undefined) return -1;
+		if (ib !== undefined) return 1;
+		return a.prop.localeCompare(b.prop);
+	});
 }
 
 export interface EmitterResult {
@@ -68,14 +147,21 @@ interface Scope {
  * Render scopes as inline `{ ... }` bodies nested under `_condition:` keys,
  * all on ONE line: `{ prop: v, _hover: { prop: v } }`.
  */
-function renderInlineScopes(scopes: Array<Scope>): string {
-	const parts = scopes.map((scope) => {
-		let body = `{ ${scope.entries.map((e) => `${e.prop}: ${formatValue(e.value)}`).join(", ")} }`;
-		for (let i = scope.conditions.length - 1; i >= 0; i--) {
-			body = `_${scope.conditions[i]}: ${body}`;
+function renderInlineScopes(scopes: Array<Scope>, sort = false): string {
+	const parts: string[] = [];
+	for (const scope of scopes) {
+		const entries = sort ? sortByCanonicalOrder(scope.entries) : scope.entries;
+		const body = entries.map((e) => `${e.prop}: ${formatValue(e.value)}`).join(", ");
+		if (scope.conditions.length === 0) {
+			parts.push(body); // top-level props merge into the call's own object
+			continue;
 		}
-		return body;
-	});
+		let nested = `{ ${body} }`;
+		for (let i = scope.conditions.length - 1; i >= 0; i--) {
+			nested = `_${scope.conditions[i]}: ${nested}`;
+		}
+		parts.push(nested);
+	}
 	return parts.join(", ");
 }
 
@@ -85,13 +171,14 @@ const wrapCall = (callee: string, inner: string): string => `${callee}({ ${inner
 /* css.class                                                           */
 /* ------------------------------------------------------------------ */
 
-export const emitCssClass: Emitter = (ir) => {
+export const emitCssClass: Emitter = (ir, _meta, ctx) => {
 	const groups = groupByConditions(ir.entries);
 	const inner = renderInlineScopes(
 		[...groups.values()].map((entries) => ({
 			entries,
 			conditions: entries[0]?.conditions ?? [],
 		})),
+		ctx.sort,
 	);
 	const text = inner.length > 0 ? wrapCall("css.class", inner) : "";
 	return { text, residuals: [] };
@@ -367,7 +454,8 @@ export const emitDesignVocab: Emitter = (ir, _meta, ctx) => {
 	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
 	const groups = groupByConditions(ir.entries);
 	const parts: string[] = [];
-	for (const entries of groups.values()) {
+	for (const groupEntries of groups.values()) {
+		const entries = ctx.sort === true ? sortByCanonicalOrder(groupEntries) : groupEntries;
 		const conditions = entries[0]?.conditions ?? [];
 		const scope: DesignScope = { frame: [], layout: [], text: [], raw: [] };
 		// display:flex + flexDirection pair into $layout.flow; anything else

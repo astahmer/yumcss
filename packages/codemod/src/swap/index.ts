@@ -32,6 +32,13 @@ import type { SwapIR } from "./ir.ts";
 export const SWAP_SOURCES = ["auto", "tw", "css", "design"] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
 
+export type SwapMissResolver = (
+	utilityClass: string,
+) => Array<{ prop: string; value: string }> | null;
+
+export { createEngineMissResolver } from "./engine.ts";
+export type { TwMissResolver } from "./engine.ts";
+
 export interface SwapOptions {
 	from: SwapSource;
 	to: SwapTarget;
@@ -40,6 +47,14 @@ export interface SwapOptions {
 	metaDir?: string;
 	/** Token-reference emission for value-capable targets (default "bare"). */
 	tokenRefs?: TokenRefMode;
+	/** Resolve bridge misses through the real Tailwind engine. */
+	engineResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null;
+	/** Tokenize-this: rewrite raw values to authored $tokens (css sources). */
+	tokenize?: boolean;
+	/** Canonical property-order sorting in emitted scopes. */
+	sort?: boolean;
+	/** Hoist repeated identical literal call sites into module constants. */
+	dedup?: boolean;
 }
 
 interface Match {
@@ -50,21 +65,25 @@ interface Match {
 	shape: "tw" | "css" | "design";
 }
 
+type MissResolver = (utilityClass: string) => Array<{ prop: string; value: string }> | null;
+
 function collectMatches(
 	source: string,
 	from: SwapSource,
 	meta: PandwindMeta,
 	file: string,
+	engineResolver?: MissResolver,
+	tokenize?: boolean,
 ): Array<Match> {
 	const { isExcluded } = computeExcludedRanges(source, file);
 	const matches: Array<Match> = [];
 	if (from === "auto" || from === "tw") {
-		for (const m of parseTwCalls(source, meta, isExcluded)) {
+		for (const m of parseTwCalls(source, meta, isExcluded, engineResolver)) {
 			matches.push({ ...m, shape: "tw" });
 		}
 	}
 	if (from === "auto" || from === "css" || from === "design") {
-		for (const m of parseCssLiterals(source, isExcluded)) {
+		for (const m of parseCssLiterals(source, isExcluded, { tokenize })) {
 			const shape = from === "auto" ? (m.design ? "design" : "css") : (from as "css" | "design");
 			if (from === "css" && m.design) continue;
 			if (from === "design" && !m.design) continue;
@@ -91,7 +110,14 @@ export function runSwap(
 	const file = options.file;
 	const emitter = EMITTERS[options.to] as SwapEmitter | undefined;
 	if (emitter === undefined) throw new Error(`codemod swap: unknown target '${options.to}'`);
-	const matches = collectMatches(source, options.from, meta, file);
+	const matches = collectMatches(
+		source,
+		options.from,
+		meta,
+		file,
+		options.engineResolver,
+		options.tokenize,
+	);
 
 	type Edit = { start: number; end: number; text: string };
 	let code = source;
@@ -120,7 +146,7 @@ export function runSwap(
 			skippedByMarker++;
 			continue;
 		}
-		const result = emitter(ir, meta, { index: siteIndex, tokenRefs });
+		const result = emitter(ir, meta, { index: siteIndex, tokenRefs, sort: options.sort });
 		if (result.headers !== undefined && result.headers.length > 0) headers.push(...result.headers);
 		if (result.imports !== undefined && result.imports.length > 0) imports.push(...result.imports);
 		if (result.text === "") {
@@ -171,6 +197,8 @@ export function runSwap(
 		}
 	}
 
+	if (options.dedup === true) code = dedupLiteralCallSites(code);
+
 	return {
 		code,
 		changed: code !== source,
@@ -178,6 +206,31 @@ export function runSwap(
 		unmappedTokens: residualsOut,
 		skippedByMarker,
 	};
+}
+
+/**
+ * Dedup pass: identical literal `css.class({...})` / `tw({...})` call sites
+ * appearing 2+ times hoist into one module constant placed after the import
+ * section (ensureImport semantics); every occurrence references it.
+ */
+const DEDUP_CALL_REGEX = /\b(css\.class|tw)\(\{[^{}]*\}\)/g;
+
+export function dedupLiteralCallSites(code: string): string {
+	const counts = new Map<string, number>();
+	for (const match of code.matchAll(DEDUP_CALL_REGEX)) {
+		const key = `${match[1]}|${match[0]}`;
+		counts.set(key, (counts.get(key) ?? 0) + 1);
+	}
+	const duplicates = [...counts.entries()].filter(([, n]) => n >= 2);
+	if (duplicates.length === 0) return code;
+	let working = code;
+	duplicates.forEach(([key], i) => {
+		const literal = key.slice(key.indexOf("|") + 1);
+		const name = `pwStyle${i + 1}`;
+		working = working.split(literal).join(name);
+		working = ensureImport(working, `const ${name} = ${literal};`);
+	});
+	return working;
 }
 
 export interface SwapCliArgs {
@@ -190,6 +243,10 @@ export interface SwapCliArgs {
 	metaDir: string;
 	skipMarker: string;
 	tokenRefs: TokenRefMode;
+	engine: boolean;
+	tokenize: boolean;
+	sort: boolean;
+	dedup: boolean;
 }
 
 export function parseSwapArgs(argv: string[]): SwapCliArgs {
@@ -203,6 +260,10 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		metaDir: "",
 		skipMarker: "pandwind:migrate-skip",
 		tokenRefs: "bare",
+		engine: false,
+		tokenize: false,
+		sort: false,
+		dedup: false,
 	};
 	for (const arg of argv) {
 		if (arg.startsWith("--from=")) {
