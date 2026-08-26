@@ -1,0 +1,32 @@
+{
+	"name": "showcase",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"tui": "bun run src/tui/main.tsx",
+		"build": "tsc --noEmit && tsc --noEmit -p src/tui",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p src/tui",
+		"test": "bash test/all.sh"
+	},
+	"dependencies": {
+		"@opentui/core": "0.4.1",
+		"@opentui/react": "0.4.1",
+		"pandwind": "workspace:*",
+		"react": "19.2.8",
+		"react-dom": "19.2.8",
+		"react-native": "npm:react-native-web@0.21.0",
+		"react-native-web": "0.21.0"
+	},
+	"devDependencies": {
+		"@types/bun": "1.3.14",
+		"@types/node": "26.2.0",
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4",
+		"@vitejs/plugin-react-swc": "4.3.3",
+		"playwright-core": "1.61.1",
+		"typescript": "7.0.2",
+		"vite": "8.2.1"
+	}
+}

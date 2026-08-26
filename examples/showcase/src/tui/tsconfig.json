@@ -1,0 +1,14 @@
+{
+	"extends": "../../../../tsconfig.base.json",
+	"compilerOptions": {
+		"lib": ["ES2023"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "@opentui/react",
+		"types": ["bun", "react"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"noEmit": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": ["./", "../shared-styles.ts"]
+}
