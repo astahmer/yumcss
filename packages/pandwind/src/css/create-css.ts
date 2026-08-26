@@ -27,6 +27,13 @@ type CssStyle = Record<string, string>;
 
 const DYNAMIC = Symbol("dynamic");
 
+const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
+	typeof value === "object" &&
+	value !== null &&
+	"conditions" in value &&
+	"properties" in value &&
+	"strict" in value;
+
 /**
  * Untyped convenience — useful for throwaway styles or before the preset
  * types are wired up. Values are loose strings / nested objects.
@@ -46,12 +53,6 @@ export function createCss(
 	presetOrOptions: CreateCssOptions | TypedPreset = {},
 	options: CreateCssOptions = {},
 ): CssFn<StyleObject> {
-	const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
-		typeof value === "object" &&
-		value !== null &&
-		"conditions" in value &&
-		"properties" in value &&
-		"strict" in value;
 	const backendOptions = isPreset(presetOrOptions) ? options : presetOrOptions;
 
 	// The web backend owns declaration lowering (hash/strategy/atom registry,
