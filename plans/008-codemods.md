@@ -68,3 +68,7 @@ declarations, or styled-components with no props interpolation, become
   modifiers stay verbatim; arbitrary values stay verbatim via a wrapping cx();
   cross-file css mode requires an existing `css` binding; template-literal
   classNames are never touched.
+
+> **2026-08-26:** panda-css inbound migration landed via plan 024
+> (`swap --from=panda`) — see plans/024-panda-inbound-codemod.md and
+> plans/024-baseline-report.md.

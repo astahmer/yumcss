@@ -1,8 +1,7 @@
 /**
  * Source-library detectors & migrations — styled-components, stylex,
- * panda-css patterns rewritten onto pandwind APIs.
  *
- * Enabled explicitly via `--from=styled-components,stylex,panda` (off by
+ * Enabled explicitly via `--from=styled-components,stylex` (off by
  * default). Runs BEFORE the --to mode pass so its output composes: library
  * patterns become pandwind code, then the regular mode migrates whatever
  * raw tailwind remains.
@@ -24,9 +23,9 @@ import type { MappedToken } from "./map.ts";
 import type { TransformResult } from "./migrate.ts";
 import { ensureImport, hasCssBinding } from "./shared.ts";
 
-export type SourceId = "styled-components" | "stylex" | "panda";
+export type SourceId = "styled-components" | "stylex";
 
-export const SOURCE_IDS: SourceId[] = ["styled-components", "stylex", "panda"];
+export const SOURCE_IDS: SourceId[] = ["styled-components", "stylex"];
 
 export function parseSourceList(value: string): SourceId[] {
 	const ids: SourceId[] = [];
@@ -89,27 +88,9 @@ function propertyValueIndex(meta: PandwindMeta): Map<string, string> {
 	return index;
 }
 
-/** All distinct CSS property names the generated metadata knows about —
- * union of the bridge's direct-property sections and every conflict-map
- * property list (the latter covers utilities the bridge scopes out, e.g.
- * `color` when values resolve through theme variables). */
 /** kebab-case CSS property -> camelCase object key. */
 export const camelProperty = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
-
-function knownProperties(meta: PandwindMeta): Set<string> {
-	const names = new Set<string>();
-	const add = (prop: string): void => {
-		names.add(camelProperty(prop));
-	};
-	for (const { property } of meta.bridgeInverse.values()) add(property);
-	for (const perValue of meta.conflicts.values()) {
-		for (const props of Object.values(perValue)) {
-			for (const prop of props) add(prop);
-		}
-	}
-	return names;
-}
 
 /** Brace-matched extraction of the balanced block starting at `open`. */
 export function matchBlock(source: string, open: number): { body: string; end: number } | null {
@@ -596,164 +577,6 @@ function splitTopLevel(body: string, separator: string): Array<string> {
 }
 
 /* ------------------------------------------------------------------ */
-/* panda-css                                                           */
-/* ------------------------------------------------------------------ */
-
-const PANDA_SHORTHANDS = new Set([
-	"bg",
-	"p",
-	"px",
-	"py",
-	"pt",
-	"pb",
-	"pl",
-	"pr",
-	"m",
-	"mx",
-	"my",
-	"mt",
-	"mb",
-	"ml",
-	"mr",
-	"w",
-	"h",
-	"minW",
-	"minH",
-	"maxW",
-	"maxH",
-	"inset",
-	"borderX",
-	"borderY",
-]);
-
-function transformPanda(
-	source: string,
-	meta: PandwindMeta,
-	options: { marker: string; file: string },
-	result: TransformResult,
-): string {
-	let working = source;
-	if (/["'](?:styled-system\/(?:css|recipes)|@pandacss[^"']*)["']/.test(working) === false) {
-		return working;
-	}
-	if (!hasCssBinding(working)) {
-		const first = working.search(/\bcss\s*\(\s*\{/);
-		if (first !== -1) {
-			working = insertSkipMarker(
-				working,
-				first,
-				"panda->css conversion needs an existing pandwind css binding",
-				options.marker,
-			);
-			result.skippedByMarker++;
-		}
-		return working;
-	}
-
-	const properties = knownProperties(meta);
-
-	// Literal css({...}) calls whose keys are all known CSS properties convert
-	// to css.class({...}); shorthands/token refs/spreads get markers.
-	type Rep = { start: number; end: number; replacement: string };
-	const replacements: Array<Rep> = [];
-	for (const match of working.matchAll(/(?<![\w.])css\s*\(\s*\{/g)) {
-		const openBrace = (match.index ?? 0) + match[0].length - 1;
-		const block = matchBlock(working, openBrace);
-		if (block === null) continue;
-		const entries = parseLiteralEntries(block.body);
-		if (entries === null || entries.length === 0) {
-			working = insertSkipMarker(
-				working,
-				match.index ?? 0,
-				"panda css() with non-literal styles is flagged, not converted",
-				options.marker,
-			);
-			result.skippedByMarker++;
-			continue;
-		}
-		const tokenRef = entries.find(([, value]) => value.startsWith("tokens."));
-		if (tokenRef !== undefined) {
-			working = insertSkipMarker(
-				working,
-				match.index ?? 0,
-				`panda token reference (${tokenRef[1]}) needs your pandwind preset — flagged, not converted`,
-				options.marker,
-			);
-			result.skippedByMarker++;
-			continue;
-		}
-		const unknown = entries.filter(([prop]) => !properties.has(prop) || PANDA_SHORTHANDS.has(prop));
-		if (unknown.length > 0) {
-			working = insertSkipMarker(
-				working,
-				match.index ?? 0,
-				`panda shorthand/unknown keys left alone (${unknown.map(([k]) => k).join(", ")})`,
-				options.marker,
-			);
-			result.skippedByMarker++;
-			continue;
-		}
-		replacements.push({
-			start: match.index ?? 0,
-			end: block.end,
-			replacement: renderCall("css.class", entries),
-		});
-		result.converted++;
-	}
-	for (const rep of [...replacements].toSorted((a, b) => b.start - a.start)) {
-		working = working.slice(0, rep.start) + rep.replacement + working.slice(rep.end);
-	}
-
-	// cva(): convert base-only recipes; variants/compoundVariants get markers.
-	for (const match of working.matchAll(/\bcva\s*\(\s*\{/g)) {
-		const openBrace = (match.index ?? 0) + match[0].length - 1;
-		const outer = matchBlock(working, openBrace);
-		if (outer === null) continue;
-		const baseOpen = working.indexOf("{", openBrace + 1);
-		const base = baseOpen === -1 ? null : matchBlock(working, baseOpen);
-		const baseOnly = base !== null && !/variants\s*:|compoundVariants\s*:/.test(outer.body);
-		const entries = baseOnly && base !== null ? parseLiteralEntries(base.body) : null;
-		if (base === null || entries === null || !baseOnly) {
-			working = insertSkipMarker(
-				working,
-				match.index ?? 0,
-				"cva with variants is flagged — model it as a tw()/css() factory instead",
-				options.marker,
-			);
-			result.skippedByMarker++;
-			continue;
-		}
-		working =
-			working.slice(0, match.index ?? 0) +
-			renderCall("css.class", entries) +
-			working.slice(outer.end);
-		result.converted++;
-	}
-	working = working.replace(
-		/\n?import\s*\{[^}]*\}\s*from\s+["']styled-system\/(?:css|recipes)["'];?\n?/g,
-		"\n",
-	);
-	return working;
-}
-
-/** Parse `key: literal` pairs at brace depth 0. Null on anything non-literal. */
-function parseLiteralEntries(body: string): Array<[string, string]> | null {
-	const entries: Array<[string, string]> = [];
-	for (const statement of splitTopLevel(body, ",")) {
-		const trimmed = statement.trim();
-		if (trimmed === "" || trimmed.startsWith("//")) continue;
-		const colon = trimmed.indexOf(":");
-		if (colon === -1 || trimmed.includes("\n")) return null;
-		const key = trimmed.slice(0, colon).trim();
-		const value = trimmed.slice(colon + 1).trim();
-		if (!/^[A-Za-z_$][\w$]*$/.test(key)) return null;
-		if (!/^["'].*["']$/.test(value) && !/^-?\d+(\.\d+)?$/.test(value)) return null;
-		entries.push([key, value.replace(/^["']|["']$/g, "")]);
-	}
-	return entries.length > 0 ? entries : [];
-}
-
-/* ------------------------------------------------------------------ */
 /* Registry                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -775,8 +598,6 @@ export function runSourcePasses(
 			working = transformStyledComponents(working, meta, options, result);
 		} else if (id === "stylex") {
 			working = transformStylex(working, meta, options, result);
-		} else if (id === "panda") {
-			working = transformPanda(working, meta, options, result);
 		}
 	}
 	return working;

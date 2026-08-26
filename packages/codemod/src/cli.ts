@@ -72,7 +72,7 @@ function parseArgs(argv: string[]): CliArgs {
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod: no input patterns given.\n" +
-				"usage: pandwind-codemod <globs...> --to=tw|cx|css|keep [--diff] [--write] [--meta=<dir>]\n      [--from=styled-components,stylex,panda]",
+				"usage: pandwind-codemod <globs...> --to=tw|cx|css|keep [--diff] [--write] [--meta=<dir>]\n      [--from=styled-components,stylex]",
 		);
 	}
 	return args;
@@ -253,6 +253,49 @@ function findRepoRoot(): string {
 	}
 }
 
+/** Plan-024 inbound migration: `swap --from=panda <site-globs> [--out=<dir>]`. */
+async function runPandaSwap(
+	args: import("./swap/index.ts").SwapCliArgs,
+	filePaths: Array<string>,
+	meta: PandwindMeta,
+): Promise<void> {
+	if (filePaths.length === 0) {
+		console.error("codemod swap: no matching files for --from=panda");
+		process.exitCode = 1;
+		return;
+	}
+	const projectRoot = swapImport.inferCommonRoot(filePaths.map((p) => ({ path: p })));
+	const outFlag = args.outDir || "pandwind";
+	const report = await swapImport.runPandaMigration({
+		projectRoot,
+		patterns: args.patterns,
+		meta,
+		outDirName: outFlag,
+		write: args.write,
+		diff: args.diff,
+		skipMarker: args.skipMarker,
+		force: args.force,
+	});
+	console.log(
+		`\npanda migration: ${report.filesScanned} file(s) scanned · ${report.filesChanged} changed · ` +
+			`${report.cssCallsConverted} css() converted · ${report.cssCallsFlagged} flagged · ` +
+			`${report.factoryElementsConverted} <panda.*> converted · ${report.factoryElementsFlagged} flagged`,
+	);
+	for (const note of report.notes) console.log(`  note: ${note}`);
+	console.log(`  tier-1 modules: ${report.tier1Modules.join(", ") || "(none)"}`);
+	console.log(`  tier-0 folded: ${report.tier0Folded.join(", ") || "(none)"}`);
+	console.log(`  pattern modules: ${report.patternModules.join(", ") || "(none)"}`);
+	if (args.report) {
+		console.log("  residuals by kind:");
+		for (const [kind, count] of Object.entries(report.residualsByKind).toSorted(([a], [b]) =>
+			a.localeCompare(b),
+		)) {
+			console.log(`    ${kind}: ${count}`);
+		}
+	}
+	if (!args.write) console.log("  dry-run (use --write to apply)");
+}
+
 async function mainSwap(argv: string[]): Promise<void> {
 	const args = swapImport.parseSwapArgs(argv);
 	const root = findRepoRoot();
@@ -278,6 +321,12 @@ async function mainSwap(argv: string[]): Promise<void> {
 	}
 
 	const filePaths = expandPatterns(args.patterns, root);
+
+	if (args.from === "panda") {
+		await runPandaSwap(args, filePaths, meta);
+		return;
+	}
+
 	if (filePaths.length === 0) {
 		console.error("codemod swap: no matching files");
 		process.exitCode = 1;

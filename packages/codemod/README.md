@@ -12,7 +12,7 @@ pnpm codemod "src/**/*.tsx" --to=tw
 pnpm codemod "src/**/*.tsx" --to=tw --diff --write
 
 # also migrate away from a source library (repeatable / comma-separated)
-pnpm codemod "src/**/*.tsx" --from=styled-components,stylex,panda --to=css --diff --write
+pnpm codemod "src/**/*.tsx" --from=styled-components,stylex --to=css --diff --write
 ```
 
 ## Source libraries (`--from=`)
@@ -24,9 +24,8 @@ mode pass runs. Off by default.
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `styled-components` | `styled.tag`\`...\``with only flat literal declarations →`tw({...})`when the bridge maps every declaration to typed keys, else`css.class({...})`. JSX usages are rewritten to the intrinsic tag with `className={Name}`(static classNames merge via`cx`). The styled-components import is removed. | interpolated templates, nested selectors/media queries, `styled(<Component>)` inheritance |
 | `stylex`            | `stylex.create({ name: { literalProps } })` → plain object of `css.class({...})` values; `stylex.props(a, b)` → `cx(a, b)`. The stylex import is removed.                                                                                                                                          | pseudo/`:hover`, media queries, non-literal values                                        |
-| `panda`             | `css({ literalProps })` and base-only `cva({...})` → `css.class({...})` (keys must be known CSS properties).                                                                                                                                                                                       | panda shorthands (`bg`, `p`, ...), `tokens.*` references, spreads, `cva` with variants    |
 
-All three require an existing pandwind `css()` binding in the file (same rule
+Both require an existing pandwind `css()` binding in the file (same rule
 as `--to=css`) — the codemod never invents an import for your app's css
 factory.
 
@@ -138,3 +137,35 @@ pnpm codemod tokens --from=preset --to=panda src/preset.ts
 `--report` — print a migration-completeness summary (call sites through
 pandwind vs flagged vs verbatim, files needing attention). Works in both
 the default mode pass and `swap`.
+
+## Panda inbound migration (`swap --from=panda`)
+
+Migrates a panda-css codebase to pandwind (plan 024):
+
+```bash
+pnpm add pandwind
+node src/cli.ts swap --from=panda --to=css.class '<site>/{src,app,theme}/**/*.{ts,tsx}' --out=pandwind --write
+```
+
+- `css({...})` → `css.class({...})` — shorthands expanded, `_hover`/`_dark`/
+  breakpoint scopes preserved, per-property responsive objects fanned out,
+  textStyles expanded; semantic tokens map to authored `$refs` (offline theme
+  ingestion from the host's panda.config, CSS-var fallback otherwise).
+- `<panda.div px="4">` → `<div className={css.class({ paddingX: "4" })}>`
+  (opening + closing tags; non-literal props are flagged, never guessed).
+- cva/sva/defineRecipe → tier-1 modules under `<out>/recipes/` with identical
+  export names: variants stay data + a generated resolver; single-use local
+  definitions fold inline instead. Ark-ui anatomy/parts recipes are residual.
+- Built-in patterns (`stack`, `hstack`, `grid`, …) re-emit as modules under
+  `<out>/patterns/`; call sites only change their import specifier.
+- Import specifiers rewrite 1:1: `@/styled-system/x` → `@/<out>/…`.
+  Generated files are placed under the alias target (`@/* -> src/*` emits
+  `src/<out>`), not blindly at the repository root. Alias detection:
+  package.json#imports → next/vite/components.json/tsconfig paths.
+- The generated bootstrap imports `pandwind/design` and `pandwind/cx`, so the
+  target project must have the `pandwind` package installed before typechecking.
+  Existing generated modules are preserved on reruns; add `--force` to regenerate them.
+
+See `plans/024-panda-inbound-codemod.md` and
+`plans/024-baseline-report.md` (real-world run on the panda docs website:
+146/154 css sites + 86/86 factory elements converted, zero silent drops).

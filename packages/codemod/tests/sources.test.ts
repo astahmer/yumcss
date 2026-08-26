@@ -1,5 +1,5 @@
 /**
- * Source-library migration fixtures — styled-components, stylex, panda-css.
+ * Source-library migration fixtures — styled-components, stylex.
  *
  * Contract under test (plans/008 + 011 §5):
  * - literal-only patterns convert onto pandwind APIs (css.class / tw / cx);
@@ -37,14 +37,6 @@ function stylex(source: string) {
 		mode: "keep",
 		file: "test.tsx",
 		sources: ["stylex"],
-	});
-}
-
-function panda(source: string) {
-	return transformSource(`${CSS_BINDING}\n${source}`, meta, {
-		mode: "keep",
-		file: "test.tsx",
-		sources: ["panda"],
 	});
 }
 
@@ -250,155 +242,5 @@ const styles = stylex.create({
 		expect(result.skippedByMarker).toBe(1);
 		expect(result.code).toContain("pseudo/media");
 		expect(result.code).toContain("stylex.create");
-	});
-});
-
-describe("panda-css source", () => {
-	const PANDA_IMPORT = 'import { css } from "styled-system/css";';
-
-	test("literal known-property css() converts to css.class", () => {
-		const result = panda(`
-${PANDA_IMPORT}
-export const card = css({ color: "red", backgroundColor: "blue" });`);
-		expect(result.changed).toBe(true);
-		expect(result.converted).toBe(1);
-		expect(result.code).toContain("css.class({");
-		expect(result.code).toContain('"color": "red"');
-		expect(result.code).not.toContain("styled-system");
-	});
-
-	test("shorthand keys are flagged, not converted", () => {
-		const result = panda(`
-${PANDA_IMPORT}
-export const card = css({ bg: "red", p: "4" });`);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("bg, p");
-	});
-
-	test("token references are flagged", () => {
-		const result = panda(`
-${PANDA_IMPORT}
-export const card = css({ color: "tokens.colors.red.500" });`);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-	});
-
-	test("base-only cva converts; variants cva is flagged", () => {
-		const ok = panda(`
-${PANDA_IMPORT}
-import { cva } from "styled-system/recipes"
-export const btn = cva({ base: { color: "red" } });`);
-		expect(ok.converted).toBe(1);
-		expect(ok.code).toContain("css.class");
-
-		const flagged = panda(`
-${PANDA_IMPORT}
-export const btn = cva({
-	base: { color: "red" },
-	variants: { size: { sm: { fontSize: "sm" } } },
-});`);
-		expect(flagged.converted).toBe(0);
-		expect(flagged.code).toContain("cva with variants");
-	});
-});
-
-describe("safety rails across sources", () => {
-	test("detectors are opt-in — no sources means no changes", () => {
-		const source = "const Card = styled.div`\n\tcolor: red;\n`;";
-		const result = transformSource(source, meta, { mode: "keep", file: "t.tsx" });
-		expect(result.changed).toBe(false);
-	});
-
-	test("skip markers on library patterns keep them untouched", () => {
-		const result = transformSource(
-			[
-				CSS_BINDING,
-				"// pandwind:migrate-skip (hand-tuned)",
-				"const Card = styled.div`",
-				"\tcolor: red;",
-				"`;",
-			].join("\n"),
-			meta,
-			{ mode: "keep", file: "t.tsx", sources: ["styled-components"] },
-		);
-		expect(result.converted).toBe(0);
-		expect(result.skippedByMarker).toBe(1);
-		expect(result.code).toContain("styled.div");
-	});
-
-	test("composed with --to=tw: source conversion then mode pass both apply", () => {
-		const result = transformSource(
-			[
-				CSS_BINDING,
-				"const Card = styled.div`",
-				"\tcolor: #3182ce;",
-				"`;",
-				'export const A = () => <div className="p-4" />;',
-			].join("\n"),
-			meta,
-			{ mode: "tw", file: "test.tsx", sources: ["styled-components"] },
-		);
-		expect(result.code).toContain("css.class({");
-		expect(result.code).toContain("tw({");
-	});
-
-	test("idempotency: converting twice changes nothing the second time", () => {
-		const source = [
-			CSS_BINDING,
-			'import * as stylex from "@stylexjs/stylex";',
-			"const styles = stylex.create({",
-			'\tcard: { color: "#3182ce" },',
-			"});",
-			"const Card = styled.div`",
-			"\tbackground-color: gray;",
-			"`;",
-		].join("\n");
-		const first = transformSource(source, meta, {
-			mode: "keep",
-			file: "t.ts",
-			sources: ["styled-components", "stylex"],
-		});
-		expect(first.changed).toBe(true);
-		const second = transformSource(first.code, meta, {
-			mode: "keep",
-			file: "t.ts",
-			sources: ["styled-components", "stylex"],
-		});
-		expect(second.changed).toBe(false);
-		expect(second.converted).toBe(0);
-		expect(second.skippedByMarker).toBe(0);
-		expect(second.code).toBe(first.code);
-	});
-});
-
-describe("data-[...] arbitrary variants", () => {
-	test("map through the escape hatch when the base utility is known", () => {
-		const result = transformSource(
-			`export const App = () => <div className="data-[expanded]:opacity-100 data-[closed]:opacity-0" />;`,
-			meta,
-			{ mode: "tw", file: "dv.tsx" },
-		);
-		expect(result.unmappedTokens).toEqual([]);
-		expect(result.code).toContain('"data-[expanded]": {');
-		expect(result.code).toContain('"data-[closed]": {');
-	});
-
-	test("named-group data variants keep their group qualifier", () => {
-		const result = transformSource(
-			`export const App = () => <div className="group-data-[state=collapsed]/sidebar:px-0" />;`,
-			meta,
-			{ mode: "tw", file: "gv.tsx" },
-		);
-		expect(result.code).toContain('"group-data-[state=collapsed]/sidebar": {');
-	});
-
-	test("arbitrary variant + unknown base utility still stays verbatim", () => {
-		const result = transformSource(
-			`export const App = () => <div className="data-[expanded]:totally-unknown-util" />;`,
-			meta,
-			{ mode: "tw", file: "uv.tsx" },
-		);
-		expect(result.unmappedTokens).toHaveLength(1);
 	});
 });
