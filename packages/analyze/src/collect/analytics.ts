@@ -12,7 +12,7 @@
  * Pure string analysis — brace-matched extraction, no AST dependency.
  */
 
-import type { ConditionUsage, StyleUsageReport, UsageCount } from "../types.ts";
+import type { ConditionUsage, StyleUsageReport, UsageCount } from "./types.ts";
 
 export type { ConditionUsage, StyleUsageReport, UsageCount };
 
@@ -263,7 +263,7 @@ interface FgBgPair {
 export function computeContrastWarnings(
 	files: Array<{ file: string; content: string }>,
 	tokens: Record<string, string>,
-): import("../types.ts").ContrastWarning[] {
+): import("./types.ts").ContrastWarning[] {
 	// authored token name ($gray-100) -> resolved color
 	const tokenColors = new Map<string, string>();
 	for (const [name, value] of Object.entries(tokens)) {
@@ -279,7 +279,7 @@ export function computeContrastWarnings(
 		return tokenColors.get(unquoted.toLowerCase()) ?? null;
 	};
 
-	const warnings: import("../types.ts").ContrastWarning[] = [];
+	const warnings: import("./types.ts").ContrastWarning[] = [];
 	for (const file of files) {
 		for (const match of file.content.matchAll(CALL_REGEX)) {
 			const open = (match.index ?? 0) + match[0].length - 1;

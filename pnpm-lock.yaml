@@ -66,6 +66,9 @@ importers:
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind
+      pandwind-analyze:
+        specifier: workspace:*
+        version: link:../../packages/analyze
       react:
         specifier: 19.2.8
         version: 19.2.8

@@ -25,6 +25,7 @@
 	"type": "module",
 	"exports": {
 		".": "./src/cli.ts",
+		"./collect": "./src/collect/index.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

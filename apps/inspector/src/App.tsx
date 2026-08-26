@@ -26,7 +26,7 @@ import {
 	resolveChain,
 	splitTokenValue,
 	type ThemeVarCategory,
-} from "./server/parsers.ts";
+} from "pandwind-analyze/collect";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 
 type Tab = "design" | "stats" | "history" | "graph" | "usage";

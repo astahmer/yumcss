@@ -1,6 +1,6 @@
 /** Pure parsers for generated artifacts — unit-tested, no I/O. */
 
-import type { ThemeVar, TokenSection, UtilityUnion } from "../types.ts";
+import type { ThemeVar, TokenSection, UtilityUnion } from "./types.ts";
 
 /**
  * Parse `@theme { --name: value; }` lines from a generated bridge document.

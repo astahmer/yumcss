@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig, type Plugin } from "vite";
 import { gather } from "./src/server/gather.ts";
-import { buildPruneChangeset } from "./src/server/analytics.ts";
+import { buildPruneChangeset } from "pandwind-analyze/collect";
 import { persistAnalyticsSnapshot, readAnalyticsSeries } from "./src/server/analytics-history.ts";
 import { persistRun } from "./src/server/history.ts";
 
@@ -28,7 +28,7 @@ const studioApi = (): Plugin => ({
 			if (req.method !== "POST") return next();
 			void (async () => {
 				try {
-					const payload = await gather();
+					const payload = (await gather()) as import("./src/types.ts").StudioPayload;
 					const unused = payload.analytics?.unusedTokens ?? [];
 					res.setHeader("content-type", "application/json");
 					res.end(
@@ -47,7 +47,7 @@ const studioApi = (): Plugin => ({
 		server.middlewares.use("/api/analytics", (_req, res) => {
 			void (async () => {
 				try {
-					const payload = await gather();
+					const payload = (await gather()) as import("./src/types.ts").StudioPayload;
 					res.end(JSON.stringify(payload.analytics ?? {}));
 				} catch (error) {
 					res.statusCode = 500;
@@ -60,7 +60,7 @@ const studioApi = (): Plugin => ({
 			void (async () => {
 				res.setHeader("content-type", "application/json");
 				try {
-					const payload = await gather();
+					const payload = (await gather()) as import("./src/types.ts").StudioPayload;
 					persistRun(pkgRoot, payload);
 					if (process.env.INSPECTOR_HISTORY === "1") {
 						persistAnalyticsSnapshot(pkgRoot, payload);
