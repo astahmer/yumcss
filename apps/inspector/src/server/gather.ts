@@ -30,7 +30,8 @@ const DEFAULT_APP = "apps/example";
  * are optional and degrade to empty when the target app doesn't have them.
  */
 export async function gather(repoRoot?: string): Promise<StudioPayload> {
-	const root = repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
+	const root =
+		repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
 	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
 	const isDogfoodApp = APP === DEFAULT_APP;
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
