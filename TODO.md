@@ -40,8 +40,8 @@
 - All deps pinned to exact latest versions (no `^`).
 - oxc-based parsing everywhere a scanner or static transform exists.
 - Real-vite integration tests (dev transform, HMR invalidation, build) with
-  post-plugin snapshots; runtime-size snapshot keeps the bundle stylex-sized
-  (~2.4 KB gz for css+tw+cx).
+  post-plugin snapshots; runtime-size snapshot keeps the bundle lean
+  (~4.4 KB gz for css+tw+cx).
 - Tailwind-compatibility proof suite: every generated candidate compiles
   through real Tailwind and the committed conflict map predicts its emitted
   properties; `cx()` merges recompile to the survivors' rules only; `css()`
@@ -53,23 +53,21 @@
 - CSS identifiers (class names, custom properties) are escaped, so hashes
   that start with a digit are valid CSS.
 
+## Shipped since this list was written
+
+- **Split overloaded utilities** — semantic sub-keys (`textColor`, `textSize`,
+  `textAlign`, `textWrap`, `textOverflow`) are generated at codegen time and
+  documented in the README.
+- **DTCG design-token integration for `tw()`** — `tw:codegen --tokens`
+  bridges tokens into `@theme` and the generated types.
+- **Compile-time `cx()`** — the vite inliner folds literal `cx()` calls,
+  differentially proven byte-identical to the runtime.
+- **Faster `cx()` runtime** — v3 whole-input result cache: warm long pairs
+  ~2.7M ops/sec, at or above tailwind-merge on realistic class lists (see
+  BENCH.md).
+
 # What we want
 
-- **Split overloaded utilities** — Tailwind puts size, color and alignment
-  under one key (`text`). Generate semantic sub-keys (`textColor`, `textSize`,
-  `textAlign`) with a key-to-utility mapping so `{ textSize: "2xl",
-textColor: "gray-900" }` works without arrays.
-- **DTCG design-token integration for `tw()`** — tokens -> `@theme` ->
-  generated types, so autocomplete is your design system, not all of
-  Tailwind. (The css() side already resolves tokens from preset groups.)
-- **Compile-time `cx()`** — the vite inliner resolves literal `tw()` calls
-  today; extending it to literal `cx()` calls (evaluating the merge at build
-  time) would make the cx runtime tree-shakeable for static apps.
-- **Faster `cx()` runtime** — BENCH.md shows `cx()` at ~177K ops/sec vs
-  ~4.3M for tailwind-merge: it resolves every token through the atom registry
-  and conflict map (which is what lets it merge css atoms + tw utilities).
-  Optimize the tokenize/lookup path, then move the merge to compile time for
-  literal calls.
 - **Adapter modes** — the tw adapter proves the "one API, swappable output"
   idea: the same `css()` surface could emit panda-style or stylex-style
   classes behind a different `ClassNameStrategy` (or a starlight-style
@@ -79,8 +77,9 @@ textColor: "gray-900" }` works without arrays.
   one rule per class in tw mode; the equivalent guarantee for panda/stylex
   modes needs the same bridge + test treatment.
 - **SIZE.md / BENCH.md freshness** — both docs are real local measurements
-  (2026-08-15). Re-run the size gate and the scratch benchmark rig before
-  publishing claims.
+  (last re-measured 2026-08-22/23; sizes now quote the committed
+  `runtime-size.json.snap` snapshot). Re-run the size gate and the scratch
+  benchmark rig before publishing claims.
 - **Safelist-free mode** — a custom Tailwind extractor that understands
   `tw()` objects, or first-class `@source inline` guidance; today the inliner
   already makes literal calls visible, and `tw:scan` covers the rest.

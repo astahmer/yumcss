@@ -71,13 +71,13 @@ import { examplePreset } from "./pandwind.preset";
 
 // Lengths become unitless dp numbers ("20px" -> 20, "0.5rem" -> 8).
 // Shorthand lists split per side / corner like CSS.
-const css = createDesignCss(examplePreset, {
+const dcss = createDesignCss(examplePreset, {
 	dark: () => useColorScheme().scheme === "dark",
 });
 const cx = createCx();
 
 const styles = {
-	card: css({
+	card: dcss({
 		$frame: { fill: "$gray-100", corners: "lg", pad: [4, 8] },
 		_dark: { $frame: { fill: "$gray-800" } },
 	}),
@@ -100,10 +100,10 @@ import { examplePreset } from "./pandwind.preset";
 // default ("20px" -> 5 cells); override with { cellSize: 8 }. Hex colors
 // pass through. CSS border shorthands expand to { border: true } +
 // borderColor — OpenTUI borders are boolean, one cell thick.
-const css = createDesignCss(examplePreset);
+const dcss = createDesignCss(examplePreset);
 const cx = createCx();
 
-const panel = css({
+const panel = dcss({
 	$frame: { fill: "$gray-900", corners: "lg", pad: [1, 2] },
 });
 // <box style={panel}>…</box>

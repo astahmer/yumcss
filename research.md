@@ -151,37 +151,3 @@ not evidence.
 
 Unanswered and requiring the empirical pass: exact feature matrix of Atomic CSS
 Devtools (panels, specificity view, media-query handling); whether it pattern-parses
-names vs scans CSSOM; maintenance status, versions, Firefox support; install base;
-whether Chromium currently renders CSS source maps in the Styles pane (step 6 settles it).
-
----
-
-acceptance-report
-
-```json
-{
-	"criteriaSatisfied": [
-		{
-			"id": "criterion-1",
-			"status": "satisfied",
-			"evidence": "Concrete findings delivered in /Users/astahmer/dev/pandwind/research.md: per-question findings 1-6 with confidence tags, coverage verdict table (covered/not-covered), and a 7-step empirical verification checklist with decision gate. Residual risks listed below; unverifiable stats omitted per supervisor decision B."
-		}
-	],
-	"changedFiles": ["/Users/astahmer/dev/pandwind/research.md"],
-	"testsAddedOrUpdated": [],
-	"commandsRun": [],
-	"validationOutput": [
-		"research.md written to authoritative output path; contains all four task questions addressed plus supervisor-requested 'how to verify empirically' section"
-	],
-	"residualRisks": [
-		"All claims about Atomic CSS Devtools specifically are LOW-MED confidence (training-data only, no live web access this run); empirical checklist must be run before any build-vs-install decision",
-		"Chromium CSS source-map Styles-pane behavior varies across versions; step-6 spike required to confirm zero-code origin mapping path"
-	],
-	"noStagedFiles": true,
-	"diffSummary": "Added research.md: unverified-flagged knowledge-based comparison of Atomic CSS Devtools vs pandwind needs, with per-claim confidence levels, coverage verdict (partial; do not build custom extension yet), and empirical verification checklist",
-	"reviewFindings": [
-		"no blockers; note finding 1 and 2 carry LOW-MED confidence tags and must not be cited as verified facts"
-	],
-	"manualNotes": "Ran under supervisor-approved fallback B (no web_search tool available). Omitted install-base/maintenance figures entirely rather than guessing; the empirical checklist answers those in ~10 min."
-}
-```

@@ -57,7 +57,9 @@ export const isCssSource = (source: string, matchers: Array<string | RegExp>): b
  * Collect local bindings imported from css modules. A binding is considered
  * a css function when it's imported (named or default) as `css` from a
  * matching source — e.g. `import { css } from "./design"` or
- * `import css from "./css"`.
+ * `import css from "./css"`. The design-lane naming convention (`dcss`,
+ * distinct from engine css() instances) is accepted identically:
+ * `import { dcss } from "./design"`.
  */
 export function findCssImports(
 	code: string,
@@ -78,7 +80,7 @@ export function findCssImports(
 			if (specifier.type === "ImportSpecifier") {
 				const imported = specifier.imported?.name;
 				const local = specifier.local?.name;
-				if (imported === "css" && typeof local === "string") {
+				if ((imported === "css" || imported === "dcss") && typeof local === "string") {
 					names.add(local);
 				}
 			} else if (specifier.type === "ImportDefaultSpecifier") {

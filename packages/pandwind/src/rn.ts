@@ -7,7 +7,7 @@
  * import { createDesignCss, createCx } from "pandwind/react-native";
  * import { examplePreset } from "./pandwind.preset.ts";
  *
- * const css = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
+ * const dcss = createDesignCss(examplePreset, { isDark: () => scheme === "dark" });
  * const cx = createCx();
  *
  * const styles = {

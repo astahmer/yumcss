@@ -68,6 +68,18 @@ export interface MissingCssSite {
 	token: string;
 }
 
+/**
+ * A statically-known class token using Tailwind arbitrary-value bracket
+ * syntax (`w-[13px]`, `bg-[#0f0]`, `hover:[margin-top:7px]`). These DO
+ * compile — they are flagged as a separate off-design-system lane, not as
+ * missing CSS. Same collection scope and `missingCssIgnore` opt-out as the
+ * missing-CSS lane.
+ */
+export interface ArbitraryValueSite {
+	line: number;
+	token: string;
+}
+
 export interface FileFoldStats {
 	file: string;
 	/** Share of cx calls eliminated at build time (full + partial), %. */
@@ -78,6 +90,7 @@ export interface FileFoldStats {
 	cxRuntime: number;
 	runtimeSites: Array<CallSite>;
 	missingCss: Array<MissingCssSite>;
+	arbitraryValues: Array<ArbitraryValueSite>;
 	twCalls: number;
 	twFolded: number;
 }
@@ -98,6 +111,7 @@ export interface FoldSummary {
 	/** Entry-level elimination — matches the vite-cx-coverage harness. */
 	entryEliminatedPct: number;
 	totalMissingCss: number;
+	totalArbitraryValues: number;
 }
 
 type FoldKind = "full" | "partial" | "runtime";
@@ -375,6 +389,7 @@ export function analyzeSource(
 
 	const ignore = options.missingCssIgnore;
 	const missingCss: Array<MissingCssSite> = [];
+	const arbitraryValues: Array<ArbitraryValueSite> = [];
 	for (const call of mod.calls) {
 		const site = { line: lineOf(mod.lineStarts, call.start), reason: call.reason };
 		if (mod.twNames.has(call.name)) {
@@ -396,6 +411,7 @@ export function analyzeSource(
 			missingCss.push(
 				...collectMissingCss(values, mod.lineStarts, call.start, options.config, ignore),
 			);
+			arbitraryValues.push(...collectArbitraryValues(values, mod.lineStarts, call.start, ignore));
 		}
 	}
 
@@ -409,6 +425,7 @@ export function analyzeSource(
 		cxRuntime,
 		runtimeSites,
 		missingCss,
+		arbitraryValues,
 		twCalls,
 		twFolded,
 	};
@@ -485,6 +502,40 @@ const collectMissingCss = (
 	return [...sites.values()];
 };
 
+/**
+ * Off-design-system lane: after stripping variant prefixes, does the utility
+ * itself use arbitrary-value bracket syntax? Mirrors the `[` check inside
+ * tokenHasCss (arbitrary brackets always compile) but reports instead of
+ * passing. Variant prefixes are skipped without validity checking — an
+ * arbitrary value under any variant is equally off-system.
+ */
+const tokenIsArbitrary = (token: string): boolean => {
+	let rest = token;
+	for (;;) {
+		const colon = topLevelColon(rest);
+		if (colon === -1) break;
+		rest = rest.slice(colon + 1);
+	}
+	return rest.includes("[");
+};
+
+const collectArbitraryValues = (
+	values: Array<unknown>,
+	lineStarts: Array<number>,
+	start: number,
+	ignore: ReadonlySet<string> | undefined,
+): Array<ArbitraryValueSite> => {
+	const sites = new Map<string, ArbitraryValueSite>();
+	for (const value of values) {
+		if (typeof value !== "string" || value === "") continue;
+		for (const token of value.split(/\s+/)) {
+			if (token === "" || ignore?.has(token) || !tokenIsArbitrary(token)) continue;
+			sites.set(token, { line: lineOf(lineStarts, start), token });
+		}
+	}
+	return [...sites.values()];
+};
+
 function lineOf(lineStarts: Array<number>, offset: number): number {
 	let lo = 0;
 	let hi = lineStarts.length - 1;
@@ -538,6 +589,7 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 	const entryEliminatedPct =
 		filesWithCalls.length === 0 ? 100 : Math.round((filesEliminated / filesWithCalls.length) * 100);
 	const totalMissingCss = files.reduce((acc, f) => acc + f.missingCss.length, 0);
+	const totalArbitraryValues = files.reduce((acc, f) => acc + f.arbitraryValues.length, 0);
 	return {
 		files,
 		totalCxCalls,
@@ -551,6 +603,7 @@ export function summarize(files: Array<FileFoldStats>): FoldSummary {
 		filesWithCalls: filesWithCalls.length,
 		entryEliminatedPct,
 		totalMissingCss,
+		totalArbitraryValues,
 	};
 }
 
@@ -575,6 +628,11 @@ export function formatReport(summary: FoldSummary): string {
 				`    ^ ${f.file}:${site.line} — missing-css: no Tailwind candidate for "${site.token}"`,
 			);
 		}
+		for (const site of f.arbitraryValues) {
+			lines.push(
+				`    ^ ${f.file}:${site.line} — off-design-system: "${site.token}" uses an arbitrary value outside the design system`,
+			);
+		}
 	}
 	lines.push("");
 	lines.push(
@@ -587,6 +645,11 @@ export function formatReport(summary: FoldSummary): string {
 	if (summary.totalMissingCss > 0) {
 		lines.push(
 			`missing-css: ${summary.totalMissingCss} static class token(s) with no Tailwind candidate`,
+		);
+	}
+	if (summary.totalArbitraryValues > 0) {
+		lines.push(
+			`off-design-system: ${summary.totalArbitraryValues} arbitrary-value token(s) outside the design system`,
 		);
 	}
 	return lines.join("\n");

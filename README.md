@@ -8,6 +8,25 @@ The core idea: **the compiler is the contract**. Wrong values are type errors,
 autocomplete comes from your actual design system, and nothing is generated at
 runtime that a build step could have done instead.
 
+## Pick your lane
+
+pandwind has three entry points; each subpath import is one deliberate choice,
+and the root export carries only the recommended lane:
+
+| lane                                | import                                                                             | use it when                                                 |
+| ----------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **tw()** — typed Tailwind classes   | `import { createTw } from "pandwind/tw"`                                           | you run Tailwind and want typed, merge-safe utility objects |
+| **css()** — atomic CSS-in-JS        | `import { createCss } from "pandwind/css"`                                         | you want hashed atomic classes + tokens without Tailwind    |
+| **design css()** — Figma vocabulary | `import { createDesignCss } from "pandwind/design"` (convention: `const dcss = …`) | you want ~30 design-intent props with strict tokens         |
+
+`cx()` (`pandwind/cx`) merges across all three; presets live in `pandwind/preset`.
+
+> 📚 **Documentation site**: [`docs/`](./docs) — a Starlight site (`pnpm
+--filter pandwind-docs dev`) with guides for every API, the build-time
+> tooling, the non-web backends and the compatibility proofs. Agent skills:
+> [`skills/pandwind`](./skills/pandwind/SKILL.md) and
+> [`skills/pandwind-codemod`](./skills/pandwind-codemod/SKILL.md).
+
 ```tsx
 import { tw } from "./tw"; // generated from your tailwind.css
 
@@ -36,8 +55,12 @@ pandwind ships **source** (`.ts` entry points) and expects a bundler that
 compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
 
 ```sh
-pnpm add pandwind
+pnpm add pandwind # publishing pending — see PUBLISHING.md; until then install from the repo
 ```
+
+> Publishing to npm/JSR is deferred internet-facing work (see
+> [PUBLISHING.md](./PUBLISHING.md)); until then the quickstart assumes you
+> have the repo available locally.
 
 **1. Preset** — define your design system once (`src/preset.ts`): tokens,
 radii, conditions. See `packages/pandwind/src/preset/example-preset.ts` for a
@@ -93,8 +116,12 @@ same API either way.
 atomic styles, `cx()` to merge both. Plain strings keep working everywhere.
 
 Subpath map: `pandwind/css`, `/tw`, `/cx`, `/preset`, `/design`, `/vite`
-(runtime); `pandwind/codegen/{types,theme,collect}` (build-time codegen
-helpers). `generate-bridge` stays CLI-only (it executes on import).
+(runtime); `pandwind/codegen/{types,theme,collect}` and `/tw/generate`,
+`/tw/collect` (build-time codegen helpers); `pandwind/unplugin` (generic
+bundler adapters); non-web backends `pandwind/react-native`, `/opentui` and
+the render-agnostic `pandwind/stack` (+ `pandwind/stack/react`) — see
+[BACKENDS.md](./BACKENDS.md). `generate-bridge` stays CLI-only (it executes
+on import).
 
 ## `tw()` — typed Tailwind classes
 
@@ -169,9 +196,9 @@ agent ever ships.
   `tests/source-inline.test.ts`).
 - **`tw:prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
-  variables the compiled CSS actually references (the example app drops 82 →
-  20 vars). Caveat: breaks dynamic token access — opt-in, run after
-  `tw:codegen` whenever sources change.
+  variables the compiled CSS actually references (the example app drops 82
+  vars down to the ~20 its compiled CSS references). Caveat: breaks dynamic
+  token access — opt-in, run after `tw:codegen` whenever sources change.
 - **`packages/codemod`** — migrate raw Tailwind authoring onto the pandwind
   APIs (`tw` / `cx` / `css` modes; dry-run + diff by default, idempotent,
   driven by the generated metadata). See
@@ -268,7 +295,8 @@ property-priority merging, variant conditions and a `$input` escape hatch for
 dynamic values.
 
 ```ts
-import { createCss, definePreset, defineTokens } from "pandwind";
+import { createCss } from "pandwind/css";
+import { definePreset, defineTokens } from "pandwind/preset";
 
 const css = createCss(
 	definePreset({ config: {} as StandardProperties, tokens: defineTokens({...}) }),
@@ -289,9 +317,11 @@ properties, behind one function.
 ```ts
 import { createDesignCss } from "pandwind/design";
 
-const css = createDesignCss(examplePreset);
+// Convention: name design-lane instances `dcss` to keep them visually
+// distinct from engine css() instances.
+const dcss = createDesignCss(examplePreset);
 
-css.class({
+dcss.class({
 	$frame: { w: "20", h: 40, corners: "lg", fill: "$blue-500", pad: [4, 8] },
 	$layout: { flow: "stackY", gap: 16, align: "center" },
 	$text: { size: "xl", weight: "semibold", color: "$red-300" },
@@ -407,9 +437,9 @@ import { examplePreset } from "pandwind/preset";
 import { bridge, variants } from "./bridge"; // generated by `tw:bridge`
 
 const twAdapter = createTwAdapter({ preset: examplePreset, variants, bridge });
-const css = createDesignCss(examplePreset, { className: twAdapter });
+const dcss = createDesignCss(examplePreset, { className: twAdapter });
 
-css.class({ $text: { color: "$blue-500" } }); // "text-blue-500"
+dcss.class({ $text: { color: "$blue-500" } }); // "text-blue-500"
 tw({ text: "blue-500" }); // "text-blue-500"
 ```
 
@@ -422,7 +452,7 @@ instead of silently emitting a class that has no CSS in this mode.
 
 The generator (`tw:bridge`) sweeps Tailwind's own class list and keeps only
 direct-property utilities that resolve against your `@theme`, so the bridge
-stays small (~36 KB for the example preset) and cannot drift from what
+stays small (~41 KB for the example preset) and cannot drift from what
 Tailwind actually compiles.
 
 ### Class-name strategies — one API, swappable output
@@ -447,8 +477,8 @@ more than minimal bytes:
 ```ts
 import { createNamedAtomsStrategy } from "pandwind/css";
 
-const css = createDesignCss(examplePreset, { className: createNamedAtomsStrategy() });
-css.class({ $text: { color: "red" } }); // "pw-color-red" (rule in the generated sheet)
+const dcss = createDesignCss(examplePreset, { className: createNamedAtomsStrategy() });
+dcss.class({ $text: { color: "red" } }); // "pw-color-red" (rule in the generated sheet)
 ```
 
 Switching modes is a one-option change; call sites never move.
@@ -514,10 +544,11 @@ through real Tailwind.
 
 The browser runtime is the three small modules above — no stylesheet
 generator, no PostCSS, no parser. Measured by `tests/runtime-size.test.ts`
-(esbuild, minified + gzip): `css()` ≈ 1.1 KB, `tw()` ≈ 1.0 KB, `cx()` ≈ 3.0 KB,
-all three together ≈ 3.7 KB gz. The build-time stylesheet generator would add
-~20 KB gz (postcss-selector-parser) and is deliberately not exported from the
-runtime barrel. Real numbers for the runtime, the example build and the
+(esbuild, minified + gzip, against the committed record-of-truth snapshot
+`tests/snapshots/runtime-size.json.snap`): `css()` ≈ 1.5 KB gz, `tw()` ≈ 1.0
+KB gz, `cx()` ≈ 3.7 KB gz, all three together ≈ 4.4 KB gz. The build-time
+stylesheet generator adds ~20 KB gz (postcss-selector-parser) and is
+deliberately not exported from the runtime barrel. Real numbers for the runtime, the example build and the
 alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
 [SIZE.md](./SIZE.md); per-call runtime benchmarks against those same
 alternatives live in [BENCH.md](./BENCH.md). Lowering the same design system
@@ -565,7 +596,7 @@ under _What we deliberately don't do (and why)_. The highlights:
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
   props; everything else lives under `$raw` on purpose.
-- **No panda-like runtime bloat** — the shipped runtime is ~3.7 KB gz for
+- **No panda-like runtime bloat** — the shipped runtime is ~4.4 KB gz for
   css+tw+cx; the stylesheet generator is build-time only.
 
 ## Repo layout
@@ -622,9 +653,10 @@ vite-only capability. Cache invalidation uses unplugin's `watchChange`
   inlined or scanned — same constraint as dynamic class names in plain
   Tailwind. The safelist covers calls that are statically evaluable; fully
   dynamic values need `@source inline` or an explicit safelist entry.
-- Tailwind overloads utilities like `text-*` (size, color, alignment). One key
-  per utility means you use an array: `tw({ text: ["2xl", "gray-900"] })`.
-  Semantic sub-keys (`textSize`/`textColor`) are planned.
+- Mixed-concern overloaded utilities need an array:
+  `tw({ text: ["2xl", "gray-900"] })`. The semantic sub-keys
+  (`textSize`/`textColor`) are the narrower spellings — see
+  _Semantic sub-keys_ above.
 - Dynamic `css()` values (variables, `$input`) aren't covered by the static
   extractor — they need runtime styles, exactly like dynamic Tailwind classes.
 - **What about node_modules?** Same answer as Tailwind: the tw() inliner

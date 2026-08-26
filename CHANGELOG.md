@@ -4,6 +4,25 @@ All notable changes to `pandwind` are documented here. The project has no
 released version yet — entries group the development waves that produced the
 current `0.1.0` state.
 
+## Unreleased — 2026-08-25 wave (multi-target backends)
+
+### API
+
+- **Style backends** (`pandwind/react-native`, `pandwind/opentui`, plus the
+  render-agnostic `pandwind/stack` / `pandwind/stack/react` subpaths): the
+  design layer now lowers a resolved flat style IR to non-web targets — RN
+  registered style objects, OpenTUI plain style objects — with per-target
+  unit policies and a strict condition policy (unresolvable conditions throw
+  loudly). See [BACKENDS.md](./BACKENDS.md).
+- New example/e2e apps: `apps/css-example`, `apps/rn-example`,
+  `apps/opentui-example`, each asserting rendered output on a real host.
+
+### Fixes
+
+- opentui-example: disable mouse-movement tracking and restore terminal modes
+  on teardown via `renderer.destroy()` before exit — no more raw SGR mouse
+  fragments leaking into the terminal.
+
 ## Unreleased — 2026-08-23 wave (perf, compiler, packaging)
 
 ### Performance

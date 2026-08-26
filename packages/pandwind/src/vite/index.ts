@@ -28,7 +28,8 @@ import { findCssImports } from "./css-extract.ts";
 import { createPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssPreset } from "./css-extract.ts";
-import { extractTwConfig, inlineTwCalls, type TwConfig } from "./inline.ts";
+import { extractTwConfig, inlineTwCalls, type OnUnresolved, type TwConfig } from "./inline.ts";
+import type { UnresolvedToken } from "./unresolved.ts";
 
 export interface PandwindViteOptions {
 	/**
@@ -70,6 +71,18 @@ export interface PandwindViteOptions {
 		 */
 		cssSources?: Array<string | RegExp>;
 	};
+	/**
+	 * Fail-fast policy for statically-folded class tokens that are NOT part
+	 * of the design system: arbitrary `[...]` values (compile fine but
+	 * bypass the token vocabulary) and tokens Tailwind will not compile
+	 * (they render unstyled). Only fully-folded cx()/tw() call sites are
+	 * checked; custom/foreign classes passed through cx() will false-positive.
+	 *
+	 * - "off" (default, backwards compatible): do nothing;
+	 * - "warn": report each site via console.warn and keep building;
+	 * - "error": throw — the build fails on the offending module.
+	 */
+	onUnresolved?: OnUnresolved;
 }
 
 export interface Resolver {
@@ -165,6 +178,19 @@ export interface InlineTwPluginCore {
 	invalidate(file: string): void;
 }
 
+const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnresolved): void => {
+	if (unresolved.length === 0) return;
+	const sites = unresolved
+		.map((site) => `  ${id}:${site.line}: "${site.token}" (${site.reason})`)
+		.join("\n");
+	const message =
+		`pandwind: ${unresolved.length} folded class token(s) outside the design system:\n${sites}\n` +
+		"Arbitrary [...] values bypass the token vocabulary; unknown tokens render unstyled. " +
+		'Set onUnresolved: "off" to silence.';
+	if (mode === "error") throw new Error(message);
+	console.warn(message);
+};
+
 export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
 
@@ -202,6 +228,8 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 	};
 
 	const crossModuleResolver = createCrossModuleConstResolver();
+	const unresolvedMode: OnUnresolved = options.onUnresolved ?? "off";
+	const unresolvedOptions = { onUnresolved: unresolvedMode };
 
 	return {
 		name: "pandwind:inline-tw",
@@ -236,7 +264,14 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				id,
 				parseProgramForConsts(working, id),
 			);
-			const result = inlineTwCalls(working, id, config, imports.localNames, importedConstants);
+			const result = inlineTwCalls(
+				working,
+				id,
+				config,
+				imports.localNames,
+				importedConstants,
+				unresolvedOptions,
+			);
 			working = result.code;
 
 			// cx pass runs on the post-tw code: folded tw() strings then
@@ -245,20 +280,35 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			// shared engine context and merge via its registry.
 			const cxImports = findCxImports(working, id, isCxSource);
 			let inlined = result.inlined;
+			let cxUnresolved: UnresolvedToken[] = [];
 			if (cxImports.localNames.size > 0) {
-				let cxOptions: Parameters<typeof inlineCxCalls>[4] = { importedConstants };
+				let cxOptions: Parameters<typeof inlineCxCalls>[4] = {
+					importedConstants,
+					onUnresolved: unresolvedMode,
+				};
 				if (cssFold !== undefined) {
 					const cssNames = findCssImports(working, id, cssFold.cssSources);
 					if (cssNames.size > 0) {
-						cxOptions = { importedConstants, fold: { cssNames, engine: cssFold.engine } };
+						cxOptions = {
+							...cxOptions,
+							fold: { cssNames, engine: cssFold.engine },
+						};
 					}
 				}
 				const cxResult = inlineCxCalls(working, id, config, cxImports.localNames, cxOptions);
 				working = cxResult.code;
 				inlined += cxResult.inlined;
+				cxUnresolved = cxResult.unresolved ?? [];
 			}
 
-			return inlined === 0 ? null : { code: working, map: null };
+			return inlined === 0
+				? null
+				: (() => {
+						if (unresolvedMode !== "off") {
+							reportUnresolved(id, [...(result.unresolved ?? []), ...cxUnresolved], unresolvedMode);
+						}
+						return { code: working, map: null } as const;
+					})();
 		},
 		invalidate(file: string) {
 			crossModuleResolver.invalidate(file);

@@ -48,6 +48,16 @@ export function collectAnnotations(
 				message: `"${site.token}" matches no Tailwind candidate — it will render unstyled`,
 			});
 		}
+		// Correctness lane first (missing-css), then the off-design-system
+		// hygiene lane — same order rationale as the original two-lane split.
+		for (const site of file.arbitraryValues) {
+			out.push({
+				file: file.file,
+				line: site.line,
+				title: "off-design-system",
+				message: `"${site.token}" uses an arbitrary value outside the design system`,
+			});
+		}
 	}
 	void budget; // budget dead-candidates lack file/line coords — reported by --css instead
 	return out.slice(0, MAX_ANNOTATIONS);

@@ -141,6 +141,8 @@ Measurement notes from the 2026-08-22 rig:
 
 For pandwind itself, `packages/pandwind/tests/runtime-size.test.ts` is the
 repo-owned size gate, `packages/pandwind/cx-bench.mts` is the repo-owned
-cx microbench (`tsx cx-bench.mts` from `apps/example`), and the benchmark
+cx microbench (`pnpm tsx ../../packages/pandwind/cx-bench.mts` from
+`apps/example`, so the generated config in `apps/example/src/tw.ts`
+resolves), and the benchmark
 entries import `packages/pandwind/src/*` directly plus the generated config
 in `apps/example/src/tw.ts`.

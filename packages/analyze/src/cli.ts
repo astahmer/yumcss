@@ -172,7 +172,10 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		const missingSites = stats.flatMap((s) =>
 			s.missingCss.map((m) => ({ file: s.file, line: m.line, token: m.token })),
 		);
-		let cssBudgetJson: import("./css-budget.ts").CssBudget | undefined;
+		const arbitrarySites = stats.flatMap((s) =>
+			s.arbitraryValues.map((m) => ({ file: s.file, line: m.line, token: m.token })),
+		);
+		let cssBudgetJson: import("./css-budget.ts").CssBudget | Record<string, unknown> | undefined;
 		if (args.css) {
 			cssBudgetJson = await computeCssBudget(args, files);
 		}
@@ -181,6 +184,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 				schema: ANALYZE_JSON_SCHEMA,
 				...summary,
 				missingCss: { count: missingSites.length, sites: missingSites.slice(0, 50) },
+				arbitraryValues: { count: arbitrarySites.length, sites: arbitrarySites.slice(0, 50) },
 				...(cssBudgetJson !== undefined ? { cssBudget: cssBudgetJson } : {}),
 			},
 			null,

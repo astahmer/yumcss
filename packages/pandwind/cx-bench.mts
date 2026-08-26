@@ -1,5 +1,5 @@
 /* cx() microbench — BENCH.md shapes: short pair (4+3 tokens) + long pair (13+9 incl. variants).
- * Usage: node --import tsx cx-v3-bench.mts [--prof]
+ * Usage: node --import tsx cx-bench.mts [--prof]
  */
 import { performance } from "node:perf_hooks";
 import { readFileSync } from "node:fs";

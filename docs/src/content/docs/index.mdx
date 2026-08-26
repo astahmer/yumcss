@@ -1,0 +1,41 @@
+---
+title: pandwind
+description: Typed style objects that compile to real CSS — Tailwind classes or atomic CSS-in-JS.
+template: splash
+hero:
+  title: pandwind
+  tagline: Panda-like typed style objects that compile to real CSS — via Tailwind classes (`tw()`) or an atomic CSS-in-JS engine (`css()`). Plain `className` strings and plain CSS keep working right next to both.
+  actions:
+    - text: Quick start
+      link: ./getting-started/
+      icon: right-arrow
+    - text: Why pandwind exists
+      link: ./why-pandwind/
+      icon: external
+---
+
+The core idea: **the compiler is the contract**. Wrong values are type errors,
+autocomplete comes from your actual design system, and nothing is generated at
+runtime that a build step could have done instead.
+
+```tsx
+import { tw } from "./tw"; // generated from your tailwind.css
+
+export function Card() {
+	return (
+		<div
+			className={tw({
+				rounded: "xl",
+				bg: "white",
+				p: "6",
+				shadow: "lg",
+				hover: { bg: "gray-50" },
+				sm: { p: "8" },
+				group: { hover: { opacity: "100" } },
+			})}
+		>
+			{/* "rounded-xl bg-white p-6 shadow-lg hover:bg-gray-50 sm:p-8 group-hover:opacity-100" */}
+		</div>
+	);
+}
+```
