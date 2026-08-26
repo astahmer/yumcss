@@ -17,6 +17,8 @@ perl -e 'alarm 20; exec @ARGV' script -q "$cap" bun run src/index.tsx >/dev/null
 code=$?
 if [ $code -eq 0 ] && [ -s "$cap" ]; then
 	echo "PASS pty boot exits 0 with captured output ($(wc -c <"$cap" | tr -d ' ') bytes)"
+	# CI visual-artifacts lane: keep the frame capture when asked.
+	if [ "${OPENTUI_CAPTURE:-}" != "" ]; then cp "$cap" "$OPENTUI_CAPTURE"; fi
 else
 	echo "FAIL pty boot (exit=$code, bytes=$(wc -c <"$cap" | tr -d ' '))"
 	rc=1

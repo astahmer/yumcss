@@ -3,15 +3,46 @@
 Everything in this file touches the outside world. **Execute only with
 maintainer approval** — until then development stays local-only by design.
 
-## 1. npm release
+## 1. npm release — AUTOMATED (first publish is the only manual step)
 
-- [ ] Add changesets (`.changeset/config.json`, version bump flow) — packages:
-      `pandwind`, `pandwind-codemod`, `pandwind-analyze`.
-- [ ] Decide registry strategy: npm (+ provenance via OIDC) vs JSR vs
-      pkg.pr.new preview builds for every PR.
-- [ ] Verify `exports` map + `files` field per package (007-E hygiene done).
-- [ ] Publish order: pandwind → codemod → analyze.
-- [ ] Post-release: tag `v0.x.0` on main, CHANGELOG entry.
+Automation in place:
+
+- [x] Changesets: `.changeset/config.json` (independent versioning — the four
+      packages move at different speeds; linked for lockstep majors),
+      `privatePackages: false` keeps examples out. Add a changeset per PR via
+      `pnpm changeset`.
+- [x] Registry strategy: npm + OIDC provenance (`id-token: write` in the
+      workflow, `--provenance` on publish). Preview builds per PR via
+      pkg.pr.new (non-blocking `preview` job in ci.yml).
+- [x] Per-package hygiene: `files` (src/README/LICENSE), `publishConfig`
+      (public access + registry + provenance), `engines.node >= 20`,
+      repository/keywords/license metadata, `bin` entries for the two CLIs.
+- [x] Source-publishing verified by pack smoke tests:
+      `scripts/release/smoke-pack.mjs` packs each package, asserts every
+      exports/bin target exists in the tarball, then dynamically imports EVERY
+      shipped module (catches deep-relative imports into sibling packages —
+      this is why `pandwind/internal/*` subpath exports exist; codemod and
+      analyze must import pandwind through those specifiers, never
+      `../../pandwind/src/*` relative paths).
+- [x] Publish order enforced in one script: `scripts/release/publish-all.sh`
+      (pandwind → lint-plugin → codemod → analyze) after re-running smokes.
+- [x] Workflow: `.github/workflows/release.yml` — changesets action opens a
+      "Version Packages" PR on main; tagging `v*` runs typecheck+tests,
+      publishes with provenance, creates the GitHub release from CHANGELOG.
+
+### First release (manual, once)
+
+```sh
+# 1. add NPM_TOKEN (automation token, publish rights for both package scopes)
+#    to GitHub -> Settings -> Secrets -> Actions
+# 2. merge the "Version Packages" PR that changesets opened
+# 3. tag and push — CI does the rest:
+git tag v0.1.0 && git push origin v0.1.0
+# 4. verify: npm view pandwind / npm view pandwind-codemod
+```
+
+Subsequent releases: open PRs with changesets, merge the auto-updated Version
+Packages PR, tag the new version. Nothing else.
 
 ## 2. Upstream kumo migration PR
 

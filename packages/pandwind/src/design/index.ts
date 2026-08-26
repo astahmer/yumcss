@@ -75,3 +75,5 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 
 	return css as CssFn<Design>;
 };
+
+export type { DesignPreset, DesignStyleObject } from "./types.ts";

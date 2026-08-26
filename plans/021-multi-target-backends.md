@@ -222,10 +222,10 @@ Remaining (smaller):
         cx merge later-wins-per-property vs css-backend semantics, token-value
         consistency across targets, condition-policy parity (css conditions
         are stylesheet-scoped atoms vs object backends' eager strict resolvers).
-  - [x] Host-app E2E per target (2026-08-25): `apps/css-example` (vite +
-        Chromium computed-style assertions), `apps/rn-example`
+  - [x] Host-app E2E per target (2026-08-25): `examples/css-example` (vite +
+        Chromium computed-style assertions), `examples/rn-example`
         (react-native-web host: shorthand expansion + _dark toggle e2e),
-        `apps/opentui-example` (real @opentui render: headless span/color
+        `examples/opentui-example` (real @opentui render: headless span/color
         assertions + PTY smoke).
 - [x] No new required user-facing API for existing web apps (zero-churn upgrade;
       object backends are additive subpath exports).

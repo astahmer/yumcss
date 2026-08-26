@@ -28,6 +28,50 @@ interface CliArgs {
 	css: boolean;
 	githubAnnotations: boolean;
 	constantsPath?: string;
+	/** Absolute ceiling on minified CSS bytes — exit 1 when exceeded. */
+	failOverBytes?: number;
+	/** Budgets json path: per-lane caps { css, gzip, rules }. */
+	budgetsPath?: string;
+}
+
+/** Per-lane caps for the budgets file (plans/023 CI gate). */
+export interface BudgetCaps {
+	css?: number;
+	gzip?: number;
+	rules?: number;
+}
+
+/** Parse a budgets json file; unknown lanes are ignored, values must be positive numbers. */
+export function parseBudgets(text: string): BudgetCaps {
+	const raw = JSON.parse(text) as Record<string, unknown>;
+	const caps: BudgetCaps = {};
+	for (const lane of ["css", "gzip", "rules"] as const) {
+		const v = raw[lane];
+		if (typeof v === "number" && Number.isFinite(v) && v >= 0) caps[lane] = v;
+	}
+	return caps;
+}
+
+/** Evaluate caps against a measured budget; returns human-readable violations. */
+export function evaluateBudget(
+	measured: { cssBytes: number; cssGzipBytes: number; rules: number },
+	failOverBytes: number | undefined,
+	caps: BudgetCaps,
+): string[] {
+	const violations: string[] = [];
+	if (failOverBytes !== undefined && measured.cssBytes > failOverBytes) {
+		violations.push(`css bytes ${measured.cssBytes} exceed --fail-over ceiling ${failOverBytes}`);
+	}
+	if (caps.css !== undefined && measured.cssBytes > caps.css) {
+		violations.push(`css bytes ${measured.cssBytes} exceed budgets cap ${caps.css}`);
+	}
+	if (caps.gzip !== undefined && measured.cssGzipBytes > caps.gzip) {
+		violations.push(`gzip bytes ${measured.cssGzipBytes} exceed budgets cap ${caps.gzip}`);
+	}
+	if (caps.rules !== undefined && measured.rules > caps.rules) {
+		violations.push(`rule count ${measured.rules} exceed budgets cap ${caps.rules}`);
+	}
+	return violations;
 }
 
 /** Version tag stamped into `--json` output for consumers. */
@@ -41,6 +85,8 @@ function parseArgs(argv: Array<string>): CliArgs {
 	let githubAnnotations = false;
 	let root = process.cwd();
 	let constantsPath: string | undefined;
+	let failOverBytes: number | undefined;
+	let budgetsPath: string | undefined;
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
 		if (arg === "--tw") {
@@ -55,6 +101,13 @@ function parseArgs(argv: Array<string>): CliArgs {
 			root = resolve(process.cwd(), argv[++i] ?? ".");
 		} else if (arg === "--constants") {
 			constantsPath = resolve(process.cwd(), argv[++i] ?? "");
+		} else if (arg !== undefined && arg.startsWith("--fail-over=")) {
+			failOverBytes = Number(arg.slice("--fail-over=".length));
+			if (!Number.isFinite(failOverBytes) || failOverBytes < 0) {
+				throw new Error(`analyze: invalid --fail-over '${arg}'`);
+			}
+		} else if (arg !== undefined && arg.startsWith("--budgets=")) {
+			budgetsPath = resolve(process.cwd(), arg.slice("--budgets=".length));
 		} else if (arg !== undefined) {
 			patterns.push(arg);
 		}
@@ -67,7 +120,26 @@ function parseArgs(argv: Array<string>): CliArgs {
 		githubAnnotations,
 		root,
 		constantsPath,
+		failOverBytes,
+		budgetsPath,
 	};
+}
+
+/** Shared CSS-budget computation for both output lanes. */
+async function computeCssBudget(args: CliArgs, files: Array<string>) {
+	const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
+	let themeCss: string | undefined;
+	try {
+		themeCss = readFileSync(themeCssPath, "utf8");
+	} catch {
+		themeCss = undefined;
+	}
+	return cssBudget({
+		files: files.map((f) => resolve(args.root, f)),
+		twEntry: args.twPath,
+		themeCss,
+		base: args.root,
+	});
 }
 
 /**
@@ -100,28 +172,9 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		const missingSites = stats.flatMap((s) =>
 			s.missingCss.map((m) => ({ file: s.file, line: m.line, token: m.token })),
 		);
-		let cssBudgetJson: Record<string, unknown> | undefined;
+		let cssBudgetJson: import("./css-budget.ts").CssBudget | undefined;
 		if (args.css) {
-			const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
-			let themeCss: string | undefined;
-			try {
-				themeCss = readFileSync(themeCssPath, "utf8");
-			} catch {
-				themeCss = undefined;
-			}
-			const budget = await cssBudget({
-				files: files.map((f) => resolve(args.root, f)),
-				twEntry: args.twPath,
-				themeCss,
-				base: args.root,
-			});
-			cssBudgetJson = {
-				liveCandidates: budget.liveCandidates,
-				deadCandidates: budget.deadCandidates,
-				cssBytes: budget.cssBytes,
-				cssGzipBytes: budget.cssGzipBytes,
-				rules: budget.rules,
-			};
+			cssBudgetJson = await computeCssBudget(args, files);
 		}
 		return JSON.stringify(
 			{
@@ -135,23 +188,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		);
 	}
 	if (args.css && !args.json) {
-		// CSS budget lane (human format; --json embeds the budget above) — compiles the scanned tw() surface through the
-		// real engine. Needs the generated tw runtime (same file the app
-		// imports) and optionally the @theme bridge for token utilities.
-		const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
-		let themeCss: string | undefined;
-		try {
-			themeCss = readFileSync(themeCssPath, "utf8");
-		} catch {
-			themeCss = undefined;
-		}
-		const budget = await cssBudget({
-			files: files.map((f) => resolve(args.root, f)),
-			twEntry: args.twPath,
-			themeCss,
-			base: args.root,
-		});
-		return formatCssBudget(budget);
+		return formatCssBudget(await computeCssBudget(args, files));
 	}
 
 	if (args.githubAnnotations) {
@@ -163,7 +200,27 @@ export async function runCli(argv: Array<string>): Promise<string> {
 }
 
 async function main(): Promise<void> {
-	console.log(await runCli(process.argv.slice(2)));
+	const argv = process.argv.slice(2);
+	const args = parseArgs(argv);
+	console.log(await runCli(argv));
+
+	// CI gate (plans/023): nonzero exit when the measured budget violates
+	// --fail-over ceiling or any --budgets cap. PR-relative deltas compose by
+	// running the CLI twice (base + head) in the workflow layer.
+	if ((args.failOverBytes !== undefined || args.budgetsPath !== undefined) && args.css) {
+		const files = collectFiles(
+			args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"],
+			args.root,
+		).filter((f) => f.endsWith(".ts") || f.endsWith(".tsx"));
+		const measured = await computeCssBudget(args, files);
+		const caps =
+			args.budgetsPath !== undefined ? parseBudgets(readFileSync(args.budgetsPath!, "utf8")) : {};
+		const violations = evaluateBudget(measured, args.failOverBytes, caps);
+		if (violations.length > 0) {
+			for (const v of violations) console.error(`analyze: BUDGET VIOLATION — ${v}`);
+			process.exitCode = 1;
+		}
+	}
 }
 
 const invokedDirectly =

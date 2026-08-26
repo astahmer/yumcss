@@ -1,0 +1,20 @@
+{
+	"$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+	"changelog": [
+		"@changesets/changelog-github",
+		{
+			"repo": "astahmer/pandwind"
+		}
+	],
+	"commit": false,
+	"fixed": [],
+	"linked": [["@pandwind/lint-plugin", "pandwind", "pandwind-analyze", "pandwind-codemod"]],
+	"access": "public",
+	"privatePackages": {
+		"version": false,
+		"tag": false
+	},
+	"baseBranch": "main",
+	"updateInternalDependencies": "patch",
+	"ignore": []
+}

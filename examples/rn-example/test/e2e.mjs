@@ -54,6 +54,8 @@ server.stdout.on("data", (d) => serverLogs.push(d.toString()));
 server.stderr.on("data", (d) => serverLogs.push(d.toString()));
 
 let browser;
+/** @type {import("playwright-core").Page | undefined} */
+let page;
 try {
 	// wait for the dev server
 	const deadline = Date.now() + TIMEOUT;
@@ -70,7 +72,7 @@ try {
 	if (!up) throw new Error(`dev server did not come up:\n${serverLogs.join("")}`);
 
 	browser = await chromium.launch();
-	const page = await browser.newPage();
+	page = await browser.newPage();
 	const consoleErrors = [];
 	page.on("console", (m) => {
 		if (m.type() === "error") consoleErrors.push(m.text());
@@ -147,6 +149,9 @@ try {
 } catch (error) {
 	failures.push(String(error));
 } finally {
+	if (process.env.PW_SCREENSHOT !== undefined && page !== undefined) {
+		await page.screenshot({ path: process.env.PW_SCREENSHOT, fullPage: true });
+	}
 	if (browser) await browser.close();
 	server.kill("SIGTERM");
 }

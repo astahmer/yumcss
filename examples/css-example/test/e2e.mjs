@@ -107,6 +107,10 @@ try {
 
 	check("zero console errors / pageerrors", consoleErrors.length === 0, consoleErrors.join(" | "));
 
+	// CI visual-artifacts lane: optional deterministic capture.
+	if (process.env.PW_SCREENSHOT !== undefined) {
+		await page.screenshot({ path: process.env.PW_SCREENSHOT, fullPage: true });
+	}
 	await browser.close();
 } catch (err) {
 	failures++;

@@ -162,5 +162,7 @@ stylesheet handles them natively.
   | `examples/rn-example`      | react-native-web + real Chromium                                          | emitted RN style objects processed by a real RN-semantics host: per-side shorthand expansion, `_dark` runtime toggle round-trip |
   | `examples/opentui-example` | real `@opentui/core` renderer (bun), headless span assertions + PTY smoke | exact token colors in rendered spans, border glyphs, `_dark` swap, cell insets                                                  |
 
+| `examples/showcase` | ALL THREE from one shared vocabulary module | the write-once story itself: same `$blue-500`/corners/pad/`_dark` asserted across web, native-web and opentui renderers (`pnpm test`) |
+
 Canvas remains deferred (plan 021 step 5): draw-call styling has no layout
 and paint-state semantics — it gets built when something actually needs it.

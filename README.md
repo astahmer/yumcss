@@ -523,6 +523,33 @@ alternatives (stylex, panda, emotion/chakra, tailwind-merge, tokenami) live in
 alternatives live in [BENCH.md](./BENCH.md). Lowering the same design system
 to React Native / OpenTUI style objects lives in [BACKENDS.md](./BACKENDS.md).
 
+## CI — analyze results on your PRs
+
+A reusable workflow posts (and keeps updated, one sticky comment) the analyze
+CLI's PR metrics: cx() fold coverage, missing-CSS tokens, and generated CSS
+size with a delta against your base branch.
+
+In **this repo** it already runs on every `pandwind/**` PR. To consume it from
+**another repository**:
+
+```yaml
+# .github/workflows/analyze.yml
+jobs:
+  analyze:
+    uses: astahmer/pandwind/.github/workflows/analyze-comment.yml@main
+    with:
+      base-ref: main
+      app-dir: apps/my-app # dir containing src/ + generated tw.ts
+      patterns: "src/**/*.{ts,tsx}"
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Inputs: `base-ref`, `working-directory`, `app-dir`, `patterns`, `pr-number`
+(for dispatch runs). Requires the app to have run `tw:codegen`/`tw:bridge`
+outputs committed (the workflow reads them). Fail-open: reporting problems
+never fail the workflow.
+
 ## Why pandwind exists
 
 The short version of the decisions behind this repo lives in [TODO.md](./TODO.md)
