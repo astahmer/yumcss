@@ -13,13 +13,19 @@ sidebar:
 
 `createCss(preset)` returns a typed `css()` that flattens a style object into
 hashed atomic classes, with design tokens, property-priority merging, variant
-conditions and a `$input` escape hatch for dynamic values.
+conditions and a `$input` escape hatch for dynamic values. `createCss()` remains
+available as an intentionally loose convenience form.
 
 ```ts
 import { createCss } from "pandwind/css";
 import { definePreset, defineTokens } from "pandwind/preset";
 
-const css = createCss(definePreset({ config: {} as StandardProperties, tokens: defineTokens({}) }));
+const css = createCss(
+	definePreset(
+		{ config: {} as StandardProperties, tokens: defineTokens({}) },
+		{ strict: true, conditions: { base: "" }, properties: { $all: true } },
+	),
+);
 ```
 
 It is the "better stylex + panda" half of the repo: no runtime style

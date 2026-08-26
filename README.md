@@ -292,14 +292,18 @@ the bundled class strings are already conflict-free.
 The panda+stylex engine: `createCss(preset)` returns a typed `css()` that
 flattens a style object into hashed atomic classes, with design tokens,
 property-priority merging, variant conditions and a `$input` escape hatch for
-dynamic values.
+dynamic values. `createCss()` remains available as an intentionally loose
+convenience form.
 
 ```ts
 import { createCss } from "pandwind/css";
 import { definePreset, defineTokens } from "pandwind/preset";
 
 const css = createCss(
-	definePreset({ config: {} as StandardProperties, tokens: defineTokens({...}) }),
+	definePreset(
+		{ config: {} as StandardProperties, tokens: defineTokens({...}) },
+		{ strict: true, conditions: { base: "" }, properties: { $all: true } },
+	),
 );
 ```
 

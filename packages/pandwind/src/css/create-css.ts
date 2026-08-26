@@ -3,6 +3,7 @@ import type {
 	AnyCssConfig,
 	AnyTokens,
 	CssConfigReturn,
+	CssPreset,
 	DefinePresetOptions,
 	StyleObject,
 	TypedStyleObject,
@@ -20,6 +21,8 @@ import { encodeVars, VARS_ATOMS, type VarAtom, type VarsOutput } from "./vars.ts
 export type { ClassNameFn };
 export type { AnyClassNameStrategy, ClassNameStrategy };
 
+type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
+
 type CompiledStyles = Record<string, string>;
 type CssStyle = Record<string, string>;
 
@@ -29,6 +32,10 @@ const DYNAMIC = Symbol("dynamic");
  * Untyped convenience — useful for throwaway styles or before the preset
  * types are wired up. Values are loose strings / nested objects.
  */
+export function createCss<TPreset extends TypedPreset>(
+	preset: TPreset,
+	options?: CreateCssOptions,
+): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
 export function createCss(options?: CreateCssOptions): CssFn<StyleObject>;
 /** Fully typed against a preset: every value is a token or a constrained option. */
 export function createCss<
@@ -36,10 +43,21 @@ export function createCss<
 >(
 	options?: CreateCssOptions,
 ): CssFn<TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>>;
-export function createCss(options: CreateCssOptions = {}): CssFn<StyleObject> {
+export function createCss(
+	presetOrOptions: CreateCssOptions | TypedPreset = {},
+	options: CreateCssOptions = {},
+): CssFn<StyleObject> {
+	const isPreset = (value: CreateCssOptions | TypedPreset): value is CssPreset =>
+		typeof value === "object" &&
+		value !== null &&
+		"conditions" in value &&
+		"properties" in value &&
+		"strict" in value;
+	const backendOptions = isPreset(presetOrOptions) ? options : presetOrOptions;
+
 	// The web backend owns declaration lowering (hash/strategy/atom registry,
 	// plans/021); everything below is the css surface built on top of it.
-	const backend = createCssBackend(options);
+	const backend = createCssBackend(backendOptions);
 	const atoms = backend.atoms;
 
 	const compile = (style: FlatStyles): CompiledStyles => {
