@@ -45,6 +45,7 @@ const PROP_GROUP: Record<string, string> = {
 function pandaValue(
 	entry: SwapEntry,
 	mode: "off" | "bare" | "group",
+	tokens: import("../../../pandwind/src/types/typings.ts").AnyTokens | undefined,
 ): string | true | number | Array<string | number> {
 	if (mode === "off") return entry.value;
 	if (typeof entry.value === "string") {
@@ -57,7 +58,7 @@ function pandaValue(
 		// Resolved values round-trip through the preset.
 		const group = PROP_GROUP[entry.prop];
 		if (group === undefined) return entry.value;
-		const ref = resolvedTokenRef([group], entry.value);
+		const ref = resolvedTokenRef([group], entry.value, tokens);
 		if (ref === null) return entry.value;
 		return mode === "group" ? qualifyRef(ref, group) : ref;
 	}
@@ -148,7 +149,7 @@ function formatPandaValue(value: string | true | number | Array<string | number>
 			: String(value);
 }
 
-export const emitPanda: Emitter = (ir, _meta, ctx) => {
+export const emitPanda: Emitter = (ir, meta, ctx) => {
 	const mode = ctx.tokenRefs ?? "bare";
 	const groups = new Map<string, SwapEntry[]>();
 	for (const entry of ir.entries) {
@@ -161,7 +162,7 @@ export const emitPanda: Emitter = (ir, _meta, ctx) => {
 	for (const [key, entries] of groups) {
 		const conditions = key === "" ? [] : key.split("__");
 		const body = entries
-			.map((e) => `${e.prop}: ${formatPandaValue(pandaValue(e, mode))}`)
+			.map((e) => `${e.prop}: ${formatPandaValue(pandaValue(e, mode, meta.tokens))}`)
 			.join(", ");
 		if (conditions.length === 0) {
 			parts.unshift(body); // unconditional props first

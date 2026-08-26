@@ -8,7 +8,7 @@
  * sites were written for.
  */
 
-import { examplePreset } from "pandwind/preset";
+import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
@@ -20,14 +20,13 @@ export function normalizeTokenKey(key: string): string {
 
 /** group -> lowercase resolved value -> normalized ref (WeakMap-cached). */
 const inverseCache = new WeakMap<object, Map<string, Map<string, string>>>();
-function inverseGroups(): Map<string, Map<string, string>> {
-	const cacheKey = examplePreset.tokens as object;
+function inverseGroups(tokens: AnyTokens | undefined): Map<string, Map<string, string>> {
+	if (tokens === undefined) return new Map();
+	const cacheKey = tokens as object;
 	let cached = inverseCache.get(cacheKey);
 	if (cached !== undefined) return cached;
 	const groups = new Map<string, Map<string, string>>();
-	for (const [group, values] of Object.entries(
-		examplePreset.tokens as Record<string, Record<string, unknown>>,
-	)) {
+	for (const [group, values] of Object.entries(tokens)) {
 		const inverse = new Map<string, string>();
 		for (const [tokenKey, tokenValue] of Object.entries(values)) {
 			if (typeof tokenValue !== "string") continue;
@@ -51,10 +50,14 @@ export function authoredTokenRef(value: string): string | null {
 }
 
 /** Resolved value -> ref by searching the preset groups (`#3182ce` -> `blue.500`). */
-export function resolvedTokenRef(groups: ReadonlyArray<string>, value: string): string | null {
+export function resolvedTokenRef(
+	groups: ReadonlyArray<string>,
+	value: string,
+	tokens?: AnyTokens,
+): string | null {
 	const lower = value.toLowerCase();
 	for (const group of groups) {
-		const hit = inverseGroups().get(group)?.get(lower);
+		const hit = inverseGroups(tokens).get(group)?.get(lower);
 		if (hit !== undefined) return hit;
 	}
 	return null;
@@ -69,11 +72,10 @@ export function qualifyRef(ref: string, group: string): string {
  * Resolved value -> AUTHORED preset token (`#3182ce` -> `$blue-500`).
  * Searches every group; returns the raw key form used by pandwind call sites.
  */
-export function resolvedAuthoredToken(value: string): string | null {
+export function resolvedAuthoredToken(value: string, tokens?: AnyTokens): string | null {
+	if (tokens === undefined) return null;
 	const lower = value.toLowerCase();
-	for (const values of Object.values(
-		examplePreset.tokens as Record<string, Record<string, unknown>>,
-	)) {
+	for (const values of Object.values(tokens)) {
 		for (const [tokenKey, tokenValue] of Object.entries(values)) {
 			if (typeof tokenValue === "string" && tokenValue.toLowerCase() === lower) return tokenKey;
 		}

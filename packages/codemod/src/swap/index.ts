@@ -85,7 +85,7 @@ function collectMatches(
 		}
 	}
 	if (from === "auto" || from === "css" || from === "design") {
-		for (const m of parseCssLiterals(source, isExcluded, { tokenize })) {
+		for (const m of parseCssLiterals(source, isExcluded, { tokenize, tokens: meta.tokens })) {
 			const shape = from === "auto" ? (m.design ? "design" : "css") : (from as "css" | "design");
 			if (from === "css" && m.design) continue;
 			if (from === "design" && !m.design) continue;

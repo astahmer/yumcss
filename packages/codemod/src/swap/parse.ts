@@ -19,7 +19,7 @@ import type { PandwindMeta } from "../meta.ts";
 import { UTILITY_SUBKEYS } from "../../../pandwind/src/tw/compile.ts";
 import { flattenStyle } from "../../../pandwind/src/lib/utils.ts";
 import { resolveDesignStyle } from "../../../pandwind/src/design/resolve.ts";
-import { examplePreset } from "pandwind/preset";
+import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
 import { matchBlock } from "../sources.ts";
 import type { SwapIR } from "./ir.ts";
 import { resolvedAuthoredToken } from "./tokens.ts";
@@ -387,7 +387,7 @@ function flattenToIr(flat: Record<string, unknown>): SwapIR {
 export function parseCssLiterals(
 	source: string,
 	excluded: (start: number) => boolean,
-	options: { tokenize?: boolean } = {},
+	options: { tokenize?: boolean; tokens?: AnyTokens } = {},
 ): Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> {
 	const out: Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> =
 		[];
@@ -419,14 +419,14 @@ export function parseCssLiterals(
 			for (const { key, value } of parsed.keys) style[key] = toPlain(value);
 			const design = Object.keys(style).some((k) => k.startsWith("$"));
 			let ir = design
-				? flattenToIr(resolveDesignStyle(style, examplePreset.tokens) as never)
+				? flattenToIr(resolveDesignStyle(style, options.tokens) as never)
 				: flattenToIr(style);
 			if (!design && options.tokenize === true) {
 				// Tokenize-this: raw values with an authored preset token become
 				// $token references (#3182ce -> $blue-500).
 				for (const entry of ir.entries) {
 					if (typeof entry.value !== "string") continue;
-					const authored = resolvedAuthoredToken(entry.value);
+					const authored = resolvedAuthoredToken(entry.value, options.tokens);
 					if (authored !== null) entry.value = authored;
 				}
 			}

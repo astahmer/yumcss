@@ -14,8 +14,11 @@
  *   for `css()` mode so emitted declarations carry exact resolved values.
  */
 import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
 import { UTILITY_SUBKEYS } from "../../pandwind/src/tw/compile.ts";
+import type { AnyTokens } from "../../pandwind/src/types/typings.ts";
 
 export interface VariantMeta {
 	join: ":" | "-" | "";
@@ -42,6 +45,8 @@ export interface PandwindMeta {
 	conflicts: Map<string, Record<string, string[]>>;
 	/** Inverted bridge: utility class -> { property, resolvedValue }. */
 	bridgeInverse: Map<string, { property: string; value: string }>;
+	/** Project-owned token graph used by design and token-reference adapters. */
+	tokens: AnyTokens | undefined;
 }
 
 const dashCase = (key: string): string => key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
@@ -145,6 +150,8 @@ export interface LoadMetaOptions {
 	typesDtsPath: string;
 	twTsPath: string;
 	bridgePath?: string;
+	/** Explicit project tokens for programmatic callers and tests. */
+	tokens?: AnyTokens;
 }
 
 export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
@@ -173,5 +180,50 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 			options.bridgePath !== undefined
 				? parseBridge(readFileSync(options.bridgePath, "utf8"))
 				: new Map(),
+		tokens: options.tokens,
 	};
+}
+
+type ModuleExports = Record<string, unknown>;
+
+/** Load project tokens from the preset import emitted into bridge.ts. */
+async function loadTokensFromBridge(bridgePath: string): Promise<AnyTokens | undefined> {
+	const source = readFileSync(bridgePath, "utf8");
+	const binding = /\bpreset\s*:\s*([A-Za-z_$][\w$]*)/.exec(source)?.[1];
+	if (binding === undefined) return undefined;
+	for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
+		const imported = match[1]!
+			.split(",")
+			.map((part) => part.trim().split(/\s+as\s+/))
+			.find((parts) => (parts[1] ?? parts[0]) === binding);
+		if (imported === undefined) continue;
+		const module = await importProjectModule(bridgePath, match[2]!);
+		const preset = module[imported[0]!] as { tokens?: unknown } | undefined;
+		if (preset?.tokens !== null && typeof preset?.tokens === "object") {
+			return preset.tokens as AnyTokens;
+		}
+	}
+	return undefined;
+}
+
+async function importProjectModule(fromFile: string, specifier: string): Promise<ModuleExports> {
+	if (!specifier.startsWith(".")) return (await import(specifier)) as ModuleExports;
+	const base = pathToFileURL(resolve(dirname(fromFile), specifier)).href;
+	let lastError: unknown;
+	for (const candidate of [base, `${base}.ts`, `${base}.tsx`, `${base}.js`, `${base}.mjs`]) {
+		try {
+			return (await import(candidate)) as ModuleExports;
+		} catch (error) {
+			lastError = error;
+		}
+	}
+	throw lastError;
+}
+
+/** Async project-aware loader used by the CLI. */
+export async function loadMetaFromSourcesAsync(options: LoadMetaOptions): Promise<PandwindMeta> {
+	const tokens =
+		options.tokens ??
+		(options.bridgePath === undefined ? undefined : await loadTokensFromBridge(options.bridgePath));
+	return loadMetaFromSources({ ...options, tokens });
 }

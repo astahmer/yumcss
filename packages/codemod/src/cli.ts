@@ -17,7 +17,7 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadMetaFromSources, type PandwindMeta } from "./meta.ts";
+import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
@@ -305,7 +305,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 	let meta: PandwindMeta;
 	try {
 		const bridgePath = resolve(metaDir, "bridge.ts");
-		meta = loadMetaFromSources({
+		meta = await loadMetaFromSourcesAsync({
 			typesDtsPath: resolve(metaDir, "types.d.ts"),
 			twTsPath: resolve(metaDir, "tw.ts"),
 			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
@@ -396,7 +396,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 	}
 }
 
-function main(): void {
+async function main(): Promise<void> {
 	const args = parseArgs(process.argv.slice(2));
 	const root = findRepoRoot();
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
@@ -405,7 +405,7 @@ function main(): void {
 	let meta: PandwindMeta;
 	try {
 		const bridgePath = resolve(metaDir, "bridge.ts");
-		meta = loadMetaFromSources({
+		meta = await loadMetaFromSourcesAsync({
 			typesDtsPath: resolve(metaDir, "types.d.ts"),
 			twTsPath: resolve(metaDir, "tw.ts"),
 			bridgePath: existsSync(bridgePath) ? bridgePath : undefined,

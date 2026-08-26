@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
+import { examplePreset } from "pandwind/preset";
 import {
 	runPandaMigration,
 	scanFactoryElements,
@@ -26,6 +27,7 @@ try {
 	meta = loadMetaFromSources({
 		typesDtsPath: "../../apps/example/src/types.d.ts",
 		twTsPath: "../../apps/example/src/tw.ts",
+		tokens: examplePreset.tokens,
 	});
 } catch {
 	meta = {
@@ -100,6 +102,7 @@ describe("factory elements", () => {
 		const loadedMeta = loadMetaFromSources({
 			typesDtsPath: "../../apps/example/src/types.d.ts",
 			twTsPath: "../../apps/example/src/tw.ts",
+			tokens: examplePreset.tokens,
 		});
 		const edits = factoryEdits(el, src, loadedMeta, {
 			tokenVars: new Map(),

@@ -12,7 +12,7 @@
  */
 import type { PandwindMeta } from "../meta.ts";
 import { mapToken } from "../map.ts";
-import { examplePreset } from "pandwind/preset";
+import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
 
@@ -303,14 +303,13 @@ export const emitTwObject: Emitter = (ir, meta) => {
 
 /** Inverted preset tokens: group -> lowercase resolved value -> token key. */
 const inverseTokensCache = new WeakMap<object, Map<string, Map<string, string>>>();
-function inverseTokens(): Map<string, Map<string, string>> {
-	const cacheKey = examplePreset.tokens as object;
+function inverseTokens(tokens: AnyTokens | undefined): Map<string, Map<string, string>> {
+	if (tokens === undefined) return new Map();
+	const cacheKey = tokens as object;
 	let cached = inverseTokensCache.get(cacheKey);
 	if (cached !== undefined) return cached;
 	const groups = new Map<string, Map<string, string>>();
-	for (const [group, values] of Object.entries(
-		examplePreset.tokens as Record<string, Record<string, unknown>>,
-	)) {
+	for (const [group, values] of Object.entries(tokens)) {
 		const inverse = new Map<string, string>();
 		for (const [tokenKey, tokenValue] of Object.entries(values)) {
 			if (typeof tokenValue !== "string") continue;
@@ -332,13 +331,14 @@ function inverseTokens(): Map<string, Map<string, string>> {
  * With tokenRefs "group", emits qualified refs (`colors.blue.500`).
  */
 function toDesignTokenRef(
+	tokens: AnyTokens | undefined,
 	groups: ReadonlyArray<string>,
 	value: string,
 	mode: TokenRefMode,
 	fallbackGroup: string,
 ): string | number | null {
 	for (const group of groups) {
-		const hit = inverseTokens().get(group)?.get(value.toLowerCase());
+		const hit = inverseTokens(tokens).get(group)?.get(value.toLowerCase());
 		if (hit !== undefined) {
 			if (mode === "group") return `${group}.${hit}`;
 			// Bare spacing keys are numbers in the vocabulary (pad: [4, 8]).
@@ -361,7 +361,12 @@ interface DesignScope {
 	raw: Array<[string, unknown]>;
 }
 
-function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): boolean {
+function placeEntry(
+	entry: SwapEntry,
+	scope: DesignScope,
+	mode: TokenRefMode,
+	tokens: AnyTokens | undefined,
+): boolean {
 	const str = typeof entry.value === "string" ? entry.value : String(entry.value);
 
 	switch (entry.prop) {
@@ -373,7 +378,7 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 			return true;
 		case "backgroundColor":
 		case "background": {
-			const ref = toDesignTokenRef(["colors"], str, mode, "colors");
+			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors");
 			if (ref === null) return false;
 			scope.frame.push(["fill", ref]);
 			return true;
@@ -381,7 +386,7 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 		case "borderRadius": {
 			const list = splitList(str);
 			if (list === null) return false;
-			const refs = list.map((part) => toDesignTokenRef(["radii"], part, mode, "radii"));
+			const refs = list.map((part) => toDesignTokenRef(tokens, ["radii"], part, mode, "radii"));
 			if (refs.some((r) => r === null)) return false;
 			scope.frame.push(["corners", refs.length === 1 ? (refs[0] as string) : (refs as string[])]);
 			return true;
@@ -389,14 +394,14 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 		case "padding": {
 			const list = splitList(str);
 			if (list === null) return false;
-			const refs = list.map((part) => toDesignTokenRef(["spacing"], part, mode, "spacing"));
+			const refs = list.map((part) => toDesignTokenRef(tokens, ["spacing"], part, mode, "spacing"));
 			if (refs.some((r) => r === null)) return false;
 			scope.frame.push(["pad", refs.length === 1 ? refs[0] : refs]);
 			return true;
 		}
 		case "paddingInline":
 		case "paddingBlock": {
-			const ref = toDesignTokenRef(["spacing"], str, mode, "spacing");
+			const ref = toDesignTokenRef(tokens, ["spacing"], str, mode, "spacing");
 			if (ref === null) return false;
 			scope.frame.push([entry.prop === "paddingInline" ? "padX" : "padY", ref]);
 			return true;
@@ -413,7 +418,7 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 		case "gap":
 		case "columnGap":
 		case "rowGap": {
-			const ref = toDesignTokenRef(["spacing"], str, mode, "spacing");
+			const ref = toDesignTokenRef(tokens, ["spacing"], str, mode, "spacing");
 			if (ref === null) return false;
 			scope.layout.push([
 				entry.prop === "gap" ? "gap" : entry.prop === "columnGap" ? "gapX" : "gapY",
@@ -429,25 +434,25 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 			return str === "nowrap"; // default value — drop silently
 		}
 		case "color": {
-			const ref = toDesignTokenRef(["colors"], str, mode, "colors");
+			const ref = toDesignTokenRef(tokens, ["colors"], str, mode, "colors");
 			if (ref === null) return false;
 			scope.text.push(["color", ref]);
 			return true;
 		}
 		case "fontSize": {
-			const ref = toDesignTokenRef(["fontSizes"], str, mode, "fontSizes");
+			const ref = toDesignTokenRef(tokens, ["fontSizes"], str, mode, "fontSizes");
 			if (ref === null) return false;
 			scope.text.push(["size", ref]);
 			return true;
 		}
 		case "fontWeight": {
-			const ref = toDesignTokenRef(["fontWeights"], str, mode, "fontWeights");
+			const ref = toDesignTokenRef(tokens, ["fontWeights"], str, mode, "fontWeights");
 			if (ref === null) return false;
 			scope.text.push(["weight", ref]);
 			return true;
 		}
 		case "fontFamily": {
-			const ref = toTokenRef(["fonts"], str, mode, "fonts");
+			const ref = toTokenRef(tokens, ["fonts"], str, mode, "fonts");
 			if (ref === null) return false;
 			scope.text.push(["font", ref]);
 			return true;
@@ -467,7 +472,7 @@ function placeEntry(entry: SwapEntry, scope: DesignScope, mode: TokenRefMode): b
 // alias kept so both call shapes above stay valid if one is renamed later
 const toTokenRef = toDesignTokenRef;
 
-export const emitDesignVocab: Emitter = (ir, _meta, ctx) => {
+export const emitDesignVocab: Emitter = (ir, meta, ctx) => {
 	const residuals: SwapIR["residuals"] = [];
 	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
 	const groups = groupByConditions(ir.entries);
@@ -496,7 +501,7 @@ export const emitDesignVocab: Emitter = (ir, _meta, ctx) => {
 				}
 				continue;
 			}
-			if (!placeEntry(entry, scope, mode)) {
+			if (!placeEntry(entry, scope, mode, meta.tokens)) {
 				scope.raw.push([entry.prop, entry.value]);
 				residuals.push({
 					kind: "unknown-value",

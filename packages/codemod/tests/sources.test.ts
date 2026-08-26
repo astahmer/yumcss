@@ -13,12 +13,14 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { transformSource } from "../src/migrate.ts";
+import { examplePreset } from "pandwind/preset";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
 const meta = loadMetaFromSources({
 	typesDtsPath: resolve(appDir, "types.d.ts"),
 	twTsPath: resolve(appDir, "tw.ts"),
 	bridgePath: resolve(appDir, "bridge.ts"),
+	tokens: examplePreset.tokens,
 });
 
 const CSS_BINDING = "const css = createDesignCss(examplePreset);";
