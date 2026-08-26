@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: IN PROGRESS — foundation wave**
+**Status: IN PROGRESS — runtime sheet foundation complete; semantic interop next**
 
 ## Context
 
