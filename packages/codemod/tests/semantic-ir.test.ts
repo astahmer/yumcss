@@ -2,8 +2,10 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_PROGRAM_SCHEMA,
 	inferSemanticConditionKind,
+	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	styleProgramFromSwapIR,
+	styleProgramToCanonicalCss,
 	swapIRFromStyleProgram,
 } from "../src/swap/semantic-ir.ts";
 
@@ -23,6 +25,7 @@ describe("versioned semantic style-program IR", () => {
 		});
 
 		expect(program.schema).toBe(STYLE_PROGRAM_SCHEMA);
+		expect(program.rules[0]).toMatchObject({ kind: "style", order: 0 });
 		expect(program.declarations[0]).toEqual({
 			conditions: [
 				{ kind: "pseudo", name: "hover" },
@@ -44,6 +47,18 @@ describe("versioned semantic style-program IR", () => {
 					conditions: [],
 					property: "color",
 					value: { kind: "dynamic" as const, expression: "theme.foreground" },
+				},
+			],
+			rules: [
+				{
+					...program.rules[0]!,
+					declarations: [
+						{
+							conditions: [],
+							property: "color",
+							value: { kind: "dynamic" as const, expression: "theme.foreground" },
+						},
+					],
 				},
 			],
 		};
@@ -87,5 +102,43 @@ describe("versioned semantic style-program IR", () => {
 		});
 		expect(program.residuals).toEqual([]);
 		expect(inferSemanticConditionKind("@supports (display: grid)")).toBe("supports");
+	});
+
+	test("preserves rule-level CSS constructs and canonical ordering", () => {
+		const program = styleProgramFromRules([
+			{
+				kind: "global",
+				selector: "body",
+				conditions: [],
+				declarations: [
+					{ conditions: [], property: "margin", value: { kind: "literal", value: 0 } },
+				],
+				order: 2,
+			},
+			{
+				kind: "keyframes",
+				name: "fade",
+				conditions: [],
+				declarations: [],
+				children: [
+					{
+						kind: "style",
+						selector: "from",
+						conditions: [],
+						declarations: [
+							{ conditions: [], property: "opacity", value: { kind: "literal", value: 0 } },
+						],
+						children: [],
+						order: 0,
+					},
+				],
+				order: 1,
+			},
+		]);
+
+		expect(program.rules.map((rule) => rule.kind)).toEqual(["keyframes", "global"]);
+		expect(styleProgramToCanonicalCss(program)).toBe(
+			"@keyframes fade{from{opacity:0}}body{margin:0}",
+		);
 	});
 });

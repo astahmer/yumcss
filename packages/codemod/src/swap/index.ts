@@ -56,8 +56,11 @@ export type { TwMissResolver } from "./engine.ts";
 export {
 	STYLE_PROGRAM_SCHEMA,
 	inferSemanticConditionKind,
+	orderStyleRules,
+	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	styleProgramFromSwapIR,
+	styleProgramToCanonicalCss,
 	swapIRFromStyleProgram,
 } from "./semantic-ir.ts";
 export {
@@ -78,6 +81,9 @@ export type {
 	StyleProgramOptions,
 	StyleProgramResidual,
 	StyleProgramSource,
+	StyleRule,
+	StyleRuleInput,
+	StyleRuleKind,
 	StyleTokenValue,
 	StyleValue,
 } from "./semantic-ir.ts";

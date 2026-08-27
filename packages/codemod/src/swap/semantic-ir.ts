@@ -10,7 +10,7 @@
 import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
 import { parseSync } from "oxc-parser";
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/1" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/2" as const;
 
 export type SemanticConditionKind =
 	| "named"
@@ -21,6 +21,15 @@ export type SemanticConditionKind =
 	| "supports";
 
 export type StyleConditionOperator = "and" | "or" | "not";
+
+export type StyleRuleKind =
+	| "style"
+	| "global"
+	| "keyframes"
+	| "font-face"
+	| "layer"
+	| "supports"
+	| "property";
 
 export interface StyleCondition {
 	readonly kind: SemanticConditionKind;
@@ -70,6 +79,25 @@ export interface StyleDeclaration {
 	readonly value: StyleValue;
 }
 
+/**
+ * A rule-level node deliberately sits above the flat declaration list. Rules
+ * retain authored CSS structure that cannot be represented by SwapIR: global
+ * selectors, at-rules, keyframe steps, layers, and custom-property metadata.
+ */
+export interface StyleRule {
+	readonly kind: StyleRuleKind;
+	readonly name?: string;
+	readonly selector?: string;
+	readonly conditions: readonly StyleCondition[];
+	readonly declarations: readonly StyleDeclaration[];
+	readonly children: readonly StyleRule[];
+	/** Explicit cascade layer, when the source supplied one. */
+	readonly layer?: string;
+	/** Stable authored order within the containing program. */
+	readonly order: number;
+	readonly source?: StyleProgramSource;
+}
+
 export interface StyleProgramSource {
 	readonly file?: string;
 	readonly start?: number;
@@ -85,6 +113,9 @@ export interface StyleProgramResidual {
 
 export interface StyleProgram {
 	readonly schema: typeof STYLE_PROGRAM_SCHEMA;
+	/** Ordered semantic rules; the complete interop representation. */
+	readonly rules: readonly StyleRule[];
+	/** Root declarations retained as the cheap projection for old emitters. */
 	readonly declarations: readonly StyleDeclaration[];
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly source?: StyleProgramSource;
@@ -97,6 +128,11 @@ export interface StyleProgramOptions {
 	readonly conditionRaw?: Readonly<Record<string, string>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
+}
+
+export interface StyleRuleInput extends Omit<StyleRule, "children" | "order"> {
+	readonly children?: readonly StyleRule[];
+	readonly order?: number;
 }
 
 const toValue = (value: string | true | number): StyleValue => {
@@ -164,15 +200,25 @@ export function styleProgramFromSwapIR(
 	options: StyleProgramOptions = {},
 ): StyleProgram {
 	const conditionKinds = options.conditionKinds ?? {};
+	const declarations = ir.entries.map((entry) => ({
+		conditions: entry.conditions.map((name) => conditionFor(name, { ...options, conditionKinds })),
+		property: entry.prop,
+		value: toValue(entry.value),
+	}));
+	const rules: readonly StyleRule[] = [
+		{
+			kind: "style",
+			conditions: [],
+			declarations,
+			children: [],
+			order: 0,
+			source: options.source,
+		},
+	];
 	return {
 		schema: STYLE_PROGRAM_SCHEMA,
-		declarations: ir.entries.map((entry) => ({
-			conditions: entry.conditions.map((name) =>
-				conditionFor(name, { ...options, conditionKinds }),
-			),
-			property: entry.prop,
-			value: toValue(entry.value),
-		})),
+		rules,
+		declarations,
 		residuals: ir.residuals.map((residual) => ({
 			kind: residual.kind,
 			text: residual.text,
@@ -180,6 +226,100 @@ export function styleProgramFromSwapIR(
 		})),
 		source: options.source,
 	};
+}
+
+/** Build a normalized, deterministically ordered semantic program. */
+export function styleProgramFromRules(
+	rules: readonly StyleRuleInput[],
+	options: StyleProgramOptions & { residuals?: readonly StyleProgramResidual[] } = {},
+): StyleProgram {
+	const normalized = rules.map((rule, index): StyleRule => ({
+		...rule,
+		children: rule.children ?? [],
+		order: rule.order ?? index,
+	}));
+	const ordered = orderStyleRules(normalized);
+	return {
+		schema: STYLE_PROGRAM_SCHEMA,
+		rules: ordered,
+		declarations: ordered.flatMap((rule) =>
+			rule.kind === "style" && rule.conditions.length === 0 ? rule.declarations : [],
+		),
+		residuals: [...(options.residuals ?? [])],
+		source: options.source,
+	};
+}
+
+/** Stable ordering for rules and nested at-rule children. */
+export function orderStyleRules(rules: readonly StyleRule[]): StyleRule[] {
+	return [...rules]
+		.sort(
+			(a, b) =>
+				a.order - b.order ||
+				a.kind.localeCompare(b.kind) ||
+				(a.name ?? "").localeCompare(b.name ?? ""),
+		)
+		.map((rule) => ({ ...rule, children: orderStyleRules(rule.children) }));
+}
+
+function cssCondition(condition: StyleCondition): string {
+	if (condition.value !== undefined) {
+		if (condition.kind === "media") return `@media ${condition.value}`;
+		if (condition.kind === "container") return `@container ${condition.value}`;
+		if (condition.kind === "supports") return `@supports ${condition.value}`;
+		return condition.value;
+	}
+	if (condition.kind === "pseudo")
+		return condition.name.startsWith(":") ? condition.name : `:${condition.name}`;
+	return condition.name;
+}
+
+function cssValue(value: StyleValue): string {
+	if (value.kind === "token") return value.authored;
+	if (value.kind === "dynamic") return value.expression;
+	return typeof value.value === "string" ? value.value : String(value.value);
+}
+
+function renderDeclarations(declarations: readonly StyleDeclaration[]): string {
+	return declarations
+		.map((declaration) => `${declaration.property}:${cssValue(declaration.value)}`)
+		.join(";");
+}
+
+/**
+ * Canonical CSS-ish serialization used by adapter differential tests. It is
+ * intentionally structural and stable, not a browser CSS minifier.
+ */
+export function styleProgramToCanonicalCss(program: StyleProgram): string {
+	const render = (rule: StyleRule): string => {
+		const declarations = renderDeclarations(rule.declarations);
+		const children = rule.children.map(render).join("");
+		switch (rule.kind) {
+			case "style":
+				return `${rule.selector ?? "&"}{${declarations}${children}}`;
+			case "global":
+				return `${rule.selector ?? "*"}{${declarations}${children}}`;
+			case "keyframes":
+				return `@keyframes ${rule.name ?? ""}{${declarations}${children}}`;
+			case "font-face":
+				return `@font-face{${declarations}${children}}`;
+			case "layer":
+				return `@layer ${rule.layer ?? rule.name ?? ""}{${declarations}${children}}`;
+			case "supports":
+				return `@supports ${rule.name ?? ""}{${declarations}${children}}`;
+			case "property":
+				return `@property ${rule.name ?? ""}{${declarations}${children}}`;
+		}
+	};
+	return orderStyleRules(program.rules)
+		.map((rule) => {
+			const base = render(rule);
+			return rule.conditions.reduceRight(
+				(body, condition) => `${cssCondition(condition)}{${body}}`,
+				base,
+			);
+		})
+		.join("");
 }
 
 interface SourceNode {
@@ -328,12 +468,19 @@ export function styleProgramFromSourceObject(
 	} else {
 		walk(root, []);
 	}
-	return {
-		schema: STYLE_PROGRAM_SCHEMA,
-		declarations,
-		residuals,
-		source: options.source,
-	};
+	return styleProgramFromRules(
+		[
+			{
+				kind: "style",
+				conditions: [],
+				declarations,
+				children: [],
+				order: 0,
+				source: options.source,
+			},
+		],
+		{ source: options.source, residuals },
+	);
 }
 
 /**
@@ -347,24 +494,35 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 		hint: residual.hint,
 	}));
 	const entries = [] as SwapIR["entries"];
-	for (const declaration of program.declarations) {
-		const value = fromValue(declaration.value);
-		if (value === null) {
+	const rules = program.rules.length > 0 ? program.rules : [];
+	for (const rule of rules) {
+		if (rule.kind !== "style") {
 			residuals.push({
-				kind: "dynamic",
-				text:
-					declaration.value.kind === "dynamic"
-						? declaration.value.expression
-						: `${declaration.property}: <unsupported semantic value>`,
-				hint: "dynamic semantic declaration requires a target runtime",
+				kind: "unrepresentable",
+				text: rule.name ?? rule.selector ?? rule.kind,
+				hint: `${rule.kind} rule requires a rule-capable target`,
 			});
 			continue;
 		}
-		entries.push({
-			conditions: declaration.conditions.map((condition) => condition.name),
-			prop: declaration.property,
-			value,
-		});
+		for (const declaration of rule.declarations) {
+			const value = fromValue(declaration.value);
+			if (value === null) {
+				residuals.push({
+					kind: "dynamic",
+					text:
+						declaration.value.kind === "dynamic"
+							? declaration.value.expression
+							: `${declaration.property}: <unsupported semantic value>`,
+					hint: "dynamic semantic declaration requires a target runtime",
+				});
+				continue;
+			}
+			entries.push({
+				conditions: declaration.conditions.map((condition) => condition.name),
+				prop: declaration.property,
+				value,
+			});
+		}
 	}
 	return { entries, residuals };
 }

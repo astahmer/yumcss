@@ -19,6 +19,7 @@ const contract: AdapterCapabilities = {
 
 const program: StyleProgram = {
 	schema: STYLE_PROGRAM_SCHEMA,
+	rules: [],
 	declarations: [
 		{
 			conditions: [{ kind: "media", name: "wide", value: "(min-width: 40rem)" }],
