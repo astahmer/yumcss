@@ -61,3 +61,15 @@ export async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoi
 	if (!res.ok) throw new Error(`analytics history api failed: ${res.status}`);
 	return (await res.json()) as Array<AnalyticsHistoryPoint>;
 }
+
+/** Single inspector transport facade; endpoint functions remain private seams. */
+export class InspectorApi {
+	static readonly fetchData = fetchData;
+	static readonly fetchHistoryList = fetchHistoryList;
+	static readonly fetchHistoryRun = fetchHistoryRun;
+	static readonly fetchPruneChangeset = fetchPruneChangeset;
+	static readonly fetchAnalyticsHistory = fetchAnalyticsHistory;
+	static readonly vscodeLink = vscodeLink;
+	static readonly vscodeLinkAt = vscodeLinkAt;
+	static readonly kb = kb;
+}

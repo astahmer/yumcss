@@ -123,7 +123,12 @@ export type {
 	StyleSystemRegistry,
 } from "./style-systems.ts";
 export { STYLE_SYSTEM_SCHEMA } from "./style-systems.ts";
-export { STYLE_SYSTEMS, CORE_STYLE_SYSTEMS, PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./systems.ts";
+export {
+	STYLE_SYSTEMS,
+	CORE_STYLE_SYSTEMS,
+	PANDA_STYLE_SYSTEM,
+	PANDWIND_STYLE_SYSTEM,
+} from "./systems.ts";
 export {
 	SOURCE_SCANNER_SCHEMA,
 	SOURCE_LANGUAGE_ADAPTERS,

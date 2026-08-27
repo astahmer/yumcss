@@ -12,6 +12,7 @@
  *   (runCli, cssBudget, classRules, sheetShape, collectFiles, loadTwConfig)
  */
 export { gather } from "./gather.ts";
+export { CollectionToolkit } from "./facade.ts";
 export { analyzeStyleUsage, buildPruneChangeset, computeContrastWarnings } from "./analytics.ts";
 export {
 	flattenTokenGroups,

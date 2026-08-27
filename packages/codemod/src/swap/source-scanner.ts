@@ -56,16 +56,18 @@ export interface SourceScannerRegistry {
 const languageForFile = (file: string): SourceLanguage => {
 	const extension = file.split(".").pop()?.toLowerCase();
 	return (
-		{
-			ts: "typescript",
-			tsx: "tsx",
-			js: "javascript",
-			jsx: "jsx",
-			vue: "vue",
-			svelte: "svelte",
-			astro: "astro",
-		} as Record<string, SourceLanguage>
-	)[extension ?? ""] ?? "unknown";
+		(
+			{
+				ts: "typescript",
+				tsx: "tsx",
+				js: "javascript",
+				jsx: "jsx",
+				vue: "vue",
+				svelte: "svelte",
+				astro: "astro",
+			} as Record<string, SourceLanguage>
+		)[extension ?? ""] ?? "unknown"
+	);
 };
 
 function scanDocument(document: SourceDocument): SourceScanResult {
@@ -123,7 +125,8 @@ export function createSourceScannerRegistry(
 		register(adapter) {
 			if (adapter.schema !== SOURCE_SCANNER_SCHEMA)
 				throw new Error(`unsupported source scanner schema: ${adapter.schema}`);
-			if (adapters.has(adapter.id)) throw new Error(`source scanner already registered: ${adapter.id}`);
+			if (adapters.has(adapter.id))
+				throw new Error(`source scanner already registered: ${adapter.id}`);
 			adapters.set(adapter.id, adapter);
 			return registry;
 		},
@@ -136,9 +139,9 @@ export function createSourceScannerRegistry(
 				return {
 					...scanDocument(document),
 					diagnostics: [
-							...scanDocument(document).diagnostics,
-							{ kind: "language", message: `no source scanner matched ${document.file}` },
-						],
+						...scanDocument(document).diagnostics,
+						{ kind: "language", message: `no source scanner matched ${document.file}` },
+					],
 				};
 			}
 			return adapter.scan(document);

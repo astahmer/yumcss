@@ -1,33 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-	fetchAnalyticsHistory,
-	fetchData,
-	fetchHistoryList,
-	fetchHistoryRun,
-	fetchPruneChangeset,
-	kb,
-	vscodeLink,
-	vscodeLinkAt,
-	type AnalyticsHistoryPoint,
-	type HistoryListItem,
-} from "./lib/api.ts";
+import { InspectorApi, type AnalyticsHistoryPoint, type HistoryListItem } from "./lib/api.ts";
 import { diffRuns, type HistoryEntry } from "./lib/history-diff.ts";
-import {
-	coverageToHtml,
-	coverageToJson,
-	coverageToMarkdown,
-	downloadFile,
-	themeVarsToCss,
-	tokensToDtcg,
-	utilitiesToJson,
-} from "./lib/export.ts";
+import { InspectorExport } from "./lib/export.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
-import {
-	groupThemeVars,
-	resolveChain,
-	splitTokenValue,
-	type ThemeVarCategory,
-} from "pandwind-analyze/collect";
+import { CollectionToolkit, type ThemeVarCategory } from "pandwind-analyze/collect";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
 
 type Tab = "design" | "stats" | "history" | "graph" | "usage";
@@ -94,14 +70,14 @@ function ColorSwatches(props: {
 	matches: (text: string) => boolean;
 }) {
 	const swatches = filterNamed(props.section.entries, props.matches).map((entry) => {
-		const split = splitTokenValue(entry.value);
+		const split = CollectionToolkit.splitTokenValue(entry.value);
 		if (split.conditionBound && split.json !== null) {
 			return { name: entry.name, modes: split.json, chain: [entry.name] };
 		}
 		if (isHex(split.raw))
 			return { name: entry.name, modes: { base: split.raw }, chain: [entry.name] };
 		// $ref or named ref -> resolve through raw colors
-		const chain = resolveChain(split.raw, props.rawColors);
+		const chain = CollectionToolkit.resolveChain(split.raw, props.rawColors);
 		const leaf = chain[chain.length - 1] ?? "";
 		if (isHex(leaf)) return { name: entry.name, modes: { base: leaf }, chain };
 		return null;
@@ -159,9 +135,9 @@ function DesignSystemView(props: {
 	const sectionsById = new Map(d.tokenSections.map((s) => [s.id, s]));
 	const rawColors = new Map<string, string>();
 	for (const e of sectionsById.get("colors")?.entries ?? []) {
-		if (!splitTokenValue(e.value).conditionBound) rawColors.set(e.name, e.value);
+		if (!CollectionToolkit.splitTokenValue(e.value).conditionBound) rawColors.set(e.name, e.value);
 	}
-	const groupedVars = useMemo(() => groupThemeVars(d.themeVars), [d.themeVars]);
+	const groupedVars = useMemo(() => CollectionToolkit.groupThemeVars(d.themeVars), [d.themeVars]);
 
 	const fontSizeEntries = sectionsById.get("fontSizes")?.entries ?? [];
 	const weightEntries = sectionsById.get("fontWeights")?.entries ?? [];
@@ -591,8 +567,8 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 				/>
 				<Card
 					label="css budget"
-					value={kb(c.budget.cssBytes)}
-					sub={`${kb(c.budget.cssGzipBytes)} gzip · ${c.budget.rules} rules`}
+					value={InspectorApi.kb(c.budget.cssBytes)}
+					sub={`${InspectorApi.kb(c.budget.cssGzipBytes)} gzip · ${c.budget.rules} rules`}
 				/>
 				<Card
 					label="missing-css warnings"
@@ -612,7 +588,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 				<section>
 					<h2>stylesheet shape</h2>
 					<p className="muted">
-						{c.shape.totalRules} rules · {kb(c.shape.totalBytes)} compiled
+						{c.shape.totalRules} rules · {InspectorApi.kb(c.shape.totalBytes)} compiled
 					</p>
 					{c.shape.categories.map((cat) => {
 						const maxBytes = Math.max(...c.shape.categories.map((x) => x.bytes), 1);
@@ -621,7 +597,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 								<div className="shape-head">
 									<strong>{cat.category}</strong>
 									<span>
-										{cat.rules} rules · {kb(cat.bytes)}
+										{cat.rules} rules · {InspectorApi.kb(cat.bytes)}
 									</span>
 								</div>
 								<Bar label="bytes" value={cat.bytes} max={maxBytes} />
@@ -682,7 +658,14 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 					<ul className="sites">
 						{props.data.cssSources.map((site) => (
 							<li key={`${site.file}:${site.start}`}>
-								<a href={vscodeLinkAt(props.data.meta.root, site.file, site.line, site.column)}>
+								<a
+									href={InspectorApi.vscodeLinkAt(
+										props.data.meta.root,
+										site.file,
+										site.line,
+										site.column,
+									)}
+								>
 									{site.file}:{site.line}:{site.column}
 								</a>{" "}
 								— <code>{site.callKind}</code> · {site.staticArguments} static /{" "}
@@ -708,7 +691,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 					<ul className="sites">
 						{c.missingCssSites.map((s) => (
 							<li key={`${s.file}:${s.line}:${s.token}`}>
-								<a href={vscodeLink(props.data.meta.root, s.file, s.line)}>
+								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
 									{s.file}:{s.line}
 								</a>{" "}
 								— no Tailwind candidate for <code>{s.token}</code>
@@ -724,7 +707,7 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 					<ul className="sites">
 						{c.runtimeSites.map((s) => (
 							<li key={`${s.file}:${s.line}`}>
-								<a href={vscodeLink(props.data.meta.root, s.file, s.line)}>
+								<a href={InspectorApi.vscodeLink(props.data.meta.root, s.file, s.line)}>
 									{s.file}:{s.line}
 								</a>{" "}
 								— {s.token}
@@ -1054,7 +1037,7 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 	const [copied, setCopied] = useState(false);
 	const generate = (): void => {
 		setBusy(true);
-		fetchPruneChangeset()
+		InspectorApi.fetchPruneChangeset()
 			.then((r) => setContent(r.content))
 			.finally(() => setBusy(false));
 	};
@@ -1090,7 +1073,7 @@ function AnalyticsHistoryChart() {
 	const [series, setSeries] = useState<Array<AnalyticsHistoryPoint> | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	useEffect(() => {
-		fetchAnalyticsHistory()
+		InspectorApi.fetchAnalyticsHistory()
 			.then(setSeries)
 			.catch((e: Error) => setError(e.message));
 	}, []);
@@ -1175,7 +1158,7 @@ export function App() {
 	const refresh = useCallback(() => {
 		setLoading(true);
 		setError(null);
-		fetchData()
+		InspectorApi.fetchData()
 			.then(setData)
 			.catch((e: Error) => setError(e.message))
 			.finally(() => setLoading(false));
@@ -1186,7 +1169,10 @@ export function App() {
 	const loadDiff = useCallback(async (a: string, b: string) => {
 		setHistoryError(null);
 		try {
-			const [ea, eb] = await Promise.all([fetchHistoryRun(a), fetchHistoryRun(b)]);
+			const [ea, eb] = await Promise.all([
+				InspectorApi.fetchHistoryRun(a),
+				InspectorApi.fetchHistoryRun(b),
+			]);
 			setDiffData({
 				a: { timestamp: a, parent: null, payload: ea },
 				b: { timestamp: b, parent: null, payload: eb },
@@ -1199,7 +1185,7 @@ export function App() {
 	useEffect(() => {
 		if (tab !== "history") return;
 		setHistoryError(null);
-		fetchHistoryList()
+		InspectorApi.fetchHistoryList()
 			.then(setHistoryList)
 			.catch((e: Error) => setHistoryError(e.message));
 	}, [tab]);
@@ -1274,17 +1260,21 @@ export function App() {
 									<>
 										<button
 											onClick={() =>
-												downloadFile("pandwind-tokens.json", tokensToDtcg(data), "application/json")
+												InspectorExport.downloadFile(
+													"pandwind-tokens.json",
+													InspectorExport.tokensToDtcg(data),
+													"application/json",
+												)
 											}
 										>
 											tokens — DTCG JSON
 										</button>
 										<button
 											onClick={() => {
-												downloadFile(
+												InspectorExport.downloadFile(
 													"pandwind-theme-vars.css",
 													`:root {
-${themeVarsToCss(data)}}
+${InspectorExport.themeVarsToCss(data)}}
 `,
 													"text/css",
 												);
@@ -1294,9 +1284,9 @@ ${themeVarsToCss(data)}}
 										</button>
 										<button
 											onClick={() =>
-												downloadFile(
+												InspectorExport.downloadFile(
 													"pandwind-unions.json",
-													utilitiesToJson(data),
+													InspectorExport.utilitiesToJson(data),
 													"application/json",
 												)
 											}
@@ -1308,9 +1298,9 @@ ${themeVarsToCss(data)}}
 									<>
 										<button
 											onClick={() =>
-												downloadFile(
+												InspectorExport.downloadFile(
 													"pandwind-coverage.json",
-													coverageToJson(data),
+													InspectorExport.coverageToJson(data),
 													"application/json",
 												)
 											}
@@ -1319,9 +1309,9 @@ ${themeVarsToCss(data)}}
 										</button>
 										<button
 											onClick={() =>
-												downloadFile(
+												InspectorExport.downloadFile(
 													"pandwind-report.md",
-													coverageToMarkdown(data),
+													InspectorExport.coverageToMarkdown(data),
 													"text/markdown",
 												)
 											}
@@ -1330,9 +1320,9 @@ ${themeVarsToCss(data)}}
 										</button>
 										<button
 											onClick={() =>
-												downloadFile(
+												InspectorExport.downloadFile(
 													"pandwind-report.html",
-													coverageToHtml(data, new Date().toISOString()),
+													InspectorExport.coverageToHtml(data, new Date().toISOString()),
 													"text/html",
 												)
 											}

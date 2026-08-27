@@ -993,7 +993,9 @@ const externalDialect = (adapter: StyleAdapter) =>
 /** Registry is the extension point; the object remains a read-only lookup projection. */
 export const EXTERNAL_STYLE_SYSTEMS: StyleSystemRegistry = createStyleSystemRegistry(
 	Object.values(EXTERNAL_ADAPTERS).map((adapter) =>
-		createStyleSystem(adapter.id === "pandwind" ? "pandwind-external" : adapter.id, [externalDialect(adapter)]),
+		createStyleSystem(adapter.id === "pandwind" ? "pandwind-external" : adapter.id, [
+			externalDialect(adapter),
+		]),
 	),
 );
 

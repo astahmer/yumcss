@@ -56,7 +56,10 @@ const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 	},
 });
 
-const emptyConfig = (id: string, context: { root?: string; file: string }): AdapterProjectConfig => ({
+const emptyConfig = (
+	id: string,
+	context: { root?: string; file: string },
+): AdapterProjectConfig => ({
 	adapter: id,
 	root: context.root,
 	files: [context.file],
@@ -85,15 +88,29 @@ function parseDss(source: string, context: AdapterParseContext): AdapterParseRes
 	return { matches, residuals };
 }
 
-function parseCoreDialect(id: string, source: string, context: AdapterParseContext): AdapterParseResult {
+function parseCoreDialect(
+	id: string,
+	source: string,
+	context: AdapterParseContext,
+): AdapterParseResult {
 	const excluded = context.document?.isExcluded ?? (() => false);
 	if (id === "tw") {
 		if (context.meta === undefined)
-			return { matches: [], residuals: [{ kind: "config", text: "tw({...})", hint: "Pandwind metadata is required" }] };
+			return {
+				matches: [],
+				residuals: [{ kind: "config", text: "tw({...})", hint: "Pandwind metadata is required" }],
+			};
 		return {
 			matches: parseTwCalls(source, context.meta, excluded).map((match) => ({
 				...match,
-				program: styleProgramFromSwapIR(match.ir, { source: { file: context.file, start: match.start, end: match.end, adapter: context.config.adapter } }),
+				program: styleProgramFromSwapIR(match.ir, {
+					source: {
+						file: context.file,
+						start: match.start,
+						end: match.end,
+						adapter: context.config.adapter,
+					},
+				}),
 				sourceText: source.slice(match.start, match.end),
 			})),
 			residuals: [],
@@ -104,7 +121,14 @@ function parseCoreDialect(id: string, source: string, context: AdapterParseConte
 		matches: parseCssLiterals(source, excluded, { tokens: context.meta?.tokens }).map((match) => ({
 			start: match.start,
 			end: match.end,
-			program: styleProgramFromSwapIR(match.ir, { source: { file: context.file, start: match.start, end: match.end, adapter: context.config.adapter } }),
+			program: styleProgramFromSwapIR(match.ir, {
+				source: {
+					file: context.file,
+					start: match.start,
+					end: match.end,
+					adapter: context.config.adapter,
+				},
+			}),
 			sourceText: source.slice(match.start, match.end),
 		})),
 		residuals: [],
@@ -122,16 +146,28 @@ function makeCoreAdapter(
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "1",
-		sourceModules: dialect === "tw" ? ["pandwind/tw"] : dialect === "dss" ? ["pandwind/design"] : ["pandwind/css"],
+		sourceModules:
+			dialect === "tw"
+				? ["pandwind/tw"]
+				: dialect === "dss"
+					? ["pandwind/design"]
+					: ["pandwind/css"],
 		capabilities: CORE_CAPABILITIES(id),
 		dependencies: CORE_DEPENDENCIES,
-		detect: (context) => ({ matched: new RegExp(`\\b${dialect}\\s*\\(`).test(context.source), confidence: 1, evidence: [dialect] }),
+		detect: (context) => ({
+			matched: new RegExp(`\\b${dialect}\\s*\\(`).test(context.source),
+			confidence: 1,
+			evidence: [dialect],
+		}),
 		loadConfig: (context) => emptyConfig(id, context),
 		parse: (source, context) => parseCoreDialect(dialect, source, context),
 		emit: (program, context) => {
 			const meta: PandwindMeta | undefined = context.meta;
 			if (meta === undefined)
-				return { text: "", residuals: [{ kind: "config", text: id, hint: "Pandwind metadata is required" }] };
+				return {
+					text: "",
+					residuals: [{ kind: "config", text: id, hint: "Pandwind metadata is required" }],
+				};
 			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
 			return { text: result.text, imports: result.imports, residuals: [...result.residuals] };
 		},
@@ -140,10 +176,18 @@ function makeCoreAdapter(
 			const canonicalTarget = styleProgramToCanonicalCss(target);
 			return {
 				valid: canonicalSource === canonicalTarget && residuals.length === 0,
-				lossiness: canonicalSource !== canonicalTarget ? "unsupported" : residuals.length > 0 ? "lossy" : "lossless",
+				lossiness:
+					canonicalSource !== canonicalTarget
+						? "unsupported"
+						: residuals.length > 0
+							? "lossy"
+							: "lossless",
 				canonicalSource,
 				canonicalTarget,
-				differences: canonicalSource === canonicalTarget && residuals.length === 0 ? [] : ["canonical CSS differs or has residuals"],
+				differences:
+					canonicalSource === canonicalTarget && residuals.length === 0
+						? []
+						: ["canonical CSS differs or has residuals"],
 				residuals,
 			};
 		},
@@ -157,6 +201,16 @@ const pandwindTw = makeCoreAdapter("pandwind", "tw", "target", SWAP_EMITTERS.tw)
 const pandwindDss = makeCoreAdapter("pandwind", "dss", "target", SWAP_EMITTERS.dss);
 const pandwindCss = makeCoreAdapter("pandwind", "css", "target", SWAP_EMITTERS["css.class"]);
 
-export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("panda", [pandaTw, pandaCss]);
-export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("pandwind", [pandwindTw, pandwindDss, pandwindCss]);
-export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM];
+export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("panda", [
+	pandaTw,
+	pandaCss,
+]);
+export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("pandwind", [
+	pandwindTw,
+	pandwindDss,
+	pandwindCss,
+]);
+export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [
+	PANDA_STYLE_SYSTEM,
+	PANDWIND_STYLE_SYSTEM,
+];
