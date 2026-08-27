@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: IN PROGRESS — runtime sheet and project context complete; semantic IR next**
+**Status: IN PROGRESS — runtime, project context, semantic IR, source dynamics, and adapter contracts complete**
 
 ## Context
 
@@ -186,7 +186,7 @@ context used to produce it.
 1. Write the compatibility scorecard and freeze the semantic/runtime contracts.
 2. Remove codemod coupling to `examplePreset`; add project context and generated
    interop metadata.
-3. Version and extend the semantic IR while retaining the flat fast path.
+3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** source objects now retain structured conditions, dynamic expressions, source ranges, and lowering hints; adapters receive capability contracts and can opt into safe/partial enforcement.
 4. Build the runtime sheet: insertion, extraction, hydration, ordering, and
    dynamic custom-property lowering.
 5. Add global/keyframe/font-face/layer primitives and their extraction parity.
@@ -232,3 +232,5 @@ context used to produce it.
 | 2026-08-26 | Use safe-by-default migrations with explicit partial mode and residual reporting.                                                    |
 | 2026-08-26 | The codemod must load the project’s real preset/config; `examplePreset` is test data only.                                           |
 | 2026-08-27 | Generated bridge metadata is the CLI discovery boundary for project tokens; missing token context remains conservative and explicit. |
+| 2026-08-27 | Dynamic source objects get a parallel semantic parse; the literal parser and `SwapIR` remain conservative and unchanged for the fast path. |
+| 2026-08-27 | Adapter contracts are versioned separately, classify exact/partial/unsupported capabilities, and enforce only when a caller opts into a mode. |
