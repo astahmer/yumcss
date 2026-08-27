@@ -24,7 +24,7 @@ import { walk } from "../tw/literal.ts";
 import { findCxImports, inlineCxCalls } from "./cx-inline.ts";
 import { createCrossModuleConstResolver } from "./cross-module-consts.ts";
 import { type OxcNode } from "../tw/literal.ts";
-import { findCssImports } from "./css-extract.ts";
+import { createCssSourceService } from "./css-source-service.ts";
 import { createPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssPreset } from "./css-extract.ts";
@@ -199,6 +199,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				cssSources: options.css.cssSources ?? (["css", "design"] as Array<string | RegExp>),
 			}
 		: undefined;
+	const cssSourceService = createCssSourceService();
 
 	const isTwSource = (source: string): boolean => matchesSource(source, options.twSources, "tw");
 	const isCxSource = (source: string): boolean =>
@@ -281,7 +282,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 					onUnresolved: unresolvedMode,
 				};
 				if (cssFold !== undefined) {
-					const cssNames = findCssImports(working, id, cssFold.cssSources);
+					const cssNames = cssSourceService.findCssImports(working, id, cssFold.cssSources);
 					if (cssNames.size > 0) {
 						cxOptions = {
 							...cxOptions,

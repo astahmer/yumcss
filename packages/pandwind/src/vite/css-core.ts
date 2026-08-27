@@ -6,11 +6,10 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
-import { extractCssFile } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
-import { extractCssSources, findCssImports, inlineCssCalls } from "./css-extract.ts";
+import { createCssSourceService } from "./css-source-service.ts";
 
 export type { CssExtractorPreset };
 
@@ -48,6 +47,7 @@ export function createCssExtractorPluginCore(
 		);
 	}
 	const matchers = options.cssSources ?? ["css", "design"];
+	const sourceService = createCssSourceService();
 	const virtualId = options.virtualId ?? "pandwind:css";
 	const className = options.engine?.className ?? options.className;
 	const strategy = normalizeStrategy(className);
@@ -61,7 +61,7 @@ export function createCssExtractorPluginCore(
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
 	const fileCache = new Map<
 		string,
-		{ mtimeMs: number; sources: ReturnType<typeof extractCssSources>; varKeys: string[] }
+		{ mtimeMs: number; sources: ReturnType<typeof sourceService.extract>; varKeys: string[] }
 	>();
 	type RenderCache<T> = { files: Array<string>; value: T };
 	let bodyCache: RenderCache<string> | undefined;
@@ -113,9 +113,9 @@ export function createCssExtractorPluginCore(
 			: (code: string, id: string): { code: string; map: null } | null => {
 					if (id.includes("node_modules")) return null;
 					if (!isScanned(id)) return null;
-					const names = findCssImports(code, id, matchers);
+					const names = sourceService.findCssImports(code, id, matchers);
 					if (names.size === 0) return null;
-					const result = inlineCssCalls(code, id, names, preset, className);
+					const result = sourceService.inline(code, id, names, preset, className);
 					return result.inlined === 0 ? null : { code: result.code, map: null };
 				};
 
@@ -168,7 +168,7 @@ export function createCssExtractorPluginCore(
 			const mtimeMs = statSync(file).mtimeMs;
 			if (!entry || entry.mtimeMs !== mtimeMs) {
 				const code = readFileSync(file, "utf8");
-				const { sources, varKeys } = extractCssFile(code, file, matchers, preset);
+				const { sources, varKeys } = sourceService.extractFile(code, file, matchers, preset);
 				entry = { mtimeMs, sources, varKeys };
 				fileCache.set(file, entry);
 			}
@@ -187,12 +187,12 @@ export function createCssExtractorPluginCore(
 	/** Cached styles/var-keys for one file (re-scanning on mtime change). */
 	const scanFile = (
 		file: string,
-	): { sources: ReturnType<typeof extractCssSources>; varKeys: string[] } => {
+	): { sources: ReturnType<typeof sourceService.extract>; varKeys: string[] } => {
 		let entry = fileCache.get(file);
 		const mtimeMs = statSync(file).mtimeMs;
 		if (!entry || entry.mtimeMs !== mtimeMs) {
 			const code = readFileSync(file, "utf8");
-			const { sources, varKeys } = extractCssFile(code, file, matchers, preset);
+			const { sources, varKeys } = sourceService.extractFile(code, file, matchers, preset);
 			entry = { mtimeMs, sources, varKeys };
 			fileCache.set(file, entry);
 		}
