@@ -148,6 +148,57 @@ function irToText(ir: SwapIrLike, meta: PandwindMeta): string {
 const cssImportFor = (depth: number): string =>
 	depth <= 0 ? "./css" : `${"../".repeat(depth)}css`;
 
+/** Keep generated imports after a file's directive prologue (`"use client"`). */
+function importInsertionOffset(source: string): number {
+	let offset = source.charCodeAt(0) === 0xfeff ? 1 : 0;
+	if (source.startsWith("#!", offset)) {
+		const newline = source.indexOf("\n", offset);
+		offset = newline === -1 ? source.length : newline + 1;
+	}
+
+	const skipTrivia = (at: number): number => {
+		let next = at;
+		for (;;) {
+			while (/\s/.test(source[next] ?? "")) next++;
+			if (source.startsWith("//", next)) {
+				const newline = source.indexOf("\n", next + 2);
+				next = newline === -1 ? source.length : newline + 1;
+				continue;
+			}
+			if (source.startsWith("/*", next)) {
+				const end = source.indexOf("*/", next + 2);
+				next = end === -1 ? source.length : end + 2;
+				continue;
+			}
+			return next;
+		}
+	};
+
+	for (;;) {
+		const start = skipTrivia(offset);
+		const quote = source[start];
+		if (quote !== "'" && quote !== '"') return start;
+		let end = start + 1;
+		let escaped = false;
+		for (; end < source.length; end++) {
+			const char = source[end];
+			if (escaped) {
+				escaped = false;
+				continue;
+			}
+			if (char === "\\") {
+				escaped = true;
+				continue;
+			}
+			if (char === quote) break;
+		}
+		if (source[end] !== quote) return start;
+		end = skipTrivia(end + 1);
+		if (source[end] === ";") end++;
+		offset = end;
+	}
+}
+
 function countResidual(report: PandaMigrateReport, kind: string, amount = 1): void {
 	report.residualsByKind[kind] = (report.residualsByKind[kind] ?? 0) + amount;
 }
@@ -784,9 +835,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// re-point the binding at the emitted module
 		addExtra(def.file.path, { start: def.start, end: def.end, text: "" });
 		const spec = aliasSpecifier(aliasInfo, outDirName, "recipes");
+		const insertion = importInsertionOffset(def.file.source);
 		addExtra(def.file.path, {
-			start: 0,
-			end: 0,
+			start: insertion,
+			end: insertion,
 			text: `import { ${recipeExportNames.get(def.name)} as ${def.name} } from "${spec}/${recipeModuleNames.get(`${def.file.path}#${def.start}`) ?? def.name}";\n`,
 		});
 	}
@@ -1063,7 +1115,9 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// directly (for example via the JSX factory). Ensure every converted
 		// call has a real migrated binding.
 		if (/\bcss\.class\s*\(/.test(next) && !hasCssBinding(next)) {
-			next = `import { css } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n${next}`;
+			const importText = `import { css } from "${aliasSpecifier(aliasInfo, outDirName, "css")}";\n`;
+			const insertion = importInsertionOffset(next);
+			next = next.slice(0, insertion) + importText + next.slice(insertion);
 		}
 		// cva/sva definitions folded into generated output no longer need their
 		// panda-only named imports; leaving them would create unresolved exports.

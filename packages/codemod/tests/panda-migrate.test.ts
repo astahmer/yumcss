@@ -159,6 +159,8 @@ describe("supporting migration primitives", () => {
 		expect(jsx).toContain('import { css, cx } from "../css";');
 		expect(jsx).toContain('import("react").ElementType');
 		expect(jsx).toContain("splitStyleProps(rest)");
+		expect(jsx).toContain('className, children, as = "div", ...rest');
+		expect(jsx).toContain(">{children}</Tag>");
 	});
 
 	it("folds a single-use recipe without duplicating a shared definition", () => {
@@ -256,6 +258,35 @@ describe("runPandaMigration", () => {
 		const output = readFileSync(join(dir, "src", "local.tsx"), "utf8");
 		expect(output).not.toMatch(/^\s*\)\s*$/m);
 		expect(output).toContain("css.class");
+	});
+
+	it("inserts generated imports after a client directive", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "client.tsx"),
+			[
+				"'use client'",
+				"import { cva } from '@/styled-system/css'",
+				"const local = cva({ base: { padding: '2' } })",
+				"export const Client = () => (",
+				"  <>",
+				"    <div className={local({})} />",
+				"    <div className={local({})} />",
+				"  </>",
+				")",
+			].join("\n"),
+		);
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+		const output = readFileSync(join(dir, "src", "client.tsx"), "utf8");
+		expect(output).toMatch(/^'use client'\nimport \{ local as local \}/);
 	});
 
 	it("is idempotent on an already-migrated project", async () => {

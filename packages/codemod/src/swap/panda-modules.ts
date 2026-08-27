@@ -514,20 +514,22 @@ export function renderJsxIndex(
 		const pattern = PATTERN_OF[component];
 		if (pattern !== undefined) {
 			lines.push(`export function ${component}(props: AnyProps) {`);
-			lines.push('\tconst { className, as = "div", ...rest } = props;');
+			lines.push('\tconst { className, children, as = "div", ...rest } = props;');
 			lines.push("\tconst { style, dom } = splitStyleProps(rest);");
 			lines.push('\tconst Tag = as as import("react").ElementType;');
-			lines.push(`\treturn <Tag {...dom} className={cx(${pattern}(style), className)} />;`);
+			lines.push(
+				`\treturn <Tag {...dom} className={cx(${pattern}(style), className)}>{children}</Tag>;`,
+			);
 			lines.push("}");
 			lines.push("");
 		} else {
 			// Box-style container: props ARE declarations.
 			lines.push(`export function ${component}(props: AnyProps) {`);
-			lines.push('\tconst { className, as = "div", ...rest } = props;');
+			lines.push('\tconst { className, children, as = "div", ...rest } = props;');
 			lines.push("\tconst { style, dom } = splitStyleProps(rest);");
 			lines.push('\tconst Tag = as as import("react").ElementType;');
 			lines.push(
-				"\treturn <Tag {...dom} className={cx(css.class(canonicalProps(style)), className)} />;",
+				"\treturn <Tag {...dom} className={cx(css.class(canonicalProps(style)), className)}>{children}</Tag>;",
 			);
 			lines.push("}");
 			lines.push("");
