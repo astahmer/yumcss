@@ -74,9 +74,11 @@ export function parseAdapterTemplate(
 				const expression = templateDynamicExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
-					kind: interpolation[1]?.includes("=>") ? "capability" : "dynamic",
+					kind: "dynamic",
 					text: rawValue,
-					hint: `${adapter} template interpolation requires a runtime-aware lowering`,
+					hint: interpolation[1]?.includes("=>")
+						? `${adapter} function interpolation requires a framework prop wrapper`
+						: `${adapter} template interpolation requires a runtime-aware lowering`,
 				});
 			} else {
 				value = { kind: "literal", value: rawValue };

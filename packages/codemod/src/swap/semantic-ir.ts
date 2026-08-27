@@ -172,6 +172,8 @@ export interface StyleProgramOptions {
 	readonly computedKeys?: Readonly<Record<string, string>>;
 	/** Source-adapter mappings for runtime variable references in values. */
 	readonly dynamicReferences?: Readonly<Record<string, string>>;
+	/** Adapter-owned array fields that expand into independent semantic rules. */
+	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 	readonly themes?: readonly StyleThemeBinding[];
@@ -470,6 +472,7 @@ interface SourceNode {
 	valueNode?: SourceNode;
 	expression?: SourceNode;
 	properties?: SourceNode[];
+	elements?: SourceNode[];
 }
 
 function sourceSlice(body: string, node: SourceNode): string {
@@ -569,6 +572,7 @@ export function styleProgramFromSourceObject(
 	const residuals: StyleProgramResidual[] = [];
 	const themes: StyleThemeBinding[] = [...(options.themes ?? [])];
 	const compositions: StyleComposition[] = [...(options.compositions ?? [])];
+	const specialRules: StyleRule[] = [];
 	const themePaths = new Set(themes.map((theme) => theme.path));
 	const compositionKeys = new Set(["compose", "composes", "extend", "extends"]);
 	const addDynamicResidual = (text: string, hint: string): void => {
@@ -610,6 +614,29 @@ export function styleProgramFromSourceObject(
 			const valueNode = property.value as SourceNode | undefined;
 			if (valueNode === undefined) {
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
+				continue;
+			}
+			const specialKind = options.arrayRuleKinds?.[name];
+			if (specialKind !== undefined && valueNode.type === "ArrayExpression") {
+				for (const element of valueNode.elements ?? []) {
+					if (!sourceObject(element)) {
+						addDynamicResidual(
+							sourceSlice(body, element),
+							`${specialKind} array entries must be object expressions`,
+						);
+						continue;
+					}
+					const before = declarations.length;
+					walk(element, []);
+					specialRules.push({
+						kind: specialKind,
+						conditions: [],
+						declarations: declarations.splice(before),
+						children: [],
+						order: specialRules.length + 1,
+						source: sourceRange(options.source, options.sourceOffset ?? 0, element),
+					});
+				}
 				continue;
 			}
 			if (compositionKeys.has(name)) {
@@ -695,6 +722,7 @@ export function styleProgramFromSourceObject(
 				order: 0,
 				source: options.source,
 			},
+			...specialRules,
 		],
 		{
 			source: options.source,

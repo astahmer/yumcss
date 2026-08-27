@@ -93,6 +93,12 @@ export interface AdapterEmitContext {
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view for target emitters. */
 	readonly document?: SourceScanResult;
+	/** Host binding context for adapters that emit framework wrappers. */
+	readonly host?: {
+		readonly binding?: string;
+		readonly framework?: string;
+		readonly subject?: string;
+	};
 }
 
 export interface AdapterEmitResult {

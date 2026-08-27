@@ -1,5 +1,9 @@
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
-import type { AdapterDependencies, AdapterEmitResult } from "../adapter-contract.ts";
+import type {
+	AdapterDependencies,
+	AdapterEmitContext,
+	AdapterEmitResult,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleProgramOptions } from "../semantic-ir.ts";
 
 export type AdapterSourceObjectOptions = Pick<
@@ -41,6 +45,7 @@ export interface AdapterDefinition {
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,
+		context?: AdapterEmitContext,
 	): Pick<AdapterEmitResult, "text" | "imports">;
 }
 

@@ -12,6 +12,7 @@ import {
 	styleProgramToCanonicalCss,
 	type StyleProgram,
 	type StyleProgramResidual,
+	type StyleProgramOptions,
 } from "../semantic-ir.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 
@@ -25,6 +26,7 @@ export interface ExtraAdapterOptions {
 	readonly prefix: string;
 	readonly suffix?: string;
 	readonly namedObjects?: boolean;
+	readonly sourceObjectOptions?: Pick<StyleProgramOptions, "nestedObjectKind" | "arrayRuleKinds">;
 }
 
 const capabilities = (id: string): AdapterCapabilities => ({
@@ -127,6 +129,7 @@ function parseObjectCalls(
 			source: { file: context.file, start, end: block.end, adapter: id },
 			sourceOffset: open + 1,
 			...(options.namedObjects ? { nestedObjectKind: "named" as const } : {}),
+			...options.sourceObjectOptions,
 		});
 		let end = block.end;
 		while (source[end] === ")") end++;
@@ -171,6 +174,9 @@ function parseTemplateCalls(
 					...program.source,
 					subject: normalized,
 					subjectKind: subject.trim().startsWith(".") ? "member" : "call",
+					...(context.semantic?.source?.framework
+						? { framework: context.semantic.source.framework }
+						: {}),
 				},
 			};
 		}

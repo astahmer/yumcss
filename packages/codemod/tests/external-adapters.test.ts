@@ -125,6 +125,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('css.group({ button: { color: "red" } })');
 	});
 
+	test("lowers Aphrodite font-face arrays into runtime semantic rules", () => {
+		const result = runAdapterMigration(
+			'import { StyleSheet } from "aphrodite";\n' +
+				"const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: 'Inter', src: 'url(inter.woff2)' }] } });",
+			{ from: "aphrodite", to: "pandwind", file: "fonts.js", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("registerSemanticRules");
+		expect(result.code).toContain('kind: "font-face"');
+		expect(result.code).toContain('property: "fontFamily"');
+	});
+
 	test("migrates an Emotion object into styled-components with selectors and dynamics", () => {
 		const source = `import { css } from "@emotion/css";\nconst card = css({ color: theme.foreground, "&:hover": { color: "red" } });`;
 		const result = runAdapterMigration(source, {
@@ -503,8 +517,45 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(parsed.matches).toHaveLength(1);
 		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
 		expect(
-			parsed.matches[0]?.program.residuals.some((residual) => residual.kind === "capability"),
+			parsed.matches[0]?.program.residuals.some((residual) => residual.kind === "dynamic"),
 		).toBe(true);
 		expect(parsed.residuals.some((residual) => residual.kind === "parse")).toBe(false);
+	});
+
+	test("wraps function-valued Solid and Vue styles with host runtime context", () => {
+		const solid = runAdapterMigration(
+			'import { styled } from "solid-styled-components";\n' +
+				"const Card = styled.div`color: ${(props) => props.color};`;",
+			{
+				from: "solid-styled",
+				to: "pandwind",
+				file: "Card.tsx",
+				mode: "safe",
+				semantic: { source: { file: "Card.tsx", framework: "solid" } },
+			},
+		);
+		expect(solid.converted).toBe(1);
+		expect(solid.residuals).toEqual([]);
+		expect(solid.code).toContain("css.vars({ color: ((props) => props.color)(props) })");
+		expect(solid.code).toContain('import { cx } from "pandwind/cx";');
+		expect(solid.code).toContain("class={cx(style.class, props.class)}");
+
+		const vue = runAdapterMigration(
+			'import styled from "vue-styled-components";\n' +
+				"const Card = styled.div`color: ${(props) => props.color};`;",
+			{
+				from: "vue-styled",
+				to: "pandwind",
+				file: "Card.vue",
+				mode: "safe",
+				semantic: { source: { file: "Card.vue", framework: "vue" } },
+			},
+		);
+		expect(vue.converted).toBe(1);
+		expect(vue.residuals).toEqual([]);
+		expect(vue.code).toContain(
+			"computed(() => css.vars({ color: ((props) => props.color)(attrs) }))",
+		);
+		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 	});
 });

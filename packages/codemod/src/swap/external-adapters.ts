@@ -9,6 +9,7 @@ import {
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
+	type AdapterEmitContext,
 	type AdapterLossiness,
 	type AdapterMatch,
 	type AdapterParseContext,
@@ -441,9 +442,11 @@ function parseTemplateProgram(
 				const expression = templateDynamicExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
-					kind: interpolation[1]?.includes("=>") ? "capability" : "dynamic",
+					kind: "dynamic",
 					text: rawValue,
-					hint: "template interpolation requires a runtime-aware lowering",
+					hint: interpolation[1]?.includes("=>")
+						? "function interpolation requires a framework prop wrapper"
+						: "template interpolation requires a runtime-aware lowering",
 				});
 			} else {
 				value = { kind: "literal", value: rawValue };
@@ -783,7 +786,10 @@ export function adapter(
 	patterns: readonly CallPattern[],
 	packages: AdapterDependencies,
 	capabilities: AdapterCapabilities,
-	emitCall: (program: StyleProgram) => { text: string; imports?: readonly string[] },
+	emitCall: (program: StyleProgram, context?: AdapterEmitContext) => {
+		text: string;
+		imports?: readonly string[];
+	},
 	detectPatterns: readonly RegExp[],
 	sourceModules: readonly string[],
 	sourceObjectOptions: AdapterSourceObjectOptionsProvider | undefined = {},
@@ -798,8 +804,8 @@ export function adapter(
 		detect: (context) => detectBy(detectPatterns, context),
 		loadConfig: (context) => configFor(id, context),
 		parse: (source, context) => parseCalls(source, context, patterns, sourceObjectOptions),
-		emit: (program, _context) => {
-			const rendered = emitCall(program);
+		emit: (program, context) => {
+			const rendered = emitCall(program, context);
 			return { ...rendered, dependencies: packages, residuals: [...program.residuals] };
 		},
 		validate: validatePrograms,
@@ -816,7 +822,7 @@ function adapterFromDefinition(definition: AdapterDefinition): StyleAdapter {
 		definition.patterns,
 		definition.packages,
 		definition.capabilities,
-		(program) => definition.emit(program, renderers),
+		(program, context) => definition.emit(program, renderers, context),
 		definition.detectPatterns,
 		definition.sourceModules,
 		definition.sourceObjectOptions,

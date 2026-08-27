@@ -12,6 +12,61 @@ function runtimeValue(value: StyleProgram["declarations"][number]["value"]): str
 	return JSON.stringify(value.value);
 }
 
+function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgram {
+	const declaration = (item: StyleProgram["declarations"][number]) => ({
+		...item,
+		value:
+			item.value.kind === "dynamic" && /=>|^function\b/.test(item.value.expression.trim())
+				? { ...item.value, expression: `(${item.value.expression})(${parameter})` }
+				: item.value,
+	});
+	const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...item,
+		declarations: item.declarations.map(declaration),
+		children: item.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(declaration),
+		rules: program.rules.map(rule),
+	};
+}
+
+function runtimeComponent(
+	program: StyleProgram,
+	programObject: AdapterRenderers["programObject"],
+	context: Parameters<NonNullable<AdapterDefinition["emit"]>>[2] | undefined,
+): { text: string; imports: readonly string[] } | undefined {
+	const host = context?.host;
+	const subject = host?.subject ?? program.source?.subject;
+	const tag = subject?.match(/^styled\.([a-z][\w-]*)$/)?.[1];
+	const framework = host?.framework ?? program.source?.framework;
+	if (host?.binding === undefined || tag === undefined || framework === undefined) return undefined;
+	const object = programObject(mapRuntimeProps(program, framework === "vue" ? "attrs" : "props"));
+	if (framework === "vue") {
+		return {
+			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => css.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			imports: [
+				'import { computed, defineComponent, h } from "vue";',
+				'import { createRuntimeCss } from "pandwind/css/runtime";',
+				'import { pandwindPreset } from "pandwind/preset";',
+				"const css = createRuntimeCss(pandwindPreset);",
+			],
+		};
+	}
+	if (framework !== "solid" && framework !== "react" && framework !== "preact") return undefined;
+	const classAttribute = framework === "solid" ? "class" : "className";
+	return {
+		text: `(props) => { const style = css.vars(${object}); return <${tag} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
+		imports: [
+			'import { cx } from "pandwind/cx";',
+			'import { createRuntimeCss } from "pandwind/css/runtime";',
+			'import { pandwindPreset } from "pandwind/preset";',
+			"const css = createRuntimeCss(pandwindPreset);",
+		],
+	};
+}
+
 function runtimeKeyframes(program: StyleProgram): string {
 	const rule = program.rules[0]!;
 	const name = `pw-kf-${(rule.name ?? "animation").replace(/[^A-Za-z0-9_-]/g, "-")}`;
@@ -25,6 +80,21 @@ function runtimeKeyframes(program: StyleProgram): string {
 				.join(", ")}] }`,
 	);
 	return `(css.sheet.register([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
+}
+
+function runtimeFontFaces(program: StyleProgram): string {
+	return program.rules
+		.filter((rule) => rule.kind === "font-face")
+		.map(
+			(rule) =>
+				`{ kind: "font-face", declarations: [${rule.declarations
+					.map(
+						(declaration) =>
+							`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
+					)
+					.join(", ")} ] }`,
+		)
+		.join(", ");
 }
 
 function stitchesRecipeObject(
@@ -67,8 +137,35 @@ export const PANDWIND_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
-	emit(program, { programObject, declarationsObject }) {
+	emit(program, { programObject, declarationsObject }, context) {
 		const kind = program.rules[0]?.kind;
+		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
+			return (
+				rule.declarations.some(
+					(declaration) =>
+						declaration.value.kind === "dynamic" &&
+						/=>|^function\b/.test(declaration.value.expression.trim()),
+				) || rule.children.some(containsFunction)
+			);
+		});
+		if (hasFunctionDynamic) {
+			const component = runtimeComponent(program, programObject, context);
+			if (component !== undefined) return component;
+		}
+		if (program.rules.some((rule) => rule.kind === "font-face")) {
+			const styleProgram = {
+				...program,
+				rules: program.rules.filter((rule) => rule.kind !== "font-face"),
+			};
+			return {
+				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(program)}]), css.group(${programObject(styleProgram)}))`,
+				imports: [
+					'import { createRuntimeCss } from "pandwind/css/runtime";',
+					'import { pandwindPreset } from "pandwind/preset";',
+					"const css = createRuntimeCss(pandwindPreset);",
+				],
+			};
+		}
 		if (kind === "keyframes")
 			return {
 				text: runtimeKeyframes(program),

@@ -8,4 +8,5 @@ export const APHRODITE = makeExtraAdapter({
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
 	namedObjects: true,
+	sourceObjectOptions: { arrayRuleKinds: { fontFamily: "font-face" } },
 });

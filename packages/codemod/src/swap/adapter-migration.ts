@@ -47,6 +47,18 @@ function programHasDynamic(program: StyleProgram): boolean {
 	});
 }
 
+function programHasFunctionDynamic(program: StyleProgram): boolean {
+	return program.rules.some(function containsFunction(rule): boolean {
+		return (
+			rule.declarations.some(
+				(declaration) =>
+					declaration.value.kind === "dynamic" &&
+					/=>|^function\b/.test(declaration.value.expression.trim()),
+			) || rule.children.some(containsFunction)
+		);
+	});
+}
+
 function stylexPropsUses(source: string, binding: string): boolean {
 	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return new RegExp(`\\bstylex\\.props\\(\\s*${escaped}\\s*\\.`).test(source);
@@ -62,6 +74,10 @@ function tagForStandalone(source: string, start: number): string | undefined {
 
 function isStandaloneDefaultExport(source: string, start: number): boolean {
 	return /export\s+default\s*$/.test(source.slice(0, start));
+}
+
+function bindingForMatch(source: string, start: number): string | undefined {
+	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
 }
 
 function rewriteVanillaExtractBindings(source: string): string {
@@ -245,6 +261,7 @@ export function runAdapterMigration(
 			mode,
 		});
 		let program = lowering.program;
+		const sourceSubject = program.source?.subject;
 		let dynamicCarrier: { binding?: string; framework: string; stylexHost?: boolean } | undefined;
 		if (targetAdapter.id === "pandwind" && program.source?.subject === undefined) {
 			const hasDynamic = programHasDynamic(program);
@@ -306,6 +323,7 @@ export function runAdapterMigration(
 		}
 		if (targetAdapter.id === "pandwind" && program.source?.subject !== undefined) {
 			const hasDynamic = programHasDynamic(program);
+			const hasFunctionDynamic = programHasFunctionDynamic(program);
 			const binding = source
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
@@ -324,8 +342,21 @@ export function runAdapterMigration(
 				framework !== undefined &&
 				getHostComponentRewriter(framework)?.rewriteStandalone !== undefined &&
 				isStandaloneDefaultExport(source, match.start);
-			if (standaloneExport) {
+			const frameworkWrapper =
+				hasFunctionDynamic &&
+				binding !== undefined &&
+				tag !== undefined &&
+				(framework === "solid" ||
+					framework === "vue" ||
+					framework === "react" ||
+					framework === "preact");
+			if (standaloneExport || frameworkWrapper) {
 				program = { ...program, source: { ...program.source, subject: undefined } };
+				if (frameworkWrapper)
+					program = {
+						...program,
+						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
+					};
 			}
 			if (
 				(binding === undefined && !standaloneExport) ||
@@ -347,7 +378,7 @@ export function runAdapterMigration(
 					(residual) => residual.kind === "dynamic",
 				);
 				const rewriteKey = `${binding}:${tag}:${framework}`;
-				if (preview.residuals.length === 0 && residualsCanUseHostLowering) {
+				if (preview.residuals.length === 0 && residualsCanUseHostLowering && !hasFunctionDynamic) {
 					program = {
 						...program,
 						residuals: hasDynamic
@@ -405,6 +436,13 @@ export function runAdapterMigration(
 			index,
 			document,
 			meta: options.meta,
+			host: {
+				...(bindingForMatch(source, match.start) === undefined
+					? {}
+					: { binding: bindingForMatch(source, match.start) }),
+				...(program.source?.framework ? { framework: program.source.framework } : {}),
+				...(sourceSubject ? { subject: sourceSubject } : {}),
+			},
 		});
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
