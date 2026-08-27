@@ -12,6 +12,18 @@ export type SourceLanguage =
 	| "vue"
 	| "svelte"
 	| "astro"
+	| "mdx"
+	| (string & {});
+
+export type SourceFramework =
+	| "react"
+	| "preact"
+	| "solid"
+	| "qwik"
+	| "vue"
+	| "svelte"
+	| "astro"
+	| "mdx"
 	| (string & {});
 
 export interface SourceDocument {
@@ -19,6 +31,7 @@ export interface SourceDocument {
 	readonly source: string;
 	readonly language?: SourceLanguage;
 	readonly root?: string;
+	readonly framework?: SourceFramework;
 }
 
 export interface SourceRange {
@@ -36,6 +49,7 @@ export interface SourceScanResult {
 	readonly language: SourceLanguage;
 	readonly excluded: readonly SourceRange[];
 	readonly diagnostics: readonly SourceScanDiagnostic[];
+	readonly framework?: SourceFramework;
 	isExcluded(start: number): boolean;
 }
 
@@ -66,6 +80,7 @@ export function sourceLanguageForFile(file: string): SourceLanguage {
 				vue: "vue",
 				svelte: "svelte",
 				astro: "astro",
+				mdx: "mdx",
 			} as Record<string, SourceLanguage>
 		)[extension ?? ""] ?? "unknown"
 	);
@@ -93,6 +108,33 @@ function lexicalExcludedRanges(source: string): SourceRange[] {
 		const start = match.index ?? 0;
 		ranges.push({ start, end: start + match[0].length });
 	}
+	return ranges;
+}
+
+function mdxExcludedRanges(source: string): SourceRange[] {
+	const ranges: SourceRange[] = [];
+	let fence: { start: number; end: number } | undefined;
+	let lineStart = 0;
+	for (const line of source.split("\n")) {
+		const lineEnd = lineStart + line.length;
+		if (/^\s*```/.test(line)) {
+			if (fence === undefined) fence = { start: lineStart, end: lineEnd + 1 };
+			else {
+				fence.end = lineEnd + 1;
+				ranges.push(fence);
+				fence = undefined;
+			}
+			lineStart = lineEnd + 1;
+			continue;
+		}
+		if (
+			fence === undefined &&
+			!/^\s*(?:import|export|const|let|var|function|class|type|interface|[<{])/.test(line)
+		)
+			ranges.push({ start: lineStart, end: lineEnd + 1 });
+		lineStart = lineEnd + 1;
+	}
+	if (fence !== undefined) ranges.push({ start: fence.start, end: source.length });
 	return ranges;
 }
 
@@ -193,7 +235,10 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	} else if (language === "unknown") {
 		diagnostics.push({ kind: "language", message: `no registered language for ${document.file}` });
 	} else {
-		excluded = lexicalExcludedRanges(document.source);
+		excluded =
+			language === "mdx"
+				? mdxExcludedRanges(document.source)
+				: lexicalExcludedRanges(document.source);
 	}
 	return {
 		document,
@@ -213,7 +258,47 @@ const makeAdapter = (id: string, languages: readonly SourceLanguage[]): SourceLa
 	scan: scanDocument,
 });
 
+const makeFrameworkAdapter = (
+	id: string,
+	framework: SourceFramework,
+	languages: readonly SourceLanguage[],
+	patterns: readonly RegExp[],
+): SourceLanguageAdapter => ({
+	schema: SOURCE_SCANNER_SCHEMA,
+	id,
+	languages,
+	detect: (document) =>
+		languages.includes(document.language ?? sourceLanguageForFile(document.file)) &&
+		patterns.some((pattern) => pattern.test(document.source)),
+	scan: (document) => ({ ...scanDocument(document), framework }),
+});
+
 export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
+	makeFrameworkAdapter(
+		"jsx-react",
+		"react",
+		["typescript", "tsx", "javascript", "jsx"],
+		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
+	),
+	makeFrameworkAdapter(
+		"jsx-preact",
+		"preact",
+		["typescript", "tsx", "javascript", "jsx"],
+		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
+	),
+	makeFrameworkAdapter(
+		"jsx-solid",
+		"solid",
+		["typescript", "tsx", "javascript", "jsx"],
+		[/from\s+["']solid-js(?:\/|["'])/],
+	),
+	makeFrameworkAdapter(
+		"jsx-qwik",
+		"qwik",
+		["typescript", "tsx", "javascript", "jsx"],
+		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
+	),
+	makeAdapter("mdx", ["mdx"]),
 	makeAdapter("typescript", ["typescript", "tsx", "javascript", "jsx"]),
 	makeAdapter("vue", ["vue"]),
 	makeAdapter("svelte", ["svelte"]),

@@ -37,4 +37,27 @@ describe("language-neutral source scanner registry", () => {
 		const registry = createSourceScannerRegistry().register(markdown);
 		expect(registry.scan({ file: "README.mdx", source: "tw({})" }).language).toBe("mdx");
 	});
+
+	test("uses built-in MDX and framework adapters", () => {
+		const registry = createSourceScannerRegistry();
+		const mdx = registry.scan({
+			file: "Card.mdx",
+			source: "# Card\n\n<Card />\n\n{tw({ color: 'red' })}",
+		});
+		expect(mdx.language).toBe("mdx");
+		expect(mdx.framework).toBeUndefined();
+		expect(mdx.isExcluded(0)).toBe(true);
+		expect(mdx.isExcluded(mdx.document.source.lastIndexOf("tw("))).toBe(false);
+
+		const react = registry.scan({
+			file: "Card.tsx",
+			source: 'import React from "react";\nconst card = css({ color: "red" });',
+		});
+		expect(react.framework).toBe("react");
+		const solid = registry.scan({
+			file: "Card.tsx",
+			source: 'import { createSignal } from "solid-js";\nconst card = css({ color: "red" });',
+		});
+		expect(solid.framework).toBe("solid");
+	});
 });

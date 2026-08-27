@@ -22,6 +22,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 				"import { StyleSheet } from 'aphrodite'; StyleSheet.create({ button: { color: 'red' } })",
 			style9: "import style9 from 'style9'; style9.create({ button: { color: 'red' } })",
 			treat: "import { style } from './styles.treat'; style({ color: 'red' })",
+			compiled: "import { css } from '@compiled/react'; css({ color: 'red' })",
+			"solid-styled":
+				"import { styled } from 'solid-styled-components'; styled.div({ color: 'red' })",
+			"vue-styled": "import styled from 'vue-styled-components'; styled.div({ color: 'red' })",
 		};
 		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);

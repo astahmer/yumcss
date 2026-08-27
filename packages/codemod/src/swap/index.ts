@@ -147,12 +147,34 @@ export type {
 	AdapterMigrationPipeline,
 	MigrationStage,
 } from "./migration-pipeline.ts";
-export { EXTRA_ADAPTERS, FELA, GOOBER, APHRODITE, STYLE9, TREAT } from "./extra-adapters.ts";
+export {
+	EXTRA_ADAPTERS,
+	FELA,
+	GOOBER,
+	APHRODITE,
+	STYLE9,
+	TREAT,
+	COMPILED,
+	SOLID_STYLED,
+	VUE_STYLED,
+} from "./extra-adapters.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,
 	createStyleAdapterRegistry,
 } from "./adapter-registry.ts";
+export {
+	ADAPTER_MANIFEST_SCHEMA,
+	ADAPTER_PACKAGE_FIELD,
+	createStyleAdapterManifest,
+	readAdapterPackageDeclaration,
+	validateStyleAdapterManifest,
+} from "./adapter-manifest.ts";
+export type {
+	AdapterPackageDeclaration,
+	StyleAdapterManifest,
+	StyleAdapterManifestEntry,
+} from "./adapter-manifest.ts";
 export type {
 	AdapterDiscoveryOptions,
 	AdapterDiscoveryResult,
@@ -201,6 +223,7 @@ export {
 } from "./source-scanner.ts";
 export type {
 	SourceDocument,
+	SourceFramework,
 	SourceLanguage,
 	SourceLanguageAdapter,
 	SourceRange,

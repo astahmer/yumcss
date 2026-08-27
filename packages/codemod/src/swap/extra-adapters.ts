@@ -224,5 +224,41 @@ export const TREAT = makeAdapter({
 	prefix: "style(",
 });
 
+export const COMPILED = makeAdapter({
+	id: "compiled",
+	modules: ["@compiled/react", "@compiled/css-in-js"],
+	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
+	detect: [/from\s+["']@compiled\/(?:react|css-in-js)["']/g, /\bcss\s*\(\s*\{/g],
+	call: /\bcss\s*\(\s*\{/g,
+	prefix: "css(",
+});
+
+export const SOLID_STYLED = makeAdapter({
+	id: "solid-styled",
+	modules: ["solid-styled-components"],
+	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
+	detect: [/from\s+["']solid-styled-components["']/g, /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g],
+	call: /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g,
+	prefix: "styled.div(",
+});
+
+export const VUE_STYLED = makeAdapter({
+	id: "vue-styled",
+	modules: ["vue-styled-components"],
+	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
+	detect: [/from\s+["']vue-styled-components["']/g, /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g],
+	call: /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g,
+	prefix: "styled.div(",
+});
+
 /** Independently owned adapters added without modifying existing library adapters. */
-export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [FELA, GOOBER, APHRODITE, STYLE9, TREAT];
+export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [
+	FELA,
+	GOOBER,
+	APHRODITE,
+	STYLE9,
+	TREAT,
+	COMPILED,
+	SOLID_STYLED,
+	VUE_STYLED,
+];

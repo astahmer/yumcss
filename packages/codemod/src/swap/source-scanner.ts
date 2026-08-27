@@ -12,6 +12,7 @@ export {
 } from "pandwind/source";
 export type {
 	SourceDocument,
+	SourceFramework,
 	SourceLanguage,
 	SourceLanguageAdapter,
 	SourceRange,

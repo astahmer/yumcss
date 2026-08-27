@@ -32,9 +32,26 @@ export default {
 	schema: "pandwind.style-adapter-plugin/1",
 	id: "acme-css-in-js",
 	version: "1.0.0",
+	manifest: createStyleAdapterManifest("acme-css-in-js", "1.0.0", [adapter]),
 	adapters: [adapter],
 } satisfies StyleAdapterPlugin;
 ```
+
+The package may advertise the same entry points in `package.json`:
+
+```json
+{
+	"pandwind": {
+		"plugin": "./dist/plugin.js",
+		"manifest": "./dist/manifest.json"
+	}
+}
+```
+
+The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
+ID, implementation version, contract version, capabilities, and dependencies.
+Hosts can inspect it before loading code and the registry verifies it again at
+registration time.
 
 Discovery is deliberately explicit. The host decides how package names are
 resolved, which makes the same registry safe for CLIs, bundlers, tests, and

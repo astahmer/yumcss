@@ -1,5 +1,10 @@
 import type { StyleAdapter } from "./adapter-contract.ts";
 import {
+	createStyleAdapterManifest,
+	type StyleAdapterManifest,
+	validateStyleAdapterManifest,
+} from "./adapter-manifest.ts";
+import {
 	asStyleDialect,
 	createStyleSystem,
 	createStyleSystemRegistry,
@@ -13,6 +18,7 @@ export interface StyleAdapterPlugin {
 	readonly schema: typeof ADAPTER_PLUGIN_SCHEMA;
 	readonly id: string;
 	readonly version?: string;
+	readonly manifest: StyleAdapterManifest;
 	readonly adapters: readonly StyleAdapter[];
 }
 
@@ -42,7 +48,7 @@ export interface StyleAdapterRegistry {
 function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
 	const candidate = (value as { default?: unknown }).default ?? value;
 	if (isStyleAdapter(candidate)) {
-		return { schema: ADAPTER_PLUGIN_SCHEMA, id: specifier, adapters: [candidate] };
+		return createStyleAdapterPlugin(specifier, [candidate]);
 	}
 	if (
 		typeof candidate === "object" &&
@@ -54,7 +60,7 @@ function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
 	if (typeof candidate === "object" && candidate !== null) {
 		const adapters = (candidate as { adapters?: unknown }).adapters;
 		if (Array.isArray(adapters) && adapters.every(isStyleAdapter))
-			return { schema: ADAPTER_PLUGIN_SCHEMA, id: specifier, adapters };
+			return createStyleAdapterPlugin(specifier, adapters);
 	}
 	throw new Error(`package ${specifier} does not export a pandwind adapter plugin`);
 }
@@ -76,7 +82,13 @@ export function createStyleAdapterPlugin(
 	version = "1",
 ): StyleAdapterPlugin {
 	if (adapters.length === 0) throw new Error(`adapter plugin ${id} must export an adapter`);
-	return { schema: ADAPTER_PLUGIN_SCHEMA, id, version, adapters };
+	return {
+		schema: ADAPTER_PLUGIN_SCHEMA,
+		id,
+		version,
+		manifest: createStyleAdapterManifest(id, version, adapters),
+		adapters,
+	};
 }
 
 export function createStyleAdapterRegistry(
@@ -97,6 +109,7 @@ export function createStyleAdapterRegistry(
 		registerPlugin(plugin) {
 			if (plugin.schema !== ADAPTER_PLUGIN_SCHEMA)
 				throw new Error(`unsupported adapter plugin schema: ${plugin.schema}`);
+			validateStyleAdapterManifest(plugin.manifest, plugin.adapters);
 			for (const adapter of plugin.adapters) registry.register(adapter);
 			return registry;
 		},

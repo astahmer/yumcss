@@ -153,6 +153,20 @@ function sourceName(source: string, start: number, fallback: string): string {
 	return prefix.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1] ?? fallback;
 }
 
+function adapterSource(
+	context: AdapterParseContext,
+	start: number,
+	extra: Partial<StyleProgramSource> = {},
+): StyleProgramSource {
+	return {
+		file: context.file,
+		start,
+		adapter: context.config.adapter,
+		...(context.document?.framework ? { framework: context.document.framework } : {}),
+		...extra,
+	};
+}
+
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
 	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
 	if (match?.[1] === undefined) return {};
@@ -286,7 +300,7 @@ function parseKeyframeProgram(
 	name: string,
 ): StyleProgram {
 	const base = styleProgramFromSourceObject(body, {
-		source: { file: context.file, start, adapter: context.config.adapter },
+		source: adapterSource(context, start),
 		conditionKinds: { from: "selector", to: "selector" },
 		sourceOffset: start + 1,
 	});
@@ -316,7 +330,7 @@ function parseKeyframeProgram(
 			},
 		],
 		{
-			source: { file: context.file, start, adapter: context.config.adapter },
+			source: adapterSource(context, start),
 			residuals: base.residuals,
 		},
 	);
@@ -328,7 +342,7 @@ function parseGlobalProgram(
 	start: number,
 ): StyleProgram {
 	const base = styleProgramFromSourceObject(body, {
-		source: { file: context.file, start, adapter: context.config.adapter },
+		source: adapterSource(context, start),
 		nestedObjectKind: "selector",
 		sourceOffset: start + 1,
 	});
@@ -349,7 +363,7 @@ function parseGlobalProgram(
 			order,
 		})),
 		{
-			source: { file: context.file, start, adapter: context.config.adapter },
+			source: adapterSource(context, start),
 			residuals: base.residuals,
 		},
 	);
@@ -378,7 +392,7 @@ function parseTemplateProgram(
 				},
 			],
 			{
-				source: { file: context.file, start, adapter: context.config.adapter },
+				source: adapterSource(context, start),
 				residuals: [
 					{
 						kind: "dynamic",
@@ -406,7 +420,7 @@ function parseTemplateProgram(
 					},
 				],
 				{
-					source: { file: context.file, start, adapter: context.config.adapter },
+					source: adapterSource(context, start),
 					residuals: [
 						{ kind: "parse", text: statement, hint: "nested template CSS requires a rule parser" },
 					],
@@ -429,7 +443,7 @@ function parseTemplateProgram(
 				order: 0,
 			},
 		],
-		{ source: { file: context.file, start, adapter: context.config.adapter } },
+		{ source: adapterSource(context, start) },
 	);
 }
 
@@ -529,6 +543,7 @@ function parseCalls(
 						start,
 						end,
 						adapter: context.config.adapter,
+						...(context.document?.framework ? { framework: context.document.framework } : {}),
 						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
 						...context.semantic?.source,
 					},
