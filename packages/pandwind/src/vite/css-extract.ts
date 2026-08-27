@@ -50,6 +50,26 @@ export interface CssSourceProvenance {
 	callKind: "css" | "css.class" | "css.raw";
 }
 
+export interface CssCallSite extends CssSourceProvenance {
+	/** Number of arguments whose object shape can be extracted at build time. */
+	staticArguments: number;
+	/** Number of arguments left to the runtime because they are dynamic. */
+	dynamicArguments: number;
+}
+
+export type CssDiagnosticKind = "unsupported-construct" | "missing-extraction";
+
+export interface CssDiagnostic {
+	kind: CssDiagnosticKind;
+	file: string;
+	line: number;
+	column: number;
+	start: number;
+	end: number;
+	message: string;
+	suggestion: string;
+}
+
 export interface ExtractedCssStyle {
 	style: StyleObject;
 	provenance: CssSourceProvenance;
@@ -119,6 +139,141 @@ const isMemberCall = (callee: OxcNode | null, cssNames: ReadonlySet<string>): bo
 	);
 };
 
+const callLocation = (code: string, call: CallNode): Pick<CssSourceProvenance, "line" | "column"> => {
+	const before = code.slice(0, call.start);
+	return {
+		line: before.split("\n").length,
+		column: call.start - (before.lastIndexOf("\n") + 1) + 1,
+	};
+};
+
+const memberName = (callee: OxcNode | null): string | undefined => {
+	if (callee?.type !== "MemberExpression") return undefined;
+	return (callee as { property?: { name?: string } | null }).property?.name;
+};
+
+const callKindFor = (
+	callee: OxcNode | null,
+	cssNames: ReadonlySet<string>,
+): CssSourceProvenance["callKind"] | undefined => {
+	if (callee?.type === "Identifier" && cssNames.has(callee.name as string)) return "css";
+	if (callee?.type !== "MemberExpression" || !isMemberCall(callee, cssNames)) return undefined;
+	const member = memberName(callee);
+	return member === "class" || member === "raw" ? `css.${member}` : undefined;
+};
+
+const isObjectLiteral = (argument: unknown): boolean => {
+	const literal = evalLiteral(argument as Expression);
+	return typeof literal === "object" && literal !== null;
+};
+
+/** Find supported css() call sites, including calls partially left dynamic. */
+export function findCssCallSites(
+	code: string,
+	id: string,
+	cssNames: ReadonlySet<string>,
+): Array<CssCallSite> {
+	if (cssNames.size === 0) return [];
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const sites: Array<CssCallSite> = [];
+
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const callKind = callKindFor(call.callee, cssNames);
+		if (callKind === undefined) return;
+		const location = callLocation(code, call);
+		let staticArguments = 0;
+		for (const argument of call.arguments) {
+			if (isObjectLiteral(argument)) staticArguments++;
+		}
+		sites.push({
+			file: id,
+			start: call.start,
+			end: call.end,
+			...location,
+			callKind,
+			staticArguments,
+			dynamicArguments: call.arguments.length - staticArguments,
+		});
+	});
+
+	return sites;
+}
+
+/**
+ * Report constructs the extractor cannot currently represent. The diagnostic
+ * is intentionally source-local and actionable so editors/CI can point at the
+ * call and explain the supported escape hatch.
+ */
+export function diagnoseCssSources(
+	code: string,
+	id: string,
+	cssNames: ReadonlySet<string>,
+): Array<CssDiagnostic> {
+	if (cssNames.size === 0) return [];
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const diagnostics: Array<CssDiagnostic> = [];
+	const unsupported = new Map<string, string>([
+		["global", "Authored global rules are not extracted yet."],
+		["keyframes", "Authored keyframes are not extracted yet."],
+		["fontFace", "Authored @font-face rules are not extracted yet."],
+		["layer", "Authored layers are not extracted yet."],
+		["supports", "Authored @supports rules are not extracted yet."],
+		["property", "Authored @property rules are not extracted yet."],
+	]);
+
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		if (call.callee?.type !== "MemberExpression") return;
+		const object = (call.callee as { object?: OxcNode | null }).object;
+		if (object?.type !== "Identifier" || !cssNames.has(object.name as string)) return;
+		const member = memberName(call.callee);
+		const location = callLocation(code, call);
+		if (member !== undefined && unsupported.has(member)) {
+			diagnostics.push({
+				kind: "unsupported-construct",
+				file: id,
+				start: call.start,
+				end: call.end,
+				...location,
+				message: unsupported.get(member)!,
+				suggestion:
+					"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+			});
+			return;
+		}
+
+		const callKind = callKindFor(call.callee, cssNames);
+		if (callKind === undefined) return;
+		const staticArguments = call.arguments.filter(isObjectLiteral).length;
+		if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
+			diagnostics.push({
+				kind: "missing-extraction",
+				file: id,
+				start: call.start,
+				end: call.end,
+				...location,
+				message:
+					call.arguments.length === 0
+						? `${callKind} has no style object to extract.`
+						: `${callKind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
+				suggestion:
+					"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+			});
+		}
+	});
+
+	return diagnostics;
+}
+
 /**
  * Resolve every literal css() call in `code` to its final style object.
  * Non-literal arguments (variables, spreads, `$input` blocks with dynamic
@@ -155,9 +310,7 @@ export function extractCssSources(
 			? (callee.property as { name?: string } | null | undefined)?.name
 			: undefined;
 		const callKind = isDirect ? "css" : (`css.${member}` as "css.class" | "css.raw");
-		const before = code.slice(0, call.start);
-		const line = before.split("\n").length;
-		const column = call.start - (before.lastIndexOf("\n") + 1) + 1;
+		const { line, column } = callLocation(code, call);
 
 		for (const argument of call.arguments) {
 			const literal = evalLiteral(argument as Expression);

@@ -6,12 +6,62 @@ import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import {
+	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
+	findCssCallSites,
 	findCssImports,
 	inlineCssCalls,
 	isCssSource,
 } from "../src/vite/css-extract.ts";
+
+test("findCssCallSites reports extraction coverage with provenance", () => {
+	const code = `
+		import { css } from "./design";
+		const color = "$blue-500";
+		const a = css.class({ $text: { color: "$blue-500" } });
+		const b = css({ $text: { color } });
+	`;
+	const sites = findCssCallSites(code, "src/card.tsx", new Set(["css"]));
+
+	expect(sites).toHaveLength(2);
+	expect(sites[0]).toMatchObject({
+		callKind: "css.class",
+		line: 4,
+		staticArguments: 1,
+		dynamicArguments: 0,
+	});
+	expect(sites[1]).toMatchObject({
+		callKind: "css",
+		line: 5,
+		staticArguments: 0,
+		dynamicArguments: 1,
+	});
+});
+
+test("diagnoseCssSources reports unsupported constructs and missed extraction", () => {
+	const code = `
+		import { css } from "./design";
+		const color = "$blue-500";
+		css.keyframes({ from: { opacity: 0 } });
+		css.class({ $text: { color } });
+	`;
+	const diagnostics = diagnoseCssSources(code, "src/card.tsx", new Set(["css"]));
+
+	expect(diagnostics).toHaveLength(2);
+	expect(diagnostics[0]).toMatchObject({
+		kind: "unsupported-construct",
+		line: 4,
+		message: expect.stringContaining("keyframes"),
+		suggestion: expect.stringContaining("css.class"),
+	});
+	expect(diagnostics[1]).toMatchObject({
+		kind: "missing-extraction",
+		line: 5,
+		message: expect.stringContaining("dynamic"),
+		suggestion: expect.stringContaining("css.vars"),
+	});
+});
 
 test("extractCssSources records stable call provenance without changing styles", () => {
 	const code = `\n\nimport { css as design } from "./design";\nconst a = design.class({ $text: { color: "$blue-500" } });`;

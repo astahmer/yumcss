@@ -18,6 +18,7 @@ import {
 	parseUtilityUnions,
 } from "./parsers.ts";
 import { crawlCssImports } from "./theme-crawl.ts";
+import { collectCssDiagnostics, collectCssProvenance } from "../css-diagnostics.ts";
 import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 
 const DEFAULT_APP = "apps/example";
@@ -170,6 +171,8 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const appSourceFiles = collectFiles(["**/*.{ts,tsx}"], root)
 		.filter((f) => f.includes(`${APP}/src`))
 		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
+	const cssSources = collectCssProvenance(appSourceFiles);
+	const cssDiagnostics = collectCssDiagnostics(appSourceFiles);
 	const tokenUniverse = Object.entries(presetTokens).flatMap(([group, values]) =>
 		Object.keys(values as Record<string, unknown>).map((k) => `${group}/${k}`),
 	);
@@ -192,6 +195,8 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	return {
 		meta: { root },
+		cssSources,
+		cssDiagnostics,
 		tokenGraph,
 		coverage: {
 			eliminatedPct: summary.eliminatedPct,

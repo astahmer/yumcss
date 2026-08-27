@@ -35,7 +35,9 @@ describe("runCli --json", () => {
 		const doc = JSON.parse(output) as Record<string, unknown>;
 
 		expect(doc["schema"]).toBe(ANALYZE_JSON_SCHEMA);
-		expect(doc["schema"]).toBe("pandwind.analyze/1");
+		expect(doc["schema"]).toBe("pandwind.analyze/2");
+		expect(doc["cssSources"]).toEqual([]);
+		expect(doc["cssDiagnostics"]).toEqual([]);
 
 		const files = doc["files"] as Array<Record<string, unknown>>;
 		expect(files).toHaveLength(3);

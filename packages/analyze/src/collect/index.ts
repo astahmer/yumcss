@@ -24,10 +24,18 @@ export {
 	type ThemeVarCategory,
 } from "./parsers.ts";
 export { crawlCssImports } from "./theme-crawl.ts";
+export {
+	collectCssDiagnostics,
+	collectCssProvenance,
+	type AnalyzeSourceFile,
+} from "../css-diagnostics.ts";
 export type {
 	CollectPayload,
 	ConditionUsage,
 	ContrastWarning,
+	CssCallSite,
+	CssDiagnostic,
+	CssDiagnosticKind,
 	CoverageFile,
 	MissingSite,
 	SheetShape,
