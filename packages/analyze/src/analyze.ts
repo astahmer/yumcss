@@ -26,7 +26,7 @@ import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inl
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
 
-interface AnalyzeOptions {
+export interface AnalyzeOptions {
 	/** Generated tw module config (conflicts/compose/variants metadata). */
 	config: TwConfig;
 	/** Local names bound to the generated tw function. Default: ["tw"]. */

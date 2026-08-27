@@ -10,14 +10,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import {
-	analyzeSource,
-	collectFiles,
-	formatReport,
-	loadTwConfig,
-	summarize,
-	type FoldSummary,
-} from "./analyze.ts";
+import { formatReport, type FoldSummary } from "./analyze.ts";
+import { createAnalysisWorkspace, createFoldAnalysisService } from "./analysis-service.ts";
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 import {
@@ -156,25 +150,27 @@ async function computeCssBudget(args: CliArgs, files: Array<string>) {
 export async function runCli(argv: Array<string>): Promise<string> {
 	const args = parseArgs(argv);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
-	const config = loadTwConfig(args.twPath);
+	const workspace = createAnalysisWorkspace();
+	const analysis = createFoldAnalysisService();
+	const config = workspace.loadConfig(args.twPath);
 	const importedConstants = args.constantsPath
 		? (JSON.parse(readFileSync(args.constantsPath, "utf8")) as Record<string, string>)
 		: undefined;
-	const files = collectFiles(patterns, args.root).filter((f) =>
-		SOURCE_SCANNER_SERVICE.isScriptFile(f),
-	);
+	const files = workspace
+		.collectFiles(patterns, args.root)
+		.filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
 	const sourceFiles = files.map((file) => ({
 		file: file.replace(args.root + "/", ""),
 		content: readFileSync(file, "utf8"),
 	}));
 
 	const stats = sourceFiles.map(({ file, content }) =>
-		analyzeSource(content, file, {
+		analysis.analyze(content, file, {
 			config,
 			importedConstants,
 		}),
 	);
-	const summary: FoldSummary = summarize(stats);
+	const summary: FoldSummary = analysis.summarize(stats);
 	const cssReport = collectCssReport(sourceFiles);
 	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 
@@ -230,10 +226,9 @@ async function main(): Promise<void> {
 	// --fail-over ceiling or any --budgets cap. PR-relative deltas compose by
 	// running the CLI twice (base + head) in the workflow layer.
 	if ((args.failOverBytes !== undefined || args.budgetsPath !== undefined) && args.css) {
-		const files = collectFiles(
-			args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"],
-			args.root,
-		).filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
+		const files = workspace
+			.collectFiles(args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"], args.root)
+			.filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
 		const measured = await computeCssBudget(args, files);
 		const caps =
 			args.budgetsPath !== undefined ? parseBudgets(readFileSync(args.budgetsPath!, "utf8")) : {};
