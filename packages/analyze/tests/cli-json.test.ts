@@ -71,6 +71,35 @@ describe("runCli --json", () => {
 		expect(human).toContain("pandwind analyze — fold coverage");
 		expect(human).not.toContain('"schema"');
 	});
+
+	test("reports CSS provenance and actionable extraction diagnostics", async () => {
+		seed({
+			"design.ts": "export const css = (x: unknown) => x;",
+			"a.ts": `import { css } from "./design";
+const tone = "$blue-500";
+export const a = css.class({ color: tone });
+css.keyframes({ from: { opacity: 0 } });`,
+		});
+		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
+		const doc = JSON.parse(output) as {
+			cssSources: Array<{ file: string; callKind: string; staticArguments: number }>;
+			cssDiagnostics: Array<{ kind: string; suggestion: string }>;
+		};
+		expect(doc.cssSources).toEqual([
+			expect.objectContaining({
+				file: "a.ts",
+				callKind: "css.class",
+				staticArguments: 0,
+			}),
+		]);
+		expect(doc.cssDiagnostics).toEqual([
+			expect.objectContaining({ kind: "missing-extraction" }),
+			expect.objectContaining({ kind: "unsupported-construct", suggestion: expect.stringContaining("css.class") }),
+		]);
+		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
+		expect(human).toContain("css diagnostics:");
+		expect(human).toContain("Keep the style shape literal");
+	});
 });
 
 describe("collectFiles", () => {
