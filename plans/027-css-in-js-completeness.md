@@ -1,6 +1,6 @@
 # CSS-in-JS completeness plan
 
-**Status: in progress — dynamic contract and non-Vite browser proof landed**
+**Status: complete — contract, tooling, browser proof, performance gates, and adoption docs landed**
 
 ## Context
 
@@ -176,7 +176,7 @@ interface AuthoredCssImport {
 6. Finish migration/adoption documentation and inspector lane presentation.
    **Adoption guide landed; inspector lane presentation was landed in the
    provenance revisions.**
-7. Run all gates, review focused JJ revisions, and record outcomes.
+7. Run all gates, review focused JJ revisions, and record outcomes. **Landed.**
 
 ## Open questions
 
@@ -203,7 +203,7 @@ interface AuthoredCssImport {
 - [x] Performance corpus records build, CSS, runtime, and composition costs
       with repeatable regression thresholds.
 - [x] Recommended architecture and migration patterns are documented.
-- [ ] No built-in recipe/global-rule API or release work is introduced.
+- [x] No built-in recipe/global-rule API or release work is introduced.
 
 ## Decisions log
 
