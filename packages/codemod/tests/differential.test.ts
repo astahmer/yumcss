@@ -101,6 +101,19 @@ describe("CSS-in-JS differential validation", () => {
 		expect(result.residuals[0]?.kind).toBe("capability");
 	});
 
+	test("validates keyframes by retaining the authored binding name", () => {
+		const result = runDifferentialFixture({
+			name: "emotion-keyframes-to-stitches",
+			sourceAdapter: "emotion",
+			targetAdapter: "stitches",
+			file: "animation.ts",
+			source: `import { keyframes } from "@emotion/css";\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
+		});
+
+		expect(result.valid).toBe(true);
+		expect(result.validation?.valid).toBe(true);
+	});
+
 	test("runs a suite while preserving per-fixture diagnostics", () => {
 		const results = runDifferentialSuite([
 			{

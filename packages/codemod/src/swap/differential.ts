@@ -114,6 +114,13 @@ function renderAdapterProgram(
 	return adapter.emit(program, { file, config, mode, index: 0 });
 }
 
+function validationSource(text: string, program: StyleProgram): string {
+	const rule = program.rules[0];
+	return rule?.kind === "keyframes" && rule.name !== undefined
+		? `const ${rule.name} = ${text}`
+		: text;
+}
+
 /**
  * Compare a source adapter with a target adapter through the emitted source,
  * then exercise browser-state and SSR/hydration hooks when a fixture provides
@@ -185,9 +192,10 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 	);
 	residuals.push(...emitted.residuals);
 	if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
-	const targetParsed = targetAdapter.parse(emitted.text, {
+	const emittedForValidation = validationSource(emitted.text, sourceProgram);
+	const targetParsed = targetAdapter.parse(emittedForValidation, {
 		file: fixture.file,
-		source: emitted.text,
+		source: emittedForValidation,
 		root: fixture.root,
 		config: targetConfig,
 	});
