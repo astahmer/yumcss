@@ -20,9 +20,7 @@ import {
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 import {
-	collectCssDiagnostics,
-	collectCssProvenance,
-	collectAuthoredCssImports,
+	collectCssReport,
 	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
@@ -169,16 +167,15 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		content: readFileSync(file, "utf8"),
 	}));
 
-	const stats = files.map((file) =>
-		analyzeSource(readFileSync(file, "utf8"), file.replace(args.root + "/", ""), {
+	const stats = sourceFiles.map(({ file, content }) =>
+		analyzeSource(content, file, {
 			config,
 			importedConstants,
 		}),
 	);
 	const summary: FoldSummary = summarize(stats);
-	const authoredCss = collectAuthoredCssImports(sourceFiles);
-	const cssSources = collectCssProvenance(sourceFiles);
-	const cssDiagnostics = collectCssDiagnostics(sourceFiles);
+	const cssReport = collectCssReport(sourceFiles);
+	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 
 	if (args.json) {
 		// Machine consumers (the reusable analyze-comment workflow) need the
@@ -219,8 +216,8 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	}
 	const report = formatReport(summary);
 	const authoredCssReport = formatAuthoredCssImports(authoredCss);
-	const cssReport = formatCssDiagnostics(cssDiagnostics);
-	return [report, authoredCssReport, cssReport].filter(Boolean).join("\n\n");
+	const formattedCssReport = formatCssDiagnostics(cssDiagnostics);
+	return [report, authoredCssReport, formattedCssReport].filter(Boolean).join("\n\n");
 }
 
 async function main(): Promise<void> {

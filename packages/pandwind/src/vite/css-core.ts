@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
-import { extractVarKeys } from "./css-extract.ts";
+import { extractCssFile, extractVarKeys } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
@@ -71,6 +71,9 @@ export function createCssExtractorPluginCore(
 		string,
 		{ mtimeMs: number; sources: ReturnType<typeof extractCssSources>; varKeys: string[] }
 	>();
+	type RenderCache<T> = { files: Array<string>; value: T };
+	let bodyCache: RenderCache<string> | undefined;
+	let splitCache: RenderCache<{ common: string; routes: Map<string, string> }> | undefined;
 	const routes = options.splitByRoute ?? [];
 	const COMMON_BUCKET = "__common__";
 	const resolvedManifestId = `\0${virtualId}-manifest.js`;
@@ -96,6 +99,22 @@ export function createCssExtractorPluginCore(
 		return acc;
 	};
 
+	const isFresh = (files: Array<string>, cached: RenderCache<unknown>): boolean => {
+		if (files.length !== cached.files.length) return false;
+		for (let index = 0; index < files.length; index++) {
+			if (files[index] !== cached.files[index]) return false;
+			const file = files[index]!;
+			const entry = fileCache.get(file);
+			if (entry === undefined) return false;
+			try {
+				if (entry.mtimeMs !== statSync(file).mtimeMs) return false;
+			} catch {
+				return false;
+			}
+		}
+		return true;
+	};
+
 	const transform =
 		className === undefined
 			? undefined
@@ -110,12 +129,17 @@ export function createCssExtractorPluginCore(
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
 	const collectBody = (): string => {
-		const sheet = collect();
+		const files = walkFiles(root);
+		if (bodyCache !== undefined && isFresh(files, bodyCache)) return bodyCache.value;
+		const sheet = collect(files);
 		const tokens = sheet.gen.tokens();
 		const atomic = sheet.gen.atomic();
 		const varRules = sheet.gen.varRules();
 		const body = [tokens, atomic, varRules].filter(Boolean).join("\n");
-		if (options.debug !== true) return body;
+		if (options.debug !== true) {
+			bodyCache = { files, value: body };
+			return body;
+		}
 		// Dev-only origin manifest: which scanned file feeds how many
 		// style objects into the sheet. Search a class here to find its
 		// candidate files; zero prod cost (flag off by default).
@@ -132,32 +156,27 @@ export function createCssExtractorPluginCore(
 							.join("\n"),
 			)
 			.join("\n");
-		return (
+		const value =
 			`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
 			(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
 			"\n\n" +
-			body
-		);
+			body;
+		bodyCache = { files, value };
+		return value;
 	};
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
-	const collect = () => {
+	const collect = (files: Array<string> = walkFiles(root)) => {
 		const sheet = createStylesheet(preset, { className });
 		const seen = new Set<string>();
 
-		for (const file of walkFiles(root)) {
+		for (const file of files) {
 			seen.add(file);
 			let entry = fileCache.get(file);
 			const mtimeMs = statSync(file).mtimeMs;
 			if (!entry || entry.mtimeMs !== mtimeMs) {
 				const code = readFileSync(file, "utf8");
-				let sources: ReturnType<typeof extractCssSources> = [];
-				let varKeys: string[] = [];
-				const names = findCssImports(code, file, matchers);
-				if (names.size > 0) {
-					sources = extractCssSources(code, file, names, preset);
-					varKeys = extractVarKeys(code, file, names);
-				}
+				const { sources, varKeys } = extractCssFile(code, file, matchers, preset);
 				entry = { mtimeMs, sources, varKeys };
 				fileCache.set(file, entry);
 			}
@@ -181,13 +200,7 @@ export function createCssExtractorPluginCore(
 		const mtimeMs = statSync(file).mtimeMs;
 		if (!entry || entry.mtimeMs !== mtimeMs) {
 			const code = readFileSync(file, "utf8");
-			let sources: ReturnType<typeof extractCssSources> = [];
-			let varKeys: string[] = [];
-			const names = findCssImports(code, file, matchers);
-			if (names.size > 0) {
-				sources = extractCssSources(code, file, names, preset);
-				varKeys = extractVarKeys(code, file, names);
-			}
+			const { sources, varKeys } = extractCssFile(code, file, matchers, preset);
 			entry = { mtimeMs, sources, varKeys };
 			fileCache.set(file, entry);
 		}
@@ -231,17 +244,21 @@ export function createCssExtractorPluginCore(
 	 * preset-derived and identical everywhere -> common chunk.
 	 */
 	const collectSplit = (): { common: string; routes: Map<string, string> } => {
+		const files = walkFiles(root);
+		if (splitCache !== undefined && isFresh(files, splitCache)) return splitCache.value;
 		const commonFiles: Array<string> = [];
 		const routeFiles = new Map<string, Array<string>>();
 		for (const route of routes) routeFiles.set(route.name, []);
-		for (const file of walkFiles(root)) {
+		for (const file of files) {
 			const hit = routes.find((r) => r.match.test(file));
 			if (hit === undefined) commonFiles.push(file);
 			else routeFiles.get(hit.name)!.push(file);
 		}
 
 		const buckets = new Map<string, BucketSheet>();
-		for (const [name, files] of routeFiles) buckets.set(name, buildBucket(files));
+		for (const [name, routeFilesList] of routeFiles) {
+			buckets.set(name, buildBucket(routeFilesList));
+		}
 		buckets.set(COMMON_BUCKET, buildBucket(commonFiles));
 
 		// Shared = produced by >=2 ROUTE buckets (the common bucket is common
@@ -281,7 +298,9 @@ export function createCssExtractorPluginCore(
 			const vars = bucket.vars.filter((e) => !sharedIds.has(`v:${e.id}`));
 			out.set(name, render(atomic, vars, ""));
 		}
-		return { common, routes: out };
+		const value = { common, routes: out };
+		splitCache = { files, value };
+		return value;
 	};
 
 	let command: "build" | "serve" | undefined;
@@ -361,8 +380,11 @@ ${split.routes.get(route.name) ?? ""}`;
 			return null;
 		},
 		invalidate(file: string) {
-			// The next load re-scans the changed file.
-			if (fileCache.has(file)) fileCache.delete(file);
+			// The next load re-scans the changed file and refreshes the rendered
+			// stylesheet. Clearing even an unknown path also covers added files.
+			fileCache.delete(file);
+			bodyCache = undefined;
+			splitCache = undefined;
 		},
 	};
 }

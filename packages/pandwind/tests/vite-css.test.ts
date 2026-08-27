@@ -7,8 +7,10 @@ import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import {
 	diagnoseCssSources,
+	extractCssFile,
 	extractCssSources,
 	extractCssStyles,
+	extractVarKeys,
 	findAuthoredCssImports,
 	findCssCallSites,
 	findCssImports,
@@ -101,6 +103,19 @@ test("extractCssSources records stable call provenance without changing styles",
 		},
 	});
 	expect(sources[0]!.provenance.end).toBeGreaterThan(sources[0]!.provenance.start);
+});
+
+test("extractCssFile keeps styles and var keys equivalent in one parse", () => {
+	const code = `
+		import { css } from "./design";
+		css({ $text: { color: "$blue-500" } });
+		css.vars({ color: "runtime" });
+	`;
+	const names = findCssImports(code, "app.ts", ["css"]);
+	const combined = extractCssFile(code, "app.ts", ["css"], examplePreset);
+
+	expect(combined.sources).toEqual(extractCssSources(code, "app.ts", names, examplePreset));
+	expect(combined.varKeys).toEqual(extractVarKeys(code, "app.ts", names));
 });
 
 test("isCssSource matches css/design basenames", () => {

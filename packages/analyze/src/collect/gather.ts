@@ -10,10 +10,7 @@ import { runCli } from "../cli.ts";
 import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
 import { createStylesheet } from "../../../../packages/pandwind/src/css/create-stylesheet.ts";
-import {
-	extractCssSources,
-	findCssImports,
-} from "../../../../packages/pandwind/src/vite/css-extract.ts";
+import { extractCssSources } from "../../../../packages/pandwind/src/vite/css-extract.ts";
 import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
@@ -23,11 +20,7 @@ import {
 	parseUtilityUnions,
 } from "./parsers.ts";
 import { crawlCssImports } from "./theme-crawl.ts";
-import {
-	collectAuthoredCssImports,
-	collectCssDiagnostics,
-	collectCssProvenance,
-} from "../css-diagnostics.ts";
+import { collectCssReport } from "../css-diagnostics.ts";
 import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 
 const DEFAULT_APP = "apps/example";
@@ -180,11 +173,11 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const appSourceFiles = collectFiles(["**/*.{ts,tsx}"], root)
 		.filter((f) => f.includes(`${APP}/src`))
 		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
-	const cssSources = collectCssProvenance(appSourceFiles);
-	const authoredCss = collectAuthoredCssImports(appSourceFiles);
+	const cssReport = collectCssReport(appSourceFiles);
+	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 	const cssSourcesByStart = new Map(cssSources.map((site) => [`${site.file}:${site.start}`, site]));
 	for (const { file, content } of appSourceFiles) {
-		const names = findCssImports(content, file, ["css", "design"]);
+		const names = cssReport.cssNamesByFile.get(file) ?? new Set<string>();
 		for (const extracted of extractCssSources(content, file, names, examplePreset)) {
 			const site = cssSourcesByStart.get(`${file}:${extracted.provenance.start}`);
 			if (site === undefined) continue;
@@ -194,7 +187,6 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 			site.rules = [...(site.rules ?? []), ...rules];
 		}
 	}
-	const cssDiagnostics = collectCssDiagnostics(appSourceFiles);
 	const tokenUniverse = Object.entries(presetTokens).flatMap(([group, values]) =>
 		Object.keys(values as Record<string, unknown>).map((k) => `${group}/${k}`),
 	);
