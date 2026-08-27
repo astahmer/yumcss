@@ -1,4 +1,3 @@
-import parser from "postcss-selector-parser";
 import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type {
 	AnyConditions,
@@ -12,6 +11,12 @@ import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
+import {
+	createConditionsBucket,
+	cssRuleSerializer,
+	isSelfSelector,
+	parseCondition,
+} from "./css-rule-serializer.ts";
 
 /** Priority-ordered copy of a rule cache's values. */
 const byPriority = <T extends { priority: number }>(values: Iterable<T>): Array<T> =>
@@ -78,7 +83,10 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 					);
 
 					cssVars.set(`${tokenPath}.${condition}`, {
-						declaration: genCSSRule(cssVar.declaration(cssVarHash, value), conditions),
+						declaration: cssRuleSerializer.serialize(
+							cssVar.declaration(cssVarHash, value),
+							conditions,
+						),
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
 				}
@@ -86,7 +94,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			}
 
 			cssVars.set(tokenPath, {
-				declaration: genCSSRule(
+				declaration: cssRuleSerializer.serialize(
 					cssVar.declaration(cssVarHash, tokenValue),
 					createConditionsBucket({
 						parentSelectors: [":root "],
@@ -115,7 +123,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			const atomic = decodeAtomicPath(preset.conditions, pairId);
 			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
 
-			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
+			const css = cssRuleSerializer.serialize([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
 				className: `.${classNameFor(orderedKey, style[key]!)}`,
 			});
@@ -161,7 +169,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
 		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
-		const css = genCSSRule(`${prop}: ${declaration}`, {
+		const css = cssRuleSerializer.serialize(`${prop}: ${declaration}`, {
 			...atomic.conditions,
 			className: `.${escapeVarClass(varClassFor(orderedKey))}`,
 		});
@@ -285,106 +293,3 @@ const cssVar = {
 };
 
 type Rule = { id: string; css: string; priority: number };
-
-/** Selectors rooted at the generated class, including descendant selectors. */
-const isSelfSelector = (cond: string) => cond.charCodeAt(0) === 38;
-
-/**
- * endsWith `&`
- */
-const isParentSelector = (cond: string) => cond.charCodeAt(cond.length - 1) === 38;
-
-/**
- * startsWith `@`
- */
-const isAtRule = (cond: string) => cond.charCodeAt(0) === 64;
-
-interface ParsedConditions {
-	className: string;
-	selfSelectors: Array<string>;
-	parentSelectors: Array<string>;
-	selectorLists: Array<string>;
-	atRules: Array<string>;
-}
-
-/**
- * @see https://github.com/facebook/stylex/blob/9cf6d835e2d0b7d05af44f027dfca29dd8ee0abf/packages/shared/src/utils/genCSSRule.js
- */
-function genCSSRule(decls: string, conditions: ParsedConditions): string {
-	const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
-
-	// `["&:active, &[data-active=true]"]`
-	if (selectorLists.length) {
-		return atRules.reduce(
-			(acc, atRule) => `${atRule}{${acc}}`,
-			`${selectorLists.map((list) => {
-				const atomicSelectors = [] as string[];
-				parser((selectors) => {
-					atomicSelectors.push(...selectors.nodes.map((node) => node.toString().trim()));
-				}).processSync(list);
-
-				return atomicSelectors
-					.map((selector) => {
-						const selfs = [...selfSelectors];
-						const parents = [...parentSelectors];
-
-						if (isSelfSelector(selector)) {
-							selfs.push(selector.slice(1));
-						} else if (isParentSelector(selector)) {
-							parents.push(selector.slice(0, -1));
-						}
-
-						return `${parents.join("")}${className}${selfs.join("")}`;
-					})
-					.join(", ");
-			})}{${decls}}`,
-		);
-	}
-
-	const selectors = `${parentSelectors.join("")}${className}${selfSelectors.join("")}`;
-
-	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${`${selectors}{${decls}}`}`);
-}
-
-const isSelectorList = (selector: string) => {
-	let inParentheses = false;
-
-	for (let i = 0; i < selector.length; i++) {
-		const char = selector[i];
-
-		if (char === "(") {
-			inParentheses = true;
-		} else if (char === ")") {
-			inParentheses = false;
-		} else if (char === "," && !inParentheses) {
-			return true;
-		}
-	}
-
-	return false;
-};
-
-const parseCondition = (selector: string, conditions: ParsedConditions) => {
-	// Empty conditions are ignored, things like `css({ _hover: { base: "red", _disabled: "blue" } })`
-	//                                                            ^^^^ this is like `css({ _hover: "red" })`
-	if (!selector) return;
-
-	if (isSelectorList(selector)) {
-		conditions.selectorLists.push(selector);
-		return;
-	}
-	if (isSelfSelector(selector)) {
-		conditions.selfSelectors.push(selector.slice(1));
-		return;
-	}
-	if (isParentSelector(selector)) {
-		conditions.parentSelectors.push(selector.slice(0, -1));
-		return;
-	}
-	if (isAtRule(selector)) {
-		conditions.atRules.push(selector);
-		return;
-	}
-
-	return true;
-};
