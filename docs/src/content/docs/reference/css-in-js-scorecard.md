@@ -23,16 +23,16 @@ ordering, and a testable integration contract.
 
 | Capability              | Status      | Current contract                                                                                                  |
 | ----------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
-| Typed general CSS       | Partial     | `createDesignCss()` is typed against a preset; the general `css()` lane is being made preset-bound and ergonomic. |
+| Typed general CSS       | Static      | `createCss(preset)` is preset-bound and typed for ordinary CSS; `createDesignCss()` remains the constrained design lane. |
 | Atomic CSS              | Static      | Literal declarations become deterministic, deduplicated atomic rules.                                             |
 | Static extraction       | Static      | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                              |
 | Dynamic values          | Runtime     | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.              |
 | Theme scopes            | Static      | Theme and component token scopes are emitted as deterministic CSS blocks.                                         |
 | Global rules            | Unsupported | No first-class authored global-rule primitive yet.                                                                |
 | Keyframes and font-face | Unsupported | No first-class authored animation/font primitive yet.                                                             |
-| SSR and hydration       | Partial     | `css.vars()` is serializable and server-safe; runtime sheet extraction/hydration remains host-owned.              |
+| SSR and hydration       | Partial     | `css.vars()` is serializable and server-safe; the runtime sheet can extract/hydrate, while framework host adapters remain host-owned. |
 | Bundlers/frameworks     | Partial     | Vite and generic unplugin adapters exist; framework-specific proof is still being added.                          |
-| Source provenance       | Partial     | Debug names and analyzer data exist; generated rules are not yet source-addressable end to end.                   |
+| Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain. |
 
 The scorecard is a product contract, not a promise that every style should be
 forced through pandwind. Unsupported constructs remain explicit CSS or use a

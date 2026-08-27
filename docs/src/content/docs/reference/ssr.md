@@ -17,9 +17,12 @@ The build-time stylesheet generator is also idempotent. Repeated collection of
 the same static calls produces one rule per identity, which is safe when a
 server render is retried or a stream is rendered in chunks.
 
-The runtime stylesheet extraction/hydration adapter is not shipped yet. For
-now, static rules belong in the generated CSS entry, while dynamic values use
-the inline custom properties returned by `css.vars()`.
+The runtime sheet primitive also supports deterministic registration,
+snapshot extraction, hydration, and optional DOM insertion. A universal
+framework-specific extraction/hydration adapter is not shipped: static rules
+still belong in the generated CSS entry, while dynamic values can use the
+inline custom properties returned by `css.vars()` or an adapter-owned runtime
+sheet.
 
 ## Integration matrix
 
@@ -28,5 +31,5 @@ the inline custom properties returned by `css.vars()`.
 | Vite                                         | Yes                                                   | `css.vars()` contract | Real Vite integration and browser example                              |
 | Rollup via unplugin                          | Yes                                                   | `css.vars()` contract | Real Rollup build plus unit contract                                   |
 | Webpack/Rspack/esbuild/rolldown via unplugin | Shared adapter path                                   | `css.vars()` contract | Adapter docs; add dedicated fixtures before claiming framework support |
-| React RSC                                    | Use generated CSS and serializable `css.vars()` props | Host-owned            | Guidance only; no RSC adapter is shipped                               |
+| React RSC                                    | Use generated CSS and serializable `css.vars()` props | Host-owned            | Guidance only; streaming/RSC adapter and browser fixture are not shipped  |
 | Native/OpenTUI                               | Separate backend                                      | Backend-specific      | No DOM insertion or browser hydration implied                          |

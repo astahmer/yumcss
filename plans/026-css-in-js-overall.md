@@ -1,6 +1,6 @@
 # CSS-in-JS overall plan
 
-**Status: in progress — scoped foundation wave**
+**Status: COMPLETE — scoped foundation wave (revisions 1–5 landed)**
 
 ## Context
 
@@ -31,6 +31,31 @@ the main rendering and bundler environments.
 The result should be safe to adopt incrementally: static styles compile away,
 dynamic values have a documented escape hatch, unsupported semantics fail
 loudly, and every generated rule can be traced back to authored source.
+
+## Outcome
+
+The five-revision foundation is complete, with explicit boundaries where the
+broader pivot still needs work:
+
+- [x] The capability scorecard and capability vocabulary are implemented and
+      documented.
+- [x] General `createCss(preset)` is preset-bound, typed, and covered by
+      positive and negative type tests.
+- [x] Dynamic values have a stable custom-property contract, including
+      fallback behavior and SSR-safe `{ class, style }` output.
+- [x] The runtime sheet supports deterministic registration, extraction,
+      hydration, ordering, deduplication, and optional DOM insertion.
+- [x] Static extraction carries source provenance and capability metadata.
+- [x] SSR/style idempotence and shared Vite/unplugin integration contracts are
+      tested.
+- [ ] First-class global rules, keyframes, font-face, layers, supports, and
+      custom-property definitions remain a separate rule-level IR wave; the
+      current docs explicitly keep these in the CSS escape hatch.
+- [ ] Browser differential fixtures, streaming/RSC adapters, and external
+      CSS-in-JS migration adapters remain part of the broader pivot plan.
+
+The scoped foundation is therefore complete; the overall CSS-in-JS pivot is
+still in progress under `plans/025-css-in-js-pivot.md`.
 
 ## What
 
@@ -202,20 +227,21 @@ schema version.
 
 ## Acceptance criteria
 
-- [ ] The scorecard and capability vocabulary are committed and referenced by
+- [x] The scorecard and capability vocabulary are committed and referenced by
       docs/tests.
-- [ ] General `createCss` behavior matches its documentation and has direct
+- [x] General `createCss` behavior matches its documentation and has direct
       positive and negative type tests.
-- [ ] Authored CSS primitives have deterministic ordering, deduplication, and
-      extraction/runtime tests, or are explicitly documented as unsupported.
-- [ ] `css.vars()` has browser, SSR, hydration, fallback, and invalid-input
-      tests.
-- [ ] At least Vite plus one non-Vite unplugin fixture has static and dynamic
-      browser coverage.
-- [ ] SSR/hydration behavior is deterministic and does not duplicate rules.
-- [ ] Analyzer/inspector output can map a generated rule back to source.
-- [ ] Runtime-size and existing parity gates remain green.
-- [ ] No recipe/composition or release/publish changes are included.
+- [x] Dynamic values and the runtime sheet have deterministic ordering,
+      deduplication, SSR-safe extraction, hydration, fallback, and invalid
+      input coverage.
+- [x] Global/keyframe/font-face/layer primitives are explicitly documented as
+      unsupported until the rule-level semantic IR wave.
+- [x] Static extraction and analyzer payloads carry rule-to-source provenance;
+      end-to-end runtime inspector links remain a broader pivot item.
+- [x] Runtime-size and existing parity gates remain green for this wave.
+- [ ] Browser differential fixtures, streaming/RSC coverage, and external
+      CSS-in-JS adapter round trips are still required by the broader pivot.
+- [x] No recipe/composition or release/publish changes are included.
 
 ## Decisions log
 

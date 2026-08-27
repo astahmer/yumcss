@@ -188,14 +188,49 @@ context used to produce it.
    interop metadata.
 3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** source objects now retain structured conditions, dynamic expressions, source ranges, and lowering hints; adapters receive capability contracts and can opt into safe/partial enforcement.
 4. Build the runtime sheet: insertion, extraction, hydration, ordering, and
-   dynamic custom-property lowering.
+   dynamic custom-property lowering. **Foundation complete:** the runtime
+   sheet, snapshots, hydration, ordering, and `css.vars()` contract exist;
+   host/framework adapters and browser fixtures remain.
 5. Add global/keyframe/font-face/layer primitives and their extraction parity.
+   **Not complete:** these are still explicit unsupported/escape-hatch
+   boundaries in the current authoring contract.
 6. Add SSR/RSC/framework fixtures and a browser differential harness.
+   **Partial:** server-safe values, stylesheet idempotence, and shared
+   unplugin coverage are tested; streaming/RSC and browser differential gates
+   are still needed.
 7. Harden existing adapters, then add Emotion, styled-components,
-   vanilla-extract, and Stitches adapters.
+   vanilla-extract, and Stitches adapters. **Foundation complete:** the
+   versioned adapter capability contract and semantic source path exist;
+   external system adapters and end-to-end round trips remain.
 8. Add recipe/component semantics and host-framework adapters where the
-   capability matrix supports them.
-9. Document migration recipes and publish the adapter contract.
+   capability matrix supports them. **Deferred** until the rule-level IR and
+   external adapter baseline are proven.
+9. Document migration recipes and publish the adapter contract. **Partially
+   complete:** the internal contract and scorecard are documented; public
+   migration recipes and publishing remain.
+
+### Remaining completion waves
+
+The broad CSS-in-JS pivot is not complete yet. The next implementation order
+is:
+
+1. **Rule-level semantic IR:** add versioned records for global rules,
+   keyframes, font-face, layers, supports, custom-property definitions,
+   selectors/nesting, specificity, and ordering. Preserve the existing flat
+   `SwapIR` path for literal declaration objects.
+2. **Adapter contract v2:** extend capability contracts with detection,
+   config loading, dependency declarations, parse/emit hooks, validation,
+   and explicit lossiness. Keep safe mode untouched and partial mode
+   machine-readable.
+3. **First external adapters:** implement differential fixtures and
+   bidirectional mappings for Emotion and styled-components first, then
+   vanilla-extract/Stitches based on the capability scorecard.
+4. **Differential validation:** compare canonical CSS, representative browser
+   states, SSR output, hydration, ordering, and residual reports. Make this a
+   migration CI gate rather than an adapter-specific best effort.
+5. **Recipes/components and host frameworks:** only after the rule-level and
+   adapter contracts can represent their semantics without silently
+   approximating them.
 
 ## Acceptance criteria
 
