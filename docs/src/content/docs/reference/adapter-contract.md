@@ -18,7 +18,8 @@ Every adapter provides:
 - `loadConfig(context)` — project-root configuration and generated metadata;
 - `parse(source, context)` — source ranges and semantic rule programs;
 - `emit(program, context)` — target text, imports, dependencies, and residuals;
-- `validate(source, target, residuals)` — canonical equivalence diagnostics;
+- `validate(source, target, residuals)` — canonical equivalence diagnostics and
+  explicit `lossless`, `lossy`, or `unsupported` classification;
 - `capabilities` and `dependencies` — explicit support and installation data.
 
 The built-in registry currently includes pandwind, Emotion,

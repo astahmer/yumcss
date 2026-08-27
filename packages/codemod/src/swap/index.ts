@@ -101,6 +101,7 @@ export type {
 	AdapterDetectionResult,
 	AdapterEmitContext,
 	AdapterEmitResult,
+	AdapterLossiness,
 	AdapterMatch,
 	AdapterParseContext,
 	AdapterParseResult,

@@ -17,6 +17,7 @@ import {
 	type AdapterDependencies,
 	type AdapterDetectionContext,
 	type AdapterEmitContext,
+	type AdapterLossiness,
 	type AdapterMatch,
 	type AdapterParseContext,
 	type AdapterParseResult,
@@ -545,8 +546,15 @@ function validatePrograms(
 	const differences: string[] = [];
 	if (canonicalSource !== canonicalTarget) differences.push("canonical CSS differs");
 	if (residuals.length > 0) differences.push(`${residuals.length} residual conversion(s)`);
+	const lossiness: AdapterLossiness =
+		canonicalSource !== canonicalTarget
+			? "unsupported"
+			: residuals.length > 0
+				? "lossy"
+				: "lossless";
 	return {
 		valid: differences.length === 0,
+		lossiness,
 		canonicalSource,
 		canonicalTarget,
 		differences,

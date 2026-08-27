@@ -78,8 +78,11 @@ export interface AdapterEmitResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+export type AdapterLossiness = "lossless" | "lossy" | "unsupported";
+
 export interface AdapterValidationResult {
 	readonly valid: boolean;
+	readonly lossiness: AdapterLossiness;
 	readonly canonicalSource: string;
 	readonly canonicalTarget: string;
 	readonly differences: readonly string[];

@@ -48,6 +48,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('"&:hover"');
 		expect(result.reports[0]?.convertible).toBe(true);
 		expect(result.validations[0]?.valid).toBe(true);
+		expect(result.validations[0]?.lossiness).toBe("lossless");
 	});
 
 	test("loads package/config evidence and migrates static tagged templates", () => {
