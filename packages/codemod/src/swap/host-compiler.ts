@@ -1,6 +1,10 @@
 import { foldStackElements } from "pandwind/vite/stack-fold";
 import { stackClasses, type StackProps } from "pandwind/stack";
-import { type HostFramework, type HostFrameworkAdapter } from "./host-adapters.ts";
+import {
+	HOST_FRAMEWORK_REGISTRY,
+	type HostFramework,
+	type HostFrameworkAdapter,
+} from "./host-adapters.ts";
 
 /** Versioned boundary for framework-native compiler integrations. */
 export const HOST_COMPILER_SCHEMA = "pandwind.host-compiler/1" as const;
@@ -33,24 +37,6 @@ export interface HostCompilerPlugin {
 	detect(file: string, source: string): boolean;
 	transform(source: string, context: HostCompilerContext): HostCompilerResult;
 }
-
-const extensions: Record<HostFramework, readonly string[]> = {
-	react: [".jsx", ".tsx"],
-	preact: [".jsx", ".tsx"],
-	solid: [".jsx", ".tsx"],
-	vue: [".vue"],
-	svelte: [".svelte"],
-	astro: [".astro"],
-};
-
-const importPattern: Record<HostFramework, RegExp> = {
-	react: /from\s+["']react(?:\/jsx-runtime)?["']/,
-	preact: /from\s+["']preact(?:\/jsx-runtime)?["']/,
-	solid: /from\s+["']solid-js["']/,
-	vue: /from\s+["']vue["']/,
-	svelte: /from\s+["']svelte["']/,
-	astro: /from\s+["']astro["']/,
-};
 
 function foldNativeStackMarkup(
 	source: string,
@@ -96,16 +82,15 @@ function foldNativeStackMarkup(
  * return an explicit delegation warning until their native AST is available.
  */
 export function createHostCompilerPlugin(framework: HostFramework): HostCompilerPlugin {
+	const host = HOST_FRAMEWORK_REGISTRY.get(framework);
+	if (host === undefined) throw new Error(`unknown host framework: ${framework}`);
 	return {
 		schema: HOST_COMPILER_SCHEMA,
 		name: `pandwind-host-${framework}`,
 		framework,
-		extensions: extensions[framework],
+		extensions: host.extensions,
 		detect(file, source) {
-			return (
-				extensions[framework].some((extension) => file.endsWith(extension)) ||
-				importPattern[framework].test(source)
-			);
+			return host.detect(file, source);
 		},
 		transform(source, context) {
 			if (framework === "react" || framework === "preact") {
@@ -132,11 +117,10 @@ export function createHostCompilerPlugin(framework: HostFramework): HostCompiler
 	};
 }
 
-export const HOST_COMPILER_PLUGINS: Readonly<Record<HostFramework, HostCompilerPlugin>> = {
-	react: createHostCompilerPlugin("react"),
-	preact: createHostCompilerPlugin("preact"),
-	solid: createHostCompilerPlugin("solid"),
-	vue: createHostCompilerPlugin("vue"),
-	svelte: createHostCompilerPlugin("svelte"),
-	astro: createHostCompilerPlugin("astro"),
-};
+export const HOST_COMPILER_PLUGINS: Readonly<Record<string, HostCompilerPlugin>> =
+	Object.fromEntries(
+		HOST_FRAMEWORK_REGISTRY.adapters.map((adapter) => [
+			adapter.id,
+			createHostCompilerPlugin(adapter.id),
+		]),
+	) as Record<string, HostCompilerPlugin>;

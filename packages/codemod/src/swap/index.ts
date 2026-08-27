@@ -165,8 +165,15 @@ export {
 	detectHostFramework,
 	getHostFrameworkAdapter,
 	HOST_FRAMEWORK_ADAPTERS,
+	HOST_FRAMEWORK_REGISTRY,
+	createHostFrameworkRegistry,
 } from "./host-adapters.ts";
-export type { HostFramework, HostFrameworkAdapter } from "./host-adapters.ts";
+export type {
+	BuiltinHostFramework,
+	HostFramework,
+	HostFrameworkAdapter,
+	HostFrameworkRegistry,
+} from "./host-adapters.ts";
 export {
 	HOST_COMPILER_PLUGINS,
 	HOST_COMPILER_SCHEMA,

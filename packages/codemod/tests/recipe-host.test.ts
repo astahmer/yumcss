@@ -1,11 +1,13 @@
 import { describe, expect, test } from "vitest";
 import {
 	detectHostFramework,
+	createHostFrameworkRegistry,
 	getHostFrameworkAdapter,
 	resolveStyleRecipe,
 	STYLE_PROGRAM_SCHEMA,
 	STYLE_RECIPE_SCHEMA,
 	type StyleRecipeProgram,
+	type HostFrameworkAdapter,
 } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
 
@@ -52,5 +54,22 @@ describe("recipe and host-framework pivot semantics", () => {
 			'className={cx("existing", generated)}',
 		);
 		expect(getHostFrameworkAdapter("svelte")?.classBinding("generated")).toBe("class={generated}");
+	});
+
+	test("registers a third-party host without editing the built-in registry", () => {
+		const adapter: HostFrameworkAdapter = {
+			id: "qwik",
+			extensions: [".tsx"],
+			classAttribute: "class",
+			styleAttribute: "style",
+			supportsClassList: true,
+			supportsStyleObject: true,
+			packageHints: ["@builder.io/qwik"],
+			detect: (file) => file.endsWith(".tsx"),
+			classBinding: (expression) => `class={${expression}}`,
+			mergeClass: (_existing, generated) => `class={${generated}}`,
+		};
+		const registry = createHostFrameworkRegistry().register(adapter);
+		expect(registry.detect("Card.tsx", "").id).toBe("qwik");
 	});
 });

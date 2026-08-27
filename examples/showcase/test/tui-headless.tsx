@@ -40,16 +40,23 @@ async function boot(dark) {
 
 {
 	const t = await boot(false);
-	const hexes = collect(t.capture);
+	const frame = t.captureCharFrame();
+	const hexes = collect(t.captureSpans());
+	check(
+		"shared labels render",
+		frame.includes("tui header") && frame.includes("tui status") && frame.includes("tui body"),
+	);
 	check("shared $blue-500 renders (#3182ce)", hexes.has("#3182ce"), [...hexes].join(","));
 	check("shared $gray-100 status renders", hexes.has("#f3f4f6"));
-	t.destroy();
+	t.renderer.destroy?.();
 }
 {
 	const t = await boot(true);
-	const hexes = collect(t.capture);
-	check("_dark flips shared status to $gray-900 (#1f2937)", hexes.has("#1f2937"));
-	t.destroy();
+	const frame = t.captureCharFrame();
+	const hexes = collect(t.captureSpans());
+	check("dark status text renders", frame.includes("tui status"));
+	check("_dark flips shared status to $gray-900 (#111827)", hexes.has("#111827"));
+	t.renderer.destroy?.();
 }
 
 if (failures > 0) {
