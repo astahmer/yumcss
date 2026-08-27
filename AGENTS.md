@@ -76,3 +76,22 @@ which concrete module to import or grow a switch statement in a central runner.
 - Every refactor is split into focused JJ revisions with behavior-preserving
   tests at each boundary. Do not rewrite concurrent workspaces or move their
   heads while another agent owns them.
+
+## Implementation locality rules
+
+- A concrete ecosystem adapter is a cohesive policy module. Its adapter file
+  owns detection, config loading, source matching, semantic normalization,
+  emission, capability declarations, dependency declarations, and adapter
+  validation. Generic parser/renderer helpers are infrastructure; ecosystem
+  names, patterns, and semantic exceptions do not belong in `cli.ts`, the
+  migration runner, or a shared “extra adapters” switchboard.
+- A family interface may contain nested dialect implementations. For example,
+  Panda-to-Pandwind is a route family whose `tw`, `dss`, and `css` dialects are
+  independently registered source adapters. The orchestrator sees only ports
+  and resolves a route from the registry.
+- CLI files are composition roots: argument parsing, filesystem providers,
+  registry assembly, and reporting are allowed there. Parsing, lowering,
+  framework rewrites, and target emission are not.
+- Knip is a required maintenance check. Findings are fixed at the ownership
+  boundary where possible. A suppression requires a documented dynamic entry
+  point or generated/public contract, never convenience.
