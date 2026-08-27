@@ -31,6 +31,11 @@ the tradeoffs that matter for Pandwind.
 
 - Webpack production-build smoke test landed in
   `packages/pandwind/tests/unplugin-webpack.test.ts`.
+- Webpack CSS virtual-module and watch-rebuild coverage, browser-level Vite
+  HMR coverage, and a packed-package Vite consumer proof now cover the main
+  shipped integration boundaries.
+- Analyzer JSON snapshots now lock the authored-CSS, provenance, and
+  actionable-diagnostics contract end to end.
 - Adoption docs now state the Vite/Rollup/Webpack evidence boundary and keep
   authored CSS host-owned and CVA external.
 - Competitor anchors now link to current official documentation for StyleX,
