@@ -17,7 +17,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
-import { runSwap } from "../src/swap/index.ts";
+import { runSwap, SWAP_TARGETS } from "../src/swap/index.ts";
 import { examplePreset } from "pandwind/preset";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
@@ -112,6 +112,10 @@ describe("swap css.class -> tw", () => {
 });
 
 describe("swap design vocabulary", () => {
+	test("dss is exposed as an explicit swap target", () => {
+		expect(SWAP_TARGETS).toContain("dss");
+	});
+
 	test("$frame resolves offline and emits plain declarations", () => {
 		const result = swap(
 			`${WITH_CSS}export const Card = () => (\n\t<div className={css.class({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] } })} />\n);`,
