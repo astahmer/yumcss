@@ -1,7 +1,7 @@
 import type { PandwindMeta } from "../meta.ts";
 import { matchBlock } from "../sources.ts";
 import { SWAP_EMITTERS, type Emitter } from "./emit.ts";
-import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
+import { OUTBOUND_EMITTERS } from "./adapters/outbound/plugin.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
@@ -192,9 +192,9 @@ function makeCoreAdapter(
 	return asStyleDialect(adapter, { system, dialect, role });
 }
 
-const pandaTw = makeCoreAdapter("panda", "tw", "both", SWAP_OUTBOUND_EMITTERS.panda);
-const pandaDss = makeCoreAdapter("panda", "dss", "source", SWAP_OUTBOUND_EMITTERS.panda);
-const pandaCss = makeCoreAdapter("panda", "css", "source", SWAP_OUTBOUND_EMITTERS.panda);
+const pandaTw = makeCoreAdapter("panda", "tw", "both", OUTBOUND_EMITTERS.panda);
+const pandaDss = makeCoreAdapter("panda", "dss", "source", OUTBOUND_EMITTERS.panda);
+const pandaCss = makeCoreAdapter("panda", "css", "source", OUTBOUND_EMITTERS.panda);
 const pandwindTw = makeCoreAdapter("pandwind", "tw", "target", SWAP_EMITTERS.tw);
 const pandwindDss = makeCoreAdapter("pandwind", "dss", "target", SWAP_EMITTERS.dss);
 const pandwindCss = makeCoreAdapter("pandwind", "css", "target", SWAP_EMITTERS["css.class"]);

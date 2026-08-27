@@ -2,7 +2,7 @@ import type { PandwindMeta } from "../meta.ts";
 import { computeExcludedRanges } from "../sources.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
 import { SWAP_EMITTERS, type Emitter, type EmitterContext, type EmitterResult } from "./emit.ts";
-import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
+import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";
 import type { SwapIR } from "./ir.ts";
 
 export interface SwapSourceMatch {
@@ -55,9 +55,7 @@ export const SWAP_TARGET_ADAPTERS: readonly SwapTargetAdapter[] = [
 	target("design", SWAP_EMITTERS.design),
 	target("dss", SWAP_EMITTERS.dss),
 	target("tw", SWAP_EMITTERS.tw),
-	target("tailwind", SWAP_OUTBOUND_EMITTERS.tailwind),
-	target("panda", SWAP_OUTBOUND_EMITTERS.panda),
-	target("stylex", SWAP_OUTBOUND_EMITTERS.stylex),
+	...OUTBOUND_ADAPTERS.map((adapter) => target(adapter.id, adapter.emit)),
 ];
 
 const coreSource = (id: "tw" | "css" | "design"): SwapSourceAdapter =>
