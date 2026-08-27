@@ -22,7 +22,10 @@ import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
-import * as tokenSetModule from "./swap/token-set.ts";
+import {
+	createTokenFormatRegistry,
+	type TokenFormatRegistry,
+} from "./swap/token-format-registry.ts";
 
 interface CliArgs {
 	patterns: string[];
@@ -600,7 +603,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 		else if (!arg.startsWith("--")) input = arg;
 		else throw new Error(`codemod tokens: unknown flag '${arg}' (--from= --to= --out=)`);
 	}
-	const formats = ["dtcg", "theme", "panda", "preset", "sd", "figma", "rootcss", "stylex"];
+	const formats = ["dtcg", "theme", "panda", "preset", "sd", "figma", "rootcss", "stylex"] as const;
 	if (from === undefined || !formats.includes(from) || input === undefined) {
 		throw new Error(
 			"usage: pandwind-codemod tokens --from=<dtcg|theme|panda|preset> --to=<dtcg|theme|panda|preset> <file> [--out=<file>]",
@@ -608,31 +611,13 @@ async function mainTokens(argv: string[]): Promise<void> {
 	}
 	to = to ?? from;
 
-	const ts = await import("node:fs");
-	const T = tokenSetModule;
-	let set: import("./swap/token-set.ts").TokenSet;
-	if (from === "dtcg") set = T.fromDtcgJson(ts.readFileSync(input, "utf8"));
-	else if (from === "theme") set = T.fromThemeCss(ts.readFileSync(input, "utf8"));
-	else if (from === "sd") set = T.importStyleDictionary(ts.readFileSync(input, "utf8"));
-	else if (from === "figma") set = T.importFigmaTokens(ts.readFileSync(input, "utf8"));
-	else if (from === "rootcss") set = T.importRootCss(ts.readFileSync(input, "utf8"));
-	else if (from === "stylex") {
-		throw new Error("codemod tokens: --from=stylex is not supported (export-only format)");
-	} else if (from === "panda") set = await T.fromPandaConfig(resolve(input));
-	else set = await T.fromDefinePreset(resolve(input));
+	const registry: TokenFormatRegistry = createTokenFormatRegistry();
+	const set = await registry.importFile(from, resolve(input));
 
 	const groupCount = Object.keys(set.groups).length;
 	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
 
-	let result: string;
-	if (to === "dtcg") result = T.toDtcgJson(set);
-	else if (to === "theme") result = T.toThemeCss(set);
-	else if (to === "sd") result = T.exportStyleDictionary(set);
-	else if (to === "figma") result = T.exportFigmaTokens(set);
-	else if (to === "rootcss") result = T.exportRootCss(set);
-	else if (to === "stylex") result = T.exportStylexVars(set);
-	else if (to === "panda") result = T.toPandaConfigSnippet(set);
-	else result = T.toDefinePresetSnippet(set);
+	const result = registry.exportText(to, set);
 
 	if (out !== undefined) {
 		writeFileSync(resolve(out), result);
