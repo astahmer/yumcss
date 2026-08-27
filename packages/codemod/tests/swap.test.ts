@@ -88,6 +88,16 @@ describe("swap css.class -> tw", () => {
 		expect(result.code).toContain('tw({ textSize: "xs" })');
 	});
 
+	test("tw target preserves the text utility family from a css source", () => {
+		const result = swap(
+			`${WITH_CSS}const heading = css.class({ fontSize: "1.5rem" });`,
+			"tw",
+			"css",
+		);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('tw({ textSize: "2xl" })');
+	});
+
 	test("round trip stabilizes: css.class -> tw -> css.class is idempotent at IR level", () => {
 		const once = swap(`const x = css.class({ backgroundColor: "#3182ce" });`, "tw");
 		const twice = swap(once.code, "tw");
