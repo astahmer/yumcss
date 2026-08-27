@@ -11,7 +11,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import webpack, { type Compiler, type Configuration, type Stats, type Watching } from "webpack";
 import { describe, expect, test } from "vitest";
-import { pandwindWebpack } from "../src/unplugin.ts";
+import { examplePreset } from "../src/preset/example-preset.ts";
+import { pandwindWebpack, pandwindWebpackCss } from "../src/unplugin.ts";
 
 const packageRoot = resolve(import.meta.dirname, "..");
 const exampleTwModule = resolve(packageRoot, "../../apps/example/src/tw.ts");
@@ -176,6 +177,45 @@ describe("pandwindWebpack", () => {
 				await new Promise<void>((resolveClose) => watching?.close(() => resolveClose()));
 			if (compiler !== null)
 				await new Promise<void>((resolveClose) => compiler!.close(() => resolveClose()));
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("emits extracted CSS through the Webpack adapter", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-webpack-css-"));
+		const outputDir = join(dir, "dist");
+		try {
+			writeFileSync(join(dir, "css.js"), 'export const css = { class: () => "runtime-class" };');
+			const cssLoader = join(dir, "css-loader.cjs");
+			writeFileSync(
+				cssLoader,
+				"module.exports = function cssLoader(source) { return `globalThis.__pandwindCss = ${JSON.stringify(source)}`; };",
+			);
+			writeFileSync(
+				join(dir, "entry.js"),
+				[
+					'import { css } from "./css.js";',
+					'import "pandwind:css";',
+					'console.log(css.class({ color: "$blue-500" }));',
+				].join("\n"),
+			);
+			mkdirSync(outputDir, { recursive: true });
+
+			const stats = await runWebpack({
+				mode: "production",
+				context: dir,
+				entry: "./entry.js",
+				output: { path: outputDir, filename: "bundle.js", clean: true },
+				module: {
+					rules: [{ test: /_virtual_.*\.css$/, use: [{ loader: cssLoader }] }],
+				},
+				plugins: [pandwindWebpackCss({ preset: examplePreset, root: dir })],
+			});
+
+			expect(stats.hasErrors(), stats.toString({ errorDetails: true })).toBe(false);
+			const code = readFileSync(join(outputDir, "bundle.js"), "utf8");
+			expect(code).toContain("#3182ce");
+		} finally {
 			rmSync(dir, { recursive: true, force: true });
 		}
 	});
