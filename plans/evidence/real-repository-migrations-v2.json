@@ -88,8 +88,8 @@
 				"evidence": ["styled-components", "\\bstyled\\s*\\."]
 			},
 			"sourceBytes": 333,
-			"outputBytes": 349,
-			"outputByteDelta": 16,
+			"outputBytes": 388,
+			"outputByteDelta": 55,
 			"converted": 0,
 			"skipped": 1,
 			"residuals": 1,
@@ -107,7 +107,7 @@
 				"targetRuntimePackages": ["@emotion/css"],
 				"added": ["@emotion/css"],
 				"removed": ["styled-components"],
-				"byteDelta": 16
+				"byteDelta": 55
 			}
 		},
 		{
@@ -162,16 +162,14 @@
 				"evidence": ["@emotion\\/(?:css|react|styled)", "\\bcss\\s*`"]
 			},
 			"sourceBytes": 164,
-			"outputBytes": 176,
-			"outputByteDelta": 12,
-			"converted": 0,
-			"skipped": 1,
-			"residuals": 1,
-			"residualKinds": {
-				"framework-semantics": 1
-			},
-			"validations": 0,
-			"manualFixes": ["target lacks framework semantics"],
+			"outputBytes": 187,
+			"outputByteDelta": 23,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -181,7 +179,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["@emotion/css", "@emotion/react"],
-				"byteDelta": 12
+				"byteDelta": 23
 			}
 		},
 		{
@@ -196,20 +194,16 @@
 				"evidence": ["styled-components", "\\bstyled\\s*\\."]
 			},
 			"sourceBytes": 333,
-			"outputBytes": 349,
-			"outputByteDelta": 16,
+			"outputBytes": 388,
+			"outputByteDelta": 55,
 			"converted": 0,
 			"skipped": 1,
-			"residuals": 2,
+			"residuals": 1,
 			"residualKinds": {
-				"capability": 1,
-				"framework-semantics": 1
+				"capability": 1
 			},
 			"validations": 0,
-			"manualFixes": [
-				"components: component subject: styled.div",
-				"target lacks framework semantics"
-			],
+			"manualFixes": ["components: component subject: styled.div"],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -219,7 +213,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["styled-components"],
-				"byteDelta": 16
+				"byteDelta": 55
 			}
 		},
 		{
@@ -234,20 +228,18 @@
 				"evidence": ["@vanilla-extract\\/css", "\\b(?:style|globalStyle|keyframes)\\s*\\("]
 			},
 			"sourceBytes": 774,
-			"outputBytes": 804,
-			"outputByteDelta": 30,
+			"outputBytes": 884,
+			"outputByteDelta": 110,
 			"converted": 0,
 			"skipped": 2,
-			"residuals": 3,
+			"residuals": 2,
 			"residualKinds": {
-				"capability": 2,
-				"framework-semantics": 1
+				"capability": 2
 			},
 			"validations": 0,
 			"manualFixes": [
 				"dynamic-values: dynamic: {\n    vars: {\n      [angle]: '360deg',\n    },\n  }",
-				"dynamic-values: dynamic: `opacity .1s ease, color .1s ease`",
-				"target lacks framework semantics"
+				"dynamic-values: dynamic: `opacity .1s ease, color .1s ease`"
 			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
@@ -258,7 +250,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["@vanilla-extract/css"],
-				"byteDelta": 30
+				"byteDelta": 110
 			}
 		},
 		{
@@ -273,18 +265,16 @@
 				"evidence": ["\\bcreateStitches\\s*\\("]
 			},
 			"sourceBytes": 7459,
-			"outputBytes": 1475,
-			"outputByteDelta": -5984,
-			"converted": 1,
-			"skipped": 10,
-			"residuals": 11,
+			"outputBytes": 7641,
+			"outputByteDelta": 182,
+			"converted": 9,
+			"skipped": 2,
+			"residuals": 2,
 			"residualKinds": {
-				"framework-semantics": 9,
 				"capability": 2
 			},
-			"validations": 1,
+			"validations": 9,
 			"manualFixes": [
-				"target lacks framework semantics",
 				"dynamic-values: dynamic: {\n\t\t\t\tcolor: 'Black',\n\t\t\t}",
 				"dynamic-values: dynamic: {\n\t\t\t\tshade: {\n\t\t\t\t\tred: {\n\t\t\t\t\t\tcolor: 'Crimson',\n\t\t\t\t\t},\n\t\t\t\t\tblue: {\n\t\t\t\t\t..."
 			],
@@ -297,7 +287,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["@stitches/react"],
-				"byteDelta": -5984
+				"byteDelta": 182
 			}
 		},
 		{
@@ -312,16 +302,22 @@
 				"evidence": ["@linaria\\/(?:core|react)", "\\b(?:css|styled)\\s*`"]
 			},
 			"sourceBytes": 1175,
-			"outputBytes": 1358,
-			"outputByteDelta": 183,
+			"outputBytes": 1394,
+			"outputByteDelta": 219,
 			"converted": 1,
 			"skipped": 3,
-			"residuals": 3,
+			"residuals": 7,
 			"residualKinds": {
-				"dynamic": 3
+				"dynamic": 4,
+				"capability": 3
 			},
 			"validations": 1,
-			"manualFixes": ["template interpolation requires a runtime adapter"],
+			"manualFixes": [
+				"template interpolation requires a runtime-aware lowering",
+				"dynamic-values: dynamic: GLOBAL_VARS.color_header",
+				"dynamic-values: dynamic: astroTextColor",
+				"dynamic-values: dynamic: LOCAL_VARS.description_font_style"
+			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -331,7 +327,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["@linaria/core", "@linaria/react"],
-				"byteDelta": 183
+				"byteDelta": 219
 			}
 		},
 		{
@@ -349,14 +345,16 @@
 				]
 			},
 			"sourceBytes": 583,
-			"outputBytes": 560,
-			"outputByteDelta": -23,
+			"outputBytes": 638,
+			"outputByteDelta": 55,
 			"converted": 0,
-			"skipped": 0,
-			"residuals": 0,
-			"residualKinds": {},
+			"skipped": 1,
+			"residuals": 1,
+			"residualKinds": {
+				"runtime-context": 1
+			},
 			"validations": 0,
-			"manualFixes": [],
+			"manualFixes": ["JSS rule application requires a host-specific rewrite"],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -366,7 +364,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["jss", "react-jss"],
-				"byteDelta": -23
+				"byteDelta": 55
 			}
 		},
 		{
@@ -445,19 +443,17 @@
 				"evidence": ["\\bStyleSheet\\.create\\s*\\(\\s*\\{"]
 			},
 			"sourceBytes": 16434,
-			"outputBytes": 17558,
-			"outputByteDelta": 1124,
-			"converted": 2,
-			"skipped": 20,
-			"residuals": 20,
+			"outputBytes": 14474,
+			"outputByteDelta": -1960,
+			"converted": 21,
+			"skipped": 1,
+			"residuals": 1,
 			"residualKinds": {
-				"capability": 20
+				"capability": 1
 			},
-			"validations": 2,
+			"validations": 21,
 			"manualFixes": [
-				"named-conditions: named: red",
-				"named-conditions: named: test",
-				"named-conditions: named: test; dynamic-values: dynamic: [{\n                    fontStyle: \"normal\",\n                    fontWeight: \"..."
+				"dynamic-values: dynamic: [{\n                    fontStyle: \"normal\",\n                    fontWeight: \"..."
 			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
@@ -468,7 +464,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["aphrodite"],
-				"byteDelta": 1124
+				"byteDelta": -1960
 			}
 		},
 		{
@@ -483,16 +479,14 @@
 				"evidence": ["from\\s+[\"']style9[\"']", "\\bstyle9\\.create\\s*\\(\\s*\\{"]
 			},
 			"sourceBytes": 200,
-			"outputBytes": 227,
-			"outputByteDelta": 27,
-			"converted": 0,
-			"skipped": 1,
-			"residuals": 1,
-			"residualKinds": {
-				"capability": 1
-			},
-			"validations": 0,
-			"manualFixes": ["named-conditions: named: center"],
+			"outputBytes": 215,
+			"outputByteDelta": 15,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -502,7 +496,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["style9"],
-				"byteDelta": 27
+				"byteDelta": 15
 			}
 		},
 		{
@@ -520,8 +514,8 @@
 				]
 			},
 			"sourceBytes": 439,
-			"outputBytes": 464,
-			"outputByteDelta": 25,
+			"outputBytes": 494,
+			"outputByteDelta": 55,
 			"converted": 0,
 			"skipped": 1,
 			"residuals": 1,
@@ -539,7 +533,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["treat"],
-				"byteDelta": 25
+				"byteDelta": 55
 			}
 		},
 		{
@@ -589,16 +583,22 @@
 				"evidence": ["\\bstyled(?:\\.[A-Za-z_$][\\w$]*|\\([^)]*\\))[^`]*`"]
 			},
 			"sourceBytes": 4251,
-			"outputBytes": 4460,
-			"outputByteDelta": 209,
+			"outputBytes": 4405,
+			"outputByteDelta": 154,
 			"converted": 5,
-			"skipped": 4,
-			"residuals": 8,
+			"skipped": 3,
+			"residuals": 16,
 			"residualKinds": {
-				"dynamic": 8
+				"dynamic": 12,
+				"capability": 4
 			},
 			"validations": 5,
-			"manualFixes": ["solid-styled template interpolation requires a runtime-aware lowering"],
+			"manualFixes": [
+				"solid-styled template interpolation requires a runtime-aware lowering",
+				"solid-styled function-valued styles require a host-specific lowering",
+				"dynamic-values: dynamic: ({ border = 1, color = \"gainsboro\" }): string => `${border}px solid ${color}`",
+				"dynamic-values: dynamic: ({ border = 1, theme }): string =>\n        `${border}px solid ${theme?.colors..."
+			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -608,7 +608,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["solid-styled-components"],
-				"byteDelta": 209
+				"byteDelta": 154
 			}
 		},
 		{
@@ -626,19 +626,21 @@
 				]
 			},
 			"sourceBytes": 6953,
-			"outputBytes": 7016,
-			"outputByteDelta": 63,
+			"outputBytes": 6922,
+			"outputByteDelta": -31,
 			"converted": 4,
-			"skipped": 3,
-			"residuals": 6,
+			"skipped": 2,
+			"residuals": 11,
 			"residualKinds": {
-				"parse": 2,
-				"dynamic": 4
+				"dynamic": 8,
+				"capability": 3
 			},
 			"validations": 4,
 			"manualFixes": [
-				"vue-styled nested template CSS requires a rule parser",
-				"vue-styled template interpolation requires a runtime-aware lowering"
+				"vue-styled template interpolation requires a runtime-aware lowering",
+				"vue-styled function-valued styles require a host-specific lowering",
+				"dynamic-values: dynamic: props => props.active ? 'rgba(255, 255, 255, 0.2)' : 'transparent'",
+				"dynamic-values: dynamic: props => props.active ? props.theme.success : 'rgba(255, 255, 255, 0.1)'"
 			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
@@ -649,7 +651,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["vue-styled-components"],
-				"byteDelta": 63
+				"byteDelta": -31
 			}
 		},
 		{
@@ -664,19 +666,17 @@
 				"evidence": ["@stylexjs\\/stylex", "\\bstylex\\.create\\s*\\("]
 			},
 			"sourceBytes": 966,
-			"outputBytes": 978,
-			"outputByteDelta": 12,
+			"outputBytes": 1021,
+			"outputByteDelta": 55,
 			"converted": 0,
 			"skipped": 1,
-			"residuals": 2,
+			"residuals": 1,
 			"residualKinds": {
-				"capability": 1,
-				"framework-semantics": 1
+				"capability": 1
 			},
 			"validations": 0,
 			"manualFixes": [
-				"dynamic-values: dynamic: {\n    display: 'flex',\n    alignItems: 'center',\n    justifyContent: 'center'...",
-				"target lacks framework semantics"
+				"dynamic-values: dynamic: {\n    display: 'flex',\n    alignItems: 'center',\n    justifyContent: 'center'..."
 			],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
@@ -687,7 +687,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["@stylexjs/stylex"],
-				"byteDelta": 12
+				"byteDelta": 55
 			}
 		}
 	],

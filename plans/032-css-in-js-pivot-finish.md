@@ -186,7 +186,7 @@ framework, and authored provenance.
 Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
 
 - `pnpm run typecheck` — all workspace packages and examples passed.
-- `pnpm --dir packages/codemod test` — 218 tests passed, including the
+- `pnpm --dir packages/codemod test` — 220 tests passed, including the
   versioned StyleProgram runtime fixture, all adapter contracts, API corpus,
   Panda stage pipeline, and real-repository evidence checks.
 - `pnpm exec tsx scripts/generate-real-repository-report.ts` — regenerated
@@ -194,10 +194,17 @@ Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
   clones (Panda, Emotion, styled-components, vanilla-extract, Stitches,
   Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled,
   solid-styled-components, vue-styled-components, and StyleX). Every selected
-  source file was detected and migrated to Pandwind; the report records
-  converted/skipped counts, residual kinds, validation/dependency evidence,
-  source/output bytes, and explicitly marks bundle measurement false because
-  dependency graphs are not installed in the corpus runner.
+  source file was detected; the report records successful adapter routes,
+  safe residuals, converted/skipped counts, residual kinds,
+  validation/dependency evidence, source/output bytes, and explicitly marks
+  bundle measurement false because dependency graphs are not installed in the
+  corpus runner. The latest rerun covers 19 fixtures: 8 have zero residuals
+  and 11 retain 44 explicit residuals, with no silent source drops.
+- The tagged-template matcher now handles nested expression templates and
+  nested selectors; function-valued style declarations are classified as
+  host-specific capability residuals instead of being misreported as parse
+  failures. Safe migrations retain source imports whenever a residual match
+  still requires the source runtime.
 - The differential matrix runs 12 adapter routes with canonical CSS,
   browser-state, SSR/hydration, streaming, dependency, and residual evidence;
   the dedicated runtime fixture exercises the real Pandwind SSR sheet and

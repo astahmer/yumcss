@@ -211,7 +211,13 @@ export function runAdapterMigration(
 		validations.push(validation);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 	}
-	let code = removeSourceImports(applyEdits(source, edits), sourceAdapter.sourceModules);
+	const edited = applyEdits(source, edits);
+	// Keep source imports whenever a skipped/residual match still depends on the
+	// source runtime. Removing them would turn a safe residual into broken code.
+	let code =
+		skipped === 0 && residuals.length === 0
+			? removeSourceImports(edited, sourceAdapter.sourceModules)
+			: edited;
 	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
 	return {
 		code,

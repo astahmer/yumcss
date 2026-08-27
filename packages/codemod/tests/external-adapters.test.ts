@@ -236,6 +236,26 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 
+	test("keeps JSS binding-based runtime application intact in safe mode", () => {
+		const source = [
+			'import jss from "jss";',
+			"const styles = { button: { color: 'red' } };",
+			"const sheet = jss.createStyleSheet(styles);",
+			"sheet.getRule('button').applyTo(button);",
+		].join("\n");
+		const result = runAdapterMigration(source, {
+			from: "jss",
+			to: "pandwind",
+			file: "styles.js",
+			mode: "safe",
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals[0]).toMatchObject({ kind: "runtime-context" });
+		expect(result.code).toContain('import jss from "jss";');
+		expect(result.code).toContain("jss.createStyleSheet(styles)");
+	});
+
 	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {
 		const adapter = getExternalAdapter("stitches")!;
 		const parsed = adapter.parse(
@@ -309,5 +329,24 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.code).toContain("body");
 			expect(result.code).toContain("button");
 		}
+	});
+
+	test("matches complete tagged templates with nested expressions and preserves nested rules", () => {
+		const adapter = getExternalAdapter("solid-styled")!;
+		const source =
+			'const Card = styled("div")<{ border: number }>`\n' +
+			"  color: red;\n" +
+			'  border: ${({ border = 1, color = "gainsboro" }): string => `${border}px solid ${color}`};\n' +
+			"  &:hover { color: blue; }\n" +
+			"`;";
+		const parsed = adapter.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: "solid-styled", files: [], values: {} },
+		});
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
+		expect(parsed.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+		expect(parsed.residuals.some((residual) => residual.kind === "parse")).toBe(false);
 	});
 });

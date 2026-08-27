@@ -5,6 +5,11 @@ export const JSS_DEFINITION: AdapterDefinition = {
 	patterns: [
 		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g },
 		{ name: "jss-styleSheet", regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*\{/g },
+		{
+			name: "jss-styleSheet-reference",
+			regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/g,
+			form: "reference",
+		},
 	],
 	packages: {
 		packages: [

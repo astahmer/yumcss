@@ -26,6 +26,7 @@ import {
 	type StyleProgramResidual,
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
+import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import {
 	asStyleDialect,
 	createStyleSystem,
@@ -50,7 +51,7 @@ export type ExternalAdapterId = string;
 export type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
-	readonly form?: "object" | "template";
+	readonly form?: "object" | "template" | "reference";
 };
 
 export function dependency(
@@ -395,70 +396,128 @@ function parseTemplateProgram(
 	context: AdapterParseContext,
 	start: number,
 ): StyleProgram {
-	if (body.includes("${")) {
-		return styleProgramFromRules(
-			[
-				{
+	const parseBlock = (
+		input: string,
+	): {
+		declarations: StyleDeclaration[];
+		children: StyleProgram["rules"][number][];
+		residuals: StyleProgramResidual[];
+	} => {
+		const declarations: StyleDeclaration[] = [];
+		const children: StyleProgram["rules"][number][] = [];
+		const residuals: StyleProgramResidual[] = [];
+		let cursor = 0;
+		let order = 0;
+		const addTemplateDeclaration = (statement: string): void => {
+			const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
+			if (trimmed === "") return;
+			const colon = trimmed.indexOf(":");
+			if (colon <= 0) {
+				residuals.push({
+					kind: "parse",
+					text: statement,
+					hint: "nested template CSS requires a rule parser",
+				});
+				return;
+			}
+			const rawValue = trimmed.slice(colon + 1).trim();
+			const interpolation = /\$\{([\s\S]+)\}/.exec(rawValue);
+			let value: StyleDeclaration["value"];
+			if (interpolation?.[1] !== undefined) {
+				const expression =
+					rawValue.startsWith("${") && rawValue.endsWith("}") ? interpolation[1].trim() : rawValue;
+				value = { kind: "dynamic", expression, lowering: "residual" };
+				residuals.push({
+					kind: "dynamic",
+					text: rawValue,
+					hint: "template interpolation requires a runtime-aware lowering",
+				});
+			} else {
+				value = { kind: "literal", value: rawValue };
+			}
+			declarations.push({
+				conditions: [],
+				property: camelProperty(trimmed.slice(0, colon)),
+				value,
+			});
+		};
+		while (cursor < input.length) {
+			while (/\s/.test(input[cursor] ?? "")) cursor++;
+			if (cursor >= input.length) break;
+			let index = cursor;
+			let parens = 0;
+			let quote: string | undefined;
+			let delimiter: ";" | "{" | undefined;
+			for (; index < input.length; index++) {
+				const character = input[index]!;
+				if (quote !== undefined) {
+					if (character === quote && input[index - 1] !== "\\\\") quote = undefined;
+					continue;
+				}
+				if (character === "'" || character === '"') {
+					quote = character;
+					continue;
+				}
+				if (character === "(") parens++;
+				if (character === ")") parens--;
+				if (character === "$" && input[index + 1] === "{") {
+					const interpolation = matchBlock(input, index + 1);
+					if (interpolation !== null) {
+						index = interpolation.end - 1;
+						continue;
+					}
+				}
+				if (parens === 0 && (character === ";" || character === "{")) {
+					delimiter = character;
+					break;
+				}
+			}
+			if (delimiter === "{") {
+				const selector = input.slice(cursor, index).trim();
+				const block = matchBlock(input, index);
+				if (block === null || selector === "") {
+					residuals.push({
+						kind: "parse",
+						text: input.slice(cursor),
+						hint: "unbalanced template CSS",
+					});
+					break;
+				}
+				const nested = parseBlock(block.body);
+				children.push({
 					kind: "style",
+					selector,
 					conditions: [],
-					declarations: [],
-					children: [],
-					order: 0,
-				},
-			],
-			{
-				source: adapterSource(context, start),
-				residuals: [
-					{
-						kind: "dynamic",
-						text: body,
-						hint: "template interpolation requires a runtime adapter",
-					},
-				],
-			},
-		);
-	}
-	const declarations: StyleDeclaration[] = [];
-	for (const statement of body.split(";")) {
-		const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
-		if (trimmed === "") continue;
-		const colon = trimmed.indexOf(":");
-		if (colon <= 0) {
-			return styleProgramFromRules(
-				[
-					{
-						kind: "style",
-						conditions: [],
-						declarations: [],
-						children: [],
-						order: 0,
-					},
-				],
-				{
-					source: adapterSource(context, start),
-					residuals: [
-						{ kind: "parse", text: statement, hint: "nested template CSS requires a rule parser" },
-					],
-				},
-			);
+					declarations: nested.declarations,
+					children: nested.children,
+					order: order++,
+				});
+				residuals.push(...nested.residuals);
+				cursor = block.end;
+				continue;
+			}
+			if (delimiter === ";") {
+				addTemplateDeclaration(input.slice(cursor, index));
+				cursor = index + 1;
+				continue;
+			}
+			addTemplateDeclaration(input.slice(cursor));
+			break;
 		}
-		declarations.push({
-			conditions: [],
-			property: camelProperty(trimmed.slice(0, colon)),
-			value: { kind: "literal", value: trimmed.slice(colon + 1).trim() },
-		});
-	}
+		return { declarations, children, residuals };
+	};
+	const parsed = parseBlock(body);
 	return styleProgramFromRules(
 		[
 			{
 				kind: "style",
 				conditions: [],
-				declarations,
-				children: [],
+				declarations: parsed.declarations,
+				children: parsed.children,
 				order: 0,
 			},
 		],
-		{ source: adapterSource(context, start) },
+		{ source: adapterSource(context, start), residuals: parsed.residuals },
 	);
 }
 
@@ -508,12 +567,76 @@ function parseCalls(
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;
+			if (pattern.form === "reference") {
+				const reference = match[1];
+				if (reference === undefined) continue;
+				const escaped = reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+				const binding = new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=\\s*\\{`, "g").exec(
+					source,
+				);
+				if (binding === null) {
+					residuals.push({
+						kind: "parse",
+						text: match[0],
+						hint: `JSS style binding '${reference}' was not found`,
+					});
+					continue;
+				}
+				const open = binding.index + binding[0].lastIndexOf("{");
+				const block = matchBlock(source, open);
+				if (block === null) {
+					residuals.push({
+						kind: "parse",
+						text: match[0],
+						hint: `JSS style binding '${reference}' is unbalanced`,
+					});
+					continue;
+				}
+				const program = styleProgramFromSourceObject(block.body, {
+					source: {
+						file: context.file,
+						start,
+						end: start + match[0].length,
+						adapter: context.config.adapter,
+					},
+					sourceOffset: open + 1,
+					nestedObjectKind: "named",
+				});
+				const safeProgram = /\.getRule\s*\(|\.applyTo\s*\(/.test(source)
+					? {
+							...program,
+							residuals: [
+								...program.residuals,
+								{
+									kind: "runtime-context",
+									text: match[0],
+									hint: "JSS rule application requires a host-specific rewrite",
+								},
+							],
+						}
+					: program;
+				matches.push({
+					start,
+					end: start + match[0].length,
+					program: safeProgram,
+					sourceText: match[0],
+				});
+				continue;
+			}
 			if (pattern.form === "template") {
-				const template = match[0];
-				const firstTick = template.indexOf("`");
-				const lastTick = template.lastIndexOf("`");
-				if (firstTick === -1 || lastTick <= firstTick) continue;
-				let program = parseTemplateProgram(template.slice(firstTick + 1, lastTick), context, start);
+				const firstTick = source.indexOf("`", start);
+				const lastTick = findTemplateLiteralEnd(source, firstTick);
+				if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
+				if (source.slice(start, firstTick).includes("=>")) {
+					residuals.push({
+						kind: "capability",
+						text: source.slice(start, lastTick + 1),
+						hint: `${pattern.name} function-valued styles require a host-specific lowering`,
+					});
+					continue;
+				}
+				const template = source.slice(start, lastTick + 1);
+				let program = parseTemplateProgram(source.slice(firstTick + 1, lastTick), context, start);
 				if (pattern.name.startsWith("styled"))
 					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
 				if (pattern.name === "linaria-styled")
@@ -610,7 +733,7 @@ function parseCalls(
 						...program,
 						source: {
 							...program.source,
-							subject: pattern.name === "jss-styleSheet" ? "createStyleSheet" : "createUseStyles",
+							subject: pattern.name.includes("styleSheet") ? "createStyleSheet" : "createUseStyles",
 							subjectKind: "call",
 						},
 					};

@@ -13,6 +13,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
+import { findTemplateLiteralEnd, parseAdapterTemplate } from "./adapter-template-parser.ts";
 
 type ExtraAdapterOptions = {
 	id: string;
@@ -136,12 +137,6 @@ function parseObjectCalls(
 	return { matches, residuals };
 }
 
-function camelProperty(property: string): string {
-	return property
-		.trim()
-		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
-}
-
 function parseTemplateCalls(
 	id: string,
 	source: string,
@@ -154,59 +149,21 @@ function parseTemplateCalls(
 	for (const match of source.matchAll(options.call)) {
 		const start = match.index ?? 0;
 		if (mask(start)) continue;
-		const template = match[0];
-		const firstTick = template.indexOf("`");
-		const lastTick = template.lastIndexOf("`");
-		if (firstTick === -1 || lastTick <= firstTick) continue;
-		const body = template.slice(firstTick + 1, lastTick);
-		const declarations: StyleProgram["declarations"][number][] = [];
-		const programResiduals: StyleProgramResidual[] = [];
-		if (body.includes("${")) {
-			const residual = {
-				kind: "dynamic",
-				text: body,
-				hint: `${id} template interpolation requires a runtime-aware lowering`,
-			} satisfies StyleProgramResidual;
-			programResiduals.push(residual);
-			residuals.push(residual);
-		} else {
-			for (const statement of body.split(";")) {
-				const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
-				if (trimmed === "") continue;
-				const colon = trimmed.indexOf(":");
-				if (colon <= 0) {
-					const residual = {
-						kind: "parse",
-						text: statement,
-						hint: `${id} nested template CSS requires a rule parser`,
-					} satisfies StyleProgramResidual;
-					programResiduals.push(residual);
-					residuals.push(residual);
-					break;
-				}
-				declarations.push({
-					conditions: [],
-					property: camelProperty(trimmed.slice(0, colon)),
-					value: { kind: "literal", value: trimmed.slice(colon + 1).trim() },
-				});
-			}
+		const firstTick = source.indexOf("`", start);
+		const lastTick = findTemplateLiteralEnd(source, firstTick);
+		if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
+		if (source.slice(start, firstTick).includes("=>")) {
+			residuals.push({
+				kind: "capability",
+				text: source.slice(start, lastTick + 1),
+				hint: `${id} function-valued styles require a host-specific lowering`,
+			});
+			continue;
 		}
-		const program: StyleProgram = {
-			schema: "pandwind.style-program/3",
-			rules: [
-				{
-					kind: "style",
-					conditions: [],
-					declarations,
-					children: [],
-					order: 0,
-				},
-			],
-			declarations,
-			residuals: programResiduals,
-			source: { file: context.file, start, end: start + template.length, adapter: id },
-		};
+		const template = source.slice(start, lastTick + 1);
+		const program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start);
 		matches.push({ start, end: start + template.length, program, sourceText: template });
+		residuals.push(...program.residuals);
 	}
 	return { matches, residuals };
 }

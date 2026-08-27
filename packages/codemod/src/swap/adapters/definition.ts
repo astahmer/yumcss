@@ -5,7 +5,7 @@ import type { StyleProgram } from "../semantic-ir.ts";
 export interface CallPattern {
 	readonly name: string;
 	readonly regex: RegExp;
-	readonly form?: "object" | "template";
+	readonly form?: "object" | "template" | "reference";
 }
 
 export interface AdapterRenderers {
