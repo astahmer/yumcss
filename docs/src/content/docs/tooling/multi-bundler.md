@@ -41,3 +41,19 @@ generic transform folds a literal `tw()` call and removes the runtime call from
 the emitted bundle. This is adapter proof, not a claim that every Webpack
 framework integration is turnkey; framework loaders and CSS asset ownership
 remain host configuration.
+
+## HMR and watch invalidation coverage
+
+The repository tests the invalidation contract at each adapter boundary:
+
+- Vite has dev-server/module-graph coverage for changed, added, deleted, and
+  unchanged-mtime sources, plus cross-module constant invalidation.
+- Rollup tests both the CSS extractor's `watchChange` scan invalidation and the
+  inline transform's invalidation of changed cross-module constants.
+- Webpack runs a real `compiler.watch()` rebuild after a source mutation and
+  verifies that the emitted bundle changes.
+
+These are bundler/plugin invalidation tests, not a promise that every host
+framework's browser-side HMR or React Fast Refresh behavior is identical. The
+host owns the dev server, framework runtime, and CSS asset delivery; those
+framework-specific matrices belong in the corresponding integration fixtures.
