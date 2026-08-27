@@ -33,7 +33,7 @@ ordering, and a testable integration contract.
 | SSR and hydration       | Runtime     | Runtime snapshots are serializable, hydrate without duplicate rules, and are covered by a concrete mounted-sheet fixture.             |
 | Bundlers/frameworks     | Partial     | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered; native compiler plugins remain. |
 | Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                     |
-| External adapters       | Runtime     | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
+| External adapters       | Static      | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
 | Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.             |
 
 The scorecard is a product contract, not a promise that every style should be

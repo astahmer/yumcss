@@ -15,7 +15,6 @@ import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts"
 import { parseTwCalls, parseCssLiterals } from "./parse.ts";
 import { SWAP_EMITTERS, type EmitterContext, type EmitterResult } from "./emit.ts";
 import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
-import { EXTERNAL_ADAPTER_IDS, type ExternalAdapterId } from "./external-adapters.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import {
 	styleProgramFromSourceObject,
@@ -39,26 +38,11 @@ const EMITTERS: Record<string, SwapEmitter> = {
 	...SWAP_OUTBOUND_EMITTERS,
 };
 
-export const SWAP_TARGETS = [...Object.keys(EMITTERS), ...EXTERNAL_ADAPTER_IDS];
-export type SwapTarget =
-	| "css.class"
-	| "design"
-	| "dss"
-	| "tw"
-	| "tailwind"
-	| "panda"
-	| "stylex"
-	| ExternalAdapterId;
+export const SWAP_TARGETS = Object.keys(EMITTERS);
+export type SwapTarget = "css.class" | "design" | "dss" | "tw" | "tailwind" | "panda" | "stylex";
 import type { SwapIR } from "./ir.ts";
 
-export const SWAP_SOURCES = [
-	"auto",
-	"tw",
-	"css",
-	"design",
-	"panda",
-	...EXTERNAL_ADAPTER_IDS,
-] as const;
+export const SWAP_SOURCES = ["auto", "tw", "css", "design", "panda"] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
 
 export type SwapMissResolver = (
@@ -85,13 +69,7 @@ export {
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
-export {
-	EXTERNAL_ADAPTERS,
-	EXTERNAL_ADAPTER_IDS,
-	getExternalAdapter,
-	runAdapterMigration,
-} from "./external-adapters.ts";
-export type { ExternalAdapterId } from "./external-adapters.ts";
+export { EXTERNAL_ADAPTERS, getExternalAdapter, runAdapterMigration } from "./external-adapters.ts";
 export type {
 	AdapterConfigContext,
 	AdapterDependencies,
@@ -101,7 +79,6 @@ export type {
 	AdapterDetectionResult,
 	AdapterEmitContext,
 	AdapterEmitResult,
-	AdapterLossiness,
 	AdapterMatch,
 	AdapterParseContext,
 	AdapterParseResult,
@@ -295,7 +272,8 @@ export function runSwap(
 		const needsCssTarget = options.to === "css.class" || options.to === "design";
 		const needsDssTarget = options.to === "dss";
 		const hasDssBinding =
-			/\b(?:const|let|var)\s+dss\b/.test(code) || /import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
+			/\b(?:const|let|var)\s+dss\b/.test(code) ||
+			/import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
 		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
 			code = insertSkipMarker(
 				code,
@@ -508,8 +486,7 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod swap: no input patterns given.\n" +
-				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda|emotion|styled-components|vanilla-extract|stitches> " +
-				"--to=<css.class|design|tw|emotion|styled-components|vanilla-extract|stitches> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
+				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
 		);
 	}
 	return args;

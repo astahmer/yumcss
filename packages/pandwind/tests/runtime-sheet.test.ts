@@ -116,13 +116,19 @@ describe("runtime CSS-in-JS sheet", () => {
 			{
 				kind: "supports",
 				name: "(display: grid)",
-				declarations: [{ property: "display", value: "grid" }],
+				children: [
+					{
+						kind: "style",
+						selector: ".grid",
+						declarations: [{ property: "display", value: "grid" }],
+					},
+				],
 				priority: 3,
 			},
 		]);
 
 		expect(server.css()).toBe(
-			"body{margin:0}\n@keyframes fade{from{opacity:0}to{opacity:1}}\n@supports (display: grid){display:grid}",
+			"body{margin:0}\n@keyframes fade{from{opacity:0}to{opacity:1}}\n@supports (display: grid){.grid{display:grid}}",
 		);
 		expect(new Set(server.snapshot().rules.map((rule) => rule.id)).size).toBe(3);
 
