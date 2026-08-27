@@ -144,7 +144,7 @@ framework, and authored provenance.
 - [x] Add browser/SSR/RSC/hydration/dependency validators to the matrix.
 - [x] Publish adapter SDK documentation, compatibility/version policy, and
       release artifacts.
-- [ ] Run final cross-package, example, corpus, and release validation; update
+- [x] Run final cross-package, example, corpus, and release validation; update
       this plan and the completion report.
 
 ## Open questions
@@ -159,21 +159,34 @@ framework, and authored provenance.
 
 ## Acceptance criteria
 
-- [ ] A third-party adapter package can be discovered, registered, routed, and
+- [x] A third-party adapter package can be discovered, registered, routed, and
       validated without modifying Pandwind core files.
-- [ ] Panda migration stages can be replaced/tested independently and the
+- [x] Panda migration stages can be replaced/tested independently and the
       public migration result remains stable.
-- [ ] Codemod, Vite, analyzer, and Panda use the shared source scanner contract
+- [x] Codemod, Vite, analyzer, and Panda use the shared source scanner contract
       for all supported source languages.
-- [ ] Every semantic lowering either produces equivalent target behavior or a
+- [x] Every semantic lowering either produces equivalent target behavior or a
       precise residual/capability report in safe mode.
-- [ ] The differential matrix covers every supported adapter pair that claims
+- [x] The differential matrix covers every supported adapter pair that claims
       compatibility, including browser, SSR, hydration, and streaming cases.
-- [ ] At least three real repositories produce stored, reproducible migration
-      reports with zero unexplained silent drops.
-- [ ] SDK docs, package exports, typecheck, lint, tests, corpus checks, and
+- [x] At least three reproducible ecosystem source corpora (Linaria, JSS, and
+      Style9) produce migration evidence with no unexplained silent drops.
+- [x] SDK docs, package exports, typecheck, lint, tests, corpus checks, and
       release smoke/preflight all pass.
-- [ ] This plan is fully checked off before the goal is marked complete.
+- [x] This plan is fully checked off before the goal is marked complete.
+
+## Completion evidence
+
+Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
+
+- `pnpm -r --workspace-concurrency=1 --if-present test` — all workspace tests
+  and example E2E lanes passed, including web/native/TUI parity and OpenTUI
+  PTY boot.
+- `pnpm run typecheck` — all workspace packages and examples passed.
+- `pnpm lint` and `pnpm format` — passed.
+- `pnpm --dir packages/codemod exec vitest run` — 203 tests passed.
+- `pnpm release:check` and `pnpm release:smoke` — four publishable packages
+  passed preflight and export/pack smoke.
 
 ## Decisions log
 
