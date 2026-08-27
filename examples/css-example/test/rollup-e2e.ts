@@ -86,8 +86,10 @@ writeFileSync(
 		'import "./globals.css";',
 		'import { dcss } from "./design.ts";',
 		'const staticClass = dcss.class({ $frame: { fill: "$blue-500" } });',
+		'const duplicateClass = dcss.class({ $frame: { fill: "$blue-500" } });',
 		'const dynamic = dcss.vars({ color: "#2563eb", _hover: { color: "#dc2626" } });',
 		'document.querySelector("#static")!.className = staticClass;',
+		'document.querySelector("#duplicate")!.className = duplicateClass;',
 		'const target = document.querySelector("#dynamic")!;',
 		"target.className = dynamic.class;",
 		"for (const [key, value] of Object.entries(dynamic.style)) target.style.setProperty(key, value);",
@@ -95,7 +97,7 @@ writeFileSync(
 );
 writeFileSync(
 	join(project, "index.html"),
-	'<!doctype html><link rel="stylesheet" href="/styles.css"><div id="static">static</div><div id="dynamic">dynamic</div><div class="rollup-global" id="global">global</div><script type="module" src="/app.js"></script>',
+	'<!doctype html><link rel="stylesheet" href="/styles.css"><div id="static">static</div><div id="duplicate">duplicate</div><div id="dynamic">dynamic</div><div class="rollup-global" id="global">global</div><script type="module" src="/app.js"></script>',
 );
 
 let server: Server | undefined;
@@ -135,6 +137,8 @@ try {
 		"#static",
 		(element) => getComputedStyle(element).backgroundColor,
 	);
+	const staticClass = await page.$eval("#static", (element) => element.className);
+	const duplicateClass = await page.$eval("#duplicate", (element) => element.className);
 	const globalColor = await page.$eval("#global", (element) => getComputedStyle(element).color);
 	const animation = await page.$eval(
 		"#global",
@@ -148,6 +152,12 @@ try {
 	const hoverColor = await page.$eval("#dynamic", (element) => getComputedStyle(element).color);
 	const checks: Array<[string, boolean, string]> = [
 		["Rollup extracts static atomic CSS", staticColor === "rgb(49, 130, 206)", staticColor],
+		[
+			"Rollup deduplicates duplicate atoms",
+			duplicateClass === staticClass &&
+				(generated.match(/background-color:#3182ce/g) ?? []).length === 1,
+			`${staticClass} / ${duplicateClass} / ${generated.match(/background-color:#3182ce/g)?.length ?? 0} rules`,
+		],
 		["Rollup serves authored global CSS", globalColor === "rgb(124, 45, 18)", globalColor],
 		["Rollup serves authored keyframes", animation === "rollup-fade", animation],
 		["Rollup carries dynamic vars", dynamic.color === "rgb(37, 99, 235)", JSON.stringify(dynamic)],

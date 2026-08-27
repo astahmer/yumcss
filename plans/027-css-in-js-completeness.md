@@ -178,15 +178,22 @@ interface AuthoredCssImport {
    provenance revisions.**
 7. Run all gates, review focused JJ revisions, and record outcomes. **Landed.**
 
-## Open questions
+## Resolved decisions and follow-up scope
 
-1. Which non-Vite fixture gives the most confidence with the least harness
-   complexity: Rollup, Webpack, or another unplugin target?
-2. Should runtime stylesheet extraction remain entirely adapter-owned, or is a
-   minimal optional React adapter justified after the contract is measured?
-3. Which representative applications and thresholds should become the
-   permanent performance corpus?
-4. Which migration examples provide the highest adoption value first?
+1. Rollup is the first non-Vite fixture: it exercises the generic unplugin
+   path with a small real-browser harness. Webpack/Rspack/esbuild/rolldown
+   fixtures can be added when those integrations have a distinct failure mode
+   worth covering.
+2. Runtime stylesheet extraction remains adapter-owned. `css.vars()` provides
+   serializable inline values; Pandwind does not add a React-specific injector
+   until a concrete host requirement justifies one.
+3. The permanent evidence corpus is the existing runtime-size budget and
+   snapshot gate, CSS/Vite/Rollup browser fixtures, parity/dedup suites, and
+   the `cx()` smoke benchmark. Wall-clock build time is intentionally not a
+   hard gate because it is machine- and dependency-sensitive.
+4. The adoption guide prioritizes the agreed lanes: Pandwind atoms, authored
+   web CSS, `css.vars()`, and external CVA. Recipe/composition API design and
+   authored TypeScript primitives are deferred to dedicated plans.
 
 ## Acceptance criteria
 
