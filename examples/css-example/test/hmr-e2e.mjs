@@ -63,12 +63,14 @@ const writeFixture = (color) => {
 
 const waitForServerUrl = async (server) => {
 	const deadline = Date.now() + 10_000;
-	while (Date.now() < deadline) {
+	const poll = async () => {
 		const url = server.resolvedUrls?.local?.[0];
 		if (url) return url;
+		if (Date.now() >= deadline) throw new Error("Vite did not expose a local URL");
 		await new Promise((resolve) => setTimeout(resolve, 25));
-	}
-	throw new Error("Vite did not expose a local URL");
+		return poll();
+	};
+	return poll();
 };
 
 let server;
