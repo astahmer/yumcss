@@ -606,22 +606,33 @@ function adapter(
 
 function removeSourceImports(code: string, modules: readonly string[]): string {
 	let result = code;
+	const removeMatches = (source: string, pattern: RegExp): string => {
+		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+		try {
+			mask = computeExcludedRanges(source, "pandwind-adapter.ts");
+		} catch {
+			// Keep cleanup best-effort for incomplete source snippets.
+		}
+		const edits: Array<{ start: number; end: number; text: string }> = [];
+		for (const match of source.matchAll(pattern)) {
+			const start = match.index ?? 0;
+			if (mask?.isExcluded(start)) continue;
+			edits.push({ start, end: start + match[0].length, text: "" });
+		}
+		return applyEdits(source, edits);
+	};
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		result = result.replace(
-			new RegExp(
-				`^[ \\t]*import(?:[^\\n;]+?\\s+from\\s+)?["']${quoted}["'];?[ \\t]*(?:\\n|$)`,
-				"gm",
-			),
-			"",
+		result = removeMatches(
+			result,
+			new RegExp(`\\bimport\\s+(?:[^;]*?\\s+from\\s+)?["']${quoted}["']\\s*;?`, "g"),
 		);
 	}
-	return result
-		.replace(
-			/^[ \t]*(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?[ \t]*(?:\n|$)/gm,
-			"",
-		)
-		.replace(/^[ \t]*const\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?[ \t]*(?:\n|$)/gm, "");
+	result = removeMatches(
+		result,
+		/\b(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?/g,
+	);
+	return removeMatches(result, /\bconst\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?/g);
 }
 
 function consolidateImports(statements: Iterable<string>): string[] {
@@ -722,6 +733,7 @@ const STYLED_COMPONENTS = adapter(
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
+		components: "exact",
 	}),
 	(program) => {
 		const kind = firstKind(program);
@@ -944,7 +956,9 @@ export function runAdapterMigration(
 							{
 								kind: "capability",
 								text: match.sourceText,
-								hint: report.blockers.map((issue) => issue.detail).join("; "),
+								hint: report.blockers
+									.map((issue) => `${issue.capability}: ${issue.detail}`)
+									.join("; "),
 							},
 						]),
 			);

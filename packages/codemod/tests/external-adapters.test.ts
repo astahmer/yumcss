@@ -79,6 +79,28 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("const css = createCss();");
 	});
 
+	test("cleans source imports when the module shares a line with migrated code", () => {
+		const result = runAdapterMigration(
+			`import { css } from "@emotion/css"; const card = css({ color: "red" });`,
+			{ from: "emotion", to: "styled-components", file: "styles.ts", mode: "safe" },
+		);
+		expect(result.code).not.toContain("@emotion/css");
+		expect(result.code).toContain('import styled from "styled-components";');
+	});
+
+	test("does not lower styled components into class factories in safe mode", () => {
+		const result = runAdapterMigration(
+			`import styled from "styled-components"; const Card = styled.button({ color: "red" });`,
+			{ from: "styled-components", to: "emotion", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.code).toContain("styled.button");
+		expect(result.residuals).toContainEqual(
+			expect.objectContaining({ kind: "capability", hint: expect.stringContaining("components") }),
+		);
+	});
+
 	test("loads package/config evidence and migrates static tagged templates", () => {
 		const adapter = getExternalAdapter("emotion")!;
 		const config = adapter.loadConfig({

@@ -114,6 +114,8 @@ export function requiredAdapterCapabilities(
 	};
 
 	if (program.declarations.length > 0) add("declarations", "style declarations");
+	if (program.source?.subject !== undefined)
+		add("components", `component subject: ${program.source.subject}`);
 	const needsRuleLevel = program.rules.some(
 		(rule) =>
 			rule.kind !== "style" ||
