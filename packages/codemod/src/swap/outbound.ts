@@ -93,7 +93,7 @@ const arbitraryClass = (entry: SwapEntry): string => {
 	return `[${dash}:${value}]`;
 };
 
-export const emitTailwindClasses: Emitter = (ir, meta) => {
+const emitTailwindClasses: Emitter = (ir, meta) => {
 	const residuals: SwapIR["residuals"] = [];
 	// group by condition chain to build prefixed class runs
 	const groups = new Map<string, SwapEntry[]>();
@@ -134,7 +134,7 @@ export const emitTailwindClasses: Emitter = (ir, meta) => {
 /* panda                                                               */
 /* ------------------------------------------------------------------ */
 
-export const PANDA_IMPORT = 'import { css } from "styled-system/css";';
+const PANDA_IMPORT = 'import { css } from "styled-system/css";';
 
 /**
  * Panda's condition keys (`_hover`, `_dark`) mirror pandwind's own — the
@@ -149,7 +149,7 @@ function formatPandaValue(value: string | true | number | Array<string | number>
 			: String(value);
 }
 
-export const emitPanda: Emitter = (ir, meta, ctx) => {
+const emitPanda: Emitter = (ir, meta, ctx) => {
 	const mode = ctx.tokenRefs ?? "bare";
 	const groups = new Map<string, SwapEntry[]>();
 	for (const entry of ir.entries) {
@@ -186,8 +186,8 @@ export const emitPanda: Emitter = (ir, meta, ctx) => {
 /* stylex                                                              */
 /* ------------------------------------------------------------------ */
 
-export const STYLEX_IMPORT = 'import * as stylex from "@stylexjs/stylex";';
-export const STYLEX_STYLES_NAME = "swapStyles";
+const STYLEX_IMPORT = 'import * as stylex from "@stylexjs/stylex";';
+const STYLEX_STYLES_NAME = "swapStyles";
 
 const STYLEX_CONDITION_MAP: Record<string, string> = {
 	hover: ":hover",
@@ -214,7 +214,7 @@ function toStylexCondition(name: string): string | null {
 const renderEntries = (entries: SwapEntry[], indent: string): string[] =>
 	entries.map((e) => `${indent}${e.prop}: ${JSON.stringify(String(e.value))},`);
 
-export const emitStylex: Emitter = (ir, _meta, ctx) => {
+const emitStylex: Emitter = (ir, _meta, ctx) => {
 	const name = `s${ctx.index}`;
 	const groups = new Map<string, SwapEntry[]>();
 	for (const entry of ir.entries) {
@@ -263,4 +263,4 @@ export const SWAP_OUTBOUND_EMITTERS: Record<"tailwind" | "panda" | "stylex", Emi
 	stylex: emitStylex,
 };
 
-export type OutboundTarget = keyof typeof SWAP_OUTBOUND_EMITTERS;
+type OutboundTarget = keyof typeof SWAP_OUTBOUND_EMITTERS;

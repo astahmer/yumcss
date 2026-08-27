@@ -9,7 +9,7 @@
 import type { OxcNode } from "../tw/literal.ts";
 
 /** Depth-first walk over every object node reachable from `node`. */
-export function* iterAll(node: OxcNode): Generator<OxcNode> {
+function* iterAll(node: OxcNode): Generator<OxcNode> {
 	const queue: unknown[] = [node];
 	for (let head = 0; head < queue.length; head++) {
 		const current = queue[head];

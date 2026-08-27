@@ -30,7 +30,7 @@ export function persistRun(root: string, payload: StudioPayload): string {
 }
 
 /** All runs, newest first. */
-export function listRuns(root: string): Array<HistoryEntry> {
+function listRuns(root: string): Array<HistoryEntry> {
 	const dir = HISTORY_DIR(root);
 	if (!existsSync(dir)) return [];
 	return readdirSync(dir)
@@ -48,7 +48,7 @@ export function listRuns(root: string): Array<HistoryEntry> {
 		.filter((e): e is HistoryEntry => e !== null);
 }
 
-export function readRun(root: string, timestamp: string): HistoryEntry | null {
+function readRun(root: string, timestamp: string): HistoryEntry | null {
 	const safe = timestamp.replace(/[^0-9T:.\-Z]/g, "");
 	const path = join(HISTORY_DIR(root), `${safe}.json`);
 	if (!existsSync(path)) return null;

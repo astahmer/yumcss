@@ -13,7 +13,7 @@ import type {
 	StyleRuntimeContext,
 	StyleThemeBinding,
 } from "./semantic-ir.ts";
-import type { SourceScanResult } from "./source-scanner.ts";
+import type { SourceScanResult } from "pandwind/source";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;

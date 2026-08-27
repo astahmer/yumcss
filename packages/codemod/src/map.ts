@@ -34,7 +34,7 @@ const lastSegment = (prop: string): string => prop.split("-").pop() ?? prop;
  * conflict map: score = how many props' last segment appear in the key name
  * (case-insensitive). Ties resolve by interface order (first wins).
  */
-export function pickKey(
+function pickKey(
 	meta: PandwindMeta,
 	prefix: string,
 	props: string[],

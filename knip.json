@@ -32,7 +32,16 @@
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
 		},
 		"examples/*": {
-			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts"],
+			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"],
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
+		},
+		"examples/css-example": {
+			"entry": [
+				"src/{main,index,App}.{ts,tsx}",
+				"src/hydration.tsx",
+				"vite.config.ts",
+				"test/**/*.{ts,tsx,mjs}"
+			],
 			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
 		},
 		"docs": {
@@ -40,6 +49,14 @@
 			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
 		}
 	},
+	"ignoreDependencies": [
+		"react",
+		"react-native-web",
+		"tailwindcss",
+		"@oxc-parser/binding-wasm32-wasi",
+		"playwright-core"
+	],
+	"ignoreBinaries": ["rg"],
 	"ignore": [
 		"**/tests/fixtures/**",
 		"**/tests/fixtures/**/*",

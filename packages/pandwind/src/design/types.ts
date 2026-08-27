@@ -5,7 +5,7 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 	StyleObject,
-} from "../types/typings.d.ts";
+} from "../types/typings.ts";
 
 /* ---------------------------------------------------------------------------
  * Designer vocabulary — the box, its children and its type.
@@ -87,16 +87,16 @@ type LetterSpacingValue<TTokens> =
 type AxisValue<T> = T | [T, T] | [T, T, T] | [T, T, T, T];
 
 /** One value, or 2/3/4 in CSS order (tl-tr-br-bl for corners). */
-export type CornerValue<TTokens> = AxisValue<RadiusValue<TTokens>>;
+type CornerValue<TTokens> = AxisValue<RadiusValue<TTokens>>;
 
 /** One value, or 2 (y/x), 3 (top/x/bottom) or 4 (t-r-b-l). */
-export type PadValue<TTokens> = AxisValue<SpaceValue<TTokens>>;
+type PadValue<TTokens> = AxisValue<SpaceValue<TTokens>>;
 
-export type FillValue<TTokens> =
+type FillValue<TTokens> =
 	| ColorValue<TTokens>
 	| [ColorValue<TTokens>, ColorValue<TTokens>, ...Array<ColorValue<TTokens>>];
 
-export type BorderValue<TTokens> =
+type BorderValue<TTokens> =
 	| ColorValue<TTokens>
 	| {
 			color: ColorValue<TTokens>;
@@ -104,10 +104,10 @@ export type BorderValue<TTokens> =
 			style?: "solid" | "dashed" | "dotted" | "double" | "none";
 	  };
 
-export type OverflowValue = "show" | "clip" | "scroll" | "scroll-hidden";
+type OverflowValue = "show" | "clip" | "scroll" | "scroll-hidden";
 
 /** The box — how the element itself looks. */
-export interface FrameProps<TTokens extends AnyTokens> {
+interface FrameProps<TTokens extends AnyTokens> {
 	/** Width. Spacing token, px number, or any length. */
 	w?: SpaceValue<TTokens>;
 	/** Height. Spacing token, px number, or any length. */
@@ -134,11 +134,11 @@ export interface FrameProps<TTokens extends AnyTokens> {
 	opacity?: number;
 }
 
-export type FlowValue = "stackX" | "stackY" | "grid";
-export type AlignValue = "center" | `${"top" | "center" | "bottom"}-${"left" | "center" | "right"}`;
+type FlowValue = "stackX" | "stackY" | "grid";
+type AlignValue = "center" | `${"top" | "center" | "bottom"}-${"left" | "center" | "right"}`;
 
 /** The children — how the element lays out its content. */
-export interface LayoutProps<TTokens extends AnyTokens> {
+interface LayoutProps<TTokens extends AnyTokens> {
 	/** stackX: row, stackY: column, grid: auto-flow grid. */
 	flow?: FlowValue;
 	/** Wrap children onto the next line (stack flows). */
@@ -157,7 +157,7 @@ export interface LayoutProps<TTokens extends AnyTokens> {
 	gapY?: SpaceValue<TTokens> | "auto";
 }
 
-export type DecorationValue<TTokens> =
+type DecorationValue<TTokens> =
 	| "none"
 	| "underline"
 	| "strikethrough"
@@ -169,7 +169,7 @@ export type DecorationValue<TTokens> =
 			offset?: number | "auto";
 	  };
 
-export type SpacingValue<TTokens> =
+type SpacingValue<TTokens> =
 	| LineHeightValue<TTokens>
 	| {
 			/** Line height. A unitless number is a multiplier, like CSS. */
@@ -178,12 +178,12 @@ export type SpacingValue<TTokens> =
 			letter?: LetterSpacingValue<TTokens>;
 	  };
 
-export type HighlightValue<TTokens> =
+type HighlightValue<TTokens> =
 	| ColorValue<TTokens>
 	| { text?: ColorValue<TTokens>; bg?: ColorValue<TTokens> };
 
 /** The type — how text looks. */
-export interface TextProps<TTokens extends AnyTokens> {
+interface TextProps<TTokens extends AnyTokens> {
 	/** Text color token. */
 	color?: ColorValue<TTokens>;
 	/** Font family (token or name). */

@@ -143,5 +143,3 @@ export function createTokenResolver(
 	const maps = buildTokenMaps(preset, debug);
 	return (prop, value) => resolveTokenValue(maps, prop, value);
 }
-
-export type { AnyTokens };

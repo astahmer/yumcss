@@ -6,32 +6,19 @@ export type StudioPayload = Omit<CollectPayload, "tokenGraph"> & {
 	tokenGraph: TokenGraph;
 };
 
-export type {
-	ConditionUsage,
-	ContrastWarning,
-	CoverageFile,
-	MissingSite,
-	SheetShape,
-	ShapeCategory,
-	SpecificityBucket,
-	StyleUsageReport,
-	ThemeVar,
-	TokenSection,
-	UsageCount,
-	UtilityUnion,
-} from "pandwind-analyze/collect";
+export type { ThemeVar, TokenSection, UtilityUnion } from "pandwind-analyze/collect";
 
 /* ------------------------- inspector-local types ------------------------- */
 
 export type TokenTier = "raw" | "semantic" | "scope" | "component";
 
-export interface TokenGraphNode {
+interface TokenGraphNode {
 	id: string;
 	tier: TokenTier;
 	label: string;
 }
 
-export interface TokenGraphEdge {
+interface TokenGraphEdge {
 	from: string;
 	to: string;
 }

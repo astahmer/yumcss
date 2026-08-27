@@ -22,7 +22,7 @@
 import type { TwConfig } from "./inline.ts";
 
 /** Why a token was flagged by `collectUnresolvedTokens`. */
-export type UnresolvedReason = "arbitrary" | "no-css";
+type UnresolvedReason = "arbitrary" | "no-css";
 
 export interface UnresolvedToken {
 	token: string;

@@ -757,7 +757,7 @@ export function foldRecipeCall(
 /* ------------------------------------------------------------------ */
 
 /** In-place replacement for `const X = panda(tagOrComp, styleOrRecipe)`. */
-export function renderFactoryWrapper(options: {
+function renderFactoryWrapper(options: {
 	name: string;
 	target: string;
 	isRecipe: boolean;
@@ -888,7 +888,7 @@ export function renderJsxIndex(
 /* ------------------------------------------------------------------ */
 
 /** Offline expansion of a pattern fn call's literal props -> SwapIR. */
-export function patternCallToIr(
+function patternCallToIr(
 	name: string,
 	props: Record<string, unknown>,
 	theme: Parameters<typeof pandaStyleToIr>[1],

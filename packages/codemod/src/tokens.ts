@@ -71,10 +71,7 @@ const camelCase = (name: string): string =>
  * Compound dash forms (`group-hover`) split into a nested chain when both
  * halves are known variants joined by `-`.
  */
-export function parseVariants(
-	token: string,
-	meta: PandwindMeta,
-): { variants: string[]; rest: string } {
+function parseVariants(token: string, meta: PandwindMeta): { variants: string[]; rest: string } {
 	const segments = splitTopLevel(token, ":");
 	const variants: string[] = [];
 	let i = 0;
@@ -111,7 +108,7 @@ export function parseVariants(
 }
 
 /** Longest-prefix match of the utility against the conflict map keys. */
-export function splitPrefix(
+function splitPrefix(
 	utility: string,
 	meta: PandwindMeta,
 ): { prefix: string; value: string } | null {

@@ -146,7 +146,7 @@ export function aliasSpecifier(aliasInfo: AliasInfo, outDirName: string, subpath
 /* usage scan                                                          */
 /* ------------------------------------------------------------------ */
 
-export interface RecipeUsage {
+interface RecipeUsage {
 	/** Local binding name at the call site (may differ from export). */
 	local: string;
 	/** Files using it, with call-site counts. */
@@ -177,7 +177,7 @@ export interface ProjectUsage {
 
 const RECIPE_IMPORT_RE = /from\s+["'][^"']*styled-system\/recipes["']/g;
 
-export function emptyProjectUsage(): ProjectUsage {
+function emptyProjectUsage(): ProjectUsage {
 	return {
 		recipes: new Map(),
 		patterns: new Set(),
@@ -197,7 +197,7 @@ function touchRecipe(usage: ProjectUsage, local: string): void {
  * Text-level usage scan over one file's source (already read). Regex-first
  * by design — the inventory only needs NAMES and COUNTS, not positions.
  */
-export function scanFileUsage(file: string, source: string, usage: ProjectUsage): void {
+function scanFileUsage(file: string, source: string, usage: ProjectUsage): void {
 	void file;
 
 	// Recipes imported from styled-system/recipes.
@@ -302,4 +302,4 @@ export function scanProjectUsage(
 }
 
 /** Basename without extension — module file naming for emissions. */
-export const moduleNameFor = (file: string): string => basename(file).replace(/\.[^.]+$/, "");
+const moduleNameFor = (file: string): string => basename(file).replace(/\.[^.]+$/, "");

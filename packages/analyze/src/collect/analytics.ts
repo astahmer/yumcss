@@ -14,8 +14,6 @@
 
 import type { ConditionUsage, StyleUsageReport, UsageCount } from "./types.ts";
 
-export type { ConditionUsage, StyleUsageReport, UsageCount };
-
 const RESPONSIVE = /^(sm|md|lg|xl|2xl|min|max|maxMd|maxLg)(:|$)/;
 const PSEUDO =
 	/^(hover|focus|focusWithin|focusVisible|active|visited|disabled|enabled|checked|placeholder|first|last|odd|even|firstLetter|firstLine|selection|marker|before|after|file|backdrop)$/;
@@ -199,7 +197,7 @@ export function analyzeStyleUsage(
 /* ------------------------------------------------------------------ */
 
 /** Parse a color to sRGB [r,g,b] 0-255. Supports #rgb/#rrggbb + rgb()/rgba(). */
-export function parseColor(raw: string): Array<number> | null {
+function parseColor(raw: string): Array<number> | null {
 	const v = raw.trim().toLowerCase();
 	if (v.startsWith("#")) {
 		const hex = v.slice(1);
@@ -233,7 +231,7 @@ function luminance(rgb: Array<number>): number {
 }
 
 /** WCAG contrast ratio between two colors, rounded to 2 decimals. */
-export function contrastRatio(a: string, b: string): number | null {
+function contrastRatio(a: string, b: string): number | null {
 	const ca = parseColor(a);
 	const cb = parseColor(b);
 	if (ca === null || cb === null) return null;

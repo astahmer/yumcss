@@ -218,7 +218,7 @@ function transformTw(
 /* Mode: cx (clsx / classnames / tailwind-merge -> cx)                 */
 /* ------------------------------------------------------------------ */
 
-export function rewriteClsxImports(
+function rewriteClsxImports(
 	code: string,
 	cxImportSource = "pandwind/cx",
 ): {

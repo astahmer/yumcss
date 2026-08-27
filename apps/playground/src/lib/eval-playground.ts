@@ -15,7 +15,7 @@ import { parseSync } from "oxc-parser";
 import { collectModuleConstants } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
 import type { ConstantScope } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
 
-export interface PlaygroundSuccess {
+interface PlaygroundSuccess {
 	ok: true;
 	/** The merged class string produced by the runtime. */
 	output: string;

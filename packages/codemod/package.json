@@ -40,7 +40,6 @@
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
-		"oxc-parser": "0.144.0",
 		"pandwind": "workspace:*"
 	},
 	"devDependencies": {

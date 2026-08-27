@@ -89,7 +89,7 @@ export const CSS_PROPERTY_ALIASES: ReadonlyMap<string, string> = new Map([
 ]);
 
 /** Top-level keys that open a condition scope instead of declaring. */
-export function isConditionKey(key: string): boolean {
+function isConditionKey(key: string): boolean {
 	return key.startsWith("_") || key === "base";
 }
 
@@ -208,14 +208,14 @@ const SIMPLE_TOKEN_PROPS = new Set([
 ]);
 
 /** Best-effort panda CSS-var group for an unmapped dotted token. */
-export function fallbackVarForPath(path: string): string {
+function fallbackVarForPath(path: string): string {
 	const segments = path.split(".");
 	const group = COLOR_TOKEN_HEADS.has(segments[0] ?? "") ? "colors" : (segments[0] ?? "tokens");
 	return `var(--${group}-${segments.map((segment) => segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)).join("-")})`;
 }
 
 /** Authored pandwind token ref for a known host-theme path (`fg.muted` -> `$fg-muted`). */
-export function authoredRefForPath(path: string): string {
+function authoredRefForPath(path: string): string {
 	return `$${path.replace(/\./g, "-")}`;
 }
 
@@ -442,7 +442,7 @@ function toPlain(value: LitValue): unknown {
 /* cva / sva / defineRecipe                                            */
 /* ------------------------------------------------------------------ */
 
-export interface CompoundVariantIR {
+interface CompoundVariantIR {
 	/** Non-css matcher keys -> required variant value. */
 	matchers: Record<string, string>;
 	/** slot name ('' for cva) -> declarations IR. */
@@ -610,7 +610,7 @@ export function pandaRecipeToIr(
 /* source scanning                                                     */
 /* ------------------------------------------------------------------ */
 
-export type PandaCallKind = "css" | "cva" | "sva";
+type PandaCallKind = "css" | "cva" | "sva";
 
 export interface PandaCall {
 	start: number;

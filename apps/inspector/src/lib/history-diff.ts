@@ -11,7 +11,7 @@ export interface HistoryEntry {
 	payload: StudioPayload;
 }
 
-export interface MetricDelta {
+interface MetricDelta {
 	label: string;
 	before: number;
 	after: number;

@@ -10,7 +10,7 @@
  */
 import type { TwConfig } from "../vite/inline.ts";
 
-export const AGENTS_SCHEMA = "pandwind.agents/1";
+const AGENTS_SCHEMA = "pandwind.agents/1";
 /** Cap per-key literal lists; huge unions keep only a sample + total count. */
 const VALUES_CAP = 50;
 

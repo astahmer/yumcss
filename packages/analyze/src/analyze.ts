@@ -31,7 +31,7 @@ import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inl
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
 
-export interface AnalyzeOptions {
+interface AnalyzeOptions {
 	/** Generated tw module config (conflicts/compose/variants metadata). */
 	config: TwConfig;
 	/** Local names bound to the generated tw function. Default: ["tw"]. */
@@ -50,7 +50,7 @@ export interface AnalyzeOptions {
 	missingCssIgnore?: ReadonlySet<string>;
 }
 
-export interface CallSite {
+interface CallSite {
 	line: number;
 	reason: string;
 }
@@ -63,7 +63,7 @@ export interface CallSite {
  * Custom/foreign classes passed through cx() will false-positive here —
  * list them in `AnalyzeOptions.missingCssIgnore`.
  */
-export interface MissingCssSite {
+interface MissingCssSite {
 	line: number;
 	token: string;
 }
@@ -75,7 +75,7 @@ export interface MissingCssSite {
  * missing CSS. Same collection scope and `missingCssIgnore` opt-out as the
  * missing-CSS lane.
  */
-export interface ArbitraryValueSite {
+interface ArbitraryValueSite {
 	line: number;
 	token: string;
 }
@@ -651,5 +651,3 @@ export function formatReport(summary: FoldSummary): string {
 	}
 	return lines.join("\n");
 }
-
-export type { KnownConstant };

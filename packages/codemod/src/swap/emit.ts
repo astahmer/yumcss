@@ -101,7 +101,7 @@ const CANONICAL_PROP_ORDER: Record<string, number> = {};
 });
 
 /** Sort entries by canonical order; unknowns after knowns, alphabetical. */
-export function sortByCanonicalOrder(entries: SwapEntry[]): SwapEntry[] {
+function sortByCanonicalOrder(entries: SwapEntry[]): SwapEntry[] {
 	return entries.toSorted((a, b) => {
 		const ia = CANONICAL_PROP_ORDER[a.prop];
 		const ib = CANONICAL_PROP_ORDER[b.prop];
@@ -299,7 +299,7 @@ function renderTwInline(tree: TwTree): string {
 	return parts.join(", ");
 }
 
-export const emitTwObject: Emitter = (ir, meta) => {
+const emitTwObject: Emitter = (ir, meta) => {
 	const residuals: SwapIR["residuals"] = [];
 	const tree: TwTree = new Map();
 	let placed = 0;
@@ -556,11 +556,10 @@ function emitDesignVocabWithCallee(
 	return { text, residuals };
 }
 
-export const emitDesignVocab: Emitter = (ir, meta, ctx) =>
+const emitDesignVocab: Emitter = (ir, meta, ctx) =>
 	emitDesignVocabWithCallee("css.class", ir, meta, ctx);
 
-export const emitDssVocab: Emitter = (ir, meta, ctx) =>
-	emitDesignVocabWithCallee("dss", ir, meta, ctx);
+const emitDssVocab: Emitter = (ir, meta, ctx) => emitDesignVocabWithCallee("dss", ir, meta, ctx);
 
 /* ------------------------------------------------------------------ */
 
@@ -571,4 +570,4 @@ export const SWAP_EMITTERS: Record<"css.class" | "design" | "dss" | "tw", Emitte
 	tw: emitTwObject,
 };
 
-export type CoreTarget = keyof typeof SWAP_EMITTERS;
+type CoreTarget = keyof typeof SWAP_EMITTERS;

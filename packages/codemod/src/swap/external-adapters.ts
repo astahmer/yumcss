@@ -54,20 +54,20 @@ import { STYLEX_DEFINITION } from "./adapters/stylex-definition.ts";
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
 
-export type CallPattern = {
+type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly form?: "object" | "template" | "reference";
 };
 
-export function dependency(
+function dependency(
 	name: string,
 	kind: "runtime" | "development" | "peer" | "config",
 ): AdapterDependencies {
 	return { packages: [{ name, kind }] };
 }
 
-export function allRuleCapabilities(
+function allRuleCapabilities(
 	adapterId: string,
 	dynamic: "exact" | "partial" | "unsupported",
 	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
@@ -258,7 +258,7 @@ function addDeclaration(
 	addDeclaration(child, declaration, conditions.slice(1));
 }
 
-export function declarationsObject(declarations: readonly StyleDeclaration[]): string {
+function declarationsObject(declarations: readonly StyleDeclaration[]): string {
 	const root = objectNode();
 	for (const declaration of declarations) {
 		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
@@ -289,7 +289,7 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 	return `{ ${JSON.stringify(prefix)}: ${body} }`;
 }
 
-export function programObject(program: StyleProgram): string {
+function programObject(program: StyleProgram): string {
 	if (program.rules.length === 1) return ruleObject(program.rules[0]!);
 	if (program.rules.every((rule) => rule.kind === "global")) {
 		const root = objectNode();
@@ -311,7 +311,7 @@ export function programObject(program: StyleProgram): string {
 	return renderObjectNode(root);
 }
 
-export function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
+function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
 	return program.rules[0]?.kind ?? "style";
 }
 
@@ -548,7 +548,7 @@ const templateValue = (value: StyleProgram["declarations"][number]["value"]): st
 	return String(value.value);
 };
 
-export function templateCss(program: StyleProgram): string {
+function templateCss(program: StyleProgram): string {
 	const renderRule = (rule: StyleProgram["rules"][number]): string => {
 		const declarations = rule.declarations
 			.filter((declaration) => declaration.conditions.length === 0)
@@ -781,12 +781,15 @@ function validatePrograms(
 	};
 }
 
-export function adapter(
+function adapter(
 	id: ExternalAdapterId,
 	patterns: readonly CallPattern[],
 	packages: AdapterDependencies,
 	capabilities: AdapterCapabilities,
-	emitCall: (program: StyleProgram, context?: AdapterEmitContext) => {
+	emitCall: (
+		program: StyleProgram,
+		context?: AdapterEmitContext,
+	) => {
 		text: string;
 		imports?: readonly string[];
 	},

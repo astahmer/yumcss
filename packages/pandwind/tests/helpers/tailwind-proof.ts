@@ -7,7 +7,7 @@
 import { compile } from "@tailwindcss/node";
 import { parse, type Root, type Rule } from "postcss";
 import selectorParser from "postcss-selector-parser";
-import { resolveVar, themeVariables } from "../../src/tw/theme.ts";
+import { themeVariables } from "../../src/tw/theme.ts";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
 export const TW_ENTRY = '@import "tailwindcss";';
@@ -43,8 +43,6 @@ export function selectorTail(selector: string, className: string): string {
 	}).processSync(selector);
 	return tail;
 }
-
-export { resolveVar, themeVariables };
 
 /** Compile classes with the real Tailwind engine and parse the output. */
 export async function compileClasses(

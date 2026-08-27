@@ -12,7 +12,7 @@
 import type { CssBudget } from "./css-budget.ts";
 import type { FoldSummary } from "./analyze.ts";
 
-export const MAX_ANNOTATIONS = 50;
+const MAX_ANNOTATIONS = 50;
 
 export interface Annotation {
 	file: string;

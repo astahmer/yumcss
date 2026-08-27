@@ -20,11 +20,11 @@ import { pathToFileURL } from "node:url";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 import type { AnyTokens } from "pandwind/types/typings";
 
-export interface VariantMeta {
+interface VariantMeta {
 	join: ":" | "-" | "";
 }
 
-export interface KeyInfo {
+interface KeyInfo {
 	/** tw() object key, e.g. `textColor`. */
 	key: string;
 	/** The utility prefix it emits, e.g. `text`. */

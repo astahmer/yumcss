@@ -22,7 +22,7 @@ import { matchBlock } from "../sources.ts";
 import { parseObjectLiteral } from "./parse.ts";
 import { literalToPlain } from "./parse-panda.ts";
 
-export interface PandaCustomPattern {
+interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */
 	transform?: (
 		props: Record<string, unknown>,
@@ -295,10 +295,7 @@ export const emptyPandaTheme: PandaTheme = {
  * installed). The theme files are plain literals behind identity helpers,
  * so brace-balanced slicing + the shared literal parser recovers them.
  */
-export function loadPandaThemeFromSource(
-	configSource: string,
-	extraSources: Array<string>,
-): PandaTheme {
+function loadPandaThemeFromSource(configSource: string, extraSources: Array<string>): PandaTheme {
 	const tokenVars = new Map<string, string>();
 	const tokens: Record<string, Record<string, unknown>> = {};
 	const textStyles = new Map<string, Record<string, unknown>>();

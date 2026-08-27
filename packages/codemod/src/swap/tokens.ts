@@ -14,7 +14,7 @@ import type { AnyTokens } from "pandwind/types/typings";
 export type TokenRefMode = "off" | "bare" | "group";
 
 /** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
-export function normalizeTokenKey(key: string): string {
+function normalizeTokenKey(key: string): string {
 	return key.replace(/^\$/, "").replace(/-/g, ".");
 }
 

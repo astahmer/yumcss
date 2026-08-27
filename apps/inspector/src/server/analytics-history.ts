@@ -12,7 +12,7 @@ import type { AnalyticsHistoryPoint, StudioPayload } from "../types.ts";
 const DIR = (root: string): string => join(root, ".analytics-history");
 
 /** Extract the compact point from a full payload. */
-export function toHistoryPoint(payload: StudioPayload): AnalyticsHistoryPoint {
+function toHistoryPoint(payload: StudioPayload): AnalyticsHistoryPoint {
 	return {
 		timestamp: new Date().toISOString(),
 		eliminatedPct: payload.coverage.eliminatedPct,
@@ -22,7 +22,7 @@ export function toHistoryPoint(payload: StudioPayload): AnalyticsHistoryPoint {
 	};
 }
 
-export function persistAnalyticsPoint(root: string, point: AnalyticsHistoryPoint): void {
+function persistAnalyticsPoint(root: string, point: AnalyticsHistoryPoint): void {
 	const dir = DIR(root);
 	mkdirSync(dir, { recursive: true });
 	writeFileSync(join(dir, `${point.timestamp}.json`), JSON.stringify(point));

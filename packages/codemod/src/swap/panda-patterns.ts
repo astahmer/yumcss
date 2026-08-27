@@ -145,7 +145,7 @@ export const BUILTIN_PATTERNS: ReadonlySet<string> = new Set([
  * styled-system/jsx component -> pattern function. Box is a styled container
  * without pattern behavior (props pass straight through as declarations).
  */
-export const JSX_COMPONENT_PATTERNS: ReadonlyMap<string, string> = new Map([
+const JSX_COMPONENT_PATTERNS: ReadonlyMap<string, string> = new Map([
 	["Stack", "stack"],
 	["HStack", "hstack"],
 	["VStack", "vstack"],

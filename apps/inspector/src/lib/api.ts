@@ -1,6 +1,6 @@
 import type { StudioPayload } from "../types.ts";
 
-export async function fetchData(): Promise<StudioPayload> {
+async function fetchData(): Promise<StudioPayload> {
 	const res = await fetch("/api/data");
 	if (!res.ok) {
 		const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -9,27 +9,27 @@ export async function fetchData(): Promise<StudioPayload> {
 	return (await res.json()) as StudioPayload;
 }
 
-export const vscodeLink = (root: string, file: string, line: number): string =>
+const vscodeLink = (root: string, file: string, line: number): string =>
 	`vscode://file/${root}/${file}:${line}`;
 
 /** Source link used by provenance views; columns are one-based for editors. */
-export const vscodeLinkAt = (root: string, file: string, line: number, column: number): string =>
+const vscodeLinkAt = (root: string, file: string, line: number, column: number): string =>
 	`vscode://file/${root}/${file}:${line}:${column}`;
 
-export const kb = (bytes: number): string => `${(bytes / 1024).toFixed(2)} KB`;
+const kb = (bytes: number): string => `${(bytes / 1024).toFixed(2)} KB`;
 
-export interface HistoryListItem {
+interface HistoryListItem {
 	timestamp: string;
 	parent: string | null;
 }
 
-export async function fetchHistoryList(): Promise<Array<HistoryListItem>> {
+async function fetchHistoryList(): Promise<Array<HistoryListItem>> {
 	const res = await fetch("/api/history");
 	if (!res.ok) throw new Error(`history api failed: ${res.status}`);
 	return (await res.json()) as Array<HistoryListItem>;
 }
 
-export async function fetchHistoryRun(timestamp: string): Promise<StudioPayload> {
+async function fetchHistoryRun(timestamp: string): Promise<StudioPayload> {
 	const res = await fetch(`/api/history?run=${encodeURIComponent(timestamp)}`);
 	if (!res.ok) throw new Error(`history api failed: ${res.status}`);
 	const body = (await res.json()) as StudioPayload & { error?: string };
@@ -37,18 +37,18 @@ export async function fetchHistoryRun(timestamp: string): Promise<StudioPayload>
 	return body;
 }
 
-export interface PruneChangeset {
+interface PruneChangeset {
 	count: number;
 	content: string | null;
 }
 
-export async function fetchPruneChangeset(): Promise<PruneChangeset> {
+async function fetchPruneChangeset(): Promise<PruneChangeset> {
 	const res = await fetch("/api/analytics/prune-changeset", { method: "POST" });
 	if (!res.ok) throw new Error(`prune-changeset api failed: ${res.status}`);
 	return (await res.json()) as PruneChangeset;
 }
 
-export interface AnalyticsHistoryPoint {
+interface AnalyticsHistoryPoint {
 	timestamp: string;
 	eliminatedPct: number;
 	totalCalls: number;
@@ -56,7 +56,7 @@ export interface AnalyticsHistoryPoint {
 	unusedTokens: number | null;
 }
 
-export async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoint>> {
+async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoint>> {
 	const res = await fetch("/api/analytics/history");
 	if (!res.ok) throw new Error(`analytics history api failed: ${res.status}`);
 	return (await res.json()) as Array<AnalyticsHistoryPoint>;

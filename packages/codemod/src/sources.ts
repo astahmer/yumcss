@@ -24,7 +24,7 @@ import { ensureImport, hasCssBinding } from "./shared.ts";
 
 export type SourceId = "styled-components" | "stylex";
 
-export const SOURCE_IDS: SourceId[] = ["styled-components", "stylex"];
+const SOURCE_IDS: SourceId[] = ["styled-components", "stylex"];
 
 export function parseSourceList(value: string): SourceId[] {
 	const ids: SourceId[] = [];
@@ -88,7 +88,7 @@ function propertyValueIndex(meta: PandwindMeta): Map<string, string> {
 }
 
 /** kebab-case CSS property -> camelCase object key. */
-export const camelProperty = (prop: string): string =>
+const camelProperty = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
 /** Brace-matched extraction of the balanced block starting at `open`. */
@@ -444,7 +444,7 @@ function matchParen(source: string, open: number): { body: string; end: number }
  * uses pseudo/media keys, non-literal values or nested objects — flagged
  * upstream instead of partially converted.
  */
-export function parseStylexEntries(body: string): Array<[string, Array<[string, string]>]> | null {
+function parseStylexEntries(body: string): Array<[string, Array<[string, string]>]> | null {
 	const entries: Array<[string, Array<[string, string]>]> = [];
 	let i = 0;
 	while (i < body.length) {

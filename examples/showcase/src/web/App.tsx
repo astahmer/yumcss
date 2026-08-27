@@ -8,7 +8,7 @@ import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "pandwind/preset";
 import { header, status, body } from "../shared-styles.ts";
 
-export const css = createDesignCss(examplePreset);
+const css = createDesignCss(examplePreset);
 
 export function ShowcaseWeb() {
 	return (

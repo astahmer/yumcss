@@ -16,7 +16,7 @@ import { parse, type Root } from "postcss";
 import { collectTwClasses } from "pandwind/tw/collect";
 
 /** One declared theme scope's extra cost (plans/015). */
-export interface ThemeScopeDelta {
+interface ThemeScopeDelta {
 	scope: string;
 	/** Bytes of the override block (author CSS shipped as-is). */
 	bytes: number;
@@ -158,7 +158,7 @@ export function formatCssBudget(budget: CssBudget): string {
 	return lines.join("\n");
 }
 
-export interface ClassRule {
+interface ClassRule {
 	selector: string;
 	declarations: string;
 }
@@ -222,7 +222,7 @@ export async function classRules(options: {
 /* Stylesheet shape — CSS Overview-style distributions                 */
 /* ------------------------------------------------------------------ */
 
-export interface ShapeCategory {
+interface ShapeCategory {
 	category: string;
 	rules: number;
 	/** Approximate byte weight of the rules in this category. */
@@ -231,7 +231,7 @@ export interface ShapeCategory {
 	topValues: Array<{ value: string; count: number }>;
 }
 
-export interface SpecificityBucket {
+interface SpecificityBucket {
 	label: string;
 	rules: number;
 }

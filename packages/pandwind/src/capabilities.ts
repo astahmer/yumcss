@@ -5,7 +5,7 @@
  * This is intentionally not exported from a public package entry point. It is
  * a contract for describing behavior, not another app-facing styling API.
  */
-export type CapabilityStatus = "static" | "runtime" | "partial" | "unsupported";
+type CapabilityStatus = "static" | "runtime" | "partial" | "unsupported";
 
 export interface CapabilityRecord {
 	readonly feature: string;

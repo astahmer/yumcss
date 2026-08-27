@@ -41,16 +41,6 @@ import type { ModuleNode } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
-import {
-	diagnoseCssSources,
-	extractCssSources,
-	extractCssStyles,
-	findAuthoredCssImports,
-	findCssCallSites,
-	findCssImports,
-	inlineCssCalls,
-	isCssSource,
-} from "./css-extract.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -151,15 +141,4 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 	};
 }
 
-export {
-	findAuthoredCssImports,
-	diagnoseCssSources,
-	extractCssSources,
-	extractCssStyles,
-	findCssCallSites,
-	findCssImports,
-	inlineCssCalls,
-	isCssSource,
-};
-
-export type { AuthoredCssImport } from "./css-extract.ts";
+export type { CssExtractorPreset } from "./css-extract.ts";

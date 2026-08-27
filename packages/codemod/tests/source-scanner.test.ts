@@ -3,7 +3,7 @@ import {
 	SOURCE_SCANNER_SCHEMA,
 	createSourceScannerRegistry,
 	type SourceLanguageAdapter,
-} from "../src/swap/index.ts";
+} from "pandwind/source";
 
 describe("language-neutral source scanner registry", () => {
 	test("scans TSX, Vue, Svelte, and Astro through one document contract", () => {

@@ -1,4 +1,4 @@
-import type { AnyTokens, StyleObject } from "../types/typings.d.ts";
+import type { AnyTokens, StyleObject } from "../types/typings.ts";
 
 /* ---------------------------------------------------------------------------
  * Design-style resolution — designer vocabulary -> concrete CSS properties.

@@ -70,7 +70,6 @@
 		"flattie": "1.1.1",
 		"oxc-parser": "0.144.0",
 		"postcss-selector-parser": "7.1.5",
-		"tailwindcss": "4.3.3",
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {

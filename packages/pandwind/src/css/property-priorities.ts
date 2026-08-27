@@ -647,7 +647,7 @@ type PseudoClassPriorities = {
 	":active": 170;
 };
 
-export const PSEUDO_CLASS_PRIORITIES: PseudoClassPriorities = {
+const PSEUDO_CLASS_PRIORITIES: PseudoClassPriorities = {
 	":is": 40,
 	":where": 40,
 	":not": 40,
@@ -716,13 +716,13 @@ type AtRulePriorities = {
 	"@container": 300;
 };
 
-export const AT_RULE_PRIORITIES: AtRulePriorities = {
+const AT_RULE_PRIORITIES: AtRulePriorities = {
 	"@supports": 30,
 	"@media": 200,
 	"@container": 300,
 };
 
-export const PSEUDO_ELEMENT_PRIORITY: number = 5000;
+const PSEUDO_ELEMENT_PRIORITY: number = 5000;
 
 export function getPropertyPriority(key: string): number {
 	if (key.startsWith("--")) {

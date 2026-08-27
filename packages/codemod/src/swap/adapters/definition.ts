@@ -18,7 +18,7 @@ export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
 	| ((source: string) => AdapterSourceObjectOptions);
 
-export interface CallPattern {
+interface CallPattern {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly form?: "object" | "template" | "reference";

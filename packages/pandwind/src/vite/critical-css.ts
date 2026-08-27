@@ -7,7 +7,7 @@
  * HTML from disk and delegates here; unit tests call it directly.
  */
 
-export const CRITICAL_MARKER_ATTR = "data-pw-critical";
+const CRITICAL_MARKER_ATTR = "data-pw-critical";
 
 const DEFAULT_CAP_BYTES = 64 * 1024;
 

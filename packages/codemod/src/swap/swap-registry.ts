@@ -143,7 +143,7 @@ export function createSwapRegistry(
 
 export const SWAP_REGISTRY = createSwapRegistry();
 
-export type SwapConditionOptions = Pick<
+type SwapConditionOptions = Pick<
 	StyleProgramOptions,
 	"conditionKinds" | "conditionValues" | "conditionRaw"
 >;

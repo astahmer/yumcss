@@ -224,26 +224,6 @@ export type {
 	SwapSourceMatch,
 	SwapTargetAdapter,
 } from "./swap-registry.ts";
-export {
-	SOURCE_SCANNER_SCHEMA,
-	SOURCE_LANGUAGE_ADAPTERS,
-	createSourceScannerRegistry,
-	computeExcludedRanges,
-	isScriptSourceFile,
-	isSupportedSourceFile,
-	parseSourceProgram,
-	sourceLanguageForFile,
-} from "./source-scanner.ts";
-export type {
-	SourceDocument,
-	SourceFramework,
-	SourceLanguage,
-	SourceLanguageAdapter,
-	SourceRange,
-	SourceScanDiagnostic,
-	SourceScanResult,
-	SourceScannerRegistry,
-} from "./source-scanner.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
 export {
 	DIFFERENTIAL_MATRIX,
