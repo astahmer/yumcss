@@ -140,5 +140,3 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		},
 	};
 }
-
-export type { CssExtractorPreset } from "./css-extract.ts";

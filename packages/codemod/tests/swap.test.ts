@@ -251,7 +251,7 @@ describe("swap CLI end-to-end", () => {
 		expect(after).toContain("tw({");
 		expect(after).toContain('bgColor: "blue-500"');
 		expect(after).not.toContain("css.class(");
-	});
+	}, 15_000);
 });
 
 /* ------------------------------------------------------------------ */

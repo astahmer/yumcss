@@ -18,7 +18,7 @@ const vscodeLinkAt = (root: string, file: string, line: number, column: number):
 
 const kb = (bytes: number): string => `${(bytes / 1024).toFixed(2)} KB`;
 
-interface HistoryListItem {
+export interface HistoryListItem {
 	timestamp: string;
 	parent: string | null;
 }
@@ -48,7 +48,7 @@ async function fetchPruneChangeset(): Promise<PruneChangeset> {
 	return (await res.json()) as PruneChangeset;
 }
 
-interface AnalyticsHistoryPoint {
+export interface AnalyticsHistoryPoint {
 	timestamp: string;
 	eliminatedPct: number;
 	totalCalls: number;

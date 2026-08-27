@@ -359,7 +359,8 @@ export function runAdapterMigration(
 					};
 			}
 			if (
-				(binding === undefined && !standaloneExport) ||
+				standaloneExport ||
+				binding === undefined ||
 				tag === undefined ||
 				framework === undefined ||
 				rewriter === undefined

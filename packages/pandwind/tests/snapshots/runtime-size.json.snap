@@ -17,7 +17,7 @@
   },
   "stylesheet generator (build-time only)": {
     "min": 83248,
-    "gz": 20762
+    "gz": 20763
   },
   "root barrel, css only": {
     "min": 3420,
