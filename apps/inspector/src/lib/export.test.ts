@@ -12,6 +12,7 @@ import type { StudioPayload } from "../types.ts";
 
 const payload: StudioPayload = {
 	meta: { root: "/repo" },
+	authoredCss: [],
 	cssSources: [],
 	cssDiagnostics: [],
 	tokenGraph: { nodes: [], edges: [], cycles: [], orphans: [], reachability: {}, dangling: [] },

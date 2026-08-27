@@ -24,6 +24,8 @@ import type {
 export type CssPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
 interface ImportNode extends OxcNode {
+	start?: number;
+	end?: number;
 	source?: { value?: string };
 	specifiers?: OxcSpecifier[];
 }
@@ -70,6 +72,21 @@ export interface CssDiagnostic {
 	end: number;
 	message: string;
 	suggestion: string;
+}
+
+/** An explicit web stylesheet import owned by the host CSS pipeline. */
+export interface AuthoredCssImport {
+	/** TypeScript/TSX module containing the import. */
+	file: string;
+	/** Import specifier exactly as authored, e.g. `./styles.css`. */
+	source: string;
+	/** Import declaration range in the importer. */
+	start: number;
+	end: number;
+	line: number;
+	column: number;
+	/** Side-effect imports load CSS; bound imports are commonly CSS modules. */
+	kind: "side-effect" | "binding";
 }
 
 export interface ExtractedCssStyle {
@@ -151,6 +168,43 @@ const callLocation = (
 		column: call.start - (before.lastIndexOf("\n") + 1) + 1,
 	};
 };
+
+const isAuthoredCssSpecifier = (source: string): boolean =>
+	/\.css(?:[?#].*)?$/.test(source);
+
+/**
+ * Find explicit `.css` imports without inspecting or rewriting their contents.
+ * This is intentionally an import graph observation, not CSS inference: the
+ * host bundler remains responsible for parsing and emitting authored CSS.
+ */
+export function findAuthoredCssImports(code: string, id: string): Array<AuthoredCssImport> {
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const imports: Array<AuthoredCssImport> = [];
+
+	walk(result.program, (node) => {
+		if (node.type !== "ImportDeclaration") return;
+		const declaration = node as ImportNode;
+		const source = declaration.source?.value;
+		if (typeof source !== "string" || !isAuthoredCssSpecifier(source)) return;
+		const start = declaration.start ?? 0;
+		const end = declaration.end ?? start;
+		const { line, column } = callLocation(code, { start, end } as CallNode);
+		imports.push({
+			file: id,
+			source,
+			start,
+			end,
+			line,
+			column,
+			kind: (declaration.specifiers?.length ?? 0) === 0 ? "side-effect" : "binding",
+		});
+	});
+
+	return imports;
+}
 
 const memberName = (callee: OxcNode | null): string | undefined => {
 	if (callee?.type !== "MemberExpression") return undefined;

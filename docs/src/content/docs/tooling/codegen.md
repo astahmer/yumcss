@@ -77,7 +77,8 @@ pnpm analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css]
 - `--tw <path>` — generated tw module (default `src/tw.ts` resolved against
   `--root`).
 - `--json` — JSON output tagged with schema `pandwind.analyze/2`. In addition
-  to fold coverage, it includes `cssSources` call-site provenance and
+  to fold coverage, it includes `authoredCss` explicit web stylesheet imports,
+  `cssSources` call-site provenance and
   `cssDiagnostics` with source positions, reasons, and suggestions for calls
   the CSS extractor could not handle.
 - `--css` — CSS budget lane: compiles the scanned `tw()` surface through the

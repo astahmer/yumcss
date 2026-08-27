@@ -25,12 +25,15 @@ export {
 } from "./parsers.ts";
 export { crawlCssImports } from "./theme-crawl.ts";
 export {
+	collectAuthoredCssImports,
 	collectCssDiagnostics,
 	collectCssProvenance,
+	formatAuthoredCssImports,
 	formatCssDiagnostics,
 	type AnalyzeSourceFile,
 } from "../css-diagnostics.ts";
 export type {
+	AuthoredCssImport,
 	CollectPayload,
 	ConditionUsage,
 	ContrastWarning,

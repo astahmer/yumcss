@@ -1,5 +1,6 @@
 import {
 	diagnoseCssSources,
+	findAuthoredCssImports,
 	findCssCallSites,
 	findCssImports,
 	type CssCallSite,
@@ -7,6 +8,7 @@ import {
 } from "../../pandwind/src/vite/css-extract.ts";
 
 export type {
+	AuthoredCssImport,
 	CssCallSite,
 	CssDiagnostic,
 	CssDiagnosticKind,
@@ -18,6 +20,13 @@ export interface AnalyzeSourceFile {
 }
 
 const DEFAULT_MATCHERS = ["css", "design"] as const;
+
+/** Collect explicit web stylesheet imports without parsing their CSS. */
+export function collectAuthoredCssImports(
+	files: ReadonlyArray<AnalyzeSourceFile>,
+): Array<import("../../pandwind/src/vite/css-extract.ts").AuthoredCssImport> {
+	return files.flatMap(({ file, content }) => findAuthoredCssImports(content, file));
+}
 
 /** Collect CSS call provenance for analyze and inspector consumers. */
 export function collectCssProvenance(
@@ -47,6 +56,18 @@ export function formatCssDiagnostics(diagnostics: ReadonlyArray<CssDiagnostic>):
 		"css diagnostics:",
 		...diagnostics.map(
 			(d) => `    ^ ${d.file}:${d.line}:${d.column} — ${d.kind}: ${d.message} ${d.suggestion}`,
+		),
+	].join("\n");
+}
+
+export function formatAuthoredCssImports(
+	imports: ReadonlyArray<import("../../pandwind/src/vite/css-extract.ts").AuthoredCssImport>,
+): string {
+	if (imports.length === 0) return "";
+	return [
+		"authored css imports:",
+		...imports.map(
+			(css) => `    ^ ${css.file}:${css.line}:${css.column} — ${css.source} (${css.kind})`,
 		),
 	].join("\n");
 }

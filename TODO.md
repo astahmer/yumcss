@@ -92,9 +92,10 @@
 - **No panda-style PostCSS pipeline or mini runtime.** Tailwind compiles once,
   statically; `tw()` output is plain class strings. `css()` output is
   extracted at build time by `pandwindCssVite`.
-- **No cva/sva, no config files.** Panda's recipe/slot API and config-driven
-  pipeline are exactly the surface we don't want to repeat. A minimalist API
-  you can hold in your head; codegen stays plain scripts.
+- **No built-in recipe/slot API, no config files.** Panda's recipe/slot API and
+  config-driven pipeline are exactly the surface we don't want to repeat. A
+  minimalist API you can hold in your head; external CVA-style packages can
+  select the class strings Pandwind already produces.
 - **No hand-maintained tailwind-merge config.** Conflict rules are generated
   from the real engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API.** The design surface is ~30 Figma-inspector props;

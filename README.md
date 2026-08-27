@@ -594,8 +594,9 @@ under _What we deliberately don't do (and why)_. The highlights:
   styles at runtime is exactly the perf and caching cost we're avoiding.
 - **No panda-style PostCSS pipeline or mini runtime** — Tailwind compiles once,
   statically; `tw()` output is plain class strings.
-- **No cva/sva, no config files** — a minimalist API you can hold in your head;
-  codegen stays plain scripts.
+- **No built-in recipe/slot API, no config files** — a minimalist API you can
+  hold in your head; use an external CVA-style package to select Pandwind
+  class strings when needed.
 - **No hand-maintained tailwind-merge config** — conflict rules are generated
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector

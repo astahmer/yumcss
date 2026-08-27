@@ -1,6 +1,6 @@
 # CSS-in-JS overall plan
 
-**Status: in progress — revisions 1, 2, 4, and 5 landed; authored-rule decisions deferred**
+**Status: in progress — revisions 1, 2, 4, and 5 landed; web authored-CSS lane documented and observable; recipes deferred**
 
 ## Context
 
@@ -122,7 +122,7 @@ the flat path does not become ambiguous.
 | SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                 |
 | Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation              |
 | Release/publishing   | Deferred                                                             | User explicitly requested no release work in this wave               |
-| Recipes/composition  | Deferred to dedicated session                                        | User explicitly requested this exclusion                             |
+| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API       | User explicitly requested this exclusion                             |
 
 ## What this allows
 
@@ -207,9 +207,8 @@ schema version.
       docs/tests.
 - [ ] General `createCss` behavior matches its documentation and has direct
       positive and negative type tests.
-- [ ] Authored CSS primitives have deterministic ordering, deduplication, and
-      extraction/runtime tests, or are explicitly documented as unsupported.
-      **Deferred to the dedicated authored-rule decision session.**
+- [x] Web authored CSS has an explicit import contract and tooling visibility;
+      first-class TypeScript primitives remain deferred.
 - [ ] `css.vars()` has browser, SSR, hydration, fallback, and invalid-input
       tests.
 - [ ] At least Vite plus one non-Vite unplugin fixture has static and dynamic

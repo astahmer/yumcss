@@ -44,6 +44,7 @@ import {
 	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
+	findAuthoredCssImports,
 	findCssCallSites,
 	findCssImports,
 	inlineCssCalls,
@@ -141,6 +142,7 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 }
 
 export {
+	findAuthoredCssImports,
 	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
@@ -149,3 +151,5 @@ export {
 	inlineCssCalls,
 	isCssSource,
 };
+
+export type { AuthoredCssImport } from "./css-extract.ts";

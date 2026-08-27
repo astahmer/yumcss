@@ -12,6 +12,7 @@ function payload(overrides: {
 }): StudioPayload {
 	return {
 		meta: { root: "/repo" },
+		authoredCss: [],
 		cssSources: [],
 		cssDiagnostics: [],
 		tokenGraph: { nodes: [], edges: [], cycles: [], orphans: [], reachability: {}, dangling: [] },

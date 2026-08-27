@@ -41,13 +41,13 @@ export const CSS_IN_JS_CAPABILITIES = [
 	},
 	{
 		feature: "global-rules",
-		status: "unsupported",
-		detail: "No first-class authored global-rule primitive exists yet.",
+		status: "partial",
+		detail: "Web projects use explicit authored CSS imports; no first-class TS global-rule primitive exists.",
 	},
 	{
 		feature: "keyframes-font-face",
-		status: "unsupported",
-		detail: "No first-class authored keyframes or font-face primitive exists yet.",
+		status: "partial",
+		detail: "Web projects use explicit authored CSS imports; no first-class TS animation/font primitive exists.",
 	},
 	{
 		feature: "ssr-hydration",

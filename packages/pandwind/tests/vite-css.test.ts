@@ -9,11 +9,34 @@ import {
 	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
+	findAuthoredCssImports,
 	findCssCallSites,
 	findCssImports,
 	inlineCssCalls,
 	isCssSource,
 } from "../src/vite/css-extract.ts";
+
+test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
+	const code = `
+		import "./globals.css";
+		import styles from "@acme/theme/styles.css?inline";
+		import { css } from "./design";
+	`;
+	const imports = findAuthoredCssImports(code, "src/main.tsx");
+
+	expect(imports).toHaveLength(2);
+	expect(imports[0]).toMatchObject({
+		file: "src/main.tsx",
+		source: "./globals.css",
+		kind: "side-effect",
+		line: 2,
+	});
+	expect(imports[1]).toMatchObject({
+		source: "@acme/theme/styles.css?inline",
+		kind: "binding",
+		line: 3,
+	});
+});
 
 test("findCssCallSites reports extraction coverage with provenance", () => {
 	const code = `
