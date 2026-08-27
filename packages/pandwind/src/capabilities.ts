@@ -53,7 +53,7 @@ export const CSS_IN_JS_CAPABILITIES = [
 		feature: "ssr-hydration",
 		status: "partial",
 		detail:
-			"css.vars() is serializable and server-safe; runtime sheet extraction and hydration adapters are not shipped.",
+			"css.vars() is serializable and server-safe; browser hydration proves class/style stability, while runtime sheet extraction remains host-owned.",
 	},
 	{
 		feature: "bundler-integration",
@@ -64,6 +64,6 @@ export const CSS_IN_JS_CAPABILITIES = [
 		feature: "source-provenance",
 		status: "partial",
 		detail:
-			"Debug names and analyzer data exist, but emitted rules are not source-addressable yet.",
+			"Analyze/inspector payloads carry source ranges and emitted rule identities when a matching preset is available.",
 	},
 ] as const satisfies readonly CapabilityRecord[];

@@ -1,6 +1,6 @@
 # CSS-in-JS overall plan
 
-**Status: in progress — scoped foundation wave**
+**Status: in progress — revisions 1, 2, 4, and 5 landed; authored-rule decisions deferred**
 
 ## Context
 
@@ -54,11 +54,11 @@ loudly, and every generated rule can be traced back to authored source.
 - Add direct type tests for the general CSS lane, not only the design vocabulary.
 - Preserve `createDesignCss()` as the constrained design-intent lane.
 
-### Revision 3 — authored CSS primitives and dynamic contract
+### Revision 3 — authored CSS primitives and dynamic contract (deferred decision)
 
-- Add or explicitly support, through a design-reviewed minimal surface,
-  global rules, keyframes, font-face, cascade layers, `@supports`, and custom
-  property definitions.
+- Decide in a dedicated session whether global rules, keyframes, font-face,
+  cascade layers, `@supports`, and custom property definitions remain
+  unsupported or get a minimal build-time mechanism.
 - Define deterministic ordering, deduplication, hashing, and debug behavior
   for these constructs.
 - Fully specify `css.vars()` behavior for SSR, hydration, fallback chains,
@@ -188,7 +188,8 @@ schema version.
    smallest approved surface.
 5. Add SSR/RSC and framework fixture coverage with browser assertions.
 6. Thread provenance and capability diagnostics through extraction and
-   analyzer/inspector output.
+   analyzer/inspector output. **Landed:** source ranges, emitted rule links,
+   unsupported-construct diagnostics, and missing-extraction diagnostics.
 7. Run all gates, inspect each jj revision, and update this plan's outcomes.
 
 ## Open questions
@@ -208,21 +209,26 @@ schema version.
       positive and negative type tests.
 - [ ] Authored CSS primitives have deterministic ordering, deduplication, and
       extraction/runtime tests, or are explicitly documented as unsupported.
+      **Deferred to the dedicated authored-rule decision session.**
 - [ ] `css.vars()` has browser, SSR, hydration, fallback, and invalid-input
       tests.
 - [ ] At least Vite plus one non-Vite unplugin fixture has static and dynamic
       browser coverage.
 - [ ] SSR/hydration behavior is deterministic and does not duplicate rules.
-- [ ] Analyzer/inspector output can map a generated rule back to source.
+- [x] Analyzer/inspector output can map an extracted rule identity/CSS back to
+      its source call site when the matching preset is available.
+- [x] Analyze JSON and human output report actionable unsupported-construct and
+      missing-extraction diagnostics.
 - [ ] Runtime-size and existing parity gates remain green.
 - [ ] No recipe/composition or release/publish changes are included.
 
 ## Decisions log
 
-| Date       | Decision                                   | Rationale                                                            |
-| ---------- | ------------------------------------------ | -------------------------------------------------------------------- |
-| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces |
-| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                       |
-| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                |
-| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                        |
-| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions    |
+| Date       | Decision                                   | Rationale                                                                                      |
+| ---------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces                           |
+| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                                                 |
+| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                                          |
+| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                                                  |
+| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions                              |
+| 2026-08-27 | Defer authored CSS primitive decisions     | Globals, keyframes, font-face, layers, `@supports`, and `@property` will be planned separately |

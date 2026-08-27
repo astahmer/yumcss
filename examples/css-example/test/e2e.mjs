@@ -137,10 +137,16 @@ try {
 	);
 	check(
 		"hydrated variable drives computed color",
-		(await hydration.$eval('[data-testid="hydration-target"]', (el) => getComputedStyle(el).color)) ===
-				"rgb(37, 99, 235)",
+		(await hydration.$eval(
+			'[data-testid="hydration-target"]',
+			(el) => getComputedStyle(el).color,
+		)) === "rgb(37, 99, 235)",
 	);
-	check("hydration has no console errors or warnings", hydrationErrors.length === 0, hydrationErrors.join(" | "));
+	check(
+		"hydration has no console errors or warnings",
+		hydrationErrors.length === 0,
+		hydrationErrors.join(" | "),
+	);
 	await hydration.close();
 
 	// CI visual-artifacts lane: optional deterministic capture.

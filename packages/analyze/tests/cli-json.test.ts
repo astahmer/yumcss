@@ -94,7 +94,10 @@ css.keyframes({ from: { opacity: 0 } });`,
 		]);
 		expect(doc.cssDiagnostics).toEqual([
 			expect.objectContaining({ kind: "missing-extraction" }),
-			expect.objectContaining({ kind: "unsupported-construct", suggestion: expect.stringContaining("css.class") }),
+			expect.objectContaining({
+				kind: "unsupported-construct",
+				suggestion: expect.stringContaining("css.class"),
+			}),
 		]);
 		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
 		expect(human).toContain("css diagnostics:");
