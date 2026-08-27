@@ -1,11 +1,11 @@
 /** Replaceable, independently testable stages used by Panda migration. */
 import { parseSourceProgram } from "pandwind/source";
-import type { PandwindMeta } from "../meta.ts";
-import { applyEdits } from "../migrate.ts";
-import { emitCssClass } from "./emit.ts";
-import { parseObjectLiteral } from "./parse.ts";
-import type { PandaTheme } from "./panda-theme.ts";
-import { pandaRecipeToIr, pandaStyleToIr } from "./parse-panda.ts";
+import type { PandwindMeta } from "../../../meta.ts";
+import { applyEdits } from "../../../migrate.ts";
+import { emitCssClass } from "../../emit.ts";
+import { parseObjectLiteral } from "../../parse.ts";
+import type { PandaTheme } from "./theme.ts";
+import { pandaRecipeToIr, pandaStyleToIr } from "./parse.ts";
 
 export const PANDA_MIGRATION_STAGES_SCHEMA = "pandwind.panda-migration-stages/1" as const;
 

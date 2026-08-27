@@ -60,12 +60,12 @@ export type SwapMissResolver = (
 ) => Array<{ prop: string; value: string }> | null;
 
 export { createEngineMissResolver } from "./engine.ts";
-export { runPandaMigration } from "./panda-migrate.ts";
+export { runPandaMigration } from "./adapters/panda/index.ts";
 export {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
 	createPandaMigrationPipeline,
-} from "./panda-migration-pipeline.ts";
+} from "./adapters/panda/index.ts";
 export type {
 	PandaMigrationContext,
 	PandaMigrationPhase,
@@ -73,7 +73,7 @@ export type {
 	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
-} from "./panda-migration-pipeline.ts";
+} from "./adapters/panda/index.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
 	discoverPandaFiles,
@@ -81,12 +81,12 @@ export {
 	extractPandaMigrationUsage,
 	loadPandaMigrationTheme,
 	scanPandaMigrationSources,
-} from "./panda-migration-discovery.ts";
+} from "./adapters/panda/index.ts";
 export type {
 	PandaMigrationFile,
 	PandaMigrationSource,
 	PandaMigrationWorkspace,
-} from "./panda-migration-discovery.ts";
+} from "./adapters/panda/index.ts";
 export {
 	PANDA_MIGRATION_STAGES_SCHEMA,
 	convertPandaRecipe,
@@ -94,8 +94,8 @@ export {
 	emitPandaStyle,
 	rewritePandaSource,
 	validatePandaSource,
-} from "./panda-migration-stages.ts";
-export { inferCommonRoot } from "./panda-migrate.ts";
+} from "./adapters/panda/index.ts";
+export { inferCommonRoot } from "./adapters/panda/index.ts";
 export type { TwMissResolver } from "./engine.ts";
 export {
 	STYLE_PROGRAM_SCHEMA,

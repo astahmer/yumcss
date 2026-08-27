@@ -1,8 +1,8 @@
-import type { PandwindMeta } from "../meta.ts";
-import { matchBlock } from "../sources.ts";
-import { SWAP_EMITTERS, type Emitter } from "./emit.ts";
-import { OUTBOUND_EMITTERS } from "./adapters/outbound/plugin.ts";
-import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
+import type { PandwindMeta } from "../../meta.ts";
+import { matchBlock } from "../../sources.ts";
+import { SWAP_EMITTERS, type Emitter } from "../emit.ts";
+import { OUTBOUND_EMITTERS } from "./outbound/plugin.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterDependencies,
@@ -10,21 +10,21 @@ import {
 	type AdapterParseResult,
 	type AdapterProjectConfig,
 	type StyleAdapter,
-} from "./adapter-contract.ts";
-import { parseCssLiterals, parseTwCalls } from "./parse.ts";
+} from "../adapter-contract.ts";
+import { parseCssLiterals, parseTwCalls } from "../parse.ts";
 import {
 	createStyleSystem,
 	asStyleDialect,
 	type StyleDialectAdapter,
 	type StyleSystemAdapter,
-} from "./style-systems.ts";
+} from "../style-systems.ts";
 import {
 	styleProgramFromSourceObject,
 	styleProgramFromSwapIR,
 	styleProgramToCanonicalCss,
 	swapIRFromStyleProgram,
 	type StyleProgramResidual,
-} from "./semantic-ir.ts";
+} from "../semantic-ir.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: "runtime" }],

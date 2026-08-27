@@ -20,14 +20,15 @@
  * - `textStyle: '<name>'` expands inline from the ingested theme (a
  *   textStyle is bundled utilities); unknown names are residuals.
  */
-import type { SwapEntry, SwapIR, SwapResidual } from "./ir.ts";
-import { parseObjectLiteral, type LiteralObject, type LitValue } from "./parse.ts";
-import type { PandaTheme } from "./panda-theme.ts";
-import { emptyPandaTheme } from "./panda-theme.ts";
-import { matchBlock } from "../sources.ts";
+import type { SwapEntry, SwapIR, SwapResidual } from "../../ir.ts";
+import { parseObjectLiteral, type LiteralObject, type LitValue } from "../../parse.ts";
+import type { PandaTheme } from "./theme.ts";
+import { emptyPandaTheme } from "./theme.ts";
+import { matchBlock } from "../../../sources.ts";
+import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 
 // Re-exported for tests/consumers that only import this module.
-export { parseObjectLiteral } from "./parse.ts";
+export { parseObjectLiteral } from "../../parse.ts";
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === "object" && v !== null && !Array.isArray(v);
@@ -74,18 +75,6 @@ export const PANDA_ALIASES: ReadonlyMap<string, string> = new Map([
 	["roundedLeft", "borderLeftRadius"],
 	["roundedStart", "borderStartRadius"],
 	["roundedEnd", "borderEndRadius"],
-]);
-
-/** Canonical Panda names that need expansion to an actual CSS property. */
-export const CSS_PROPERTY_ALIASES: ReadonlyMap<string, string> = new Map([
-	["paddingX", "paddingInline"],
-	["paddingY", "paddingBlock"],
-	["marginX", "marginInline"],
-	["marginY", "marginBlock"],
-	["scrollMarginX", "scrollMarginInline"],
-	["scrollMarginY", "scrollMarginBlock"],
-	["scrollPaddingX", "scrollPaddingInline"],
-	["scrollPaddingY", "scrollPaddingBlock"],
 ]);
 
 /** Top-level keys that open a condition scope instead of declaring. */

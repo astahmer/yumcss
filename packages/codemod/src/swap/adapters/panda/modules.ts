@@ -12,12 +12,13 @@
  * modules import the app's migrated `css`/`cx` instances from the out-dir
  * bootstrap.
  */
-import type { SwapIR } from "./ir.ts";
-import { emitCssClass } from "./emit.ts";
-import type { PandwindMeta } from "../meta.ts";
-import { CSS_PROPERTY_ALIASES, PANDA_ALIASES, type PandaRecipeIR } from "./parse-panda.ts";
-import { expandBuiltinPattern } from "./panda-patterns.ts";
-import type { PandaTheme } from "./panda-theme.ts";
+import type { SwapIR } from "../../ir.ts";
+import { emitCssClass } from "../../emit.ts";
+import type { PandwindMeta } from "../../../meta.ts";
+import { PANDA_ALIASES, type PandaRecipeIR } from "./parse.ts";
+import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
+import { expandBuiltinPattern } from "./patterns.ts";
+import type { PandaTheme } from "./theme.ts";
 
 const q = (v: string | number | boolean): string =>
 	typeof v === "string" ? JSON.stringify(v) : String(v);

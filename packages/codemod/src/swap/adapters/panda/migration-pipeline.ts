@@ -6,10 +6,10 @@ import {
 	loadPandaMigrationTheme,
 	scanPandaMigrationSources,
 	type PandaMigrationWorkspace,
-} from "./panda-migration-discovery.ts";
-import { parsePandaCalls, type PandaCall } from "./parse-panda.ts";
+} from "./migration-discovery.ts";
+import { parsePandaCalls, type PandaCall } from "./parse.ts";
 import { scanFactoryElements } from "./panda-migrate.ts";
-import { styleProgramFromSwapIR, type StyleProgram } from "./semantic-ir.ts";
+import { styleProgramFromSwapIR, type StyleProgram } from "../../semantic-ir.ts";
 
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
 export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/2" as const;

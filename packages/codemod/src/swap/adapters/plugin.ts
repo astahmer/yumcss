@@ -1,20 +1,20 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
 import aphrodite from "./aphrodite.adapter.ts";
 import compiled from "./compiled.adapter.ts";
-import emotion from "./emotion-definition.ts";
+import emotion from "./emotion.adapter.ts";
 import fela from "./fela.adapter.ts";
 import goober from "./goober.adapter.ts";
-import jss from "./jss-definition.ts";
-import linaria from "./linaria-definition.ts";
-import pandwind from "./pandwind-definition.ts";
+import jss from "./jss.adapter.ts";
+import linaria from "./linaria.adapter.ts";
+import pandwind from "./pandwind.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
-import stitches from "./stitches-definition.ts";
+import stitches from "./stitches.adapter.ts";
 import style9 from "./style9.adapter.ts";
-import stylex from "./stylex-definition.ts";
-import styledComponents from "./styled-components-definition.ts";
+import stylex from "./stylex.adapter.ts";
+import styledComponents from "./styled-components.adapter.ts";
 import treat from "./treat.adapter.ts";
-import vanillaExtract from "./vanilla-extract-definition.ts";
+import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */

@@ -17,7 +17,7 @@ import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
-import { CSS_PROPERTY_ALIASES } from "./parse-panda.ts";
+import { CSS_PROPERTY_ALIASES } from "./property-aliases.ts";
 
 export interface EmitterContext {
 	/** 1-based ordinal of the call site within the current file pass. */

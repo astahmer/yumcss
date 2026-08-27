@@ -18,9 +18,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { matchBlock } from "../sources.ts";
-import { parseObjectLiteral } from "./parse.ts";
-import { literalToPlain } from "./parse-panda.ts";
+import { matchBlock } from "../../../sources.ts";
+import { parseObjectLiteral, literalToPlain } from "./parse.ts";
 
 interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */

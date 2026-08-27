@@ -4,13 +4,8 @@ import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
-import {
-	detectAlias,
-	scanProjectUsage,
-	type AliasInfo,
-	type ProjectUsage,
-} from "./panda-project.ts";
-import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./panda-theme.ts";
+import { detectAlias, scanProjectUsage, type AliasInfo, type ProjectUsage } from "./project.ts";
+import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./theme.ts";
 
 export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/2" as const;
 

@@ -15,9 +15,9 @@
  */
 import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
-import type { PandwindMeta } from "../meta.ts";
-import { computeExcludedRanges, matchBlock } from "../sources.ts";
-import { ensureImport } from "../shared.ts";
+import type { PandwindMeta } from "../../../meta.ts";
+import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
+import { ensureImport } from "../../../shared.ts";
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
@@ -28,26 +28,26 @@ import {
 	renderPatternModule,
 	renderRecipeModule,
 	renderVirtualCssDeclaration,
-} from "./panda-modules.ts";
-import { BUILTIN_PATTERNS } from "./panda-patterns.ts";
-import { aliasSpecifier, type ProjectUsage } from "./panda-project.ts";
-import { parseObjectLiteral } from "./parse.ts";
-import { discoverPandaMigration, type PandaMigrationFile } from "./panda-migration-discovery.ts";
-import type { PandaMigrationWorkspace } from "./panda-migration-discovery.ts";
+} from "./modules.ts";
+import { BUILTIN_PATTERNS } from "./patterns.ts";
+import { aliasSpecifier, type ProjectUsage } from "./project.ts";
+import { parseObjectLiteral } from "../../parse.ts";
+import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
+import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import {
 	convertPandaRecipe,
 	convertPandaStyle,
 	emitPandaStyle,
 	rewritePandaSource,
 	validatePandaSource,
-} from "./panda-migration-stages.ts";
-import type { PandaTheme } from "./panda-theme.ts";
+} from "./migration-stages.ts";
+import type { PandaTheme } from "./theme.ts";
 import {
 	literalToPlain,
 	PANDA_ALIASES,
 	normalizePandaStyleObject,
 	parsePandaCalls,
-} from "./parse-panda.ts";
+} from "./parse.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;

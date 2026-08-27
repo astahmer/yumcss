@@ -19,8 +19,8 @@ import {
 	parseObjectLiteral,
 	parsePandaCalls,
 	type PandaRecipeIR,
-} from "../src/swap/parse-panda.ts";
-import { loadPandaTheme, type PandaTheme } from "../src/swap/panda-theme.ts";
+} from "../src/swap/adapters/panda/index.ts";
+import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/index.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 
 const WEBSITE = `${process.env.HOME}/dev/panda/website`;
