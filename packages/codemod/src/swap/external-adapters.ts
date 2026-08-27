@@ -164,9 +164,7 @@ function sourceName(source: string, start: number, fallback: string): string {
 }
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
-	const match = source
-		.slice(start)
-		.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
+	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
 	if (match?.[1] === undefined) return {};
 	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
 	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
@@ -461,11 +459,7 @@ function parseCalls(
 				const firstTick = template.indexOf("`");
 				const lastTick = template.lastIndexOf("`");
 				if (firstTick === -1 || lastTick <= firstTick) continue;
-				let program = parseTemplateProgram(
-					template.slice(firstTick + 1, lastTick),
-					context,
-					start,
-				);
+				let program = parseTemplateProgram(template.slice(firstTick + 1, lastTick), context, start);
 				if (pattern.name.startsWith("styled"))
 					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
 				matches.push({ start, end: start + template.length, program, sourceText: template });
@@ -616,14 +610,17 @@ function removeSourceImports(code: string, modules: readonly string[]): string {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		result = result.replace(
 			new RegExp(
-				`^[ \\t]*import(?:[^\\n;]+?\\s+from\\s+)?[\"']${quoted}[\"'];?[ \\t]*(?:\\n|$)`,
+				`^[ \\t]*import(?:[^\\n;]+?\\s+from\\s+)?["']${quoted}["'];?[ \\t]*(?:\\n|$)`,
 				"gm",
 			),
 			"",
 		);
 	}
 	return result
-		.replace(/^[ \t]*(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?[ \t]*(?:\n|$)/gm, "")
+		.replace(
+			/^[ \t]*(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?[ \t]*(?:\n|$)/gm,
+			"",
+		)
 		.replace(/^[ \t]*const\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?[ \t]*(?:\n|$)/gm, "");
 }
 
@@ -657,9 +654,9 @@ function consolidateImports(statements: Iterable<string>): string[] {
 	}
 	return [
 		...[...grouped].map(([module, group]) => {
-		const named = group.named.size > 0 ? `{ ${[...group.named].sort().join(", ")} }` : "";
-		const specifier = [group.defaultImport, named].filter(Boolean).join(", ");
-		return `import ${specifier} from "${module}";`;
+			const named = group.named.size > 0 ? `{ ${[...group.named].toSorted().join(", ")} }` : "";
+			const specifier = [group.defaultImport, named].filter(Boolean).join(", ");
+			return `import ${specifier} from "${module}";`;
 		}),
 		...other,
 	];

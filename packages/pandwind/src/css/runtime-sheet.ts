@@ -171,8 +171,8 @@ const semanticRule = (rule: RuntimeSemanticRule): RuntimeRule => {
 	const { priority: _priority, ...semanticIdentity } = rule;
 	return {
 		id: rule.id ?? `semantic-${semanticHash(JSON.stringify(semanticIdentity))}`,
-	css: semanticRuleCss(rule),
-	priority: rule.priority ?? 0,
+		css: semanticRuleCss(rule),
+		priority: rule.priority ?? 0,
 	};
 };
 

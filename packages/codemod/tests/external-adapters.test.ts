@@ -43,7 +43,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
-		expect(result.code).not.toContain('@emotion/css');
+		expect(result.code).not.toContain("@emotion/css");
 		expect(result.code).toContain('import styled from "styled-components";');
 		expect(result.code).toContain("styled.div({");
 		expect(result.code).toContain("theme.foreground");
@@ -204,7 +204,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const vanilla = getExternalAdapter("vanilla-extract")!;
 		const parsed = vanilla.parse(
 			`style({ color: "red", selectors: { "&:hover": { color: "blue" } } });`,
-			{ file: "card.css.ts", source: "", config: { adapter: "vanilla-extract", files: [], values: {} } },
+			{
+				file: "card.css.ts",
+				source: "",
+				config: { adapter: "vanilla-extract", files: [], values: {} },
+			},
 		);
 		expect(parsed.matches[0]?.program.residuals).toEqual([]);
 		expect(parsed.matches[0]?.program.declarations[1]?.conditions[0]).toMatchObject({
