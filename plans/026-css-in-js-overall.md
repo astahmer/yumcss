@@ -57,6 +57,12 @@ broader pivot still needs work:
 The scoped foundation is therefore complete; the overall CSS-in-JS pivot is
 still in progress under `plans/025-css-in-js-pivot.md`.
 
+The subsequent full-pivot implementation added the rule-level semantic IR,
+adapter contract v2, external adapters, differential validation, recipes, and
+host contracts. This plan remains the historical foundation scope; its
+remaining unchecked items are intentionally tracked as integration-hardening
+work in plan 025.
+
 ## What
 
 ### Revision 1 — compatibility scorecard and contract

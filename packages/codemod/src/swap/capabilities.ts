@@ -114,12 +114,19 @@ export function requiredAdapterCapabilities(
 	};
 
 	if (program.declarations.length > 0) add("declarations", "style declarations");
-	if (program.rules.length > 0) {
+	const needsRuleLevel = program.rules.some(
+		(rule) =>
+			rule.kind !== "style" ||
+			rule.selector !== undefined ||
+			rule.children.length > 0 ||
+			rule.conditions.length > 0,
+	);
+	if (needsRuleLevel) {
 		add("rule-level", `${program.rules.length} semantic rules`);
 		if (program.rules.length > 1) add("ordering", "ordered semantic rules");
 	}
 	for (const rule of program.rules) {
-		add(ruleCapability(rule.kind), `${rule.kind} rule`);
+		if (needsRuleLevel) add(ruleCapability(rule.kind), `${rule.kind} rule`);
 		if (rule.selector !== undefined) add("selectors", `selector: ${rule.selector}`);
 		if (rule.children.length > 0) add("nesting", `${rule.kind} nested rules`);
 	}

@@ -82,7 +82,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			mode: "safe",
 			index: 0,
 		});
-		expect(emitted.text).toContain("css(");
+		expect(emitted.text).toContain("keyframes(");
 		expect(emitted.residuals).toEqual([]);
 	});
 });

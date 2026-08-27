@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: IN PROGRESS — runtime, project context, semantic IR, source dynamics, and adapter contracts complete**
+**Status: IN PROGRESS — first full pivot implementation landed; integration hardening remains**
 
 ## Context
 
@@ -22,6 +22,30 @@ layers, recipes, component composition, and host-framework behavior.
 The codemod direction already has a useful neutral IR, but it must become
 project-aware and must preserve authored token identity and non-declaration
 semantics. It must not be coupled to the example preset.
+
+## Current outcome
+
+The first complete implementation slice now exists:
+
+- rule-level semantic IR `/2` with ordered style/global/keyframes/font-face/
+  layer/supports/property nodes and canonical serialization;
+- adapter contract `/2` with detection, project config, parse/emit,
+  dependencies, capabilities, validation, and explicit residuals;
+- pandwind, Emotion, styled-components, vanilla-extract, and Stitches object
+  adapters;
+- canonical/browser-hook/SSR-hydration differential validation;
+- recipe/component IR plus runtime recipes and slot recipes;
+- renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts.
+
+This is a deliberately breaking internal contract revision: pandwind owns the
+adapter and semantic-IR API, so there is no compatibility shim for the old
+capability schema or style-program schema. The flat `SwapIR` path remains the
+performance path for literal declaration swaps.
+
+Remaining hardening is concrete rather than conceptual: real browser and
+framework fixtures, project config/package detection, tagged-template parsing,
+first-class authored rule runtime APIs, and complete bidirectional round trips
+for each external library.
 
 ## Goal
 
@@ -183,10 +207,10 @@ context used to produce it.
 
 ## Implementation steps
 
-1. Write the compatibility scorecard and freeze the semantic/runtime contracts.
+1. Write the compatibility scorecard and freeze the semantic/runtime contracts. **Complete.**
 2. Remove codemod coupling to `examplePreset`; add project context and generated
-   interop metadata.
-3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** source objects now retain structured conditions, dynamic expressions, source ranges, and lowering hints; adapters receive capability contracts and can opt into safe/partial enforcement.
+   interop metadata. **Complete for the current codemod path; config discovery hardening remains.**
+3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** rule-level `/2` nodes now preserve structured conditions, selectors, nesting, dynamic expressions, source ranges, ordering, and non-declaration rules.
 4. Build the runtime sheet: insertion, extraction, hydration, ordering, and
    dynamic custom-property lowering. **Foundation complete:** the runtime
    sheet, snapshots, hydration, ordering, and `css.vars()` contract exist;
@@ -203,8 +227,9 @@ context used to produce it.
    versioned adapter capability contract and semantic source path exist;
    external system adapters and end-to-end round trips remain.
 8. Add recipe/component semantics and host-framework adapters where the
-   capability matrix supports them. **Deferred** until the rule-level IR and
-   external adapter baseline are proven.
+   capability matrix supports them. **Initial implementation complete:**
+   recipe/slot IR, runtime recipes, and six host contracts exist; framework
+   fixture and component composition hardening remains.
 9. Document migration recipes and publish the adapter contract. **Partially
    complete:** the internal contract and scorecard are documented; public
    migration recipes and publishing remain.
@@ -259,13 +284,16 @@ is:
 
 ## Decisions log
 
-| Date       | Decision                                                                                                                             |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 2026-08-26 | Runtime CSS-in-JS is an explicit product goal, not merely a build-time fallback.                                                     |
-| 2026-08-26 | Keep the core authoring surface minimal; put interoperability in the semantic IR, runtime sheet, adapters, and tooling.              |
-| 2026-08-26 | Preserve the existing flat declaration IR as a fast subset and add a versioned semantic IR for richer constructs.                    |
-| 2026-08-26 | Use safe-by-default migrations with explicit partial mode and residual reporting.                                                    |
-| 2026-08-26 | The codemod must load the project’s real preset/config; `examplePreset` is test data only.                                           |
-| 2026-08-27 | Generated bridge metadata is the CLI discovery boundary for project tokens; missing token context remains conservative and explicit. |
-| 2026-08-27 | Dynamic source objects get a parallel semantic parse; the literal parser and `SwapIR` remain conservative and unchanged for the fast path. |
+| Date       | Decision                                                                                                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-08-26 | Runtime CSS-in-JS is an explicit product goal, not merely a build-time fallback.                                                              |
+| 2026-08-26 | Keep the core authoring surface minimal; put interoperability in the semantic IR, runtime sheet, adapters, and tooling.                       |
+| 2026-08-26 | Preserve the existing flat declaration IR as a fast subset and add a versioned semantic IR for richer constructs.                             |
+| 2026-08-26 | Use safe-by-default migrations with explicit partial mode and residual reporting.                                                             |
+| 2026-08-26 | The codemod must load the project’s real preset/config; `examplePreset` is test data only.                                                    |
+| 2026-08-27 | Generated bridge metadata is the CLI discovery boundary for project tokens; missing token context remains conservative and explicit.          |
+| 2026-08-27 | Dynamic source objects get a parallel semantic parse; the literal parser and `SwapIR` remain conservative and unchanged for the fast path.    |
 | 2026-08-27 | Adapter contracts are versioned separately, classify exact/partial/unsupported capabilities, and enforce only when a caller opts into a mode. |
+| 2026-08-27 | The user approved breaking our own internal API: semantic style programs and adapter capabilities move to `/2` without compatibility shims.   |
+| 2026-08-27 | Rule-level IR is the portability boundary; the flat `SwapIR` declaration path remains as an explicit fast projection.                         |
+| 2026-08-27 | External adapters share one v2 protocol; unsupported dynamic values produce residuals in safe mode instead of guessed output.                 |
