@@ -4,7 +4,6 @@ import { parseCssLiterals, parseTwCalls } from "./parse.ts";
 import { SWAP_EMITTERS, type Emitter, type EmitterContext, type EmitterResult } from "./emit.ts";
 import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
 import type { SwapIR } from "./ir.ts";
-import type { StyleProgramOptions } from "./semantic-ir.ts";
 
 export interface SwapSourceMatch {
 	readonly start: number;
@@ -142,8 +141,3 @@ export function createSwapRegistry(
 }
 
 export const SWAP_REGISTRY = createSwapRegistry();
-
-type SwapConditionOptions = Pick<
-	StyleProgramOptions,
-	"conditionKinds" | "conditionValues" | "conditionRaw"
->;

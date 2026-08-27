@@ -10,7 +10,6 @@
  */
 import { pairs } from "../lib/utils.ts";
 import type {
-	AnyTokens,
 	CssConfigReturn,
 	DefinePresetOptions,
 	SemanticToken,

@@ -21,12 +21,7 @@ import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
-import {
-	collectModuleConstants,
-	evalStaticCx,
-	type ConstantScope,
-	type KnownConstant,
-} from "pandwind/vite/cx-inline";
+import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";

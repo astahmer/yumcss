@@ -262,5 +262,3 @@ export const SWAP_OUTBOUND_EMITTERS: Record<"tailwind" | "panda" | "stylex", Emi
 	panda: emitPanda,
 	stylex: emitStylex,
 };
-
-type OutboundTarget = keyof typeof SWAP_OUTBOUND_EMITTERS;

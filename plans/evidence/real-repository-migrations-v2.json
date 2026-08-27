@@ -192,16 +192,14 @@
 				"evidence": ["styled-components", "\\bstyled\\s*\\."]
 			},
 			"sourceBytes": 333,
-			"outputBytes": 388,
-			"outputByteDelta": 55,
-			"converted": 0,
-			"skipped": 1,
-			"residuals": 1,
-			"residualKinds": {
-				"capability": 1
-			},
-			"validations": 0,
-			"manualFixes": ["components: component subject: styled.div"],
+			"outputBytes": 560,
+			"outputByteDelta": 227,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -211,7 +209,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["styled-components"],
-				"byteDelta": 55
+				"byteDelta": 227
 			}
 		},
 		{
@@ -421,16 +419,14 @@
 				"evidence": ["\\bStyleSheet\\.create\\s*\\(\\s*\\{"]
 			},
 			"sourceBytes": 16434,
-			"outputBytes": 14496,
-			"outputByteDelta": -1938,
-			"converted": 21,
-			"skipped": 1,
-			"residuals": 1,
-			"residualKinds": {
-				"dynamic-values": 1
-			},
-			"validations": 21,
-			"manualFixes": ["dynamic style binding 'fontSheet' has no supported host use"],
+			"outputBytes": 14532,
+			"outputByteDelta": -1902,
+			"converted": 22,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 22,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -440,7 +436,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["aphrodite"],
-				"byteDelta": -1938
+				"byteDelta": -1902
 			}
 		},
 		{
@@ -557,22 +553,14 @@
 				"evidence": ["\\bstyled(?:\\.[A-Za-z_$][\\w$]*|\\([^)]*\\))[^`]*`"]
 			},
 			"sourceBytes": 4251,
-			"outputBytes": 4647,
-			"outputByteDelta": 396,
-			"converted": 2,
-			"skipped": 6,
-			"residuals": 13,
-			"residualKinds": {
-				"capability": 13
-			},
-			"validations": 2,
-			"manualFixes": [
-				"solid-styled function-valued styles require a host-specific lowering",
-				"solid-styled template interpolation requires a runtime-aware lowering",
-				"components: component subject: styled(\"div\")",
-				"components: component subject: styled(SuperDiv)",
-				"components: component subject: styled(BaseComponent)"
-			],
+			"outputBytes": 4678,
+			"outputByteDelta": 427,
+			"converted": 9,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 9,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -582,7 +570,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["solid-styled-components"],
-				"byteDelta": 396
+				"byteDelta": 427
 			}
 		},
 		{
@@ -600,20 +588,14 @@
 				]
 			},
 			"sourceBytes": 6953,
-			"outputBytes": 6962,
-			"outputByteDelta": 9,
-			"converted": 4,
-			"skipped": 2,
-			"residuals": 7,
-			"residualKinds": {
-				"capability": 7
-			},
-			"validations": 4,
-			"manualFixes": [
-				"vue-styled function-valued styles require a host-specific lowering",
-				"vue-styled template interpolation requires a runtime-aware lowering",
-				"components: component subject: styled.button"
-			],
+			"outputBytes": 7382,
+			"outputByteDelta": 429,
+			"converted": 7,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 7,
+			"manualFixes": [],
 			"emittedModules": [],
 			"runtimeBundleImpact": {
 				"measured": false,
@@ -623,7 +605,7 @@
 				"targetRuntimePackages": ["pandwind"],
 				"added": ["pandwind"],
 				"removed": ["vue-styled-components"],
-				"byteDelta": 9
+				"byteDelta": 429
 			}
 		},
 		{

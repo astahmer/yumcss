@@ -47,10 +47,3 @@ function listRuns(root: string): Array<HistoryEntry> {
 		})
 		.filter((e): e is HistoryEntry => e !== null);
 }
-
-function readRun(root: string, timestamp: string): HistoryEntry | null {
-	const safe = timestamp.replace(/[^0-9T:.\-Z]/g, "");
-	const path = join(HISTORY_DIR(root), `${safe}.json`);
-	if (!existsSync(path)) return null;
-	return JSON.parse(readFileSync(path, "utf8")) as HistoryEntry;
-}

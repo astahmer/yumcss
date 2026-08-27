@@ -11,4 +11,6 @@ export const SOLID_STYLED = makeExtraAdapter({
 	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
 	form: "template",
 	prefix: "styled.div(",
+	functionCall:
+		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });

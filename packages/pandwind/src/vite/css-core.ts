@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
-import { extractCssFile, extractVarKeys } from "./css-extract.ts";
+import { extractCssFile } from "./css-extract.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";

@@ -29,6 +29,7 @@ import {
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
+	componentTagForSubject,
 	intrinsicTagForSubject,
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
@@ -78,6 +79,11 @@ function isStandaloneDefaultExport(source: string, start: number): boolean {
 
 function bindingForMatch(source: string, start: number): string | undefined {
 	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
+}
+
+function classExpressionFromEmission(emitted: string): string | undefined {
+	const expression = emitted.trim();
+	return expression.length === 0 ? undefined : expression;
 }
 
 function rewriteVanillaExtractBindings(source: string): string {
@@ -246,6 +252,11 @@ export function runAdapterMigration(
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const convertedBindings = new Set<string>();
 	const componentRewrites: HostComponentRewriteRequest[] = [];
+	const pendingComponentDeclarationRewrites = new Map<
+		number,
+		Omit<HostComponentRewriteRequest, "source" | "classExpression">
+	>();
+	const componentDeclarationRewrites = new Map<number, HostComponentRewriteRequest>();
 	const standaloneComponentRewrites: Array<
 		StandaloneHostComponentRewriteRequest & { emittedExpression: string }
 	> = [];
@@ -327,7 +338,7 @@ export function runAdapterMigration(
 			const binding = source
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
-			const tag = intrinsicTagForSubject(program.source.subject);
+			const tag = componentTagForSubject(program.source.subject);
 			const framework =
 				document.framework ??
 				options.semantic?.source?.framework ??
@@ -398,6 +409,17 @@ export function runAdapterMigration(
 							source,
 						});
 					}
+				} else if (
+					preview.residuals.length > 0 &&
+					getHostComponentRewriter(framework)?.rewriteDeclaration !== undefined &&
+					new RegExp(`styled\\(\\s*${binding}\\s*\\)`).test(source)
+				) {
+					program = { ...program, source: { ...program.source, subject: undefined } };
+					pendingComponentDeclarationRewrites.set(index, {
+						binding,
+						tag,
+						framework,
+					});
 				}
 			}
 		}
@@ -448,6 +470,23 @@ export function runAdapterMigration(
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
+		const declarationRewrite = pendingComponentDeclarationRewrites.get(index);
+		if (declarationRewrite !== undefined) {
+			const classExpression = classExpressionFromEmission(emitted.text);
+			if (classExpression === undefined) {
+				residuals.push({
+					kind: "host-framework",
+					text: declarationRewrite.binding,
+					hint: "converted styled subject declaration has no extractable class expression",
+				});
+			} else {
+				componentDeclarationRewrites.set(index, {
+					...declarationRewrite,
+					source,
+					classExpression,
+				});
+			}
+		}
 		if (
 			targetAdapter.id === "pandwind" &&
 			program.source?.subject === undefined &&
@@ -538,6 +577,20 @@ export function runAdapterMigration(
 		const rewriter = getHostComponentRewriter(request.framework);
 		if (rewriter === undefined) continue;
 		const rewritten = rewriter.rewrite({ ...request, source: runtimeEdited });
+		if (rewritten.residuals.length > 0) {
+			residuals.push(...rewritten.residuals);
+			continue;
+		}
+		runtimeEdited = rewritten.code;
+		needsCx ||= rewritten.needsCx;
+	}
+	for (const request of componentDeclarationRewrites.values()) {
+		const rewriter = getHostComponentRewriter(request.framework);
+		if (rewriter?.rewriteDeclaration === undefined) continue;
+		const rewritten = rewriter.rewriteDeclaration({
+			...request,
+			source: runtimeEdited,
+		});
 		if (rewritten.residuals.length > 0) {
 			residuals.push(...rewritten.residuals);
 			continue;

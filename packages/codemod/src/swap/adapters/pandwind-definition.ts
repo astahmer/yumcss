@@ -39,7 +39,10 @@ function runtimeComponent(
 ): { text: string; imports: readonly string[] } | undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
-	const tag = subject?.match(/^styled\.([a-z][\w-]*)$/)?.[1];
+	const tag =
+		subject?.match(/^styled\.([a-z][\w-]*)/)?.[1] ??
+		subject?.match(/^styled\(\s*["']([a-z][\w-]*)["']\s*\)/)?.[1] ??
+		subject?.match(/^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/)?.[1];
 	const framework = host?.framework ?? program.source?.framework;
 	if (host?.binding === undefined || tag === undefined || framework === undefined) return undefined;
 	const object = programObject(mapRuntimeProps(program, framework === "vue" ? "attrs" : "props"));

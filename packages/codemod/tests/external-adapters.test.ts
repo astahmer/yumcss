@@ -558,4 +558,25 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 	});
+
+	test("lowers Solid function-call styles and custom component subjects", () => {
+		const result = runAdapterMigration(
+			'import { styled } from "solid-styled-components";\n' +
+				'const Base = styled("div")`color: red;`;\n' +
+				"const Card = styled(Base)<{ color: string }>(({ color }) => ({ color }));\n" +
+				'export const App = () => <Card color="blue" />;',
+			{
+				from: "solid-styled",
+				to: "pandwind",
+				file: "Card.tsx",
+				mode: "safe",
+				semantic: { source: { file: "Card.tsx", framework: "solid" } },
+			},
+		);
+		expect(result.converted).toBe(2);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("<Base {...props} class={cx(");
+		expect(result.code).toContain("css.vars({ color:");
+		expect(result.code).toContain(")(props) });");
+	});
 });

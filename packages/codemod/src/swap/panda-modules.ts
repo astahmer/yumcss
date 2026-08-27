@@ -15,13 +15,8 @@
 import type { SwapIR } from "./ir.ts";
 import { emitCssClass } from "./emit.ts";
 import type { PandwindMeta } from "../meta.ts";
-import {
-	CSS_PROPERTY_ALIASES,
-	PANDA_ALIASES,
-	pandaStyleToIr,
-	type PandaRecipeIR,
-} from "./parse-panda.ts";
-import { BUILTIN_PATTERNS, expandBuiltinPattern } from "./panda-patterns.ts";
+import { CSS_PROPERTY_ALIASES, PANDA_ALIASES, type PandaRecipeIR } from "./parse-panda.ts";
+import { expandBuiltinPattern } from "./panda-patterns.ts";
 import type { PandaTheme } from "./panda-theme.ts";
 
 const q = (v: string | number | boolean): string =>
@@ -752,46 +747,6 @@ export function foldRecipeCall(
 	return { text, ir: merged };
 }
 
-/* ------------------------------------------------------------------ */
-/* JSX component wrappers                                              */
-/* ------------------------------------------------------------------ */
-
-/** In-place replacement for `const X = panda(tagOrComp, styleOrRecipe)`. */
-function renderFactoryWrapper(options: {
-	name: string;
-	target: string;
-	isRecipe: boolean;
-	/** Recipe local/imported binding name (isRecipe only). */
-	recipeRef?: string;
-	variantKeys?: Array<string>;
-	/** Style object text for non-recipe factories (verbatim source slice). */
-	styleObjectText?: string;
-}): string {
-	const tag = /^[A-Z]/.test(options.target) ? options.target : JSON.stringify(options.target);
-	const destructured = options.isRecipe
-		? ["className", ...(options.variantKeys ?? [])]
-		: ["className"];
-	const head = `{ ${destructured.join(", ")}, ...rest }`;
-	if (options.isRecipe) {
-		const recipeArgs = (options.variantKeys ?? []).map((k) => `${k},`).join(" ");
-		return [
-			`export const ${options.name} = (${head}: Record<string, unknown>) => (`,
-			`\t<${tag}`,
-			`\t\tclassName={cx(${options.recipeRef}({ ${recipeArgs.replace(/,$/, "")} }), className)}`,
-			"\t\t{...rest}",
-			"\t/>",
-			");",
-			"",
-		].join("\n");
-	}
-	return [
-		`export const ${options.name} = ({ className, ...rest }: Record<string, unknown>) => (`,
-		`\t<${tag} className={cx(css.class(canonicalProps(rest)), className)} />`,
-		");",
-		"",
-	].join("\n");
-}
-
 /**
  * `<outDir>/jsx/index.tsx` — layout components wrapping the emitted pattern
  * modules (Stack/HStack/Box/…), plus Box-style direct containers.
@@ -881,19 +836,4 @@ export function renderJsxIndex(
 		lines.push("void css;");
 	}
 	return lines.join("\n") + "\n";
-}
-
-/* ------------------------------------------------------------------ */
-/* offline conversion helpers                                          */
-/* ------------------------------------------------------------------ */
-
-/** Offline expansion of a pattern fn call's literal props -> SwapIR. */
-function patternCallToIr(
-	name: string,
-	props: Record<string, unknown>,
-	theme: Parameters<typeof pandaStyleToIr>[1],
-): SwapIR | null {
-	if (!BUILTIN_PATTERNS.has(name)) return null;
-	const expansion = expandBuiltinPattern(name, props);
-	return pandaStyleToIr(expansion.style, theme);
 }

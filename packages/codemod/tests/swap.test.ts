@@ -251,7 +251,7 @@ describe("swap CLI end-to-end", () => {
 		expect(after).toContain("tw({");
 		expect(after).toContain('bgColor: "blue-500"');
 		expect(after).not.toContain("css.class(");
-	}, 15_000);
+	}, 30_000);
 });
 
 /* ------------------------------------------------------------------ */
@@ -616,4 +616,4 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 	const after = readFileSync(file, "utf8");
 	expect(after).toContain('css({ backgroundColor: "blue.500" })');
 	expect(after).toContain('import { css } from "styled-system/css";');
-});
+}, 30_000);

@@ -13,7 +13,7 @@
  *   the way the host app already imports things.
  */
 import { existsSync, readFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import { join } from "node:path";
 
 /* ------------------------------------------------------------------ */
 /* alias resolution                                                    */
@@ -300,6 +300,3 @@ export function scanProjectUsage(
 	for (const { path: p, source } of files) scanFileUsage(p, source, usage);
 	return usage;
 }
-
-/** Basename without extension — module file naming for emissions. */
-const moduleNameFor = (file: string): string => basename(file).replace(/\.[^.]+$/, "");

@@ -50,9 +50,20 @@
 		}
 	},
 	"ignoreDependencies": [
+		"@astrojs/starlight",
+		"@monaco-editor/react",
+		"@opentui/core",
+		"@tailwindcss/node",
+		"class-variance-authority",
+		"pandwind",
+		"pandwind-analyze",
+		"postcss",
 		"react",
+		"react-native",
 		"react-native-web",
+		"shiki",
 		"tailwindcss",
+		"oxc-parser",
 		"@oxc-parser/binding-wasm32-wasi",
 		"playwright-core"
 	],

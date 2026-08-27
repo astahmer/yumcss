@@ -33,6 +33,8 @@ export interface HostComponentRewriter {
 	readonly id: string;
 	readonly frameworks: readonly string[];
 	rewrite(request: HostComponentRewriteRequest): HostComponentRewriteResult;
+	/** Wrap a converted style binding when it is itself used as a styled subject. */
+	rewriteDeclaration?(request: HostComponentRewriteRequest): HostComponentRewriteResult;
 	/** Wrap an exported styled intrinsic that has no component binding or JSX use. */
 	rewriteStandalone?(request: StandaloneHostComponentRewriteRequest): HostComponentRewriteResult;
 }
@@ -49,6 +51,13 @@ export function intrinsicTagForSubject(subject: string): string | undefined {
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
 	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)$/.exec(subject)?.[1];
 	return call;
+}
+
+/** Component expression used by `styled(Component)` subjects. */
+export function componentTagForSubject(subject: string): string | undefined {
+	return (
+		intrinsicTagForSubject(subject) ?? /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1]
+	);
 }
 
 const jsxFrameworks = new Set(["react", "preact", "solid", "qwik"]);
@@ -171,6 +180,38 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	for (const edit of edits.toSorted((a, b) => b.start - a.start))
 		code = code.slice(0, edit.start) + edit.text + code.slice(edit.end);
 	return { code, changed: code !== request.source, needsCx, residuals: [] };
+}
+
+function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
+	const assignment = `${request.binding} = ${request.classExpression};`;
+	const start = request.source.indexOf(assignment);
+	if (start === -1) {
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: `converted ${request.binding} declaration could not be wrapped`,
+				},
+			],
+		};
+	}
+	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const declaration =
+		`const ${request.binding} = (props) => <${request.tag} {...props} ` +
+		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
+	return {
+		code:
+			request.source.slice(0, start) +
+			declaration +
+			request.source.slice(start + assignment.length),
+		changed: true,
+		needsCx: true,
+		residuals: [],
+	};
 }
 
 function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRewriteResult {
@@ -414,6 +455,7 @@ const rewriters: readonly HostComponentRewriter[] = [
 		id: "jsx-intrinsic-component",
 		frameworks: [...jsxFrameworks],
 		rewrite: rewriteJsx,
+		rewriteDeclaration: rewriteJsxDeclaration,
 		rewriteStandalone: rewriteStandaloneJsx,
 	},
 	{

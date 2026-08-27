@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
 import { computeExcludedRanges } from "pandwind/source";
-import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
+import type { AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
@@ -59,45 +59,6 @@ type CallPattern = {
 	readonly regex: RegExp;
 	readonly form?: "object" | "template" | "reference";
 };
-
-function dependency(
-	name: string,
-	kind: "runtime" | "development" | "peer" | "config",
-): AdapterDependencies {
-	return { packages: [{ name, kind }] };
-}
-
-function allRuleCapabilities(
-	adapterId: string,
-	dynamic: "exact" | "partial" | "unsupported",
-	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
-): AdapterCapabilities {
-	return {
-		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: adapterId,
-		capabilities: {
-			declarations: "exact",
-			"rule-level": "exact",
-			"global-rules": "exact",
-			keyframes: "exact",
-			"font-face": "exact",
-			layers: "exact",
-			"supports-rules": "exact",
-			"property-rules": "exact",
-			selectors: "exact",
-			nesting: "exact",
-			ordering: "exact",
-			"token-values": "exact",
-			"dynamic-values": dynamic,
-			"pseudo-conditions": "exact",
-			"selector-conditions": "exact",
-			"media-conditions": "exact",
-			"container-conditions": "exact",
-			"supports-conditions": "exact",
-			...capabilities,
-		},
-	};
-}
 
 const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 	pandwind: ["pandwind.config.ts", "package.json"],

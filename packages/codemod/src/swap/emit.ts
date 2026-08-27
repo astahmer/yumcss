@@ -569,5 +569,3 @@ export const SWAP_EMITTERS: Record<"css.class" | "design" | "dss" | "tw", Emitte
 	dss: emitDssVocab,
 	tw: emitTwObject,
 };
-
-type CoreTarget = keyof typeof SWAP_EMITTERS;

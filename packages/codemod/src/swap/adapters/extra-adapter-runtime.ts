@@ -23,6 +23,8 @@ export interface ExtraAdapterOptions {
 	readonly detect: readonly RegExp[];
 	readonly call: RegExp;
 	readonly form?: "object" | "template";
+	/** Optional function-valued style call syntax, e.g. styled.div(props => ({})). */
+	readonly functionCall?: RegExp;
 	readonly prefix: string;
 	readonly suffix?: string;
 	readonly namedObjects?: boolean;
@@ -103,6 +105,109 @@ function balanced(source: string, open: number): { end: number; body: string } |
 	return undefined;
 }
 
+function balancedPair(
+	source: string,
+	open: number,
+	openChar: string,
+	closeChar: string,
+): { end: number; body: string } | undefined {
+	let depth = 0;
+	for (let index = open; index < source.length; index++) {
+		if (source[index] === openChar) depth++;
+		if (source[index] === closeChar) {
+			depth--;
+			if (depth === 0) return { end: index + 1, body: source.slice(open + 1, index) };
+		}
+	}
+	return undefined;
+}
+
+function markFunctionValues(program: StyleProgram, parameter: string): StyleProgram {
+	const declaration = (item: StyleProgram["declarations"][number]) => ({
+		...item,
+		value:
+			item.value.kind === "dynamic"
+				? { ...item.value, expression: `(${parameter}) => ${item.value.expression}` }
+				: item.value,
+	});
+	const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...item,
+		declarations: item.declarations.map(declaration),
+		children: item.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(declaration),
+		rules: program.rules.map(rule),
+	};
+}
+
+function parseFunctionCalls(
+	id: string,
+	source: string,
+	context: AdapterParseContext,
+	options: ExtraAdapterOptions,
+): AdapterParseResult {
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const residuals: StyleProgramResidual[] = [];
+	const mask = context.document?.isExcluded ?? (() => false);
+	const functionCall = options.functionCall;
+	if (functionCall === undefined) return { matches, residuals };
+	for (const match of source.matchAll(functionCall)) {
+		const start = match.index ?? 0;
+		if (mask(start)) continue;
+		const open = start + match[0].lastIndexOf("(");
+		const call = balancedPair(source, open, "(", ")");
+		if (call === undefined) {
+			residuals.push({
+				kind: "parse",
+				text: source.slice(start),
+				hint: `${id} function style is unbalanced`,
+			});
+			continue;
+		}
+		const arrow = call.body.indexOf("=>");
+		const objectOpen = arrow === -1 ? -1 : call.body.indexOf("{", arrow);
+		const object = objectOpen === -1 ? undefined : balanced(source, open + 1 + objectOpen);
+		if (arrow === -1 || object === undefined) {
+			residuals.push({
+				kind: "dynamic",
+				text: source.slice(start, call.end),
+				hint: `${id} function-valued styles require a framework prop wrapper`,
+			});
+			continue;
+		}
+		const parameter = call.body.slice(0, arrow).trim();
+		const program = markFunctionValues(
+			styleProgramFromSourceObject(object.body, {
+				source: {
+					file: context.file,
+					start,
+					end: call.end,
+					adapter: id,
+					...(context.semantic?.source?.framework
+						? { framework: context.semantic.source.framework }
+						: {}),
+				},
+				sourceOffset: open + 1 + objectOpen + 1,
+			}),
+			parameter,
+		);
+		const subject = match[0]
+			.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
+			?.replace(/\s+/g, " ")
+			.replace(/\.\s+/g, ".");
+		matches.push({
+			start,
+			end: call.end,
+			program:
+				subject === undefined ? program : { ...program, source: { ...program.source, subject } },
+			sourceText: source.slice(start, call.end),
+		});
+	}
+	return { matches, residuals };
+}
+
 function parseObjectCalls(
 	id: string,
 	source: string,
@@ -154,6 +259,7 @@ function parseTemplateCalls(
 		const lastTick = findTemplateLiteralEnd(source, firstTick);
 		if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
 		if (source.slice(start, firstTick).includes("=>")) {
+			if (options.functionCall !== undefined) continue;
 			residuals.push({
 				kind: "capability",
 				text: source.slice(start, lastTick + 1),
@@ -203,10 +309,19 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			return { matched: evidence.length > 0, confidence: evidence.length ? 0.8 : 0, evidence };
 		},
 		loadConfig: (context) => config(options.id, context),
-		parse: (source, context) =>
-			options.form === "template"
-				? parseTemplateCalls(options.id, source, context, options)
-				: parseObjectCalls(options.id, source, context, options),
+		parse: (source, context) => {
+			const parsed =
+				options.form === "template"
+					? parseTemplateCalls(options.id, source, context, options)
+					: parseObjectCalls(options.id, source, context, options);
+			const functionParsed = parseFunctionCalls(options.id, source, context, options);
+			return {
+				matches: [...parsed.matches, ...functionParsed.matches].toSorted(
+					(a, b) => a.start - b.start,
+				),
+				residuals: [...parsed.residuals, ...functionParsed.residuals],
+			};
+		},
 		emit: (program) => ({
 			text: `${options.prefix}${objectText(program)}${options.suffix ?? ""}`,
 			residuals: [...program.residuals],

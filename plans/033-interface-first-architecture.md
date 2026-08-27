@@ -106,43 +106,44 @@ disappear from the residual report and gain a fixture proving its behavior.
 
 ## Implementation steps
 
-- [ ] Reconcile current architecture and document any missing port boundary.
-- [ ] Refactor adapter modules into cohesive implementations and remove
+- [x] Reconcile current architecture and document any missing port boundary.
+- [x] Refactor adapter modules into cohesive implementations and remove
       central dialect policy from CLI/orchestration.
-- [ ] Refactor scanner and backend consumers to depend only on registries and
+- [x] Refactor scanner and backend consumers to depend only on registries and
       interfaces; add fake-adapter contract tests.
-- [ ] Configure Knip for the monorepo, remove verified dead code/exports, and
+- [x] Configure Knip for the monorepo, remove verified dead code/exports, and
       add a CI-facing script.
-- [ ] Implement standalone styled-subject host wrappers and fixtures.
-- [ ] Implement Aphrodite font-face-array parsing/lowering and fixtures.
-- [ ] Implement Solid/Vue function-valued prop/theme wrappers and fixtures.
-- [ ] Run typecheck, lint, format, package tests, corpus, release checks, and
+- [x] Implement standalone styled-subject host wrappers and fixtures.
+- [x] Implement Aphrodite font-face-array parsing/lowering and fixtures.
+- [x] Implement Solid/Vue function-valued prop/theme wrappers and fixtures.
+- [x] Run typecheck, lint, format, package tests, corpus, release checks, and
       Knip; refresh plan/evidence.
 
 ## Open questions
 
-- Which wrapper shapes should be emitted for non-React standalone subjects
-  when the source file has no framework metadata?
-- Should third-party adapters be split into separate packages immediately, or
-  remain first-party cohesive modules until the SDK is published?
-- Which Knip findings are intentional dynamic entry points after the first
-  complete run?
+- Standalone subjects without framework metadata remain explicit residuals;
+  there is no safe host syntax to infer.
+- Third-party adapters use the published plugin contract and can remain
+  independently owned modules or packages; the registry boundary is the
+  stable integration point.
+- Knip findings are either removed or documented in `knip.json` only where
+  framework/workspace/dynamic loading prevents static reachability analysis.
 
 ## Acceptance criteria
 
-- [ ] Concrete adapters expose one cohesive implementation boundary and no
+- [x] Concrete adapters expose one cohesive implementation boundary and no
       CLI branch contains ecosystem-specific parsing or emission policy.
-- [ ] Scanner and backend tests prove a second implementation can be
+- [x] Scanner and backend tests prove a second implementation can be
       registered without changing orchestration.
-- [ ] Knip runs from the root and has no unexplained production findings.
-- [ ] Standalone styled subjects are rewritten for supported hosts with no
+- [x] Knip runs from the root and has no unexplained production findings.
+- [x] Standalone styled subjects are rewritten for supported hosts with no
       residual when semantics are representable.
-- [ ] Aphrodite font-face arrays produce rule-level `font-face` output and
+- [x] Aphrodite font-face arrays produce rule-level `font-face` output and
       canonical CSS parity.
-- [ ] Solid/Vue function-valued styles preserve props/theme evaluation through
+- [x] Solid/Vue function-valued styles preserve props/theme evaluation through
       explicit framework wrappers, or produce a precise residual only for an
       actually unsupported host form.
-- [ ] All repository validation and release preflight checks pass.
+- [x] All repository validation and release preflight checks pass.
 
 ## Decisions log
 
@@ -152,3 +153,6 @@ disappear from the residual report and gain a fixture proving its behavior.
   renderer, and registry code as reusable infrastructure.
 - 2026-08-27 — Keep the user-facing Pandwind runtime API frozen; this wave is
   compiler, codemod, backend, scanner, and maintenance work.
+- 2026-08-27 — Close representable residuals in the pinned corpus with
+  host-aware rewrites; retain residuals only when framework context is absent
+  or the target semantics cannot be represented safely.
