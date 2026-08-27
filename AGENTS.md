@@ -22,3 +22,42 @@ Current approved-but-not-built examples of the bar: var-inline strategy
 (dynamic values only). Per-page CSS splitting already shipped
 (`splitByRoute` / `inlineCritical` on `pandwindCssVite`) — treat it as part of
 the frozen surface now.
+
+## Interface-first architecture policy
+
+Pandwind is a pivot library, so extensibility is a product requirement, not a
+future cleanup. When a domain can have more than one implementation, model it
+as a versioned interface plus a registry/factory. Do not make callers know
+which concrete module to import or grow a switch statement in a central runner.
+
+- Migration is composed from a source dialect adapter, the semantic IR, and a
+  target dialect adapter. A route from X to Y is not a bespoke `XToY` function.
+  Systems may expose nested dialect adapters: Panda can register `tw`, `dss`,
+  and `css` source dialects under one Panda system adapter, while Pandwind can
+  register multiple target dialects under its target adapter.
+- Adapter contracts must carry identity, detection, configuration, parse,
+  emit, dependencies, capabilities, validation, and lossiness. Adding one
+  adapter should mean implementing the interface and registering it, not
+  editing every migration branch.
+- Scanning is document/language agnostic. A source document contains an id,
+  language, content, and source-map metadata; language adapters own parsing and
+  AST traversal for TSX, Vue, Svelte, Astro, and future formats. Filesystem
+  globbing and file reading are providers, not scanner semantics.
+- Backends follow one family contract with many implementations. CSS,
+  React Native, OpenTUI, and future targets implement the same backend factory
+  and capability protocol. Shared style resolution must depend on the
+  interface, never a concrete backend module.
+- Prefer cohesive domain objects over bags of unrelated exports. A module that
+  has several operations over one concept should expose a scoped interface,
+  registry, factory, or class with static utilities. Keep standalone exports
+  only for genuinely independent primitives and preserve narrow public
+  subpaths.
+- Registries are the extension point; unions and maps are derived from the
+  registry where possible. Tests must prove that a fake/minimal adapter can be
+  registered without changing core orchestration.
+- Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
+  and backend adapters must not force every call through the richest semantic
+  representation when the simple path is sufficient.
+- Every refactor is split into focused JJ revisions with behavior-preserving
+  tests at each boundary. Do not rewrite concurrent workspaces or move their
+  heads while another agent owns them.
