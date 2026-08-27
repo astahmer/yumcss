@@ -20,6 +20,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { buildAgentsDocument } from "./agents-json.ts";
+import {
+	FileSystemDesignSystemArtifactWriter,
+	type DesignSystemArtifacts,
+} from "./codegen-artifacts.ts";
 import { extractTwConfig } from "../vite/inline.ts";
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
@@ -1149,12 +1153,12 @@ export async function generateDesignSystem(
 	css: string,
 	base: string,
 	options: GenerateDesignSystemOptions = {},
-): Promise<{
-	typesDts: string;
-	twTs: string;
-	utilityCount: number;
-	variantCount: number;
-}> {
+): Promise<
+	DesignSystemArtifacts & {
+		utilityCount: number;
+		variantCount: number;
+	}
+> {
 	const effectiveCss = options.themeBlock ? `${css}\n${options.themeBlock}` : css;
 	const system = await __unstable__loadDesignSystem(effectiveCss, { base });
 
@@ -1264,8 +1268,7 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 		themeBlock,
 	});
 
-	writeFileSync(resolve(outDir, "types.d.ts"), typesDts);
-	writeFileSync(resolve(outDir, "tw.ts"), twTs);
+	let agentsJson: string | undefined;
 	if (agentsFlag) {
 		// plans/014 §5 — machine-readable capability file for AI agents,
 		// derived from the artifacts this run just generated.
@@ -1278,9 +1281,14 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 			themeBlock,
 			artifactDir: outDir,
 		});
-		writeFileSync(resolve(outDir, "pandwind.agents.json"), `${JSON.stringify(doc, null, "\t")}\n`);
+		agentsJson = `${JSON.stringify(doc, null, "\t")}\n`;
 	}
-	if (themeBlock) writeFileSync(resolve(outDir, "pandwind-theme.css"), `${themeBlock}\n`);
+	new FileSystemDesignSystemArtifactWriter(writeFileSync, resolve).write(outDir, {
+		typesDts,
+		twTs,
+		...(themeBlock === "" ? {} : { themeBlock }),
+		...(agentsJson === undefined ? {} : { agentsJson }),
+	});
 
 	console.log(
 		`pandwind: generated types.d.ts (${utilityCount} utilities, ${variantCount} variants) and tw.ts from ${cssEntry}${
