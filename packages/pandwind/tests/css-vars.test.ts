@@ -62,10 +62,12 @@ describe("css.vars — encoding", () => {
 		});
 	});
 
-	test("non-finite and structural values are omitted instead of becoming CSS", () => {
+	test("invalid and structural values are omitted instead of becoming CSS", () => {
 		const out = css.vars({
 			opacity: Number.NaN,
+			zIndex: Number.POSITIVE_INFINITY,
 			color: true,
+			fontFamily: "",
 		} as never);
 		expect(out.class).toBe("");
 		expect(out.style).toEqual({});

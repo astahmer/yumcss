@@ -1,6 +1,6 @@
 {
 	"css": {
-		"min": 3400,
+		"min": 3420,
 		"gz": 1650
 	},
 	"tw": {
@@ -16,7 +16,7 @@
 		"gz": 4900
 	},
 	"root barrel, css only": {
-		"min": 3400,
+		"min": 3420,
 		"gz": 1650
 	},
 	"root barrel, tw only": {

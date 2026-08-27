@@ -99,7 +99,7 @@ export const encodeVars = (
 	const style: Record<string, string> = {};
 	for (const key of Object.keys(flat).toSorted()) {
 		const raw = flat[key];
-		if (typeof raw === "boolean" || raw !== raw) continue;
+		if ((typeof raw !== "string" && !Number.isFinite(raw)) || raw === "") continue;
 		const { conditions, prop } = splitKey(key);
 		if (!prop) continue;
 		const cls = varClassFor(key);

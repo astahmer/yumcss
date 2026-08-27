@@ -94,8 +94,9 @@ internal symbol), so they merge with everything else last-wins.
 `css.vars()` is SSR-safe data, not a DOM side effect: both `class` and `style`
 are ordinary serializable values that can be rendered on the server and
 hydrated unchanged on the client. String values and finite numbers become
-custom properties; booleans, `NaN`, and other unsupported runtime
-values are omitted. The generated toggle rule always falls back from the most
+custom properties; booleans, empty strings, non-finite numbers, and other
+unsupported runtime values are omitted. The generated toggle rule always falls
+back from the most
 specific condition to the base custom property, so transitions and other
 browser CSS can consume the same property normally.
 
