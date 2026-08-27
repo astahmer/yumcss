@@ -78,6 +78,7 @@ export default defineConfig({
 				{
 					label: "Reference",
 					items: [
+						"reference/adoption",
 						"reference/authored-css",
 						"reference/backends",
 						"reference/size",

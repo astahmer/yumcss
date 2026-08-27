@@ -5,7 +5,8 @@ sidebar:
   order: 3
 ---
 
-Last measured: **2026-08-23** for `cx()` v3 (whole-input cache), **2026-08-22**
+Last measured: **2026-08-27** for the runtime-size contract and **2026-08-23**
+for `cx()` v3 (whole-input cache), **2026-08-22**
 for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
 evidence, not a published benchmark suite — numbers vary with hardware and
@@ -64,8 +65,9 @@ Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 
 ## Re-running
 
-The repo-owned entry points: `packages/pandwind/tests/runtime-size.test.ts`
-(the size gate), `packages/pandwind/cx-bench.mts` (cx microbench,
-`tsx cx-bench.mts` from `apps/example`). The competitor rig lives outside the
-repo; rebuild instructions are in
+The repo-owned evidence is split by cost center: `packages/pandwind/tests/runtime-size.test.ts`
+is the runtime byte/gzip gate; the committed CSS snapshots and Vite/Rollup
+browser fixtures cover generated stylesheet behavior and integration; and
+`packages/pandwind/cx-bench.mts` plus its smoke test cover composition
+throughput. The competitor rig lives outside the repo; rebuild instructions are in
 [BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md#re-running).

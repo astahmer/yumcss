@@ -109,4 +109,39 @@ describe("pandwindUnpluginCss", () => {
 			rmSync(root, { recursive: true, force: true });
 		}
 	});
+
+	test("watchChange invalidates the Rollup stylesheet scan", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-unplugin-rollup-watch-"));
+		try {
+			writeFileSync(
+				join(root, "app.ts"),
+				[
+					'import { css } from "./css";',
+					'export const a = css({ $frame: { fill: "$blue-500" } });',
+				].join("\n"),
+			);
+			const plugin = pandwindUnpluginCss.rollup({
+				preset: examplePreset,
+				root,
+				cssSources: ["css"],
+			}) as unknown as {
+				resolveId: (source: string) => string | null;
+				load: (id: string) => string | null;
+				watchChange: (id: string) => void;
+			};
+			const id = plugin.resolveId("pandwind:css");
+			expect(id).not.toBeNull();
+			expect(plugin.load(id!)).toContain("#3182ce");
+
+			const extra = join(root, "extra.ts");
+			writeFileSync(
+				extra,
+				['import { css } from "./css";', 'css({ $frame: { fill: "$green-500" } });'].join("\n"),
+			);
+			plugin.watchChange(extra);
+			expect(plugin.load(id!)?.toLowerCase()).toContain("#60a3bc");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
 });
