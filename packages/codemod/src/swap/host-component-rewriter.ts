@@ -1,5 +1,6 @@
 import { computeExcludedRanges } from "../sources.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
+import { HOST_FRAMEWORK_REGISTRY, getHostFrameworkAdapter } from "./host-adapters.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
 
@@ -59,9 +60,6 @@ export function componentTagForSubject(subject: string): string | undefined {
 		intrinsicTagForSubject(subject) ?? /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1]
 	);
 }
-
-const jsxFrameworks = new Set(["react", "preact", "solid", "qwik"]);
-const templateFrameworks = new Set(["vue", "svelte", "astro"]);
 
 const excluded = (source: string, file: string, index: number): boolean => {
 	try {
@@ -338,7 +336,7 @@ export function rewriteDynamicCarrier(
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let found = false;
 	let needsCx = false;
-	const jsx = jsxFrameworks.has(framework);
+	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
 	const vue = framework === "vue";
 	const pattern = jsx
 		? /\b(className|class)\s*=\s*\{([^{}]*)\}/g
@@ -395,7 +393,7 @@ export function rewriteDynamicExpressionCarrier(
 	file = "pandwind-dynamic.tsx",
 ): HostDynamicCarrierRewriteResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
-	const jsx = jsxFrameworks.has(framework);
+	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
 	const vue = framework === "vue";
 	const attributes = jsx
 		? [`className={${expression}}`, `class={${expression}}`]
@@ -453,7 +451,9 @@ const rewriters: readonly HostComponentRewriter[] = [
 	{
 		schema: HOST_COMPONENT_REWRITER_SCHEMA,
 		id: "jsx-intrinsic-component",
-		frameworks: [...jsxFrameworks],
+		frameworks: HOST_FRAMEWORK_REGISTRY.adapters
+			.filter((adapter) => adapter.syntax === "jsx")
+			.map((adapter) => adapter.id),
 		rewrite: rewriteJsx,
 		rewriteDeclaration: rewriteJsxDeclaration,
 		rewriteStandalone: rewriteStandaloneJsx,
@@ -461,7 +461,9 @@ const rewriters: readonly HostComponentRewriter[] = [
 	{
 		schema: HOST_COMPONENT_REWRITER_SCHEMA,
 		id: "template-intrinsic-component",
-		frameworks: [...templateFrameworks],
+		frameworks: HOST_FRAMEWORK_REGISTRY.adapters
+			.filter((adapter) => adapter.syntax === "template")
+			.map((adapter) => adapter.id),
 		rewrite: rewriteTemplate,
 	},
 ];

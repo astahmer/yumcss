@@ -60,6 +60,7 @@ describe("recipe and host-framework pivot semantics", () => {
 		const adapter: HostFrameworkAdapter = {
 			id: "qwik",
 			extensions: [".tsx"],
+			syntax: "jsx",
 			classAttribute: "class",
 			styleAttribute: "style",
 			supportsClassList: true,

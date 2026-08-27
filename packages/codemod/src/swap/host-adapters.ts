@@ -9,9 +9,12 @@ export type BuiltinHostFramework =
 	| "svelte"
 	| "astro";
 
+export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
+
 export interface HostFrameworkAdapter {
 	readonly id: HostFramework;
 	readonly extensions: readonly string[];
+	readonly syntax: "jsx" | "template";
 	readonly classAttribute: "className" | "class";
 	readonly styleAttribute: "style";
 	readonly supportsClassList: boolean;
@@ -22,6 +25,12 @@ export interface HostFrameworkAdapter {
 	classBinding(expression: string): string;
 	/** Merge a generated class expression with an existing static class. */
 	mergeClass(existing: string | undefined, generated: string): string;
+}
+
+export interface HostFrameworkPlugin {
+	readonly schema: typeof HOST_FRAMEWORK_PLUGIN_SCHEMA;
+	readonly id: HostFramework;
+	readonly adapter: HostFrameworkAdapter;
 }
 
 const classBinding = (attribute: "className" | "class", expression: string): string =>
@@ -39,6 +48,9 @@ const makeAdapter = (
 	id,
 	extensions,
 	classAttribute,
+	syntax: extensions.some((extension) => [".vue", ".svelte", ".astro"].includes(extension))
+		? "template"
+		: "jsx",
 	styleAttribute: "style",
 	supportsClassList,
 	supportsStyleObject,
@@ -53,8 +65,10 @@ const makeAdapter = (
 });
 
 export interface HostFrameworkRegistry {
+	readonly plugins: readonly HostFrameworkPlugin[];
 	readonly adapters: readonly HostFrameworkAdapter[];
 	register(adapter: HostFrameworkAdapter): HostFrameworkRegistry;
+	registerPlugin(plugin: HostFrameworkPlugin): HostFrameworkRegistry;
 	get(id: string): HostFrameworkAdapter | undefined;
 	detect(file: string, source: string): HostFrameworkAdapter | undefined;
 }
@@ -63,7 +77,11 @@ export function createHostFrameworkRegistry(
 	initial: readonly HostFrameworkAdapter[] = [],
 ): HostFrameworkRegistry {
 	const adapters = new Map<string, HostFrameworkAdapter>();
+	const plugins = new Map<string, HostFrameworkPlugin>();
 	const registry: HostFrameworkRegistry = {
+		get plugins() {
+			return [...plugins.values()];
+		},
 		get adapters() {
 			return [...adapters.values()];
 		},
@@ -72,6 +90,12 @@ export function createHostFrameworkRegistry(
 				throw new Error(`host framework already registered: ${adapter.id}`);
 			adapters.set(adapter.id, adapter);
 			return registry;
+		},
+		registerPlugin(plugin) {
+			if (plugin.schema !== HOST_FRAMEWORK_PLUGIN_SCHEMA)
+				throw new Error(`unsupported host framework plugin schema: ${plugin.schema}`);
+			plugins.set(plugin.id, plugin);
+			return registry.register(plugin.adapter);
 		},
 		get: (id) => adapters.get(id),
 		detect: (file, source) => registry.adapters.find((adapter) => adapter.detect(file, source)),
@@ -143,11 +167,24 @@ const builtin = {
 	),
 } satisfies Record<BuiltinHostFramework, HostFrameworkAdapter>;
 
-export const HOST_FRAMEWORK_REGISTRY = createHostFrameworkRegistry(Object.values(builtin));
+export const HOST_FRAMEWORK_PLUGINS: readonly HostFrameworkPlugin[] = Object.values(builtin).map(
+	(adapter) => ({
+		schema: HOST_FRAMEWORK_PLUGIN_SCHEMA,
+		id: adapter.id,
+		adapter,
+	}),
+);
+
+export const HOST_FRAMEWORK_REGISTRY = HOST_FRAMEWORK_PLUGINS.reduce(
+	(registry, plugin) => registry.registerPlugin(plugin),
+	createHostFrameworkRegistry(),
+);
 
 /** Compatibility projection; new code should depend on HOST_FRAMEWORK_REGISTRY. */
 export const HOST_FRAMEWORK_ADAPTERS: Readonly<Record<BuiltinHostFramework, HostFrameworkAdapter>> =
-	builtin;
+	Object.fromEntries(
+		HOST_FRAMEWORK_REGISTRY.adapters.map((adapter) => [adapter.id, adapter]),
+	) as Readonly<Record<BuiltinHostFramework, HostFrameworkAdapter>>;
 
 export function getHostFrameworkAdapter(id: string): HostFrameworkAdapter | undefined {
 	return HOST_FRAMEWORK_REGISTRY.get(id);

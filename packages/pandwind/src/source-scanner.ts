@@ -3,6 +3,7 @@ import { walk, type OxcNode } from "./tw/literal.ts";
 
 /** Versioned, package-level source analysis protocol shared by every lane. */
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
+export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
 export type SourceLanguage =
 	| "typescript"
@@ -57,15 +58,34 @@ export interface SourceLanguageAdapter {
 	readonly schema: typeof SOURCE_SCANNER_SCHEMA;
 	readonly id: string;
 	readonly languages: readonly SourceLanguage[];
+	/** File suffixes owned by this adapter; custom adapters may omit this. */
+	readonly extensions?: readonly string[];
 	detect(document: SourceDocument): boolean;
 	scan(document: SourceDocument): SourceScanResult;
 }
 
+export interface SourceScannerPlugin {
+	readonly schema: typeof SOURCE_SCANNER_PLUGIN_SCHEMA;
+	readonly id: string;
+	readonly adapters: readonly SourceLanguageAdapter[];
+}
+
 export interface SourceScannerRegistry {
+	readonly plugins: readonly SourceScannerPlugin[];
 	readonly adapters: readonly SourceLanguageAdapter[];
 	register(adapter: SourceLanguageAdapter): SourceScannerRegistry;
+	registerPlugin(plugin: SourceScannerPlugin): SourceScannerRegistry;
+	languageForFile(file: string): SourceLanguage;
+	isSupportedFile(file: string): boolean;
+	isScriptFile(file: string): boolean;
 	detect(document: SourceDocument): SourceLanguageAdapter | undefined;
 	scan(document: SourceDocument): SourceScanResult;
+}
+
+export interface SourceLanguageClassifier {
+	languageForFile(file: string): SourceLanguage;
+	isSupportedFile(file: string): boolean;
+	isScriptFile(file: string): boolean;
 }
 
 /** Shared scanner facade consumed by build, analyze, codemod, and collection.
@@ -81,29 +101,15 @@ export interface SourceScannerService {
 }
 
 export function sourceLanguageForFile(file: string): SourceLanguage {
-	const extension = file.split(".").pop()?.toLowerCase();
-	return (
-		(
-			{
-				ts: "typescript",
-				tsx: "tsx",
-				js: "javascript",
-				jsx: "jsx",
-				vue: "vue",
-				svelte: "svelte",
-				astro: "astro",
-				mdx: "mdx",
-			} as Record<string, SourceLanguage>
-		)[extension ?? ""] ?? "unknown"
-	);
+	return SOURCE_LANGUAGE_CLASSIFIER.languageForFile(file);
 }
 
 export function isSupportedSourceFile(file: string): boolean {
-	return sourceLanguageForFile(file) !== "unknown";
+	return SOURCE_LANGUAGE_CLASSIFIER.isSupportedFile(file);
 }
 
 export function isScriptSourceFile(file: string): boolean {
-	return isOxcLanguage(sourceLanguageForFile(file));
+	return SOURCE_LANGUAGE_CLASSIFIER.isScriptFile(file);
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
@@ -265,10 +271,25 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	};
 }
 
+const extensionForLanguage = (language: SourceLanguage): string | undefined =>
+	({
+		typescript: ".ts",
+		tsx: ".tsx",
+		javascript: ".js",
+		jsx: ".jsx",
+		vue: ".vue",
+		svelte: ".svelte",
+		astro: ".astro",
+		mdx: ".mdx",
+	})[language as keyof Record<string, string>];
+
 const makeAdapter = (id: string, languages: readonly SourceLanguage[]): SourceLanguageAdapter => ({
 	schema: SOURCE_SCANNER_SCHEMA,
 	id,
 	languages,
+	extensions: languages
+		.map(extensionForLanguage)
+		.filter((extension): extension is string => extension !== undefined),
 	detect: (document) =>
 		languages.includes(document.language ?? sourceLanguageForFile(document.file)),
 	scan: scanDocument,
@@ -283,6 +304,9 @@ const makeFrameworkAdapter = (
 	schema: SOURCE_SCANNER_SCHEMA,
 	id,
 	languages,
+	extensions: languages
+		.map(extensionForLanguage)
+		.filter((extension): extension is string => extension !== undefined),
 	detect: (document) =>
 		languages.includes(document.language ?? sourceLanguageForFile(document.file)) &&
 		patterns.some((pattern) => pattern.test(document.source)),
@@ -321,11 +345,53 @@ export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeAdapter("astro", ["astro"]),
 ];
 
+export function createSourceLanguageClassifier(
+	adapters: readonly SourceLanguageAdapter[],
+): SourceLanguageClassifier {
+	const languagesByExtension = new Map<string, SourceLanguage>();
+	for (const adapter of adapters) {
+		const extensions = adapter.extensions ?? [];
+		for (const extension of extensions) {
+			const language =
+				adapter.languages.find(
+					(candidate) => extensionForLanguage(candidate)?.toLowerCase() === extension.toLowerCase(),
+				) ?? (adapter.languages.length === 1 ? adapter.languages[0] : undefined);
+			if (language !== undefined && !languagesByExtension.has(extension.toLowerCase()))
+				languagesByExtension.set(extension.toLowerCase(), language);
+		}
+	}
+	return {
+		languageForFile(file) {
+			const extension = `.${file.split(".").pop()?.toLowerCase() ?? ""}`;
+			return languagesByExtension.get(extension) ?? "unknown";
+		},
+		isSupportedFile(file) {
+			return this.languageForFile(file) !== "unknown";
+		},
+		isScriptFile(file) {
+			return isOxcLanguage(this.languageForFile(file));
+		},
+	};
+}
+
+export const SOURCE_LANGUAGE_CLASSIFIER = createSourceLanguageClassifier(SOURCE_LANGUAGE_ADAPTERS);
+
+export const BUILTIN_SOURCE_SCANNER_PLUGIN: SourceScannerPlugin = {
+	schema: SOURCE_SCANNER_PLUGIN_SCHEMA,
+	id: "pandwind-source-languages",
+	adapters: SOURCE_LANGUAGE_ADAPTERS,
+};
+
 export function createSourceScannerRegistry(
-	initial: readonly SourceLanguageAdapter[] = SOURCE_LANGUAGE_ADAPTERS,
+	initial?: readonly SourceLanguageAdapter[],
 ): SourceScannerRegistry {
 	const adapters = new Map<string, SourceLanguageAdapter>();
+	const plugins = new Map<string, SourceScannerPlugin>();
+	let classifier = createSourceLanguageClassifier([]);
 	const registry: SourceScannerRegistry = {
+		get plugins() {
+			return [...plugins.values()];
+		},
 		get adapters() {
 			return [...adapters.values()];
 		},
@@ -335,8 +401,21 @@ export function createSourceScannerRegistry(
 			if (adapters.has(adapter.id))
 				throw new Error(`source scanner already registered: ${adapter.id}`);
 			adapters.set(adapter.id, adapter);
+			classifier = createSourceLanguageClassifier([...adapters.values()]);
 			return registry;
 		},
+		registerPlugin(plugin) {
+			if (plugin.schema !== SOURCE_SCANNER_PLUGIN_SCHEMA)
+				throw new Error(`unsupported source scanner plugin schema: ${plugin.schema}`);
+			if (plugins.has(plugin.id))
+				throw new Error(`source scanner plugin already registered: ${plugin.id}`);
+			for (const adapter of plugin.adapters) registry.register(adapter);
+			plugins.set(plugin.id, plugin);
+			return registry;
+		},
+		languageForFile: (file) => classifier.languageForFile(file),
+		isSupportedFile: (file) => classifier.isSupportedFile(file),
+		isScriptFile: (file) => classifier.isScriptFile(file),
 		detect: (document) => registry.adapters.find((adapter) => adapter.detect(document)),
 		scan(document) {
 			const adapter = registry.detect(document);
@@ -351,7 +430,8 @@ export function createSourceScannerRegistry(
 			};
 		},
 	};
-	for (const adapter of initial) registry.register(adapter);
+	if (initial === undefined) registry.registerPlugin(BUILTIN_SOURCE_SCANNER_PLUGIN);
+	else for (const adapter of initial) registry.register(adapter);
 	return registry;
 }
 

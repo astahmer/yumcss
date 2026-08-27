@@ -38,6 +38,33 @@ describe("language-neutral source scanner registry", () => {
 		expect(registry.scan({ file: "README.mdx", source: "tw({})" }).language).toBe("mdx");
 	});
 
+	test("exposes language adapters through a plugin composition boundary", () => {
+		const registry = createSourceScannerRegistry();
+		expect(registry.plugins.map((plugin) => plugin.id)).toEqual(["pandwind-source-languages"]);
+		const custom = {
+			schema: "pandwind.source-scanner-plugin/1",
+			id: "custom-source-plugin",
+			adapters: [
+				{
+					schema: "pandwind.source-scanner/2",
+					id: "custom-source",
+					languages: ["custom"],
+					extensions: [".custom"],
+					detect: (document: { file: string }) => document.file.endsWith(".custom"),
+					scan: (document: { file: string; source: string }) => ({
+						document,
+						language: "custom",
+						excluded: [],
+						diagnostics: [],
+						isExcluded: () => false,
+					}),
+				},
+			],
+		} as const;
+		registry.registerPlugin(custom);
+		expect(registry.languageForFile("Card.custom")).toBe("custom");
+	});
+
 	test("uses built-in MDX and framework adapters", () => {
 		const registry = createSourceScannerRegistry();
 		const mdx = registry.scan({
