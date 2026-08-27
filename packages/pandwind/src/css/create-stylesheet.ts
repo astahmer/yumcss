@@ -5,7 +5,7 @@ import type {
 	StyleObject,
 	TokenDeclaration,
 } from "../types/typings.ts";
-import { escapeVarClass, varClassFor } from "./vars.ts";
+import { VarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
@@ -171,7 +171,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
 		const css = cssRuleSerializer.serialize(`${prop}: ${declaration}`, {
 			...atomic.conditions,
-			className: `.${escapeVarClass(varClassFor(orderedKey))}`,
+			className: `.${VarCompiler.escapeClass(VarCompiler.classFor(orderedKey))}`,
 		});
 		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
 	};
