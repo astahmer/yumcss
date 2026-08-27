@@ -44,6 +44,36 @@
 /** Flattened, condition-nested, token-resolved style object — see module docs. */
 export type FlatStyleIR = Record<string, string>;
 
+export const STYLE_BACKEND_SCHEMA = "pandwind.style-backend/1" as const;
+
+export type BackendCapabilityLevel = "unsupported" | "partial" | "exact";
+export type BackendLossiness = "lossless" | "lossy" | "unsupported";
+export type BackendArtifactKind = "stylesheet" | "style-object" | (string & {});
+
+export type BackendFeature =
+	| "declarations"
+	| "conditions"
+	| "dynamic-values"
+	| "runtime-conditions"
+	| "unit-conversion"
+	| "serialization"
+	| "stable-identity"
+	| "ssr";
+
+export interface BackendCapabilityContract {
+	readonly schema: "pandwind.style-backend-capabilities/1";
+	readonly artifact: BackendArtifactKind;
+	readonly features: Readonly<Record<BackendFeature, BackendCapabilityLevel>>;
+	readonly unsupported: "throw" | "diagnose";
+}
+
+export interface BackendDeclarationIssue {
+	readonly property: string;
+	readonly value: string;
+	readonly lossiness: BackendLossiness;
+	readonly message: string;
+}
+
 /**
  * Per-declaration artifact of a backend: the css backend yields class
  * names; object-emitting backends yield the converted target properties
@@ -52,6 +82,8 @@ export type FlatStyleIR = Record<string, string>;
 export interface StyleBackend<TArtifact = string> {
 	/** Mode id, e.g. `"css"` / `"react-native"` / `"opentui"` (docs/debug). */
 	readonly name: string;
+	/** Typed target contract used by tooling and differential validation. */
+	readonly capabilities?: BackendCapabilityContract;
 	/**
 	 * Policy-check one flattened declaration without lowering it. Throws
 	 * when this backend refuses the declaration (unsupported condition,
@@ -59,6 +91,8 @@ export interface StyleBackend<TArtifact = string> {
 	 * (css) omits it.
 	 */
 	check?(key: string, value: string): void;
+	/** Optional non-throwing policy inspection for analyzers and reports. */
+	diagnose?(key: string, value: string): readonly BackendDeclarationIssue[];
 	/**
 	 * Lower one flattened declaration to this backend's artifact.
 	 * Idempotent per (key, value); may throw on policy violations.

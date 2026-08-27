@@ -5,13 +5,34 @@ import {
 	type ClassNameStrategy,
 } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
-import type { StyleBackend } from "./types.ts";
+import {
+	STYLE_BACKEND_SCHEMA,
+	type BackendCapabilityContract,
+	type StyleBackend,
+} from "./types.ts";
+import type { StyleBackendFactory } from "./registry.ts";
 
 export interface CssBackendOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
 	className?: AnyClassNameStrategy;
 }
+
+const CSS_BACKEND_CAPABILITIES: BackendCapabilityContract = {
+	schema: "pandwind.style-backend-capabilities/1",
+	artifact: "stylesheet",
+	unsupported: "throw",
+	features: {
+		declarations: "exact",
+		conditions: "exact",
+		"dynamic-values": "exact",
+		"runtime-conditions": "unsupported",
+		"unit-conversion": "exact",
+		serialization: "exact",
+		"stable-identity": "exact",
+		ssr: "exact",
+	},
+};
 
 /**
  * The web backend (plans/021 reference implementation): lowers flattened
@@ -50,3 +71,10 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 	return { name: "css", atoms, declare };
 }
+
+export const CSS_BACKEND: StyleBackendFactory<CssBackendOptions, string> = {
+	schema: STYLE_BACKEND_SCHEMA,
+	id: "css",
+	capabilities: CSS_BACKEND_CAPABILITIES,
+	create: createCssBackend,
+};

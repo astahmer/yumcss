@@ -23,9 +23,16 @@ describe("style backend registry", () => {
 		const fake: StyleBackendFactory = {
 			schema: STYLE_BACKEND_SCHEMA,
 			id: "test-target",
+			capabilities: STYLE_BACKENDS.factories[0]!.capabilities,
 			create: () => ({ name: "test-target", declare: (key, value) => `${key}:${value}` }),
 		};
 		const registry = createStyleBackendRegistry().register(fake);
 		expect(registry.create<string>("test-target").declare("color", "red")).toBe("color:red");
+	});
+
+	test("names the extension point as a plugin registry", () => {
+		const plugin = STYLE_BACKENDS.factories[0]!;
+		const registry = createStyleBackendRegistry().registerPlugin(plugin);
+		expect(registry.plugins.map((entry) => entry.id)).toEqual([plugin.id]);
 	});
 });
