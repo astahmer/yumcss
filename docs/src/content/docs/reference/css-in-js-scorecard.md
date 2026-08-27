@@ -31,7 +31,7 @@ ordering, and a testable integration contract.
 | Global rules            | Partial | Web-only via explicit authored CSS imports; no first-class TypeScript global-rule primitive.                                                                         |
 | Keyframes and font-face | Partial | Web-only via explicit authored CSS imports; no first-class TypeScript animation/font primitive.                                                                      |
 | SSR and hydration       | Partial | `css.vars()` is serializable and server-safe; a real React browser hydration fixture proves class/style stability while runtime sheet extraction remains host-owned. |
-| Bundlers/frameworks     | Partial | Vite/Chromium, Rollup/Chromium, Webpack production/CSS/watch, and packed-package consumer fixtures are green; host-framework matrices remain future evidence. |
+| Bundlers/frameworks     | Partial | Vite/Chromium, Rollup/Chromium, Webpack production/CSS/watch, and packed-package consumer fixtures are green; host-framework matrices remain future evidence.        |
 | Source provenance       | Partial | Analyze/inspector payloads carry source ranges, extraction status, and (when the matching preset is available) emitted rule identities/CSS.                          |
 
 The scorecard is a product contract, not a promise that every style should be
