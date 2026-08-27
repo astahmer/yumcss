@@ -112,6 +112,60 @@ css.keyframes({ from: { opacity: 0 } });`,
 		const human = await runCli(["**/*.ts", "--tw", twPath, "--root", root]);
 		expect(human).toContain("css diagnostics:");
 		expect(human).toContain("Keep the style shape literal");
+
+		expect({
+			authoredCss: doc.authoredCss.map(({ file, source, kind }) => ({ file, source, kind })),
+			cssSources: doc.cssSources.map(({ file, callKind, staticArguments, dynamicArguments }) => ({
+				file,
+				callKind,
+				staticArguments,
+				dynamicArguments,
+			})),
+			cssDiagnostics: doc.cssDiagnostics.map(({ kind, file, line, column, message, suggestion }) => ({
+				kind,
+				file,
+				line,
+				column,
+				message,
+				suggestion,
+			})),
+		}).toMatchInlineSnapshot(`
+			{
+			  "authoredCss": [
+			    {
+			      "file": "main.ts",
+			      "kind": "side-effect",
+			      "source": "./globals.css",
+			    },
+			  ],
+			  "cssDiagnostics": [
+			    {
+			      "column": 18,
+			      "file": "a.ts",
+			      "kind": "missing-extraction",
+			      "line": 3,
+			      "message": "css.class has dynamic argument(s); only literal style objects enter the generated stylesheet.",
+			      "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+			    },
+			    {
+			      "column": 1,
+			      "file": "a.ts",
+			      "kind": "unsupported-construct",
+			      "line": 4,
+			      "message": "Authored keyframes are not extracted yet.",
+			      "suggestion": "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+			    },
+			  ],
+			  "cssSources": [
+			    {
+			      "callKind": "css.class",
+			      "dynamicArguments": 1,
+			      "file": "a.ts",
+			      "staticArguments": 0,
+			    },
+			  ],
+			}
+		`);
 	});
 });
 
