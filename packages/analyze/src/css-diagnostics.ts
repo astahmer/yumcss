@@ -36,3 +36,14 @@ export function collectCssDiagnostics(
 		return diagnoseCssSources(content, file, names);
 	});
 }
+
+export function formatCssDiagnostics(diagnostics: ReadonlyArray<CssDiagnostic>): string {
+	if (diagnostics.length === 0) return "";
+	return [
+		"css diagnostics:",
+		...diagnostics.map(
+			(d) =>
+				`    ^ ${d.file}:${d.line}:${d.column} — ${d.kind}: ${d.message} ${d.suggestion}`,
+		),
+	].join("\n");
+}

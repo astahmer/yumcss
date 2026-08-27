@@ -19,7 +19,11 @@ import {
 } from "./analyze.ts";
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
-import { collectCssDiagnostics, collectCssProvenance } from "./css-diagnostics.ts";
+import {
+	collectCssDiagnostics,
+	collectCssProvenance,
+	formatCssDiagnostics,
+} from "./css-diagnostics.ts";
 
 interface CliArgs {
 	patterns: Array<string>;
@@ -209,7 +213,9 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		const truncated = false;
 		return formatAnnotations(annotations, truncated);
 	}
-	return formatReport(summary);
+	const report = formatReport(summary);
+	const cssReport = formatCssDiagnostics(cssDiagnostics);
+	return cssReport === "" ? report : `${report}\n\n${cssReport}`;
 }
 
 async function main(): Promise<void> {

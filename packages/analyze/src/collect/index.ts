@@ -27,6 +27,7 @@ export { crawlCssImports } from "./theme-crawl.ts";
 export {
 	collectCssDiagnostics,
 	collectCssProvenance,
+	formatCssDiagnostics,
 	type AnalyzeSourceFile,
 } from "../css-diagnostics.ts";
 export type {
