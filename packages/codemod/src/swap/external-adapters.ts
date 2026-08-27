@@ -16,7 +16,6 @@ import {
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
-	type AdapterEmitContext,
 	type AdapterLossiness,
 	type AdapterMatch,
 	type AdapterParseContext,
@@ -63,12 +62,12 @@ const dependency = (
 });
 
 const allRuleCapabilities = (
-	adapter: string,
+	adapterId: string,
 	dynamic: "exact" | "partial" | "unsupported",
 	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
 ): AdapterCapabilities => ({
 	schema: ADAPTER_CAPABILITIES_SCHEMA,
-	adapter,
+	adapter: adapterId,
 	capabilities: {
 		declarations: "exact",
 		"rule-level": "exact",
@@ -273,10 +272,6 @@ function programObject(program: StyleProgram): string {
 
 function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
 	return program.rules[0]?.kind ?? "style";
-}
-
-function globalSelector(program: StyleProgram): string {
-	return program.rules.find((rule) => rule.kind === "global")?.selector ?? "*";
 }
 
 function parseKeyframeProgram(

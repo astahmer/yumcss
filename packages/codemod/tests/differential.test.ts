@@ -1,24 +1,24 @@
 import { describe, expect, test } from "vitest";
-import {
-	runDifferentialFixture,
-	runDifferentialSuite,
-	styleProgramToCanonicalCss,
-	type DifferentialRender,
-} from "../src/swap/index.ts";
+import { runDifferentialFixture, runDifferentialSuite } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
 import { createRuntimeSheet } from "pandwind/css/runtime";
 
+type SemanticValue = StyleProgram["declarations"][number]["value"];
+type SemanticCondition = StyleProgram["rules"][number]["conditions"][number];
+
+const runtimeValue = (input: SemanticValue): string => {
+	if (input.kind === "token") return input.authored;
+	if (input.kind === "dynamic") return input.expression;
+	return String(input.value);
+};
+
+const runtimeCondition = (input: SemanticCondition): string => {
+	if (input.kind === "media" || input.kind === "container" || input.kind === "supports")
+		return `@${input.kind} ${input.value ?? input.name}`;
+	return input.value ?? input.raw ?? input.name;
+};
+
 function runtimeCss(program: StyleProgram): string {
-	const value = (input: StyleProgram["declarations"][number]["value"]): string => {
-		if (input.kind === "token") return input.authored;
-		if (input.kind === "dynamic") return input.expression;
-		return String(input.value);
-	};
-	const condition = (input: StyleProgram["rules"][number]["conditions"][number]): string => {
-		if (input.kind === "media" || input.kind === "container" || input.kind === "supports")
-			return `@${input.kind} ${input.value ?? input.name}`;
-		return input.value ?? input.raw ?? input.name;
-	};
 	const runtimeRule = (
 		rule: StyleProgram["rules"][number],
 	): Parameters<ReturnType<typeof createRuntimeSheet>["registerSemanticRules"]>[0][number] => ({
@@ -26,10 +26,10 @@ function runtimeCss(program: StyleProgram): string {
 		name: rule.name,
 		selector: rule.selector,
 		layer: rule.layer,
-		conditions: rule.conditions.map(condition),
+		conditions: rule.conditions.map(runtimeCondition),
 		declarations: rule.declarations.map((declaration) => ({
 			property: declaration.property,
-			value: value(declaration.value),
+			value: runtimeValue(declaration.value),
 		})),
 		children: rule.children.map(runtimeRule),
 	});

@@ -258,7 +258,7 @@ export function styleProgramFromRules(
 /** Stable ordering for rules and nested at-rule children. */
 export function orderStyleRules(rules: readonly StyleRule[]): StyleRule[] {
 	return [...rules]
-		.sort(
+		.toSorted(
 			(a, b) =>
 				a.order - b.order ||
 				a.kind.localeCompare(b.kind) ||
@@ -427,7 +427,6 @@ function sourceRange(
 	base: StyleProgramSource | undefined,
 	sourceOffset: number,
 	node: SourceNode,
-	body: string,
 ): StyleProgramSource {
 	const start = sourceOffset + Math.max(0, (node.start ?? 2) - 2);
 	const end = sourceOffset + Math.max(0, (node.end ?? node.start ?? 2) - 2);
@@ -463,7 +462,7 @@ function dynamicSourceValue(
 		kind: "dynamic",
 		expression: sourceSlice(body, node),
 		lowering: "residual",
-		source: sourceRange(options.source, options.sourceOffset ?? 0, node, body),
+		source: sourceRange(options.source, options.sourceOffset ?? 0, node),
 	};
 }
 
