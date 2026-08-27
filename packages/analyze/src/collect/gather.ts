@@ -9,6 +9,11 @@ import { collectFiles, loadTwConfig } from "../analyze.ts";
 import { runCli } from "../cli.ts";
 import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
 import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
+import { createStylesheet } from "../../../../packages/pandwind/src/css/create-stylesheet.ts";
+import {
+	extractCssSources,
+	findCssImports,
+} from "../../../../packages/pandwind/src/vite/css-extract.ts";
 import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
@@ -172,6 +177,18 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		.filter((f) => f.includes(`${APP}/src`))
 		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
 	const cssSources = collectCssProvenance(appSourceFiles);
+	const cssSourcesByStart = new Map(cssSources.map((site) => [`${site.file}:${site.start}`, site]));
+	for (const { file, content } of appSourceFiles) {
+		const names = findCssImports(content, file, ["css", "design"]);
+		for (const extracted of extractCssSources(content, file, names, examplePreset)) {
+			const site = cssSourcesByStart.get(`${file}:${extracted.provenance.start}`);
+			if (site === undefined) continue;
+			const sheet = createStylesheet(examplePreset);
+			sheet.process([extracted.style]);
+			const rules = sheet.gen.atomicEntries().map(({ id, css }) => ({ id, css }));
+			site.rules = [...(site.rules ?? []), ...rules];
+		}
+	}
 	const cssDiagnostics = collectCssDiagnostics(appSourceFiles);
 	const tokenUniverse = Object.entries(presetTokens).flatMap(([group, values]) =>
 		Object.keys(values as Record<string, unknown>).map((k) => `${group}/${k}`),
