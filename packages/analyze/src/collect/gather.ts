@@ -23,7 +23,11 @@ import {
 	parseUtilityUnions,
 } from "./parsers.ts";
 import { crawlCssImports } from "./theme-crawl.ts";
-import { collectCssDiagnostics, collectCssProvenance } from "../css-diagnostics.ts";
+import {
+	collectAuthoredCssImports,
+	collectCssDiagnostics,
+	collectCssProvenance,
+} from "../css-diagnostics.ts";
 import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 
 const DEFAULT_APP = "apps/example";
@@ -177,6 +181,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		.filter((f) => f.includes(`${APP}/src`))
 		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
 	const cssSources = collectCssProvenance(appSourceFiles);
+	const authoredCss = collectAuthoredCssImports(appSourceFiles);
 	const cssSourcesByStart = new Map(cssSources.map((site) => [`${site.file}:${site.start}`, site]));
 	for (const { file, content } of appSourceFiles) {
 		const names = findCssImports(content, file, ["css", "design"]);
@@ -212,6 +217,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	return {
 		meta: { root },
+		authoredCss,
 		cssSources,
 		cssDiagnostics,
 		tokenGraph,

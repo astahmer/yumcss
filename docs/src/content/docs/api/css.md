@@ -99,11 +99,17 @@ values are omitted. The generated toggle rule always falls back from the most
 specific condition to the base custom property, so transitions and other
 browser CSS can consume the same property normally.
 
-The general lane does not currently author global rules, keyframes, `@font-face`,
-cascade layers, `@supports`, or `@property` definitions. These are explicit
-capability boundaries rather than silently approximated declarations; use a
-normal CSS entry for them until a minimal, extraction-aware contract is
-designed.
+The general lane does not author global rules, keyframes, `@font-face`, cascade
+layers, `@supports`, or `@property` definitions. Keep those browser-global
+primitives in an explicit CSS entry imported by the app or package. See
+[Authored CSS on the web](/reference/authored-css/) for the pattern and the
+token-variable bridge. `analyze` and the inspector record those explicit CSS
+imports, but do not scan arbitrary CSS and infer a Pandwind API from it.
+
+Pandwind does not provide a recipe API. If you need variant selection, use an
+external CVA-style package with the class strings returned by `css()` and
+`cx()`; keep the variant map statically authored for extraction. See the
+[authored CSS guide](/reference/authored-css/#external-variant-composition).
 
 `css.raw()` is the opposite trade: it skips atom compilation entirely and
 returns the style object as-is. Use it for targets whose components take

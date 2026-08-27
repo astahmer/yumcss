@@ -22,6 +22,8 @@ import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 import {
 	collectCssDiagnostics,
 	collectCssProvenance,
+	collectAuthoredCssImports,
+	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
 
@@ -174,6 +176,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		}),
 	);
 	const summary: FoldSummary = summarize(stats);
+	const authoredCss = collectAuthoredCssImports(sourceFiles);
 	const cssSources = collectCssProvenance(sourceFiles);
 	const cssDiagnostics = collectCssDiagnostics(sourceFiles);
 
@@ -196,6 +199,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 				...summary,
 				missingCss: { count: missingSites.length, sites: missingSites.slice(0, 50) },
 				arbitraryValues: { count: arbitrarySites.length, sites: arbitrarySites.slice(0, 50) },
+				authoredCss,
 				cssSources,
 				cssDiagnostics,
 				...(cssBudgetJson !== undefined ? { cssBudget: cssBudgetJson } : {}),
@@ -214,8 +218,9 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		return formatAnnotations(annotations, truncated);
 	}
 	const report = formatReport(summary);
+	const authoredCssReport = formatAuthoredCssImports(authoredCss);
 	const cssReport = formatCssDiagnostics(cssDiagnostics);
-	return cssReport === "" ? report : `${report}\n\n${cssReport}`;
+	return [report, authoredCssReport, cssReport].filter(Boolean).join("\n\n");
 }
 
 async function main(): Promise<void> {

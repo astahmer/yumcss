@@ -94,9 +94,11 @@ export interface SheetShape {
 }
 
 export type { CssCallSite, CssDiagnostic, CssDiagnosticKind } from "../css-diagnostics.ts";
+export type { AuthoredCssImport } from "../css-diagnostics.ts";
 
 export interface CollectPayload {
 	meta: { root: string };
+	authoredCss: Array<import("../css-diagnostics.ts").AuthoredCssImport>;
 	cssSources: Array<import("../css-diagnostics.ts").CssCallSite>;
 	cssDiagnostics: Array<import("../css-diagnostics.ts").CssDiagnostic>;
 	analytics?: StyleUsageReport;

@@ -36,6 +36,7 @@ describe("runCli --json", () => {
 
 		expect(doc["schema"]).toBe(ANALYZE_JSON_SCHEMA);
 		expect(doc["schema"]).toBe("pandwind.analyze/2");
+		expect(doc["authoredCss"]).toEqual([]);
 		expect(doc["cssSources"]).toEqual([]);
 		expect(doc["cssDiagnostics"]).toEqual([]);
 
@@ -74,6 +75,7 @@ describe("runCli --json", () => {
 
 	test("reports CSS provenance and actionable extraction diagnostics", async () => {
 		seed({
+			"main.ts": 'import "./globals.css";\n',
 			"design.ts": "export const css = (x: unknown) => x;",
 			"a.ts": `import { css } from "./design";
 const tone = "$blue-500";
@@ -82,9 +84,17 @@ css.keyframes({ from: { opacity: 0 } });`,
 		});
 		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
 		const doc = JSON.parse(output) as {
+			authoredCss: Array<{ file: string; source: string; kind: string }>;
 			cssSources: Array<{ file: string; callKind: string; staticArguments: number }>;
 			cssDiagnostics: Array<{ kind: string; suggestion: string }>;
 		};
+		expect(doc.authoredCss).toEqual([
+			expect.objectContaining({
+				file: "main.ts",
+				source: "./globals.css",
+				kind: "side-effect",
+			}),
+		]);
 		expect(doc.cssSources).toEqual([
 			expect.objectContaining({
 				file: "a.ts",

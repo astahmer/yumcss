@@ -35,6 +35,7 @@ ordering, and a testable integration contract.
 | Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                     |
 | External adapters       | Static      | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
 | Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.             |
+| Authored CSS imports    | Partial     | Explicit web CSS imports remain a supported escape hatch and are visible to analyzer/extractor diagnostics; first-class TypeScript primitives use the semantic runtime path. |
 
 The scorecard is a product contract, not a promise that every style should be
 forced through pandwind. Unsupported constructs remain explicit CSS or use a

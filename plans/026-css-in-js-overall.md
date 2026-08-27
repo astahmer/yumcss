@@ -154,7 +154,7 @@ the flat path does not become ambiguous.
 | SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                 |
 | Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation              |
 | Release/publishing   | Deferred                                                             | User explicitly requested no release work in this wave               |
-| Recipes/composition  | Deferred to dedicated session                                        | User explicitly requested this exclusion                             |
+| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API       | User explicitly requested this exclusion                             |
 
 ## What this allows
 
@@ -250,6 +250,8 @@ schema version.
 - [x] Browser differential fixtures and external CSS-in-JS adapter round trips
       are covered by the follow-on pivot implementation.
 - [x] No recipe/composition or release/publish changes are included.
+- [x] Web authored CSS has an explicit import contract and tooling visibility;
+      first-class TypeScript primitives use the rule-level semantic IR path.
 - [x] Analyzer/inspector output can map an extracted rule identity/CSS back to
       its source call site when the matching preset is available.
 - [x] Analyze JSON and human output report actionable unsupported-construct and
