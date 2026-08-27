@@ -19,6 +19,7 @@ import {
 } from "./analyze.ts";
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
+import { collectCssDiagnostics, collectCssProvenance } from "./css-diagnostics.ts";
 
 interface CliArgs {
 	patterns: Array<string>;
@@ -75,7 +76,7 @@ export function evaluateBudget(
 }
 
 /** Version tag stamped into `--json` output for consumers. */
-export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/1";
+export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/2";
 
 function parseArgs(argv: Array<string>): CliArgs {
 	const patterns: Array<string> = [];
@@ -157,6 +158,10 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	const files = collectFiles(patterns, args.root).filter(
 		(f) => f.endsWith(".ts") || f.endsWith(".tsx"),
 	);
+	const sourceFiles = files.map((file) => ({
+		file: file.replace(args.root + "/", ""),
+		content: readFileSync(file, "utf8"),
+	}));
 
 	const stats = files.map((file) =>
 		analyzeSource(readFileSync(file, "utf8"), file.replace(args.root + "/", ""), {
@@ -165,6 +170,8 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		}),
 	);
 	const summary: FoldSummary = summarize(stats);
+	const cssSources = collectCssProvenance(sourceFiles);
+	const cssDiagnostics = collectCssDiagnostics(sourceFiles);
 
 	if (args.json) {
 		// Machine consumers (the reusable analyze-comment workflow) need the
@@ -185,6 +192,8 @@ export async function runCli(argv: Array<string>): Promise<string> {
 				...summary,
 				missingCss: { count: missingSites.length, sites: missingSites.slice(0, 50) },
 				arbitraryValues: { count: arbitrarySites.length, sites: arbitrarySites.slice(0, 50) },
+				cssSources,
+				cssDiagnostics,
 				...(cssBudgetJson !== undefined ? { cssBudget: cssBudgetJson } : {}),
 			},
 			null,

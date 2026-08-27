@@ -11,8 +11,10 @@ import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import {
+	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
+	findCssCallSites,
 	findCssImports,
 	inlineCssCalls,
 	isCssSource,
@@ -377,9 +379,11 @@ ${split.routes.get(route.name) ?? ""}`;
 
 // Re-exported so callers of the core keep the same surface as css.ts.
 export {
+	diagnoseCssSources,
 	extractCssSources,
 	extractCssStyles,
 	extractVarKeys,
+	findCssCallSites,
 	findCssImports,
 	inlineCssCalls,
 	isCssSource,
