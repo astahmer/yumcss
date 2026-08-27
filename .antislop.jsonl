@@ -1,0 +1,1 @@
+{"kind":"rule","id":"as_1csfcpmjsp79","ts":"2026-08-27T12:38:37.786Z","agent":"unknown","text":"Normalize bundler virtual CSS ids at the adapter boundary so Webpack slash-prefixed decoded ids still reach the NUL-prefixed stylesheet loader.","tags":["webpack"],"severity":"major"}

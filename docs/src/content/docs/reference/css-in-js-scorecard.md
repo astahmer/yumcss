@@ -21,21 +21,21 @@ ordering, and a testable integration contract.
 
 ## Current scorecard
 
-| Capability              | Status      | Current contract                                                                                                                      |
-| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Typed general CSS       | Static      | `createCss(preset)` is preset-bound and typed for ordinary CSS; `createDesignCss()` remains the constrained design lane.              |
-| Atomic CSS              | Static      | Literal declarations become deterministic, deduplicated atomic rules.                                                                 |
-| Static extraction       | Static      | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                                                  |
-| Dynamic values          | Runtime     | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.                                  |
-| Theme scopes            | Static      | Theme and component token scopes are emitted as deterministic CSS blocks.                                                             |
-| Global rules            | Runtime     | `RuntimeSemanticRule` registers ordered global selectors and preserves them through extraction and hydration.                          |
-| Keyframes and font-face | Runtime     | Keyframe, `@font-face`, layer, supports, and property rule nodes serialize through the runtime sheet.                                   |
-| SSR and hydration       | Runtime     | Runtime snapshots are serializable, hydrate without duplicate rules, and are covered by a concrete mounted-sheet fixture.             |
-| Bundlers/frameworks     | Partial     | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered, with Rollup and Webpack browser proof; native compiler plugins remain. |
-| Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                     |
-| External adapters       | Static      | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
-| Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.             |
-| Authored CSS imports    | Partial     | Explicit web CSS imports remain a supported escape hatch and are visible to analyzer/extractor diagnostics; first-class TypeScript primitives use the semantic runtime path. |
+| Capability              | Status  | Current contract                                                                                                                                                                    |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Typed general CSS       | Static  | `createCss(preset)` is preset-bound and typed for ordinary CSS; `createDesignCss()` remains the constrained design lane.                                                            |
+| Atomic CSS              | Static  | Literal declarations become deterministic, deduplicated atomic rules.                                                                                                               |
+| Static extraction       | Static  | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                                                                                                |
+| Dynamic values          | Runtime | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.                                                                                |
+| Theme scopes            | Static  | Theme and component token scopes are emitted as deterministic CSS blocks.                                                                                                           |
+| Global rules            | Runtime | `RuntimeSemanticRule` registers ordered global selectors and preserves them through extraction and hydration.                                                                       |
+| Keyframes and font-face | Runtime | Keyframe, `@font-face`, layer, supports, and property rule nodes serialize through the runtime sheet.                                                                               |
+| SSR and hydration       | Runtime | Runtime snapshots are serializable, hydrate without duplicate rules, and are covered by a concrete mounted-sheet fixture.                                                           |
+| Bundlers/frameworks     | Partial | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered, with Rollup and Webpack browser proof; native compiler plugins remain. |
+| Source provenance       | Partial | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                                                                   |
+| External adapters       | Static  | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures.                                    |
+| Recipes and host syntax | Partial | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.                                                          |
+| Authored CSS imports    | Partial | Explicit web CSS imports remain a supported escape hatch and are visible to analyzer/extractor diagnostics; first-class TypeScript primitives use the semantic runtime path.        |
 
 The scorecard is a product contract, not a promise that every style should be
 forced through pandwind. Unsupported constructs remain explicit CSS or use a
