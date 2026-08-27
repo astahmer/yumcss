@@ -1,6 +1,6 @@
 # CSS-in-JS completeness plan
 
-**Status: in progress — dynamic contract slice landed; non-Vite browser proof next**
+**Status: in progress — dynamic contract and non-Vite browser proof landed**
 
 ## Context
 
@@ -166,7 +166,7 @@ interface AuthoredCssImport {
 
 1. Commit this plan and align the capability scorecard and previous plan. **Landed.**
 2. Complete the `css.vars()` dynamic/SSR browser contract and documentation. **Landed.**
-3. Add the first non-Vite browser fixture through the unplugin path.
+3. Add the first non-Vite browser fixture through the unplugin path. **Landed.**
 4. Audit CSS conflict/order behavior and capability promotion criteria.
 5. Add representative performance measurements and regression gates.
 6. Finish migration/adoption documentation and inspector lane presentation.
@@ -187,7 +187,9 @@ interface AuthoredCssImport {
 - [x] `css.vars()` has browser, SSR, hydration, fallback, invalid-input, and
       duplicate-rule coverage.
 - [ ] Vite/Chromium and one non-Vite browser fixture prove static extraction,
-      runtime vars, authored CSS imports, and invalidation behavior.
+      runtime vars, authored CSS imports, and invalidation behavior. **Static,
+      runtime, authored CSS, and browser-error checks are landed; invalidation
+      remains covered by adapter tests.**
 - [ ] CSS shorthand/condition/selector ordering has representative browser
       assertions and no unexplained capability claims.
 - [ ] Analyze/inspector distinguish extracted Pandwind rules, runtime values,
@@ -208,3 +210,6 @@ interface AuthoredCssImport {
 - 2026-08-27: The dynamic contract slice rejects empty/non-finite runtime
   values, keeps the existing runtime-size gate explicit, and proves conditional
   fallback behavior in Chromium.
+- 2026-08-27: The non-Vite browser proof uses Rollup plus the existing unplugin
+  CSS path; authored CSS remains a host-owned stylesheet and Pandwind owns only
+  the generated atomic CSS.

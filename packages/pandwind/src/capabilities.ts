@@ -66,7 +66,8 @@ export const CSS_IN_JS_CAPABILITIES = [
 	{
 		feature: "bundler-integration",
 		status: "partial",
-		detail: "Vite and unplugin adapters exist; framework-specific fixtures are still needed.",
+		detail:
+			"Vite and generic unplugin adapters have browser proof through Rollup; framework-specific fixtures are still needed.",
 	},
 	{
 		feature: "source-provenance",

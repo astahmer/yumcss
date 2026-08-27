@@ -8,7 +8,8 @@
 		"build": "tsc --noEmit && vite build",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
-		"test": "node test/e2e.mjs"
+		"test": "node test/e2e.mjs",
+		"test:rollup": "tsx test/rollup-e2e.ts"
 	},
 	"dependencies": {
 		"class-variance-authority": "0.7.1",
@@ -17,10 +18,14 @@
 		"react-dom": "19.2.8"
 	},
 	"devDependencies": {
+		"@rollup/plugin-node-resolve": "16.0.3",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.4",
 		"@vitejs/plugin-react-swc": "4.3.3",
+		"esbuild": "0.28.2",
 		"playwright-core": "1.61.1",
+		"rollup": "4.62.5",
+		"tsx": "4.23.12",
 		"typescript": "7.0.2",
 		"vite": "8.2.1"
 	}

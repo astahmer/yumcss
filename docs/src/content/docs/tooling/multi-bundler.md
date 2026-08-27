@@ -27,3 +27,10 @@ export default {
   the filesystem; bare/aliased tw imports are a vite-only capability.
 - Cache invalidation uses unplugin's `watchChange` (cross-bundler) with vite
   `handleHotUpdate` for immediate dev re-requests.
+
+The repository also runs a real Rollup + Chromium fixture covering the shared
+contract: extracted static atoms, `css.vars()` values and conditional rules,
+and an explicitly imported authored stylesheet containing a global selector and
+keyframes. The host bundler owns the authored stylesheet; the Pandwind CSS
+plugin emits only the generated atomic stylesheet. See
+`examples/css-example/test/rollup-e2e.ts` for the executable proof.

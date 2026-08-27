@@ -29,7 +29,7 @@ sheet.
 | Host/integration                             | Static extraction                                     | Dynamic values        | Proof level                                                            |
 | -------------------------------------------- | ----------------------------------------------------- | --------------------- | ---------------------------------------------------------------------- |
 | Vite                                         | Yes                                                   | `css.vars()` contract | Real Vite integration and browser example                              |
-| Rollup via unplugin                          | Yes                                                   | `css.vars()` contract | Real Rollup build plus unit contract                                   |
+| Rollup via unplugin                          | Yes                                                   | `css.vars()` contract | Real Rollup build and Chromium fixture                                 |
 | Webpack/Rspack/esbuild/rolldown via unplugin | Shared adapter path                                   | `css.vars()` contract | Adapter docs; add dedicated fixtures before claiming framework support |
 | React RSC                                    | Use generated CSS and serializable `css.vars()` props | Host-owned            | Guidance only; streaming/RSC adapter and browser fixture are not shipped  |
 | Native/OpenTUI                               | Separate backend                                      | Backend-specific      | No DOM insertion or browser hydration implied                          |

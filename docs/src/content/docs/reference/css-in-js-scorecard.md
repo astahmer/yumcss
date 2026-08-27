@@ -31,7 +31,7 @@ ordering, and a testable integration contract.
 | Global rules            | Runtime     | `RuntimeSemanticRule` registers ordered global selectors and preserves them through extraction and hydration.                          |
 | Keyframes and font-face | Runtime     | Keyframe, `@font-face`, layer, supports, and property rule nodes serialize through the runtime sheet.                                   |
 | SSR and hydration       | Runtime     | Runtime snapshots are serializable, hydrate without duplicate rules, and are covered by a concrete mounted-sheet fixture.             |
-| Bundlers/frameworks     | Partial     | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered; native compiler plugins remain. |
+| Bundlers/frameworks     | Partial     | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered, with Rollup browser proof; native compiler plugins remain. |
 | Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                     |
 | External adapters       | Static      | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
 | Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.             |
