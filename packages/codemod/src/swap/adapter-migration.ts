@@ -418,7 +418,8 @@ export function runAdapterMigration(
 			isStandaloneDefaultExport(source, match.start)
 		) {
 			const tag = tagForStandalone(source, match.start);
-			const rewriter = tag === undefined ? undefined : getHostComponentRewriter(program.source.framework);
+			const rewriter =
+				tag === undefined ? undefined : getHostComponentRewriter(program.source.framework);
 			if (tag !== undefined && rewriter?.rewriteStandalone !== undefined) {
 				standaloneComponentRewrites.push({
 					source,

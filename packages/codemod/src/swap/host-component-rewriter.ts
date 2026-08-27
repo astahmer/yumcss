@@ -34,9 +34,7 @@ export interface HostComponentRewriter {
 	readonly frameworks: readonly string[];
 	rewrite(request: HostComponentRewriteRequest): HostComponentRewriteResult;
 	/** Wrap an exported styled intrinsic that has no component binding or JSX use. */
-	rewriteStandalone?(
-		request: StandaloneHostComponentRewriteRequest,
-	): HostComponentRewriteResult;
+	rewriteStandalone?(request: StandaloneHostComponentRewriteRequest): HostComponentRewriteResult;
 }
 
 export interface HostDynamicCarrierRewriteResult {

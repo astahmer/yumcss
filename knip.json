@@ -1,0 +1,51 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"workspaces": {
+		".": {
+			"entry": ["scripts/**/*.{ts,mts,mjs}"],
+			"project": ["scripts/**/*.{ts,mts,mjs}"]
+		},
+		"packages/codemod": {
+			"entry": ["src/cli.ts", "src/swap/index.ts", "tests/**/*.test.ts"],
+			"project": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]
+		},
+		"packages/pandwind": {
+			"entry": [
+				"src/index.ts",
+				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts",
+				"src/{unplugin,source-scanner,rn,opentui}.ts",
+				"tests/**/*.test.ts",
+				"tests/**/*.tst.ts"
+			],
+			"project": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
+		},
+		"packages/analyze": {
+			"entry": ["src/cli.ts", "src/collect/index.ts", "tests/**/*.test.ts"],
+			"project": ["src/**/*.ts", "tests/**/*.ts"]
+		},
+		"packages/lint-plugin": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"]
+		},
+		"apps/*": {
+			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts"],
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts"]
+		},
+		"examples/*": {
+			"entry": ["src/{main,index,App}.{ts,tsx}", "vite.config.ts"],
+			"project": ["src/**/*.{ts,tsx}", "vite.config.ts", "test/**/*.{ts,tsx,mjs}"]
+		},
+		"docs": {
+			"entry": ["astro.config.mjs", "src/content.config.ts"],
+			"project": ["src/**/*.{ts,tsx,mjs,md,mdx}", "astro.config.mjs"]
+		}
+	},
+	"ignore": [
+		"**/tests/fixtures/**",
+		"**/tests/fixtures/**/*",
+		"**/src/types.d.ts",
+		"**/src/bridge.ts",
+		"**/src/generated/**",
+		"**/*.bench.{ts,mts}"
+	]
+}

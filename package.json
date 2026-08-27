@@ -16,6 +16,8 @@
 		"lint:fix": "oxlint --fix --deny-warnings --report-unused-disable-directives",
 		"format": "oxfmt --check",
 		"format:fix": "oxfmt",
+		"knip": "knip --reporter compact",
+		"knip:production": "knip --production --reporter compact",
 		"check": "oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
 		"changeset": "changeset",
 		"changeset:version": "changeset version && pnpm install --no-frozen-lockfile",
