@@ -20,11 +20,23 @@ export interface HostComponentRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+export interface StandaloneHostComponentRewriteRequest {
+	readonly source: string;
+	readonly tag: string;
+	readonly framework: string;
+	/** Expression that evaluates to the generated Pandwind class string. */
+	readonly classExpression: string;
+}
+
 export interface HostComponentRewriter {
 	readonly schema: typeof HOST_COMPONENT_REWRITER_SCHEMA;
 	readonly id: string;
 	readonly frameworks: readonly string[];
 	rewrite(request: HostComponentRewriteRequest): HostComponentRewriteResult;
+	/** Wrap an exported styled intrinsic that has no component binding or JSX use. */
+	rewriteStandalone?(
+		request: StandaloneHostComponentRewriteRequest,
+	): HostComponentRewriteResult;
 }
 
 export interface HostDynamicCarrierRewriteResult {
@@ -226,6 +238,58 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 	return { code, changed: code !== request.source, needsCx: false, residuals: [] };
 }
 
+function rewriteStandaloneJsx(
+	request: StandaloneHostComponentRewriteRequest,
+): HostComponentRewriteResult {
+	const exportPattern = /export\s+default\s+/g;
+	const exportMatch = exportPattern.exec(request.source);
+	if (exportMatch === null) {
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.tag,
+					hint: "standalone styled subject has no default export to wrap",
+				},
+			],
+		};
+	}
+	const expressionStart = exportMatch.index + exportMatch[0].length;
+	const expression = request.source.slice(expressionStart).match(/^[\s\S]*?;/)?.[0];
+	if (expression === undefined || expression.trim() !== `${request.classExpression};`) {
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.tag,
+					hint: "standalone styled subject could not be matched after emission",
+				},
+			],
+		};
+	}
+	const className = "__pandwindStandaloneClass";
+	const componentName = "__pandwindStandaloneComponent";
+	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const replacement =
+		`const ${className} = ${request.classExpression};\n` +
+		`const ${componentName} = (props) => <${request.tag} {...props} ` +
+		`${classAttribute}={cx(${className}, props.${classAttribute})} />;\n` +
+		`export default ${componentName};`;
+	const end = expressionStart + expression.length;
+	return {
+		code: request.source.slice(0, exportMatch.index) + replacement + request.source.slice(end),
+		changed: true,
+		needsCx: true,
+		residuals: [],
+	};
+}
+
 export function rewriteDynamicCarrier(
 	source: string,
 	binding: string,
@@ -352,6 +416,7 @@ const rewriters: readonly HostComponentRewriter[] = [
 		id: "jsx-intrinsic-component",
 		frameworks: [...jsxFrameworks],
 		rewrite: rewriteJsx,
+		rewriteStandalone: rewriteStandaloneJsx,
 	},
 	{
 		schema: HOST_COMPONENT_REWRITER_SCHEMA,

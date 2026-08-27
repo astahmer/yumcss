@@ -33,6 +33,7 @@ import {
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
 	type HostComponentRewriteRequest,
+	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
 
 type Edit = { start: number; end: number; text: string };
@@ -49,6 +50,18 @@ function programHasDynamic(program: StyleProgram): boolean {
 function stylexPropsUses(source: string, binding: string): boolean {
 	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return new RegExp(`\\bstylex\\.props\\(\\s*${escaped}\\s*\\.`).test(source);
+}
+
+function tagForStandalone(source: string, start: number): string | undefined {
+	const subject = source
+		.slice(start)
+		.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
+		.trim();
+	return subject === undefined ? undefined : intrinsicTagForSubject(subject);
+}
+
+function isStandaloneDefaultExport(source: string, start: number): boolean {
+	return /export\s+default\s*$/.test(source.slice(0, start));
 }
 
 function rewriteVanillaExtractBindings(source: string): string {
@@ -217,6 +230,9 @@ export function runAdapterMigration(
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const convertedBindings = new Set<string>();
 	const componentRewrites: HostComponentRewriteRequest[] = [];
+	const standaloneComponentRewrites: Array<
+		StandaloneHostComponentRewriteRequest & { emittedExpression: string }
+	> = [];
 	const componentRewriteKeys = new Set<string>();
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
 	const stylexBindings = new Set<string>();
@@ -302,8 +318,17 @@ export function runAdapterMigration(
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
 					: undefined;
+			const standaloneExport =
+				binding === undefined &&
+				tag !== undefined &&
+				framework !== undefined &&
+				getHostComponentRewriter(framework)?.rewriteStandalone !== undefined &&
+				isStandaloneDefaultExport(source, match.start);
+			if (standaloneExport) {
+				program = { ...program, source: { ...program.source, subject: undefined } };
+			}
 			if (
-				binding === undefined ||
+				(binding === undefined && !standaloneExport) ||
 				tag === undefined ||
 				framework === undefined ||
 				rewriter === undefined
@@ -384,6 +409,26 @@ export function runAdapterMigration(
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
+		if (
+			targetAdapter.id === "pandwind" &&
+			program.source?.subject === undefined &&
+			program.source?.framework !== undefined &&
+			program.source?.subject === undefined &&
+			tagForStandalone(source, match.start) !== undefined &&
+			isStandaloneDefaultExport(source, match.start)
+		) {
+			const tag = tagForStandalone(source, match.start);
+			const rewriter = tag === undefined ? undefined : getHostComponentRewriter(program.source.framework);
+			if (tag !== undefined && rewriter?.rewriteStandalone !== undefined) {
+				standaloneComponentRewrites.push({
+					source,
+					tag,
+					framework: program.source.framework,
+					classExpression: emitted.text,
+					emittedExpression: emitted.text,
+				});
+			}
+		}
 		if (dynamicCarrier !== undefined && dynamicCarrier.stylexHost !== true) {
 			dynamicRewrites.push({
 				...dynamicCarrier,
@@ -453,6 +498,22 @@ export function runAdapterMigration(
 		const rewriter = getHostComponentRewriter(request.framework);
 		if (rewriter === undefined) continue;
 		const rewritten = rewriter.rewrite({ ...request, source: runtimeEdited });
+		if (rewritten.residuals.length > 0) {
+			residuals.push(...rewritten.residuals);
+			continue;
+		}
+		runtimeEdited = rewritten.code;
+		needsCx ||= rewritten.needsCx;
+	}
+	for (const request of standaloneComponentRewrites) {
+		const rewriter = getHostComponentRewriter(request.framework);
+		if (rewriter?.rewriteStandalone === undefined) continue;
+		const rewritten = rewriter.rewriteStandalone({
+			source: runtimeEdited,
+			tag: request.tag,
+			framework: request.framework,
+			classExpression: request.emittedExpression,
+		});
 		if (rewritten.residuals.length > 0) {
 			residuals.push(...rewritten.residuals);
 			continue;

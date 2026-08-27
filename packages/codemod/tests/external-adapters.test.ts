@@ -77,6 +77,27 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
+	test("wraps a standalone styled intrinsic default export for React", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\nexport default styled.div({ color: "red" });',
+			{
+				from: "styled-components",
+				to: "pandwind",
+				file: "View.js",
+				mode: "safe",
+				semantic: { source: { file: "View.js", framework: "react" } },
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("__pandwindStandaloneComponent");
+		expect(result.code).toContain("<div {...props}");
+		expect(result.code).toContain("className={cx(__pandwindStandaloneClass, props.className)}");
+		expect(result.code).toContain('import { cx } from "pandwind/cx";');
+		expect(result.code).not.toContain('from "styled-components"');
+	});
+
 	test("registers JSS style maps and keeps their named-rule boundary explicit", () => {
 		const adapter = getExternalAdapter("jss")!;
 		const parsed = adapter.parse("createUseStyles({ button: { color: 'red' } })", {
