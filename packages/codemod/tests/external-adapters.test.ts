@@ -14,6 +14,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"styled-components": "import styled from 'styled-components'; styled.div({ color: 'red' })",
 			"vanilla-extract": "import { style } from '@vanilla-extract/css'; style({ color: 'red' })",
 			stitches: "import { createStitches } from '@stitches/react'; createStitches()",
+			linaria: "import { css } from '@linaria/core'; css`color: red;`",
+			jss: "import { createUseStyles } from 'react-jss'; createUseStyles({ button: { color: 'red' } })",
 		};
 		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
@@ -30,6 +32,48 @@ describe("CSS-in-JS adapter contract v2", () => {
 			});
 			expect(config.adapter).toBe(id);
 		}
+	});
+
+	test("migrates Linaria static CSS templates and preserves styled subjects", () => {
+		const css = runAdapterMigration(
+			'import { css } from "@linaria/core";\nconst card = css`color: red; background-color: blue;`;',
+			{ from: "linaria", to: "emotion", file: "Card.tsx", mode: "safe" },
+		);
+		expect(css.converted).toBe(1);
+		expect(css.code).toContain('css({ color: "red", backgroundColor: "blue" })');
+		expect(css.code).not.toContain("@linaria/core");
+
+		const component = runAdapterMigration(
+			'import { styled } from "@linaria/react";\nconst Card = styled.button`color: red;`;',
+			{ from: "linaria", to: "styled-components", file: "Card.tsx", mode: "safe" },
+		);
+		expect(component.converted).toBe(1);
+		expect(component.code).toContain("styled.button({");
+	});
+
+	test("registers JSS style maps and keeps their named-rule boundary explicit", () => {
+		const adapter = getExternalAdapter("jss")!;
+		const parsed = adapter.parse("createUseStyles({ button: { color: 'red' } })", {
+			file: "styles.ts",
+			source: "",
+			config: { adapter: "jss", files: [], values: {} },
+		});
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.declarations[0]?.conditions[0]?.name).toBe("button");
+		const emitted = adapter.emit(parsed.matches[0]!.program, {
+			file: "styles.ts",
+			config: { adapter: "jss", files: [], values: {} },
+			mode: "safe",
+			index: 0,
+		});
+		expect(emitted.text).toContain("createUseStyles({");
+
+		const result = runAdapterMigration(
+			'import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ button: { color: "red" } });',
+			{ from: "jss", to: "pandwind", file: "styles.ts", mode: "safe" },
+		);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
 	});
 
 	test("migrates an Emotion object into styled-components with selectors and dynamics", () => {

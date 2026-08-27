@@ -39,7 +39,9 @@ export type ExternalAdapterId =
 	| "emotion"
 	| "styled-components"
 	| "vanilla-extract"
-	| "stitches";
+	| "stitches"
+	| "linaria"
+	| "jss";
 
 export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = [
 	"pandwind",
@@ -47,6 +49,8 @@ export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = [
 	"styled-components",
 	"vanilla-extract",
 	"stitches",
+	"linaria",
+	"jss",
 ];
 
 type CallPattern = {
@@ -98,6 +102,8 @@ const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 	"styled-components": ["package.json"],
 	"vanilla-extract": ["package.json"],
 	stitches: ["stitches.config.ts", "package.json"],
+	linaria: ["linaria.config.js", "package.json"],
+	jss: ["jss.config.js", "package.json"],
 };
 
 function configFor(id: string, context: AdapterConfigContext): AdapterProjectConfig {
@@ -165,6 +171,13 @@ function sourceName(source: string, start: number, fallback: string): string {
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
 	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
+	if (match?.[1] === undefined) return {};
+	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
+	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
+}
+
+function linariaStyledSubject(source: string, start: number): Partial<StyleProgramSource> {
+	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`/);
 	if (match?.[1] === undefined) return {};
 	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
 	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
@@ -436,6 +449,33 @@ function parseTemplateProgram(
 	);
 }
 
+function kebabProperty(property: string): string {
+	return property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+}
+
+/** Emit the static subset as authored CSS for template-based adapters. */
+function templateCss(program: StyleProgram): string {
+	const templateValue = (value: StyleProgram["declarations"][number]["value"]): string => {
+		if (value.kind === "dynamic") return value.expression;
+		if (value.kind === "token") return value.authored;
+		return String(value.value);
+	};
+	const renderRule = (rule: StyleProgram["rules"][number]): string => {
+		const declarations = rule.declarations
+			.filter((declaration) => declaration.conditions.length === 0)
+			.map(
+				(declaration) =>
+					`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+			)
+			.join(" ");
+		const nested = rule.children.map(renderRule).join(" ");
+		if (rule.kind !== "style") return `${declarations}${nested}`;
+		const base = declarations === "" ? nested : `${declarations}${nested}`;
+		return base;
+	};
+	return program.rules.map(renderRule).join(" ");
+}
+
 function parseCalls(
 	source: string,
 	context: AdapterParseContext,
@@ -462,6 +502,11 @@ function parseCalls(
 				let program = parseTemplateProgram(template.slice(firstTick + 1, lastTick), context, start);
 				if (pattern.name.startsWith("styled"))
 					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
+				if (pattern.name === "linaria-styled")
+					program = {
+						...program,
+						source: { ...program.source, ...linariaStyledSubject(source, start) },
+					};
 				matches.push({ start, end: start + template.length, program, sourceText: template });
 				continue;
 			}
@@ -502,6 +547,7 @@ function parseCalls(
 						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
 					},
 					sourceOffset: open + 1,
+					...(pattern.name.startsWith("jss-") ? { nestedObjectKind: "named" as const } : {}),
 					...(pattern.name === "style" ? { unwrapNestedObjectKeys: ["selectors"] } : {}),
 				});
 				if (pattern.name === "globalStyle") {
@@ -535,6 +581,16 @@ function parseCalls(
 					);
 				} else {
 					program = base;
+				}
+				if (pattern.name.startsWith("jss-")) {
+					program = {
+						...program,
+						source: {
+							...program.source,
+							subject: pattern.name === "jss-styleSheet" ? "createStyleSheet" : "createUseStyles",
+							subjectKind: "call",
+						},
+					};
 				}
 			}
 			matches.push({ start, end, program, sourceText: source.slice(start, end) });
@@ -576,6 +632,8 @@ const SOURCE_MODULES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 	"styled-components": ["styled-components"],
 	"vanilla-extract": ["@vanilla-extract/css"],
 	stitches: ["@stitches/react", "@stitches/core"],
+	linaria: ["@linaria/core", "@linaria/react"],
+	jss: ["jss", "react-jss"],
 };
 
 function adapter(
@@ -836,6 +894,82 @@ const STITCHES = adapter(
 	[/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 );
 
+const LINARIA = adapter(
+	"linaria",
+	[
+		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
+		{
+			name: "linaria-styled",
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+		},
+	],
+	{
+		packages: [
+			dependency("@linaria/core", "peer").packages[0]!,
+			dependency("@linaria/react", "peer").packages[0]!,
+		],
+	},
+	allRuleCapabilities("linaria", "unsupported", {
+		"dynamic-values": "partial",
+		components: "exact",
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
+	(program) => {
+		const component = program.source?.subject;
+		const text = templateCss(program);
+		if (component !== undefined)
+			return {
+				text: `${component}\`${text}\``,
+				imports: ['import { styled } from "@linaria/react";'],
+			};
+		return {
+			text: `css\`${text}\``,
+			imports: ['import { css } from "@linaria/core";'],
+		};
+	},
+	[/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
+);
+
+const JSS = adapter(
+	"jss",
+	[
+		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g },
+		{ name: "jss-styleSheet", regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*\{/g },
+	],
+	{
+		packages: [
+			dependency("jss", "runtime").packages[0]!,
+			dependency("react-jss", "peer").packages[0]!,
+		],
+	},
+	allRuleCapabilities("jss", "unsupported", {
+		"named-conditions": "exact",
+		"dynamic-values": "partial",
+		"rule-level": "partial",
+		"global-rules": "unsupported",
+		keyframes: "unsupported",
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
+	(program) => {
+		const subject = program.source?.subject ?? "createUseStyles";
+		return {
+			text: `${subject}(${programObject(program)})`,
+			imports:
+				subject === "createStyleSheet"
+					? ['import { createStyleSheet } from "jss";']
+					: ['import { createUseStyles } from "react-jss";'],
+		};
+	},
+	[/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
+);
+
 const PANDWIND = adapter(
 	"pandwind",
 	[{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g }],
@@ -854,6 +988,8 @@ export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>
 	"styled-components": STYLED_COMPONENTS,
 	"vanilla-extract": VANILLA_EXTRACT,
 	stitches: STITCHES,
+	linaria: LINARIA,
+	jss: JSS,
 };
 
 export function getExternalAdapter(id: string): StyleAdapter | undefined {
