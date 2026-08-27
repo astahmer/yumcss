@@ -31,4 +31,11 @@ describe("codemod architecture boundaries", () => {
 		expect(readdirSync(swapRoot).some((name) => name.startsWith("panda-"))).toBe(false);
 		expect(existsSync(resolve(swapRoot, "adapters/panda/index.ts"))).toBe(true);
 	});
+
+	test("keeps project migration behavior out of the CLI", () => {
+		const cli = readFileSync(resolve(swapRoot, "../cli.ts"), "utf8");
+		expect(cli).not.toContain("runPandaMigration");
+		expect(cli).not.toContain("inferCommonRoot");
+		expect(cli).toContain("getProjectMigrationCommand");
+	});
 });

@@ -119,6 +119,8 @@ export { runAdapterMigration } from "./adapter-migration.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+export { getProjectMigrationCommand } from "./project-commands.ts";
+export type { ProjectMigrationCommand, ProjectMigrationContext } from "./project-command.ts";
 export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);
 export function listCodemodAdapterIds(): readonly string[] {
 	return builtinAdapterIds;
