@@ -55,7 +55,17 @@ registration time.
 
 Discovery is deliberately explicit. The host decides how package names are
 resolved, which makes the same registry safe for CLIs, bundlers, tests, and
-browser tooling. Ambient `node_modules` scanning is not part of the SDK.
+browser tooling. For a project package manifest, `discoverPackages()` first
+selects dependencies whose own package metadata contains the `pandwind`
+manifest field, then loads only those advertised plugins:
+
+```ts
+await registry.discoverPackages(projectPackageJson);
+```
+
+The package metadata loader and plugin loader are injectable for lockfile,
+bundler, and test environments. Ambient `node_modules` scanning is not part of
+the SDK.
 
 ## Versioning and fixtures
 

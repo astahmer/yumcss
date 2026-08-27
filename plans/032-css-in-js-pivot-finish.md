@@ -65,7 +65,7 @@ host compiler + backend adapter + residual report
 - Keep the flat `SwapIR` path for simple literal swaps.
 - Use explicit plugin discovery; never scan `node_modules` implicitly.
 - Third-party adapters must declare capabilities, dependencies, config inputs,
-  and lossiness behavior.
+  and lossiness behavior in the package manifest convention.
 - Source-language adapters own syntax parsing; migration policy consumes a
   language-neutral document contract.
 - Framework and runtime semantics are explicit metadata, not guessed from
@@ -131,6 +131,7 @@ framework, and authored provenance.
       affected Vite, analyzer, codemod, and Panda paths through it.
 - [x] Add standalone canonical/residual validator registry.
 - [x] Add Fela, Goober, Aphrodite, and differential corpus coverage.
+- [x] Add Compiled, Solid/Vue styled, and React Native adapter families.
 - [x] Add StyleProgram v3 metadata and capability requirements for dynamics,
       themes, composition, runtime, plugins, and framework semantics.
 - [x] Decompose the remaining Panda orchestration into independently testable
@@ -142,6 +143,8 @@ framework, and authored provenance.
 - [x] Add the next adapter families and representative real-world migration
       corpus fixtures.
 - [x] Add browser/SSR/RSC/hydration/dependency validators to the matrix.
+- [x] Add an adapter-pair matrix with pass/residual expectations and explicit
+      dependency deltas.
 - [x] Publish adapter SDK documentation, compatibility/version policy, and
       release artifacts.
 - [x] Run final cross-package, example, corpus, and release validation; update
@@ -169,8 +172,11 @@ framework, and authored provenance.
       precise residual/capability report in safe mode.
 - [x] The differential matrix covers every supported adapter pair that claims
       compatibility, including browser, SSR, hydration, and streaming cases.
-- [x] At least three reproducible ecosystem source corpora (Linaria, JSS, and
-      Style9) produce migration evidence with no unexplained silent drops.
+- [x] Pin three reproducible real-repository corpora (Panda website, Emotion,
+      and styled-components) with generated migration reports; no unexplained
+      silent drops are accepted.
+- [x] Keep Linaria, JSS, and Style9 representative fixtures as adapter-level
+      regression coverage.
 - [x] SDK docs, package exports, typecheck, lint, tests, corpus checks, and
       release smoke/preflight all pass.
 - [x] This plan is fully checked off before the goal is marked complete.
@@ -184,7 +190,18 @@ Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
   PTY boot.
 - `pnpm run typecheck` — all workspace packages and examples passed.
 - `pnpm lint` and `pnpm format` — passed.
-- `pnpm --dir packages/codemod exec vitest run` — 203 tests passed.
+- `pnpm --dir packages/codemod exec vitest run` — 210 tests passed after the
+  final adapter/scanner wave.
+- `pnpm exec tsx scripts/generate-real-repository-report.ts` — regenerated
+  `plans/evidence/real-repository-migrations.json` from pinned Panda, Emotion,
+  and styled-components source excerpts. The report records conversions,
+  residuals, source/output bytes, dependency deltas, and explicitly marks real
+  bundle-size measurement as pending a target bundler.
+- The differential matrix runs 11 adapter routes with canonical CSS,
+  browser-state, SSR/hydration, streaming, dependency, and residual evidence.
+- `createStyleAdapterRegistry().discoverPackages()` is manifest-gated and
+  tested with an injected package-metadata/plugin loader; Qwik and React Native
+  are included in the framework/adapter family contracts.
 - `pnpm release:check` and `pnpm release:smoke` — four publishable packages
   passed preflight and export/pack smoke.
 
@@ -198,3 +215,9 @@ Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
   residuals, never silent partial rewrites.
 - 2026-08-27 — Treat the existing Panda parser/theme/project/module files as
   domain owners and decompose the remaining orchestration around them.
+- 2026-08-27 — Package discovery is opt-in and manifest-gated: dependency
+  metadata selects candidates, then the same injectable plugin loader registers
+  implementations.
+- 2026-08-27 — Real repository evidence distinguishes successful conversions
+  from safe residuals; runtime bundle size remains an explicit measured=false
+  field until a concrete host bundler is selected.

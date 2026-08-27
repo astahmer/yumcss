@@ -43,6 +43,8 @@ for (const fixture of REAL_REPOSITORY_CORPUS) {
 		try {
 			const file = join(root, "Page.tsx");
 			writeFileSync(file, fixture.source);
+			// The temporary project must be isolated before its migration runs.
+			// oxlint-disable-next-line no-await-in-loop
 			const report = await runPandaMigration({
 				projectRoot: root,
 				patterns: ["Page.tsx"],
