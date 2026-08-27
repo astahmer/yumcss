@@ -35,13 +35,18 @@ The first complete implementation slice now exists:
   adapters;
 - canonical/browser-hook/SSR-hydration differential validation;
 - a public `swap` CLI path with project config discovery and safe residual output;
+- source-module ownership, generated-import consolidation, authored keyframe-name
+  validation, and conservative component-role checks;
 - recipe/component IR plus runtime recipes and slot recipes;
 - renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts.
 
 This is a deliberately breaking internal contract revision: pandwind owns the
 adapter and semantic-IR API, so there is no compatibility shim for the old
 capability schema or style-program schema. The flat `SwapIR` path remains the
-performance path for literal declaration swaps.
+performance path for literal declaration swaps. Adapter-owned source modules
+are removed after a successful rewrite, target imports are consolidated, and a
+styled-component subject is treated as a component capability rather than
+silently changing it into a class factory.
 
 The requested wave is complete. The remaining roadmap is deliberately outside
 this wave: additional ecosystems such as Linaria/JSS, full framework compiler
@@ -211,7 +216,8 @@ context used to produce it.
 
 1. Write the compatibility scorecard and freeze the semantic/runtime contracts. **Complete.**
 2. Remove codemod coupling to `examplePreset`; add project context and generated
-   interop metadata. **Complete for the current codemod path; config discovery hardening remains.**
+   interop metadata. **Complete for the current codemod path, including adapter
+   config discovery and source-module ownership.**
 3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** rule-level `/2` nodes now preserve structured conditions, selectors, nesting, dynamic expressions, source ranges, ordering, and non-declaration rules.
 4. Build the runtime sheet: insertion, extraction, hydration, ordering, and
    dynamic custom-property lowering. **Complete for the requested wave:** the
@@ -226,9 +232,10 @@ context used to produce it.
    hydration, host-binding, and two external differential fixtures are tested;
    streaming/RSC-specific integration remains a future extension.
 7. Harden existing adapters, then add Emotion, styled-components,
-   vanilla-extract, and Stitches adapters. **Foundation complete:** the
-   v2 adapters, safe CLI routing, config discovery, tagged templates, rich
-   rules, and round-trip/differential coverage exist.
+   vanilla-extract, and Stitches adapters. **Complete:** the v2 adapters, safe
+   CLI routing, config discovery, tagged templates, rich rules, source import
+   cleanup, component-role capability checks, and round-trip/differential
+   coverage exist.
 8. Add recipe/component semantics and host-framework adapters where the
    capability matrix supports them. **Initial implementation complete:**
    recipe/slot IR, runtime recipes, and six host contracts plus host fixtures
@@ -255,6 +262,8 @@ semantic boundary established here.
 - Static round trips preserve canonical declarations and token identity.
 - Unsupported constructs produce actionable residuals and never disappear.
 - Adapter capability mismatches fail loudly or remain untouched in safe mode.
+- Successful migrations do not retain source adapter imports or silently change
+  styled-component values into class factories.
 - At least two external CSS-in-JS systems pass source, output, SSR, and browser
   differential fixtures.
 - Runtime size, build time, CSS size, and migration coverage remain budgeted.

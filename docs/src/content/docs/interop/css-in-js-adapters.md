@@ -43,6 +43,13 @@ interpolations, unsupported at-rules, computed keys, and parse failures stay in
 place with a `pandwind:migrate-skip` marker and a machine-readable residual in
 the adapter result.
 
+Adapters also declare the package modules they own. After a successful rewrite,
+those source imports and source runtime bootstrap bindings are removed, while
+target imports are consolidated. Component identity is part of the contract:
+for example, a styled-components subject cannot be silently lowered to an
+Emotion class factory in safe mode; it remains in place with a `components`
+capability residual.
+
 The `--report` output is a migration worklist: it shows converted and skipped
 sites, residual counts, and capability blockers. Use `--diff` before `--write`;
 partial mode is an adapter API option for controlled tooling, not the CLI's
