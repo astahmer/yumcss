@@ -14,5 +14,8 @@ describe("gather (integration over apps/example)", { timeout: 60_000 }, () => {
 		expect(data.designSystem.utilities.length).toBeGreaterThan(10);
 		expect(data.designSystem.bridgeProperties).toBeGreaterThan(10);
 		expect(data.designSystem.tokenSections.length).toBeGreaterThan(0);
+		expect(data.cssSources.length).toBeGreaterThan(0);
+		expect(data.cssSources[0]).toMatchObject({ file: expect.any(String), line: expect.any(Number) });
+		expect(data.cssDiagnostics).toEqual([]);
 	}, 60_000);
 });
