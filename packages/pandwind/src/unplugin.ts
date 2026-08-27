@@ -41,6 +41,7 @@
 import { realpathSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { createUnplugin } from "unplugin";
+import type { HmrContext, ModuleNode } from "vite";
 import { createInlineTwPluginCore } from "./vite/index.ts";
 import type { PandwindViteOptions, Resolver } from "./vite/index.ts";
 import { createCssExtractorPluginCore } from "./vite/css-core.ts";
@@ -98,8 +99,9 @@ export const pandwindUnplugin = createUnplugin((options: PandwindUnpluginOptions
 			core.invalidate(id);
 		},
 		vite: {
-			handleHotUpdate(ctx: { file: string }) {
+			handleHotUpdate(ctx: HmrContext) {
 				core.invalidate(ctx.file);
+				return ctx.modules;
 			},
 		},
 	};
@@ -126,7 +128,7 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 		resolveId: (source: string) => string | null;
 		load: (id: string) => string | null;
 		watchChange: (id: string) => void;
-		vite: { handleHotUpdate(ctx: { file: string }): void };
+		vite: { handleHotUpdate(ctx: HmrContext): ModuleNode[] | undefined };
 		webpack?: (compiler: unknown) => void;
 	} = {
 		name: core.name,
@@ -172,8 +174,12 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 			});
 		},
 		vite: {
-			handleHotUpdate(ctx: { file: string }) {
+			handleHotUpdate(ctx: HmrContext) {
 				core.invalidate(ctx.file);
+				const virtual = ctx.server.moduleGraph.getModuleById(
+					`\0${options.virtualId ?? "pandwind:css"}.css`,
+				);
+				return virtual === undefined ? ctx.modules : [...ctx.modules, virtual];
 			},
 		},
 	};
