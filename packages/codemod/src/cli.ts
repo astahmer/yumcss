@@ -17,6 +17,7 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
+import { isScriptSourceFile } from "pandwind/source";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
@@ -108,8 +109,6 @@ function expandPatterns(patterns: string[], baseDir: string): string[] {
 	return [...files].toSorted();
 }
 
-const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx"]);
-
 function addDirectory(files: Set<string>, directory: string): void {
 	let entries;
 	try {
@@ -121,8 +120,7 @@ function addDirectory(files: Set<string>, directory: string): void {
 		return;
 	}
 	for (const entry of entries) {
-		const dot = entry.lastIndexOf(".");
-		if (dot !== -1 && SOURCE_EXTENSIONS.has(entry.slice(dot))) {
+		if (isScriptSourceFile(entry)) {
 			files.add(resolve(directory, entry));
 		}
 	}

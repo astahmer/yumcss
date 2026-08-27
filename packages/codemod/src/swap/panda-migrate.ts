@@ -13,15 +13,11 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { globSync } from "node:fs";
-import { parseSourceProgram } from "pandwind/source";
+import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../meta.ts";
-import { applyEdits } from "../migrate.ts";
 import { computeExcludedRanges, matchBlock } from "../sources.ts";
 import { ensureImport } from "../shared.ts";
-import { emitCssClass, type EmitterContext } from "./emit.ts";
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
@@ -34,24 +30,24 @@ import {
 	renderVirtualCssDeclaration,
 } from "./panda-modules.ts";
 import { BUILTIN_PATTERNS } from "./panda-patterns.ts";
-import {
-	aliasSpecifier,
-	detectAlias,
-	scanProjectUsage,
-	type ProjectUsage,
-} from "./panda-project.ts";
+import { aliasSpecifier, type ProjectUsage } from "./panda-project.ts";
 import { parseObjectLiteral } from "./parse.ts";
-import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./panda-theme.ts";
+import { discoverPandaMigration, type PandaMigrationFile } from "./panda-migration-discovery.ts";
+import type { PandaMigrationWorkspace } from "./panda-migration-discovery.ts";
+import {
+	convertPandaRecipe,
+	convertPandaStyle,
+	emitPandaStyle,
+	rewritePandaSource,
+	validatePandaSource,
+} from "./panda-migration-stages.ts";
+import type { PandaTheme } from "./panda-theme.ts";
 import {
 	literalToPlain,
 	PANDA_ALIASES,
 	normalizePandaStyleObject,
-	pandaRecipeToIr,
-	pandaStyleToIr,
 	parsePandaCalls,
 } from "./parse-panda.ts";
-
-const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
@@ -64,6 +60,8 @@ export interface PandaMigrateOptions {
 	skipMarker: string;
 	/** Preserve existing generated modules unless explicitly forcing regeneration. */
 	force?: boolean;
+	/** @internal pipeline-provided discovery result; avoids a second scan. */
+	workspace?: PandaMigrationWorkspace;
 }
 
 export interface PandaMigrateReport {
@@ -82,33 +80,7 @@ export interface PandaMigrateReport {
 	notes: Array<string>;
 }
 
-interface FileEntry {
-	path: string;
-	source: string;
-}
-
-function collectFiles(projectRoot: string, patterns: Array<string>): Array<FileEntry> {
-	const seen = new Set<string>();
-	for (const pattern of patterns) {
-		const candidates = existsSync(resolve(projectRoot, pattern))
-			? [pattern]
-			: globSync(pattern, { cwd: projectRoot });
-		for (const rel of candidates) {
-			const dot = rel.lastIndexOf(".");
-			if (dot === -1 || !SOURCE_EXTENSIONS.has(rel.slice(dot))) continue;
-			seen.add(resolve(projectRoot, rel));
-		}
-	}
-	const files: Array<FileEntry> = [];
-	for (const abs of [...seen].toSorted()) {
-		try {
-			files.push({ path: abs, source: readFileSync(abs, "utf8") });
-		} catch {
-			// unreadable — skipped like everywhere else in the codemod
-		}
-	}
-	return files;
-}
+type FileEntry = PandaMigrationFile;
 
 function resolve(root: string, p: string): string {
 	return p.startsWith("/") ? p : `${root}/${p}`;
@@ -128,25 +100,12 @@ export function inferCommonRoot(files: Array<{ path: string }>): string {
 	return common;
 }
 
-async function loadThemeOrEmpty(projectRoot: string): Promise<PandaTheme> {
-	const candidate = ["panda.config.ts", "panda.config.mjs", "panda.config.js"]
-		.map((name) => join(projectRoot, name))
-		.find((path) => existsSync(path));
-	if (candidate === undefined) return emptyPandaTheme;
-	try {
-		return await loadPandaTheme(candidate);
-	} catch {
-		return emptyPandaTheme;
-	}
-}
-
 /* ------------------------------------------------------------------ */
 /* emission helpers                                                    */
 /* ------------------------------------------------------------------ */
 
 function irToText(ir: SwapIrLike, meta: PandwindMeta): string {
-	const ctx: EmitterContext = { index: 1, tokenRefs: "bare", sort: true };
-	return emitCssClass(ir, meta, ctx).text;
+	return emitPandaStyle(ir, meta);
 }
 
 const cssImportFor = (depth: number): string =>
@@ -755,7 +714,7 @@ export function factoryEdits(
 
 	const styleObj: Record<string, unknown> = {};
 	for (const [k, v] of styleEntries) styleObj[PANDA_ALIASES.get(k) ?? k] = v;
-	const ir = pandaStyleToIr(styleObj, theme);
+	const ir = convertPandaStyle(styleObj, theme);
 	const text = irToText(ir, meta);
 	if (text === "") return null;
 
@@ -809,16 +768,15 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		notes: [],
 	};
 
-	const files = collectFiles(projectRoot, options.patterns);
+	const workspace = options.workspace ?? (await discoverPandaMigration(options));
+	const files = workspace.files;
 	report.filesScanned = files.length;
 	if (files.length === 0) return report;
 
-	const aliasInfo = detectAlias(projectRoot);
-	report.notes.push(`alias: ${aliasInfo.alias || "(relative imports)"} (${aliasInfo.source})`);
-	const theme = await loadThemeOrEmpty(projectRoot);
-	report.notes.push(`theme tokens: ${theme.tokenVars.size}, textStyles: ${theme.textStyles.size}`);
+	const { aliasInfo, theme } = workspace;
+	report.notes.push(...workspace.notes);
 
-	const usage: ProjectUsage = scanProjectUsage(files);
+	const usage: ProjectUsage = workspace.usage;
 
 	/* ---- variant definitions: recipe libs first, then inline cva/sva ---- */
 	const libPaths = new Set(
@@ -845,7 +803,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	/* ---- tier decisions ---- */
 	// Put generated files under the alias target (e.g. @/* -> src/*), so
 	// `@/pandwind/...` resolves to the files we actually emit.
-	const outDir = join(projectRoot, aliasInfo.targetRoot, outDirName);
+	const outDir = workspace.outDir;
 	const emitted: Array<{ path: string; content: string }> = [];
 	const recipeExportNames = new Map<string, string>();
 	const recipeModuleNames = new Map<string, string>();
@@ -873,7 +831,9 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		fileExtras.set(path, list);
 	};
 
-	const parseDefIr = (def: RecipeDef): ReturnType<typeof pandaRecipeToIr> | null => {
+	const parseDefIr = (
+		def: RecipeDef,
+	): NonNullable<ReturnType<typeof convertPandaRecipe>> | null => {
 		let bodyText = def.body;
 		const strippedBody = stripSpreadElements(bodyText);
 		if (strippedBody !== null) {
@@ -882,9 +842,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				`definition '${def.name}': anatomy/spread elements dropped (parts() has no pandwind runtime meaning)`,
 			);
 		}
-		const parsed = parseObjectLiteral(bodyText);
-		if (parsed === null) return null;
-		const ir = pandaRecipeToIr(parsed, def.kind, theme);
+		const ir = convertPandaRecipe(bodyText, def.kind, theme);
+		if (ir === null) return null;
 		for (const residual of ir.residuals) countResidual(report, residual.kind);
 		return ir;
 	};
@@ -1102,7 +1061,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	// a bad emitter from leaving a partially migrated project behind.
 	for (const e of emitted) {
 		try {
-			parseSourceProgram({ file: e.path, source: e.content });
+			const validation = validatePandaSource(e.path, e.content);
+			if (!validation.valid) throw new Error(validation.message);
 		} catch (error) {
 			report.notes.push(
 				`refusing invalid generated module ${relative(projectRoot, e.path)}: ${(error as Error).message}`,
@@ -1204,7 +1164,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			}
 			edits.push(...elEdits);
 			report.factoryElementsConverted++;
-			const factoryIr = pandaStyleToIr(
+			const factoryIr = convertPandaStyle(
 				Object.fromEntries(
 					el.attrs
 						.filter((attr) => !DOM_ATTR_RE.test(attr.name) && attr.valueText !== null)
@@ -1253,7 +1213,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		edits.push(...defineTextStylesEdits(file.source));
 
 		if (edits.length === 0) continue;
-		let next = applyEdits(file.source, edits);
+		let next = rewritePandaSource(file.source, edits);
 		// Files may use the global panda `css()` binding without importing it
 		// directly (for example via the JSX factory). Ensure every converted
 		// call has a real migrated binding.
@@ -1267,11 +1227,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// panda-only named imports; leaving them would create unresolved exports.
 		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
 		next = removeUnusedFactoryImports(next);
-		try {
-			parseSourceProgram({ file: file.path, source: next });
-		} catch (error) {
+		const validation = validatePandaSource(file.path, next);
+		if (!validation.valid) {
 			report.notes.push(
-				`refusing invalid rewrite ${relative(projectRoot, file.path)}: ${(error as Error).message}`,
+				`refusing invalid rewrite ${relative(projectRoot, file.path)}: ${validation.message}`,
 			);
 			continue;
 		}

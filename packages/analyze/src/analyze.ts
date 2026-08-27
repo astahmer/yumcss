@@ -19,7 +19,7 @@
  */
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseSourceProgram } from "pandwind/source";
+import { isScriptSourceFile, parseSourceProgram } from "pandwind/source";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import {
 	collectModuleConstants,
@@ -561,7 +561,7 @@ export function collectFiles(patterns: Array<string>, root: string): Array<strin
 		for (const match of matches) {
 			if (typeof match !== "string") continue;
 			if (match.includes("node_modules")) continue;
-			if (!match.endsWith(".ts") && !match.endsWith(".tsx")) continue;
+			if (!isScriptSourceFile(match)) continue;
 			files.add(resolve(root, match));
 		}
 	}

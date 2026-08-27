@@ -5,7 +5,10 @@ export {
 	SOURCE_LANGUAGE_ADAPTERS,
 	computeExcludedRanges,
 	createSourceScannerRegistry,
+	isScriptSourceFile,
+	isSupportedSourceFile,
 	parseSourceProgram,
+	sourceLanguageForFile,
 } from "pandwind/source";
 export type {
 	SourceDocument,

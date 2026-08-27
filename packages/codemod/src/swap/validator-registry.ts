@@ -3,7 +3,11 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
-import type { AdapterLossiness, AdapterValidationResult } from "./adapter-contract.ts";
+import type {
+	AdapterDependencies,
+	AdapterLossiness,
+	AdapterValidationResult,
+} from "./adapter-contract.ts";
 
 export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
 
@@ -12,6 +16,22 @@ export interface StyleValidationContext {
 	readonly target: StyleProgram;
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly fixture?: string;
+	readonly browser?: readonly { name: string; source: string; target: string }[];
+	readonly ssr?: {
+		readonly source: {
+			server: { html: string; css: string };
+			hydrated: { html: string; css: string };
+		};
+		readonly target: {
+			server: { html: string; css: string };
+			hydrated: { html: string; css: string };
+		};
+	};
+	readonly streaming?: { readonly source: readonly string[]; readonly target: readonly string[] };
+	readonly dependencies?: {
+		readonly source: AdapterDependencies;
+		readonly target: AdapterDependencies;
+	};
 }
 
 export interface StyleValidationEvidence {
@@ -61,8 +81,92 @@ const residualValidator: StyleValidator = {
 	}),
 };
 
+const browserValidator: StyleValidator = {
+	schema: VALIDATOR_SCHEMA,
+	id: "browser-states",
+	validate: ({ browser }) => {
+		if (browser === undefined || browser.length === 0)
+			return { validator: "browser-states", valid: true, lossiness: "lossless", differences: [] };
+		const differences = browser
+			.filter((state) => state.source !== state.target)
+			.map((state) => `browser state differs: ${state.name}`);
+		return {
+			validator: "browser-states",
+			valid: differences.length === 0,
+			lossiness: differences.length === 0 ? "lossless" : "unsupported",
+			differences,
+		};
+	},
+};
+
+const ssrValidator: StyleValidator = {
+	schema: VALIDATOR_SCHEMA,
+	id: "ssr-hydration",
+	validate: ({ ssr }) => {
+		if (ssr === undefined)
+			return { validator: "ssr-hydration", valid: true, lossiness: "lossless", differences: [] };
+		const differences: string[] = [];
+		if (ssr.source.server.html !== ssr.target.server.html) differences.push("SSR HTML differs");
+		if (ssr.source.server.css !== ssr.target.server.css) differences.push("SSR CSS differs");
+		if (ssr.source.hydrated.html !== ssr.target.hydrated.html)
+			differences.push("hydrated HTML differs");
+		if (ssr.source.hydrated.css !== ssr.target.hydrated.css)
+			differences.push("hydrated CSS differs");
+		return {
+			validator: "ssr-hydration",
+			valid: differences.length === 0,
+			lossiness: differences.length === 0 ? "lossless" : "unsupported",
+			differences,
+		};
+	},
+};
+
+const dependencyValidator: StyleValidator = {
+	schema: VALIDATOR_SCHEMA,
+	id: "dependencies",
+	validate: ({ dependencies }) => {
+		if (dependencies === undefined)
+			return { validator: "dependencies", valid: true, lossiness: "lossless", differences: [] };
+		const targetNames = new Set(dependencies.target.packages.map((dependency) => dependency.name));
+		const differences = targetNames.size === 0 ? ["target adapter declares no dependencies"] : [];
+		return {
+			validator: "dependencies",
+			valid: differences.length === 0,
+			lossiness: differences.length === 0 ? "lossless" : "unsupported",
+			differences,
+		};
+	},
+};
+
+const streamingValidator: StyleValidator = {
+	schema: VALIDATOR_SCHEMA,
+	id: "rsc-streaming",
+	validate: ({ streaming }) => {
+		if (streaming === undefined)
+			return { validator: "rsc-streaming", valid: true, lossiness: "lossless", differences: [] };
+		const differences =
+			streaming.source.length !== streaming.target.length ||
+			streaming.source.some((chunk, index) => chunk !== streaming.target[index])
+				? ["RSC streaming chunks differ"]
+				: [];
+		return {
+			validator: "rsc-streaming",
+			valid: differences.length === 0,
+			lossiness: differences.length === 0 ? "lossless" : "unsupported",
+			differences,
+		};
+	},
+};
+
 export function createStyleValidatorRegistry(
-	initial: readonly StyleValidator[] = [canonicalValidator, residualValidator],
+	initial: readonly StyleValidator[] = [
+		canonicalValidator,
+		residualValidator,
+		browserValidator,
+		ssrValidator,
+		dependencyValidator,
+		streamingValidator,
+	],
 ): StyleValidatorRegistry {
 	const validators = new Map<string, StyleValidator>();
 	const registry: StyleValidatorRegistry = {

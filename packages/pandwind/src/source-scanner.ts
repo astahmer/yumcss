@@ -54,7 +54,7 @@ export interface SourceScannerRegistry {
 	scan(document: SourceDocument): SourceScanResult;
 }
 
-const languageForFile = (file: string): SourceLanguage => {
+export function sourceLanguageForFile(file: string): SourceLanguage {
 	const extension = file.split(".").pop()?.toLowerCase();
 	return (
 		(
@@ -69,7 +69,15 @@ const languageForFile = (file: string): SourceLanguage => {
 			} as Record<string, SourceLanguage>
 		)[extension ?? ""] ?? "unknown"
 	);
-};
+}
+
+export function isSupportedSourceFile(file: string): boolean {
+	return sourceLanguageForFile(file) !== "unknown";
+}
+
+export function isScriptSourceFile(file: string): boolean {
+	return isOxcLanguage(sourceLanguageForFile(file));
+}
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
 	language === "typescript" ||
@@ -90,7 +98,7 @@ function lexicalExcludedRanges(source: string): SourceRange[] {
 
 /** Parse an ECMAScript-family document using the same language selection as scanning. */
 export function parseSourceProgram(document: SourceDocument): ParseResult {
-	const language = document.language ?? languageForFile(document.file);
+	const language = document.language ?? sourceLanguageForFile(document.file);
 	if (!isOxcLanguage(language))
 		throw new Error(`source language ${language} does not expose an oxc program`);
 	return parseSync(document.file, document.source, {
@@ -104,7 +112,7 @@ export function computeExcludedRanges(
 	source: string,
 	file: string,
 ): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
-	const language = languageForFile(file);
+	const language = sourceLanguageForFile(file);
 	if (!isOxcLanguage(language)) {
 		const ranges = lexicalExcludedRanges(source);
 		return {
@@ -168,7 +176,7 @@ export function computeExcludedRanges(
 }
 
 function scanDocument(document: SourceDocument): SourceScanResult {
-	const language = document.language ?? languageForFile(document.file);
+	const language = document.language ?? sourceLanguageForFile(document.file);
 	const diagnostics: SourceScanDiagnostic[] = [];
 	let excluded: SourceRange[] = [];
 	if (isOxcLanguage(language)) {
@@ -200,7 +208,8 @@ const makeAdapter = (id: string, languages: readonly SourceLanguage[]): SourceLa
 	schema: SOURCE_SCANNER_SCHEMA,
 	id,
 	languages,
-	detect: (document) => languages.includes(document.language ?? languageForFile(document.file)),
+	detect: (document) =>
+		languages.includes(document.language ?? sourceLanguageForFile(document.file)),
 	scan: scanDocument,
 });
 

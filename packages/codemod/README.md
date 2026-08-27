@@ -17,6 +17,10 @@ Adapters implement the versioned `pandwind.style-adapter/2` contract and are
 routed through the semantic style-program IR. Unsupported capabilities produce
 residual reports instead of silent partial rewrites.
 
+Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
+shape, schema versioning, capability declarations, and differential corpus
+requirements.
+
 Migrate raw Tailwind authoring onto the pandwind APIs. Driven entirely by
 your project's **generated metadata** (`types.d.ts`, `tw.ts`, `bridge.ts`) —
 never hand-maintained tables.

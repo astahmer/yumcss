@@ -9,7 +9,7 @@
  * module, so no runtime stylesheet accumulation is needed for static calls.
  */
 import { type Expression } from "oxc-parser";
-import { parseSourceProgram } from "../source-scanner.ts";
+import { parseSourceProgram, sourceLanguageForFile } from "../source-scanner.ts";
 import { createCss } from "../css/create-css.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
@@ -22,8 +22,21 @@ import type {
 	StyleObject,
 } from "../types/typings.ts";
 
-const parseSync = (file: string, source: string, _options?: unknown) =>
-	parseSourceProgram({ file, source });
+const parseSync = (
+	file: string,
+	source: string,
+	options?: { lang?: string; sourceType?: string },
+) =>
+	parseSourceProgram({
+		file,
+		source,
+		language: options?.lang === "tsx" ? "tsx" : options?.lang === "ts" ? "typescript" : undefined,
+	});
+
+const parseLanguageFor = (file: string): "tsx" | "ts" => {
+	const language = sourceLanguageForFile(file);
+	return language === "tsx" || language === "jsx" ? "tsx" : "ts";
+};
 
 export type CssPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 
@@ -245,7 +258,7 @@ function extractPatternSources(
 ): Array<ExtractedCssStyle> {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const importedPatterns = findPatternImports(result.program as unknown as OxcNode);
 	if (importedPatterns.size === 0) return [];
@@ -324,7 +337,7 @@ export function findCssImports(
 ): Set<string> {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const names = new Set<string>();
 
@@ -386,7 +399,7 @@ export function inspectCssSource(
 ): CssSourceInspection {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const authoredCss: Array<AuthoredCssImport> = [];
 	const cssNames = new Set<string>();
@@ -501,7 +514,7 @@ export function inspectCssSource(
 export function findAuthoredCssImports(code: string, id: string): Array<AuthoredCssImport> {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const imports: Array<AuthoredCssImport> = [];
 
@@ -556,7 +569,7 @@ export function findCssCallSites(
 	if (cssNames.size === 0) return [];
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const sites: Array<CssCallSite> = [];
 
@@ -597,7 +610,7 @@ export function diagnoseCssSources(
 	if (cssNames.size === 0) return [];
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const diagnostics: Array<CssDiagnostic> = [];
 	const unsupported = new Map<string, string>([
@@ -668,7 +681,7 @@ export function extractCssSources(
 ): Array<ExtractedCssStyle> {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const sources: Array<ExtractedCssStyle> = [];
 
@@ -755,7 +768,7 @@ export function extractVarKeys(
 
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const keys = new Set<string>();
 
@@ -793,7 +806,7 @@ export function extractCssFile(
 ): CssFileExtraction {
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const cssNames = new Set<string>();
 	walk(result.program, (node) => {
@@ -870,7 +883,7 @@ export function inlineCssCalls(
 	const engine = createCss({ className });
 	const result = parseSync(id, code, {
 		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+		lang: parseLanguageFor(id),
 	});
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;

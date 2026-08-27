@@ -14,6 +14,7 @@ import type {
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
 import { styleProgramFromRules, type StyleProgramResidual } from "./semantic-ir.ts";
+import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import {
 	EXTERNAL_ADAPTER_REGISTRY,
@@ -37,6 +38,8 @@ export interface AdapterMigrationOptions {
 	readonly registry?: StyleSystemRegistry;
 	/** Optional adapter registry, including adapters discovered from plugins. */
 	readonly adapterRegistry?: StyleAdapterRegistry;
+	/** Optional target-aware semantic lowering registry. */
+	readonly loweringRegistry?: StyleLoweringRegistry;
 	/** Framework/project metadata that cannot be recovered from syntax alone. */
 	readonly semantic?: AdapterParseContext["semantic"];
 }
@@ -129,13 +132,19 @@ export function runAdapterMigration(
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	let skipped = 0;
 	for (const [index, match] of parsed.matches.entries()) {
-		const report = inspectAdapterCapabilities(targetAdapter.capabilities, match.program, mode);
+		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).lower({
+			program: match.program,
+			target: targetAdapter.capabilities,
+			mode,
+		});
+		const program = lowering.program;
+		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
 		reports.push(report);
-		const hasParseResiduals = match.program.residuals.length > 0;
+		const hasParseResiduals = program.residuals.length > 0 || lowering.residuals.length > 0;
 		if (!report.convertible || (mode === "safe" && hasParseResiduals)) {
 			skipped++;
 			residuals.push(
-				...match.program.residuals,
+				...program.residuals,
 				...(report.blockers.length === 0
 					? []
 					: [
@@ -147,6 +156,7 @@ export function runAdapterMigration(
 									.join("; "),
 							},
 						]),
+				...lowering.residuals,
 			);
 			edits.push({
 				start: match.start,
@@ -155,7 +165,8 @@ export function runAdapterMigration(
 			});
 			continue;
 		}
-		const emitted = targetAdapter.emit(match.program, {
+		residuals.push(...lowering.residuals);
+		const emitted = targetAdapter.emit(program, {
 			file: options.file,
 			config: targetConfig,
 			mode,
@@ -167,7 +178,7 @@ export function runAdapterMigration(
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
-		const emittedForValidation = validationSource(emitted.text, match.program);
+		const emittedForValidation = validationSource(emitted.text, program);
 		const reparsed = targetAdapter.parse(emittedForValidation, {
 			file: options.file,
 			source: emittedForValidation,
@@ -185,15 +196,15 @@ export function runAdapterMigration(
 		});
 		const targetProgram =
 			reparsed.matches.length === 0
-				? match.program
+				? program
 				: styleProgramFromRules(
 						reparsed.matches.flatMap((candidate) => candidate.program.rules),
 						{
-							source: match.program.source,
+							source: program.source,
 							residuals: reparsed.residuals,
 						},
 					);
-		const validation = targetAdapter.validate(match.program, targetProgram, [
+		const validation = targetAdapter.validate(program, targetProgram, [
 			...emitted.residuals,
 			...reparsed.residuals,
 		]);

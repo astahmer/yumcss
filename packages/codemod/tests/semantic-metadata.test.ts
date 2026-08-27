@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	STYLE_VALIDATORS,
+	STYLE_LOWERING_REGISTRY,
 	createStyleValidatorRegistry,
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
@@ -62,5 +63,36 @@ describe("semantic metadata and validator domains", () => {
 			fixture: "fixture",
 		});
 		expect(result.valid).toBe(true);
+	});
+
+	test("lowers resolved themes and preserves an explicit dynamic residual", () => {
+		const program = styleProgramFromSourceObject(
+			"color: theme.colors.foreground, padding: props.padding",
+			{
+				themes: [
+					{ path: "colors.foreground", authored: "theme.colors.foreground", resolved: "red" },
+				],
+			},
+		);
+		const result = STYLE_LOWERING_REGISTRY.lower({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "static-target",
+				capabilities: {
+					declarations: "exact",
+					"dynamic-values": "unsupported",
+					"theme-context": "unsupported",
+				},
+			},
+			mode: "safe",
+		});
+		expect(result.program.declarations.find((item) => item.property === "color")?.value).toEqual({
+			kind: "literal",
+			value: "red",
+		});
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "dynamic" })]),
+		);
 	});
 });

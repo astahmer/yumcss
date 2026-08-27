@@ -4,6 +4,8 @@ import {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
 	MIGRATION_PIPELINE_SCHEMA,
+	rewritePandaSource,
+	validatePandaSource,
 } from "../src/swap/index.ts";
 
 describe("migration pipeline domains", () => {
@@ -19,6 +21,13 @@ describe("migration pipeline domains", () => {
 
 	test("exposes Panda as a replaceable project pipeline", () => {
 		expect(PANDA_MIGRATION_PIPELINE.schema).toBe(PANDA_MIGRATION_PIPELINE_SCHEMA);
-		expect(PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id)).toEqual(["panda-project"]);
+		expect(PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id)).toEqual([
+			"discovery",
+			"project-migration",
+		]);
+		expect(rewritePandaSource("const x = 1;", [{ start: 6, end: 7, text: "y" }])).toBe(
+			"const y = 1;",
+		);
+		expect(validatePandaSource("stage.ts", "const x = 1;").valid).toBe(true);
 	});
 });

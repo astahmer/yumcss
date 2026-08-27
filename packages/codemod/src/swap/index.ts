@@ -62,7 +62,23 @@ export {
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
 	createPandaMigrationPipeline,
 } from "./panda-migration-pipeline.ts";
-export type { PandaMigrationPipeline, PandaMigrationStage } from "./panda-migration-pipeline.ts";
+export type {
+	PandaMigrationContext,
+	PandaMigrationPhase,
+	PandaMigrationPipeline,
+	PandaMigrationStage,
+	PandaMigrationStageResult,
+} from "./panda-migration-pipeline.ts";
+export { PANDA_DISCOVERY_SCHEMA, discoverPandaMigration } from "./panda-migration-discovery.ts";
+export type { PandaMigrationFile, PandaMigrationWorkspace } from "./panda-migration-discovery.ts";
+export {
+	PANDA_MIGRATION_STAGES_SCHEMA,
+	convertPandaRecipe,
+	convertPandaStyle,
+	emitPandaStyle,
+	rewritePandaSource,
+	validatePandaSource,
+} from "./panda-migration-stages.ts";
 export { inferCommonRoot } from "./panda-migrate.ts";
 export type { TwMissResolver } from "./engine.ts";
 export {
@@ -106,6 +122,18 @@ export type {
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+export {
+	STYLE_LOWERING_REGISTRY,
+	STYLE_LOWERING_SCHEMA,
+	STYLE_LOWERINGS,
+	createStyleLoweringRegistry,
+} from "./lowering.ts";
+export type {
+	StyleLowering,
+	StyleLoweringContext,
+	StyleLoweringRegistry,
+	StyleLoweringResult,
+} from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 export { EXTERNAL_STYLE_SYSTEMS } from "./external-adapters.ts";
 export { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
@@ -119,7 +147,7 @@ export type {
 	AdapterMigrationPipeline,
 	MigrationStage,
 } from "./migration-pipeline.ts";
-export { EXTRA_ADAPTERS, FELA, GOOBER, APHRODITE } from "./extra-adapters.ts";
+export { EXTRA_ADAPTERS, FELA, GOOBER, APHRODITE, STYLE9, TREAT } from "./extra-adapters.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,
@@ -165,6 +193,11 @@ export {
 	SOURCE_SCANNER_SCHEMA,
 	SOURCE_LANGUAGE_ADAPTERS,
 	createSourceScannerRegistry,
+	computeExcludedRanges,
+	isScriptSourceFile,
+	isSupportedSourceFile,
+	parseSourceProgram,
+	sourceLanguageForFile,
 } from "./source-scanner.ts";
 export type {
 	SourceDocument,
@@ -195,6 +228,8 @@ export type {
 	DifferentialResult,
 	DifferentialSsrHooks,
 	DifferentialSsrResult,
+	DifferentialStreamingHooks,
+	DifferentialStreamingResult,
 } from "./differential.ts";
 export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";
 export type {

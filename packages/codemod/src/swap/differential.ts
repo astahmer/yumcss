@@ -18,6 +18,7 @@ import {
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 import { STYLE_VALIDATORS, type StyleValidatorRegistry } from "./validator-registry.ts";
+import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 
 export interface DifferentialBrowserState {
 	readonly name: string;
@@ -55,6 +56,11 @@ export interface DifferentialSsrHooks {
 	};
 }
 
+export interface DifferentialStreamingHooks {
+	readonly source: { render(program: StyleProgram): readonly string[] };
+	readonly target: { render(program: StyleProgram): readonly string[] };
+}
+
 export interface DifferentialFixture {
 	readonly name: string;
 	readonly sourceAdapter: string;
@@ -65,7 +71,9 @@ export interface DifferentialFixture {
 	readonly mode?: AdapterCapabilityMode;
 	readonly browserStates?: readonly DifferentialBrowserState[];
 	readonly ssr?: DifferentialSsrHooks;
+	readonly streaming?: DifferentialStreamingHooks;
 	readonly validators?: StyleValidatorRegistry;
+	readonly lowerings?: StyleLoweringRegistry;
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly semantic?: import("./adapter-contract.ts").AdapterParseContext["semantic"];
 }
@@ -83,6 +91,12 @@ export interface DifferentialSsrResult {
 	readonly target: { server: DifferentialRender; hydrated: DifferentialRender };
 }
 
+export interface DifferentialStreamingResult {
+	readonly valid: boolean;
+	readonly source: readonly string[];
+	readonly target: readonly string[];
+}
+
 export interface DifferentialResult {
 	readonly fixture: string;
 	readonly valid: boolean;
@@ -96,6 +110,7 @@ export interface DifferentialResult {
 	readonly validation?: AdapterValidationResult;
 	readonly browser: readonly DifferentialBrowserResult[];
 	readonly ssr?: DifferentialSsrResult;
+	readonly streaming?: DifferentialStreamingResult;
 	readonly dependencies: readonly AdapterDependencies[];
 }
 
@@ -172,34 +187,42 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		};
 	}
 	const capability = targetAdapter.capabilities;
-	const report = inspectAdapterCapabilities(capability, sourceProgram, mode);
+	const lowering = (fixture.lowerings ?? STYLE_LOWERING_REGISTRY).lower({
+		program: sourceProgram,
+		target: capability,
+		mode,
+	});
+	const loweredProgram = lowering.program;
+	const report = inspectAdapterCapabilities(capability, loweredProgram, mode);
 	if (!report.convertible) {
 		return {
 			fixture: fixture.name,
 			sourceProgram,
 			valid: false,
-			canonicalSource: styleProgramToCanonicalCss(sourceProgram),
+			canonicalSource: styleProgramToCanonicalCss(loweredProgram),
 			canonicalTarget: "",
 			differences: ["target capability contract rejected the program"],
 			residuals: [
 				...residuals,
 				...report.blockers.map((issue) => ({ kind: "capability", text: issue.detail })),
+				...lowering.residuals,
 			],
 			capability: report,
 			browser: [],
 			dependencies,
 		};
 	}
+	residuals.push(...lowering.residuals);
 	const emitted = renderAdapterProgram(
 		targetAdapter,
-		sourceProgram,
+		loweredProgram,
 		targetConfig,
 		fixture.file,
 		mode,
 	);
 	residuals.push(...emitted.residuals);
 	if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
-	const emittedForValidation = validationSource(emitted.text, sourceProgram);
+	const emittedForValidation = validationSource(emitted.text, loweredProgram);
 	const targetParsed = targetAdapter.parse(emittedForValidation, {
 		file: fixture.file,
 		source: emittedForValidation,
@@ -214,30 +237,66 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 	const differences: string[] = [];
 	if (targetProgram === undefined)
 		differences.push("target emission is not parseable by its adapter");
-	const canonicalSource = styleProgramToCanonicalCss(sourceProgram);
+	const canonicalSource = styleProgramToCanonicalCss(loweredProgram);
 	const canonicalTarget =
 		targetProgram === undefined ? "" : styleProgramToCanonicalCss(targetProgram);
 	if (canonicalSource !== canonicalTarget) differences.push("canonical CSS differs");
 	if (residuals.length > 0) differences.push(`${residuals.length} residual conversion(s)`);
 	const validation = (fixture.validators ?? STYLE_VALIDATORS).validate({
-		source: sourceProgram,
-		target: targetProgram ?? sourceProgram,
+		source: loweredProgram,
+		target: targetProgram ?? loweredProgram,
 		residuals,
 		fixture: fixture.name,
+		browser: (fixture.browserStates ?? []).map((state) => ({
+			name: state.name,
+			source: state.source(loweredProgram),
+			target: state.target(targetProgram ?? loweredProgram),
+		})),
+		ssr:
+			fixture.ssr === undefined
+				? undefined
+				: {
+						source: {
+							server: fixture.ssr.source.render(loweredProgram),
+							hydrated: fixture.ssr.source.hydrate(
+								fixture.ssr.source.render(loweredProgram),
+								loweredProgram,
+							),
+						},
+						target: {
+							server: fixture.ssr.target.render(targetProgram ?? loweredProgram),
+							hydrated: fixture.ssr.target.hydrate(
+								fixture.ssr.target.render(targetProgram ?? loweredProgram),
+								targetProgram ?? loweredProgram,
+							),
+						},
+					},
+		dependencies: { source: sourceAdapter.dependencies, target: targetAdapter.dependencies },
+		streaming:
+			fixture.streaming === undefined
+				? undefined
+				: {
+						source: fixture.streaming.source.render(loweredProgram),
+						target: fixture.streaming.target.render(targetProgram ?? loweredProgram),
+					},
 	});
+	differences.push(...validation.differences);
 	const browser = (fixture.browserStates ?? []).map((state) => {
-		const source = state.source(sourceProgram);
-		const target = state.target(targetProgram ?? sourceProgram);
+		const source = state.source(loweredProgram);
+		const target = state.target(targetProgram ?? loweredProgram);
 		const valid = source === target;
 		if (!valid) differences.push(`browser state differs: ${state.name}`);
 		return { name: state.name, valid, source, target };
 	});
 	let ssr: DifferentialSsrResult | undefined;
 	if (fixture.ssr !== undefined) {
-		const sourceServer = fixture.ssr.source.render(sourceProgram);
-		const targetServer = fixture.ssr.target.render(targetProgram ?? sourceProgram);
-		const sourceHydrated = fixture.ssr.source.hydrate(sourceServer, sourceProgram);
-		const targetHydrated = fixture.ssr.target.hydrate(targetServer, targetProgram ?? sourceProgram);
+		const sourceServer = fixture.ssr.source.render(loweredProgram);
+		const targetServer = fixture.ssr.target.render(targetProgram ?? loweredProgram);
+		const sourceHydrated = fixture.ssr.source.hydrate(sourceServer, loweredProgram);
+		const targetHydrated = fixture.ssr.target.hydrate(
+			targetServer,
+			targetProgram ?? loweredProgram,
+		);
 		const valid =
 			sourceServer.html === targetServer.html &&
 			sourceServer.css === targetServer.css &&
@@ -249,6 +308,15 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 			source: { server: sourceServer, hydrated: sourceHydrated },
 			target: { server: targetServer, hydrated: targetHydrated },
 		};
+	}
+	let streaming: DifferentialStreamingResult | undefined;
+	if (fixture.streaming !== undefined) {
+		const source = fixture.streaming.source.render(loweredProgram);
+		const target = fixture.streaming.target.render(targetProgram ?? loweredProgram);
+		const valid =
+			source.length === target.length && source.every((chunk, index) => chunk === target[index]);
+		if (!valid) differences.push("RSC streaming output differs");
+		streaming = { valid, source, target };
 	}
 	return {
 		fixture: fixture.name,
@@ -263,6 +331,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		validation,
 		browser,
 		ssr,
+		streaming,
 		dependencies,
 	};
 }

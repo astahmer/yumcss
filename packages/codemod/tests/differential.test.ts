@@ -127,4 +127,22 @@ describe("CSS-in-JS differential validation", () => {
 		expect(results).toHaveLength(1);
 		expect(results[0]?.fixture).toBe("stitches-to-emotion");
 	});
+
+	test("validates deterministic RSC streaming chunks", () => {
+		const render = (program: StyleProgram): readonly string[] => [
+			"<style data-pandwind>",
+			runtimeCss(program),
+			"</style>",
+		];
+		const result = runDifferentialFixture({
+			name: "emotion-rsc-stream",
+			sourceAdapter: "emotion",
+			targetAdapter: "styled-components",
+			file: "Card.tsx",
+			source: `import { css } from "@emotion/css";\nconst card = css({ color: "red" });`,
+			streaming: { source: { render }, target: { render } },
+		});
+		expect(result.streaming?.valid).toBe(true);
+		expect(result.validation?.valid).toBe(true);
+	});
 });

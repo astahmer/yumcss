@@ -8,7 +8,7 @@
  * target library.
  */
 import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
-import { parseSync } from "oxc-parser";
+import { parseSourceProgram } from "pandwind/source";
 
 export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/3" as const;
 
@@ -557,8 +557,10 @@ export function styleProgramFromSourceObject(
 
 	let root: SourceNode | undefined;
 	try {
-		const parsed = parseSync(options.source?.file ?? "pandwind-style-program.ts", `({${body}})`, {
-			lang: "tsx",
+		const parsed = parseSourceProgram({
+			file: options.source?.file ?? "pandwind-style-program.tsx",
+			source: `({${body}})`,
+			language: "tsx",
 		});
 		const statement = (parsed.program as { body?: SourceNode[] }).body?.[0];
 		const expression = statement?.expression;

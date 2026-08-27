@@ -12,6 +12,7 @@ export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
 export interface StyleAdapterPlugin {
 	readonly schema: typeof ADAPTER_PLUGIN_SCHEMA;
 	readonly id: string;
+	readonly version?: string;
 	readonly adapters: readonly StyleAdapter[];
 }
 
@@ -72,9 +73,10 @@ function isStyleAdapter(value: unknown): value is StyleAdapter {
 export function createStyleAdapterPlugin(
 	id: string,
 	adapters: readonly StyleAdapter[],
+	version = "1",
 ): StyleAdapterPlugin {
 	if (adapters.length === 0) throw new Error(`adapter plugin ${id} must export an adapter`);
-	return { schema: ADAPTER_PLUGIN_SCHEMA, id, adapters };
+	return { schema: ADAPTER_PLUGIN_SCHEMA, id, version, adapters };
 }
 
 export function createStyleAdapterRegistry(

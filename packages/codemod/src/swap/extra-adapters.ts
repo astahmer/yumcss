@@ -205,5 +205,24 @@ export const APHRODITE = makeAdapter({
 	namedObjects: true,
 });
 
+export const STYLE9 = makeAdapter({
+	id: "style9",
+	modules: ["style9"],
+	packages: { packages: [{ name: "style9", kind: "runtime" }] },
+	detect: [/from\s+["']style9["']/g, /\bstyle9\.create\s*\(\s*\{/g],
+	call: /\bstyle9\.create\s*\(\s*\{/g,
+	prefix: "style9.create(",
+	namedObjects: true,
+});
+
+export const TREAT = makeAdapter({
+	id: "treat",
+	modules: ["@/styles.treat", "treat"],
+	packages: { packages: [{ name: "treat", kind: "development" }] },
+	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
+	call: /\bstyle\s*\(\s*\{/g,
+	prefix: "style(",
+});
+
 /** Independently owned adapters added without modifying existing library adapters. */
-export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [FELA, GOOBER, APHRODITE];
+export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [FELA, GOOBER, APHRODITE, STYLE9, TREAT];

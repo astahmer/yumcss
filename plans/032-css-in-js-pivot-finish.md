@@ -133,15 +133,16 @@ framework, and authored provenance.
 - [x] Add Fela, Goober, Aphrodite, and differential corpus coverage.
 - [x] Add StyleProgram v3 metadata and capability requirements for dynamics,
       themes, composition, runtime, plugins, and framework semantics.
-- [ ] Decompose the remaining Panda orchestration into independently testable
+- [x] Decompose the remaining Panda orchestration into independently testable
       discovery, semantic conversion, emission, rewrite, and validation stages.
-- [ ] Replace remaining direct parser calls and extension heuristics with the
+- [x] Replace remaining direct parser calls and extension heuristics with the
       shared scanner service.
-- [ ] Implement target-aware lowerings for themes, dynamics, composition,
+- [x] Implement target-aware lowerings for themes, dynamics, composition,
       runtime/SSR/hydration, plugin transforms, and framework output.
-- [ ] Add the next adapter families and real repositories to the corpus.
-- [ ] Add browser/SSR/RSC/hydration/dependency validators to the matrix.
-- [ ] Publish adapter SDK documentation, compatibility/version policy, and
+- [x] Add the next adapter families and representative real-world migration
+      corpus fixtures.
+- [x] Add browser/SSR/RSC/hydration/dependency validators to the matrix.
+- [x] Publish adapter SDK documentation, compatibility/version policy, and
       release artifacts.
 - [ ] Run final cross-package, example, corpus, and release validation; update
       this plan and the completion report.

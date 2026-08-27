@@ -1,12 +1,35 @@
 import type { PandaMigrateOptions, PandaMigrateReport } from "./panda-migrate.ts";
 import { runPandaMigration } from "./panda-migrate.ts";
+import {
+	discoverPandaMigration,
+	type PandaMigrationWorkspace,
+} from "./panda-migration-discovery.ts";
 
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
-export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/1" as const;
+export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/2" as const;
+
+export type PandaMigrationPhase =
+	| "discovery"
+	| "conversion"
+	| "emission"
+	| "rewrite"
+	| "validation";
+
+export interface PandaMigrationContext {
+	readonly options: PandaMigrateOptions;
+	readonly workspace?: PandaMigrationWorkspace;
+	readonly report?: PandaMigrateReport;
+}
+
+export interface PandaMigrationStageResult {
+	readonly workspace?: PandaMigrationWorkspace;
+	readonly report?: PandaMigrateReport;
+}
 
 export interface PandaMigrationStage {
 	readonly id: string;
-	run(options: PandaMigrateOptions): Promise<PandaMigrateReport>;
+	readonly phase: PandaMigrationPhase;
+	run(context: PandaMigrationContext): Promise<PandaMigrationStageResult>;
 }
 
 export interface PandaMigrationPipeline {
@@ -16,15 +39,36 @@ export interface PandaMigrationPipeline {
 }
 
 export function createPandaMigrationPipeline(
-	stages: readonly PandaMigrationStage[] = [{ id: "panda-project", run: runPandaMigration }],
+	stages: readonly PandaMigrationStage[] = [
+		{
+			id: "discovery",
+			phase: "discovery",
+			async run({ options }) {
+				return { workspace: await discoverPandaMigration(options) };
+			},
+		},
+		{
+			id: "project-migration",
+			phase: "conversion",
+			async run({ options, workspace }) {
+				return { report: await runPandaMigration({ ...options, workspace }) };
+			},
+		},
+	],
 ): PandaMigrationPipeline {
 	return {
 		schema: PANDA_MIGRATION_PIPELINE_SCHEMA,
 		stages,
 		async run(options) {
-			const stage = stages[0];
-			if (stage === undefined) throw new Error("Panda migration pipeline has no stages");
-			return stage.run(options);
+			let context: PandaMigrationContext = { options };
+			for (const stage of stages) {
+				// Stages are sequential by contract: each stage consumes prior context.
+				// oxlint-disable-next-line no-await-in-loop
+				context = { ...context, ...(await stage.run(context)) };
+			}
+			if (context.report === undefined)
+				throw new Error("Panda migration pipeline produced no report");
+			return context.report;
 		},
 	};
 }
