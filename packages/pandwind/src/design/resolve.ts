@@ -19,9 +19,64 @@ const isModuleKey = (key: string): key is ModuleKey => MODULE_KEYS.has(key);
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
+export interface DesignModuleContext {
+	readonly tokens: AnyTokens | undefined;
+	readonly token: TokenLookup;
+}
+
+export interface DesignModuleAdapter {
+	readonly key: ModuleKey;
+	resolve(props: Record<string, unknown>, context: DesignModuleContext): StyleObject;
+}
+
+export interface DesignModuleRegistry {
+	register(adapter: DesignModuleAdapter): void;
+	resolve(
+		key: ModuleKey,
+		props: Record<string, unknown>,
+		tokens: AnyTokens | undefined,
+	): StyleObject;
+}
+
+export class DefaultDesignModuleRegistry implements DesignModuleRegistry {
+	private readonly adapters = new Map<ModuleKey, DesignModuleAdapter>();
+
+	constructor(adapters: readonly DesignModuleAdapter[] = BUILTIN_DESIGN_MODULES) {
+		for (const adapter of adapters) this.register(adapter);
+	}
+
+	register(adapter: DesignModuleAdapter): void {
+		if (this.adapters.has(adapter.key)) throw new Error(`Duplicate design module '${adapter.key}'`);
+		this.adapters.set(adapter.key, adapter);
+	}
+
+	resolve(
+		key: ModuleKey,
+		props: Record<string, unknown>,
+		tokens: AnyTokens | undefined,
+	): StyleObject {
+		const adapter = this.adapters.get(key);
+		if (adapter === undefined) throw new Error(`Unsupported design module '${key}'`);
+		return adapter.resolve(props, { tokens, token: makeTokenLookup(tokens) });
+	}
+}
+
+export const createDesignModuleRegistry = (
+	adapters: readonly DesignModuleAdapter[] = BUILTIN_DESIGN_MODULES,
+): DesignModuleRegistry => new DefaultDesignModuleRegistry(adapters);
+
 export const resolveDesignStyle = (
 	style: Record<string, unknown>,
 	tokens: AnyTokens | undefined,
+): StyleObject => {
+	const registry = createDesignModuleRegistry();
+	return resolveDesignStyleWithRegistry(style, tokens, registry);
+};
+
+const resolveDesignStyleWithRegistry = (
+	style: Record<string, unknown>,
+	tokens: AnyTokens | undefined,
+	registry: DesignModuleRegistry,
 ): StyleObject => {
 	const out: StyleObject = {};
 
@@ -41,13 +96,15 @@ export const resolveDesignStyle = (
 		}
 
 		if (isModuleKey(key)) {
-			Object.assign(out, resolveModule(key, value as Record<string, unknown>, tokens));
+			Object.assign(out, registry.resolve(key, value as Record<string, unknown>, tokens));
 			continue;
 		}
 
 		// Conditions, selectors and raw value-objects (`color: { _hover: "red" }`)
 		// all recurse; plain values pass through untouched.
-		out[key] = isPlainObject(value) ? resolveDesignStyle(value, tokens) : (value as string);
+		out[key] = isPlainObject(value)
+			? resolveDesignStyleWithRegistry(value, tokens, registry)
+			: (value as string);
 	}
 
 	return out;
@@ -310,18 +367,8 @@ const resolveText = (props: Record<string, unknown>, token: TokenLookup): StyleO
 	return out;
 };
 
-const resolveModule = (
-	key: ModuleKey,
-	props: Record<string, unknown>,
-	tokens: AnyTokens | undefined,
-): StyleObject => {
-	const token = makeTokenLookup(tokens);
-	switch (key) {
-		case "$frame":
-			return resolveFrame(props, token);
-		case "$layout":
-			return resolveLayout(props, token);
-		case "$text":
-			return resolveText(props, token);
-	}
-};
+const BUILTIN_DESIGN_MODULES: readonly DesignModuleAdapter[] = [
+	{ key: "$frame", resolve: (props, { token }) => resolveFrame(props, token) },
+	{ key: "$layout", resolve: (props, { token }) => resolveLayout(props, token) },
+	{ key: "$text", resolve: (props, { token }) => resolveText(props, token) },
+];
