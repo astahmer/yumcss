@@ -101,7 +101,10 @@ export function createRuntimeDesignCss<TPreset extends DesignPreset>(
 
 export { createRuntimeSheet } from "./runtime-sheet.ts";
 export type {
+	RuntimeDeclaration,
 	RuntimeRule,
+	RuntimeSemanticRule,
+	RuntimeSemanticRuleKind,
 	RuntimeSheet,
 	RuntimeSheetOptions,
 	RuntimeSheetSnapshot,

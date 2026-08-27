@@ -94,4 +94,84 @@ describe("runtime CSS-in-JS sheet", () => {
 		sheet.register([{ id: "b", css: ".b{color:blue}", priority: 2 }]);
 		expect(styles[0]?.textContent).toBe(".a{color:red}\n.b{color:blue}");
 	});
+
+	test("registers semantic rules with stable IDs and preserves rich CSS order", () => {
+		const server = createRuntimeSheet({ autoMount: false });
+		server.registerSemanticRules([
+			{
+				kind: "global",
+				selector: "body",
+				declarations: [{ property: "margin", value: 0 }],
+				priority: 1,
+			},
+			{
+				kind: "keyframes",
+				name: "fade",
+				children: [
+					{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] },
+					{ kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] },
+				],
+				priority: 2,
+			},
+			{
+				kind: "supports",
+				name: "(display: grid)",
+				declarations: [{ property: "display", value: "grid" }],
+				priority: 3,
+			},
+		]);
+
+		expect(server.css()).toBe(
+			"body{margin:0}\n@keyframes fade{from{opacity:0}to{opacity:1}}\n@supports (display: grid){display:grid}",
+		);
+		expect(new Set(server.snapshot().rules.map((rule) => rule.id)).size).toBe(3);
+
+		const client = createRuntimeSheet({ autoMount: false });
+		client.hydrate(server.snapshot());
+		client.registerSemanticRules([
+			{
+				kind: "global",
+				selector: "body",
+				declarations: [{ property: "margin", value: 0 }],
+				priority: 1,
+			},
+		]);
+		expect(client.css()).toBe(server.css());
+	});
+
+	test("covers font-face, layers, custom properties, and conditional selectors", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "font-face",
+				declarations: [
+					{ property: "font-family", value: "Inter" },
+					{ property: "src", value: "url(inter.woff2)" },
+				],
+			},
+			{
+				kind: "layer",
+				layer: "components",
+				children: [
+					{
+						kind: "style",
+						selector: ".card",
+						conditions: ["hover"],
+						declarations: [{ property: "color", value: "red" }],
+					},
+				],
+			},
+			{
+				kind: "property",
+				name: "--brand-hue",
+				declarations: [
+					{ property: "syntax", value: "<number>" },
+					{ property: "inherits", value: false },
+				],
+			},
+		]);
+		expect(sheet.css()).toContain("@font-face{font-family:Inter;src:url(inter.woff2)}");
+		expect(sheet.css()).toContain("@layer components{.card:hover{color:red}}");
+		expect(sheet.css()).toContain("@property --brand-hue{syntax:<number>;inherits:false}");
+	});
 });

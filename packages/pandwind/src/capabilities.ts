@@ -16,8 +16,8 @@ export interface CapabilityRecord {
 export const CSS_IN_JS_CAPABILITIES = [
 	{
 		feature: "typed-general-css",
-		status: "partial",
-		detail: "The design vocabulary is typed; the general css lane needs a preset-bound contract.",
+		status: "static",
+		detail: "createCss(preset) is typed against ordinary CSS properties and preset conditions.",
 	},
 	{
 		feature: "atomic-css",
@@ -41,19 +41,26 @@ export const CSS_IN_JS_CAPABILITIES = [
 	},
 	{
 		feature: "global-rules",
-		status: "unsupported",
-		detail: "No first-class authored global-rule primitive exists yet.",
+		status: "runtime",
+		detail: "The DOM-optional runtime sheet registers deterministic global semantic rules.",
 	},
 	{
 		feature: "keyframes-font-face",
-		status: "unsupported",
-		detail: "No first-class authored keyframes or font-face primitive exists yet.",
+		status: "runtime",
+		detail:
+			"The runtime sheet registers keyframes and font-face semantic rules with stable ordering.",
+	},
+	{
+		feature: "layers-supports-property",
+		status: "runtime",
+		detail:
+			"Cascade layers, supports blocks, and custom-property definitions share the semantic rule path.",
 	},
 	{
 		feature: "ssr-hydration",
 		status: "partial",
 		detail:
-			"css.vars() is serializable and server-safe; runtime sheet extraction and hydration adapters are not shipped.",
+			"css.vars() and runtime-sheet snapshots are serializable and hydratable; framework adapters remain host-owned.",
 	},
 	{
 		feature: "bundler-integration",
@@ -64,6 +71,12 @@ export const CSS_IN_JS_CAPABILITIES = [
 		feature: "source-provenance",
 		status: "partial",
 		detail:
-			"Debug names and analyzer data exist, but emitted rules are not source-addressable yet.",
+			"Semantic migration records retain source ranges; runtime inspector links remain an integration concern.",
+	},
+	{
+		feature: "recipes-and-hosts",
+		status: "partial",
+		detail:
+			"Recipes, slot recipes, and renderer-neutral host adapters exist; framework fixtures remain to be added.",
 	},
 ] as const satisfies readonly CapabilityRecord[];

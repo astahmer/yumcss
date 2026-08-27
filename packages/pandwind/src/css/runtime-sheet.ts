@@ -12,6 +12,32 @@ export interface RuntimeRule {
 	readonly priority: number;
 }
 
+export type RuntimeSemanticRuleKind =
+	| "style"
+	| "global"
+	| "keyframes"
+	| "font-face"
+	| "layer"
+	| "supports"
+	| "property";
+
+export interface RuntimeDeclaration {
+	readonly property: string;
+	readonly value: string | number | boolean;
+}
+
+export interface RuntimeSemanticRule {
+	readonly id?: string;
+	readonly kind: RuntimeSemanticRuleKind;
+	readonly selector?: string;
+	readonly name?: string;
+	readonly layer?: string;
+	readonly conditions?: readonly string[];
+	readonly declarations?: readonly RuntimeDeclaration[];
+	readonly children?: readonly RuntimeSemanticRule[];
+	readonly priority?: number;
+}
+
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];
@@ -48,6 +74,104 @@ const orderedRules = (rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[] =>
 	Array.from(rules.values()).toSorted(
 		(a, b) => a.priority - b.priority || a.id.localeCompare(b.id),
 	);
+
+const semanticHash = (input: string): string => {
+	let hash = 2166136261;
+	for (let index = 0; index < input.length; index++) {
+		hash ^= input.charCodeAt(index);
+		hash = Math.imul(hash, 16777619);
+	}
+	return (hash >>> 0).toString(36);
+};
+
+const semanticValue = (value: RuntimeDeclaration["value"]): string =>
+	typeof value === "string" ? value : String(value);
+
+const semanticDeclarations = (declarations: readonly RuntimeDeclaration[] = []): string =>
+	declarations
+		.map((declaration) => `${declaration.property}:${semanticValue(declaration.value)}`)
+		.join(";");
+
+const semanticCondition = (condition: string): string => {
+	if (/^@(media|container|supports)\b/.test(condition)) return condition;
+	if (condition.startsWith(":")) return condition;
+	if (condition.startsWith("&")) return condition;
+	return `&:${condition}`;
+};
+
+const selectorAndConditions = (
+	selector: string,
+	conditions: readonly string[],
+): { selector: string; wrappers: string[] } => {
+	let resolved = selector;
+	const wrappers: string[] = [];
+	for (const condition of conditions) {
+		if (/^@(media|container|supports)\b/.test(condition)) {
+			wrappers.push(condition);
+		} else if (condition.startsWith("&")) {
+			resolved = condition.replaceAll("&", resolved);
+		} else if (condition.startsWith(":")) {
+			resolved += condition;
+		} else {
+			resolved += `:${condition}`;
+		}
+	}
+	return { selector: resolved, wrappers };
+};
+
+const semanticRuleCss = (rule: RuntimeSemanticRule): string => {
+	const declarationBody = semanticDeclarations(rule.declarations);
+	const children = (rule.children ?? []).map(semanticRuleCss).join("");
+	let body: string;
+	switch (rule.kind) {
+		case "style":
+			{
+				const resolved = selectorAndConditions(rule.selector ?? "&", rule.conditions ?? []);
+				body = `${resolved.selector}{${declarationBody}${children}}`;
+				body = resolved.wrappers.reduceRight(
+					(current, condition) => `${condition}{${current}}`,
+					body,
+				);
+			}
+			break;
+		case "global":
+			{
+				const resolved = selectorAndConditions(rule.selector ?? "*", rule.conditions ?? []);
+				body = `${resolved.selector}{${declarationBody}${children}}`;
+				body = resolved.wrappers.reduceRight(
+					(current, condition) => `${condition}{${current}}`,
+					body,
+				);
+			}
+			break;
+		case "keyframes":
+			body = `@keyframes ${rule.name ?? ""}{${declarationBody}${children}}`;
+			break;
+		case "font-face":
+			body = `@font-face{${declarationBody}${children}}`;
+			break;
+		case "layer":
+			body = `@layer ${rule.layer ?? rule.name ?? ""}{${declarationBody}${children}}`;
+			break;
+		case "supports":
+			body = `@supports ${rule.name ?? ""}{${declarationBody}${children}}`;
+			break;
+		case "property":
+			body = `@property ${rule.name ?? ""}{${declarationBody}${children}}`;
+			break;
+	}
+	if (rule.kind === "style" || rule.kind === "global") return body;
+	return (rule.conditions ?? []).reduceRight(
+		(current, condition) => `${semanticCondition(condition)}{${current}}`,
+		body,
+	);
+};
+
+const semanticRule = (rule: RuntimeSemanticRule): RuntimeRule => ({
+	id: rule.id ?? `semantic-${semanticHash(JSON.stringify(rule))}`,
+	css: semanticRuleCss(rule),
+	priority: rule.priority ?? 0,
+});
 
 /** Create a deduplicating, SSR-safe runtime stylesheet. */
 export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {
@@ -128,6 +252,12 @@ export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {
 		else render();
 	};
 
+	const registerSemanticRules = (next: readonly RuntimeSemanticRule[]): void => {
+		register(
+			next.map((rule, index) => semanticRule({ ...rule, priority: rule.priority ?? index })),
+		);
+	};
+
 	const unmount = (): void => {
 		element?.remove();
 		element = undefined;
@@ -137,6 +267,7 @@ export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {
 		id,
 		css,
 		register,
+		registerSemanticRules,
 		setTokens,
 		snapshot,
 		hydrate,
