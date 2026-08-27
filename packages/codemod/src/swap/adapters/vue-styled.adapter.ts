@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const VUE_STYLED = makeExtraAdapter({
+const vueStyled = makeExtraAdapter({
 	id: "vue-styled",
 	modules: ["vue-styled-components"],
 	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
@@ -14,3 +14,5 @@ export const VUE_STYLED = makeExtraAdapter({
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });
+
+export default vueStyled;

@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { REAL_REPOSITORY_CORPUS, REAL_REPOSITORY_REFERENCES } from "../src/swap/index.ts";
+import { createRealRepositoryCorpus } from "../src/swap/index.ts";
+
+const corpus = createRealRepositoryCorpus();
 
 describe("pinned real repository corpus", () => {
 	test("keeps source provenance and residual evidence for three repositories", () => {
@@ -13,7 +15,7 @@ describe("pinned real repository corpus", () => {
 		) as { schema: string; reports: Array<{ id: string; commit: string; path: string }> };
 		expect(report.schema).toBe("pandwind.real-repository-report/1");
 		expect(report.reports).toHaveLength(3);
-		for (const fixture of REAL_REPOSITORY_CORPUS) {
+		for (const fixture of corpus.inline) {
 			expect(report.reports).toContainEqual(
 				expect.objectContaining({ id: fixture.id, commit: fixture.commit, path: fixture.path }),
 			);
@@ -33,11 +35,11 @@ describe("pinned real repository corpus", () => {
 			reports: Array<{ id: string; commit: string; path: string }>;
 		};
 		expect(report.schema).toBe("pandwind.real-repository-report/2");
-		expect(report.sourceFiles).toBe(REAL_REPOSITORY_REFERENCES.length);
+		expect(report.sourceFiles).toBe(corpus.references.length);
 		expect(
-			new Set(REAL_REPOSITORY_REFERENCES.map((reference) => reference.from)).size,
+			new Set(corpus.references.map((reference) => reference.from)).size,
 		).toBeGreaterThanOrEqual(16);
-		for (const reference of REAL_REPOSITORY_REFERENCES) {
+		for (const reference of corpus.references) {
 			expect(reference.commit).toMatch(/^[0-9a-f]{40}$/);
 			expect(report.reports).toContainEqual(
 				expect.objectContaining({
@@ -68,10 +70,10 @@ describe("pinned real repository corpus", () => {
 			}>;
 			bundleImpact: { measured: boolean };
 		};
-		expect(report.sourceFiles).toBe(REAL_REPOSITORY_REFERENCES.length);
-		expect(report.reports.length).toBeGreaterThanOrEqual(REAL_REPOSITORY_REFERENCES.length);
+		expect(report.sourceFiles).toBe(corpus.references.length);
+		expect(report.reports.length).toBeGreaterThanOrEqual(corpus.references.length);
 		expect(report.bundleImpact.measured).toBe(false);
-		for (const reference of REAL_REPOSITORY_REFERENCES) {
+		for (const reference of corpus.references) {
 			const item = report.reports.find((candidate) => candidate.id === reference.id);
 			expect(item).toBeDefined();
 			expect(item?.adapterRoute).toBe(`${reference.from} -> ${reference.to}`);

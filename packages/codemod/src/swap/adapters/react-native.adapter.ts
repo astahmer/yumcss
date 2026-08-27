@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const REACT_NATIVE = makeExtraAdapter({
+const reactNative = makeExtraAdapter({
 	id: "react-native",
 	modules: ["react-native"],
 	packages: { packages: [{ name: "react-native", kind: "peer" }] },
@@ -9,3 +9,5 @@ export const REACT_NATIVE = makeExtraAdapter({
 	prefix: "StyleSheet.create(",
 	namedObjects: true,
 });
+
+export default reactNative;

@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const SOLID_STYLED = makeExtraAdapter({
+const solidStyled = makeExtraAdapter({
 	id: "solid-styled",
 	modules: ["solid-styled-components"],
 	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
@@ -14,3 +14,5 @@ export const SOLID_STYLED = makeExtraAdapter({
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });
+
+export default solidStyled;

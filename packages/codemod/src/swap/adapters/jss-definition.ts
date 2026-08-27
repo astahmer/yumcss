@@ -1,16 +1,21 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const JSS_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "jss",
 	patterns: [
-		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g },
-		{ name: "jss-styleSheet", regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*\{/g },
+		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g, objectKind: "named" },
+		{
+			name: "jss-styleSheet",
+			regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*\{/g,
+			objectKind: "named",
+		},
 		{
 			name: "jss-styleSheet-reference",
 			regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/g,
 			form: "reference",
+			objectKind: "named",
 		},
-		{ name: "jss-createRule", regex: /\b(?:jss\.)?createRule\s*\(\s*\{/g },
+		{ name: "jss-createRule", regex: /\b(?:jss\.)?createRule\s*\(\s*\{/g, objectKind: "named" },
 	],
 	packages: {
 		packages: [
@@ -31,6 +36,7 @@ export const JSS_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
 	sourceModules: ["jss", "react-jss"],
+	configFiles: ["jss.config.js", "package.json"],
 	emit(program, { programObject }) {
 		const subject = program.source?.subject ?? "createUseStyles";
 		return {
@@ -41,4 +47,4 @@ export const JSS_DEFINITION: AdapterDefinition = {
 					: ['import { createUseStyles } from "react-jss";'],
 		};
 	},
-};
+});

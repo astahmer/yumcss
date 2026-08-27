@@ -1,8 +1,8 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const STYLEX_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "stylex",
-	patterns: [{ name: "stylex-create", regex: /\bstylex\.create\s*\(\s*\{/g }],
+	patterns: [{ name: "stylex-create", regex: /\bstylex\.create\s*\(\s*\{/g, objectKind: "named" }],
 	packages: dependency("@stylexjs/stylex", "peer"),
 	capabilities: allRuleCapabilities("stylex", "partial", {
 		"dynamic-values": "partial",
@@ -14,6 +14,7 @@ export const STYLEX_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
 	sourceModules: ["@stylexjs/stylex"],
+	configFiles: ["package.json"],
 	sourceObjectOptions: { nestedObjectKind: "named" },
 	emit(program, { programObject }) {
 		return {
@@ -21,4 +22,4 @@ export const STYLEX_DEFINITION: AdapterDefinition = {
 			imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 		};
 	},
-};
+});

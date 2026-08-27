@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
-	EXTERNAL_ADAPTERS,
-	getExternalAdapter,
+	createBuiltinCodemodCatalog,
+	getCodemodAdapter,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
 
@@ -30,7 +30,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"react-native":
 				"import { StyleSheet } from 'react-native'; StyleSheet.create({ button: { color: 'red' } })",
 		};
-		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
+		for (const adapter of createBuiltinCodemodCatalog().adapters) {
+			const id = adapter.id;
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
 			expect(adapter.version).toBe("2");
 			expect(adapter.sourceModules.length).toBeGreaterThan(0);
@@ -99,7 +100,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("registers JSS style maps and keeps their named-rule boundary explicit", () => {
-		const adapter = getExternalAdapter("jss")!;
+		const adapter = getCodemodAdapter("jss")!;
 		const parsed = adapter.parse("createUseStyles({ button: { color: 'red' } })", {
 			file: "styles.ts",
 			source: "",
@@ -223,7 +224,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("loads package/config evidence and migrates static tagged templates", () => {
-		const adapter = getExternalAdapter("emotion")!;
+		const adapter = getCodemodAdapter("emotion")!;
 		const config = adapter.loadConfig({
 			file: "Card.tsx",
 			root: "/project",
@@ -245,7 +246,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("uses the default project reader and reports unsupported rule kinds", () => {
-		const config = getExternalAdapter("emotion")!.loadConfig({
+		const config = getCodemodAdapter("emotion")!.loadConfig({
 			file: "Card.tsx",
 			root: process.cwd(),
 			source: "",
@@ -382,7 +383,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			`// styled.div({ color: "red" })`,
 			`const card = css({ color: "red" });`,
 		].join("\n");
-		const parsed = getExternalAdapter("emotion")!.parse(source, {
+		const parsed = getCodemodAdapter("emotion")!.parse(source, {
 			file: "Card.tsx",
 			source,
 			config: { adapter: "emotion", files: [], values: {} },
@@ -427,7 +428,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {
-		const adapter = getExternalAdapter("stitches")!;
+		const adapter = getCodemodAdapter("stitches")!;
 		const parsed = adapter.parse(
 			`const fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
 			{
@@ -449,7 +450,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("lifts global and font-face APIs into rule-level nodes", () => {
-		const stitches = getExternalAdapter("stitches")!;
+		const stitches = getCodemodAdapter("stitches")!;
 		const global = stitches.parse(
 			`globalCss({ body: { margin: 0 }, "button:hover": { color: "red" } });`,
 			{ file: "global.ts", source: "", config: { adapter: "stitches", files: [], values: {} } },
@@ -457,7 +458,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(global.matches[0]?.program.rules.map((rule) => rule.kind)).toEqual(["global", "global"]);
 		expect(global.matches[0]?.program.rules[1]?.selector).toBe("button:hover");
 
-		const vanilla = getExternalAdapter("vanilla-extract")!;
+		const vanilla = getCodemodAdapter("vanilla-extract")!;
 		const font = vanilla.parse(
 			`const face = fontFace({ fontFamily: "Inter", src: "url(inter.woff2)" });`,
 			{
@@ -470,7 +471,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("unwraps vanilla-extract selectors containers into selector conditions", () => {
-		const vanilla = getExternalAdapter("vanilla-extract")!;
+		const vanilla = getCodemodAdapter("vanilla-extract")!;
 		const parsed = vanilla.parse(
 			`style({ color: "red", selectors: { "&:hover": { color: "blue" } } });`,
 			{
@@ -502,7 +503,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("matches complete tagged templates with nested expressions and preserves nested rules", () => {
-		const adapter = getExternalAdapter("solid-styled")!;
+		const adapter = getCodemodAdapter("solid-styled")!;
 		const source =
 			'const Card = styled("div")<{ border: number }>`\n' +
 			"  color: red;\n" +

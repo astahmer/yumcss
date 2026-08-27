@@ -3,13 +3,14 @@ import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
 import { computeExcludedRanges } from "pandwind/source";
-import type { AdapterCapabilities } from "./capabilities.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
 	type AdapterEmitContext,
+	type AdapterEmitResult,
 	type AdapterLossiness,
 	type AdapterMatch,
 	type AdapterParseContext,
@@ -24,32 +25,11 @@ import {
 	styleProgramToCanonicalCss,
 	type StyleDeclaration,
 	type StyleProgram,
+	type StyleProgramOptions,
 	type StyleProgramResidual,
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
-import {
-	asStyleDialect,
-	createStyleSystem,
-	createStyleSystemRegistry,
-	type StyleSystemRegistry,
-} from "./style-systems.ts";
-import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
-import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
-import type {
-	AdapterDefinition,
-	AdapterRenderers,
-	AdapterSourceObjectOptions,
-	AdapterSourceObjectOptionsProvider,
-} from "./adapters/definition.ts";
-import { EMOTION_DEFINITION } from "./adapters/emotion-definition.ts";
-import { STYLED_COMPONENTS_DEFINITION } from "./adapters/styled-components-definition.ts";
-import { VANILLA_EXTRACT_DEFINITION } from "./adapters/vanilla-extract-definition.ts";
-import { STITCHES_DEFINITION } from "./adapters/stitches-definition.ts";
-import { LINARIA_DEFINITION } from "./adapters/linaria-definition.ts";
-import { JSS_DEFINITION } from "./adapters/jss-definition.ts";
-import { PANDWIND_DEFINITION } from "./adapters/pandwind-definition.ts";
-import { STYLEX_DEFINITION } from "./adapters/stylex-definition.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -58,19 +38,91 @@ type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly form?: "object" | "template" | "reference";
+	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
+	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
 };
 
-const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
-	pandwind: ["pandwind.config.ts", "package.json"],
-	emotion: [".emotionrc", "emotion.config.js", "package.json"],
-	"styled-components": ["package.json"],
-	"vanilla-extract": ["package.json"],
-	stitches: ["stitches.config.ts", "package.json"],
-	linaria: ["linaria.config.js", "package.json"],
-	jss: ["jss.config.js", "package.json"],
-};
+export type AdapterSourceObjectOptions = Pick<
+	StyleProgramOptions,
+	| "nestedObjectKind"
+	| "unwrapNestedObjectKeys"
+	| "variantContainerKeys"
+	| "computedKeys"
+	| "dynamicReferences"
+>;
+export type AdapterSourceObjectOptionsProvider =
+	| AdapterSourceObjectOptions
+	| ((source: string) => AdapterSourceObjectOptions);
 
-function configFor(id: string, context: AdapterConfigContext): AdapterProjectConfig {
+export interface AdapterRenderers {
+	readonly firstKind: (program: StyleProgram) => StyleProgram["rules"][number]["kind"];
+	readonly programObject: (program: StyleProgram) => string;
+	readonly declarationsObject: (
+		declarations: readonly StyleProgram["declarations"][number][],
+	) => string;
+	readonly templateCss: (program: StyleProgram) => string;
+}
+
+export interface CodemodAdapterSpec {
+	readonly id: ExternalAdapterId;
+	readonly patterns: readonly CallPattern[];
+	readonly packages: AdapterDependencies;
+	readonly capabilities: AdapterCapabilities;
+	readonly detectPatterns: readonly RegExp[];
+	readonly sourceModules: readonly string[];
+	readonly configFiles?: readonly string[];
+	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
+	emit(
+		program: StyleProgram,
+		renderers: AdapterRenderers,
+		context?: AdapterEmitContext,
+	): Pick<AdapterEmitResult, "text" | "imports">;
+}
+
+export function dependency(
+	name: string,
+	kind: AdapterDependencies["packages"][number]["kind"],
+): AdapterDependencies {
+	return { packages: [{ name, kind }] };
+}
+
+export function allRuleCapabilities(
+	adapterId: string,
+	dynamic: "exact" | "partial" | "unsupported",
+	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
+): AdapterCapabilities {
+	return {
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		adapter: adapterId,
+		capabilities: {
+			declarations: "exact",
+			"rule-level": "exact",
+			"global-rules": "exact",
+			keyframes: "exact",
+			"font-face": "exact",
+			layers: "exact",
+			"supports-rules": "exact",
+			"property-rules": "exact",
+			selectors: "exact",
+			nesting: "exact",
+			ordering: "exact",
+			"token-values": "exact",
+			"dynamic-values": dynamic,
+			"pseudo-conditions": "exact",
+			"selector-conditions": "exact",
+			"media-conditions": "exact",
+			"container-conditions": "exact",
+			"supports-conditions": "exact",
+			...capabilities,
+		},
+	};
+}
+
+function configFor(
+	id: string,
+	configFiles: readonly string[],
+	context: AdapterConfigContext,
+): AdapterProjectConfig {
 	const files: string[] = [];
 	const values: Record<string, unknown> = {};
 	const readFile =
@@ -95,7 +147,7 @@ function configFor(id: string, context: AdapterConfigContext): AdapterProjectCon
 		}
 	}
 	if (packageJson !== undefined) values.packageJson = packageJson;
-	for (const relative of CONFIG_FILES[id as ExternalAdapterId] ?? []) {
+	for (const relative of configFiles) {
 		if (context.root === undefined || readFile === undefined) continue;
 		const file = join(context.root, relative);
 		const text = readFile(file);
@@ -152,13 +204,6 @@ function adapterSource(
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
 	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/);
-	if (match?.[1] === undefined) return {};
-	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
-	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
-}
-
-function linariaStyledSubject(source: string, start: number): Partial<StyleProgramSource> {
-	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`/);
 	if (match?.[1] === undefined) return {};
 	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
 	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
@@ -606,13 +651,8 @@ function parseCalls(
 				}
 				const template = source.slice(start, lastTick + 1);
 				let program = parseTemplateProgram(source.slice(firstTick + 1, lastTick), context, start);
-				if (pattern.name.startsWith("styled"))
+				if (pattern.kind === "styled")
 					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
-				if (pattern.name === "linaria-styled")
-					program = {
-						...program,
-						source: { ...program.source, ...linariaStyledSubject(source, start) },
-					};
 				matches.push({ start, end: start + template.length, program, sourceText: template });
 				continue;
 			}
@@ -630,7 +670,7 @@ function parseCalls(
 			const end = source[block.end] === ")" ? block.end + 1 : block.end;
 			const fallbackName = `${pattern.name}Style${matches.length + 1}`;
 			let program: StyleProgram;
-			if (pattern.name === "keyframes") {
+			if (pattern.kind === "keyframes") {
 				program = parseKeyframeProgram(
 					block.body,
 					context,
@@ -638,11 +678,7 @@ function parseCalls(
 					sourceName(source, start, fallbackName),
 					resolvedObjectOptions,
 				);
-			} else if (
-				pattern.name === "global" ||
-				pattern.name === "globalCss" ||
-				pattern.name === "createGlobalStyle"
-			) {
+			} else if (pattern.kind === "global") {
 				program = parseGlobalProgram(block.body, context, start);
 			} else {
 				const base = styleProgramFromSourceObject(block.body, {
@@ -663,20 +699,9 @@ function parseCalls(
 					...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
 					...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
 					...resolvedObjectOptions,
-					...(pattern.name.startsWith("jss-") ? { nestedObjectKind: "named" as const } : {}),
-					...(pattern.name === "css-group" ? { nestedObjectKind: "named" as const } : {}),
-					...(pattern.name === "style"
-						? {
-								unwrapNestedObjectKeys: [
-									...new Set([
-										...(resolvedObjectOptions.unwrapNestedObjectKeys ?? []),
-										"selectors",
-									]),
-								],
-							}
-						: {}),
+					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
 				});
-				if (pattern.name === "globalStyle") {
+				if (pattern.kind === "global") {
 					const args = source.slice(start, open);
 					const selector = /\(\s*(["'`])([^"'`]+)\1\s*,/.exec(args)?.[2] ?? "*";
 					program = styleProgramFromRules(
@@ -692,7 +717,7 @@ function parseCalls(
 						],
 						{ source: base.source, residuals: base.residuals },
 					);
-				} else if (pattern.name === "fontFace") {
+				} else if (pattern.kind === "font-face") {
 					program = styleProgramFromRules(
 						[
 							{
@@ -742,55 +767,30 @@ function validatePrograms(
 	};
 }
 
-function adapter(
-	id: ExternalAdapterId,
-	patterns: readonly CallPattern[],
-	packages: AdapterDependencies,
-	capabilities: AdapterCapabilities,
-	emitCall: (
-		program: StyleProgram,
-		context?: AdapterEmitContext,
-	) => {
-		text: string;
-		imports?: readonly string[];
-	},
-	detectPatterns: readonly RegExp[],
-	sourceModules: readonly string[],
-	sourceObjectOptions: AdapterSourceObjectOptionsProvider | undefined = {},
-): StyleAdapter {
+export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
-		id,
+		id: spec.id,
 		version: "2",
-		sourceModules,
-		capabilities,
-		dependencies: packages,
-		detect: (context) => detectBy(detectPatterns, context),
-		loadConfig: (context) => configFor(id, context),
-		parse: (source, context) => parseCalls(source, context, patterns, sourceObjectOptions),
+		sourceModules: spec.sourceModules,
+		capabilities: spec.capabilities,
+		dependencies: spec.packages,
+		detect: (context) => detectBy(spec.detectPatterns, context),
+		loadConfig: (context) => configFor(spec.id, spec.configFiles ?? [], context),
+		parse: (source, context) =>
+			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),
 		emit: (program, context) => {
-			const rendered = emitCall(program, context);
-			return { ...rendered, dependencies: packages, residuals: [...program.residuals] };
+			const renderers: AdapterRenderers = {
+				firstKind,
+				programObject,
+				declarationsObject,
+				templateCss,
+			};
+			const rendered = spec.emit(program, renderers, context);
+			return { ...rendered, dependencies: spec.packages, residuals: [...program.residuals] };
 		},
 		validate: validatePrograms,
 	};
-}
-
-/** Bind an independently owned concrete definition to the shared v2 parser,
- * validator, and configuration runtime. Definitions never import this module,
- * which keeps the registry cycle-free. */
-function adapterFromDefinition(definition: AdapterDefinition): StyleAdapter {
-	const renderers: AdapterRenderers = { firstKind, programObject, declarationsObject, templateCss };
-	return adapter(
-		definition.id,
-		definition.patterns,
-		definition.packages,
-		definition.capabilities,
-		(program, context) => definition.emit(program, renderers, context),
-		definition.detectPatterns,
-		definition.sourceModules,
-		definition.sourceObjectOptions,
-	);
 }
 
 function removeExcludedMatches(source: string, pattern: RegExp): string {
@@ -818,11 +818,7 @@ export function removeSourceImports(code: string, modules: readonly string[]): s
 			new RegExp(`\\bimport\\s+(?:[^;]*?\\s+from\\s+)?["']${quoted}["']\\s*;?`, "g"),
 		);
 	}
-	result = removeExcludedMatches(
-		result,
-		/\b(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?/g,
-	);
-	return removeExcludedMatches(result, /\bconst\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?/g);
+	return result;
 }
 
 export function consolidateImports(statements: Iterable<string>): string[] {
@@ -870,45 +866,4 @@ export function validationSource(text: string, program: StyleProgram): string {
 		: text;
 }
 
-export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>> = {
-	pandwind: adapterFromDefinition(PANDWIND_DEFINITION),
-	emotion: adapterFromDefinition(EMOTION_DEFINITION),
-	"styled-components": adapterFromDefinition(STYLED_COMPONENTS_DEFINITION),
-	"vanilla-extract": adapterFromDefinition(VANILLA_EXTRACT_DEFINITION),
-	stitches: adapterFromDefinition(STITCHES_DEFINITION),
-	linaria: adapterFromDefinition(LINARIA_DEFINITION),
-	jss: adapterFromDefinition(JSS_DEFINITION),
-	stylex: adapterFromDefinition(STYLEX_DEFINITION),
-	...Object.fromEntries(EXTRA_ADAPTERS.map((extraAdapter) => [extraAdapter.id, extraAdapter])),
-};
-
-/** Built-ins are merely the default plugin set; consumers may derive a registry and discover more. */
-export const EXTERNAL_ADAPTER_REGISTRY: StyleAdapterRegistry = createStyleAdapterRegistry(
-	Object.values(EXTERNAL_ADAPTERS),
-);
-
-const externalDialect = (registeredAdapter: StyleAdapter) =>
-	asStyleDialect(registeredAdapter, {
-		system: registeredAdapter.id === "pandwind" ? "pandwind-external" : registeredAdapter.id,
-		dialect: "css",
-		role: "both",
-	});
-
-/** Registry is the extension point; the object remains a read-only lookup projection. */
-export const EXTERNAL_STYLE_SYSTEMS: StyleSystemRegistry = createStyleSystemRegistry(
-	Object.values(EXTERNAL_ADAPTERS).map((registeredAdapter) =>
-		createStyleSystem(
-			registeredAdapter.id === "pandwind" ? "pandwind-external" : registeredAdapter.id,
-			[externalDialect(registeredAdapter)],
-		),
-	),
-);
-
-export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = Object.keys(EXTERNAL_ADAPTERS);
-
-export function getExternalAdapter(id: string): StyleAdapter | undefined {
-	return EXTERNAL_STYLE_SYSTEMS.getDialect(id);
-}
-
-export { runAdapterMigration } from "./adapter-migration.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";

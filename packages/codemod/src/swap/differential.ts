@@ -9,7 +9,7 @@ import type {
 	AdapterValidationResult,
 	StyleAdapter,
 } from "./adapter-contract.ts";
-import { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
+import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	styleProgramFromRules,
@@ -161,7 +161,7 @@ function validationSource(text: string, program: StyleProgram): string {
  * them. This keeps equivalence checks independent of any one framework.
  */
 export function runDifferentialFixture(fixture: DifferentialFixture): DifferentialResult {
-	const adapterRegistry = fixture.adapterRegistry ?? EXTERNAL_ADAPTER_REGISTRY;
+	const adapterRegistry = fixture.adapterRegistry ?? createBuiltinCodemodCatalog().registry;
 	const sourceAdapter = adapterOrThrow(fixture.sourceAdapter, adapterRegistry);
 	const targetAdapter = adapterOrThrow(fixture.targetAdapter, adapterRegistry);
 	const mode = fixture.mode ?? "safe";

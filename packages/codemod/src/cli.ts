@@ -398,9 +398,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 }
 
 function isExternalAdapterId(value: string): value is import("./swap/index.ts").ExternalAdapterId {
-	return swapImport.EXTERNAL_ADAPTER_IDS.includes(
-		value as import("./swap/index.ts").ExternalAdapterId,
-	);
+	return swapImport.listCodemodAdapterIds().includes(value);
 }
 
 function isExternalSwap(args: swapImport.SwapCliArgs): boolean {
@@ -412,8 +410,8 @@ function detectExternalSource(
 	file: string,
 	root: string,
 ): import("./swap/index.ts").ExternalAdapterId | undefined {
-	return swapImport.EXTERNAL_ADAPTER_IDS.flatMap((id) => {
-		const adapter = swapImport.getExternalAdapter(id);
+	return swapImport.listCodemodAdapterIds().flatMap((id) => {
+		const adapter = swapImport.getCodemodAdapter(id);
 		if (adapter === undefined) return [];
 		return [{ id, result: adapter.detect({ file, source, root }) }];
 	})

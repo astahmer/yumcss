@@ -1,11 +1,11 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const STITCHES_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "stitches",
 	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
-		{ name: "globalCss", regex: /\bglobalCss\s*\(\s*\{/g },
-		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "globalCss", kind: "global", regex: /\bglobalCss\s*\(\s*\{/g },
+		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	packages: dependency("@stitches/react", "peer"),
 	capabilities: allRuleCapabilities("stitches", "exact", {
@@ -16,6 +16,7 @@ export const STITCHES_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 	sourceModules: ["@stitches/react", "@stitches/core"],
+	configFiles: ["stitches.config.ts", "package.json"],
 	sourceObjectOptions: { variantContainerKeys: ["variants"] },
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
@@ -34,4 +35,4 @@ export const STITCHES_DEFINITION: AdapterDefinition = {
 			imports: ['import { css } from "@stitches/react";'],
 		};
 	},
-};
+});

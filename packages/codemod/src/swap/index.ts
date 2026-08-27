@@ -13,7 +13,8 @@ import { applyEdits } from "../migrate.ts";
 import { insertSkipMarker, matchBlock } from "../sources.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
-import { EXTERNAL_ADAPTER_IDS, type ExternalAdapterId } from "./external-adapters.ts";
+import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+import type { ExternalAdapterId } from "./external-adapters.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import {
 	styleProgramFromSourceObject,
@@ -29,9 +30,12 @@ import {
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 
+const builtinAdapterCatalog = createBuiltinCodemodCatalog();
+const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
+
 export const SWAP_TARGETS = [
 	...SWAP_REGISTRY.targets.map((adapter) => adapter.id),
-	...EXTERNAL_ADAPTER_IDS,
+	...builtinAdapterIds,
 ];
 export type SwapTarget =
 	| "css.class"
@@ -47,7 +51,7 @@ import type { SwapIR } from "./ir.ts";
 export const SWAP_SOURCES = [
 	...SWAP_REGISTRY.sources.map((adapter) => adapter.id),
 	"panda",
-	...EXTERNAL_ADAPTER_IDS,
+	...builtinAdapterIds,
 ] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
 
@@ -109,13 +113,15 @@ export {
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
-export {
-	EXTERNAL_ADAPTERS,
-	EXTERNAL_ADAPTER_IDS,
-	getExternalAdapter,
-	runAdapterMigration,
-} from "./external-adapters.ts";
+export { runAdapterMigration } from "./adapter-migration.ts";
+export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
+export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);
+export function listCodemodAdapterIds(): readonly string[] {
+	return builtinAdapterIds;
+}
+export type { CodemodAdapterCatalog } from "./adapter-catalog.ts";
 export type {
 	AdapterConfigContext,
 	AdapterDependencies,
@@ -147,8 +153,7 @@ export type {
 	StyleLoweringResult,
 } from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
-export { EXTERNAL_STYLE_SYSTEMS } from "./external-adapters.ts";
-export { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
+export type { CodemodAdapterSpec, AdapterRenderers } from "./external-adapters.ts";
 export {
 	ADAPTER_MIGRATION_PIPELINE,
 	MIGRATION_PIPELINE_SCHEMA,
@@ -159,18 +164,6 @@ export type {
 	AdapterMigrationPipeline,
 	MigrationStage,
 } from "./migration-pipeline.ts";
-export {
-	EXTRA_ADAPTERS,
-	FELA,
-	GOOBER,
-	APHRODITE,
-	STYLE9,
-	TREAT,
-	COMPILED,
-	SOLID_STYLED,
-	VUE_STYLED,
-	REACT_NATIVE,
-} from "./extra-adapters.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
 	createStyleAdapterPlugin,
@@ -225,11 +218,7 @@ export type {
 	SwapTargetAdapter,
 } from "./swap-registry.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
-export {
-	DIFFERENTIAL_MATRIX,
-	DIFFERENTIAL_MATRIX_SCHEMA,
-	runDifferentialMatrix,
-} from "./differential-matrix.ts";
+export { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "./differential-matrix.ts";
 export {
 	VALIDATOR_SCHEMA,
 	STYLE_VALIDATORS,
@@ -252,9 +241,13 @@ export type {
 	DifferentialStreamingHooks,
 	DifferentialStreamingResult,
 } from "./differential.ts";
-export { REAL_REPOSITORY_CORPUS, REAL_REPOSITORY_REFERENCES } from "./real-repository-corpus.ts";
-export type { RealRepositoryReference } from "./real-repository-corpus.ts";
-export type { DifferentialMatrixCase, DifferentialMatrixResult } from "./differential-matrix.ts";
+export { createRealRepositoryCorpus } from "./real-repository-corpus.ts";
+export type { RealRepositoryCorpus, RealRepositoryReference } from "./real-repository-corpus.ts";
+export type {
+	DifferentialMatrixCase,
+	DifferentialMatrixCatalog,
+	DifferentialMatrixResult,
+} from "./differential-matrix.ts";
 export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";
 export type {
 	ResolvedStyleRecipe,
@@ -376,7 +369,7 @@ function collectMatches(
 	engineResolver?: MissResolver,
 	tokenize?: boolean,
 ): Array<Match> {
-	if (from === "panda" || EXTERNAL_ADAPTER_IDS.includes(from)) return [];
+	if (from === "panda" || builtinAdapterIds.includes(from)) return [];
 	return [
 		...SWAP_REGISTRY.scanSource(from, {
 			source,

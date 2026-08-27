@@ -21,11 +21,11 @@ import {
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import {
-	EXTERNAL_ADAPTER_REGISTRY,
 	consolidateImports,
 	removeSourceImports,
 	validationSource,
 } from "./external-adapters.ts";
+import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
@@ -175,12 +175,14 @@ export interface AdapterMigrationResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
+
 /** Run one v2 adapter-to-adapter migration over a source file. */
 export function runAdapterMigration(
 	source: string,
 	options: AdapterMigrationOptions,
 ): AdapterMigrationResult {
-	const adapterRegistry = options.adapterRegistry ?? EXTERNAL_ADAPTER_REGISTRY;
+	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
 		options.to,

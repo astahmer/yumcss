@@ -1,16 +1,21 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const STYLED_COMPONENTS_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "styled-components",
 	patterns: [
-		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
+		{
+			name: "styled",
+			kind: "styled",
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
+		},
 		{
 			name: "styled-template",
+			kind: "styled",
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "createGlobalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
-		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
+		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	packages: dependency("styled-components", "peer"),
 	capabilities: allRuleCapabilities("styled-components", "exact", {
@@ -27,6 +32,7 @@ export const STYLED_COMPONENTS_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],
 	sourceModules: ["styled-components"],
+	configFiles: ["package.json"],
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -44,4 +50,4 @@ export const STYLED_COMPONENTS_DEFINITION: AdapterDefinition = {
 			imports: ['import styled from "styled-components";'],
 		};
 	},
-};
+});

@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const GOOBER = makeExtraAdapter({
+const goober = makeExtraAdapter({
 	id: "goober",
 	modules: ["goober"],
 	packages: { packages: [{ name: "goober", kind: "runtime" }] },
@@ -8,3 +8,5 @@ export const GOOBER = makeExtraAdapter({
 	call: /\bcss\s*\(\s*\{/g,
 	prefix: "css(",
 });
+
+export default goober;

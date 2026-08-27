@@ -1,5 +1,5 @@
 import type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
-import { runAdapterMigration } from "./external-adapters.ts";
+import { runAdapterMigration } from "./adapter-migration.ts";
 
 /** Versioned orchestration boundary for source/target adapter migrations. */
 export const MIGRATION_PIPELINE_SCHEMA = "pandwind.migration-pipeline/1" as const;

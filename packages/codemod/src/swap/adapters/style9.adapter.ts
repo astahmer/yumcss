@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const STYLE9 = makeExtraAdapter({
+const style9 = makeExtraAdapter({
 	id: "style9",
 	modules: ["style9"],
 	packages: { packages: [{ name: "style9", kind: "runtime" }] },
@@ -9,3 +9,5 @@ export const STYLE9 = makeExtraAdapter({
 	prefix: "style9.create(",
 	namedObjects: true,
 });
+
+export default style9;

@@ -1,12 +1,12 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "vanilla-extract",
 	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
-		{ name: "globalStyle", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
-		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
-		{ name: "fontFace", regex: /\bfontFace\s*\(\s*\{/g },
+		{ name: "globalStyle", kind: "global", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
+		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "fontFace", kind: "font-face", regex: /\bfontFace\s*\(\s*\{/g },
 	],
 	packages: dependency("@vanilla-extract/css", "runtime"),
 	capabilities: allRuleCapabilities("vanilla-extract", "unsupported", {
@@ -16,6 +16,7 @@ export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 	sourceModules: ["@vanilla-extract/css"],
+	configFiles: ["package.json"],
 	sourceObjectOptions: (source) => {
 		const variables = [
 			...source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createVar\b/g),
@@ -31,7 +32,7 @@ export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
 				.map((name) => [name, `var(--pw-${name})`]),
 		);
 		return {
-			unwrapNestedObjectKeys: ["vars"],
+			unwrapNestedObjectKeys: ["vars", "selectors"],
 			computedKeys,
 			dynamicReferences,
 		};
@@ -64,4 +65,4 @@ export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
 			imports: ['import { style } from "@vanilla-extract/css";'],
 		};
 	},
-};
+});

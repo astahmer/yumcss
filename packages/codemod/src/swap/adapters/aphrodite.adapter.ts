@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const APHRODITE = makeExtraAdapter({
+const aphrodite = makeExtraAdapter({
 	id: "aphrodite",
 	modules: ["aphrodite"],
 	packages: { packages: [{ name: "aphrodite", kind: "runtime" }] },
@@ -10,3 +10,5 @@ export const APHRODITE = makeExtraAdapter({
 	namedObjects: true,
 	sourceObjectOptions: { arrayRuleKinds: { fontFamily: "font-face" } },
 });
+
+export default aphrodite;

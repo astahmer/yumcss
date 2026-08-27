@@ -1,9 +1,10 @@
 import {
 	allRuleCapabilities,
+	defineCodemodAdapter,
 	dependency,
-	type AdapterDefinition,
 	type AdapterRenderers,
-} from "./definition.ts";
+} from "../external-adapters.ts";
+import type { AdapterEmitContext } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
@@ -35,7 +36,7 @@ function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgr
 function runtimeComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
-	context: Parameters<NonNullable<AdapterDefinition["emit"]>>[2] | undefined,
+	context: AdapterEmitContext | undefined,
 ): { text: string; imports: readonly string[] } | undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
@@ -126,12 +127,12 @@ function stitchesRecipeObject(
 	return `{ base: ${base}, variants: { ${variantText.join(", ")} } }`;
 }
 
-export const PANDWIND_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "pandwind",
 	patterns: [
 		{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
 		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
-		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g },
+		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
 	],
 	packages: dependency("pandwind", "runtime"),
 	capabilities: allRuleCapabilities("pandwind", "exact", {
@@ -140,6 +141,7 @@ export const PANDWIND_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
+	configFiles: ["pandwind.config.ts", "package.json"],
 	emit(program, { programObject, declarationsObject }, context) {
 		const kind = program.rules[0]?.kind;
 		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
@@ -219,4 +221,4 @@ export const PANDWIND_DEFINITION: AdapterDefinition = {
 					: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 		};
 	},
-};
+});

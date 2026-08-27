@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const COMPILED = makeExtraAdapter({
+const compiled = makeExtraAdapter({
 	id: "compiled",
 	modules: ["@compiled/react", "@compiled/css-in-js"],
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
@@ -11,3 +11,5 @@ export const COMPILED = makeExtraAdapter({
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
 });
+
+export default compiled;

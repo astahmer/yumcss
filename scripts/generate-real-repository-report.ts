@@ -4,16 +4,16 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
 import {
-	REAL_REPOSITORY_CORPUS,
-	REAL_REPOSITORY_REFERENCES,
-	getExternalAdapter,
+	createRealRepositoryCorpus,
+	getCodemodAdapter,
 	runAdapterMigration,
 	runPandaMigration,
 } from "../packages/codemod/src/swap/index.ts";
 
 const referenceRoot = "/Users/astahmer/.references";
+const corpus = createRealRepositoryCorpus();
 
-function readPinnedReference(reference: (typeof REAL_REPOSITORY_REFERENCES)[number]): string {
+function readPinnedReference(reference: (typeof corpus.references)[number]): string {
 	const actualCommit = execFileSync(
 		"git",
 		["-C", join(referenceRoot, reference.clone), "rev-parse", "HEAD"],
@@ -67,8 +67,8 @@ function dependencyNames(value: readonly { packages: readonly { name: string }[]
 
 const reports = [] as Array<Record<string, unknown>>;
 const fixtures = [
-	...REAL_REPOSITORY_CORPUS,
-	...REAL_REPOSITORY_REFERENCES.map((reference) => ({
+	...corpus.inline,
+	...corpus.references.map((reference) => ({
 		...reference,
 		source: readPinnedReference(reference),
 	})),
@@ -110,7 +110,7 @@ for (const fixture of fixtures) {
 			rmSync(root, { recursive: true, force: true });
 		}
 	} else {
-		const sourceAdapter = getExternalAdapter(fixture.from);
+		const sourceAdapter = getCodemodAdapter(fixture.from);
 		if (sourceAdapter === undefined) throw new Error(`missing adapter ${fixture.from}`);
 		const detected = sourceAdapter.detect({ file: fixture.path, source: fixture.source });
 		detection = detected;
@@ -179,7 +179,7 @@ console.log(
 			schema: "pandwind.real-repository-report/2",
 			generatedFrom: "scripts/generate-real-repository-report.ts",
 			cloneRoot: referenceRoot,
-			sourceFiles: REAL_REPOSITORY_REFERENCES.length,
+			sourceFiles: corpus.references.length,
 			reports,
 			bundleImpact: {
 				measured: false,

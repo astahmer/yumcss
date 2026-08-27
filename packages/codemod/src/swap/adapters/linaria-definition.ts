@@ -1,11 +1,12 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 
-export const LINARIA_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "linaria",
 	patterns: [
 		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{
 			name: "linaria-styled",
+			kind: "styled",
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
@@ -26,6 +27,7 @@ export const LINARIA_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["@linaria/core", "@linaria/react"],
+	configFiles: ["linaria.config.js", "package.json"],
 	emit(program, { templateCss }) {
 		const text = templateCss(program);
 		return program.source?.subject !== undefined
@@ -35,4 +37,4 @@ export const LINARIA_DEFINITION: AdapterDefinition = {
 				}
 			: { text: `css\`${text}\``, imports: ['import { css } from "@linaria/core";'] };
 	},
-};
+});

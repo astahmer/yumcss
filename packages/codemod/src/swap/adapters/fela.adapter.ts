@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const FELA = makeExtraAdapter({
+const fela = makeExtraAdapter({
 	id: "fela",
 	modules: ["fela", "react-fela"],
 	packages: {
@@ -13,3 +13,5 @@ export const FELA = makeExtraAdapter({
 	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
 });
+
+export default fela;

@@ -1,23 +1,23 @@
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_PLUGIN_SCHEMA,
-	EXTERNAL_ADAPTER_REGISTRY,
-	EXTERNAL_ADAPTERS,
+	createBuiltinCodemodCatalog,
 	createStyleAdapterPlugin,
 	createStyleAdapterRegistry,
 	readAdapterPackageDeclaration,
-	getExternalAdapter,
+	getCodemodAdapter,
 } from "../src/swap/index.ts";
 
 describe("third-party adapter registry", () => {
 	test("discovers a plugin module and projects it into migration routes", async () => {
 		const registry = createStyleAdapterRegistry();
-		const plugin = createStyleAdapterPlugin("test-plugin", [EXTERNAL_ADAPTERS.emotion!]);
+		const emotion = createBuiltinCodemodCatalog().registry.get("emotion")!;
+		const plugin = createStyleAdapterPlugin("test-plugin", [emotion]);
 		expect(plugin.schema).toBe(ADAPTER_PLUGIN_SCHEMA);
 		expect(plugin.manifest.adapters[0]?.id).toBe("emotion");
 		const results = await registry.discover(["test-plugin"], { load: async () => plugin });
 		expect(results[0]).toMatchObject({ registered: ["emotion"], errors: [] });
-		expect(registry.get("emotion")).toBe(EXTERNAL_ADAPTERS.emotion);
+		expect(registry.get("emotion")).toBe(emotion);
 		expect(registry.toStyleSystemRegistry().resolveRoute("emotion", "emotion").target.id).toBe(
 			"emotion",
 		);
@@ -29,7 +29,9 @@ describe("third-party adapter registry", () => {
 				pandwind: { plugin: "./dist/plugin.js", manifest: "./dist/manifest.json" },
 			}),
 		).toEqual({ plugin: "./dist/plugin.js", manifest: "./dist/manifest.json" });
-		const plugin = createStyleAdapterPlugin("bad-manifest", [EXTERNAL_ADAPTERS.emotion!]);
+		const plugin = createStyleAdapterPlugin("bad-manifest", [
+			createBuiltinCodemodCatalog().registry.get("emotion")!,
+		]);
 		const registry = createStyleAdapterRegistry();
 		expect(() =>
 			registry.registerPlugin({
@@ -43,17 +45,20 @@ describe("third-party adapter registry", () => {
 	});
 
 	test("ships expanded ecosystem adapters as ordinary registry entries", () => {
-		expect(EXTERNAL_ADAPTER_REGISTRY.get("fela")).toBeDefined();
-		expect(EXTERNAL_ADAPTER_REGISTRY.get("goober")).toBeDefined();
-		expect(EXTERNAL_ADAPTER_REGISTRY.get("aphrodite")).toBeDefined();
-		expect(getExternalAdapter("fela")?.dependencies.packages[0]?.name).toBe("fela");
-		expect(EXTERNAL_ADAPTER_REGISTRY.get("compiled")).toBeDefined();
-		expect(EXTERNAL_ADAPTER_REGISTRY.get("react-native")).toBeDefined();
+		const registry = createBuiltinCodemodCatalog().registry;
+		expect(registry.get("fela")).toBeDefined();
+		expect(registry.get("goober")).toBeDefined();
+		expect(registry.get("aphrodite")).toBeDefined();
+		expect(getCodemodAdapter("fela")?.dependencies.packages[0]?.name).toBe("fela");
+		expect(registry.get("compiled")).toBeDefined();
+		expect(registry.get("react-native")).toBeDefined();
 	});
 
 	test("discovers only dependencies that advertise the package contract", async () => {
 		const registry = createStyleAdapterRegistry();
-		const plugin = createStyleAdapterPlugin("declared-plugin", [EXTERNAL_ADAPTERS.emotion!]);
+		const plugin = createStyleAdapterPlugin("declared-plugin", [
+			createBuiltinCodemodCatalog().registry.get("emotion")!,
+		]);
 		const results = await registry.discoverPackages(
 			{
 				dependencies: { "declared-adapter": "1.0.0", unrelated: "1.0.0" },

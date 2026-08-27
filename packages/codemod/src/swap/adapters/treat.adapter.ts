@@ -1,6 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 
-export const TREAT = makeExtraAdapter({
+const treat = makeExtraAdapter({
 	id: "treat",
 	modules: ["@/styles.treat", "treat"],
 	packages: { packages: [{ name: "treat", kind: "development" }] },
@@ -8,3 +8,5 @@ export const TREAT = makeExtraAdapter({
 	call: /\bstyle\s*\(\s*\{/g,
 	prefix: "style(",
 });
+
+export default treat;

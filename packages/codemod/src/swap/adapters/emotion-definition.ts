@@ -1,18 +1,23 @@
-import { allRuleCapabilities, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
 
-export const EMOTION_DEFINITION: AdapterDefinition = {
+export default defineCodemodAdapter({
 	id: "emotion",
 	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
-		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
+		{
+			name: "styled",
+			kind: "styled",
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
+		},
 		{
 			name: "styled-template",
+			kind: "styled",
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
-		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
+		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "global", kind: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 	],
 	packages: {
 		packages: [
@@ -34,6 +39,7 @@ export const EMOTION_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
 	sourceModules: ["@emotion/css", "@emotion/react", "@emotion/styled"],
+	configFiles: [".emotionrc", "emotion.config.js", "package.json"],
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -56,4 +62,4 @@ export const EMOTION_DEFINITION: AdapterDefinition = {
 			imports: ['import { css } from "@emotion/css";'],
 		};
 	},
-};
+});
