@@ -139,4 +139,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(font.matches[0]?.program.rules[0]?.kind).toBe("font-face");
 	});
+
+	test("round-trips an ordered multi-selector global program across adapters", () => {
+		for (const target of ["emotion", "styled-components", "vanilla-extract", "stitches"] as const) {
+			const result = runAdapterMigration(
+				`import { globalCss } from "@stitches/react";\n` +
+					`globalCss({ body: { margin: 0 }, button: { color: "red" } });`,
+				{ from: "stitches", to: target, file: "global.ts", mode: "safe" },
+			);
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("body");
+			expect(result.code).toContain("button");
+		}
+	});
 });

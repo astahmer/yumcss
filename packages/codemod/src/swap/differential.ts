@@ -11,6 +11,7 @@ import type {
 } from "./adapter-contract.ts";
 import { getExternalAdapter } from "./external-adapters.ts";
 import {
+	styleProgramFromRules,
 	styleProgramToCanonicalCss,
 	type StyleProgram,
 	type StyleProgramResidual,
@@ -20,6 +21,20 @@ export interface DifferentialBrowserState {
 	readonly name: string;
 	readonly source: (program: StyleProgram) => string;
 	readonly target: (program: StyleProgram) => string;
+}
+
+function mergeParsedPrograms(
+	programs: readonly StyleProgram[],
+	residuals: readonly StyleProgramResidual[],
+): StyleProgram | undefined {
+	if (programs.length === 0) return undefined;
+	return styleProgramFromRules(
+		programs.flatMap((program) => program.rules),
+		{
+			source: programs[0]?.source,
+			residuals: [...residuals, ...programs.flatMap((program) => program.residuals)],
+		},
+	);
 }
 
 export interface DifferentialRender {
@@ -176,7 +191,10 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		root: fixture.root,
 		config: targetConfig,
 	});
-	const targetProgram = targetParsed.matches[0]?.program;
+	const targetProgram = mergeParsedPrograms(
+		targetParsed.matches.map((match) => match.program),
+		targetParsed.residuals,
+	);
 	const differences: string[] = [];
 	if (targetProgram === undefined)
 		differences.push("target emission is not parseable by its adapter");

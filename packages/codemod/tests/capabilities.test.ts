@@ -65,4 +65,33 @@ describe("semantic adapter capability contracts", () => {
 		);
 		expect(staticReport.convertible).toBe(true);
 	});
+
+	test("inspects dynamic values nested in rule-level children", () => {
+		const nested: StyleProgram = {
+			...program,
+			declarations: [],
+			rules: [
+				{
+					kind: "keyframes",
+					name: "fade",
+					conditions: [],
+					declarations: [],
+					children: [
+						{
+							kind: "style",
+							selector: "from",
+							conditions: [],
+							declarations: [program.declarations[0]!],
+							children: [],
+							order: 0,
+						},
+					],
+					order: 0,
+				},
+			],
+		};
+		expect(requiredAdapterCapabilities(nested).map((item) => item.capability)).toContain(
+			"dynamic-values",
+		);
+	});
 });

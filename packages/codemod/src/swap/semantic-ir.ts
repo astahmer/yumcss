@@ -291,40 +291,115 @@ function renderDeclarations(declarations: readonly StyleDeclaration[]): string {
 		.join(";");
 }
 
+function wrapConditions(body: string, conditions: readonly StyleCondition[]): string {
+	return conditions.reduceRight(
+		(current, condition) => `${cssCondition(condition)}{${current}}`,
+		body,
+	);
+}
+
+function conditionedSelector(
+	rule: StyleRule,
+	conditions: readonly StyleCondition[],
+): { selector: string; wrappers: StyleCondition[] } {
+	let selector = rule.selector ?? (rule.kind === "global" ? "*" : "&");
+	const wrappers: StyleCondition[] = [];
+	for (const condition of conditions) {
+		if (
+			condition.kind === "media" ||
+			condition.kind === "container" ||
+			condition.kind === "supports"
+		) {
+			wrappers.push(condition);
+			continue;
+		}
+		const selectorValue =
+			condition.kind === "pseudo"
+				? (condition.value ?? condition.name)
+				: (condition.value ?? condition.raw ?? condition.name);
+		if (selectorValue.includes("&")) selector = selectorValue.replaceAll("&", selector);
+		else if (condition.kind === "pseudo")
+			selector += selectorValue.startsWith(":") ? selectorValue : `:${selectorValue}`;
+		else if (condition.kind === "selector") selector += selectorValue;
+		else selector += `:${selectorValue}`;
+	}
+	return { selector, wrappers };
+}
+
 /**
  * Canonical CSS-ish serialization used by adapter differential tests. It is
  * intentionally structural and stable, not a browser CSS minifier.
  */
 export function styleProgramToCanonicalCss(program: StyleProgram): string {
-	const render = (rule: StyleRule): string => {
-		const declarations = renderDeclarations(rule.declarations);
-		const children = rule.children.map(render).join("");
+	const renderBase = (
+		rule: StyleRule,
+		declarations: readonly StyleDeclaration[],
+		children: readonly StyleRule[],
+		selector = rule.selector,
+	): string => {
+		const declarationText = renderDeclarations(declarations);
+		const childrenText = children.map(render).join("");
 		switch (rule.kind) {
 			case "style":
-				return `${rule.selector ?? "&"}{${declarations}${children}}`;
+				return `${selector ?? "&"}{${declarationText}${childrenText}}`;
 			case "global":
-				return `${rule.selector ?? "*"}{${declarations}${children}}`;
+				return `${selector ?? "*"}{${declarationText}${childrenText}}`;
 			case "keyframes":
-				return `@keyframes ${rule.name ?? ""}{${declarations}${children}}`;
+				return `@keyframes ${rule.name ?? ""}{${declarationText}${childrenText}}`;
 			case "font-face":
-				return `@font-face{${declarations}${children}}`;
+				return `@font-face{${declarationText}${childrenText}}`;
 			case "layer":
-				return `@layer ${rule.layer ?? rule.name ?? ""}{${declarations}${children}}`;
+				return `@layer ${rule.layer ?? rule.name ?? ""}{${declarationText}${childrenText}}`;
 			case "supports":
-				return `@supports ${rule.name ?? ""}{${declarations}${children}}`;
+				return `@supports ${rule.name ?? ""}{${declarationText}${childrenText}}`;
 			case "property":
-				return `@property ${rule.name ?? ""}{${declarations}${children}}`;
+				return `@property ${rule.name ?? ""}{${declarationText}${childrenText}}`;
 		}
 	};
-	return orderStyleRules(program.rules)
-		.map((rule) => {
-			const base = render(rule);
-			return rule.conditions.reduceRight(
-				(body, condition) => `${cssCondition(condition)}{${body}}`,
-				base,
+	const render = (rule: StyleRule): string => {
+		const rootDeclarations = rule.declarations.filter(
+			(declaration) => declaration.conditions.length === 0,
+		);
+		const baseConditions = rule.conditions;
+		let base: string;
+		if (rule.kind === "style" || rule.kind === "global") {
+			const resolved = conditionedSelector(rule, baseConditions);
+			base = renderBase(rule, rootDeclarations, rule.children, resolved.selector);
+			base = wrapConditions(base, resolved.wrappers);
+		} else {
+			base = wrapConditions(renderBase(rule, rootDeclarations, rule.children), baseConditions);
+		}
+		const groups = new Map<
+			string,
+			{ conditions: StyleCondition[]; declarations: StyleDeclaration[] }
+		>();
+		for (const declaration of rule.declarations) {
+			if (declaration.conditions.length === 0) continue;
+			const key = JSON.stringify(declaration.conditions);
+			const group = groups.get(key) ?? {
+				conditions: [...declaration.conditions],
+				declarations: [],
+			};
+			group.declarations.push({ ...declaration, conditions: [] });
+			groups.set(key, group);
+		}
+		const conditional = [...groups.values()].map((group) => {
+			const conditions = [...baseConditions, ...group.conditions];
+			if (rule.kind === "style" || rule.kind === "global") {
+				const resolved = conditionedSelector(rule, conditions);
+				return wrapConditions(
+					renderBase({ ...rule, children: [] }, group.declarations, [], resolved.selector),
+					resolved.wrappers,
+				);
+			}
+			return wrapConditions(
+				renderBase({ ...rule, children: [] }, group.declarations, []),
+				conditions,
 			);
-		})
-		.join("");
+		});
+		return base + conditional.join("");
+	};
+	return orderStyleRules(program.rules).map(render).join("");
 }
 
 interface SourceNode {

@@ -130,7 +130,13 @@ export function requiredAdapterCapabilities(
 		if (rule.selector !== undefined) add("selectors", `selector: ${rule.selector}`);
 		if (rule.children.length > 0) add("nesting", `${rule.kind} nested rules`);
 	}
-	for (const declaration of program.declarations) {
+	const declarations =
+		program.rules.length === 0
+			? program.declarations
+			: program.rules.flatMap(function collect(rule): StyleProgram["declarations"] {
+					return [...rule.declarations, ...rule.children.flatMap(collect)];
+				});
+	for (const declaration of declarations) {
 		for (const condition of declaration.conditions) {
 			add(conditionCapability(condition.kind), `${condition.kind}: ${condition.name}`);
 		}

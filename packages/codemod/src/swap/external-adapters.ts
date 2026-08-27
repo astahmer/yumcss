@@ -242,6 +242,13 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 
 function programObject(program: StyleProgram): string {
 	if (program.rules.length === 1) return ruleObject(program.rules[0]!);
+	if (program.rules.every((rule) => rule.kind === "global")) {
+		const root = objectNode();
+		for (const rule of program.rules) {
+			root.entries.push([rule.selector ?? "*", declarationsObject(rule.declarations)]);
+		}
+		return renderObjectNode(root);
+	}
 	const root = objectNode();
 	for (const rule of program.rules) {
 		if (rule.kind === "style") {
@@ -461,7 +468,11 @@ function parseCalls(
 					start,
 					sourceName(source, start, fallbackName),
 				);
-			} else if (pattern.name === "global" || pattern.name === "globalCss") {
+			} else if (
+				pattern.name === "global" ||
+				pattern.name === "globalCss" ||
+				pattern.name === "createGlobalStyle"
+			) {
 				program = parseGlobalProgram(block.body, context, start);
 			} else {
 				const base = styleProgramFromSourceObject(block.body, {
@@ -591,7 +602,7 @@ const STYLED_COMPONENTS = adapter(
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
-		{ name: "globalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
+		{ name: "createGlobalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	dependency("styled-components", "peer"),
@@ -633,11 +644,18 @@ const VANILLA_EXTRACT = adapter(
 				text: `keyframes(${programObject(program)})`,
 				imports: ['import { keyframes } from "@vanilla-extract/css";'],
 			};
-		if (kind === "global")
+		if (kind === "global") {
 			return {
-				text: `globalStyle(${JSON.stringify(globalSelector(program))}, ${declarationsObject(program.rules[0]!.declarations)})`,
+				text: program.rules
+					.filter((rule) => rule.kind === "global")
+					.map(
+						(rule) =>
+							`globalStyle(${JSON.stringify(rule.selector ?? "*")}, ${declarationsObject(rule.declarations)})`,
+					)
+					.join("; "),
 				imports: ['import { globalStyle } from "@vanilla-extract/css";'],
 			};
+		}
 		if (kind === "font-face")
 			return {
 				text: `fontFace(${programObject(program)})`,

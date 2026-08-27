@@ -5,38 +5,86 @@ import {
 	styleProgramToCanonicalCss,
 	type DifferentialRender,
 } from "../src/swap/index.ts";
+import type { StyleProgram } from "../src/swap/semantic-ir.ts";
+import { createRuntimeSheet } from "pandwind/css/runtime";
 
-const render = (program: Parameters<typeof styleProgramToCanonicalCss>[0]): DifferentialRender => ({
-	html: `<div data-style="${styleProgramToCanonicalCss(program)}"></div>`,
-	css: styleProgramToCanonicalCss(program),
-});
+function runtimeCss(program: StyleProgram): string {
+	const value = (input: StyleProgram["declarations"][number]["value"]): string => {
+		if (input.kind === "token") return input.authored;
+		if (input.kind === "dynamic") return input.expression;
+		return String(input.value);
+	};
+	const condition = (input: StyleProgram["rules"][number]["conditions"][number]): string => {
+		if (input.kind === "media" || input.kind === "container" || input.kind === "supports")
+			return `@${input.kind} ${input.value ?? input.name}`;
+		return input.value ?? input.raw ?? input.name;
+	};
+	const runtimeRule = (
+		rule: StyleProgram["rules"][number],
+	): Parameters<ReturnType<typeof createRuntimeSheet>["registerSemanticRules"]>[0][number] => ({
+		kind: rule.kind,
+		name: rule.name,
+		selector: rule.selector,
+		layer: rule.layer,
+		conditions: rule.conditions.map(condition),
+		declarations: rule.declarations.map((declaration) => ({
+			property: declaration.property,
+			value: value(declaration.value),
+		})),
+		children: rule.children.map(runtimeRule),
+	});
+	const sheet = createRuntimeSheet({ autoMount: false });
+	sheet.registerSemanticRules(program.rules.map(runtimeRule));
+	return sheet.css();
+}
 
 describe("CSS-in-JS differential validation", () => {
 	test("compares canonical CSS, browser states, SSR, and hydration", () => {
-		const result = runDifferentialFixture({
-			name: "emotion-to-styled-components",
-			sourceAdapter: "emotion",
-			targetAdapter: "styled-components",
-			file: "Card.tsx",
-			source: `import { css } from "@emotion/css";\nconst card = css({ color: "red", "&:hover": { color: "blue" } });`,
-			browserStates: [
-				{
-					name: "default",
-					source: styleProgramToCanonicalCss,
-					target: styleProgramToCanonicalCss,
-				},
+		for (const [name, sourceAdapter, targetAdapter, source] of [
+			[
+				"emotion-to-styled-components",
+				"emotion",
+				"styled-components",
+				`import { css } from "@emotion/css";\nconst card = css({ color: "red", "&:hover": { color: "blue" } });`,
 			],
-			ssr: {
-				source: { render, hydrate: (server) => server },
-				target: { render, hydrate: (server) => server },
-			},
-		});
+			[
+				"stitches-to-emotion",
+				"stitches",
+				"emotion",
+				`import { css } from "@stitches/react";\nconst card = css({ color: "red", "&:hover": { color: "blue" } });`,
+			],
+		] as const) {
+			const result = runDifferentialFixture({
+				name,
+				sourceAdapter,
+				targetAdapter,
+				file: "Card.tsx",
+				source,
+				browserStates: [{ name: "mounted-runtime-sheet", source: runtimeCss, target: runtimeCss }],
+				ssr: {
+					source: {
+						render: (program) => ({
+							html: `<div data-css="${runtimeCss(program)}"></div>`,
+							css: runtimeCss(program),
+						}),
+						hydrate: (server) => server,
+					},
+					target: {
+						render: (program) => ({
+							html: `<div data-css="${runtimeCss(program)}"></div>`,
+							css: runtimeCss(program),
+						}),
+						hydrate: (server) => server,
+					},
+				},
+			});
 
-		expect(result.valid).toBe(true);
-		expect(result.canonicalSource).toBe(result.canonicalTarget);
-		expect(result.browser[0]?.valid).toBe(true);
-		expect(result.ssr?.valid).toBe(true);
-		expect(result.residuals).toEqual([]);
+			expect(result.valid).toBe(true);
+			expect(result.canonicalSource).toBe(result.canonicalTarget);
+			expect(result.browser[0]?.valid).toBe(true);
+			expect(result.ssr?.valid).toBe(true);
+			expect(result.residuals).toEqual([]);
+		}
 	});
 
 	test("returns actionable residuals when a target cannot represent dynamics", () => {

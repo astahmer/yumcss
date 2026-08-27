@@ -102,6 +102,9 @@ describe("versioned semantic style-program IR", () => {
 		});
 		expect(program.residuals).toEqual([]);
 		expect(inferSemanticConditionKind("@supports (display: grid)")).toBe("supports");
+		expect(styleProgramToCanonicalCss(program)).toBe(
+			"&{color:theme.foreground}&:hover{backgroundColor:palette.accent}@media (min-width: 40rem){&{opacity:0.8}}",
+		);
 	});
 
 	test("preserves rule-level CSS constructs and canonical ordering", () => {
