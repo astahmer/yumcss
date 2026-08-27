@@ -15,8 +15,7 @@
  * - idempotent: converted output no longer matches any detector, flagged
  *   regions are skipped via the marker.
  */
-import { parseSync } from "oxc-parser";
-import { walk, type OxcNode } from "pandwind/tw/literal";
+import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
 import type { PandwindMeta } from "./meta.ts";
 import { mapToken } from "./map.ts";
 import type { MappedToken } from "./map.ts";
@@ -204,70 +203,7 @@ export function computeExcludedRanges(
 	source: string,
 	file: string,
 ): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
-	const parsed = parseSync(file, source, {
-		sourceType: "module",
-		lang: file.endsWith(".tsx") ? "tsx" : "ts",
-	});
-	const excluded: Array<[number, number]> = [];
-	for (const comment of (
-		parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }
-	).comments ?? []) {
-		if (typeof comment.start === "number" && typeof comment.end === "number") {
-			excluded.push([comment.start, comment.end]);
-		}
-	}
-	// Tagged templates whose tag is a supported CSS-in-JS authoring function are
-	// CODE the detector may act on — their quasi is exempted from the mask.
-	const supportedStyleQuasis: Array<[number, number]> = [];
-	walk(parsed.program as unknown as OxcNode, (node) => {
-		const n = node as {
-			type?: string;
-			start?: number;
-			end?: number;
-			tag?: { start?: number; end?: number };
-			quasi?: { start?: number; end?: number };
-		};
-		if (typeof n.start !== "number" || typeof n.end !== "number") return;
-		if (n.type === "Comment") {
-			excluded.push([n.start, n.end]);
-			return;
-		}
-		if (n.type === "TaggedTemplateExpression" && n.tag !== undefined) {
-			const tagText = source.slice(n.tag.start ?? 0, n.tag.end ?? 0);
-			const quasi = n.quasi;
-			if (
-				/^\s*(?:styled\b|css\b)/.test(tagText) &&
-				typeof quasi?.start === "number" &&
-				typeof quasi.end === "number"
-			) {
-				supportedStyleQuasis.push([quasi.start, quasi.end]);
-			}
-			return;
-		}
-		if (n.type === "Literal" || n.type === "TemplateLiteral") {
-			excluded.push([n.start, n.end]);
-		}
-	});
-	// Drop exemptions from the mask.
-	const filtered = excluded.filter(
-		([start, end]) => !supportedStyleQuasis.some(([qs, qe]) => start >= qs && end <= qe),
-	);
-	filtered.sort((a, b) => a[0] - b[0]);
-	return {
-		excluded: filtered,
-		isExcluded(start: number): boolean {
-			let lo = 0;
-			let hi = filtered.length - 1;
-			while (lo <= hi) {
-				const mid = (lo + hi) >> 1;
-				const [s, e] = filtered[mid]!;
-				if (start < s) hi = mid - 1;
-				else if (start >= e) lo = mid + 1;
-				else return true;
-			}
-			return false;
-		},
-	};
+	return scanExcludedRanges(source, file);
 }
 
 function transformStyledComponents(

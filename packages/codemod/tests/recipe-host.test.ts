@@ -70,6 +70,6 @@ describe("recipe and host-framework pivot semantics", () => {
 			mergeClass: (_existing, generated) => `class={${generated}}`,
 		};
 		const registry = createHostFrameworkRegistry().register(adapter);
-		expect(registry.detect("Card.tsx", "").id).toBe("qwik");
+		expect(registry.detect("Card.tsx", "")?.id).toBe("qwik");
 	});
 });

@@ -16,6 +16,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
+import { STYLE_VALIDATORS, type StyleValidatorRegistry } from "./validator-registry.ts";
 
 export interface DifferentialBrowserState {
 	readonly name: string;
@@ -63,6 +64,7 @@ export interface DifferentialFixture {
 	readonly mode?: AdapterCapabilityMode;
 	readonly browserStates?: readonly DifferentialBrowserState[];
 	readonly ssr?: DifferentialSsrHooks;
+	readonly validators?: StyleValidatorRegistry;
 }
 
 export interface DifferentialBrowserResult {
@@ -211,11 +213,12 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		targetProgram === undefined ? "" : styleProgramToCanonicalCss(targetProgram);
 	if (canonicalSource !== canonicalTarget) differences.push("canonical CSS differs");
 	if (residuals.length > 0) differences.push(`${residuals.length} residual conversion(s)`);
-	const validation = targetAdapter.validate(
-		sourceProgram,
-		targetProgram ?? sourceProgram,
+	const validation = (fixture.validators ?? STYLE_VALIDATORS).validate({
+		source: sourceProgram,
+		target: targetProgram ?? sourceProgram,
 		residuals,
-	);
+		fixture: fixture.name,
+	});
 	const browser = (fixture.browserStates ?? []).map((state) => {
 		const source = state.source(sourceProgram);
 		const target = state.target(targetProgram ?? sourceProgram);

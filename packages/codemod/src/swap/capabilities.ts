@@ -28,7 +28,12 @@ export type AdapterCapability =
 	| "host-framework"
 	| "ssr"
 	| "hydration"
-	| "browser-differential";
+	| "browser-differential"
+	| "theme-context"
+	| "composition"
+	| "runtime-context"
+	| "plugin-transforms"
+	| "framework-semantics";
 
 export type AdapterCapabilityLevel = "exact" | "partial" | "unsupported";
 export type AdapterCapabilityMode = "safe" | "partial";
@@ -147,6 +152,15 @@ export function requiredAdapterCapabilities(
 			add("dynamic-values", `dynamic: ${dynamicDetail(declaration.value)}`);
 		}
 	}
+	if ((program.themes?.length ?? 0) > 0)
+		add("theme-context", `${program.themes?.length ?? 0} theme binding(s)`);
+	if ((program.compositions?.length ?? 0) > 0)
+		add("composition", `${program.compositions?.length ?? 0} composition edge(s)`);
+	if (program.runtime !== undefined) add("runtime-context", `${program.runtime.phase} runtime`);
+	if ((program.plugins?.length ?? 0) > 0)
+		add("plugin-transforms", `${program.plugins?.length ?? 0} plugin transform(s)`);
+	if (program.source?.framework !== undefined)
+		add("framework-semantics", program.source.framework);
 	return requirements;
 }
 

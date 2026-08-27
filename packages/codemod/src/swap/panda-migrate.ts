@@ -15,7 +15,7 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
-import { parseSync } from "oxc-parser";
+import { parseSourceProgram } from "pandwind/source";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../meta.ts";
 import { applyEdits } from "../migrate.ts";
@@ -1102,10 +1102,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	// a bad emitter from leaving a partially migrated project behind.
 	for (const e of emitted) {
 		try {
-			parseSync(e.path, e.content, {
-				sourceType: "module",
-				lang: e.path.endsWith(".tsx") ? "tsx" : "ts",
-			});
+			parseSourceProgram({ file: e.path, source: e.content });
 		} catch (error) {
 			report.notes.push(
 				`refusing invalid generated module ${relative(projectRoot, e.path)}: ${(error as Error).message}`,
@@ -1271,10 +1268,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
 		next = removeUnusedFactoryImports(next);
 		try {
-			parseSync(file.path, next, {
-				sourceType: "module",
-				lang: file.path.endsWith(".tsx") ? "tsx" : "ts",
-			});
+			parseSourceProgram({ file: file.path, source: next });
 		} catch (error) {
 			report.notes.push(
 				`refusing invalid rewrite ${relative(projectRoot, file.path)}: ${(error as Error).message}`,

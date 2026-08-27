@@ -28,7 +28,8 @@
  */
 import { readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, resolve } from "node:path";
-import { type Expression, parseSync } from "oxc-parser";
+import { type Expression } from "oxc-parser";
+import { parseSourceProgram } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
@@ -51,10 +52,7 @@ export interface ImportBinding {
 }
 
 function parseProgram(code: string, id: string): OxcNode {
-	const result = parseSync(id, code, {
-		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
-	}) as unknown as { program: OxcNode };
+	const result = parseSourceProgram({ file: id, source: code }) as unknown as { program: OxcNode };
 	return result.program;
 }
 

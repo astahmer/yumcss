@@ -42,7 +42,8 @@
  * space-joined string the runtime would push entry-by-entry; `css.raw(...)`
  * stays dynamic (it yields a style map, not classes).
  */
-import { type Expression, parseSync } from "oxc-parser";
+import { type Expression } from "oxc-parser";
+import { parseSourceProgram } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import { createCx, type CxInput } from "../cx/index.ts";
 import { ATOM_REGISTRY } from "../css/atoms.ts";
@@ -392,10 +393,7 @@ export function findCxImports(
 	id: string,
 	isCxSource: (source: string) => boolean,
 ): CxImportInfo {
-	const result = parseSync(id, code, {
-		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
-	});
+	const result = parseSourceProgram({ file: id, source: code });
 	const info: CxImportInfo = { localNames: new Set(), sources: [] };
 
 	// Queue (not stack) so import declarations are visited in source order.
@@ -630,10 +628,7 @@ export function inlineCxCalls(
 	const enableConstants = options.constants !== false;
 	const enablePartialFold = options.partialFold !== false;
 
-	const result = parseSync(id, code, {
-		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
-	});
+	const result = parseSourceProgram({ file: id, source: code });
 	const consts = enableConstants
 		? mergeImported(
 				result.program as unknown as OxcNode,

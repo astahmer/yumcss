@@ -41,6 +41,10 @@ function mergePrograms(programs: readonly StyleProgram[]): StyleProgram | undefi
 		declarations: present.flatMap((program) => program.declarations),
 		residuals: present.flatMap((program) => program.residuals),
 		source: first.source,
+		themes: present.flatMap((program) => program.themes ?? []),
+		compositions: present.flatMap((program) => program.compositions ?? []),
+		runtime: present.find((program) => program.runtime !== undefined)?.runtime,
+		plugins: present.flatMap((program) => program.plugins ?? []),
 	};
 }
 

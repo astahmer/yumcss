@@ -39,6 +39,8 @@ import {
 	createStyleSystemRegistry,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
+import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
+import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
 import { createSourceScannerRegistry } from "./source-scanner.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
@@ -982,7 +984,13 @@ export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>
 	stitches: STITCHES,
 	linaria: LINARIA,
 	jss: JSS,
+	...Object.fromEntries(EXTRA_ADAPTERS.map((adapter) => [adapter.id, adapter])),
 };
+
+/** Built-ins are merely the default plugin set; consumers may derive a registry and discover more. */
+export const EXTERNAL_ADAPTER_REGISTRY: StyleAdapterRegistry = createStyleAdapterRegistry(
+	Object.values(EXTERNAL_ADAPTERS),
+);
 
 const externalDialect = (registeredAdapter: StyleAdapter) =>
 	asStyleDialect(registeredAdapter, {
@@ -1019,6 +1027,8 @@ export interface AdapterMigrationOptions {
 	readonly skipMarker?: string;
 	/** Optional registry for third-party or core dialect routes. */
 	readonly registry?: StyleSystemRegistry;
+	/** Optional adapter registry, including adapters discovered from plugins. */
+	readonly adapterRegistry?: StyleAdapterRegistry;
 }
 
 export interface AdapterMigrationResult {
@@ -1037,7 +1047,11 @@ export function runAdapterMigration(
 	source: string,
 	options: AdapterMigrationOptions,
 ): AdapterMigrationResult {
-	const route = (options.registry ?? EXTERNAL_STYLE_SYSTEMS).resolveRoute(options.from, options.to);
+	const adapterRegistry = options.adapterRegistry ?? EXTERNAL_ADAPTER_REGISTRY;
+	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
+		options.from,
+		options.to,
+	);
 	const sourceAdapter = route.source;
 	const targetAdapter = route.target;
 	const detection = sourceAdapter.detect({

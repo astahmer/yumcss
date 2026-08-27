@@ -8,7 +8,8 @@
  * `createStylesheet` instance. The generated CSS is served as a virtual
  * module, so no runtime stylesheet accumulation is needed for static calls.
  */
-import { type Expression, parseSync } from "oxc-parser";
+import { type Expression } from "oxc-parser";
+import { parseSourceProgram } from "../source-scanner.ts";
 import { createCss } from "../css/create-css.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
@@ -20,6 +21,9 @@ import type {
 	DefinePresetOptions,
 	StyleObject,
 } from "../types/typings.ts";
+
+const parseSync = (file: string, source: string, _options?: unknown) =>
+	parseSourceProgram({ file, source });
 
 export type CssPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 

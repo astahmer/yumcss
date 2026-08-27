@@ -1,0 +1,131 @@
+import type { StyleAdapter } from "./adapter-contract.ts";
+import {
+	asStyleDialect,
+	createStyleSystem,
+	createStyleSystemRegistry,
+	type StyleSystemRegistry,
+} from "./style-systems.ts";
+
+/** Versioned package contract for third-party adapter discovery. */
+export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
+
+export interface StyleAdapterPlugin {
+	readonly schema: typeof ADAPTER_PLUGIN_SCHEMA;
+	readonly id: string;
+	readonly adapters: readonly StyleAdapter[];
+}
+
+export interface AdapterDiscoveryResult {
+	readonly specifier: string;
+	readonly registered: readonly string[];
+	readonly errors: readonly string[];
+}
+
+export interface AdapterDiscoveryOptions {
+	/** Injectable loader makes discovery deterministic in tests and bundlers. */
+	readonly load?: (specifier: string) => Promise<unknown>;
+}
+
+export interface StyleAdapterRegistry {
+	readonly adapters: readonly StyleAdapter[];
+	register(adapter: StyleAdapter): StyleAdapterRegistry;
+	registerPlugin(plugin: StyleAdapterPlugin): StyleAdapterRegistry;
+	get(id: string): StyleAdapter | undefined;
+	toStyleSystemRegistry(): StyleSystemRegistry;
+	discover(
+		specifiers: readonly string[],
+		options?: AdapterDiscoveryOptions,
+	): Promise<readonly AdapterDiscoveryResult[]>;
+}
+
+function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
+	const candidate = (value as { default?: unknown }).default ?? value;
+	if (isStyleAdapter(candidate)) {
+		return { schema: ADAPTER_PLUGIN_SCHEMA, id: specifier, adapters: [candidate] };
+	}
+	if (
+		typeof candidate === "object" &&
+		candidate !== null &&
+		(candidate as { schema?: unknown }).schema === ADAPTER_PLUGIN_SCHEMA
+	) {
+		return candidate as StyleAdapterPlugin;
+	}
+	if (typeof candidate === "object" && candidate !== null) {
+		const adapters = (candidate as { adapters?: unknown }).adapters;
+		if (Array.isArray(adapters) && adapters.every(isStyleAdapter))
+			return { schema: ADAPTER_PLUGIN_SCHEMA, id: specifier, adapters };
+	}
+	throw new Error(`package ${specifier} does not export a pandwind adapter plugin`);
+}
+
+function isStyleAdapter(value: unknown): value is StyleAdapter {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		(value as { schema?: unknown }).schema === "pandwind.style-adapter/2" &&
+		typeof (value as { id?: unknown }).id === "string" &&
+		typeof (value as { parse?: unknown }).parse === "function" &&
+		typeof (value as { emit?: unknown }).emit === "function"
+	);
+}
+
+export function createStyleAdapterPlugin(
+	id: string,
+	adapters: readonly StyleAdapter[],
+): StyleAdapterPlugin {
+	if (adapters.length === 0) throw new Error(`adapter plugin ${id} must export an adapter`);
+	return { schema: ADAPTER_PLUGIN_SCHEMA, id, adapters };
+}
+
+export function createStyleAdapterRegistry(
+	initial: readonly StyleAdapter[] = [],
+): StyleAdapterRegistry {
+	const values = new Map<string, StyleAdapter>();
+	const registry: StyleAdapterRegistry = {
+		get adapters() {
+			return [...values.values()];
+		},
+		register(adapter) {
+			if (!isStyleAdapter(adapter)) throw new Error("invalid style adapter");
+			if (values.has(adapter.id)) throw new Error(`style adapter already registered: ${adapter.id}`);
+			values.set(adapter.id, adapter);
+			return registry;
+		},
+		registerPlugin(plugin) {
+			if (plugin.schema !== ADAPTER_PLUGIN_SCHEMA)
+				throw new Error(`unsupported adapter plugin schema: ${plugin.schema}`);
+			for (const adapter of plugin.adapters) registry.register(adapter);
+			return registry;
+		},
+		get: (id) => values.get(id),
+		toStyleSystemRegistry() {
+			return createStyleSystemRegistry(
+				registry.adapters.map((adapter) =>
+					createStyleSystem(adapter.id, [
+						asStyleDialect(adapter, { system: adapter.id, dialect: "css", role: "both" }),
+					]),
+				),
+			);
+		},
+		async discover(specifiers, options = {}) {
+			const load = options.load ?? ((specifier: string) => import(specifier));
+			return Promise.all(
+				specifiers.map(async (specifier): Promise<AdapterDiscoveryResult> => {
+					try {
+						const plugin = asPlugin(await load(specifier), specifier);
+						registry.registerPlugin(plugin);
+						return { specifier, registered: plugin.adapters.map((adapter) => adapter.id), errors: [] };
+					} catch (error) {
+						return {
+							specifier,
+							registered: [],
+							errors: [error instanceof Error ? error.message : String(error)],
+						};
+					}
+				}),
+			);
+		},
+	};
+	for (const adapter of initial) registry.register(adapter);
+	return registry;
+}

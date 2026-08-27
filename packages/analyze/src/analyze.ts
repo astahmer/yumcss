@@ -19,7 +19,7 @@
  */
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseSync } from "oxc-parser";
+import { parseSourceProgram } from "pandwind/source";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import {
 	collectModuleConstants,
@@ -125,7 +125,7 @@ interface CallInfo {
 
 /** The evaluator's NOT_STATIC sentinel, derived from a known-dynamic probe. */
 const NOT_STATIC: unknown = (() => {
-	const probe = parseSync("probe.ts", `unknownRuntimeValue`, { sourceType: "module", lang: "ts" });
+	const probe = parseSourceProgram({ file: "probe.ts", source: `unknownRuntimeValue` });
 	let sentinel: unknown;
 	walk(probe.program as unknown as OxcNode, (node) => {
 		if ((node as { type?: string }).type !== "ExpressionStatement") return;
@@ -153,10 +153,7 @@ function parseModule(
 	config: TwConfig,
 	importedConstants?: Readonly<Record<string, string>>,
 ): ParsedModule {
-	const parsed = parseSync(file, source, {
-		sourceType: "module",
-		lang: file.endsWith(".tsx") ? "tsx" : "ts",
-	});
+	const parsed = parseSourceProgram({ file, source });
 	const program = parsed.program as unknown as OxcNode;
 
 	const imported = new Map<string, string>();

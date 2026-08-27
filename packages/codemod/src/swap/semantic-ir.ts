@@ -10,7 +10,7 @@
 import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
 import { parseSync } from "oxc-parser";
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/2" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/3" as const;
 
 export type SemanticConditionKind =
 	| "named"
@@ -106,6 +106,35 @@ export interface StyleProgramSource {
 	/** Authored factory subject, for example `styled.button` or `styled(Base)`. */
 	readonly subject?: string;
 	readonly subjectKind?: "member" | "call";
+	readonly framework?: string;
+}
+
+export interface StyleThemeBinding {
+	readonly path: string;
+	readonly authored?: string;
+	readonly resolved?: string;
+	readonly source?: StyleProgramSource;
+}
+
+export interface StyleComposition {
+	readonly kind: "mixin" | "extends" | "recipe" | "slot";
+	readonly reference: string;
+	readonly source?: StyleProgramSource;
+	readonly program?: StyleProgram;
+}
+
+export interface StyleRuntimeContext {
+	readonly phase: "build" | "server" | "client" | "render";
+	readonly framework?: string;
+	readonly dependencies: readonly string[];
+	readonly hydrationKey?: string;
+}
+
+export interface StylePluginTransform {
+	readonly id: string;
+	readonly version?: string;
+	readonly input: string;
+	readonly output?: string;
 }
 
 export interface StyleProgramResidual {
@@ -122,6 +151,10 @@ export interface StyleProgram {
 	readonly declarations: readonly StyleDeclaration[];
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly source?: StyleProgramSource;
+	readonly themes?: readonly StyleThemeBinding[];
+	readonly compositions?: readonly StyleComposition[];
+	readonly runtime?: StyleRuntimeContext;
+	readonly plugins?: readonly StylePluginTransform[];
 }
 
 export interface StyleProgramOptions {
@@ -135,6 +168,10 @@ export interface StyleProgramOptions {
 	readonly unwrapNestedObjectKeys?: readonly string[];
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
+	readonly themes?: readonly StyleThemeBinding[];
+	readonly compositions?: readonly StyleComposition[];
+	readonly runtime?: StyleRuntimeContext;
+	readonly plugins?: readonly StylePluginTransform[];
 }
 
 export interface StyleRuleInput extends Omit<StyleRule, "children" | "order"> {
@@ -235,6 +272,10 @@ export function styleProgramFromSwapIR(
 			hint: residual.hint,
 		})),
 		source: options.source,
+		themes: options.themes ?? [],
+		compositions: options.compositions ?? [],
+		runtime: options.runtime,
+		plugins: options.plugins ?? [],
 	};
 }
 
@@ -257,6 +298,10 @@ export function styleProgramFromRules(
 		),
 		residuals: [...(options.residuals ?? [])],
 		source: options.source,
+		themes: options.themes ?? [],
+		compositions: options.compositions ?? [],
+		runtime: options.runtime,
+		plugins: options.plugins ?? [],
 	};
 }
 
@@ -463,11 +508,13 @@ function dynamicSourceValue(
 	body: string,
 	options: StyleProgramOptions,
 ): StyleDynamicValue {
+	const expression = sourceSlice(body, node);
 	return {
 		kind: "dynamic",
-		expression: sourceSlice(body, node),
+		expression,
 		lowering: "residual",
 		source: sourceRange(options.source, options.sourceOffset ?? 0, node),
+		dependencies: [...new Set(expression.match(/[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?/g) ?? [])],
 	};
 }
 
@@ -571,7 +618,14 @@ export function styleProgramFromSourceObject(
 				source: options.source,
 			},
 		],
-		{ source: options.source, residuals },
+		{
+			source: options.source,
+			residuals,
+			themes: options.themes,
+			compositions: options.compositions,
+			runtime: options.runtime,
+			plugins: options.plugins,
+		},
 	);
 }
 

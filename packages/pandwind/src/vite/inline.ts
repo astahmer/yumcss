@@ -9,7 +9,8 @@
  * naturally and the runtime cost becomes zero. Calls with dynamic arguments
  * are left untouched and keep working through the normal runtime.
  */
-import { type Expression, parseSync } from "oxc-parser";
+import { type Expression } from "oxc-parser";
+import { parseSourceProgram } from "../source-scanner.ts";
 import {
 	compileStyles,
 	type TwComposeMeta,
@@ -40,10 +41,7 @@ interface CallNode extends OxcNode {
  * parse + literal evaluation is enough — no type info needed.
  */
 export function extractTwConfig(source: string): TwConfig | undefined {
-	const result = parseSync("tw.ts", source, {
-		sourceType: "module",
-		lang: "ts",
-	});
+	const result = parseSourceProgram({ file: "tw.ts", source });
 	let config: TwConfig | undefined;
 
 	// The generator may pass the config as a module-level const identifier
@@ -131,10 +129,7 @@ export function inlineTwCalls(
 	importedConstants?: ConstantScope,
 	options?: UnresolvedOptions,
 ): InlineResult {
-	const result = parseSync(id, code, {
-		sourceType: "module",
-		lang: id.endsWith(".tsx") ? "tsx" : "ts",
-	});
+	const result = parseSourceProgram({ file: id, source: code });
 	// evalLiteral consumes RAW constant values, not the {value, declStart}
 	// records the cx evaluator uses for its TDZ position guard.
 	const importedScope: ConstantScope = importedConstants ?? new Map();

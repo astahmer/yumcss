@@ -102,6 +102,19 @@ export type {
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 export { EXTERNAL_STYLE_SYSTEMS } from "./external-adapters.ts";
+export { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
+export { EXTRA_ADAPTERS, FELA, GOOBER, APHRODITE } from "./extra-adapters.ts";
+export {
+	ADAPTER_PLUGIN_SCHEMA,
+	createStyleAdapterPlugin,
+	createStyleAdapterRegistry,
+} from "./adapter-registry.ts";
+export type {
+	AdapterDiscoveryOptions,
+	AdapterDiscoveryResult,
+	StyleAdapterPlugin,
+	StyleAdapterRegistry,
+} from "./adapter-registry.ts";
 export { asStyleDialect, createStyleSystem, createStyleSystemRegistry } from "./style-systems.ts";
 export type {
 	StyleDialectAdapter,
@@ -147,6 +160,13 @@ export type {
 	SourceScannerRegistry,
 } from "./source-scanner.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
+export { VALIDATOR_SCHEMA, STYLE_VALIDATORS, createStyleValidatorRegistry } from "./validator-registry.ts";
+export type {
+	StyleValidationContext,
+	StyleValidationEvidence,
+	StyleValidator,
+	StyleValidatorRegistry,
+} from "./validator-registry.ts";
 export type {
 	DifferentialBrowserResult,
 	DifferentialBrowserState,
@@ -265,13 +285,13 @@ function collectMatches(
 	tokenize?: boolean,
 ): Array<Match> {
 	if (from === "panda" || EXTERNAL_ADAPTER_IDS.includes(from)) return [];
-	return SWAP_REGISTRY.scanSource(from, {
+	return [...SWAP_REGISTRY.scanSource(from, {
 		source,
 		file,
 		meta,
 		engineResolver,
 		tokenize,
-	});
+	})];
 }
 
 /** Run one swap pass over a file's source. */

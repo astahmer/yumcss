@@ -49,6 +49,7 @@
 		"./types/typings": "./src/types/typings.ts",
 		"./opentui": "./src/opentui.ts",
 		"./backends": "./src/backends/index.ts",
+		"./source": "./src/source-scanner.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
