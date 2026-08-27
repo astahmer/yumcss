@@ -293,7 +293,9 @@ export function scanFileUsage(file: string, source: string, usage: ProjectUsage)
 }
 
 /** Scan every file into one aggregate ProjectUsage. */
-export function scanProjectUsage(files: Array<{ path: string; source: string }>): ProjectUsage {
+export function scanProjectUsage(
+	files: ReadonlyArray<{ path: string; source: string }>,
+): ProjectUsage {
 	const usage = emptyProjectUsage();
 	for (const { path: p, source } of files) scanFileUsage(p, source, usage);
 	return usage;

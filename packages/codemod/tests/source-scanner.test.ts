@@ -60,4 +60,12 @@ describe("language-neutral source scanner registry", () => {
 		});
 		expect(solid.framework).toBe("solid");
 	});
+
+	test("keeps supported tagged-template call sites actionable", () => {
+		const result = createSourceScannerRegistry().scan({
+			file: "styles.tsx",
+			source: "const card = css`color: red;`;",
+		});
+		expect(result.isExcluded(result.document.source.indexOf("css`"))).toBe(false);
+	});
 });

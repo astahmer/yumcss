@@ -251,6 +251,16 @@ export const VUE_STYLED = makeAdapter({
 	prefix: "styled.div(",
 });
 
+export const REACT_NATIVE = makeAdapter({
+	id: "react-native",
+	modules: ["react-native"],
+	packages: { packages: [{ name: "react-native", kind: "peer" }] },
+	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
+	call: /\bStyleSheet\.create\s*\(\s*\{/g,
+	prefix: "StyleSheet.create(",
+	namedObjects: true,
+});
+
 /** Independently owned adapters added without modifying existing library adapters. */
 export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [
 	FELA,
@@ -261,4 +271,5 @@ export const EXTRA_ADAPTERS: readonly StyleAdapter[] = [
 	COMPILED,
 	SOLID_STYLED,
 	VUE_STYLED,
+	REACT_NATIVE,
 ];

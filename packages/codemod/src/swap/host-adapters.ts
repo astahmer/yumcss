@@ -1,6 +1,13 @@
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
 export type HostFramework = string;
-export type BuiltinHostFramework = "react" | "preact" | "solid" | "vue" | "svelte" | "astro";
+export type BuiltinHostFramework =
+	| "react"
+	| "preact"
+	| "solid"
+	| "qwik"
+	| "vue"
+	| "svelte"
+	| "astro";
 
 export interface HostFrameworkAdapter {
 	readonly id: HostFramework;
@@ -103,6 +110,15 @@ const builtin = {
 		true,
 		["solid-js"],
 		(_file, source) => /from\s+["']solid-js["']|\bcreateSignal\s*\(/.test(source),
+	),
+	qwik: makeAdapter(
+		"qwik",
+		[".jsx", ".tsx"],
+		"class",
+		true,
+		true,
+		["@builder.io/qwik"],
+		(_file, source) => /from\s+["']@builder\.io\/qwik(?:\/|["'])/.test(source),
 	),
 	vue: makeAdapter(
 		"vue",

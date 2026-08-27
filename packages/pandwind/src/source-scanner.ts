@@ -188,9 +188,13 @@ export function computeExcludedRanges(
 			const tagText = source.slice(n.tag.start ?? 0, n.tag.end ?? 0);
 			if (
 				/^\s*(?:styled\b|css\b|keyframes\b)/.test(tagText) &&
+				typeof n.start === "number" &&
+				typeof n.end === "number" &&
 				typeof n.quasi?.start === "number" &&
 				typeof n.quasi.end === "number"
 			) {
+				// Matchers start at `css`/`styled`, not at the opening backtick.
+				supportedStyleQuasis.push([n.start, n.end]);
 				supportedStyleQuasis.push([n.quasi.start, n.quasi.end]);
 			}
 			return;

@@ -112,6 +112,20 @@ export interface DifferentialResult {
 	readonly ssr?: DifferentialSsrResult;
 	readonly streaming?: DifferentialStreamingResult;
 	readonly dependencies: readonly AdapterDependencies[];
+	/** Explicit package graph delta; dependency changes are evidence, not styling failures. */
+	readonly dependencyChanges: readonly string[];
+}
+
+function dependencyChanges(
+	source: AdapterDependencies,
+	target: AdapterDependencies,
+): readonly string[] {
+	const sourceNames = new Set(source.packages.map((dependency) => dependency.name));
+	const targetNames = new Set(target.packages.map((dependency) => dependency.name));
+	return [
+		...[...sourceNames].filter((name) => !targetNames.has(name)).map((name) => `removed:${name}`),
+		...[...targetNames].filter((name) => !sourceNames.has(name)).map((name) => `added:${name}`),
+	].toSorted();
 }
 
 function adapterOrThrow(id: string, registry: StyleAdapterRegistry): StyleAdapter {
@@ -184,6 +198,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 			residuals,
 			browser: [],
 			dependencies,
+			dependencyChanges: dependencyChanges(sourceAdapter.dependencies, targetAdapter.dependencies),
 		};
 	}
 	const capability = targetAdapter.capabilities;
@@ -210,6 +225,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 			capability: report,
 			browser: [],
 			dependencies,
+			dependencyChanges: dependencyChanges(sourceAdapter.dependencies, targetAdapter.dependencies),
 		};
 	}
 	residuals.push(...lowering.residuals);
@@ -333,6 +349,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		ssr,
 		streaming,
 		dependencies,
+		dependencyChanges: dependencyChanges(sourceAdapter.dependencies, targetAdapter.dependencies),
 	};
 }
 

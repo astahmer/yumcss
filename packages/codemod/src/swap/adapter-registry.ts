@@ -1,6 +1,7 @@
 import type { StyleAdapter } from "./adapter-contract.ts";
 import {
 	createStyleAdapterManifest,
+	readAdapterPackageDeclaration,
 	type StyleAdapterManifest,
 	validateStyleAdapterManifest,
 } from "./adapter-manifest.ts";
@@ -31,6 +32,10 @@ export interface AdapterDiscoveryResult {
 export interface AdapterDiscoveryOptions {
 	/** Injectable loader makes discovery deterministic in tests and bundlers. */
 	readonly load?: (specifier: string) => Promise<unknown>;
+	/** Injectable package metadata loader for dependency-based discovery. */
+	readonly loadPackageJson?: (
+		specifier: string,
+	) => Promise<Readonly<Record<string, unknown>> | undefined>;
 }
 
 export interface StyleAdapterRegistry {
@@ -41,6 +46,10 @@ export interface StyleAdapterRegistry {
 	toStyleSystemRegistry(): StyleSystemRegistry;
 	discover(
 		specifiers: readonly string[],
+		options?: AdapterDiscoveryOptions,
+	): Promise<readonly AdapterDiscoveryResult[]>;
+	discoverPackages(
+		packageJson: Readonly<Record<string, unknown>>,
 		options?: AdapterDiscoveryOptions,
 	): Promise<readonly AdapterDiscoveryResult[]>;
 }
@@ -144,6 +153,40 @@ export function createStyleAdapterRegistry(
 					}
 				}),
 			);
+		},
+		async discoverPackages(packageJson, options = {}) {
+			const dependencies = [
+				packageJson.dependencies,
+				packageJson.devDependencies,
+				packageJson.peerDependencies,
+			]
+				.flatMap((value) =>
+					value !== null && typeof value === "object"
+						? Object.keys(value as Record<string, unknown>)
+						: [],
+				)
+				.toSorted();
+			const loadPackageJson =
+				options.loadPackageJson ??
+				(async (specifier: string) => {
+					try {
+						const loaded = await import(`${specifier}/package.json`, { with: { type: "json" } });
+						return (loaded.default ?? loaded) as Readonly<Record<string, unknown>>;
+					} catch {
+						return undefined;
+					}
+				});
+			const candidates = (
+				await Promise.all(
+					dependencies.map(async (specifier) => ({
+						specifier,
+						metadata: await loadPackageJson(specifier),
+					})),
+				)
+			)
+				.filter(({ metadata }) => readAdapterPackageDeclaration(metadata ?? {}) !== undefined)
+				.map(({ specifier }) => specifier);
+			return registry.discover(candidates, options);
 		},
 	};
 	for (const adapter of initial) registry.register(adapter);

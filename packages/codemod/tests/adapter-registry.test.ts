@@ -48,5 +48,24 @@ describe("third-party adapter registry", () => {
 		expect(EXTERNAL_ADAPTER_REGISTRY.get("aphrodite")).toBeDefined();
 		expect(getExternalAdapter("fela")?.dependencies.packages[0]?.name).toBe("fela");
 		expect(EXTERNAL_ADAPTER_REGISTRY.get("compiled")).toBeDefined();
+		expect(EXTERNAL_ADAPTER_REGISTRY.get("react-native")).toBeDefined();
+	});
+
+	test("discovers only dependencies that advertise the package contract", async () => {
+		const registry = createStyleAdapterRegistry();
+		const plugin = createStyleAdapterPlugin("declared-plugin", [EXTERNAL_ADAPTERS.emotion!]);
+		const results = await registry.discoverPackages(
+			{
+				dependencies: { "declared-adapter": "1.0.0", unrelated: "1.0.0" },
+			},
+			{
+				loadPackageJson: async (specifier) =>
+					specifier === "declared-adapter" ? { pandwind: { plugin: "./dist/plugin.js" } } : {},
+				load: async () => plugin,
+			},
+		);
+		expect(results).toEqual([
+			{ specifier: "declared-adapter", registered: ["emotion"], errors: [] },
+		]);
 	});
 });

@@ -1,7 +1,8 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
-import { computeExcludedRanges, matchBlock } from "../sources.ts";
+import { matchBlock } from "../sources.ts";
+import { computeExcludedRanges } from "pandwind/source";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
@@ -70,7 +71,6 @@ const allRuleCapabilities = (
 		nesting: "exact",
 		ordering: "exact",
 		"token-values": "exact",
-		"custom-properties": "exact",
 		"dynamic-values": dynamic,
 		"pseudo-conditions": "exact",
 		"selector-conditions": "exact",
@@ -761,7 +761,7 @@ const EMOTION = adapter(
 		"runtime-context": "exact",
 		composition: "partial",
 		"plugin-transforms": "partial",
-		"framework-semantics": "partial",
+		"framework-semantics": "exact",
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",
@@ -784,7 +784,7 @@ const EMOTION = adapter(
 			imports: ['import { css } from "@emotion/css";'],
 		};
 	},
-	[/@emotion\/(?:css|styled)/, /\bcss\s*\(\s*\{/],
+	[/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
 );
 
 const STYLED_COMPONENTS = adapter(
@@ -805,7 +805,7 @@ const STYLED_COMPONENTS = adapter(
 		"runtime-context": "exact",
 		composition: "partial",
 		"plugin-transforms": "partial",
-		"framework-semantics": "partial",
+		"framework-semantics": "exact",
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",

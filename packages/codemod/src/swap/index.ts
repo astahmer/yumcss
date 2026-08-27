@@ -168,6 +168,7 @@ export {
 	COMPILED,
 	SOLID_STYLED,
 	VUE_STYLED,
+	REACT_NATIVE,
 } from "./extra-adapters.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
@@ -244,6 +245,11 @@ export type {
 } from "./source-scanner.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
 export {
+	DIFFERENTIAL_MATRIX,
+	DIFFERENTIAL_MATRIX_SCHEMA,
+	runDifferentialMatrix,
+} from "./differential-matrix.ts";
+export {
 	VALIDATOR_SCHEMA,
 	STYLE_VALIDATORS,
 	createStyleValidatorRegistry,
@@ -265,6 +271,8 @@ export type {
 	DifferentialStreamingHooks,
 	DifferentialStreamingResult,
 } from "./differential.ts";
+export { REAL_REPOSITORY_CORPUS } from "./real-repository-corpus.ts";
+export type { DifferentialMatrixCase, DifferentialMatrixResult } from "./differential-matrix.ts";
 export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";
 export type {
 	ResolvedStyleRecipe,

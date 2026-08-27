@@ -1,0 +1,80 @@
+{
+	"schema": "pandwind.real-repository-report/1",
+	"generatedFrom": "scripts/generate-real-repository-report.ts",
+	"reports": [
+		{
+			"id": "panda-website-home",
+			"repository": "https://github.com/chakra-ui/panda",
+			"commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
+			"path": "website/app/page.tsx",
+			"adapterRoute": "panda -> pandwind",
+			"sourceBytes": 1421,
+			"outputBytes": 1420,
+			"outputByteDelta": -1,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"emittedModules": [
+				"pandwind/preset.ts",
+				"pandwind/css.ts",
+				"pandwind/virtual.d.ts",
+				"pandwind/internal.ts",
+				"pandwind/recipes/index.ts",
+				"pandwind/patterns/index.ts",
+				"pandwind/jsx/index.tsx"
+			],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"sourceRuntimePackages": ["@pandacss/dev"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@pandacss/dev"],
+				"byteDelta": -1
+			}
+		},
+		{
+			"id": "emotion-benchmark-view",
+			"repository": "https://github.com/emotion-js/emotion",
+			"commit": "b882bcba85132554992e4bd49e94c95939bbf810",
+			"path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
+			"adapterRoute": "emotion -> styled-components",
+			"sourceBytes": 164,
+			"outputBytes": 161,
+			"outputByteDelta": -3,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"sourceRuntimePackages": ["@emotion/css"],
+				"targetRuntimePackages": ["styled-components"],
+				"added": ["styled-components"],
+				"removed": ["@emotion/css"],
+				"byteDelta": -3
+			}
+		},
+		{
+			"id": "styled-components-benchmark-view",
+			"repository": "https://github.com/styled-components/styled-components",
+			"commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
+			"path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
+			"adapterRoute": "styled-components -> emotion",
+			"sourceBytes": 333,
+			"outputBytes": 349,
+			"outputByteDelta": 16,
+			"converted": 0,
+			"skipped": 1,
+			"residuals": 1,
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"sourceRuntimePackages": ["styled-components"],
+				"targetRuntimePackages": ["@emotion/css"],
+				"added": ["@emotion/css"],
+				"removed": ["styled-components"],
+				"byteDelta": 16
+			}
+		}
+	]
+}

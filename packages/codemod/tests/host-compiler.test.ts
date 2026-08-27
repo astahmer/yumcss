@@ -11,6 +11,7 @@ describe("framework-native host compiler contract", () => {
 			"react",
 			"preact",
 			"solid",
+			"qwik",
 			"vue",
 			"svelte",
 			"astro",

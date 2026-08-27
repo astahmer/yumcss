@@ -26,6 +26,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"solid-styled":
 				"import { styled } from 'solid-styled-components'; styled.div({ color: 'red' })",
 			"vue-styled": "import styled from 'vue-styled-components'; styled.div({ color: 'red' })",
+			"react-native":
+				"import { StyleSheet } from 'react-native'; StyleSheet.create({ button: { color: 'red' } })",
 		};
 		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
