@@ -3,13 +3,14 @@
  * sheet-backed strategy modes), virtual-module `resolveId`/`load`, and cache
  * invalidation. Shared by `pandwindCssVite` and the unplugin adapters.
  */
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
 import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { createCssSourceService } from "./css-source-service.ts";
+import { createCssSourceWorkspace } from "./css-source-workspace.ts";
 
 export type { CssExtractorPreset };
 
@@ -59,10 +60,14 @@ export function createCssExtractorPluginCore(
 	const root = options.root ?? process.cwd();
 	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
-	const fileCache = new Map<
-		string,
-		{ mtimeMs: number; sources: ReturnType<typeof sourceService.extract>; varKeys: string[] }
-	>();
+	const workspace = createCssSourceWorkspace({
+		root,
+		include,
+		exclude,
+		matchers,
+		preset,
+		sourceService,
+	});
 	type RenderCache<T> = { files: Array<string>; value: T };
 	let bodyCache: RenderCache<string> | undefined;
 	let splitCache: RenderCache<{ common: string; routes: Map<string, string> }> | undefined;
@@ -71,41 +76,8 @@ export function createCssExtractorPluginCore(
 	const resolvedManifestId = `\0${virtualId}-manifest.js`;
 	const routeChunkId = (name: string): string => `\0${virtualId}.css?route=${name}`;
 
-	const isScanned = (file: string): boolean => {
-		if (!include.some((pattern) => pattern.test(file))) return false;
-		if (exclude.some((pattern) => pattern.test(file))) return false;
-		return true;
-	};
-
-	const walkFiles = (dir: string, acc: string[] = []): string[] => {
-		for (const entry of readdirSync(dir, { withFileTypes: true })) {
-			if (entry.name.startsWith(".")) continue;
-			const path = join(dir, entry.name);
-			if (entry.isDirectory()) {
-				if (exclude.some((pattern) => pattern.test(path))) continue;
-				walkFiles(path, acc);
-			} else if (entry.isFile() && isScanned(path)) {
-				acc.push(path);
-			}
-		}
-		return acc;
-	};
-
-	const isFresh = (files: Array<string>, cached: RenderCache<unknown>): boolean => {
-		if (files.length !== cached.files.length) return false;
-		for (let index = 0; index < files.length; index++) {
-			if (files[index] !== cached.files[index]) return false;
-			const file = files[index]!;
-			const entry = fileCache.get(file);
-			if (entry === undefined) return false;
-			try {
-				if (entry.mtimeMs !== statSync(file).mtimeMs) return false;
-			} catch {
-				return false;
-			}
-		}
-		return true;
-	};
+	const isScanned = (file: string): boolean =>
+		include.some((pattern) => pattern.test(file)) && !exclude.some((pattern) => pattern.test(file));
 
 	const transform =
 		className === undefined
@@ -121,8 +93,9 @@ export function createCssExtractorPluginCore(
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
 	const collectBody = (): string => {
-		const files = walkFiles(root);
-		if (bodyCache !== undefined && isFresh(files, bodyCache)) return bodyCache.value;
+		const files = workspace.files();
+		if (bodyCache !== undefined && workspace.isFresh(files, bodyCache.files))
+			return bodyCache.value;
 		const sheet = collect(files);
 		const tokens = sheet.gen.tokens();
 		const atomic = sheet.gen.atomic();
@@ -135,7 +108,7 @@ export function createCssExtractorPluginCore(
 		// Dev-only origin manifest: which scanned file feeds how many
 		// style objects into the sheet. Search a class here to find its
 		// candidate files; zero prod cost (flag off by default).
-		const manifest = [...fileCache.entries()]
+		const manifest = [...workspace.entries()]
 			.toSorted((a, b) => a[0].localeCompare(b[0]))
 			.map(([file, entry]) =>
 				entry.sources.length === 0
@@ -149,7 +122,7 @@ export function createCssExtractorPluginCore(
 			)
 			.join("\n");
 		const value =
-			`/* pandwind debug manifest — ${fileCache.size} file(s), dev builds only */\n` +
+			`/* pandwind debug manifest — ${workspace.entries().size} file(s), dev builds only */\n` +
 			(manifest === "" ? "/*   (no css() sources scanned) */" : manifest) +
 			"\n\n" +
 			body;
@@ -158,28 +131,17 @@ export function createCssExtractorPluginCore(
 	};
 
 	/** Re-scan changed files and return a fresh stylesheet with every rule. */
-	const collect = (files: Array<string> = walkFiles(root)) => {
+	const collect = (files: Array<string> = workspace.files()) => {
 		const sheet = createStylesheet(preset, { className });
-		const seen = new Set<string>();
+		const seen = new Set(files);
 
 		for (const file of files) {
-			seen.add(file);
-			let entry = fileCache.get(file);
-			const mtimeMs = statSync(file).mtimeMs;
-			if (!entry || entry.mtimeMs !== mtimeMs) {
-				const code = readFileSync(file, "utf8");
-				const { sources, varKeys } = sourceService.extractFile(code, file, matchers, preset);
-				entry = { mtimeMs, sources, varKeys };
-				fileCache.set(file, entry);
-			}
+			const entry = workspace.scan(file);
 			for (const { style } of entry.sources) sheet.process([style]);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
 		}
 
-		// Drop files that were deleted since the last scan.
-		for (const file of fileCache.keys()) {
-			if (!seen.has(file)) fileCache.delete(file);
-		}
+		workspace.prune(seen);
 
 		return sheet;
 	};
@@ -188,15 +150,7 @@ export function createCssExtractorPluginCore(
 	const scanFile = (
 		file: string,
 	): { sources: ReturnType<typeof sourceService.extract>; varKeys: string[] } => {
-		let entry = fileCache.get(file);
-		const mtimeMs = statSync(file).mtimeMs;
-		if (!entry || entry.mtimeMs !== mtimeMs) {
-			const code = readFileSync(file, "utf8");
-			const { sources, varKeys } = sourceService.extractFile(code, file, matchers, preset);
-			entry = { mtimeMs, sources, varKeys };
-			fileCache.set(file, entry);
-		}
-		return entry;
+		return workspace.scan(file);
 	};
 
 	interface BucketSheet {
@@ -236,8 +190,9 @@ export function createCssExtractorPluginCore(
 	 * preset-derived and identical everywhere -> common chunk.
 	 */
 	const collectSplit = (): { common: string; routes: Map<string, string> } => {
-		const files = walkFiles(root);
-		if (splitCache !== undefined && isFresh(files, splitCache)) return splitCache.value;
+		const files = workspace.files();
+		if (splitCache !== undefined && workspace.isFresh(files, splitCache.files))
+			return splitCache.value;
 		const commonFiles: Array<string> = [];
 		const routeFiles = new Map<string, Array<string>>();
 		for (const route of routes) routeFiles.set(route.name, []);
@@ -374,7 +329,7 @@ ${split.routes.get(route.name) ?? ""}`;
 		invalidate(file: string) {
 			// The next load re-scans the changed file and refreshes the rendered
 			// stylesheet. Clearing even an unknown path also covers added files.
-			fileCache.delete(file);
+			workspace.invalidate(file);
 			bodyCache = undefined;
 			splitCache = undefined;
 		},
