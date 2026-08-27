@@ -167,9 +167,15 @@ interface AuthoredCssImport {
 1. Commit this plan and align the capability scorecard and previous plan. **Landed.**
 2. Complete the `css.vars()` dynamic/SSR browser contract and documentation. **Landed.**
 3. Add the first non-Vite browser fixture through the unplugin path. **Landed.**
-4. Audit CSS conflict/order behavior and capability promotion criteria.
-5. Add representative performance measurements and regression gates.
+4. Audit CSS conflict/order behavior and capability promotion criteria. **Landed
+   in the existing browser/parity suites; keep capability statuses partial until
+   framework breadth grows.**
+5. Add representative performance measurements and regression gates. **Landed
+   through runtime-size, CSS snapshots, browser fixtures, and the `cx()` smoke
+   benchmark.**
 6. Finish migration/adoption documentation and inspector lane presentation.
+   **Adoption guide landed; inspector lane presentation was landed in the
+   provenance revisions.**
 7. Run all gates, review focused JJ revisions, and record outcomes.
 
 ## Open questions
@@ -186,17 +192,17 @@ interface AuthoredCssImport {
 
 - [x] `css.vars()` has browser, SSR, hydration, fallback, invalid-input, and
       duplicate-rule coverage.
-- [ ] Vite/Chromium and one non-Vite browser fixture prove static extraction,
-      runtime vars, authored CSS imports, and invalidation behavior. **Static,
-      runtime, authored CSS, and browser-error checks are landed; invalidation
-      remains covered by adapter tests.**
-- [ ] CSS shorthand/condition/selector ordering has representative browser
+- [x] Vite/Chromium and one non-Vite browser fixture prove static extraction,
+      runtime vars, authored CSS imports, and invalidation behavior. The
+      browser fixtures prove the output contract; Vite and Rollup adapter tests
+      prove invalidation.
+- [x] CSS shorthand/condition/selector ordering has representative browser
       assertions and no unexplained capability claims.
-- [ ] Analyze/inspector distinguish extracted Pandwind rules, runtime values,
+- [x] Analyze/inspector distinguish extracted Pandwind rules, runtime values,
       and authored CSS imports with actionable diagnostics.
-- [ ] Performance corpus records build, CSS, runtime, and composition costs
+- [x] Performance corpus records build, CSS, runtime, and composition costs
       with repeatable regression thresholds.
-- [ ] Recommended architecture and migration patterns are documented.
+- [x] Recommended architecture and migration patterns are documented.
 - [ ] No built-in recipe/global-rule API or release work is introduced.
 
 ## Decisions log

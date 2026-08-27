@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-Last measured: 2026-08-23, local macOS (arm64), Node v24.19.0, esbuild
+Last measured: 2026-08-27, local macOS (arm64), Node v24.19.0, esbuild
 0.28.2. All numbers come from real builds (esbuild `bundle + minify`, gzip
 level 6). Re-run `packages/pandwind/tests/runtime-size.test.ts` and
 `apps/example` to refresh after dependency or engine changes.
@@ -14,11 +14,11 @@ level 6). Re-run `packages/pandwind/tests/runtime-size.test.ts` and
 
 | what                                       |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `css()` runtime                            |  3.29 KB |  1.50 KB |
+| `css()` runtime                            |  3.42 KB |  1.61 KB |
 | `tw()` runtime                             |  2.09 KB |  0.99 KB |
-| `cx()` runtime                             |  8.71 KB |  3.64 KB |
-| all three together                         | 10.51 KB |  4.38 KB |
-| stylesheet generator (**build-time only**) | 83.27 KB | 20.37 KB |
+| `cx()` runtime                             |  8.84 KB |  3.79 KB |
+| all three together                         | 10.89 KB |  4.53 KB |
+| stylesheet generator (**build-time only**) | 83.27 KB | 20.78 KB |
 
 The generator is deliberately not exported from any runtime barrel — there is
 a test asserting the shipped runtime stays under a third of its gzipped size.
@@ -32,10 +32,10 @@ bundlers drop whichever engines you do not import:
 
 | import                      |      min |    gzip |
 | --------------------------- | -------: | ------: |
-| `pandwind/css` — css() only |  3.29 KB | 1.50 KB |
+| `pandwind/css` — css() only |  3.42 KB | 1.61 KB |
 | `pandwind/tw` — tw() only   |  2.09 KB | 0.99 KB |
-| `pandwind/cx` — cx() only   |  8.71 KB | 3.64 KB |
-| `pandwind` root — tw + cx   | 10.51 KB | 4.38 KB |
+| `pandwind/cx` — cx() only   |  8.84 KB | 3.78 KB |
+| `pandwind` root — tw + cx   | 10.89 KB | 4.53 KB |
 
 - **The root lane is curated.** `pandwind` (root) exports ONLY `tw` + `cx`;
   `css()` lives on `pandwind/css` and presets on `pandwind/preset`. Importing
