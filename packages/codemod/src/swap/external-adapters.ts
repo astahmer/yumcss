@@ -33,25 +33,16 @@ import {
 	type StyleProgramResidual,
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
+import {
+	asStyleDialect,
+	createStyleSystem,
+	createStyleSystemRegistry,
+	type StyleSystemRegistry,
+} from "./style-systems.ts";
+import { createSourceScannerRegistry } from "./source-scanner.ts";
 
-export type ExternalAdapterId =
-	| "pandwind"
-	| "emotion"
-	| "styled-components"
-	| "vanilla-extract"
-	| "stitches"
-	| "linaria"
-	| "jss";
-
-export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = [
-	"pandwind",
-	"emotion",
-	"styled-components",
-	"vanilla-extract",
-	"stitches",
-	"linaria",
-	"jss",
-];
+/** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
+export type ExternalAdapterId = string;
 
 type CallPattern = {
 	readonly name: string;
@@ -992,8 +983,24 @@ export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>
 	jss: JSS,
 };
 
+const externalDialect = (adapter: StyleAdapter) =>
+	asStyleDialect(adapter, {
+		system: adapter.id === "pandwind" ? "pandwind-external" : adapter.id,
+		dialect: "css",
+		role: "both",
+	});
+
+/** Registry is the extension point; the object remains a read-only lookup projection. */
+export const EXTERNAL_STYLE_SYSTEMS: StyleSystemRegistry = createStyleSystemRegistry(
+	Object.values(EXTERNAL_ADAPTERS).map((adapter) =>
+		createStyleSystem(adapter.id === "pandwind" ? "pandwind-external" : adapter.id, [externalDialect(adapter)]),
+	),
+);
+
+export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = Object.keys(EXTERNAL_ADAPTERS);
+
 export function getExternalAdapter(id: string): StyleAdapter | undefined {
-	return EXTERNAL_ADAPTERS[id as ExternalAdapterId];
+	return EXTERNAL_STYLE_SYSTEMS.getDialect(id);
 }
 
 export interface AdapterMigrationOptions {
@@ -1063,12 +1070,18 @@ export function runAdapterMigration(
 		packageJson: options.packageJson,
 		readFile,
 	});
+	const document = createSourceScannerRegistry().scan({
+		file: options.file,
+		source,
+		root: options.root,
+	});
 	const parsed = sourceAdapter.parse(source, {
 		file: options.file,
 		source,
 		root: options.root,
 		config,
 		meta: options.meta,
+		document,
 	});
 	const mode = options.mode ?? "safe";
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
@@ -1112,6 +1125,8 @@ export function runAdapterMigration(
 			mode,
 			capability: report,
 			index,
+			document,
+			meta: options.meta,
 		});
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
@@ -1129,6 +1144,7 @@ export function runAdapterMigration(
 				readFile,
 			}),
 			meta: options.meta,
+			document,
 		});
 		const targetProgram =
 			reparsed.matches.length === 0

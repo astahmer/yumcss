@@ -111,6 +111,33 @@ export type {
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+export { EXTERNAL_STYLE_SYSTEMS } from "./external-adapters.ts";
+export { asStyleDialect, createStyleSystem, createStyleSystemRegistry } from "./style-systems.ts";
+export type {
+	StyleDialectAdapter,
+	StyleDialectAddress,
+	StyleDialectOptions,
+	StyleDialectRole,
+	StyleMigrationRoute,
+	StyleSystemAdapter,
+	StyleSystemRegistry,
+} from "./style-systems.ts";
+export { STYLE_SYSTEM_SCHEMA } from "./style-systems.ts";
+export { STYLE_SYSTEMS, CORE_STYLE_SYSTEMS, PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./systems.ts";
+export {
+	SOURCE_SCANNER_SCHEMA,
+	SOURCE_LANGUAGE_ADAPTERS,
+	createSourceScannerRegistry,
+} from "./source-scanner.ts";
+export type {
+	SourceDocument,
+	SourceLanguage,
+	SourceLanguageAdapter,
+	SourceRange,
+	SourceScanDiagnostic,
+	SourceScanResult,
+	SourceScannerRegistry,
+} from "./source-scanner.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
 export type {
 	DifferentialBrowserResult,

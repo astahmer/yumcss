@@ -31,6 +31,8 @@ export interface EmitterContext {
 	/** Declared target contract and its check for the current program. */
 	capabilities?: AdapterCapabilities;
 	capabilityReport?: AdapterCapabilityReport;
+	/** Project metadata needed by token-aware core emitters. */
+	meta?: PandwindMeta;
 }
 
 /**
