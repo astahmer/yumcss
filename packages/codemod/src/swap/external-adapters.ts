@@ -297,6 +297,39 @@ function parseKeyframeProgram(
 	);
 }
 
+function parseGlobalProgram(
+	body: string,
+	context: AdapterParseContext,
+	start: number,
+): StyleProgram {
+	const base = styleProgramFromSourceObject(body, {
+		source: { file: context.file, start, adapter: context.config.adapter },
+		nestedObjectKind: "selector",
+		sourceOffset: start + 1,
+	});
+	const groups = new Map<string, StyleDeclaration[]>();
+	for (const declaration of base.declarations) {
+		const selector = declaration.conditions[0]?.name ?? "*";
+		const list = groups.get(selector) ?? [];
+		list.push({ ...declaration, conditions: declaration.conditions.slice(1) });
+		groups.set(selector, list);
+	}
+	return styleProgramFromRules(
+		[...groups].map(([selector, declarations], order) => ({
+			kind: "global" as const,
+			selector,
+			conditions: [],
+			declarations,
+			children: [],
+			order,
+		})),
+		{
+			source: { file: context.file, start, adapter: context.config.adapter },
+			residuals: base.residuals,
+		},
+	);
+}
+
 function camelProperty(property: string): string {
 	return property
 		.trim()
@@ -419,6 +452,8 @@ function parseCalls(
 					start,
 					sourceName(source, start, fallbackName),
 				);
+			} else if (pattern.name === "global" || pattern.name === "globalCss") {
+				program = parseGlobalProgram(block.body, context, start);
 			} else {
 				const base = styleProgramFromSourceObject(block.body, {
 					source: { file: context.file, start, end, adapter: context.config.adapter },
@@ -432,6 +467,19 @@ function parseCalls(
 							{
 								kind: "global",
 								selector,
+								conditions: [],
+								declarations: base.declarations,
+								children: [],
+								order: 0,
+							},
+						],
+						{ source: base.source, residuals: base.residuals },
+					);
+				} else if (pattern.name === "fontFace") {
+					program = styleProgramFromRules(
+						[
+							{
+								kind: "font-face",
 								conditions: [],
 								declarations: base.declarations,
 								children: [],

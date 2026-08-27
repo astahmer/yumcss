@@ -118,4 +118,25 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(emitted.text).toContain("keyframes(");
 		expect(emitted.residuals).toEqual([]);
 	});
+
+	test("lifts global and font-face APIs into rule-level nodes", () => {
+		const stitches = getExternalAdapter("stitches")!;
+		const global = stitches.parse(
+			`globalCss({ body: { margin: 0 }, "button:hover": { color: "red" } });`,
+			{ file: "global.ts", source: "", config: { adapter: "stitches", files: [], values: {} } },
+		);
+		expect(global.matches[0]?.program.rules.map((rule) => rule.kind)).toEqual(["global", "global"]);
+		expect(global.matches[0]?.program.rules[1]?.selector).toBe("button:hover");
+
+		const vanilla = getExternalAdapter("vanilla-extract")!;
+		const font = vanilla.parse(
+			`const face = fontFace({ fontFamily: "Inter", src: "url(inter.woff2)" });`,
+			{
+				file: "fonts.css.ts",
+				source: "",
+				config: { adapter: "vanilla-extract", files: [], values: {} },
+			},
+		);
+		expect(font.matches[0]?.program.rules[0]?.kind).toBe("font-face");
+	});
 });

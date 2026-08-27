@@ -126,6 +126,8 @@ export interface StyleProgramOptions {
 	readonly conditionKinds?: Readonly<Record<string, SemanticConditionKind>>;
 	readonly conditionValues?: Readonly<Record<string, string>>;
 	readonly conditionRaw?: Readonly<Record<string, string>>;
+	/** Treat every nested object as a semantic condition of this kind. */
+	readonly nestedObjectKind?: SemanticConditionKind;
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 }
@@ -181,7 +183,10 @@ export function inferSemanticConditionKind(name: string): SemanticConditionKind 
 function conditionFor(name: string, options: StyleProgramOptions): StyleCondition {
 	const value = options.conditionValues?.[name];
 	return {
-		kind: options.conditionKinds?.[name] ?? inferSemanticConditionKind(name),
+		kind:
+			options.nestedObjectKind ??
+			options.conditionKinds?.[name] ??
+			inferSemanticConditionKind(name),
 		name,
 		...(value === undefined ? {} : { value }),
 		...(options.conditionRaw?.[name] === undefined ? {} : { raw: options.conditionRaw[name] }),
@@ -393,6 +398,7 @@ function sourceObject(node: SourceNode): boolean {
 
 function looksLikeCondition(name: string, options: StyleProgramOptions): boolean {
 	return (
+		options.nestedObjectKind !== undefined ||
 		name === "base" ||
 		name.startsWith("_") ||
 		name.startsWith("&") ||
