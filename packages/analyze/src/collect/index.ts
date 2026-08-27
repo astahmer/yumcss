@@ -27,6 +27,7 @@ export { crawlCssImports } from "./theme-crawl.ts";
 export {
 	collectAuthoredCssImports,
 	collectCssDiagnostics,
+	collectCssReport,
 	collectCssProvenance,
 	formatAuthoredCssImports,
 	formatCssDiagnostics,

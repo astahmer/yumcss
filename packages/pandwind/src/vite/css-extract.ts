@@ -89,6 +89,13 @@ export interface AuthoredCssImport {
 	kind: "side-effect" | "binding";
 }
 
+export interface CssSourceInspection {
+	authoredCss: Array<AuthoredCssImport>;
+	cssNames: ReadonlySet<string>;
+	cssSources: Array<CssCallSite>;
+	cssDiagnostics: Array<CssDiagnostic>;
+}
+
 export interface ExtractedCssStyle {
 	style: StyleObject;
 	provenance: CssSourceProvenance;
@@ -362,6 +369,125 @@ const callLocation = (
 };
 
 const isAuthoredCssSpecifier = (source: string): boolean => /\.css(?:[?#].*)?$/.test(source);
+
+/**
+ * Collect all analyzer-facing CSS observations from one parsed module. The
+ * individual helpers below remain available for focused callers, while the
+ * CLI/inspector path avoids parsing the same source repeatedly.
+ */
+export function inspectCssSource(
+	code: string,
+	id: string,
+	matchers: Array<string | RegExp>,
+): CssSourceInspection {
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const authoredCss: Array<AuthoredCssImport> = [];
+	const cssNames = new Set<string>();
+
+	walk(result.program, (node) => {
+		if (node.type !== "ImportDeclaration") return;
+		const declaration = node as ImportNode;
+		const source = declaration.source?.value;
+		if (typeof source !== "string") return;
+		if (isAuthoredCssSpecifier(source)) {
+			const start = declaration.start ?? 0;
+			const end = declaration.end ?? start;
+			const { line, column } = callLocation(code, { start, end } as CallNode);
+			authoredCss.push({
+				file: id,
+				source,
+				start,
+				end,
+				line,
+				column,
+				kind: (declaration.specifiers?.length ?? 0) === 0 ? "side-effect" : "binding",
+			});
+		}
+		if (!isCssSource(source, matchers)) return;
+		for (const specifier of declaration.specifiers ?? []) {
+			if (specifier.type === "ImportSpecifier") {
+				const imported = specifier.imported?.name;
+				const local = specifier.local?.name;
+				if ((imported === "css" || imported === "dcss") && typeof local === "string") {
+					cssNames.add(local);
+				}
+			} else if (specifier.type === "ImportDefaultSpecifier") {
+				const local = specifier.local?.name;
+				if (typeof local === "string") cssNames.add(local);
+			}
+		}
+	});
+
+	const cssSources: Array<CssCallSite> = [];
+	const cssDiagnostics: Array<CssDiagnostic> = [];
+	const unsupported = new Map<string, string>([
+		["global", "Authored global rules are not extracted yet."],
+		["keyframes", "Authored keyframes are not extracted yet."],
+		["fontFace", "Authored @font-face rules are not extracted yet."],
+		["layer", "Authored layers are not extracted yet."],
+		["supports", "Authored @supports rules are not extracted yet."],
+		["property", "Authored @property rules are not extracted yet."],
+	]);
+
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const location = callLocation(code, call);
+		const callKind = callKindFor(call.callee, cssNames);
+		if (callKind !== undefined) {
+			const staticArguments = call.arguments.filter(isObjectLiteral).length;
+			cssSources.push({
+				file: id,
+				start: call.start,
+				end: call.end,
+				...location,
+				callKind,
+				staticArguments,
+				dynamicArguments: call.arguments.length - staticArguments,
+			});
+		}
+
+		if (call.callee?.type !== "MemberExpression") return;
+		const object = (call.callee as { object?: OxcNode | null }).object;
+		if (object?.type !== "Identifier" || !cssNames.has(object.name as string)) return;
+		const member = memberName(call.callee);
+		if (member !== undefined && unsupported.has(member)) {
+			cssDiagnostics.push({
+				kind: "unsupported-construct",
+				file: id,
+				start: call.start,
+				end: call.end,
+				...location,
+				message: unsupported.get(member)!,
+				suggestion:
+					"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+			});
+			return;
+		}
+		if (callKind === undefined) return;
+		const staticArguments = call.arguments.filter(isObjectLiteral).length;
+		if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
+			cssDiagnostics.push({
+				kind: "missing-extraction",
+				file: id,
+				start: call.start,
+				end: call.end,
+				...location,
+				message:
+					call.arguments.length === 0
+						? `${callKind} has no style object to extract.`
+						: `${callKind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
+				suggestion:
+					"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+			});
+		}
+	});
+
+	return { authoredCss, cssNames, cssSources, cssDiagnostics };
+}
 
 /**
  * Find explicit `.css` imports without inspecting or rewriting their contents.
@@ -647,6 +773,72 @@ export function extractVarKeys(
 	});
 
 	return [...keys];
+}
+
+export interface CssFileExtraction {
+	sources: Array<ExtractedCssStyle>;
+	varKeys: Array<string>;
+}
+
+/** Extract one file's styles and var keys with a single AST parse. */
+export function extractCssFile(
+	code: string,
+	id: string,
+	matchers: Array<string | RegExp>,
+	preset: CssPreset,
+): CssFileExtraction {
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const cssNames = new Set<string>();
+	walk(result.program, (node) => {
+		if (node.type !== "ImportDeclaration") return;
+		const declaration = node as ImportNode;
+		const source = declaration.source?.value;
+		if (typeof source !== "string" || !isCssSource(source, matchers)) return;
+		for (const specifier of declaration.specifiers ?? []) {
+			if (specifier.type === "ImportSpecifier") {
+				const imported = specifier.imported?.name;
+				const local = specifier.local?.name;
+				if ((imported === "css" || imported === "dcss") && typeof local === "string") {
+					cssNames.add(local);
+				}
+			} else if (specifier.type === "ImportDefaultSpecifier") {
+				const local = specifier.local?.name;
+				if (typeof local === "string") cssNames.add(local);
+			}
+		}
+	});
+	if (cssNames.size === 0) return { sources: [], varKeys: [] };
+
+	const sources: Array<ExtractedCssStyle> = [];
+	const keys = new Set<string>();
+	walk(result.program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const callee = call.callee;
+		const callKind = callKindFor(callee, cssNames);
+		if (callKind !== undefined) {
+			const { line, column } = callLocation(code, call);
+			for (const argument of call.arguments) {
+				const literal = evalLiteral(argument as Expression);
+				if (typeof literal !== "object" || literal === null) continue;
+				sources.push({
+					style: resolveDesignStyle(literal as Record<string, unknown>, preset.tokens),
+					provenance: { file: id, start: call.start, end: call.end, line, column, callKind },
+				});
+			}
+		}
+		if (callee?.type !== "MemberExpression") return;
+		const object = (callee as { object?: OxcNode | null }).object;
+		if (object?.type !== "Identifier" || !cssNames.has(object.name as string)) return;
+		const property = (callee as { property?: { name?: string } | null }).property;
+		if ((property?.name ?? "") !== "vars") return;
+		for (const argument of call.arguments) collectKeysFromObject(argument as OxcNode, "", keys);
+	});
+
+	return { sources, varKeys: [...keys] };
 }
 
 export interface InlineCssResult {
