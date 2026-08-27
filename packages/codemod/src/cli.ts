@@ -4,7 +4,7 @@
  * Usage:
  *   node --import tsx src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
  *   node --import tsx src/cli.ts swap --from=<auto|tw|css|design> \
- *        --to=<css.class|design|tw> [--write] [--diff] [--report] <globs...>
+ *        --to=<css.class|design|dss|tw> [--write] [--diff] [--report] <globs...>
  *
  * Default is analysis mode: reports what WOULD change without touching
  * files. `--diff` prints unified diffs; `--write` applies. The two are not

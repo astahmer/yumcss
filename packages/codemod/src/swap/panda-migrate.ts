@@ -20,6 +20,7 @@ import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../meta.ts";
 import { applyEdits } from "../migrate.ts";
 import { computeExcludedRanges, matchBlock } from "../sources.ts";
+import { ensureImport } from "../shared.ts";
 import { emitCssClass, type EmitterContext } from "./emit.ts";
 import {
 	foldRecipeCall,
@@ -27,8 +28,10 @@ import {
 	renderCustomPatternModule,
 	renderInternalHelpers,
 	renderJsxIndex,
+	renderPandaPreset,
 	renderPatternModule,
 	renderRecipeModule,
+	renderVirtualCssDeclaration,
 } from "./panda-modules.ts";
 import { BUILTIN_PATTERNS } from "./panda-patterns.ts";
 import {
@@ -42,6 +45,7 @@ import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./panda-theme.
 import {
 	literalToPlain,
 	PANDA_ALIASES,
+	normalizePandaStyleObject,
 	pandaRecipeToIr,
 	pandaStyleToIr,
 	parsePandaCalls,
@@ -148,6 +152,117 @@ function irToText(ir: SwapIrLike, meta: PandwindMeta): string {
 const cssImportFor = (depth: number): string =>
 	depth <= 0 ? "./css" : `${"../".repeat(depth)}css`;
 
+/** Register the generated extractor in host frameworks that need a plugin. */
+function integrateNextApp(
+	projectRoot: string,
+	outDir: string,
+	write: boolean,
+	notes: string[],
+): void {
+	const configPath = ["next.config.mjs", "next.config.js", "next.config.ts"]
+		.map((name) => join(projectRoot, name))
+		.find((path) => existsSync(path));
+	if (configPath === undefined) return;
+
+	const config = readFileSync(configPath, "utf8");
+	const presetPath = `./${relative(dirname(configPath), join(outDir, "preset.ts")).replaceAll("\\", "/")}`;
+	const pluginImport = `import { pandwindWebpackCss } from "pandwind/unplugin";`;
+	const presetImport = `import { preset } from "${presetPath}";`;
+	let nextConfig = config;
+	if (!nextConfig.includes("pandwindWebpackCss")) {
+		nextConfig = ensureImport(nextConfig, pluginImport);
+		nextConfig = ensureImport(nextConfig, presetImport);
+		const plugin = `\t\tconfig.plugins.push(pandwindWebpackCss({ preset, root: process.cwd(), virtualId: "pandwind-css.css" }));`;
+		const webpackBody = `\twebpack(config) {\n${plugin}\n\t\treturn config;\n\t},\n`;
+		const existingWebpack = /webpack\s*\([^)]*\)\s*\{/;
+		if (existingWebpack.test(nextConfig)) {
+			const returnAt = nextConfig.indexOf("return config", nextConfig.search(existingWebpack));
+			if (returnAt !== -1) {
+				nextConfig = `${nextConfig.slice(0, returnAt)}${plugin}\n${nextConfig.slice(returnAt)}`;
+			}
+		} else {
+			// Find the config object's balanced closing brace, not the last nested
+			// object (for example `images: { ... }`). Add the missing property
+			// comma when the existing final property does not have one.
+			const configOpen = nextConfig.search(/(?:const|let|var)\s+config\s*=\s*\{/);
+			const configBlock =
+				configOpen === -1 ? null : matchBlock(nextConfig, nextConfig.indexOf("{", configOpen));
+			if (configBlock !== null) {
+				const close = configBlock.end - 1;
+				const prefix = nextConfig.slice(0, close).replace(/\s+$/, "");
+				const separator = prefix.endsWith(",") ? "\n" : ",\n";
+				nextConfig = `${prefix}${separator}${webpackBody}${nextConfig.slice(close)}`;
+			}
+		}
+	}
+	// Older codemod runs registered the same plugin with the bare `pandwind-css`
+	// id. Normalize that registration so reruns converge on the CSS virtual
+	// module that Next/Webpack can resolve.
+	if (nextConfig.includes("pandwindWebpackCss")) {
+		nextConfig = ensureImport(nextConfig, pluginImport);
+		nextConfig = ensureImport(nextConfig, presetImport);
+		nextConfig = nextConfig.replaceAll(
+			'virtualId: "pandwind-css"',
+			'virtualId: "pandwind-css.css"',
+		);
+	}
+	if (nextConfig !== config) {
+		notes.push(`registered pandwindWebpackCss in ${relative(projectRoot, configPath)}`);
+		if (write) writeFileSync(configPath, nextConfig);
+	}
+
+	const layouts = [
+		join(projectRoot, "app", "layout.tsx"),
+		join(projectRoot, "app", "layout.ts"),
+		join(projectRoot, "src", "app", "layout.tsx"),
+		join(projectRoot, "src", "app", "layout.ts"),
+	].filter((path) => existsSync(path));
+	for (const layoutPath of layouts) {
+		const layout = readFileSync(layoutPath, "utf8");
+		// Webpack treats `scheme:` imports as URI schemes before resolver
+		// plugins run. A bare virtual id reaches unplugin on both Next and Vite.
+		const virtualImport = 'import "pandwind-css.css";';
+		const nextLayout = ensureImport(
+			layout.replaceAll('import "pandwind-css";\n', "").replaceAll('import "pandwind-css";', ""),
+			virtualImport,
+		);
+		if (nextLayout === layout) continue;
+		notes.push(`imported pandwind-css in ${relative(projectRoot, layoutPath)}`);
+		if (write) writeFileSync(layoutPath, nextLayout);
+	}
+}
+
+/** Stop package lifecycle scripts from recreating Panda's obsolete output. */
+function removePandaCodegenScripts(projectRoot: string, write: boolean, notes: string[]): void {
+	const packagePath = join(projectRoot, "package.json");
+	if (!existsSync(packagePath)) return;
+	let packageJson: { scripts?: Record<string, string> };
+	try {
+		packageJson = JSON.parse(readFileSync(packagePath, "utf8")) as {
+			scripts?: Record<string, string>;
+		};
+	} catch {
+		return;
+	}
+	if (packageJson.scripts === undefined) return;
+
+	let changed = false;
+	for (const [name, command] of Object.entries(packageJson.scripts)) {
+		if (!/\bpanda\s+codegen\b/.test(command)) continue;
+		const remaining = command
+			.split(/\s*&&\s*/)
+			.filter((part) => !/^panda\s+codegen(?:\s|$)/.test(part.trim()))
+			.join(" && ")
+			.trim();
+		if (remaining === "") delete packageJson.scripts[name];
+		else packageJson.scripts[name] = remaining;
+		changed = true;
+	}
+	if (!changed) return;
+	notes.push("removed Panda codegen lifecycle scripts from package.json");
+	if (write) writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+}
+
 /** Keep generated imports after a file's directive prologue (`"use client"`). */
 function importInsertionOffset(source: string): number {
 	let offset = source.charCodeAt(0) === 0xfeff ? 1 : 0;
@@ -197,6 +312,29 @@ function importInsertionOffset(source: string): number {
 		if (source[end] === ";") end++;
 		offset = end;
 	}
+}
+
+/** Lower Panda's compile-time-only text-style helper to its object payload. */
+function defineTextStylesEdits(
+	source: string,
+): Array<{ start: number; end: number; text: string }> {
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const match of source.matchAll(/\bdefineTextStyles\s*\(\s*\{/g)) {
+		const callStart = match.index ?? 0;
+		const open = source.indexOf("{", callStart);
+		const block = matchBlock(source, open);
+		if (block === null) continue;
+		let end = block.end;
+		while (/\s/.test(source[end] ?? "")) end++;
+		if (source[end] !== ")") continue;
+		edits.push({ start: callStart, end: end + 1, text: source.slice(open, block.end) });
+	}
+	for (const match of source.matchAll(
+		/import\s*\{\s*defineTextStyles\s*\}\s*from\s*["'][^"']+["']\s*;?\s*/g,
+	)) {
+		edits.push({ start: match.index ?? 0, end: (match.index ?? 0) + match[0].length, text: "" });
+	}
+	return edits;
 }
 
 function countResidual(report: PandaMigrateReport, kind: string, amount = 1): void {
@@ -621,9 +759,10 @@ export function factoryEdits(
 	const text = irToText(ir, meta);
 	if (text === "") return null;
 
+	const normalizedStyle = normalizePandaStyleObject(Object.fromEntries(styleEntries));
 	const classCallArgs = [
-		`{ ${styleEntries
-			.map(([k, v]) => `${JSON.stringify(PANDA_ALIASES.get(k) ?? k)}: ${renderStyleValue(v)}`)
+		`{ ${Object.entries(normalizedStyle)
+			.map(([k, v]) => `${JSON.stringify(k)}: ${renderStyleValue(v)}`)
 			.join(", ")} }`,
 	];
 	const classExpr = existingClassExpr
@@ -721,8 +860,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		emitted.push({ path, content });
 	};
 
-	queueEmission(join(outDir, "css.ts"), renderCssBootstrap(existsSync(join(outDir, "preset.ts"))));
-	queueEmission(join(outDir, "internal.ts"), renderInternalHelpers());
+	queueEmission(join(outDir, "preset.ts"), renderPandaPreset(theme));
+	queueEmission(join(outDir, "css.ts"), renderCssBootstrap(true));
+	queueEmission(join(outDir, "virtual.d.ts"), renderVirtualCssDeclaration());
+	queueEmission(join(outDir, "internal.ts"), renderInternalHelpers(theme));
 
 	/** Extra per-file edits: declaration removals, folds, import insertion. */
 	const fileExtras = new Map<string, Array<{ start: number; end: number; text: string }>>();
@@ -989,6 +1130,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	];
 
 	for (const file of files) {
+		// Generated modules are inputs to the emission pass, never call-site
+		// sources. Skipping them keeps --force reruns from reprocessing our own
+		// output and falsely reporting generated files as changed.
+		if (file.path.includes(`/${outDirName}/`)) continue;
 		const edits: Array<{ start: number; end: number; text: string }> = [
 			...(fileExtras.get(file.path) ?? []),
 		];
@@ -1108,6 +1253,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 				edits.push({ start: startAt, end: startAt + m[0].length, text: replacement });
 			}
 		}
+		edits.push(...defineTextStylesEdits(file.source));
 
 		if (edits.length === 0) continue;
 		let next = applyEdits(file.source, edits);
@@ -1122,7 +1268,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		if (next === file.source) continue;
 		// cva/sva definitions folded into generated output no longer need their
 		// panda-only named imports; leaving them would create unresolved exports.
-		next = removeUnusedVariantImports(next);
+		next = removeUnusedVariantImports(next, aliasSpecifier(aliasInfo, outDirName, "css"));
 		next = removeUnusedFactoryImports(next);
 		try {
 			parseSync(file.path, next, {
@@ -1139,6 +1285,12 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		if (options.diff) console.log(unifiedDiff(file.source, next, relative(projectRoot, file.path)));
 		if (options.write) writeFileSync(file.path, next);
 	}
+
+	// The generated preset is inert until the host bundler loads the virtual
+	// stylesheet. Next/Webpack is common enough to wire automatically, while
+	// keeping the integration local to projects that actually have Next config.
+	integrateNextApp(projectRoot, outDir, options.write, report.notes);
+	removePandaCodegenScripts(projectRoot, options.write, report.notes);
 
 	return report;
 }
@@ -1161,9 +1313,8 @@ const LAYOUT_COMPONENTS = new Set([
 ]);
 
 function isActualImportSpecifier(source: string, offset: number): boolean {
-	const lineStart = source.lastIndexOf("\n", Math.max(0, offset - 1)) + 1;
-	const prefix = source.slice(lineStart, offset);
-	if (!/(?:^|;)\s*import\b/.test(prefix)) return false;
+	const before = source.slice(Math.max(0, offset - 400), offset);
+	if (!/\bimport\b[\s\S]*\bfrom\s*["']\s*$/.test(before)) return false;
 	let inTemplate = false;
 	for (let i = 0; i < offset; i++) {
 		if (source[i] !== "`" || source[i - 1] === "\\") continue;
@@ -1179,7 +1330,7 @@ function hasCssBinding(source: string): boolean {
 	);
 }
 
-function removeUnusedVariantImports(source: string): string {
+function removeUnusedVariantImports(source: string, cssImportPath: string): string {
 	const unsupported = new Set(["cva", "sva", "defineRecipe", "defineSlotRecipe"]);
 	const excluded = computeExcludedRanges(source, "migration.tsx");
 	const hasCall = (name: string): boolean => {
@@ -1200,7 +1351,7 @@ function removeUnusedVariantImports(source: string): string {
 				.filter(Boolean);
 			const hasResidualRecipe = [...unsupported].some((name) => hasCall(name));
 			if (hasResidualRecipe)
-				return `import { ${kept.join(", ")} } from ${quote}styled-system/css${quote};`;
+				return `import { ${kept.join(", ")} } from ${quote}${cssImportPath}${quote};`;
 			return kept.length === 0 ? "" : `import { ${kept.join(", ")} } from ${quote}${path}${quote};`;
 		},
 	);

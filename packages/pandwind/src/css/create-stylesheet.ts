@@ -286,10 +286,8 @@ const cssVar = {
 
 type Rule = { id: string; css: string; priority: number };
 
-/**
- * startsWith `&` and not `& `
- */
-const isSelfSelector = (cond: string) => cond.charCodeAt(0) === 38 && cond.charAt(1) !== " ";
+/** Selectors rooted at the generated class, including descendant selectors. */
+const isSelfSelector = (cond: string) => cond.charCodeAt(0) === 38;
 
 /**
  * endsWith `&`

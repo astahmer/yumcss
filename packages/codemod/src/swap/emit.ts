@@ -15,6 +15,7 @@ import { mapToken } from "../map.ts";
 import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
+import { CSS_PROPERTY_ALIASES } from "./parse-panda.ts";
 
 export interface EmitterContext {
 	/** 1-based ordinal of the call site within the current file pass. */
@@ -133,7 +134,14 @@ function groupByConditions(entries: SwapEntry[]): Map<string, SwapEntry[]> {
 		const key = conditionKey(entry.conditions);
 		const list = groups.get(key);
 		if (list === undefined) groups.set(key, [entry]);
-		else list.push(entry);
+		else {
+			// Panda lets a bundled utility (for example textStyle) be followed by
+			// an explicit declaration. Emit one object key and keep authored
+			// last-write-wins precedence so the result remains valid TypeScript.
+			const previous = list.findIndex((candidate) => candidate.prop === entry.prop);
+			if (previous === -1) list.push(entry);
+			else list[previous] = entry;
+		}
 	}
 	return groups;
 }
@@ -170,12 +178,16 @@ function renderInlineScopes(scopes: Array<Scope>, sort = false): string {
 		const entries = sort ? sortByCanonicalOrder(node.entries) : node.entries;
 		const parts = entries.map(
 			(e) =>
-				`${e.prop.startsWith("--") ? JSON.stringify(e.prop) : e.prop}: ${formatValue(e.value)}`,
+				`${e.prop.startsWith("--") ? JSON.stringify(e.prop) : (CSS_PROPERTY_ALIASES.get(e.prop) ?? e.prop)}: ${formatValue(e.value)}`,
 		);
 		for (const [condition, child] of [...node.children.entries()].toSorted(([a], [b]) =>
 			a.localeCompare(b),
 		)) {
-			parts.push(`_${condition}: { ${renderNode(child)} }`);
+			const key =
+				condition.startsWith("&") || condition.startsWith("@")
+					? JSON.stringify(condition)
+					: `_${condition}`;
+			parts.push(`${key}: { ${renderNode(child)} }`);
 		}
 		return parts.join(", ");
 	};
@@ -472,7 +484,12 @@ function placeEntry(
 // alias kept so both call shapes above stay valid if one is renamed later
 const toTokenRef = toDesignTokenRef;
 
-export const emitDesignVocab: Emitter = (ir, meta, ctx) => {
+function emitDesignVocabWithCallee(
+	callee: "css.class" | "dss",
+	ir: SwapIR,
+	meta: PandwindMeta,
+	ctx: EmitterContext,
+): EmitterResult {
 	const residuals: SwapIR["residuals"] = [];
 	const mode: TokenRefMode = ctx.tokenRefs ?? "bare";
 	const groups = groupByConditions(ir.entries);
@@ -526,15 +543,22 @@ export const emitDesignVocab: Emitter = (ir, meta, ctx) => {
 		}
 		parts.push(body);
 	}
-	const text = parts.length > 0 ? `css.class({ ${parts.join(", ")} })` : "";
+	const text = parts.length > 0 ? `${callee}({ ${parts.join(", ")} })` : "";
 	return { text, residuals };
-};
+}
+
+export const emitDesignVocab: Emitter = (ir, meta, ctx) =>
+	emitDesignVocabWithCallee("css.class", ir, meta, ctx);
+
+export const emitDssVocab: Emitter = (ir, meta, ctx) =>
+	emitDesignVocabWithCallee("dss", ir, meta, ctx);
 
 /* ------------------------------------------------------------------ */
 
-export const SWAP_EMITTERS: Record<"css.class" | "design" | "tw", Emitter> = {
+export const SWAP_EMITTERS: Record<"css.class" | "design" | "dss" | "tw", Emitter> = {
 	"css.class": emitCssClass,
 	design: emitDesignVocab,
+	dss: emitDssVocab,
 	tw: emitTwObject,
 };
 

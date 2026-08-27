@@ -26,7 +26,7 @@ const EMITTERS: Record<string, SwapEmitter> = {
 };
 
 export const SWAP_TARGETS = Object.keys(EMITTERS);
-export type SwapTarget = "css.class" | "design" | "tw" | "tailwind" | "panda" | "stylex";
+export type SwapTarget = "css.class" | "design" | "dss" | "tw" | "tailwind" | "panda" | "stylex";
 import type { SwapIR } from "./ir.ts";
 
 export const SWAP_SOURCES = ["auto", "tw", "css", "design", "panda"] as const;
@@ -138,11 +138,14 @@ export function runSwap(
 		// Only in-house class-string targets ride an existing pandwind css
 		// binding; external libraries bring their own imports.
 		const needsCssTarget = options.to === "css.class" || options.to === "design";
-		if (needsCssTarget && !hasCssBinding(code)) {
+		const needsDssTarget = options.to === "dss";
+		const hasDssBinding =
+			/\b(?:const|let|var)\s+dss\b/.test(code) || /import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
+		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
 			code = insertSkipMarker(
 				code,
 				match.start,
-				`no local pandwind css instance to swap into (${options.to})`,
+				`no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
 				marker,
 			);
 			skippedByMarker++;
@@ -316,7 +319,7 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod swap: no input patterns given.\n" +
-				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
+				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|dss|tw> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
 		);
 	}
 	return args;

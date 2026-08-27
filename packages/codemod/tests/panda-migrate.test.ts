@@ -105,6 +105,8 @@ describe("factory elements", () => {
 			tokens: examplePreset.tokens,
 		});
 		const edits = factoryEdits(el, src, loadedMeta, {
+			tokens: {},
+			conditions: {},
 			tokenVars: new Map(),
 			textStyles: new Map(),
 			customPatterns: new Map(),
@@ -348,5 +350,86 @@ describe("runPandaMigration", () => {
 		const twice = readFileSync(join(dir, "src", "plain.ts"), "utf8");
 		expect(twice).toBe(once);
 		expect(report.filesChanged).toBe(0);
+	});
+
+	it("normalizes the old Next virtual stylesheet integration on reruns", async () => {
+		const dir = makeProject();
+		mkdirSync(join(dir, "app"), { recursive: true });
+		writeFileSync(
+			join(dir, "package.json"),
+			JSON.stringify({
+				scripts: { prepare: "panda codegen", prebuild: "pnpm build && panda codegen" },
+			}),
+		);
+		writeFileSync(
+			join(dir, "next.config.mjs"),
+			[
+				'import { pandwindWebpackCss } from "pandwind/unplugin";',
+				'import { preset } from "./src/pandwind/preset.ts";',
+				"export default {",
+				"\twebpack(config) {",
+				'\t\tconfig.plugins.push(pandwindWebpackCss({ preset, virtualId: "pandwind-css" }));',
+				"\t\treturn config;",
+				"\t},",
+				"};",
+			].join("\n"),
+		);
+		writeFileSync(
+			join(dir, "app", "layout.tsx"),
+			'import "pandwind-css";\nexport default function Layout() { return null; }\n',
+		);
+		writeFileSync(join(dir, "src", "page.tsx"), "export const Page = () => <div />;\n");
+
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+
+		expect(readFileSync(join(dir, "next.config.mjs"), "utf8")).toContain(
+			'virtualId: "pandwind-css.css"',
+		);
+		expect(readFileSync(join(dir, "next.config.mjs"), "utf8")).not.toContain(
+			'virtualId: "pandwind-css" }',
+		);
+		expect(readFileSync(join(dir, "app", "layout.tsx"), "utf8")).toBe(
+			'import "pandwind-css.css";\nexport default function Layout() { return null; }\n',
+		);
+		expect(readFileSync(join(dir, "src", "pandwind", "virtual.d.ts"), "utf8")).toContain(
+			'declare module "pandwind-css.css"',
+		);
+		const packageJson = JSON.parse(readFileSync(join(dir, "package.json"), "utf8")) as {
+			scripts: Record<string, string>;
+		};
+		expect(packageJson.scripts.prepare).toBeUndefined();
+		expect(packageJson.scripts.prebuild).toBe("pnpm build");
+	});
+
+	it("lowers defineTextStyles so the migrated theme has no invalid Panda helper", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "theme", "text-styles.ts"),
+			[
+				"import { defineTextStyles } from '@pandacss/dev'",
+				"export const textStyles = defineTextStyles({ body: { value: { fontSize: '1rem' } } })",
+			].join("\n"),
+		);
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["theme/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		});
+		const output = readFileSync(join(dir, "theme", "text-styles.ts"), "utf8");
+		expect(output).not.toContain("defineTextStyles");
+		expect(output).not.toContain("@pandacss/dev");
+		expect(output).toContain("export const textStyles = {");
 	});
 });

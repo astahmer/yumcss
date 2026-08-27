@@ -31,7 +31,7 @@ const meta = loadMetaFromSources({
 const WITH_CSS = `import { css } from "./design.ts";\n`;
 const swap = (
 	source: string,
-	to: "css.class" | "design" | "tw",
+	to: "css.class" | "design" | "dss" | "tw",
 	from: "auto" | "tw" | "css" | "design" = "auto",
 	file = "test.tsx",
 ) =>
@@ -80,6 +80,12 @@ describe("swap css.class -> tw", () => {
 		const result = swap(`const card = css.class({ backgroundColor: "#3182ce" });`, "tw");
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('bgColor: "blue-500"');
+	});
+
+	test("text declarations use the typed text-family tw key", () => {
+		const result = swap(`const heading = css.class({ fontSize: "0.75rem" });`, "tw");
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('tw({ textSize: "xs" })');
 	});
 
 	test("round trip stabilizes: css.class -> tw -> css.class is idempotent at IR level", () => {
@@ -135,6 +141,31 @@ describe("swap design vocabulary", () => {
 	test("non-flex display falls to $raw, never silently dropped", () => {
 		const result = swap(`${WITH_CSS}const b = css.class({ display: "block" });`, "design");
 		expect(result.code).toContain('display: "block"');
+	});
+
+	test("design vocabulary can target a local dss binding", () => {
+		const result = swap(
+			`import { css, dss } from "./design.ts";\nconst card = css.class({ $frame: { fill: "$blue-500", pad: 4 }, $text: { color: "$white" } });`,
+			"dss",
+			"design",
+		);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain(
+			'dss({ $frame: { fill: "$blue-500", pad: 4 }, $text: { color: "$white" } })',
+		);
+		expect(result.code).not.toContain("css.class({");
+	});
+
+	test("dss refuses to invent a missing local binding", () => {
+		const result = swap(
+			`${WITH_CSS}const card = css.class({ $frame: { fill: "$blue-500" } });`,
+			"dss",
+			"design",
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.code).toContain("no local dss instance");
+		expect(result.code).toContain("css.class({");
 	});
 });
 

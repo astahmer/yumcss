@@ -86,9 +86,11 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		const ch = body[i]!;
 		if (ch === '"' || ch === "'" || ch === "`") return parseString();
 		if (ch === "{" || ch === "[") return parseContainer();
-		const start = i;
-		while (i < body.length && /[0-9]/.test(body[i]!)) i++;
-		if (i > start) return Number(body.slice(start, i));
+		const numeric = /^-?\d+(?:\.\d+)?/.exec(body.slice(i));
+		if (numeric !== null) {
+			i += numeric[0].length;
+			return Number(numeric[0]);
+		}
 		if (body.startsWith("true", i)) {
 			i += 4;
 			return true;

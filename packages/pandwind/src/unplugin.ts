@@ -39,7 +39,7 @@
  * additionally triggers immediate re-requests.
  */
 import { statSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { createUnplugin } from "unplugin";
 import { createInlineTwPluginCore } from "./vite/index.ts";
 import type { PandwindViteOptions, Resolver } from "./vite/index.ts";
@@ -118,6 +118,7 @@ export interface PandwindUnpluginCssOptions extends PandwindCssViteOptions {
  */
 export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssOptions) => {
 	const core = createCssExtractorPluginCore(options.preset, options);
+	const virtualId = options.virtualId ?? "pandwind:css";
 	return {
 		name: core.name,
 		enforce: "pre" as const,
@@ -130,6 +131,35 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 		},
 		watchChange(id: string) {
 			core.invalidate(id);
+		},
+		webpack(compiler: any) {
+			// Next's CSS resolver does not always run webpack's ordinary
+			// resolve.plugins chain. Re-route the bare virtual stylesheet through
+			// unplugin's already-installed virtual module when that happens.
+			compiler.hooks.normalModuleFactory.tap("pandwind-css", (factory: any) => {
+				factory.hooks.beforeResolve.tapAsync("pandwind-css", (data: any, done: any) => {
+					if (data?.request !== virtualId) {
+						done(null);
+						return;
+					}
+					const resolved = core.resolveId(virtualId);
+					if (resolved === null) {
+						done(null);
+						return;
+					}
+					const virtualPath = resolve(
+						compiler.context ?? process.cwd(),
+						"_virtual_",
+						encodeURIComponent(resolved),
+					);
+					const virtualModules = compiler.options.plugins.find(
+						(plugin: any) => typeof plugin.writeModule === "function",
+					);
+					virtualModules?.writeModule?.(virtualPath, "");
+					data.request = virtualPath;
+					done(null);
+				});
+			});
 		},
 		vite: {
 			handleHotUpdate(ctx: { file: string }) {

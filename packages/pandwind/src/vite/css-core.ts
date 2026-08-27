@@ -61,7 +61,8 @@ export function createCssExtractorPluginCore(
 	// strategies still get the generated stylesheet — with their class names.
 	// The `.css` suffix makes vite's CSS pipeline (and its dev injection)
 	// treat the virtual module as stylesheet, not JavaScript.
-	const resolvedVirtualId = `\0${virtualId}.css`;
+	const cssVirtualSuffix = virtualId.endsWith(".css") ? "" : ".css";
+	const resolvedVirtualId = `\0${virtualId}${cssVirtualSuffix}`;
 	const root = options.root ?? process.cwd();
 	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
@@ -72,7 +73,7 @@ export function createCssExtractorPluginCore(
 	const routes = options.splitByRoute ?? [];
 	const COMMON_BUCKET = "__common__";
 	const resolvedManifestId = `\0${virtualId}-manifest.js`;
-	const routeChunkId = (name: string): string => `\0${virtualId}.css?route=${name}`;
+	const routeChunkId = (name: string): string => `\0${virtualId}${cssVirtualSuffix}?route=${name}`;
 
 	const isScanned = (file: string): boolean => {
 		if (!include.some((pattern) => pattern.test(file))) return false;
@@ -152,12 +153,10 @@ export function createCssExtractorPluginCore(
 				const code = readFileSync(file, "utf8");
 				let sources: ReturnType<typeof extractCssSources> = [];
 				let varKeys: string[] = [];
-				if (/\bcss\b/.test(code)) {
+				if (/\bcss\b|\/pandwind\/jsx\b/.test(code)) {
 					const names = findCssImports(code, file, matchers);
-					if (names.size > 0) {
-						sources = extractCssSources(code, file, names, preset);
-						varKeys = extractVarKeys(code, file, names);
-					}
+					sources = extractCssSources(code, file, names, preset);
+					if (names.size > 0) varKeys = extractVarKeys(code, file, names);
 				}
 				entry = { mtimeMs, sources, varKeys };
 				fileCache.set(file, entry);
@@ -184,12 +183,10 @@ export function createCssExtractorPluginCore(
 			const code = readFileSync(file, "utf8");
 			let sources: ReturnType<typeof extractCssSources> = [];
 			let varKeys: string[] = [];
-			if (/\bcss\b/.test(code)) {
+			if (/\bcss\b|\/pandwind\/jsx\b/.test(code)) {
 				const names = findCssImports(code, file, matchers);
-				if (names.size > 0) {
-					sources = extractCssSources(code, file, names, preset);
-					varKeys = extractVarKeys(code, file, names);
-				}
+				sources = extractCssSources(code, file, names, preset);
+				if (names.size > 0) varKeys = extractVarKeys(code, file, names);
 			}
 			entry = { mtimeMs, sources, varKeys };
 			fileCache.set(file, entry);
@@ -337,17 +334,20 @@ ${split.routes.get(route.name) ?? ""}`;
 			return null;
 		},
 		load(id: string) {
+			// webpack's virtual-module resolver may preserve the separator between
+			// its virtual directory and the decoded NUL-prefixed id.
+			const normalizedId = id.startsWith("/") && id.charCodeAt(1) === 0 ? id.slice(1) : id;
 			// External-compiler modes serve empty CSS; sheet-backed strategies
 			// still need the generated stylesheet (with their class names).
 			const emptyMode = className !== undefined && strategy?.sheetBacked !== true;
 
-			if (id === resolvedVirtualId) {
+			if (normalizedId === resolvedVirtualId) {
 				if (emptyMode) return "";
 				if (routes.length === 0) return collectBody();
 				return collectSplit().common;
 			}
 
-			if (routes.length > 0 && id === resolvedManifestId) {
+			if (routes.length > 0 && normalizedId === resolvedManifestId) {
 				const map = Object.fromEntries(routes.map((r) => [r.name, `${virtualId}?route=${r.name}`]));
 				return (
 					`// pandwind per-route CSS splitting (plans/014 \u00a72) — route -> virtual module id.\n` +
@@ -356,9 +356,14 @@ ${split.routes.get(route.name) ?? ""}`;
 				);
 			}
 
-			if (routes.length > 0 && id.startsWith(`\0${virtualId}.css?route=`)) {
+			if (
+				routes.length > 0 &&
+				normalizedId.startsWith(`\0${virtualId}${cssVirtualSuffix}?route=`)
+			) {
 				if (emptyMode) return "";
-				const name = decodeURIComponent(id.slice(`\0${virtualId}.css?route=`.length));
+				const name = decodeURIComponent(
+					normalizedId.slice(`\0${virtualId}${cssVirtualSuffix}?route=`.length),
+				);
 				return collectSplit().routes.get(name) ?? "";
 			}
 			return null;

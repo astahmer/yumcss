@@ -54,6 +54,8 @@ export const PANDA_ALIASES: ReadonlyMap<string, string> = new Map([
 	["mr", "marginRight"],
 	["ms", "marginInlineStart"],
 	["me", "marginInlineEnd"],
+	["ps", "paddingInlineStart"],
+	["pe", "paddingInlineEnd"],
 	["bg", "backgroundColor"],
 	["rounded", "borderRadius"],
 	["w", "width"],
@@ -64,6 +66,26 @@ export const PANDA_ALIASES: ReadonlyMap<string, string> = new Map([
 	["maxH", "maxHeight"],
 	["pos", "position"],
 	["shadow", "boxShadow"],
+	["insetStart", "insetInlineStart"],
+	["insetEnd", "insetInlineEnd"],
+	["roundedTop", "borderTopRadius"],
+	["roundedRight", "borderRightRadius"],
+	["roundedBottom", "borderBottomRadius"],
+	["roundedLeft", "borderLeftRadius"],
+	["roundedStart", "borderStartRadius"],
+	["roundedEnd", "borderEndRadius"],
+]);
+
+/** Canonical Panda names that need expansion to an actual CSS property. */
+export const CSS_PROPERTY_ALIASES: ReadonlyMap<string, string> = new Map([
+	["paddingX", "paddingInline"],
+	["paddingY", "paddingBlock"],
+	["marginX", "marginInline"],
+	["marginY", "marginBlock"],
+	["scrollMarginX", "scrollMarginInline"],
+	["scrollMarginY", "scrollMarginBlock"],
+	["scrollPaddingX", "scrollPaddingInline"],
+	["scrollPaddingY", "scrollPaddingBlock"],
 ]);
 
 /** Top-level keys that open a condition scope instead of declaring. */
@@ -80,6 +102,53 @@ function canonicalProp(key: string): string {
 	const alias = PANDA_ALIASES.get(key);
 	if (alias !== undefined) return alias;
 	return camelProp(key);
+}
+
+const RADIUS_EXPANSIONS: ReadonlyMap<string, string[]> = new Map([
+	["borderTopRadius", ["borderTopLeftRadius", "borderTopRightRadius"]],
+	["borderRightRadius", ["borderTopRightRadius", "borderBottomRightRadius"]],
+	["borderBottomRadius", ["borderBottomLeftRadius", "borderBottomRightRadius"]],
+	["borderLeftRadius", ["borderTopLeftRadius", "borderBottomLeftRadius"]],
+	["borderStartRadius", ["borderStartStartRadius", "borderEndStartRadius"]],
+	["borderEndRadius", ["borderStartEndRadius", "borderEndEndRadius"]],
+]);
+
+/**
+ * Lower Panda utility transforms that are not ordinary CSS aliases. This is
+ * shared by factory output and generated runtime pattern modules so a
+ * rerun never leaves Panda-only keys behind in a Pandwind style object.
+ */
+export function normalizePandaStyleObject(style: Record<string, unknown>): Record<string, unknown> {
+	const out: Record<string, unknown> = {};
+	const add = (key: string, value: unknown): void => {
+		const current = out[key];
+		if (isPlainObject(current) && isPlainObject(value)) out[key] = { ...current, ...value };
+		else out[key] = value;
+	};
+	for (const [rawKey, rawValue] of Object.entries(style)) {
+		const key = canonicalProp(rawKey);
+		if (key === "hideFrom" || key === "hideBelow") {
+			if (typeof rawValue === "string") {
+				add(key === "hideFrom" ? rawValue : `${rawValue}Down`, { display: "none" });
+			} else {
+				add(key, rawValue);
+			}
+			continue;
+		}
+		if (key === "boxSize") {
+			add("width", rawValue);
+			add("height", rawValue);
+			continue;
+		}
+		const radius = RADIUS_EXPANSIONS.get(key);
+		if (radius !== undefined) {
+			for (const property of radius) add(property, rawValue);
+			continue;
+		}
+		const property = CSS_PROPERTY_ALIASES.get(key) ?? key;
+		add(property, isPlainObject(rawValue) ? normalizePandaStyleObject(rawValue) : rawValue);
+	}
+	return out;
 }
 
 /* ------------------------------------------------------------------ */
@@ -112,6 +181,32 @@ const COLOR_TOKEN_HEADS = new Set([
 	"indigo",
 ]);
 
+// Simple Panda values are ambiguous across token groups (`sm` is a font size,
+// radius, spacing value, etc.). Only turn them into `$` references when the
+// declaration has a matching theme-driven group; dotted paths remain safe to
+// resolve everywhere because Panda uses them as explicit group paths.
+const SIMPLE_TOKEN_PROPS = new Set([
+	"color",
+	"background",
+	"backgroundColor",
+	"borderColor",
+	"borderTopColor",
+	"borderRightColor",
+	"borderBottomColor",
+	"borderLeftColor",
+	"outlineColor",
+	"fill",
+	"stroke",
+	"fontFamily",
+	"fontSize",
+	"fontWeight",
+	"lineHeight",
+	"letterSpacing",
+	"boxShadow",
+	"textShadow",
+	"zIndex",
+]);
+
 /** Best-effort panda CSS-var group for an unmapped dotted token. */
 export function fallbackVarForPath(path: string): string {
 	const segments = path.split(".");
@@ -139,7 +234,7 @@ function resolveValue(
 	const important = raw.endsWith("!");
 	const bare = important ? raw.slice(0, -1) : raw;
 	let resolved: ResolvedValue;
-	if (theme.tokenVars.has(bare)) {
+	if (theme.tokenVars.has(bare) && (bare.includes(".") || SIMPLE_TOKEN_PROPS.has(prop))) {
 		resolved = { value: authoredRefForPath(bare) };
 	} else if (TOKEN_PATH_RE.test(bare)) {
 		// Dotted candidate the theme does not know — transitional var() fallback
@@ -180,11 +275,18 @@ function walkStyle(
 ): void {
 	for (const [key, raw] of Object.entries(style)) {
 		if (key.startsWith("&") || key.startsWith("@")) {
-			ir.residuals.push({
-				kind: "unrepresentable",
-				text: `${key}: {...}`,
-				hint: "nested selector / at-rule stays manual",
-			});
+			if (isPlainObject(raw)) {
+				// Pandwind's stylesheet engine can preserve nested selectors and
+				// at-rules as condition paths; keep walking so Panda aliases inside
+				// them are canonicalized instead of leaving a runtime Panda call.
+				walkStyle(raw, [...conditions, key], ir, theme);
+			} else {
+				ir.residuals.push({
+					kind: "unrepresentable",
+					text: `${key}: {...}`,
+					hint: "nested selector / at-rule must contain an object",
+				});
+			}
 			continue;
 		}
 		if (isConditionKey(key) || BREAKPOINT_RE.test(key)) {
@@ -217,6 +319,37 @@ function walkDeclaration(
 	theme: PandaTheme,
 ): void {
 	const prop = canonicalProp(key);
+
+	if (prop === "hideFrom" || prop === "hideBelow") {
+		if (typeof raw === "string") {
+			walkDeclaration(
+				"display",
+				"none",
+				[...conditions, prop === "hideFrom" ? raw : `${raw}Down`],
+				ir,
+				theme,
+			);
+		} else {
+			ir.residuals.push({
+				kind: "dynamic",
+				text: `${key}: {...}`,
+				hint: `${key} must use a literal breakpoint name`,
+			});
+		}
+		return;
+	}
+
+	if (prop === "boxSize") {
+		walkDeclaration("width", raw, conditions, ir, theme);
+		walkDeclaration("height", raw, conditions, ir, theme);
+		return;
+	}
+
+	const radius = RADIUS_EXPANSIONS.get(prop);
+	if (radius !== undefined) {
+		for (const property of radius) walkDeclaration(property, raw, conditions, ir, theme);
+		return;
+	}
 
 	// textStyle expands to its bundled declarations.
 	if (prop === "textStyle" && typeof raw === "string") {

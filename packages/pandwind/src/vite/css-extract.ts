@@ -47,12 +47,204 @@ export interface CssSourceProvenance {
 	end: number;
 	line: number;
 	column: number;
-	callKind: "css" | "css.class" | "css.raw";
+	callKind: "css" | "css.class" | "css.raw" | "pattern";
 }
 
 export interface ExtractedCssStyle {
 	style: StyleObject;
 	provenance: CssSourceProvenance;
+}
+
+const PATTERN_BASES: Record<string, Record<string, unknown>> = {
+	Box: {},
+	Container: {},
+	VStack: { display: "flex", flexDirection: "column" },
+	Stack: { display: "flex", flexDirection: "column" },
+	HStack: { display: "flex", flexDirection: "row" },
+	Center: { display: "flex", alignItems: "center", justifyContent: "center" },
+	Flex: { display: "flex" },
+	Grid: { display: "grid" },
+	Wrap: { display: "flex", flexWrap: "wrap", alignItems: "center" },
+	Circle: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: "9999px",
+	},
+	Square: { display: "flex", alignItems: "center", justifyContent: "center" },
+};
+
+const PATTERN_SPECIAL_PROPS: Record<string, Record<string, string>> = {
+	Stack: { direction: "flexDirection", align: "alignItems", justify: "justifyContent" },
+	VStack: { align: "alignItems", justify: "justifyContent" },
+	HStack: { align: "alignItems", justify: "justifyContent" },
+	Center: {},
+	Flex: {
+		direction: "flexDirection",
+		align: "alignItems",
+		justify: "justifyContent",
+		wrap: "flexWrap",
+		basis: "flexBasis",
+		grow: "flexGrow",
+		shrink: "flexShrink",
+	},
+	Grid: {},
+	Wrap: {},
+	Circle: {},
+	Square: {},
+};
+
+const PATTERN_IGNORED_PROPS = new Set(["as", "className", "css"]);
+const PATTERN_ALIASES: Record<string, string> = {
+	p: "padding",
+	px: "paddingInline",
+	py: "paddingBlock",
+	pt: "paddingTop",
+	pb: "paddingBottom",
+	pl: "paddingLeft",
+	pr: "paddingRight",
+	ps: "paddingInlineStart",
+	pe: "paddingInlineEnd",
+	m: "margin",
+	mx: "marginInline",
+	my: "marginBlock",
+	mt: "marginTop",
+	mb: "marginBottom",
+	ml: "marginLeft",
+	mr: "marginRight",
+	ms: "marginInlineStart",
+	me: "marginInlineEnd",
+	bg: "backgroundColor",
+	rounded: "borderRadius",
+	w: "width",
+	h: "height",
+	minW: "minWidth",
+	minH: "minHeight",
+	maxW: "maxWidth",
+	maxH: "maxHeight",
+	pos: "position",
+	shadow: "boxShadow",
+	insetStart: "insetInlineStart",
+	insetEnd: "insetInlineEnd",
+};
+const DOM_PROP_NAMES = new Set([
+	"id",
+	"role",
+	"href",
+	"src",
+	"alt",
+	"title",
+	"target",
+	"rel",
+	"type",
+	"name",
+	"value",
+	"disabled",
+	"checked",
+	"tabIndex",
+	"hidden",
+]);
+
+type JsxAttributeNode = {
+	type?: string;
+	name?: { name?: string };
+	value?: OxcNode | null;
+};
+
+type JsxElementNode = {
+	start: number;
+	end: number;
+	openingElement?: {
+		name?: { type?: string; name?: string };
+		attributes?: JsxAttributeNode[];
+	};
+};
+
+const evalJsxAttribute = (value: OxcNode | null | undefined): unknown | null => {
+	if (value === null || value === undefined) return true;
+	if (value.type === "JSXExpressionContainer") {
+		const expression = (value as { expression?: OxcNode }).expression;
+		if (expression?.type === "JSXEmptyExpression") return null;
+		return expression === undefined ? null : evalLiteral(expression as unknown as Expression);
+	}
+	return evalLiteral(value as unknown as Expression);
+};
+
+function findPatternImports(program: OxcNode): Map<string, string> {
+	const names = new Map<string, string>();
+	walk(program, (node) => {
+		if (node.type !== "ImportDeclaration") return;
+		const source = (node as ImportNode).source?.value;
+		if (typeof source !== "string" || !source.endsWith("/pandwind/jsx")) return;
+		for (const specifier of (node as ImportNode).specifiers ?? []) {
+			if (specifier.type !== "ImportSpecifier") continue;
+			const imported = specifier.imported?.name;
+			const local = specifier.local?.name;
+			if (typeof imported === "string" && typeof local === "string" && PATTERN_BASES[imported]) {
+				names.set(local, imported);
+			}
+		}
+	});
+	return names;
+}
+
+function extractPatternSources(
+	code: string,
+	id: string,
+	preset: CssPreset,
+): Array<ExtractedCssStyle> {
+	const result = parseSync(id, code, {
+		sourceType: "module",
+		lang: id.endsWith(".tsx") ? "tsx" : "ts",
+	});
+	const importedPatterns = findPatternImports(result.program as unknown as OxcNode);
+	if (importedPatterns.size === 0) return [];
+	const sources: Array<ExtractedCssStyle> = [];
+	walk(result.program, (node) => {
+		if (node.type !== "JSXElement") return;
+		const element = node as unknown as JsxElementNode;
+		const name = element.openingElement?.name;
+		const pattern =
+			name?.type === "JSXIdentifier" ? importedPatterns.get(name.name ?? "") : undefined;
+		if (pattern === undefined) return;
+		const style: Record<string, unknown> = { ...PATTERN_BASES[pattern] };
+		for (const attribute of element.openingElement?.attributes ?? []) {
+			const prop = attribute.name?.name;
+			if (prop === undefined || PATTERN_IGNORED_PROPS.has(prop) || DOM_PROP_NAMES.has(prop))
+				continue;
+			if (prop.startsWith("data-") || prop.startsWith("aria-") || prop.startsWith("on")) continue;
+			const value = evalJsxAttribute(attribute.value);
+			if (value === null) return;
+			const special = PATTERN_SPECIAL_PROPS[pattern]?.[prop];
+			if (special !== undefined) style[special] = value;
+			else if ((pattern === "Circle" || pattern === "Square") && prop === "size") {
+				style.width = value;
+				style.height = value;
+			} else if (pattern === "Grid" && prop === "columns" && typeof value === "number") {
+				style.gridTemplateColumns = `repeat(${value}, minmax(0, 1fr))`;
+			} else if (pattern === "Grid" && prop === "rows" && typeof value === "number") {
+				style.gridTemplateRows = `repeat(${value}, minmax(0, 1fr))`;
+			} else if (!(pattern === "Grid" && (prop === "columns" || prop === "rows"))) {
+				style[prop] = value;
+			}
+		}
+		const canonicalStyle = Object.fromEntries(
+			Object.entries(style).map(([prop, value]) => [PATTERN_ALIASES[prop] ?? prop, value]),
+		);
+		const before = code.slice(0, element.start);
+		sources.push({
+			style: resolveDesignStyle(canonicalStyle, preset.tokens),
+			provenance: {
+				file: id,
+				start: element.start,
+				end: element.end,
+				line: before.split("\n").length,
+				column: element.start - (before.lastIndexOf("\n") + 1) + 1,
+				callKind: "pattern",
+			},
+		});
+	});
+	return sources;
 }
 
 /** True when the module `id` should be scanned for css() calls. */
@@ -131,8 +323,6 @@ export function extractCssSources(
 	cssNames: ReadonlySet<string>,
 	preset: CssPreset,
 ): Array<ExtractedCssStyle> {
-	if (cssNames.size === 0) return [];
-
 	const result = parseSync(id, code, {
 		sourceType: "module",
 		lang: id.endsWith(".tsx") ? "tsx" : "ts",
@@ -168,6 +358,7 @@ export function extractCssSources(
 			});
 		}
 	});
+	sources.push(...extractPatternSources(code, id, preset));
 
 	return sources;
 }

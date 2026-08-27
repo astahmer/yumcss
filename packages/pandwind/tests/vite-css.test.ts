@@ -30,6 +30,23 @@ test("extractCssSources records stable call provenance without changing styles",
 	expect(sources[0]!.provenance.end).toBeGreaterThan(sources[0]!.provenance.start);
 });
 
+test("extractCssSources covers literal generated pattern props", () => {
+	const code = `
+		import { Stack, Box } from "@/pandwind/jsx";
+		export function Page() {
+			return <Stack gap="4" align="center"><Box px={{ base: "2", md: "4" }} /></Stack>;
+		}
+	`;
+	const sources = extractCssSources(code, "/src/page.tsx", new Set(), examplePreset);
+
+	expect(sources).toHaveLength(2);
+	expect(sources[0]).toMatchObject({
+		style: { display: "flex", flexDirection: "column", gap: "4", alignItems: "center" },
+	});
+	expect(sources[1]).toMatchObject({ style: { paddingInline: { base: "2", md: "4" } } });
+	expect(sources.every((source) => source.provenance.callKind === "pattern")).toBe(true);
+});
+
 test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];
 	expect(isCssSource("./design", matchers)).toBe(true);
@@ -190,6 +207,35 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 		expect(generated).toContain("flex-direction:column");
 		// node_modules is never scanned
 		expect(generated).not.toContain("background-color:#60A3BC");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite scans pattern-only JSX modules", () => {
+	const dir = makeProject({
+		"src/page.tsx": `import { Stack } from "@/pandwind/jsx"; export const page = <Stack gap="4" />;`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		expect(generated).toContain("display:flex");
+		expect(generated).toContain("gap:4");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("pandwindCssVite accepts webpack's slash-prefixed virtual id", () => {
+	const dir = makeProject({
+		"src/app.ts": `import { css } from "./design"; css({ color: "$blue-500" });`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const load = plugin.load as (id: string) => string | null;
+		expect(load("/\0pandwind:css.css")).toContain("color:#3182ce");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

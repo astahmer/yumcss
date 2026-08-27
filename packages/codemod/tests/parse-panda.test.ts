@@ -13,6 +13,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { existsSync } from "node:fs";
 import {
 	PANDA_ALIASES,
+	normalizePandaStyleObject,
 	pandaRecipeToIr,
 	pandaStyleToIr,
 	parseObjectLiteral,
@@ -26,6 +27,8 @@ const WEBSITE = `${process.env.HOME}/dev/panda/website`;
 
 /** Theme mirroring what loadPandaTheme produces for the website config. */
 const siteTheme: PandaTheme = {
+	tokens: {},
+	conditions: {},
 	tokenVars: new Map([
 		["fg", "--colors-fg"],
 		["fg.muted", "--colors-fg-muted"],
@@ -84,9 +87,35 @@ describe("PANDA_ALIASES coverage", () => {
 			"pr",
 			"pl",
 			"me",
+			"ps",
+			"pe",
+			"insetStart",
+			"insetEnd",
+			"roundedTop",
+			"roundedStart",
 		]) {
 			expect(PANDA_ALIASES.has(key), key).toBe(true);
 		}
+	});
+
+	it("lowers Panda transforms instead of leaving Panda-only keys", () => {
+		expect(
+			normalizePandaStyleObject({
+				boxSize: "5",
+				ps: "2",
+				insetEnd: "3",
+				borderStartRadius: "lg",
+				hideBelow: "md",
+			}),
+		).toEqual({
+			width: "5",
+			height: "5",
+			paddingInlineStart: "2",
+			insetInlineEnd: "3",
+			borderStartStartRadius: "lg",
+			borderEndStartRadius: "lg",
+			mdDown: { display: "none" },
+		});
 	});
 });
 
@@ -157,6 +186,30 @@ describe("pandaStyleToIr — mdx/pre.tsx cva base", () => {
 		expect(props).not.toContain("maxH");
 	});
 
+	it("expands Panda multi-property utilities", () => {
+		const ir = pandaStyleToIr(
+			{ boxSize: "5", borderStartRadius: "lg", hideFrom: "md", ps: "2" },
+			siteTheme,
+		);
+		expect(ir.residuals).toEqual([]);
+		expect(ir.entries).toEqual([
+			{ conditions: [], prop: "width", value: "5" },
+			{ conditions: [], prop: "height", value: "5" },
+			{ conditions: [], prop: "borderStartStartRadius", value: "lg" },
+			{ conditions: [], prop: "borderEndStartRadius", value: "lg" },
+			{ conditions: ["md"], prop: "display", value: "none" },
+			{ conditions: [], prop: "paddingInlineStart", value: "2" },
+		]);
+	});
+
+	it("does not turn an ambiguous built-in radius into a font token", () => {
+		const ir = pandaStyleToIr({ borderRadius: "sm", fontSize: "sm" }, siteTheme);
+		expect(ir.entries).toEqual([
+			{ conditions: [], prop: "borderRadius", value: "sm" },
+			{ conditions: [], prop: "fontSize", value: "sm" },
+		]);
+	});
+
 	it("keeps unknown-token dotted values out of entries via CSS-var fallback + residual", () => {
 		const ir = pandaStyleToIr({ color: "made.up.token" }, siteTheme);
 		expect(ir.entries).toEqual([
@@ -181,10 +234,12 @@ describe("pandaStyleToIr — mdx/pre.tsx cva base", () => {
 		]);
 	});
 
-	it("flags nested selectors as unrepresentable", () => {
+	it("preserves nested selectors as condition paths", () => {
 		const ir = pandaStyleToIr({ "& code[data-language] .line": { px: "4" } }, siteTheme);
-		expect(ir.entries).toEqual([]);
-		expect(ir.residuals[0]!.kind).toBe("unrepresentable");
+		expect(ir.residuals).toEqual([]);
+		expect(ir.entries).toEqual([
+			{ conditions: ["& code[data-language] .line"], prop: "paddingX", value: "4" },
+		]);
 	});
 
 	it("passes CSS custom-property declarations through verbatim", () => {
@@ -274,14 +329,19 @@ describe("pandaRecipeToIr — feature-marquee.section.tsx sva", () => {
 		expect(root.residuals[0]!.text).toBe("textStyle: '2xl'");
 	});
 
-	it("carries nested-selector residuals per slot (motion-reduced animation)", () => {
+	it("carries nested selectors per slot (motion-reduced animation)", () => {
 		const marquee = recipe.base["marquee"]!;
 		expect(marquee.entries).toContainEqual({
 			conditions: [],
 			prop: "listStyleType",
 			value: "none",
 		});
-		expect(marquee.residuals.some((r) => r.kind === "unrepresentable")).toBe(true);
+		expect(marquee.residuals).toEqual([]);
+		expect(marquee.entries).toContainEqual({
+			conditions: ["motionReduce", "& .rfm-marquee"],
+			prop: "animation",
+			value: "none!",
+		});
 	});
 });
 

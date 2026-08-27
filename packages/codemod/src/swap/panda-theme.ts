@@ -32,6 +32,10 @@ export interface PandaCustomPattern {
 }
 
 export interface PandaTheme {
+	/** Flattened Panda token groups, preserving conditional semantic values. */
+	tokens: Record<string, Record<string, unknown>>;
+	/** Panda condition names and their selector/media-query values. */
+	conditions: Record<string, string | string[]>;
 	/** Known token reference paths -> generated CSS custom property name. */
 	tokenVars: ReadonlyMap<string, string>;
 	/** textStyle name -> plain declaration object (the `.value` payload). */
@@ -46,6 +50,61 @@ interface ValueBox {
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === "object" && v !== null && !Array.isArray(v);
+
+function flattenTokenSection(
+	node: Record<string, unknown>,
+	group: string,
+	prefix: string[],
+	out: Record<string, Record<string, unknown>>,
+): void {
+	for (const [key, child] of Object.entries(node)) {
+		if (!isPlainObject(child)) continue;
+		const box = child as ValueBox;
+		if ("value" in box) {
+			const path = prefix.concat(key === "DEFAULT" ? [] : [key]).join(".");
+			if (path !== "") (out[group] ??= {})[path] = box.value;
+			continue;
+		}
+		flattenTokenSection(child, group, prefix.concat(key === "DEFAULT" ? [] : [key]), out);
+	}
+}
+
+function collectTokenValues(section: unknown, out: Record<string, Record<string, unknown>>): void {
+	if (!isPlainObject(section)) return;
+	for (const [group, values] of Object.entries(section)) {
+		if (isPlainObject(values)) flattenTokenSection(values, group, [], out);
+	}
+}
+
+function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>): void {
+	const resolving = new Set<string>();
+	const resolve = (value: unknown): unknown => {
+		if (typeof value === "string") {
+			const ref = /^\{([^}]+)\}$/.exec(value)?.[1];
+			if (ref === undefined) return value;
+			const dot = ref.indexOf(".");
+			if (dot === -1) return value;
+			const group = ref.slice(0, dot);
+			const key = ref.slice(dot + 1);
+			const id = `${group}.${key}`;
+			const candidate = tokens[group]?.[key];
+			if (candidate === undefined || resolving.has(id)) return value;
+			resolving.add(id);
+			const result = resolve(candidate);
+			resolving.delete(id);
+			return result;
+		}
+		if (Array.isArray(value)) return value.map(resolve);
+		if (isPlainObject(value)) {
+			return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, resolve(child)]));
+		}
+		return value;
+	};
+	for (const [group, values] of Object.entries(tokens)) {
+		for (const [key, value] of Object.entries(values)) values[key] = resolve(value);
+		void group;
+	}
+}
 
 /** Recurse a panda token tree until `{ value: ... }` leaves; collect paths. */
 const dashSegment = (segment: string): string =>
@@ -92,7 +151,37 @@ function collectTextStyles(
 	}
 }
 
+// These are supplied by Panda's built-in preset even when a project only
+// declares custom text styles in panda.config.ts.
+const DEFAULT_PANDA_TEXT_STYLES: Record<string, Record<string, unknown>> = {
+	xs: { fontSize: "0.75rem", lineHeight: "calc(1 / 0.75)" },
+	sm: { fontSize: "0.875rem", lineHeight: "calc(1.25 / 0.875)" },
+	md: { fontSize: "1rem", lineHeight: "calc(1.5 / 1)" },
+	lg: { fontSize: "1.125rem", lineHeight: "calc(1.75 / 1.125)" },
+	xl: { fontSize: "1.25rem", lineHeight: "calc(1.75 / 1.25)" },
+	"2xl": { fontSize: "1.5rem", lineHeight: "calc(2 / 1.5)" },
+	"3xl": { fontSize: "1.875rem", lineHeight: "calc(2.25 / 1.875)" },
+	"4xl": { fontSize: "2.25rem", lineHeight: "calc(2.5 / 2.25)" },
+	"5xl": { fontSize: "3rem", lineHeight: "1" },
+	"6xl": { fontSize: "3.75rem", lineHeight: "1" },
+	"7xl": { fontSize: "4.5rem", lineHeight: "1" },
+	"8xl": { fontSize: "6rem", lineHeight: "1" },
+};
+
+function addDefaultTextStyles(textStyles: Map<string, Record<string, unknown>>): void {
+	for (const [name, style] of Object.entries(DEFAULT_PANDA_TEXT_STYLES)) {
+		if (!textStyles.has(name)) textStyles.set(name, style);
+	}
+}
+
 type AnyModule = Record<string, unknown>;
+
+interface PandaConfigShape {
+	theme?: { extend?: Record<string, unknown>; tokens?: Record<string, unknown> };
+	conditions?: { extend?: Record<string, unknown> };
+	patterns?: { extend?: Record<string, unknown> };
+	default?: PandaConfigShape;
+}
 
 async function importModule(path: string): Promise<AnyModule> {
 	return (await import(pathToFileURL(path).href)) as AnyModule;
@@ -109,13 +198,29 @@ export async function loadPandaTheme(configPath: string): Promise<PandaTheme> {
 
 async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	const mod = await importModule(configPath);
-	const config = (mod.default ?? Object.values(mod)[0]) as
-		| {
-				theme?: { extend?: Record<string, unknown>; tokens?: Record<string, unknown> };
-				patterns?: { extend?: Record<string, unknown> };
-		  }
-		| undefined;
-	const extend = config?.theme?.extend ?? {};
+	const config = (mod.default ?? Object.values(mod)[0]) as PandaConfigShape | undefined;
+	// tsx can wrap an ESM default export one extra time when the imported
+	// config is compiled as CommonJS. Unwrap that boundary before inspecting
+	// Panda's theme; otherwise every generated migration silently gets an
+	// empty preset.
+	const unwrapped = config?.default ?? config;
+	const extend = unwrapped?.theme?.extend ?? {};
+	const tokens: Record<string, Record<string, unknown>> = {};
+	collectTokenValues(extend.tokens, tokens);
+	collectTokenValues(extend.semanticTokens, tokens);
+	resolveTokenReferences(tokens);
+	const conditions: Record<string, string | string[]> = {};
+	if (isPlainObject(unwrapped?.conditions?.extend)) {
+		for (const [key, value] of Object.entries(unwrapped.conditions.extend)) {
+			if (typeof value === "string" || Array.isArray(value))
+				conditions[key] = value as string | string[];
+		}
+	}
+	if (isPlainObject(extend.breakpoints)) {
+		for (const [key, value] of Object.entries(extend.breakpoints)) {
+			if (typeof value === "string") conditions[key] = `@media (min-width: ${value})`;
+		}
+	}
 	const tokenVars = new Map<string, string>();
 	for (const key of ["semanticTokens", "tokens"] as const) {
 		const section = extend[key];
@@ -124,8 +229,9 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	const textStyles = new Map<string, Record<string, unknown>>();
 	const tsSection = extend["textStyles"];
 	if (isPlainObject(tsSection)) collectTextStyles(tsSection, [], textStyles);
+	addDefaultTextStyles(textStyles);
 	const customPatterns = new Map<string, PandaCustomPattern>();
-	const patternSection = config?.patterns?.extend;
+	const patternSection = unwrapped?.patterns?.extend;
 	if (isPlainObject(patternSection)) {
 		for (const [name, raw] of Object.entries(patternSection)) {
 			if (!isPlainObject(raw)) continue;
@@ -142,7 +248,7 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 			}
 		}
 	}
-	return { tokenVars, textStyles, customPatterns };
+	return { tokens, conditions, tokenVars, textStyles, customPatterns };
 }
 
 /**
@@ -172,6 +278,8 @@ function loadPandaThemeFromDisk(configPath: string): PandaTheme {
 
 /** Empty theme — every token candidate falls back to verbatim/CSS-var. */
 export const emptyPandaTheme: PandaTheme = {
+	tokens: {},
+	conditions: {},
 	tokenVars: new Map(),
 	textStyles: new Map(),
 	customPatterns: new Map(),
@@ -192,6 +300,7 @@ export function loadPandaThemeFromSource(
 	extraSources: Array<string>,
 ): PandaTheme {
 	const tokenVars = new Map<string, string>();
+	const tokens: Record<string, Record<string, unknown>> = {};
 	const textStyles = new Map<string, Record<string, unknown>>();
 	const chunks: Array<string> = [configSource, ...extraSources];
 	for (const chunk of chunks) {
@@ -212,10 +321,13 @@ export function loadPandaThemeFromSource(
 				// top-level keys are the panda groups (colors, shadows…)
 				for (const [group, subtree] of Object.entries(plain)) {
 					if (!isPlainObject(subtree)) continue;
+					flattenTokenSection(subtree, group, [], tokens);
 					collectTokenPaths({ [group]: subtree }, [], null, tokenVars);
 				}
 			}
 		}
 	}
-	return { tokenVars, textStyles, customPatterns: new Map() };
+	resolveTokenReferences(tokens);
+	addDefaultTextStyles(textStyles);
+	return { tokens, conditions: {}, tokenVars, textStyles, customPatterns: new Map() };
 }
