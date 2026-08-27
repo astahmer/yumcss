@@ -7,7 +7,7 @@ function HydrationFixture() {
 	const [hydrated, setHydrated] = useState(false);
 	useEffect(() => setHydrated(true), []);
 
-	const output = css.vars({ color: "#2563eb" });
+	const output = css.vars({ color: "#2563eb", _hover: { color: "#dc2626" } });
 	return (
 		<section
 			data-testid="hydration-target"

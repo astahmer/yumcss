@@ -129,6 +129,10 @@ try {
 		className: el.className,
 		style: el.getAttribute("style"),
 	}));
+	const baseColor = await hydration.$eval(
+		'[data-testid="hydration-target"]',
+		(el) => getComputedStyle(el).color,
+	);
 	await hydration.waitForFunction(
 		() => document.querySelector('[data-testid="hydration-target"]')?.dataset.phase === "client",
 	);
@@ -136,7 +140,10 @@ try {
 		className: el.className,
 		style: el.getAttribute("style"),
 	}));
-	check("browser hydration reaches client effect", afterHydration.className === "pw-color");
+	check(
+		"browser hydration reaches client effect",
+		afterHydration.className === "pw-hover:color pw-color",
+	);
 	check(
 		"hydration preserves class and inline variables",
 		JSON.stringify(beforeHydration) === JSON.stringify(afterHydration),
@@ -149,6 +156,15 @@ try {
 			(el) => getComputedStyle(el).color,
 		)) === "rgb(37, 99, 235)",
 	);
+	await hydration.hover('[data-testid="hydration-target"]');
+	check(
+		"conditional variable fallback drives hover color",
+		(await hydration.$eval(
+			'[data-testid="hydration-target"]',
+			(el) => getComputedStyle(el).color,
+		)) === "rgb(220, 38, 38)",
+	);
+	check("base variable is active before hover", baseColor === "rgb(37, 99, 235)", baseColor);
 	check(
 		"hydration has no console errors or warnings",
 		hydrationErrors.length === 0,
