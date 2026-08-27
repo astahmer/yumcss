@@ -26,13 +26,18 @@
  * - Circular imports, missing files, non-literal exports and dynamic sources
  *   resolve to nothing: the call is left untouched, nothing ever throws.
  */
-import { readFileSync, statSync } from "node:fs";
-import { dirname, isAbsolute, resolve } from "node:path";
+import { dirname } from "node:path";
 import { type Expression } from "oxc-parser";
 import { parseSourceProgram } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
+import {
+	NodeModulePathResolver,
+	NodeModuleSourceReader,
+	type ModulePathResolver,
+	type ModuleSourceReader,
+} from "./module-ports.ts";
 
 /** Analysis of one module's exported constants and re-export surface. */
 export interface ModuleExportAnalysis {
@@ -169,15 +174,24 @@ interface CacheEntry {
 	analysis: ModuleExportAnalysis | null;
 }
 
-export function createCrossModuleConstResolver(): CrossModuleResolver {
+export interface CrossModuleResolverOptions {
+	readonly sourceReader?: ModuleSourceReader;
+	readonly pathResolver?: ModulePathResolver;
+}
+
+export function createCrossModuleConstResolver(
+	options: CrossModuleResolverOptions = {},
+): CrossModuleResolver {
 	const cache = new Map<string, CacheEntry>();
+	const sourceReader = options.sourceReader ?? new NodeModuleSourceReader();
+	const pathResolver = options.pathResolver ?? new NodeModulePathResolver();
 
 	const analyze = (absPath: string): ModuleExportAnalysis | null => {
 		try {
-			const mtimeMs = statSync(absPath).mtimeMs;
+			const mtimeMs = sourceReader.mtime(absPath);
 			const cached = cache.get(absPath);
 			if (cached !== undefined && cached.mtimeMs === mtimeMs) return cached.analysis;
-			const code = readFileSync(absPath, "utf8");
+			const code = sourceReader.read(absPath);
 			const analysis = analyzeModuleExports(parseProgram(code, absPath));
 			cache.set(absPath, { mtimeMs, analysis });
 			return analysis;
@@ -194,7 +208,7 @@ export function createCrossModuleConstResolver(): CrossModuleResolver {
 		depth: number,
 	): string | undefined => {
 		if (!source.startsWith(".") && !source.startsWith("/")) return undefined;
-		const absPath = resolveSourcePath(source, importerDir);
+		const absPath = pathResolver.resolve(source, importerDir);
 		if (absPath === undefined) return undefined;
 		const mod = analyze(absPath);
 		if (mod === null) return undefined;
@@ -235,27 +249,4 @@ export function createCrossModuleConstResolver(): CrossModuleResolver {
 			cache.delete(absPath);
 		},
 	};
-}
-
-/** Resolve a relative import source to an existing file, trying extensions. */
-function resolveSourcePath(source: string, importerDir: string): string | undefined {
-	if (!isAbsolute(source) && !source.startsWith(".")) return undefined;
-	const base = resolve(importerDir, source);
-	const candidates = [
-		base,
-		`${base}.ts`,
-		`${base}.tsx`,
-		`${base}.js`,
-		`${base}.jsx`,
-		`${base}/index.ts`,
-		`${base}/index.tsx`,
-	];
-	for (const candidate of candidates) {
-		try {
-			if (statSync(candidate).isFile()) return candidate;
-		} catch {
-			// try next candidate
-		}
-	}
-	return undefined;
 }
