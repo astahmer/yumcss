@@ -34,52 +34,61 @@ import {
 } from "./style-systems.ts";
 import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
 import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
+import { EMOTION } from "./adapters/emotion.ts";
+import { STYLED_COMPONENTS } from "./adapters/styled-components.ts";
+import { VANILLA_EXTRACT } from "./adapters/vanilla-extract.ts";
+import { STITCHES } from "./adapters/stitches.ts";
+import { LINARIA } from "./adapters/linaria.ts";
+import { JSS } from "./adapters/jss.ts";
+import { PANDWIND } from "./adapters/pandwind.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
 
-type CallPattern = {
+export type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly form?: "object" | "template";
 };
 
-const dependency = (
+export function dependency(
 	name: string,
 	kind: "runtime" | "development" | "peer" | "config",
-): AdapterDependencies => ({
-	packages: [{ name, kind }],
-});
+): AdapterDependencies {
+	return { packages: [{ name, kind }] };
+}
 
-const allRuleCapabilities = (
+export function allRuleCapabilities(
 	adapterId: string,
 	dynamic: "exact" | "partial" | "unsupported",
 	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
-): AdapterCapabilities => ({
-	schema: ADAPTER_CAPABILITIES_SCHEMA,
-	adapter: adapterId,
-	capabilities: {
-		declarations: "exact",
-		"rule-level": "exact",
-		"global-rules": "exact",
-		keyframes: "exact",
-		"font-face": "exact",
-		layers: "exact",
-		"supports-rules": "exact",
-		"property-rules": "exact",
-		selectors: "exact",
-		nesting: "exact",
-		ordering: "exact",
-		"token-values": "exact",
-		"dynamic-values": dynamic,
-		"pseudo-conditions": "exact",
-		"selector-conditions": "exact",
-		"media-conditions": "exact",
-		"container-conditions": "exact",
-		"supports-conditions": "exact",
-		...capabilities,
-	},
-});
+): AdapterCapabilities {
+	return {
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		adapter: adapterId,
+		capabilities: {
+			declarations: "exact",
+			"rule-level": "exact",
+			"global-rules": "exact",
+			keyframes: "exact",
+			"font-face": "exact",
+			layers: "exact",
+			"supports-rules": "exact",
+			"property-rules": "exact",
+			selectors: "exact",
+			nesting: "exact",
+			ordering: "exact",
+			"token-values": "exact",
+			"dynamic-values": dynamic,
+			"pseudo-conditions": "exact",
+			"selector-conditions": "exact",
+			"media-conditions": "exact",
+			"container-conditions": "exact",
+			"supports-conditions": "exact",
+			...capabilities,
+		},
+	};
+}
 
 const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 	pandwind: ["pandwind.config.ts", "package.json"],
@@ -237,7 +246,7 @@ function addDeclaration(
 	addDeclaration(child, declaration, conditions.slice(1));
 }
 
-function declarationsObject(declarations: readonly StyleDeclaration[]): string {
+export function declarationsObject(declarations: readonly StyleDeclaration[]): string {
 	const root = objectNode();
 	for (const declaration of declarations) {
 		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
@@ -268,7 +277,7 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 	return `{ ${JSON.stringify(prefix)}: ${body} }`;
 }
 
-function programObject(program: StyleProgram): string {
+export function programObject(program: StyleProgram): string {
 	if (program.rules.length === 1) return ruleObject(program.rules[0]!);
 	if (program.rules.every((rule) => rule.kind === "global")) {
 		const root = objectNode();
@@ -290,7 +299,7 @@ function programObject(program: StyleProgram): string {
 	return renderObjectNode(root);
 }
 
-function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
+export function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
 	return program.rules[0]?.kind ?? "style";
 }
 
@@ -459,7 +468,7 @@ const templateValue = (value: StyleProgram["declarations"][number]["value"]): st
 	return String(value.value);
 };
 
-function templateCss(program: StyleProgram): string {
+export function templateCss(program: StyleProgram): string {
 	const renderRule = (rule: StyleProgram["rules"][number]): string => {
 		const declarations = rule.declarations
 			.filter((declaration) => declaration.conditions.length === 0)
@@ -644,19 +653,20 @@ const SOURCE_MODULES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 	jss: ["jss", "react-jss"],
 };
 
-function adapter(
+export function adapter(
 	id: ExternalAdapterId,
 	patterns: readonly CallPattern[],
 	packages: AdapterDependencies,
 	capabilities: AdapterCapabilities,
 	emitCall: (program: StyleProgram) => { text: string; imports: readonly string[] },
 	detectPatterns: readonly RegExp[],
+	_sourceModules: readonly string[] = [],
 ): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "2",
-		sourceModules: SOURCE_MODULES[id] ?? [],
+		sourceModules: _sourceModules.length > 0 ? _sourceModules : (SOURCE_MODULES[id] ?? []),
 		capabilities,
 		dependencies: packages,
 		detect: (context) => detectBy(detectPatterns, context),
@@ -747,7 +757,13 @@ export function validationSource(text: string, program: StyleProgram): string {
 		: text;
 }
 
-const EMOTION = adapter(
+/*
+ * Historical inline definitions are intentionally kept as a migration note
+ * for one release while the independently owned adapters below become the
+ * sole registry implementations. They are not reachable from the registry.
+ */
+/*
+const LEGACY_EMOTION = adapter(
 	"emotion",
 	[
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
@@ -787,7 +803,7 @@ const EMOTION = adapter(
 	[/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
 );
 
-const STYLED_COMPONENTS = adapter(
+const LEGACY_STYLED_COMPONENTS = adapter(
 	"styled-components",
 	[
 		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
@@ -832,7 +848,7 @@ const STYLED_COMPONENTS = adapter(
 	[/styled-components/, /\bstyled\s*\./],
 );
 
-const VANILLA_EXTRACT = adapter(
+const LEGACY_VANILLA_EXTRACT = adapter(
 	"vanilla-extract",
 	[
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
@@ -878,7 +894,7 @@ const VANILLA_EXTRACT = adapter(
 	[/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 );
 
-const STITCHES = adapter(
+const LEGACY_STITCHES = adapter(
 	"stitches",
 	[
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
@@ -912,7 +928,7 @@ const STITCHES = adapter(
 	[/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 );
 
-const LINARIA = adapter(
+const LEGACY_LINARIA = adapter(
 	"linaria",
 	[
 		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
@@ -952,7 +968,7 @@ const LINARIA = adapter(
 	[/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
 );
 
-const JSS = adapter(
+const LEGACY_JSS = adapter(
 	"jss",
 	[
 		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g },
@@ -988,7 +1004,7 @@ const JSS = adapter(
 	[/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
 );
 
-const PANDWIND = adapter(
+const LEGACY_PANDWIND = adapter(
 	"pandwind",
 	[{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g }],
 	{ packages: [] },
@@ -999,6 +1015,7 @@ const PANDWIND = adapter(
 	}),
 	[/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 );
+*/
 
 export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>> = {
 	pandwind: PANDWIND,
