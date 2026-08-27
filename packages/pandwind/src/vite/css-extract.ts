@@ -55,6 +55,8 @@ export interface CssCallSite extends CssSourceProvenance {
 	staticArguments: number;
 	/** Number of arguments left to the runtime because they are dynamic. */
 	dynamicArguments: number;
+	/** Emitted rule identities when a consumer has the matching preset. */
+	rules?: Array<{ id: string; css: string }>;
 }
 
 export type CssDiagnosticKind = "unsupported-construct" | "missing-extraction";
