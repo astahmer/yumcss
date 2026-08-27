@@ -10,6 +10,12 @@ import {
 const camelProperty = (property: string): string =>
 	property.trim().replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
 
+function templateDynamicExpression(rawValue: string): string {
+	const interpolation = /^\$\{([\s\S]+)\}$/.exec(rawValue.trim());
+	if (interpolation?.[1] !== undefined) return interpolation[1].trim();
+	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
+}
+
 /** Find a template's closing backtick without mistaking nested expression templates for it. */
 export function findTemplateLiteralEnd(source: string, openTick: number): number | undefined {
 	for (let index = openTick + 1; index < source.length; index++) {
@@ -65,11 +71,10 @@ export function parseAdapterTemplate(
 			const interpolation = /\$\{([\s\S]+)\}/.exec(rawValue);
 			let value: StyleDeclaration["value"];
 			if (interpolation?.[1] !== undefined) {
-				const expression =
-					rawValue.startsWith("${") && rawValue.endsWith("}") ? interpolation[1].trim() : rawValue;
+				const expression = templateDynamicExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
-					kind: "dynamic",
+					kind: interpolation[1]?.includes("=>") ? "capability" : "dynamic",
 					text: rawValue,
 					hint: `${adapter} template interpolation requires a runtime-aware lowering`,
 				});

@@ -301,6 +301,19 @@ export {
 	HOST_COMPILER_SCHEMA,
 	createHostCompilerPlugin,
 } from "./host-compiler.ts";
+export {
+	getHostComponentRewriter,
+	intrinsicTagForSubject,
+	rewriteDynamicCarrier,
+	rewriteDynamicExpressionCarrier,
+	HOST_COMPONENT_REWRITER_SCHEMA,
+} from "./host-component-rewriter.ts";
+export type {
+	HostComponentRewriteRequest,
+	HostComponentRewriteResult,
+	HostComponentRewriter,
+	HostDynamicCarrierRewriteResult,
+} from "./host-component-rewriter.ts";
 export type {
 	HostCompilerContext,
 	HostCompilerDiagnostic,

@@ -166,6 +166,12 @@ export interface StyleProgramOptions {
 	readonly nestedObjectKind?: SemanticConditionKind;
 	/** Adapter-owned object containers whose contents are the actual style object. */
 	readonly unwrapNestedObjectKeys?: readonly string[];
+	/** Adapter-owned variant containers, for example Stitches `variants`. */
+	readonly variantContainerKeys?: readonly string[];
+	/** Source-adapter mappings for computed custom-property keys. */
+	readonly computedKeys?: Readonly<Record<string, string>>;
+	/** Source-adapter mappings for runtime variable references in values. */
+	readonly dynamicReferences?: Readonly<Record<string, string>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 	readonly themes?: readonly StyleThemeBinding[];
@@ -483,8 +489,11 @@ function sourceRange(
 	return { ...base, start, end };
 }
 
-function sourceKey(node: SourceNode, body: string): string | null {
-	if (node.computed === true) return null;
+function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions): string | null {
+	if (node.computed === true) {
+		const expression = node.key === undefined ? "" : sourceSlice(body, node.key).trim();
+		return options.computedKeys?.[expression] ?? null;
+	}
 	const key = node.key;
 	if (key?.type === "Identifier" && key.name !== undefined) return key.name;
 	if (key?.type === "Literal" && typeof key.value === "string") return key.value;
@@ -507,8 +516,19 @@ function dynamicSourceValue(
 	node: SourceNode,
 	body: string,
 	options: StyleProgramOptions,
-): StyleDynamicValue {
-	const expression = sourceSlice(body, node);
+): StyleValue {
+	const sourceExpression = sourceSlice(body, node);
+	const directReference = options.dynamicReferences?.[sourceExpression.trim()];
+	if (directReference !== undefined)
+		return {
+			kind: "literal",
+			value: directReference,
+		};
+	const expression = sourceExpression.replace(/\$\{([A-Za-z_$][\w$]*)\}/g, (match, name: string) =>
+		options.dynamicReferences?.[name] === undefined
+			? match
+			: `\${${JSON.stringify(options.dynamicReferences[name])}}`,
+	);
 	return {
 		kind: "dynamic",
 		expression,
@@ -579,7 +599,7 @@ export function styleProgramFromSourceObject(
 				addDynamicResidual(sourceSlice(body, property), "unsupported source style property");
 				continue;
 			}
-			const name = sourceKey(property, body);
+			const name = sourceKey(property, body, options);
 			if (name === null) {
 				addDynamicResidual(
 					sourceSlice(body, property),
@@ -600,6 +620,35 @@ export function styleProgramFromSourceObject(
 						reference,
 						source: sourceRange(options.source, options.sourceOffset ?? 0, valueNode),
 					});
+				continue;
+			}
+			if (sourceObject(valueNode) && options.variantContainerKeys?.includes(name)) {
+				for (const variant of valueNode.properties ?? []) {
+					if (variant.type !== "Property" || variant.kind !== "init") continue;
+					const variantName = sourceKey(variant, body, options);
+					const values = variant.value as SourceNode | undefined;
+					if (variantName === null || values === undefined || !sourceObject(values)) {
+						addDynamicResidual(
+							sourceSlice(body, variant),
+							"variant configuration is not an object",
+						);
+						continue;
+					}
+					for (const option of values.properties ?? []) {
+						if (option.type !== "Property" || option.kind !== "init") continue;
+						const optionName = sourceKey(option, body, options);
+						const optionStyles = option.value as SourceNode | undefined;
+						if (optionName === null || optionStyles === undefined || !sourceObject(optionStyles)) {
+							addDynamicResidual(sourceSlice(body, option), "variant value is not an object");
+							continue;
+						}
+						walk(optionStyles, [
+							...conditions,
+							{ kind: "named", name: variantName },
+							{ kind: "named", name: optionName },
+						]);
+					}
+				}
 				continue;
 			}
 			if (

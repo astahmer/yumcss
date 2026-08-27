@@ -10,6 +10,7 @@ export const JSS_DEFINITION: AdapterDefinition = {
 			regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/g,
 			form: "reference",
 		},
+		{ name: "jss-createRule", regex: /\b(?:jss\.)?createRule\s*\(\s*\{/g },
 	],
 	packages: {
 		packages: [

@@ -16,6 +16,7 @@ export const STITCHES_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 	sourceModules: ["@stitches/react", "@stitches/core"],
+	sourceObjectOptions: { variantContainerKeys: ["variants"] },
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")

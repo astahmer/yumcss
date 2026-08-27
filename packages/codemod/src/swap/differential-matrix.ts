@@ -69,7 +69,7 @@ export const DIFFERENTIAL_MATRIX: readonly DifferentialMatrixCase[] = [
 		targetAdapter: "emotion",
 		file: "Card.tsx",
 		source: `import styled from "styled-components";\nconst Card = styled.div({ color: "red", padding: 2 });`,
-		expected: "residual",
+		expected: "pass",
 	},
 	{
 		id: "vanilla-extract-to-emotion",

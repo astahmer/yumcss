@@ -16,6 +16,26 @@ export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 	sourceModules: ["@vanilla-extract/css"],
+	sourceObjectOptions: (source) => {
+		const variables = [
+			...source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createVar\b/g),
+		].map((match) => match[1]);
+		const computedKeys = Object.fromEntries(
+			variables
+				.filter((name): name is string => name !== undefined)
+				.map((name) => [name, `--pw-${name}`]),
+		);
+		const dynamicReferences = Object.fromEntries(
+			variables
+				.filter((name): name is string => name !== undefined)
+				.map((name) => [name, `var(--pw-${name})`]),
+		);
+		return {
+			unwrapNestedObjectKeys: ["vars"],
+			computedKeys,
+			dynamicReferences,
+		};
+	},
 	emit(program, { firstKind, programObject, declarationsObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")

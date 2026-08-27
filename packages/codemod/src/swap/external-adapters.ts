@@ -35,7 +35,12 @@ import {
 } from "./style-systems.ts";
 import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
 import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
-import type { AdapterDefinition, AdapterRenderers } from "./adapters/definition.ts";
+import type {
+	AdapterDefinition,
+	AdapterRenderers,
+	AdapterSourceObjectOptions,
+	AdapterSourceObjectOptionsProvider,
+} from "./adapters/definition.ts";
 import { EMOTION_DEFINITION } from "./adapters/emotion-definition.ts";
 import { STYLED_COMPONENTS_DEFINITION } from "./adapters/styled-components-definition.ts";
 import { VANILLA_EXTRACT_DEFINITION } from "./adapters/vanilla-extract-definition.ts";
@@ -184,7 +189,7 @@ function adapterSource(
 }
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
-	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
+	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/);
 	if (match?.[1] === undefined) return {};
 	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
 	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
@@ -314,8 +319,11 @@ function parseKeyframeProgram(
 	context: AdapterParseContext,
 	start: number,
 	name: string,
+	sourceObjectOptions: AdapterSourceObjectOptions = {},
 ): StyleProgram {
 	const base = styleProgramFromSourceObject(body, {
+		...sourceObjectOptions,
+		nestedObjectKind: "selector",
 		source: adapterSource(context, start),
 		conditionKinds: { from: "selector", to: "selector" },
 		sourceOffset: start + 1,
@@ -391,6 +399,12 @@ function camelProperty(property: string): string {
 		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
 }
 
+function templateDynamicExpression(rawValue: string): string {
+	const interpolation = /^\$\{([\s\S]+)\}$/.exec(rawValue.trim());
+	if (interpolation?.[1] !== undefined) return interpolation[1].trim();
+	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
+}
+
 function parseTemplateProgram(
 	body: string,
 	context: AdapterParseContext,
@@ -424,11 +438,10 @@ function parseTemplateProgram(
 			const interpolation = /\$\{([\s\S]+)\}/.exec(rawValue);
 			let value: StyleDeclaration["value"];
 			if (interpolation?.[1] !== undefined) {
-				const expression =
-					rawValue.startsWith("${") && rawValue.endsWith("}") ? interpolation[1].trim() : rawValue;
+				const expression = templateDynamicExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
-					kind: "dynamic",
+					kind: interpolation[1]?.includes("=>") ? "capability" : "dynamic",
 					text: rawValue,
 					hint: "template interpolation requires a runtime-aware lowering",
 				});
@@ -553,9 +566,14 @@ function parseCalls(
 	source: string,
 	context: AdapterParseContext,
 	patterns: readonly CallPattern[],
+	sourceObjectOptions: AdapterSourceObjectOptionsProvider | undefined = {},
 ): AdapterParseResult {
 	const matches: AdapterMatch[] = [];
 	const residuals: StyleProgramResidual[] = [];
+	const resolvedObjectOptions =
+		typeof sourceObjectOptions === "function"
+			? sourceObjectOptions(context.source)
+			: sourceObjectOptions;
 	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 	try {
 		mask = computeExcludedRanges(source, context.file);
@@ -602,23 +620,10 @@ function parseCalls(
 					sourceOffset: open + 1,
 					nestedObjectKind: "named",
 				});
-				const safeProgram = /\.getRule\s*\(|\.applyTo\s*\(/.test(source)
-					? {
-							...program,
-							residuals: [
-								...program.residuals,
-								{
-									kind: "runtime-context",
-									text: match[0],
-									hint: "JSS rule application requires a host-specific rewrite",
-								},
-							],
-						}
-					: program;
 				matches.push({
 					start,
 					end: start + match[0].length,
-					program: safeProgram,
+					program,
 					sourceText: match[0],
 				});
 				continue;
@@ -667,6 +672,7 @@ function parseCalls(
 					context,
 					start,
 					sourceName(source, start, fallbackName),
+					resolvedObjectOptions,
 				);
 			} else if (
 				pattern.name === "global" ||
@@ -692,9 +698,19 @@ function parseCalls(
 						: {}),
 					...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
 					...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
+					...resolvedObjectOptions,
 					...(pattern.name.startsWith("jss-") ? { nestedObjectKind: "named" as const } : {}),
 					...(pattern.name === "css-group" ? { nestedObjectKind: "named" as const } : {}),
-					...(pattern.name === "style" ? { unwrapNestedObjectKeys: ["selectors"] } : {}),
+					...(pattern.name === "style"
+						? {
+								unwrapNestedObjectKeys: [
+									...new Set([
+										...(resolvedObjectOptions.unwrapNestedObjectKeys ?? []),
+										"selectors",
+									]),
+								],
+							}
+						: {}),
 				});
 				if (pattern.name === "globalStyle") {
 					const args = source.slice(start, open);
@@ -727,16 +743,6 @@ function parseCalls(
 					);
 				} else {
 					program = base;
-				}
-				if (pattern.name.startsWith("jss-")) {
-					program = {
-						...program,
-						source: {
-							...program.source,
-							subject: pattern.name.includes("styleSheet") ? "createStyleSheet" : "createUseStyles",
-							subjectKind: "call",
-						},
-					};
 				}
 			}
 			matches.push({ start, end, program, sourceText: source.slice(start, end) });
@@ -780,6 +786,7 @@ export function adapter(
 	emitCall: (program: StyleProgram) => { text: string; imports?: readonly string[] },
 	detectPatterns: readonly RegExp[],
 	sourceModules: readonly string[],
+	sourceObjectOptions: AdapterSourceObjectOptionsProvider | undefined = {},
 ): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
@@ -790,7 +797,7 @@ export function adapter(
 		dependencies: packages,
 		detect: (context) => detectBy(detectPatterns, context),
 		loadConfig: (context) => configFor(id, context),
-		parse: (source, context) => parseCalls(source, context, patterns),
+		parse: (source, context) => parseCalls(source, context, patterns, sourceObjectOptions),
 		emit: (program, _context) => {
 			const rendered = emitCall(program);
 			return { ...rendered, dependencies: packages, residuals: [...program.residuals] };
@@ -812,6 +819,7 @@ function adapterFromDefinition(definition: AdapterDefinition): StyleAdapter {
 		(program) => definition.emit(program, renderers),
 		definition.detectPatterns,
 		definition.sourceModules,
+		definition.sourceObjectOptions,
 	);
 }
 

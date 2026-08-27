@@ -64,6 +64,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(component.code).toContain("styled.button({");
 	});
 
+	test("preserves styled component subjects when targeting Emotion", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\nexport default styled.div({ color: "red" });',
+			{ from: "styled-components", to: "emotion", file: "View.js", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import styled from "@emotion/styled";');
+		expect(result.code).toContain('styled.div({ color: "red" })');
+		expect(result.code).not.toContain('from "styled-components"');
+	});
+
 	test("registers JSS style maps and keeps their named-rule boundary explicit", () => {
 		const adapter = getExternalAdapter("jss")!;
 		const parsed = adapter.parse("createUseStyles({ button: { color: 'red' } })", {
@@ -85,8 +98,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 			'import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ button: { color: "red" } });',
 			{ from: "jss", to: "pandwind", file: "styles.ts", mode: "safe" },
 		);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('css.group({ button: { color: "red" } })');
 	});
 
 	test("migrates an Emotion object into styled-components with selectors and dynamics", () => {
@@ -100,7 +115,6 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
-		expect(result.code).not.toContain("@emotion/css");
 		expect(result.code).toContain('import styled from "styled-components";');
 		expect(result.code).toContain("styled.div({");
 		expect(result.code).toContain("theme.foreground");
@@ -132,8 +146,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "emotion", to: "pandwind", file: "styles.ts", mode: "safe" },
 		);
 		expect(result.code).not.toContain("@emotion/css");
-		expect(result.code).toContain('import { createCss } from "pandwind/css";');
-		expect(result.code).toContain("const css = createCss();");
+		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
+		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
+		expect(result.code).toContain('css.sheet.register([{ kind: "keyframes"');
 	});
 
 	test("cleans source imports when the module shares a line with migrated code", () => {
@@ -145,17 +160,31 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('import styled from "styled-components";');
 	});
 
-	test("does not lower styled components into class factories in safe mode", () => {
+	test("preserves styled component semantics when lowering to Emotion", () => {
 		const result = runAdapterMigration(
 			`import styled from "styled-components"; const Card = styled.button({ color: "red" });`,
 			{ from: "styled-components", to: "emotion", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import styled from "@emotion/styled";');
 		expect(result.code).toContain("styled.button");
-		expect(result.residuals).toContainEqual(
-			expect.objectContaining({ kind: "capability", hint: expect.stringContaining("components") }),
+	});
+
+	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				'export const App = () => <Card data-testid="card" />;',
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('const Card = css.class({ color: "red" })');
+		expect(result.code).toContain('<div data-testid="card" className={Card} />');
+		expect(result.code).not.toContain('from "styled-components"');
 	});
 
 	test("loads package/config evidence and migrates static tagged templates", () => {
@@ -196,7 +225,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
 	});
 
-	test("keeps interpolated tagged templates as runtime residuals in safe mode", () => {
+	test("keeps component interpolations as explicit host residuals in safe mode", () => {
 		const result = runAdapterMigration("const Card = styled.div`color: ${theme.foreground};`;", {
 			from: "styled-components",
 			to: "pandwind",
@@ -204,7 +233,112 @@ describe("CSS-in-JS adapter contract v2", () => {
 			mode: "safe",
 		});
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+	});
+
+	test("lowers dynamic intrinsic styled components into class and style carriers", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				'export const App = () => <Card data-testid="card" />;',
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
+		expect(result.code).toContain('<div data-testid="card" className={Card.class}');
+		expect(result.code).toContain("style={Card.style}");
+	});
+
+	test("lowers styled template theme interpolations when the host is intrinsic", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div`color: ${theme.foreground};`;\n" +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
+		expect(result.code).toContain("<div className={Card.class} style={Card.style} />");
+	});
+
+	test("lowers StyleX dynamic groups through its props host and runtime engine", () => {
+		const result = runAdapterMigration(
+			'import * as stylex from "@stylexjs/stylex";\n' +
+				"const styles = stylex.create({ card: { color: colors.foreground } });\n" +
+				"export const App = () => <div {...stylex.props(styles.card)} />;",
+			{ from: "stylex", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.group({ card: { color: colors.foreground } })");
+		expect(result.code).toContain("css.props(styles.card)");
+		expect(result.code).toContain("createRuntimeCss(pandwindPreset)");
+		expect(result.code).toContain('from "pandwind/css/runtime"');
+	});
+
+	test("lowers inline dynamic tagged templates through the host carrier", () => {
+		const result = runAdapterMigration(
+			'import { css } from "@linaria/core";\n' +
+				"export const App = () => <strong className={css`color: ${theme.foreground};`} />;",
+			{ from: "linaria", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("className={css.vars({ color: theme.foreground }).class}");
+		expect(result.code).toContain("style={css.vars({ color: theme.foreground }).style}");
+	});
+
+	test("lowers Stitches variants into the existing Pandwind recipe contract", () => {
+		const result = runAdapterMigration(
+			'import { createStitches } from "@stitches/react";\n' +
+				"const { css } = createStitches();\n" +
+				'const Button = css({ fontSize: "100%", variants: { shade: { red: { color: "Crimson" } } } });\n' +
+				'const value = Button({ shade: "red" });',
+			{ from: "stitches", to: "pandwind", file: "button.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("createRecipe(css");
+		expect(result.code).toContain('"shade": { "red"');
+		expect(result.code).toContain('Button({ shade: "red" })');
+	});
+
+	test("rewrites Vanilla Extract variable declarations for the runtime target", () => {
+		const result = runAdapterMigration(
+			'import { style, createVar, fallbackVar } from "@vanilla-extract/css";\n' +
+				"const color = createVar();\n" +
+				'export const card = style({ color, vars: { [color]: fallbackVar(color, "red") } });',
+			{ from: "vanilla-extract", to: "pandwind", file: "card.css.ts", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("@vanilla-extract/css");
+		expect(result.code).toContain('const color = "--pw-color";');
+		expect(result.code).toContain("const fallbackVar =");
+		expect(result.code).toContain('fallbackVar(color, "red")');
+	});
+
+	test("lowers dynamic values into Pandwind vars and rewrites the host carrier", () => {
+		const result = runAdapterMigration(
+			'import { css } from "@emotion/css";\n' +
+				"const card = css({ color: theme.foreground });\n" +
+				"export const App = () => <div className={card} />;",
+			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
+		expect(result.code).toContain("className={card.class}");
+		expect(result.code).toContain("style={card.style}");
 	});
 
 	test("does not parse adapter-looking text inside comments or strings", () => {
@@ -236,7 +370,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 
-	test("keeps JSS binding-based runtime application intact in safe mode", () => {
+	test("lowers JSS named rules and imperative application into Pandwind classes", () => {
 		const source = [
 			'import jss from "jss";',
 			"const styles = { button: { color: 'red' } };",
@@ -249,11 +383,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 			file: "styles.js",
 			mode: "safe",
 		});
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals[0]).toMatchObject({ kind: "runtime-context" });
-		expect(result.code).toContain('import jss from "jss";');
-		expect(result.code).toContain("jss.createStyleSheet(styles)");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain('import jss from "jss";');
+		expect(result.code).toContain('const sheet = css.group({ button: { color: "red" } })');
+		expect(result.code).toContain("button.classList.add(sheet.button)");
 	});
 
 	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {
@@ -346,7 +481,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(parsed.matches).toHaveLength(1);
 		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
-		expect(parsed.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+		expect(
+			parsed.matches[0]?.program.residuals.some((residual) => residual.kind === "capability"),
+		).toBe(true);
 		expect(parsed.residuals.some((residual) => residual.kind === "parse")).toBe(false);
 	});
 });

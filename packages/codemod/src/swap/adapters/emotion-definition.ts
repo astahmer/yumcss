@@ -1,27 +1,39 @@
-import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
+import { allRuleCapabilities, type AdapterDefinition } from "./definition.ts";
 
 export const EMOTION_DEFINITION: AdapterDefinition = {
 	id: "emotion",
 	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
+		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
+		{
+			name: "styled-template",
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+		},
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 	],
-	packages: dependency("@emotion/css", "runtime"),
+	packages: {
+		packages: [
+			{ name: "@emotion/css", kind: "runtime" },
+			{ name: "@emotion/styled", kind: "peer" },
+		],
+	},
 	capabilities: allRuleCapabilities("emotion", "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",
 		"plugin-transforms": "partial",
 		"framework-semantics": "exact",
+		components: "exact",
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
 	detectPatterns: [/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
-	sourceModules: ["@emotion/css", "@emotion/react"],
+	sourceModules: ["@emotion/css", "@emotion/react", "@emotion/styled"],
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -33,6 +45,11 @@ export const EMOTION_DEFINITION: AdapterDefinition = {
 			return {
 				text: `injectGlobal(${programObject(program)})`,
 				imports: ['import { injectGlobal } from "@emotion/css";'],
+			};
+		if (program.source?.subject !== undefined)
+			return {
+				text: `${program.source.subject}(${programObject(program)})`,
+				imports: ['import styled from "@emotion/styled";'],
 			};
 		return {
 			text: `css(${programObject(program)})`,

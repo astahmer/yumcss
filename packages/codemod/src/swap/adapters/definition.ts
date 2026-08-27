@@ -1,6 +1,18 @@
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
 import type { AdapterDependencies, AdapterEmitResult } from "../adapter-contract.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
+import type { StyleProgram, StyleProgramOptions } from "../semantic-ir.ts";
+
+export type AdapterSourceObjectOptions = Pick<
+	StyleProgramOptions,
+	| "nestedObjectKind"
+	| "unwrapNestedObjectKeys"
+	| "variantContainerKeys"
+	| "computedKeys"
+	| "dynamicReferences"
+>;
+export type AdapterSourceObjectOptionsProvider =
+	| AdapterSourceObjectOptions
+	| ((source: string) => AdapterSourceObjectOptions);
 
 export interface CallPattern {
 	readonly name: string;
@@ -24,6 +36,8 @@ export interface AdapterDefinition {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	/** Source-object semantics owned by this adapter, such as named style maps. */
+	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,

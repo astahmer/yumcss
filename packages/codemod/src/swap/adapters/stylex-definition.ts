@@ -14,9 +14,10 @@ export const STYLEX_DEFINITION: AdapterDefinition = {
 	}),
 	detectPatterns: [/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
 	sourceModules: ["@stylexjs/stylex"],
+	sourceObjectOptions: { nestedObjectKind: "named" },
 	emit(program, { programObject }) {
 		return {
-			text: `css.class(${programObject(program)})`,
+			text: `css.group(${programObject(program)})`,
 			imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 		};
 	},

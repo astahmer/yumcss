@@ -161,9 +161,22 @@ function parseTemplateCalls(
 			continue;
 		}
 		const template = source.slice(start, lastTick + 1);
-		const program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start);
+		let program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start);
+		const subject = source
+			.slice(start, firstTick)
+			.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[1];
+		if (subject !== undefined) {
+			const normalized = `styled${subject.replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
+			program = {
+				...program,
+				source: {
+					...program.source,
+					subject: normalized,
+					subjectKind: subject.trim().startsWith(".") ? "member" : "call",
+				},
+			};
+		}
 		matches.push({ start, end: start + template.length, program, sourceText: template });
-		residuals.push(...program.residuals);
 	}
 	return { matches, residuals };
 }
