@@ -539,8 +539,15 @@ function parseCalls(
 						end,
 						adapter: context.config.adapter,
 						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
+						...(context.semantic?.source ?? {}),
 					},
 					sourceOffset: open + 1,
+					...(context.semantic?.themes ? { themes: context.semantic.themes } : {}),
+					...(context.semantic?.compositions
+						? { compositions: context.semantic.compositions }
+						: {}),
+					...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
+					...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
 					...(pattern.name.startsWith("jss-") ? { nestedObjectKind: "named" as const } : {}),
 					...(pattern.name === "style" ? { unwrapNestedObjectKeys: ["selectors"] } : {}),
 				});
@@ -672,7 +679,7 @@ function removeExcludedMatches(source: string, pattern: RegExp): string {
 	return applyEdits(source, edits);
 }
 
-function removeSourceImports(code: string, modules: readonly string[]): string {
+export function removeSourceImports(code: string, modules: readonly string[]): string {
 	let result = code;
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -688,7 +695,7 @@ function removeSourceImports(code: string, modules: readonly string[]): string {
 	return removeExcludedMatches(result, /\bconst\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?/g);
 }
 
-function consolidateImports(statements: Iterable<string>): string[] {
+export function consolidateImports(statements: Iterable<string>): string[] {
 	const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
 	const other: string[] = [];
 	for (const statement of statements) {
@@ -726,7 +733,7 @@ function consolidateImports(statements: Iterable<string>): string[] {
 	];
 }
 
-function validationSource(text: string, program: StyleProgram): string {
+export function validationSource(text: string, program: StyleProgram): string {
 	const rule = program.rules[0];
 	return rule?.kind === "keyframes" && rule.name !== undefined
 		? `const ${rule.name} = ${text}`
@@ -1015,182 +1022,5 @@ export function getExternalAdapter(id: string): StyleAdapter | undefined {
 	return EXTERNAL_STYLE_SYSTEMS.getDialect(id);
 }
 
-export interface AdapterMigrationOptions {
-	readonly from: string;
-	readonly to: string;
-	readonly file: string;
-	readonly root?: string;
-	readonly meta?: PandwindMeta;
-	readonly packageJson?: Readonly<Record<string, unknown>>;
-	readonly readFile?: (file: string) => string | undefined;
-	readonly mode?: AdapterCapabilityMode;
-	readonly skipMarker?: string;
-	/** Optional registry for third-party or core dialect routes. */
-	readonly registry?: StyleSystemRegistry;
-	/** Optional adapter registry, including adapters discovered from plugins. */
-	readonly adapterRegistry?: StyleAdapterRegistry;
-}
-
-export interface AdapterMigrationResult {
-	readonly code: string;
-	readonly changed: boolean;
-	readonly converted: number;
-	readonly skipped: number;
-	readonly reports: readonly AdapterCapabilityReport[];
-	readonly validations: readonly AdapterValidationResult[];
-	readonly dependencies: readonly AdapterDependencies[];
-	readonly residuals: readonly StyleProgramResidual[];
-}
-
-/** Run one v2 adapter-to-adapter migration over a source file. */
-export function runAdapterMigration(
-	source: string,
-	options: AdapterMigrationOptions,
-): AdapterMigrationResult {
-	const adapterRegistry = options.adapterRegistry ?? EXTERNAL_ADAPTER_REGISTRY;
-	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
-		options.from,
-		options.to,
-	);
-	const sourceAdapter = route.source;
-	const targetAdapter = route.target;
-	const detection = sourceAdapter.detect({
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-	});
-	if (!detection.matched) {
-		return {
-			code: source,
-			changed: false,
-			converted: 0,
-			skipped: 0,
-			reports: [],
-			validations: [],
-			dependencies: [],
-			residuals: [],
-		};
-	}
-	const readFile =
-		options.readFile ??
-		((file: string) => {
-			try {
-				return readFileSync(file, "utf8");
-			} catch {
-				return undefined;
-			}
-		});
-	const config = sourceAdapter.loadConfig({
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile,
-	});
-	const document = createSourceScannerRegistry().scan({
-		file: options.file,
-		source,
-		root: options.root,
-	});
-	const parsed = sourceAdapter.parse(source, {
-		file: options.file,
-		source,
-		root: options.root,
-		config,
-		meta: options.meta,
-		document,
-	});
-	const mode = options.mode ?? "safe";
-	const marker = options.skipMarker ?? "pandwind:migrate-skip";
-	const edits: Array<{ start: number; end: number; text: string }> = [];
-	const imports = new Set<string>();
-	const reports: AdapterCapabilityReport[] = [];
-	const validations: AdapterValidationResult[] = [];
-	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
-	const residuals: StyleProgramResidual[] = [...parsed.residuals];
-	let skipped = 0;
-	for (const [index, match] of parsed.matches.entries()) {
-		const report = inspectAdapterCapabilities(targetAdapter.capabilities, match.program, mode);
-		reports.push(report);
-		const hasParseResiduals = match.program.residuals.length > 0;
-		if (!report.convertible || (mode === "safe" && hasParseResiduals)) {
-			skipped++;
-			residuals.push(
-				...match.program.residuals,
-				...(report.blockers.length === 0
-					? []
-					: [
-							{
-								kind: "capability",
-								text: match.sourceText,
-								hint: report.blockers
-									.map((issue) => `${issue.capability}: ${issue.detail}`)
-									.join("; "),
-							},
-						]),
-			);
-			edits.push({
-				start: match.start,
-				end: match.start,
-				text: `// ${marker} (adapter capability mismatch)\n`,
-			});
-			continue;
-		}
-		const emitted = targetAdapter.emit(match.program, {
-			file: options.file,
-			config,
-			mode,
-			capability: report,
-			index,
-			document,
-			meta: options.meta,
-		});
-		for (const statement of emitted.imports ?? []) imports.add(statement);
-		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
-		residuals.push(...emitted.residuals);
-		const emittedForValidation = validationSource(emitted.text, match.program);
-		const reparsed = targetAdapter.parse(emittedForValidation, {
-			file: options.file,
-			source: emittedForValidation,
-			root: options.root,
-			config: targetAdapter.loadConfig({
-				file: options.file,
-				source: emitted.text,
-				root: options.root,
-				packageJson: options.packageJson,
-				readFile,
-			}),
-			meta: options.meta,
-			document,
-		});
-		const targetProgram =
-			reparsed.matches.length === 0
-				? match.program
-				: styleProgramFromRules(
-						reparsed.matches.flatMap((candidate) => candidate.program.rules),
-						{
-							source: match.program.source,
-							residuals: reparsed.residuals,
-						},
-					);
-		const validation = targetAdapter.validate(match.program, targetProgram, [
-			...emitted.residuals,
-			...reparsed.residuals,
-		]);
-		validations.push(validation);
-		edits.push({ start: match.start, end: match.end, text: emitted.text });
-	}
-	let code = removeSourceImports(applyEdits(source, edits), sourceAdapter.sourceModules);
-	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
-	return {
-		code,
-		changed: code !== source,
-		converted: parsed.matches.length - skipped,
-		skipped,
-		reports,
-		validations,
-		dependencies,
-		residuals,
-	};
-}
+export { runAdapterMigration } from "./adapter-migration.ts";
+export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";

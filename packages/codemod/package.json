@@ -26,6 +26,7 @@
 	"type": "module",
 	"exports": {
 		".": "./src/cli.ts",
+		"./swap": "./src/swap/index.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

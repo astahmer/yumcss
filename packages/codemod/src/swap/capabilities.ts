@@ -159,8 +159,7 @@ export function requiredAdapterCapabilities(
 	if (program.runtime !== undefined) add("runtime-context", `${program.runtime.phase} runtime`);
 	if ((program.plugins?.length ?? 0) > 0)
 		add("plugin-transforms", `${program.plugins?.length ?? 0} plugin transform(s)`);
-	if (program.source?.framework !== undefined)
-		add("framework-semantics", program.source.framework);
+	if (program.source?.framework !== undefined) add("framework-semantics", program.source.framework);
 	return requirements;
 }
 

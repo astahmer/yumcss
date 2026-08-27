@@ -87,7 +87,8 @@ export function createStyleAdapterRegistry(
 		},
 		register(adapter) {
 			if (!isStyleAdapter(adapter)) throw new Error("invalid style adapter");
-			if (values.has(adapter.id)) throw new Error(`style adapter already registered: ${adapter.id}`);
+			if (values.has(adapter.id))
+				throw new Error(`style adapter already registered: ${adapter.id}`);
 			values.set(adapter.id, adapter);
 			return registry;
 		},
@@ -114,7 +115,11 @@ export function createStyleAdapterRegistry(
 					try {
 						const plugin = asPlugin(await load(specifier), specifier);
 						registry.registerPlugin(plugin);
-						return { specifier, registered: plugin.adapters.map((adapter) => adapter.id), errors: [] };
+						return {
+							specifier,
+							registered: plugin.adapters.map((adapter) => adapter.id),
+							errors: [],
+						};
 					} catch (error) {
 						return {
 							specifier,

@@ -514,7 +514,7 @@ function dynamicSourceValue(
 		expression,
 		lowering: "residual",
 		source: sourceRange(options.source, options.sourceOffset ?? 0, node),
-		dependencies: [...new Set(expression.match(/[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?/g) ?? [])],
+		dependencies: [...new Set(expression.match(/[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/g) ?? [])],
 	};
 }
 

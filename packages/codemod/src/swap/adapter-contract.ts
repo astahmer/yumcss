@@ -4,7 +4,15 @@ import type {
 	AdapterCapabilityMode,
 	AdapterCapabilityReport,
 } from "./capabilities.ts";
-import type { StyleProgram, StyleProgramResidual } from "./semantic-ir.ts";
+import type {
+	StyleComposition,
+	StylePluginTransform,
+	StyleProgram,
+	StyleProgramOptions,
+	StyleProgramResidual,
+	StyleRuntimeContext,
+	StyleThemeBinding,
+} from "./semantic-ir.ts";
 import type { SourceScanResult } from "./source-scanner.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
@@ -52,6 +60,16 @@ export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
 	readonly document?: SourceScanResult;
+	/** Source semantic metadata supplied by a framework or project integration. */
+	readonly semantic?: Pick<
+		StyleProgramOptions,
+		"source" | "themes" | "compositions" | "runtime" | "plugins"
+	> & {
+		readonly themes?: readonly StyleThemeBinding[];
+		readonly compositions?: readonly StyleComposition[];
+		readonly runtime?: StyleRuntimeContext;
+		readonly plugins?: readonly StylePluginTransform[];
+	};
 }
 
 export interface AdapterMatch {

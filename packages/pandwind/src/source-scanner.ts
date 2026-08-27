@@ -79,7 +79,8 @@ const isOxcLanguage = (language: SourceLanguage): boolean =>
 
 function lexicalExcludedRanges(source: string): SourceRange[] {
 	const ranges: SourceRange[] = [];
-	const pattern = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/g;
+	const pattern =
+		/\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`/g;
 	for (const match of source.matchAll(pattern)) {
 		const start = match.index ?? 0;
 		ranges.push({ start, end: start + match[0].length });
@@ -106,11 +107,16 @@ export function computeExcludedRanges(
 	const language = languageForFile(file);
 	if (!isOxcLanguage(language)) {
 		const ranges = lexicalExcludedRanges(source);
-		return { excluded: ranges.map(({ start, end }) => [start, end]), isExcluded: (start) => ranges.some((range) => start >= range.start && start < range.end) };
+		return {
+			excluded: ranges.map(({ start, end }) => [start, end]),
+			isExcluded: (start) => ranges.some((range) => start >= range.start && start < range.end),
+		};
 	}
 	const parsed = parseSourceProgram({ file, source, language });
 	const excluded: Array<[number, number]> = [];
-	for (const comment of (parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }).comments ?? []) {
+	for (const comment of (
+		parsed as unknown as { comments?: Array<{ start?: number; end?: number }> }
+	).comments ?? []) {
 		if (typeof comment.start === "number" && typeof comment.end === "number")
 			excluded.push([comment.start, comment.end]);
 	}
@@ -216,7 +222,8 @@ export function createSourceScannerRegistry(
 		register(adapter) {
 			if (adapter.schema !== SOURCE_SCANNER_SCHEMA)
 				throw new Error(`unsupported source scanner schema: ${adapter.schema}`);
-			if (adapters.has(adapter.id)) throw new Error(`source scanner already registered: ${adapter.id}`);
+			if (adapters.has(adapter.id))
+				throw new Error(`source scanner already registered: ${adapter.id}`);
 			adapters.set(adapter.id, adapter);
 			return registry;
 		},

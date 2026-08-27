@@ -72,7 +72,8 @@ export function createStyleValidatorRegistry(
 		register(validator) {
 			if (validator.schema !== VALIDATOR_SCHEMA)
 				throw new Error(`unsupported validator schema: ${validator.schema}`);
-			if (validators.has(validator.id)) throw new Error(`validator already registered: ${validator.id}`);
+			if (validators.has(validator.id))
+				throw new Error(`validator already registered: ${validator.id}`);
 			validators.set(validator.id, validator);
 			return registry;
 		},

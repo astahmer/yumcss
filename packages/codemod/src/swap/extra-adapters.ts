@@ -5,10 +5,7 @@ import type {
 	AdapterProjectConfig,
 	StyleAdapter,
 } from "./adapter-contract.ts";
-import {
-	ADAPTER_CAPABILITIES_SCHEMA,
-	type AdapterCapabilities,
-} from "./capabilities.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 import { computeExcludedRanges } from "pandwind/source";
 import {
@@ -60,17 +57,33 @@ const valueText = (value: StyleProgram["declarations"][number]["value"]): string
 };
 
 const objectText = (program: StyleProgram): string => {
-	const render = (declarations: StyleProgram["declarations"], children: StyleProgram["rules"]): string => {
-		const entries = declarations.map((declaration) =>
-			`${JSON.stringify(declaration.property)}: ${valueText(declaration.value)}`,
-		);
-		const nested = children.map((rule) => {
-			const key = rule.selector ?? rule.name ?? rule.conditions[0]?.name;
-			return key === undefined ? "" : `${JSON.stringify(key)}: ${render(rule.declarations, rule.children)}`;
-		});
-		return `{ ${[...entries, ...nested].filter(Boolean).join(", ")} }`;
+	type Node = { values: Array<[string, string]>; children: Map<string, Node> };
+	const root: Node = { values: [], children: new Map() };
+	const add = (
+		node: Node,
+		declaration: StyleProgram["declarations"][number],
+		index: number,
+	): void => {
+		const condition = declaration.conditions[index];
+		if (condition === undefined) {
+			node.values.push([declaration.property, valueText(declaration.value)]);
+			return;
+		}
+		const key = condition.raw ?? condition.value ?? condition.name;
+		const child = node.children.get(key) ?? { values: [], children: new Map() };
+		node.children.set(key, child);
+		add(child, declaration, index + 1);
 	};
-	return render(program.declarations, program.rules.flatMap((rule) => rule.children.length ? [rule] : []));
+	const declarations = program.rules[0]?.declarations ?? program.declarations;
+	for (const declaration of declarations) add(root, declaration, 0);
+	const render = (node: Node): string => {
+		const values = node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`);
+		const children = [...node.children].map(
+			([key, child]) => `${JSON.stringify(key)}: ${render(child)}`,
+		);
+		return `{ ${[...values, ...children].join(", ")} }`;
+	};
+	return render(root);
 };
 
 function balanced(source: string, open: number): { end: number; body: string } | undefined {
@@ -100,7 +113,11 @@ function parseObjectCalls(
 		const open = source.indexOf("{", start);
 		const block = balanced(source, open);
 		if (block === undefined) {
-			residuals.push({ kind: "parse", text: source.slice(start), hint: `${id} object is unbalanced` });
+			residuals.push({
+				kind: "parse",
+				text: source.slice(start),
+				hint: `${id} object is unbalanced`,
+			});
 			continue;
 		}
 		const program = styleProgramFromSourceObject(block.body, {
@@ -121,7 +138,9 @@ const makeAdapter = (options: ExtraAdapterOptions): StyleAdapter => ({
 	capabilities: capabilities(options.id),
 	dependencies: options.packages,
 	detect: (context) => {
-		const evidence = options.detect.filter((pattern) => pattern.test(context.source)).map((pattern) => pattern.source);
+		const evidence = options.detect
+			.filter((pattern) => pattern.test(context.source))
+			.map((pattern) => pattern.source);
 		return { matched: evidence.length > 0, confidence: evidence.length ? 0.8 : 0, evidence };
 	},
 	loadConfig: (context) => config(options.id, context),
@@ -138,7 +157,12 @@ const makeAdapter = (options: ExtraAdapterOptions): StyleAdapter => ({
 		if (residuals.length > 0) differences.push(`${residuals.length} residual conversion(s)`);
 		return {
 			valid: differences.length === 0,
-			lossiness: differences.length === 0 ? "lossless" : canonicalSource === canonicalTarget ? "lossy" : "unsupported",
+			lossiness:
+				differences.length === 0
+					? "lossless"
+					: canonicalSource === canonicalTarget
+						? "lossy"
+						: "unsupported",
 			canonicalSource,
 			canonicalTarget,
 			differences,
@@ -150,7 +174,12 @@ const makeAdapter = (options: ExtraAdapterOptions): StyleAdapter => ({
 export const FELA = makeAdapter({
 	id: "fela",
 	modules: ["fela", "react-fela"],
-	packages: { packages: [{ name: "fela", kind: "runtime" }, { name: "react-fela", kind: "peer" }] },
+	packages: {
+		packages: [
+			{ name: "fela", kind: "runtime" },
+			{ name: "react-fela", kind: "peer" },
+		],
+	},
 	detect: [/from\s+["'](?:fela|react-fela)["']/g, /\brenderer\.renderRule\s*\(\s*\{/g],
 	call: /\brenderer\.renderRule\s*\(\s*\{/g,
 	prefix: "renderer.renderRule(",

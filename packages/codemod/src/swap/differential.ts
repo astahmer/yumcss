@@ -9,7 +9,8 @@ import type {
 	AdapterValidationResult,
 	StyleAdapter,
 } from "./adapter-contract.ts";
-import { getExternalAdapter } from "./external-adapters.ts";
+import { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
+import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
@@ -65,6 +66,8 @@ export interface DifferentialFixture {
 	readonly browserStates?: readonly DifferentialBrowserState[];
 	readonly ssr?: DifferentialSsrHooks;
 	readonly validators?: StyleValidatorRegistry;
+	readonly adapterRegistry?: StyleAdapterRegistry;
+	readonly semantic?: import("./adapter-contract.ts").AdapterParseContext["semantic"];
 }
 
 export interface DifferentialBrowserResult {
@@ -96,8 +99,8 @@ export interface DifferentialResult {
 	readonly dependencies: readonly AdapterDependencies[];
 }
 
-function adapterOrThrow(id: string): StyleAdapter {
-	const adapter = getExternalAdapter(id);
+function adapterOrThrow(id: string, registry: StyleAdapterRegistry): StyleAdapter {
+	const adapter = registry.get(id);
 	if (adapter === undefined) throw new Error(`unknown style adapter: ${id}`);
 	return adapter;
 }
@@ -129,8 +132,9 @@ function validationSource(text: string, program: StyleProgram): string {
  * them. This keeps equivalence checks independent of any one framework.
  */
 export function runDifferentialFixture(fixture: DifferentialFixture): DifferentialResult {
-	const sourceAdapter = adapterOrThrow(fixture.sourceAdapter);
-	const targetAdapter = adapterOrThrow(fixture.targetAdapter);
+	const adapterRegistry = fixture.adapterRegistry ?? EXTERNAL_ADAPTER_REGISTRY;
+	const sourceAdapter = adapterOrThrow(fixture.sourceAdapter, adapterRegistry);
+	const targetAdapter = adapterOrThrow(fixture.targetAdapter, adapterRegistry);
 	const mode = fixture.mode ?? "safe";
 	const sourceConfig = sourceAdapter.loadConfig({
 		file: fixture.file,
@@ -147,6 +151,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		source: fixture.source,
 		root: fixture.root,
 		config: sourceConfig,
+		semantic: fixture.semantic,
 	});
 	const sourceProgram = parsed.matches[0]?.program;
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
@@ -200,6 +205,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		source: emittedForValidation,
 		root: fixture.root,
 		config: targetConfig,
+		semantic: fixture.semantic,
 	});
 	const targetProgram = mergeParsedPrograms(
 		targetParsed.matches.map((match) => match.program),

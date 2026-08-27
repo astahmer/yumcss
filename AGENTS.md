@@ -55,6 +55,21 @@ which concrete module to import or grow a switch statement in a central runner.
 - Registries are the extension point; unions and maps are derived from the
   registry where possible. Tests must prove that a fake/minimal adapter can be
   registered without changing core orchestration.
+- Third-party style adapters use the versioned plugin registry in
+  `pandwind-codemod/swap`; discovery is explicit and injectable, never an
+  ambient global scan. A plugin may export one adapter, a plugin object, or an
+  adapter collection.
+- The source scanner contract is owned by `pandwind/source`. Codemod is only a
+  compatibility projection; Vite, analyze, and Panda compiler paths must use
+  the same parser/language-selection service rather than reimplementing
+  extension checks.
+- Adapter migration and Panda project migration are staged pipeline domains.
+  Concrete parsers/emitters may remain independently owned modules, while
+  orchestration policy belongs to the pipeline interface.
+- Semantic metadata for themes, composition, runtime context, plugin
+  transforms, and framework semantics must travel in the StyleProgram and be
+  checked by capability/validator registries; do not encode it only in
+  unstructured residual text.
 - Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.

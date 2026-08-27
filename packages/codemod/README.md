@@ -1,5 +1,22 @@
 # pandwind-codemod
 
+The migration pivot is also available as the `pandwind-codemod/swap` entry
+point. Third-party packages can export one `StyleAdapter`, a
+`StyleAdapterPlugin`, or `{ adapters }` and register/discover it through
+`createStyleAdapterRegistry`. Discovery is explicit and injectable, so CLI,
+bundler, and test environments can choose their own package-loading policy.
+
+```ts
+import { createStyleAdapterRegistry } from "pandwind-codemod/swap";
+
+const registry = createStyleAdapterRegistry();
+await registry.discover(["my-pandwind-adapter"]);
+```
+
+Adapters implement the versioned `pandwind.style-adapter/2` contract and are
+routed through the semantic style-program IR. Unsupported capabilities produce
+residual reports instead of silent partial rewrites.
+
 Migrate raw Tailwind authoring onto the pandwind APIs. Driven entirely by
 your project's **generated metadata** (`types.d.ts`, `tw.ts`, `bridge.ts`) —
 never hand-maintained tables.

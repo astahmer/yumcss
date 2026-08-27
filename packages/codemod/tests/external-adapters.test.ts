@@ -18,7 +18,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			jss: "import { createUseStyles } from 'react-jss'; createUseStyles({ button: { color: 'red' } })",
 			fela: "import { createRenderer } from 'fela'; renderer.renderRule({ color: 'red' })",
 			goober: "import { css } from 'goober'; css({ color: 'red' })",
-			aphrodite: "import { StyleSheet } from 'aphrodite'; StyleSheet.create({ button: { color: 'red' } })",
+			aphrodite:
+				"import { StyleSheet } from 'aphrodite'; StyleSheet.create({ button: { color: 'red' } })",
 		};
 		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);

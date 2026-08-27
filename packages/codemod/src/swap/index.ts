@@ -57,6 +57,12 @@ export type SwapMissResolver = (
 
 export { createEngineMissResolver } from "./engine.ts";
 export { runPandaMigration } from "./panda-migrate.ts";
+export {
+	PANDA_MIGRATION_PIPELINE,
+	PANDA_MIGRATION_PIPELINE_SCHEMA,
+	createPandaMigrationPipeline,
+} from "./panda-migration-pipeline.ts";
+export type { PandaMigrationPipeline, PandaMigrationStage } from "./panda-migration-pipeline.ts";
 export { inferCommonRoot } from "./panda-migrate.ts";
 export type { TwMissResolver } from "./engine.ts";
 export {
@@ -103,6 +109,16 @@ export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 export { EXTERNAL_STYLE_SYSTEMS } from "./external-adapters.ts";
 export { EXTERNAL_ADAPTER_REGISTRY } from "./external-adapters.ts";
+export {
+	ADAPTER_MIGRATION_PIPELINE,
+	MIGRATION_PIPELINE_SCHEMA,
+	createAdapterMigrationPipeline,
+} from "./migration-pipeline.ts";
+export type {
+	AdapterMigrationInput,
+	AdapterMigrationPipeline,
+	MigrationStage,
+} from "./migration-pipeline.ts";
 export { EXTRA_ADAPTERS, FELA, GOOBER, APHRODITE } from "./extra-adapters.ts";
 export {
 	ADAPTER_PLUGIN_SCHEMA,
@@ -160,7 +176,11 @@ export type {
 	SourceScannerRegistry,
 } from "./source-scanner.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
-export { VALIDATOR_SCHEMA, STYLE_VALIDATORS, createStyleValidatorRegistry } from "./validator-registry.ts";
+export {
+	VALIDATOR_SCHEMA,
+	STYLE_VALIDATORS,
+	createStyleValidatorRegistry,
+} from "./validator-registry.ts";
 export type {
 	StyleValidationContext,
 	StyleValidationEvidence,
@@ -285,13 +305,15 @@ function collectMatches(
 	tokenize?: boolean,
 ): Array<Match> {
 	if (from === "panda" || EXTERNAL_ADAPTER_IDS.includes(from)) return [];
-	return [...SWAP_REGISTRY.scanSource(from, {
-		source,
-		file,
-		meta,
-		engineResolver,
-		tokenize,
-	})];
+	return [
+		...SWAP_REGISTRY.scanSource(from, {
+			source,
+			file,
+			meta,
+			engineResolver,
+			tokenize,
+		}),
+	];
 }
 
 /** Run one swap pass over a file's source. */
