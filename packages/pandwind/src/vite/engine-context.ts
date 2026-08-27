@@ -27,11 +27,8 @@
  * generated sheet is the shipped truth, and its selectors are what folded
  * atoms must resolve to.
  */
-import type { AtomRegistry } from "../css/atoms.ts";
 import { normalizeStrategy, type AnyClassNameStrategy } from "../css/class-name-strategy.ts";
-import { createHashFn } from "../css/hash.ts";
-import { resolveDesignStyle } from "../design/resolve.ts";
-import { flattenStyle, pairs } from "../lib/utils.ts";
+import { createLiteralStyleCompiler } from "./literal-style-compiler.ts";
 
 import type { CssPreset } from "./css-extract.ts";
 
@@ -50,7 +47,7 @@ export interface PandwindEngineContext {
 	 * merge resolve folded atoms against other inputs exactly like the
 	 * runtime does.
 	 */
-	readonly registry: AtomRegistry;
+	readonly registry: import("../css/atoms.ts").AtomRegistry;
 	/**
 	 * Compile one literal (design-vocabulary or raw) style object into the
 	 * exact class string the stylesheet pass generates rules for. Returns
@@ -66,65 +63,15 @@ export function createPandwindEngineContext(
 ): PandwindEngineContext {
 	const { preset } = options;
 	const className = normalizeStrategy(options.className);
-	const hashFn = createHashFn(options.debug === true);
-	const registry: AtomRegistry = new Map();
-	// Same empty-condition rule as the stylesheet generator: a condition
-	// mapped to an empty selector contributes nothing to the atomic path.
-	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
-
-	const foldLiteralStyle = (literal: Record<string, unknown>): string | null => {
-		let resolved: Record<string, unknown>;
-		try {
-			resolved = resolveDesignStyle(literal, preset.tokens);
-		} catch {
-			return null;
-		}
-		const flat = flattenStyle(resolved as never);
-
-		// Canonicalize like processFlatStyles: later arguments win per
-		// canonical path, and the hashed key is the sorted condition path.
-		const merged = new Map<string, string>();
-		for (const key in flat) {
-			const value = flat[key]!;
-			// $input dynamics resolve at runtime against a live stylesheet —
-			// no static equivalent exists.
-			if (typeof value === "string" && value.startsWith("input>$")) return null;
-			const orderedKey = pairs.join(
-				pairs
-					.split(key)
-					.filter((part) => part !== emptyCondition)
-					.toSorted(),
-			);
-			merged.set(orderedKey, String(value));
-		}
-
-		const classes: string[] = [];
-		for (const [orderedKey, value] of merged) {
-			// Dynamic inputs (`css.input` / `$input` blocks) have no static
-			// class — the runtime transform owns them.
-			if (orderedKey.includes("$input")) return null;
-			let name: string | undefined;
-			if (className !== undefined) {
-				try {
-					name = className.toClassName(orderedKey, value) ?? undefined;
-				} catch {
-					// Strategy refuses the declaration (e.g. unrepresentable in
-					// tailwind mode) — leave it to the runtime engine.
-					return null;
-				}
-			}
-			if (name === undefined) {
-				// Byte-parity with createCss.register: engines emit the raw
-				// hash (unescaped). Escaping is a stylesheet-selector concern.
-				name = hashFn(orderedKey, value);
-			}
-			if (className?.sheetBacked === true || className === undefined) {
-				registry.set(name, orderedKey);
-			}
-			classes.push(name);
-		}
-		return classes.join(" ");
+	const compiler = createLiteralStyleCompiler({
+		preset,
+		...(className === undefined ? {} : { className }),
+		...(options.debug === undefined ? {} : { debug: options.debug }),
+	});
+	return {
+		preset,
+		className,
+		registry: compiler.registry,
+		foldLiteralStyle: compiler.compile.bind(compiler),
 	};
-
-	return { preset, className, registry, foldLiteralStyle };
 }
