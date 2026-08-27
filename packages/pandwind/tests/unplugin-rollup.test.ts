@@ -65,6 +65,38 @@ describe("pandwindRollup", () => {
 			rmSync(dir, { recursive: true, force: true });
 		}
 	});
+
+	test("watchChange invalidates inline cross-module constants", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-rollup-inline-watch-"));
+		try {
+			const twModule = writeJsTwModule(dir);
+			const constants = join(dir, "constants.js");
+			const entry = join(dir, "entry.js");
+			writeFileSync(constants, 'export const P = "6";');
+			const source = () =>
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'import { P } from "./constants.js";',
+					"export const cls = tw({ p: P });",
+				].join("\n");
+			writeFileSync(entry, source());
+
+			const plugin = pandwindRollup({}) as unknown as {
+				transform: (code: string, id: string) => Promise<{ code: string } | null>;
+				watchChange: (id: string) => void;
+			};
+			const before = await plugin.transform(readFileSync(entry, "utf8"), entry);
+			expect(before?.code).toContain('"p-6"');
+
+			writeFileSync(constants, 'export const P = "8";');
+			plugin.watchChange(constants);
+			writeFileSync(entry, source());
+			const after = await plugin.transform(readFileSync(entry, "utf8"), entry);
+			expect(after?.code).toContain('"p-8"');
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
 });
 
 describe("pandwindUnpluginCss", () => {

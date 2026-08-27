@@ -6,10 +6,10 @@
  * Rollup browser fixture covers the CSS virtual module and browser output;
  * this test covers the Webpack transform hook itself.
  */
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import webpack, { type Configuration, type Stats } from "webpack";
+import webpack, { type Compiler, type Configuration, type Stats, type Watching } from "webpack";
 import { describe, expect, test } from "vitest";
 import { pandwindWebpack } from "../src/unplugin.ts";
 
@@ -78,6 +78,104 @@ describe("pandwindWebpack", () => {
 			expect(code).toContain("p-6 text-sm");
 			expect(code).not.toMatch(/\btw\s*\(/);
 		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
+	test("watch rebuild reprocesses changed source", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-webpack-watch-"));
+		const outputDir = join(dir, "dist");
+		const entry = join(dir, "entry.js");
+		mkdirSync(outputDir, { recursive: true });
+		let compiler: Compiler | null = null;
+		let watching: Watching | undefined;
+		try {
+			const twModule = writeJsTwModule(dir);
+			writeFileSync(
+				entry,
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'console.log(tw({ p: "6", text: "sm" }));',
+				].join("\n"),
+			);
+			compiler = webpack({
+				mode: "development",
+				context: dir,
+				entry: "./entry.js",
+				output: { path: outputDir, filename: "bundle.js" },
+				plugins: [pandwindWebpack({})],
+			}) as Compiler;
+			if (compiler === null) throw new Error("Webpack returned no compiler");
+			const builds: Stats[] = [];
+			const waiters: Array<{
+				resolve: (stats: Stats) => void;
+				reject: (error: Error) => void;
+			}> = [];
+			const nextBuild = () => {
+				const build = builds.shift();
+				if (build !== undefined) return Promise.resolve(build);
+				return new Promise<Stats>((resolveStats, reject) => {
+					waiters.push({ resolve: resolveStats, reject });
+				});
+			};
+			watching = compiler.watch({ aggregateTimeout: 10 }, (error, stats) => {
+				if (error !== null) {
+					waiters.shift()?.reject(error);
+					return;
+				}
+				if (stats === undefined || "stats" in stats) {
+					waiters.shift()?.reject(new Error("Webpack emitted no watch stats"));
+					return;
+				}
+				const waiter = waiters.shift();
+				if (waiter !== undefined) waiter.resolve(stats);
+				else builds.push(stats);
+			});
+			const initial = await nextBuild();
+			expect(initial.hasErrors(), initial.toString({ errorDetails: true })).toBe(false);
+			expect(readFileSync(join(outputDir, "bundle.js"), "utf8")).toContain("p-6 text-sm");
+
+			const waitForBundle = async (expected: string): Promise<Stats> => {
+				const deadline = Date.now() + 5_000;
+				while (Date.now() < deadline) {
+					const build = nextBuild();
+					const remaining = deadline - Date.now();
+					let timer: ReturnType<typeof setTimeout> | undefined;
+					const stats = await Promise.race([
+						build,
+						new Promise<never>((_, reject) => {
+							timer = setTimeout(
+								() => reject(new Error("Timed out waiting for Webpack watch rebuild")),
+								remaining,
+							);
+						}),
+					]);
+					if (timer !== undefined) clearTimeout(timer);
+					if (stats.hasErrors()) return stats;
+					if (readFileSync(join(outputDir, "bundle.js"), "utf8").includes(expected)) return stats;
+				}
+				throw new Error(`Webpack watch output never contained ${expected}`);
+			};
+
+			const updatedBuild = waitForBundle("p-8 text-sm");
+			writeFileSync(
+				entry,
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'console.log(tw({ p: "8", text: "sm" }));',
+				].join("\n"),
+			);
+			const changedAt = new Date(Date.now() + 1_000);
+			utimesSync(entry, changedAt, changedAt);
+			watching.invalidate();
+			const updated = await updatedBuild;
+			expect(updated.hasErrors(), updated.toString({ errorDetails: true })).toBe(false);
+			expect(readFileSync(join(outputDir, "bundle.js"), "utf8")).toContain("p-8 text-sm");
+		} finally {
+			if (watching !== undefined)
+				await new Promise<void>((resolveClose) => watching?.close(() => resolveClose()));
+			if (compiler !== null)
+				await new Promise<void>((resolveClose) => compiler!.close(() => resolveClose()));
 			rmSync(dir, { recursive: true, force: true });
 		}
 	});
