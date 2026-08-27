@@ -122,7 +122,7 @@ the flat path does not become ambiguous.
 | SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                 |
 | Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation              |
 | Release/publishing   | Deferred                                                             | User explicitly requested no release work in this wave               |
-| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API       | User explicitly requested this exclusion                             |
+| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API    | User explicitly requested this exclusion                             |
 
 ## What this allows
 

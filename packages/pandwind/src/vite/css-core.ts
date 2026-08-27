@@ -102,7 +102,6 @@ export function createCssExtractorPluginCore(
 			: (code: string, id: string): { code: string; map: null } | null => {
 					if (id.includes("node_modules")) return null;
 					if (!isScanned(id)) return null;
-					if (!/\bcss\b/.test(code)) return null;
 					const names = findCssImports(code, id, matchers);
 					if (names.size === 0) return null;
 					const result = inlineCssCalls(code, id, names, preset, className);
@@ -154,12 +153,10 @@ export function createCssExtractorPluginCore(
 				const code = readFileSync(file, "utf8");
 				let sources: ReturnType<typeof extractCssSources> = [];
 				let varKeys: string[] = [];
-				if (/\bcss\b/.test(code)) {
-					const names = findCssImports(code, file, matchers);
-					if (names.size > 0) {
-						sources = extractCssSources(code, file, names, preset);
-						varKeys = extractVarKeys(code, file, names);
-					}
+				const names = findCssImports(code, file, matchers);
+				if (names.size > 0) {
+					sources = extractCssSources(code, file, names, preset);
+					varKeys = extractVarKeys(code, file, names);
 				}
 				entry = { mtimeMs, sources, varKeys };
 				fileCache.set(file, entry);
@@ -186,12 +183,10 @@ export function createCssExtractorPluginCore(
 			const code = readFileSync(file, "utf8");
 			let sources: ReturnType<typeof extractCssSources> = [];
 			let varKeys: string[] = [];
-			if (/\bcss\b/.test(code)) {
-				const names = findCssImports(code, file, matchers);
-				if (names.size > 0) {
-					sources = extractCssSources(code, file, names, preset);
-					varKeys = extractVarKeys(code, file, names);
-				}
+			const names = findCssImports(code, file, matchers);
+			if (names.size > 0) {
+				sources = extractCssSources(code, file, names, preset);
+				varKeys = extractVarKeys(code, file, names);
 			}
 			entry = { mtimeMs, sources, varKeys };
 			fileCache.set(file, entry);

@@ -104,6 +104,13 @@ try {
 		aClass === dClass && aClass.trim().length > 0,
 		`"${aClass}" vs "${dClass}"`,
 	);
+	const cvaPadding = await computed("cva-button", "padding-top");
+	const cvaWeight = await computed("cva-button", "font-weight");
+	check(
+		"CVA composes extracted Pandwind classes",
+		cvaPadding === "12px" && cvaWeight === "700",
+		`${cvaPadding} / ${cvaWeight}`,
+	);
 
 	check("zero console errors / pageerrors", consoleErrors.length === 0, consoleErrors.join(" | "));
 

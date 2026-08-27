@@ -246,6 +246,10 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 			import { css } from "./design";
 			css.class({ $layout: { flow: "stackY", gap: "16" } });
 		`,
+		"src/aliased-design.ts": `
+			import { dcss as design } from "./design";
+			design.class({ $frame: { corners: "lg" } });
+		`,
 		"node_modules/pkg/index.ts": `
 			import { css } from "./design";
 			css({ $frame: { fill: "$green-500" } });
@@ -261,6 +265,7 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 		expect(generated).toContain("width:20px");
 		expect(generated).toContain("background-color:#3182ce");
 		expect(generated).toContain("flex-direction:column");
+		expect(generated).toContain("border-radius:0.5rem");
 		// node_modules is never scanned
 		expect(generated).not.toContain("background-color:#60A3BC");
 	} finally {

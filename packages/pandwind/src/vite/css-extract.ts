@@ -169,8 +169,7 @@ const callLocation = (
 	};
 };
 
-const isAuthoredCssSpecifier = (source: string): boolean =>
-	/\.css(?:[?#].*)?$/.test(source);
+const isAuthoredCssSpecifier = (source: string): boolean => /\.css(?:[?#].*)?$/.test(source);
 
 /**
  * Find explicit `.css` imports without inspecting or rewriting their contents.

@@ -21,18 +21,18 @@ ordering, and a testable integration contract.
 
 ## Current scorecard
 
-| Capability              | Status      | Current contract                                                                                                                                                     |
-| ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Typed general CSS       | Partial     | `createDesignCss()` is typed against a preset; the general `css()` lane is being made preset-bound and ergonomic.                                                    |
-| Atomic CSS              | Static      | Literal declarations become deterministic, deduplicated atomic rules.                                                                                                |
-| Static extraction       | Static      | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                                                                                 |
-| Dynamic values          | Runtime     | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.                                                                 |
-| Theme scopes            | Static      | Theme and component token scopes are emitted as deterministic CSS blocks.                                                                                            |
-| Global rules            | Partial     | Web-only via explicit authored CSS imports; no first-class TypeScript global-rule primitive.                                                                         |
-| Keyframes and font-face | Partial     | Web-only via explicit authored CSS imports; no first-class TypeScript animation/font primitive.                                                                      |
-| SSR and hydration       | Partial     | `css.vars()` is serializable and server-safe; a real React browser hydration fixture proves class/style stability while runtime sheet extraction remains host-owned. |
-| Bundlers/frameworks     | Partial     | Vite and generic unplugin adapters exist; framework-specific proof is still being added.                                                                             |
-| Source provenance       | Partial     | Analyze/inspector payloads carry source ranges, extraction status, and (when the matching preset is available) emitted rule identities/CSS.                          |
+| Capability              | Status  | Current contract                                                                                                                                                     |
+| ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Typed general CSS       | Partial | `createDesignCss()` is typed against a preset; the general `css()` lane is being made preset-bound and ergonomic.                                                    |
+| Atomic CSS              | Static  | Literal declarations become deterministic, deduplicated atomic rules.                                                                                                |
+| Static extraction       | Static  | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                                                                                 |
+| Dynamic values          | Runtime | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.                                                                 |
+| Theme scopes            | Static  | Theme and component token scopes are emitted as deterministic CSS blocks.                                                                                            |
+| Global rules            | Partial | Web-only via explicit authored CSS imports; no first-class TypeScript global-rule primitive.                                                                         |
+| Keyframes and font-face | Partial | Web-only via explicit authored CSS imports; no first-class TypeScript animation/font primitive.                                                                      |
+| SSR and hydration       | Partial | `css.vars()` is serializable and server-safe; a real React browser hydration fixture proves class/style stability while runtime sheet extraction remains host-owned. |
+| Bundlers/frameworks     | Partial | Vite and generic unplugin adapters exist; framework-specific proof is still being added.                                                                             |
+| Source provenance       | Partial | Analyze/inspector payloads carry source ranges, extraction status, and (when the matching preset is available) emitted rule identities/CSS.                          |
 
 The scorecard is a product contract, not a promise that every style should be
 forced through pandwind. Unsupported constructs remain explicit CSS or use a
