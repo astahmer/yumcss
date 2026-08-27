@@ -107,6 +107,42 @@ try {
 
 	check("zero console errors / pageerrors", consoleErrors.length === 0, consoleErrors.join(" | "));
 
+	// Hydration fixture — server markup is hydrated by React in Chromium. The
+	// first client render matches the server, then the effect marks the actual
+	// hydrated state without changing pandwind's class or inline variables.
+	const hydration = await browser.newPage();
+	const hydrationErrors = [];
+	hydration.on("console", (m) => {
+		if (m.type() === "error" || m.type() === "warning") hydrationErrors.push(m.text());
+	});
+	hydration.on("pageerror", (e) => hydrationErrors.push(String(e)));
+	await hydration.goto(`${PAGE_URL}hydration.html`, { waitUntil: "networkidle" });
+	await hydration.waitForSelector('[data-testid="hydration-target"]');
+	const beforeHydration = await hydration.$eval('[data-testid="hydration-target"]', (el) => ({
+		className: el.className,
+		style: el.getAttribute("style"),
+	}));
+	await hydration.waitForFunction(
+		() => document.querySelector('[data-testid="hydration-target"]')?.dataset.phase === "client",
+	);
+	const afterHydration = await hydration.$eval('[data-testid="hydration-target"]', (el) => ({
+		className: el.className,
+		style: el.getAttribute("style"),
+	}));
+	check("browser hydration reaches client effect", afterHydration.className === "pw-color");
+	check(
+		"hydration preserves class and inline variables",
+		JSON.stringify(beforeHydration) === JSON.stringify(afterHydration),
+		`${JSON.stringify(beforeHydration)} -> ${JSON.stringify(afterHydration)}`,
+	);
+	check(
+		"hydrated variable drives computed color",
+		(await hydration.$eval('[data-testid="hydration-target"]', (el) => getComputedStyle(el).color)) ===
+				"rgb(37, 99, 235)",
+	);
+	check("hydration has no console errors or warnings", hydrationErrors.length === 0, hydrationErrors.join(" | "));
+	await hydration.close();
+
 	// CI visual-artifacts lane: optional deterministic capture.
 	if (process.env.PW_SCREENSHOT !== undefined) {
 		await page.screenshot({ path: process.env.PW_SCREENSHOT, fullPage: true });
