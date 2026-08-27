@@ -289,6 +289,32 @@ describe("runPandaMigration", () => {
 		expect(output).toMatch(/^'use client'\nimport \{ local as local \}/);
 	});
 
+	it("does not duplicate residual markers on reruns", async () => {
+		const dir = makeProject();
+		writeFileSync(
+			join(dir, "src", "residual.ts"),
+			[
+				"import { css } from '@/styled-system/css'",
+				"export const styles = css({ '& > *': { mt: '2' } })",
+			].join("\n"),
+		);
+		const migration = {
+			projectRoot: dir,
+			patterns: ["src/**/*.ts"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+		};
+		await runPandaMigration(migration);
+		const once = readFileSync(join(dir, "src", "residual.ts"), "utf8");
+		const report = await runPandaMigration(migration);
+		const twice = readFileSync(join(dir, "src", "residual.ts"), "utf8");
+		expect(twice).toBe(once);
+		expect(report.filesChanged).toBe(0);
+	});
+
 	it("is idempotent on an already-migrated project", async () => {
 		const dir = makeProject();
 		writeFileSync(

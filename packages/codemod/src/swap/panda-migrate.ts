@@ -1119,6 +1119,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			const insertion = importInsertionOffset(next);
 			next = next.slice(0, insertion) + importText + next.slice(insertion);
 		}
+		if (next === file.source) continue;
 		// cva/sva definitions folded into generated output no longer need their
 		// panda-only named imports; leaving them would create unresolved exports.
 		next = removeUnusedVariantImports(next);
@@ -1237,6 +1238,12 @@ function applyMarker(
 	const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
 	const indentMatch = /^\s*/.exec(source.slice(lineStart));
 	const indent = indentMatch ? indentMatch[0] : "";
+	if (source.slice(lineStart, index).includes(`// ${marker} (`)) return;
+	const previousLineStart = source.lastIndexOf("\n", Math.max(0, lineStart - 2)) + 1;
+	const previousLine = source
+		.slice(previousLineStart, Math.max(previousLineStart, lineStart - 1))
+		.trim();
+	if (previousLine.includes(`// ${marker} (`)) return;
 	edits.push({
 		start: lineStart,
 		end: lineStart,
