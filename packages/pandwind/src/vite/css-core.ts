@@ -103,7 +103,6 @@ export function createCssExtractorPluginCore(
 			: (code: string, id: string): { code: string; map: null } | null => {
 					if (id.includes("node_modules")) return null;
 					if (!isScanned(id)) return null;
-					if (!/\bcss\b/.test(code)) return null;
 					const names = findCssImports(code, id, matchers);
 					if (names.size === 0) return null;
 					const result = inlineCssCalls(code, id, names, preset, className);

@@ -1,6 +1,7 @@
 import { type CssFn } from "pandwind/css";
 import { createCx } from "pandwind/cx";
 import { cardBClass } from "./card-b.ts";
+import { cvaButton } from "./cva.ts";
 import { dcss } from "./design.ts";
 
 /**
@@ -48,6 +49,12 @@ export function App() {
 			>
 				D — dedup twin of A
 			</section>
+			<button
+				data-testid="cva-button"
+				className={cx(cvaButton({ size: "lg" }), dcss.class({ $text: { weight: "bold" } }))}
+			>
+				CVA selects Pandwind classes
+			</button>
 		</main>
 	);
 }

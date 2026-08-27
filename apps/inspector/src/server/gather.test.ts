@@ -17,8 +17,8 @@ describe("gather (integration over apps/example)", { timeout: 60_000 }, () => {
 		expect(data.authoredCss.length).toBeGreaterThan(0);
 		expect(data.authoredCss[0]).toMatchObject({
 			source: expect.stringContaining(".css"),
-		kind: "side-effect",
-	});
+			kind: "side-effect",
+		});
 		expect(data.cssSources.length).toBeGreaterThan(0);
 		expect(data.cssSources[0]).toMatchObject({
 			file: expect.any(String),

@@ -58,8 +58,12 @@ CSS entrypoint, then consume the variables from ordinary CSS:
 ```css
 /* src/globals.css */
 @keyframes pw-fade-in {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 .pw-dialog {
@@ -88,8 +92,8 @@ import { css } from "./design";
 const button = cva(css.class({ $layout: { flow: "row", gap: "2" } }), {
 	variants: {
 		size: {
-			sm: css.class({ $frame: { px: "3", py: "2" } }),
-			lg: css.class({ $frame: { px: "5", py: "3" } }),
+			sm: css.class({ $frame: { pad: [8, 12] } }),
+			lg: css.class({ $frame: { pad: [12, 20] } }),
 		},
 	},
 });
