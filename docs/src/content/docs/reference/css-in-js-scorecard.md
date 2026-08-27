@@ -28,13 +28,13 @@ ordering, and a testable integration contract.
 | Static extraction       | Static      | `pandwindCssVite()` and the unplugin adapters extract literal calls.                                                                  |
 | Dynamic values          | Runtime     | `css.vars()` carries values through inline custom properties; it does not inject one rule per value.                                  |
 | Theme scopes            | Static      | Theme and component token scopes are emitted as deterministic CSS blocks.                                                             |
-| Global rules            | Unsupported | No first-class authored global-rule primitive yet.                                                                                    |
-| Keyframes and font-face | Unsupported | No first-class authored animation/font primitive yet.                                                                                 |
-| SSR and hydration       | Partial     | `css.vars()` is serializable and server-safe; the runtime sheet can extract/hydrate, while framework host adapters remain host-owned. |
-| Bundlers/frameworks     | Partial     | Vite and generic unplugin adapters exist; framework-specific proof is still being added.                                              |
+| Global rules            | Runtime     | `RuntimeSemanticRule` registers ordered global selectors and preserves them through extraction and hydration.                          |
+| Keyframes and font-face | Runtime     | Keyframe, `@font-face`, layer, supports, and property rule nodes serialize through the runtime sheet.                                   |
+| SSR and hydration       | Runtime     | Runtime snapshots are serializable, hydrate without duplicate rules, and are covered by a concrete mounted-sheet fixture.             |
+| Bundlers/frameworks     | Partial     | Vite/unplugin plus renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts are covered; native compiler plugins remain. |
 | Source provenance       | Partial     | Extracted rules and residuals carry source ranges/module metadata; end-to-end runtime and inspector links remain.                     |
-| External adapters       | Partial     | pandwind, Emotion, styled-components, vanilla-extract, and Stitches have v2 object adapters; full round-trip fixtures remain.         |
-| Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts exist; framework component fixtures remain.                                             |
+| External adapters       | Runtime     | Versioned v2 adapters cover pandwind, Emotion, styled-components, vanilla-extract, and Stitches with safe CLI routing and differential fixtures. |
+| Recipes and host syntax | Partial     | Recipe/slot resolution and six host contracts are covered; richer framework-native component compilers remain future work.             |
 
 The scorecard is a product contract, not a promise that every style should be
 forced through pandwind. Unsupported constructs remain explicit CSS or use a
@@ -50,6 +50,6 @@ Every capability promotion must preserve:
 - type-level positive and negative cases;
 - actionable diagnostics for skipped or unsupported constructs.
 
-The scorecard will be updated as each foundation revision lands. Recipes,
-composition APIs, publishing, and release automation are deliberately outside
-this wave.
+The requested pivot wave is implemented. Linaria/JSS expansion, richer
+framework-native compiler plugins, publishing, and release automation remain
+deliberately outside this wave.

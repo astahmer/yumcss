@@ -72,6 +72,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
 	});
 
+	test("uses the default project reader and reports unsupported rule kinds", () => {
+		const config = getExternalAdapter("emotion")!.loadConfig({
+			file: "Card.tsx",
+			root: process.cwd(),
+			source: "",
+		});
+		expect(config.files).toContain(`${process.cwd()}/package.json`);
+
+		const result = runAdapterMigration(
+			'import { fontFace } from "@vanilla-extract/css";\nfontFace({ fontFamily: "Inter" });',
+			{ from: "vanilla-extract", to: "emotion", file: "fonts.css.ts", mode: "safe" },
+		);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+	});
+
 	test("keeps interpolated tagged templates as runtime residuals in safe mode", () => {
 		const result = runAdapterMigration("const Card = styled.div`color: ${theme.foreground};`;", {
 			from: "styled-components",
@@ -81,6 +97,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(result.skipped).toBe(1);
 		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+	});
+
+	test("does not parse adapter-looking text inside comments or strings", () => {
+		const source = [
+			`const example = "css({ color: 'red' })";`,
+			`// styled.div({ color: "red" })`,
+			`const card = css({ color: "red" });`,
+		].join("\n");
+		const parsed = getExternalAdapter("emotion")!.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: "emotion", files: [], values: {} },
+		});
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.sourceText).toContain(`css({ color: "red" })`);
 	});
 
 	test("keeps vanilla-extract dynamic values as explicit residuals in safe mode", () => {

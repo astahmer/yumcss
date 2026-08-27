@@ -69,7 +69,11 @@ export default defineConfig({
 				},
 				{
 					label: "Interop & proofs",
-					items: ["interop/tailwind-adapter", "interop/compatibility"],
+					items: [
+						"interop/tailwind-adapter",
+						"interop/css-in-js-adapters",
+						"interop/compatibility",
+					],
 				},
 				{
 					label: "Reference",

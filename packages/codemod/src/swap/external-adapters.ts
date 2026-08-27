@@ -2,7 +2,7 @@ import type { PandwindMeta } from "../meta.ts";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
-import { matchBlock } from "../sources.ts";
+import { computeExcludedRanges, matchBlock } from "../sources.ts";
 import { ensureImport } from "../shared.ts";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
@@ -102,7 +102,15 @@ const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
 function configFor(id: string, context: AdapterConfigContext): AdapterProjectConfig {
 	const files: string[] = [];
 	const values: Record<string, unknown> = {};
-	const readFile = context.readFile;
+	const readFile =
+		context.readFile ??
+		((file: string) => {
+			try {
+				return readFileSync(file, "utf8");
+			} catch {
+				return undefined;
+			}
+		});
 	const packageText =
 		context.packageJson === undefined && context.root !== undefined && readFile !== undefined
 			? readFile(join(context.root, "package.json"))
@@ -431,9 +439,17 @@ function parseCalls(
 ): AdapterParseResult {
 	const matches: AdapterMatch[] = [];
 	const residuals: StyleProgramResidual[] = [];
+	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+	try {
+		mask = computeExcludedRanges(source, context.file);
+	} catch {
+		// Source parsers are allowed to operate on snippets that are not complete
+		// modules; the adapter remains conservative through its balanced matcher.
+	}
 	for (const pattern of patterns) {
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
+			if (mask?.isExcluded(start)) continue;
 			if (pattern.form === "template") {
 				const template = match[0];
 				const firstTick = template.indexOf("`");
@@ -572,7 +588,12 @@ const EMOTION = adapter(
 		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 	],
 	dependency("@emotion/css", "runtime"),
-	allRuleCapabilities("emotion", "exact"),
+	allRuleCapabilities("emotion", "exact", {
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
 	(program) => {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -606,7 +627,12 @@ const STYLED_COMPONENTS = adapter(
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	dependency("styled-components", "peer"),
-	allRuleCapabilities("styled-components", "exact"),
+	allRuleCapabilities("styled-components", "exact", {
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
 	(program) => {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -636,7 +662,11 @@ const VANILLA_EXTRACT = adapter(
 		{ name: "fontFace", regex: /\bfontFace\s*\(\s*\{/g },
 	],
 	dependency("@vanilla-extract/css", "runtime"),
-	allRuleCapabilities("vanilla-extract", "unsupported"),
+	allRuleCapabilities("vanilla-extract", "unsupported", {
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
 	(program) => {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -677,7 +707,12 @@ const STITCHES = adapter(
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	dependency("@stitches/react", "peer"),
-	allRuleCapabilities("stitches", "exact"),
+	allRuleCapabilities("stitches", "exact", {
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
 	(program) => {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
@@ -837,7 +872,33 @@ export function runAdapterMigration(
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
-		const validation = targetAdapter.validate(match.program, match.program, emitted.residuals);
+		const reparsed = targetAdapter.parse(emitted.text, {
+			file: options.file,
+			source: emitted.text,
+			root: options.root,
+			config: targetAdapter.loadConfig({
+				file: options.file,
+				source: emitted.text,
+				root: options.root,
+				packageJson: options.packageJson,
+				readFile,
+			}),
+			meta: options.meta,
+		});
+		const targetProgram =
+			reparsed.matches.length === 0
+				? match.program
+				: styleProgramFromRules(
+						reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						{
+							source: match.program.source,
+							residuals: reparsed.residuals,
+						},
+					);
+		const validation = targetAdapter.validate(match.program, targetProgram, [
+			...emitted.residuals,
+			...reparsed.residuals,
+		]);
 		validations.push(validation);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 	}

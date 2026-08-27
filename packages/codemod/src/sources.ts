@@ -216,9 +216,9 @@ export function computeExcludedRanges(
 			excluded.push([comment.start, comment.end]);
 		}
 	}
-	// Tagged templates whose tag is `styled` (any member/call form) are CODE
-	// the detector may act on — their quasi is exempted from the mask.
-	const styledQuasis: Array<[number, number]> = [];
+	// Tagged templates whose tag is a supported CSS-in-JS authoring function are
+	// CODE the detector may act on — their quasi is exempted from the mask.
+	const supportedStyleQuasis: Array<[number, number]> = [];
 	walk(parsed.program as unknown as OxcNode, (node) => {
 		const n = node as {
 			type?: string;
@@ -236,11 +236,11 @@ export function computeExcludedRanges(
 			const tagText = source.slice(n.tag.start ?? 0, n.tag.end ?? 0);
 			const quasi = n.quasi;
 			if (
-				/^\s*styled\b/.test(tagText) &&
+				/^\s*(?:styled\b|css\b)/.test(tagText) &&
 				typeof quasi?.start === "number" &&
 				typeof quasi.end === "number"
 			) {
-				styledQuasis.push([quasi.start, quasi.end]);
+				supportedStyleQuasis.push([quasi.start, quasi.end]);
 			}
 			return;
 		}
@@ -250,7 +250,7 @@ export function computeExcludedRanges(
 	});
 	// Drop exemptions from the mask.
 	const filtered = excluded.filter(
-		([start, end]) => !styledQuasis.some(([qs, qe]) => start >= qs && end <= qe),
+		([start, end]) => !supportedStyleQuasis.some(([qs, qe]) => start >= qs && end <= qe),
 	);
 	filtered.sort((a, b) => a[0] - b[0]);
 	return {

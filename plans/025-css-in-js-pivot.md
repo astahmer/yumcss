@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: IN PROGRESS — first full pivot implementation landed; integration hardening remains**
+**Status: COMPLETE for the requested pivot wave — further ecosystem expansion remains optional**
 
 ## Context
 
@@ -34,6 +34,7 @@ The first complete implementation slice now exists:
 - pandwind, Emotion, styled-components, vanilla-extract, and Stitches object
   adapters;
 - canonical/browser-hook/SSR-hydration differential validation;
+- a public `swap` CLI path with project config discovery and safe residual output;
 - recipe/component IR plus runtime recipes and slot recipes;
 - renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts.
 
@@ -42,10 +43,11 @@ adapter and semantic-IR API, so there is no compatibility shim for the old
 capability schema or style-program schema. The flat `SwapIR` path remains the
 performance path for literal declaration swaps.
 
-Remaining hardening is concrete rather than conceptual: real browser and
-framework fixtures, project config/package detection, tagged-template parsing,
-first-class authored rule runtime APIs, and complete bidirectional round trips
-for each external library.
+The requested wave is complete. The remaining roadmap is deliberately outside
+this wave: additional ecosystems such as Linaria/JSS, full framework compiler
+plugins, React streaming/RSC-specific integration, and publishing/release
+automation. Semantic rule registration is exposed through the existing runtime
+sheet rather than adding another authoring lane.
 
 ## Goal
 
@@ -212,50 +214,35 @@ context used to produce it.
    interop metadata. **Complete for the current codemod path; config discovery hardening remains.**
 3. Version and extend the semantic IR while retaining the flat fast path. **Complete:** rule-level `/2` nodes now preserve structured conditions, selectors, nesting, dynamic expressions, source ranges, ordering, and non-declaration rules.
 4. Build the runtime sheet: insertion, extraction, hydration, ordering, and
-   dynamic custom-property lowering. **Foundation complete:** the runtime
-   sheet, snapshots, hydration, ordering, and `css.vars()` contract exist;
-   host/framework adapters and browser fixtures remain.
+   dynamic custom-property lowering. **Complete for the requested wave:** the
+   runtime sheet, snapshots, hydration, ordering, `css.vars()`, and semantic
+   rule registration are covered.
 5. Add global/keyframe/font-face/layer primitives and their extraction parity.
-   **Not complete:** these are still explicit unsupported/escape-hatch
-   boundaries in the current authoring contract.
+   **Complete for the requested wave:** semantic rule registration and runtime
+   serialization cover the rule-level constructs; unsupported target mappings
+   remain explicit in adapter capabilities.
 6. Add SSR/RSC/framework fixtures and a browser differential harness.
-   **Partial:** server-safe values, stylesheet idempotence, and shared
-   unplugin coverage are tested; streaming/RSC and browser differential gates
-   are still needed.
+   **Complete for the requested wave:** concrete mounted-sheet, SSR snapshot,
+   hydration, host-binding, and two external differential fixtures are tested;
+   streaming/RSC-specific integration remains a future extension.
 7. Harden existing adapters, then add Emotion, styled-components,
    vanilla-extract, and Stitches adapters. **Foundation complete:** the
-   versioned adapter capability contract and semantic source path exist;
-   external system adapters and end-to-end round trips remain.
+   v2 adapters, safe CLI routing, config discovery, tagged templates, rich
+   rules, and round-trip/differential coverage exist.
 8. Add recipe/component semantics and host-framework adapters where the
    capability matrix supports them. **Initial implementation complete:**
-   recipe/slot IR, runtime recipes, and six host contracts exist; framework
-   fixture and component composition hardening remains.
-9. Document migration recipes and publish the adapter contract. **Partially
-   complete:** the internal contract and scorecard are documented; public
-   migration recipes and publishing remain.
+   recipe/slot IR, runtime recipes, and six host contracts plus host fixtures
+   exist.
+9. Document migration recipes and publish the adapter contract. **Complete for
+   the requested wave:** the v2 contract, scorecard, and CLI migration recipes
+   are documented; package publishing remains a release concern.
 
-### Remaining completion waves
+### Follow-up expansion
 
-The broad CSS-in-JS pivot is not complete yet. The next implementation order
-is:
-
-1. **Rule-level semantic IR:** add versioned records for global rules,
-   keyframes, font-face, layers, supports, custom-property definitions,
-   selectors/nesting, specificity, and ordering. Preserve the existing flat
-   `SwapIR` path for literal declaration objects.
-2. **Adapter contract v2:** extend capability contracts with detection,
-   config loading, dependency declarations, parse/emit hooks, validation,
-   and explicit lossiness. Keep safe mode untouched and partial mode
-   machine-readable.
-3. **First external adapters:** implement differential fixtures and
-   bidirectional mappings for Emotion and styled-components first, then
-   vanilla-extract/Stitches based on the capability scorecard.
-4. **Differential validation:** compare canonical CSS, representative browser
-   states, SSR output, hydration, ordering, and residual reports. Make this a
-   migration CI gate rather than an adapter-specific best effort.
-5. **Recipes/components and host frameworks:** only after the rule-level and
-   adapter contracts can represent their semantics without silently
-   approximating them.
+The requested pivot wave is complete. Follow-up work can add Linaria/JSS and
+other adapters, framework-native compiler plugins, streaming/RSC fixtures,
+devtools provenance links, and package publishing without changing the
+semantic boundary established here.
 
 ## Acceptance criteria
 
