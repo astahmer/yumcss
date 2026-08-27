@@ -11,6 +11,7 @@ import {
 	type AdapterDetectionContext,
 	type AdapterEmitContext,
 	type AdapterEmitResult,
+	type AdapterMigrationHooks,
 	type AdapterLossiness,
 	type AdapterMatch,
 	type AdapterParseContext,
@@ -72,6 +73,7 @@ export interface CodemodAdapterSpec {
 	readonly sourceModules: readonly string[];
 	readonly configFiles?: readonly string[];
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
+	readonly migration?: AdapterMigrationHooks;
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,
@@ -775,6 +777,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		sourceModules: spec.sourceModules,
 		capabilities: spec.capabilities,
 		dependencies: spec.packages,
+		migration: spec.migration,
 		detect: (context) => detectBy(spec.detectPatterns, context),
 		loadConfig: (context) => configFor(spec.id, spec.configFiles ?? [], context),
 		parse: (source, context) =>

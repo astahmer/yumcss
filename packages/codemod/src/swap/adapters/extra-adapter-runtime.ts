@@ -3,6 +3,7 @@ import type {
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterProjectConfig,
+	AdapterMigrationHooks,
 	StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
@@ -29,6 +30,7 @@ export interface ExtraAdapterOptions {
 	readonly suffix?: string;
 	readonly namedObjects?: boolean;
 	readonly sourceObjectOptions?: Pick<StyleProgramOptions, "nestedObjectKind" | "arrayRuleKinds">;
+	readonly migration?: AdapterMigrationHooks;
 }
 
 const capabilities = (id: string): AdapterCapabilities => ({
@@ -299,6 +301,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		sourceModules: options.modules,
 		capabilities: capabilities(options.id),
 		dependencies: options.packages,
+		migration: options.migration,
 		detect: (context) => {
 			const evidence = options.detect.flatMap((pattern) => {
 				pattern.lastIndex = 0;

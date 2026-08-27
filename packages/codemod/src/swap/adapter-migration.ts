@@ -20,11 +20,7 @@ import {
 } from "./semantic-ir.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
-import {
-	consolidateImports,
-	removeSourceImports,
-	validationSource,
-} from "./external-adapters.ts";
+import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
@@ -36,8 +32,6 @@ import {
 	type HostComponentRewriteRequest,
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
-
-type Edit = { start: number; end: number; text: string };
 
 function programHasDynamic(program: StyleProgram): boolean {
 	return program.rules.some(function containsDynamic(rule): boolean {
@@ -60,11 +54,6 @@ function programHasFunctionDynamic(program: StyleProgram): boolean {
 	});
 }
 
-function stylexPropsUses(source: string, binding: string): boolean {
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(`\\bstylex\\.props\\(\\s*${escaped}\\s*\\.`).test(source);
-}
-
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source
 		.slice(start)
@@ -84,64 +73,6 @@ function bindingForMatch(source: string, start: number): string | undefined {
 function classExpressionFromEmission(emitted: string): string | undefined {
 	const expression = emitted.trim();
 	return expression.length === 0 ? undefined : expression;
-}
-
-function rewriteVanillaExtractBindings(source: string): string {
-	let code = source.replace(
-		/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createVar\s*\([\s\S]*?\)\s*;?/g,
-		(_match, name: string) => `const ${name} = ${JSON.stringify(`--pw-${name}`)};`,
-	);
-	if (/\bfallbackVar\s*\(/.test(code) && !/\b(?:const|let|var)\s+fallbackVar\b/.test(code))
-		code = `const fallbackVar = (variable, fallback) => \`var(\${variable}, \${fallback})\`;\n${code}`;
-	return code;
-}
-
-function jssRuntimeRewrites(
-	source: string,
-	convertedBindings: ReadonlySet<string>,
-): { edits: Edit[]; residuals: StyleProgramResidual[] } {
-	const edits: Edit[] = [];
-	const residuals: StyleProgramResidual[] = [];
-	const addResidual = (text: string): void => {
-		residuals.push({
-			kind: "runtime-context",
-			text,
-			hint: "JSS rule application requires a converted Pandwind class binding",
-		});
-	};
-	const sheetApplication =
-		/\b([A-Za-z_$][\w$]*)\.getRule\(\s*["']([A-Za-z_$][\w$]*)["']\s*\)\.applyTo\(\s*([^)]*)\)/g;
-	for (const match of source.matchAll(sheetApplication)) {
-		const receiver = match[1];
-		const rule = match[2];
-		const element = match[3]?.trim();
-		if (receiver === undefined || rule === undefined || element === undefined) continue;
-		if (!convertedBindings.has(receiver)) {
-			addResidual(match[0]);
-			continue;
-		}
-		edits.push({
-			start: match.index ?? 0,
-			end: (match.index ?? 0) + match[0].length,
-			text: `${element}.classList.add(${receiver}.${rule})`,
-		});
-	}
-	const ruleApplication = /\b([A-Za-z_$][\w$]*)\.applyTo\(\s*([^)]*)\)/g;
-	for (const match of source.matchAll(ruleApplication)) {
-		const receiver = match[1];
-		const element = match[2]?.trim();
-		if (receiver === undefined || element === undefined) continue;
-		if (!convertedBindings.has(receiver)) {
-			addResidual(match[0]);
-			continue;
-		}
-		edits.push({
-			start: match.index ?? 0,
-			end: (match.index ?? 0) + match[0].length,
-			text: `${element}.classList.add(${receiver})`,
-		});
-	}
-	return { edits, residuals };
 }
 
 export interface AdapterMigrationOptions {
@@ -264,8 +195,6 @@ export function runAdapterMigration(
 	> = [];
 	const componentRewriteKeys = new Set<string>();
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
-	const stylexBindings = new Set<string>();
-	let stylexNeedsRuntime = false;
 	let skipped = 0;
 	for (const [index, match] of parsed.matches.entries()) {
 		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).lower({
@@ -275,7 +204,7 @@ export function runAdapterMigration(
 		});
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
-		let dynamicCarrier: { binding?: string; framework: string; stylexHost?: boolean } | undefined;
+		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		if (targetAdapter.id === "pandwind" && program.source?.subject === undefined) {
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
@@ -292,15 +221,20 @@ export function runAdapterMigration(
 						: framework !== undefined
 							? rewriteDynamicExpressionCarrier(source, match.sourceText, framework, options.file)
 							: undefined;
-				const stylexHost =
-					options.from === "stylex" && binding !== undefined && stylexPropsUses(source, binding);
-				const runtimeStandalone =
-					(options.from === "vanilla-extract" || options.from === "treat") &&
-					program.rules.every((rule) => rule.kind === "style");
+				const dynamicPolicy = sourceAdapter.migration?.prepareDynamic?.({
+					source,
+					file: options.file,
+					targetId: targetAdapter.id,
+					program,
+					...(binding === undefined ? {} : { binding }),
+					...(framework === undefined ? {} : { framework }),
+				});
+				const dynamicHandled = dynamicPolicy?.handled === true;
+				const dynamicStandalone = dynamicPolicy?.standalone === true;
 				if (
 					(preview === undefined || preview.residuals.length > 0) &&
-					!stylexHost &&
-					!runtimeStandalone
+					!dynamicHandled &&
+					!dynamicStandalone
 				) {
 					skipped++;
 					residuals.push({
@@ -316,22 +250,17 @@ export function runAdapterMigration(
 					});
 					continue;
 				}
-				if (stylexHost || preview?.residuals.length === 0) {
+				if (dynamicHandled || preview?.residuals.length === 0) {
 					program = {
 						...program,
 						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
 					};
 				}
-				if (framework !== undefined && !runtimeStandalone)
+				if (framework !== undefined && !dynamicStandalone && !dynamicHandled)
 					dynamicCarrier = {
 						...(binding === undefined ? {} : { binding }),
 						framework,
-						...(stylexHost ? { stylexHost: true } : {}),
 					};
-				if (stylexHost) {
-					stylexBindings.add(binding!);
-					stylexNeedsRuntime = true;
-				}
 			}
 		}
 		if (targetAdapter.id === "pandwind" && program.source?.subject !== undefined) {
@@ -510,18 +439,14 @@ export function runAdapterMigration(
 				});
 			}
 		}
-		if (dynamicCarrier !== undefined && dynamicCarrier.stylexHost !== true) {
+		if (dynamicCarrier !== undefined) {
 			dynamicRewrites.push({
 				...dynamicCarrier,
 				expression: emitted.text,
 			});
 		}
-		if (options.from === "jss" && targetAdapter.id === "pandwind") {
-			const binding = source
-				.slice(0, match.start)
-				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
-			if (binding !== undefined) convertedBindings.add(binding);
-		}
+		const emittedBinding = bindingForMatch(source, match.start);
+		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		const emittedForValidation = validationSource(emitted.text, program);
 		const reparsed = targetAdapter.parse(emittedForValidation, {
 			file: options.file,
@@ -617,34 +542,18 @@ export function runAdapterMigration(
 		needsCx ||= rewritten.needsCx;
 	}
 	if (needsCx) runtimeEdited = ensureImport(runtimeEdited, 'import { cx } from "pandwind/cx";');
-	if (options.from === "jss" && targetAdapter.id === "pandwind") {
-		const runtime = jssRuntimeRewrites(runtimeEdited, convertedBindings);
-		runtimeEdited = applyEdits(runtimeEdited, runtime.edits);
-		residuals.push(...runtime.residuals);
-	}
-	if (stylexBindings.size > 0 && options.from === "stylex" && targetAdapter.id === "pandwind") {
-		for (const binding of stylexBindings) {
-			const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-			runtimeEdited = runtimeEdited.replace(
-				new RegExp(`\\bstylex\\.props\\((\\s*${escaped}\\s*\\.[A-Za-z_$][\\w$]*)`, "g"),
-				"css.props($1",
-			);
-		}
-		if (stylexNeedsRuntime) {
-			imports.delete('import { createCss } from "pandwind/css";');
-			imports.delete("const css = createCss();");
-			imports.add('import { createRuntimeCss } from "pandwind/css/runtime";');
-			imports.add('import { pandwindPreset } from "pandwind/preset";');
-			imports.add("const css = createRuntimeCss(pandwindPreset);");
-		}
-	}
-	if (
-		options.from === "vanilla-extract" &&
-		targetAdapter.id === "pandwind" &&
-		skipped === 0 &&
-		residuals.length === 0
-	) {
-		runtimeEdited = rewriteVanillaExtractBindings(runtimeEdited);
+	const rewrite = sourceAdapter.migration?.rewrite?.({
+		source,
+		code: runtimeEdited,
+		file: options.file,
+		targetId: targetAdapter.id,
+		convertedBindings,
+		complete: skipped === 0 && residuals.length === 0,
+	});
+	if (rewrite !== undefined) {
+		runtimeEdited = rewrite.code;
+		for (const statement of rewrite.imports ?? []) imports.add(statement);
+		residuals.push(...rewrite.residuals);
 	}
 	// Keep source imports whenever a skipped/residual match still depends on the
 	// source runtime. Removing them would turn a safe residual into broken code.

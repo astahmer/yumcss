@@ -1,4 +1,29 @@
+import { applyEdits } from "../../migrate.ts";
+import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+
+function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
+	if (context.targetId !== "pandwind" || !context.complete) {
+		return { code: context.code, residuals: [] };
+	}
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	const application =
+		/\b([A-Za-z_$][\w$]*)\.getRule\(\s*["']([A-Za-z_$][\w$]*)["']\s*\)\.applyTo\(\s*([A-Za-z_$][\w$]*)\s*\)/g;
+	for (const match of context.code.matchAll(application)) {
+		const sheet = match[1];
+		const rule = match[2];
+		const element = match[3];
+		if (sheet === undefined || rule === undefined || element === undefined) continue;
+		if (!context.convertedBindings.has(sheet)) continue;
+		const start = match.index ?? 0;
+		edits.push({
+			start,
+			end: start + match[0].length,
+			text: `${element}.classList.add(${sheet}.${rule})`,
+		});
+	}
+	return { code: applyEdits(context.code, edits), residuals: [] };
+}
 
 export default defineCodemodAdapter({
 	id: "jss",
@@ -37,6 +62,7 @@ export default defineCodemodAdapter({
 	detectPatterns: [/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
 	sourceModules: ["jss", "react-jss"],
 	configFiles: ["jss.config.js", "package.json"],
+	migration: { rewrite: rewriteImperativeApplications },
 	emit(program, { programObject }) {
 		const subject = program.source?.subject ?? "createUseStyles";
 		return {

@@ -108,6 +108,40 @@ export interface AdapterEmitResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+export interface AdapterDynamicPreparationContext {
+	readonly source: string;
+	readonly file: string;
+	readonly targetId: string;
+	readonly program: StyleProgram;
+	readonly binding?: string;
+	readonly framework?: string;
+}
+
+export interface AdapterDynamicPreparation {
+	readonly handled: boolean;
+	readonly standalone?: boolean;
+}
+
+export interface AdapterRewriteContext {
+	readonly source: string;
+	readonly code: string;
+	readonly file: string;
+	readonly targetId: string;
+	readonly convertedBindings: ReadonlySet<string>;
+	readonly complete: boolean;
+}
+
+export interface AdapterRewriteResult {
+	readonly code: string;
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+}
+
+export interface AdapterMigrationHooks {
+	prepareDynamic?(context: AdapterDynamicPreparationContext): AdapterDynamicPreparation;
+	rewrite?(context: AdapterRewriteContext): AdapterRewriteResult;
+}
+
 export type AdapterLossiness = "lossless" | "lossy" | "unsupported";
 
 export interface AdapterValidationResult {
@@ -127,6 +161,7 @@ export interface StyleAdapter {
 	readonly sourceModules: readonly string[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
+	readonly migration?: AdapterMigrationHooks;
 	detect(context: AdapterDetectionContext): AdapterDetectionResult;
 	loadConfig(context: AdapterConfigContext): AdapterProjectConfig;
 	parse(source: string, context: AdapterParseContext): AdapterParseResult;
