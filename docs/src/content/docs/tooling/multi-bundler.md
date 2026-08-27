@@ -28,9 +28,16 @@ export default {
 - Cache invalidation uses unplugin's `watchChange` (cross-bundler) with vite
   `handleHotUpdate` for immediate dev re-requests.
 
-The repository also runs a real Rollup + Chromium fixture covering the shared
+The repository runs a real Rollup + Chromium fixture covering the shared
 contract: extracted static atoms, `css.vars()` values and conditional rules,
 and an explicitly imported authored stylesheet containing a global selector and
 keyframes. The host bundler owns the authored stylesheet; the Pandwind CSS
 plugin emits only the generated atomic stylesheet. See
 `examples/css-example/test/rollup-e2e.ts` for the executable proof.
+
+The Webpack adapter also has a real production-build smoke test in
+`packages/pandwind/tests/unplugin-webpack.test.ts`. It verifies that the
+generic transform folds a literal `tw()` call and removes the runtime call from
+the emitted bundle. This is adapter proof, not a claim that every Webpack
+framework integration is turnkey; framework loaders and CSS asset ownership
+remain host configuration.
