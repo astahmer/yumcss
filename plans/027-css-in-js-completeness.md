@@ -1,0 +1,207 @@
+# CSS-in-JS completeness plan
+
+**Status: in progress — plan established; first proof slice underway**
+
+## Context
+
+pandwind now has the core shape of a strong CSS-in-JS system: typed atomic
+styles, deterministic static extraction, `css.vars()` for runtime values,
+`cx()` conflict composition, explicit authored CSS for browser-global rules,
+real browser hydration coverage, provenance/diagnostics, inspector payloads,
+and external CVA interoperability.
+
+The remaining work is primarily contract proof, correctness hardening,
+framework confidence, performance evidence, and adoption documentation. The
+user-facing styling API remains deliberately small.
+
+## Goal
+
+Make pandwind a trustworthy CSS-in-JS choice across static styles, controlled
+runtime values, authored browser CSS, SSR/hydration, bundlers, diagnostics,
+and performance — without adding a built-in recipe or global-rule API.
+
+“Best overall” means the clearest combination of type safety, zero-runtime
+static output, explicit runtime behavior, CSS escape hatches, and verifiable
+tooling — not supporting every CSS feature through one JavaScript syntax.
+
+## What
+
+### 1. Complete the dynamic and SSR contract
+
+- Test `css.vars()` with base and conditional fallback chains.
+- Prove custom properties work with transitions, animations, and browser
+  computed styles.
+- Cover invalid values, booleans, `NaN`, `Infinity`, empty values, and
+  serialization behavior.
+- Cover repeated calls, `cx()` merging, server/client byte stability, and
+  duplicate-rule prevention.
+- Document the adapter-owned boundary for runtime stylesheet extraction and
+  CSP/non-DOM hosts.
+
+### 2. Finish framework and bundler proof
+
+- Keep the real Vite + Chromium fixture as the reference implementation.
+- Add one non-Vite browser fixture through the existing unplugin path, starting
+  with Rollup where the test harness is smallest.
+- Verify static extraction, dynamic `css.vars()`, authored CSS imports, HMR
+  invalidation, and duplicate CSS behavior in both fixtures.
+- Document React SSR/RSC boundaries and what is guaranteed versus host-owned.
+
+### 3. Harden CSS correctness and capability reporting
+
+- Audit shorthand/longhand conflicts, conditions, selectors, custom
+  properties, and rule ordering against browser-visible output.
+- Promote capability statuses only when a representative test and documented
+  contract exist.
+- Keep unsupported TypeScript constructs actionable and direct users to
+  `css.vars()` or authored CSS where appropriate.
+- Keep authored CSS explicit: observe import edges and ownership in tooling;
+  never infer a Pandwind JavaScript API by scanning arbitrary CSS.
+
+### 4. Establish performance and size evidence
+
+- Benchmark representative static and dynamic applications.
+- Track build time, emitted CSS bytes/rules, gzip size, runtime bytes, and
+  `cx()`/`css.vars()` throughput.
+- Add regression gates for atomic deduplication, extraction, and runtime
+  behavior.
+- Measure external CVA composition separately so Pandwind’s cost remains
+  visible and bounded.
+
+### 5. Improve adoption and migration
+
+- Document the recommended architecture: Pandwind atomic CSS + authored web
+  CSS + optional external CVA.
+- Add migration examples for Panda, StyleX, Emotion/Linaria, and Tailwind.
+- Document package-library patterns for exporting authored CSS assets and
+  token custom properties.
+- Make analyzer and inspector output understandable without reading internal
+  implementation details.
+
+## Why
+
+The core engine is already strongest on static, typed, deterministic styles.
+The remaining adoption risk is uncertainty at the boundaries: runtime values,
+hydration, bundlers, authored CSS, and performance. Closing those gaps gives
+users confidence without copying the larger APIs and runtime models of other
+libraries.
+
+## How
+
+```text
+typed atomic styles ────────┐
+css.vars() runtime values ──┼─→ explicit output contract → browser/framework
+authored .css imports ─────┘             ↓
+                              analyze / inspector / benchmarks
+```
+
+The implementation should prefer tests and tooling over new authoring syntax:
+
+- static declarations continue through the existing extractor;
+- runtime values remain inline custom properties;
+- browser-global semantics remain ordinary CSS owned by the host bundler;
+- external CVA selects Pandwind-generated class strings;
+- provenance and diagnostics describe which lane owns each output.
+
+### Tech choices
+
+| Choice          | Decision                                                | Rationale                                                                      |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Public API      | Keep `tw()` / `css()` / `cx()` / presets frozen         | Preserve a small surface and avoid recipe-style expansion                      |
+| Recipes         | External CVA-style libraries only for now               | CVA already composes Pandwind class strings without a Pandwind runtime feature |
+| Browser globals | Explicit `.css` imports                                 | Full CSS fidelity and library sharing without inventing a partial TS DSL       |
+| Runtime values  | `css.vars()` and host-owned insertion                   | Serializable SSR behavior without one generated rule per value                 |
+| Framework proof | Vite reference plus one non-Vite unplugin fixture       | Establish a shared contract before expanding matrix breadth                    |
+| Tooling         | Import/rule provenance, diagnostics, inspector payloads | Make static/runtime/authored ownership observable                              |
+| Release         | Deferred                                                | This work is validation and product hardening, not distribution                |
+
+## What this allows
+
+- A defensible, measurable “best overall” CSS-in-JS position.
+- Static styles with no per-value runtime stylesheet cost.
+- Runtime values with explicit SSR-safe behavior.
+- Browser-global CSS without compromising CSS expressiveness.
+- External variant composition without a Pandwind recipe API.
+- Framework and performance claims backed by repeatable fixtures and gates.
+
+## What this does not allow
+
+- No Pandwind recipes, slots, `styled()`, or composition DSL in this plan.
+- No first-class TypeScript globals, keyframes, font-face, layers, or at-rule
+  API; those remain authored CSS for the web.
+- No arbitrary CSS scanning that reverse-engineers JavaScript APIs.
+- No hidden DOM stylesheet injection for native or non-DOM targets.
+- No release, publish, or compatibility promise before the gates pass.
+
+## UI & UX
+
+No new end-user styling UI is required. The inspector should make the existing
+lanes legible:
+
+```text
+source
+  ├─ Pandwind call → extracted atomic rule / runtime vars
+  ├─ authored CSS import → host-owned stylesheet
+  └─ diagnostic → exact location + actionable next step
+```
+
+## Data model
+
+No persistent data model is required. Continue versioning machine-readable
+analyze/inspector payloads when fields change. The relevant records remain:
+
+```ts
+interface AuthoredCssImport {
+	file: string;
+	source: string;
+	start: number;
+	end: number;
+	line: number;
+	column: number;
+	kind: "side-effect" | "binding";
+}
+```
+
+## Implementation steps
+
+1. Commit this plan and align the capability scorecard and previous plan.
+2. Complete the `css.vars()` dynamic/SSR browser contract and documentation.
+3. Add the first non-Vite browser fixture through the unplugin path.
+4. Audit CSS conflict/order behavior and capability promotion criteria.
+5. Add representative performance measurements and regression gates.
+6. Finish migration/adoption documentation and inspector lane presentation.
+7. Run all gates, review focused JJ revisions, and record outcomes.
+
+## Open questions
+
+1. Which non-Vite fixture gives the most confidence with the least harness
+   complexity: Rollup, Webpack, or another unplugin target?
+2. Should runtime stylesheet extraction remain entirely adapter-owned, or is a
+   minimal optional React adapter justified after the contract is measured?
+3. Which representative applications and thresholds should become the
+   permanent performance corpus?
+4. Which migration examples provide the highest adoption value first?
+
+## Acceptance criteria
+
+- [ ] `css.vars()` has browser, SSR, hydration, fallback, invalid-input, and
+      duplicate-rule coverage.
+- [ ] Vite/Chromium and one non-Vite browser fixture prove static extraction,
+      runtime vars, authored CSS imports, and invalidation behavior.
+- [ ] CSS shorthand/condition/selector ordering has representative browser
+      assertions and no unexplained capability claims.
+- [ ] Analyze/inspector distinguish extracted Pandwind rules, runtime values,
+      and authored CSS imports with actionable diagnostics.
+- [ ] Performance corpus records build, CSS, runtime, and composition costs
+      with repeatable regression thresholds.
+- [ ] Recommended architecture and migration patterns are documented.
+- [ ] No built-in recipe/global-rule API or release work is introduced.
+
+## Decisions log
+
+- 2026-08-27: Keep the Pandwind styling API minimal; recipes/composition stay
+  deferred and external CVA-style packages are supported.
+- 2026-08-27: Browser-global CSS uses explicit `.css` imports; tooling observes
+  imports but does not infer APIs from arbitrary CSS.
+- 2026-08-27: Release and publishing remain outside this implementation wave.
+- 2026-08-27: Use the existing isolated JJ workspace and focused revisions.
