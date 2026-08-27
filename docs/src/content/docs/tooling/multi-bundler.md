@@ -46,6 +46,18 @@ The same fixture verifies the CSS virtual module through Webpack with a
 minimal host CSS loader. Webpack users still choose the loader/injection or
 extraction policy; Pandwind supplies the generated stylesheet content.
 
+The Vite example also has a browser-level HMR fixture in
+`examples/css-example/test/hmr-e2e.mjs`. It edits a source declaration while a
+Chromium page is open, observes the extracted CSS update, and asserts that the
+page does not reload. This proves the client-visible virtual-module update in
+addition to the lower-level module-graph tests.
+
+There is also a packed-package consumer fixture in
+`packages/pandwind/tests/packed-consumer.test.ts`. It builds a temporary Vite
+consumer against `pnpm pack` output and resolves `pandwind/vite` and
+`pandwind/preset` through the tarball's export map, catching missing shipped
+files and package-resolution mistakes that workspace-source tests cannot.
+
 ## HMR and watch invalidation coverage
 
 The repository tests the invalidation contract at each adapter boundary:
