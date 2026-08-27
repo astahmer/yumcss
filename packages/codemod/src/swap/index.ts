@@ -10,12 +10,25 @@
 import type { PandwindMeta } from "../meta.ts";
 import type { TransformOptions, TransformResult } from "../migrate.ts";
 import { applyEdits } from "../migrate.ts";
-import { computeExcludedRanges, insertSkipMarker } from "../sources.ts";
+import { computeExcludedRanges, insertSkipMarker, matchBlock } from "../sources.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { parseTwCalls, parseCssLiterals } from "./parse.ts";
 import { SWAP_EMITTERS, type EmitterContext, type EmitterResult } from "./emit.ts";
 import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
 import type { TokenRefMode } from "./tokens.ts";
+import {
+	styleProgramFromSourceObject,
+	styleProgramFromSwapIR,
+	type StyleProgram,
+	type StyleProgramOptions,
+} from "./semantic-ir.ts";
+import {
+	inspectAdapterCapabilities,
+	SWAP_ADAPTER_CAPABILITIES,
+	type AdapterCapabilities,
+	type AdapterCapabilityMode,
+	type AdapterCapabilityReport,
+} from "./capabilities.ts";
 
 type SwapEmitter = (ir: SwapIR, meta: PandwindMeta, ctx: EmitterContext) => EmitterResult;
 
@@ -40,6 +53,43 @@ export { createEngineMissResolver } from "./engine.ts";
 export { runPandaMigration } from "./panda-migrate.ts";
 export { inferCommonRoot } from "./panda-migrate.ts";
 export type { TwMissResolver } from "./engine.ts";
+export {
+	STYLE_PROGRAM_SCHEMA,
+	inferSemanticConditionKind,
+	styleProgramFromSourceObject,
+	styleProgramFromSwapIR,
+	swapIRFromStyleProgram,
+} from "./semantic-ir.ts";
+export {
+	ADAPTER_CAPABILITIES_SCHEMA,
+	SWAP_ADAPTER_CAPABILITIES,
+	inspectAdapterCapabilities,
+	requiredAdapterCapabilities,
+} from "./capabilities.ts";
+export type {
+	SemanticConditionKind,
+	StyleCondition,
+	StyleConditionOperator,
+	StyleDeclaration,
+	StyleDynamicValue,
+	StyleDynamicLowering,
+	StyleLiteralValue,
+	StyleProgram,
+	StyleProgramOptions,
+	StyleProgramResidual,
+	StyleProgramSource,
+	StyleTokenValue,
+	StyleValue,
+} from "./semantic-ir.ts";
+export type {
+	AdapterCapabilities,
+	AdapterCapability,
+	AdapterCapabilityIssue,
+	AdapterCapabilityLevel,
+	AdapterCapabilityMode,
+	AdapterCapabilityReport,
+	ProgramCapabilityRequirement,
+} from "./capabilities.ts";
 
 export interface SwapOptions {
 	from: SwapSource;
@@ -57,6 +107,18 @@ export interface SwapOptions {
 	sort?: boolean;
 	/** Hoist repeated identical literal call sites into module constants. */
 	dedup?: boolean;
+	/** Optional source condition metadata supplied by a project adapter. */
+	conditionKinds?: StyleProgramOptions["conditionKinds"];
+	conditionValues?: StyleProgramOptions["conditionValues"];
+	conditionRaw?: StyleProgramOptions["conditionRaw"];
+	/** Contract override for a custom target adapter. */
+	adapterCapabilities?: AdapterCapabilities;
+	/** Enforce the declared contract; omitted preserves legacy behavior. */
+	capabilityMode?: AdapterCapabilityMode;
+}
+
+export interface SwapTransformResult extends TransformResult {
+	readonly capabilityReports: readonly AdapterCapabilityReport[];
 }
 
 interface Match {
@@ -107,7 +169,7 @@ export function runSwap(
 	source: string,
 	meta: PandwindMeta,
 	options: SwapOptions & Pick<TransformOptions, "metaDir">,
-): TransformResult {
+): SwapTransformResult {
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const file = options.file;
 	const emitter = EMITTERS[options.to] as SwapEmitter | undefined;
@@ -127,6 +189,7 @@ export function runSwap(
 	const residualsOut: Array<{ file: string; token: string; reason: string }> = [];
 	let converted = 0;
 	let skippedByMarker = 0;
+	const capabilityReports: AdapterCapabilityReport[] = [];
 
 	let siteIndex = 0;
 	const tokenRefs: TokenRefMode = options.tokenRefs ?? "bare";
@@ -135,6 +198,26 @@ export function runSwap(
 	for (const match of matches) {
 		const { ir } = match;
 		siteIndex += 1;
+		const program = semanticProgramForMatch(source, match, file, options);
+		const capabilities = options.adapterCapabilities ?? SWAP_ADAPTER_CAPABILITIES[options.to];
+		const capabilityReport =
+			capabilities === undefined
+				? undefined
+				: inspectAdapterCapabilities(capabilities, program, options.capabilityMode ?? "partial");
+		if (capabilityReport !== undefined) {
+			capabilityReports.push(capabilityReport);
+			if (options.capabilityMode !== undefined && !capabilityReport.convertible) {
+				const reason = capabilityReport.blockers
+					.map((issue) => `${issue.capability}: ${issue.detail}`)
+					.join("; ");
+				code = insertSkipMarker(code, match.start, reason || "adapter capability mismatch", marker);
+				skippedByMarker++;
+				for (const issue of capabilityReport.blockers) {
+					residualsOut.push({ file, token: issue.detail, reason: issue.level });
+				}
+				continue;
+			}
+		}
 		// Only in-house class-string targets ride an existing pandwind css
 		// binding; external libraries bring their own imports.
 		const needsCssTarget = options.to === "css.class" || options.to === "design";
@@ -151,7 +234,14 @@ export function runSwap(
 			skippedByMarker++;
 			continue;
 		}
-		const result = emitter(ir, meta, { index: siteIndex, tokenRefs, sort: options.sort });
+		const result = emitter(ir, meta, {
+			index: siteIndex,
+			tokenRefs,
+			sort: options.sort,
+			program,
+			capabilities,
+			capabilityReport,
+		});
 		if (result.headers !== undefined && result.headers.length > 0) headers.push(...result.headers);
 		if (result.imports !== undefined && result.imports.length > 0) imports.push(...result.imports);
 		if (result.text === "") {
@@ -210,7 +300,34 @@ export function runSwap(
 		converted,
 		unmappedTokens: residualsOut,
 		skippedByMarker,
+		capabilityReports,
 	};
+}
+
+function semanticProgramForMatch(
+	source: string,
+	match: Match,
+	file: string,
+	options: SwapOptions,
+): StyleProgram {
+	const programOptions: StyleProgramOptions = {
+		source: { file, start: match.start, end: match.end, adapter: match.shape },
+		conditionKinds: options.conditionKinds,
+		conditionValues: options.conditionValues,
+		conditionRaw: options.conditionRaw,
+	};
+	const hasDynamicSource = match.ir.residuals.some((residual) => residual.kind === "dynamic");
+	if (hasDynamicSource) {
+		const open = source.indexOf("{", match.start);
+		const block = open === -1 ? null : matchBlock(source, open);
+		if (block !== null) {
+			return styleProgramFromSourceObject(block.body, {
+				...programOptions,
+				sourceOffset: open + 1,
+			});
+		}
+	}
+	return styleProgramFromSwapIR(match.ir, programOptions);
 }
 
 /**

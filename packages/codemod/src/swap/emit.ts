@@ -15,6 +15,8 @@ import { mapToken } from "../map.ts";
 import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
+import type { StyleProgram } from "./semantic-ir.ts";
+import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
 import { CSS_PROPERTY_ALIASES } from "./parse-panda.ts";
 
 export interface EmitterContext {
@@ -24,6 +26,11 @@ export interface EmitterContext {
 	tokenRefs?: TokenRefMode;
 	/** Canonical CSS property-order sorting inside emitted scopes. */
 	sort?: boolean;
+	/** Versioned semantic view for adapters; legacy emitters may use `SwapIR`. */
+	program?: StyleProgram;
+	/** Declared target contract and its check for the current program. */
+	capabilities?: AdapterCapabilities;
+	capabilityReport?: AdapterCapabilityReport;
 }
 
 /**

@@ -93,6 +93,22 @@ describe("swap css.class -> tw", () => {
 		const twice = swap(once.code, "tw");
 		expect(twice.changed).toBe(false);
 	});
+
+	test("optional capability enforcement keeps dynamic source styles untouched", () => {
+		const result = runSwap("const card = css.class({ color: theme.foreground });", meta, {
+			from: "css",
+			to: "tw",
+			file: "Card.tsx",
+			metaDir: "apps/example/src",
+			capabilityMode: "safe",
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skippedByMarker).toBe(1);
+		expect(result.capabilityReports[0]?.unsupported.map((issue) => issue.capability)).toEqual([
+			"dynamic-values",
+		]);
+		expect(result.code).toContain("css.class({ color: theme.foreground })");
+	});
 });
 
 describe("swap design vocabulary", () => {
