@@ -395,6 +395,8 @@ function looksLikeCondition(name: string, options: StyleProgramOptions): boolean
 	return (
 		name === "base" ||
 		name.startsWith("_") ||
+		name.startsWith("&") ||
+		name.startsWith(":") ||
 		name.startsWith("@") ||
 		options.conditionKinds?.[name] !== undefined ||
 		options.conditionValues?.[name] !== undefined

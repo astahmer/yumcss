@@ -1,7 +1,7 @@
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
-export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/1" as const;
+export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as const;
 
 export type AdapterCapability =
 	| "declarations"
@@ -12,7 +12,23 @@ export type AdapterCapability =
 	| "selector-conditions"
 	| "media-conditions"
 	| "container-conditions"
-	| "supports-conditions";
+	| "supports-conditions"
+	| "rule-level"
+	| "global-rules"
+	| "keyframes"
+	| "font-face"
+	| "layers"
+	| "supports-rules"
+	| "property-rules"
+	| "selectors"
+	| "nesting"
+	| "ordering"
+	| "recipes"
+	| "components"
+	| "host-framework"
+	| "ssr"
+	| "hydration"
+	| "browser-differential";
 
 export type AdapterCapabilityLevel = "exact" | "partial" | "unsupported";
 export type AdapterCapabilityMode = "safe" | "partial";
@@ -62,6 +78,25 @@ const conditionCapability = (kind: SemanticConditionKind): AdapterCapability => 
 	}
 };
 
+const ruleCapability = (kind: StyleProgram["rules"][number]["kind"]): AdapterCapability => {
+	switch (kind) {
+		case "global":
+			return "global-rules";
+		case "keyframes":
+			return "keyframes";
+		case "font-face":
+			return "font-face";
+		case "layer":
+			return "layers";
+		case "supports":
+			return "supports-rules";
+		case "property":
+			return "property-rules";
+		case "style":
+			return "rule-level";
+	}
+};
+
 function dynamicDetail(value: StyleDynamicValue): string {
 	return value.expression.length > 80 ? `${value.expression.slice(0, 77)}...` : value.expression;
 }
@@ -79,6 +114,15 @@ export function requiredAdapterCapabilities(
 	};
 
 	if (program.declarations.length > 0) add("declarations", "style declarations");
+	if (program.rules.length > 0) {
+		add("rule-level", `${program.rules.length} semantic rules`);
+		if (program.rules.length > 1) add("ordering", "ordered semantic rules");
+	}
+	for (const rule of program.rules) {
+		add(ruleCapability(rule.kind), `${rule.kind} rule`);
+		if (rule.selector !== undefined) add("selectors", `selector: ${rule.selector}`);
+		if (rule.children.length > 0) add("nesting", `${rule.kind} nested rules`);
+	}
 	for (const declaration of program.declarations) {
 		for (const condition of declaration.conditions) {
 			add(conditionCapability(condition.kind), `${condition.kind}: ${condition.name}`);

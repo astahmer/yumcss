@@ -1,0 +1,550 @@
+import type { PandwindMeta } from "../meta.ts";
+import { applyEdits } from "../migrate.ts";
+import { matchBlock } from "../sources.ts";
+import { ensureImport } from "../shared.ts";
+import {
+	ADAPTER_CAPABILITIES_SCHEMA,
+	inspectAdapterCapabilities,
+	type AdapterCapabilities,
+	type AdapterCapabilityMode,
+	type AdapterCapabilityReport,
+} from "./capabilities.ts";
+import {
+	ADAPTER_CONTRACT_SCHEMA,
+	type AdapterConfigContext,
+	type AdapterDependencies,
+	type AdapterDetectionContext,
+	type AdapterEmitContext,
+	type AdapterMatch,
+	type AdapterParseContext,
+	type AdapterParseResult,
+	type AdapterProjectConfig,
+	type AdapterValidationResult,
+	type StyleAdapter,
+} from "./adapter-contract.ts";
+import {
+	styleProgramFromRules,
+	styleProgramFromSourceObject,
+	styleProgramToCanonicalCss,
+	type StyleDeclaration,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "./semantic-ir.ts";
+
+export type ExternalAdapterId =
+	| "pandwind"
+	| "emotion"
+	| "styled-components"
+	| "vanilla-extract"
+	| "stitches";
+
+type CallPattern = {
+	readonly name: string;
+	readonly regex: RegExp;
+};
+
+const dependency = (
+	name: string,
+	kind: "runtime" | "development" | "peer" | "config",
+): AdapterDependencies => ({
+	packages: [{ name, kind }],
+});
+
+const allRuleCapabilities = (
+	adapter: string,
+	dynamic: "exact" | "partial" | "unsupported",
+	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
+): AdapterCapabilities => ({
+	schema: ADAPTER_CAPABILITIES_SCHEMA,
+	adapter,
+	capabilities: {
+		declarations: "exact",
+		"rule-level": "exact",
+		"global-rules": "exact",
+		keyframes: "exact",
+		"font-face": "exact",
+		layers: "exact",
+		"supports-rules": "exact",
+		"property-rules": "exact",
+		selectors: "exact",
+		nesting: "exact",
+		ordering: "exact",
+		"token-values": "exact",
+		"dynamic-values": dynamic,
+		"pseudo-conditions": "exact",
+		"selector-conditions": "exact",
+		"media-conditions": "exact",
+		"container-conditions": "exact",
+		"supports-conditions": "exact",
+		...capabilities,
+	},
+});
+
+const configFor = (id: string, context: AdapterConfigContext): AdapterProjectConfig => ({
+	adapter: id,
+	root: context.root,
+	files: [],
+	values: {},
+});
+
+function detectBy(
+	patterns: readonly RegExp[],
+	context: AdapterDetectionContext,
+): { matched: boolean; confidence: number; evidence: string[] } {
+	const evidence = patterns.flatMap((pattern) =>
+		pattern.test(context.source) ? [pattern.source] : [],
+	);
+	return {
+		matched: evidence.length > 0,
+		confidence: evidence.length === 0 ? 0 : Math.min(1, 0.5 + evidence.length * 0.2),
+		evidence,
+	};
+}
+
+function sourceName(source: string, start: number, fallback: string): string {
+	const prefix = source.slice(Math.max(0, start - 160), start);
+	return prefix.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1] ?? fallback;
+}
+
+function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
+	if (condition.raw !== undefined) return condition.raw;
+	if (condition.kind === "pseudo")
+		return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
+	if (condition.kind === "media")
+		return condition.value === undefined ? condition.name : `@media ${condition.value}`;
+	if (condition.kind === "container")
+		return condition.value === undefined ? condition.name : `@container ${condition.value}`;
+	if (condition.kind === "supports")
+		return condition.value === undefined ? condition.name : `@supports ${condition.value}`;
+	return condition.name;
+}
+
+type ObjectNode = { entries: Array<[string, string]>; children: Array<[string, ObjectNode]> };
+
+function objectNode(): ObjectNode {
+	return { entries: [], children: [] };
+}
+
+function renderValue(value: StyleProgram["declarations"][number]["value"]): string {
+	if (value.kind === "dynamic") return value.expression;
+	if (value.kind === "token") return JSON.stringify(value.authored);
+	return JSON.stringify(value.value);
+}
+
+function renderKey(key: string): string {
+	return /^[A-Za-z_$][\w$]*$/.test(key) ? key : JSON.stringify(key);
+}
+
+function renderObjectNode(node: ObjectNode): string {
+	const entries = node.entries.map(([key, value]) => `${renderKey(key)}: ${value}`);
+	const children = node.children.map(
+		([key, child]) => `${renderKey(key)}: ${renderObjectNode(child)}`,
+	);
+	return `{ ${[...entries, ...children].join(", ")} }`;
+}
+
+function addDeclaration(
+	node: ObjectNode,
+	declaration: StyleDeclaration,
+	conditions: readonly string[],
+): void {
+	if (conditions.length === 0) {
+		node.entries.push([declaration.property, renderValue(declaration.value)]);
+		return;
+	}
+	const key = conditions[0]!;
+	let child = node.children.find(([candidate]) => candidate === key)?.[1];
+	if (child === undefined) {
+		child = objectNode();
+		node.children.push([key, child]);
+	}
+	addDeclaration(child, declaration, conditions.slice(1));
+}
+
+function declarationsObject(declarations: readonly StyleDeclaration[]): string {
+	const root = objectNode();
+	for (const declaration of declarations) {
+		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+	}
+	return renderObjectNode(root);
+}
+
+function ruleObject(rule: StyleProgram["rules"][number]): string {
+	if (rule.kind === "style" || rule.kind === "font-face" || rule.kind === "property") {
+		return declarationsObject(rule.declarations);
+	}
+	if (rule.kind === "global") {
+		return `{ ${JSON.stringify(rule.selector ?? "*")}: ${declarationsObject(rule.declarations)} }`;
+	}
+	if (rule.kind === "keyframes") {
+		return `{ ${rule.children
+			.map(
+				(child) =>
+					`${JSON.stringify(child.selector ?? "from")}: ${declarationsObject(child.declarations)}`,
+			)
+			.join(", ")} }`;
+	}
+	const body = declarationsObject(rule.declarations);
+	const prefix =
+		rule.kind === "layer"
+			? `@layer ${rule.layer ?? rule.name ?? ""}`
+			: `@supports ${rule.name ?? ""}`;
+	return `{ ${JSON.stringify(prefix)}: ${body} }`;
+}
+
+function programObject(program: StyleProgram): string {
+	if (program.rules.length === 1) return ruleObject(program.rules[0]!);
+	const root = objectNode();
+	for (const rule of program.rules) {
+		if (rule.kind === "style") {
+			for (const declaration of rule.declarations) {
+				addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+			}
+		} else {
+			root.entries.push([rule.selector ?? rule.name ?? rule.kind, ruleObject(rule)]);
+		}
+	}
+	return renderObjectNode(root);
+}
+
+function parseKeyframeProgram(
+	body: string,
+	context: AdapterParseContext,
+	start: number,
+	name: string,
+): StyleProgram {
+	const base = styleProgramFromSourceObject(body, {
+		source: { file: context.file, start, adapter: context.config.adapter },
+		conditionKinds: { from: "selector", to: "selector" },
+		sourceOffset: start + 1,
+	});
+	const groups = new Map<string, StyleDeclaration[]>();
+	for (const declaration of base.declarations) {
+		const selector = declaration.conditions[0]?.name ?? "from";
+		const list = groups.get(selector) ?? [];
+		list.push({ ...declaration, conditions: [] });
+		groups.set(selector, list);
+	}
+	return styleProgramFromRules(
+		[
+			{
+				kind: "keyframes",
+				name,
+				conditions: [],
+				declarations: [],
+				children: [...groups].map(([selector, declarations], order) => ({
+					kind: "style" as const,
+					selector,
+					conditions: [],
+					declarations,
+					children: [],
+					order,
+				})),
+				order: 0,
+			},
+		],
+		{
+			source: { file: context.file, start, adapter: context.config.adapter },
+			residuals: base.residuals,
+		},
+	);
+}
+
+function parseCalls(
+	source: string,
+	context: AdapterParseContext,
+	patterns: readonly CallPattern[],
+): AdapterParseResult {
+	const matches: AdapterMatch[] = [];
+	const residuals: StyleProgramResidual[] = [];
+	for (const pattern of patterns) {
+		for (const match of source.matchAll(pattern.regex)) {
+			const start = match.index ?? 0;
+			const open = source.indexOf("{", start);
+			if (open === -1) continue;
+			const block = matchBlock(source, open);
+			if (block === null) {
+				residuals.push({
+					kind: "parse",
+					text: source.slice(start),
+					hint: "unbalanced style object",
+				});
+				continue;
+			}
+			const end = source[block.end] === ")" ? block.end + 1 : block.end;
+			const fallbackName = `${pattern.name}Style${matches.length + 1}`;
+			let program: StyleProgram;
+			if (pattern.name === "keyframes") {
+				program = parseKeyframeProgram(
+					block.body,
+					context,
+					start,
+					sourceName(source, start, fallbackName),
+				);
+			} else {
+				const base = styleProgramFromSourceObject(block.body, {
+					source: { file: context.file, start, end, adapter: context.config.adapter },
+					sourceOffset: open + 1,
+				});
+				if (pattern.name === "globalStyle") {
+					const args = source.slice(start, open);
+					const selector = /\(\s*(["'`])([^"'`]+)\1\s*,/.exec(args)?.[2] ?? "*";
+					program = styleProgramFromRules(
+						[
+							{
+								kind: "global",
+								selector,
+								conditions: [],
+								declarations: base.declarations,
+								children: [],
+								order: 0,
+							},
+						],
+						{ source: base.source, residuals: base.residuals },
+					);
+				} else {
+					program = base;
+				}
+			}
+			matches.push({ start, end, program, sourceText: source.slice(start, end) });
+		}
+	}
+	matches.sort((a, b) => a.start - b.start);
+	return { matches, residuals };
+}
+
+function validatePrograms(
+	source: StyleProgram,
+	target: StyleProgram,
+	residuals: readonly StyleProgramResidual[] = [],
+): AdapterValidationResult {
+	const canonicalSource = styleProgramToCanonicalCss(source);
+	const canonicalTarget = styleProgramToCanonicalCss(target);
+	const differences: string[] = [];
+	if (canonicalSource !== canonicalTarget) differences.push("canonical CSS differs");
+	if (residuals.length > 0) differences.push(`${residuals.length} residual conversion(s)`);
+	return {
+		valid: differences.length === 0,
+		canonicalSource,
+		canonicalTarget,
+		differences,
+		residuals,
+	};
+}
+
+function adapter(
+	id: ExternalAdapterId,
+	patterns: readonly CallPattern[],
+	packages: AdapterDependencies,
+	capabilities: AdapterCapabilities,
+	emitCall: (program: StyleProgram) => { text: string; imports: readonly string[] },
+	detectPatterns: readonly RegExp[],
+): StyleAdapter {
+	return {
+		schema: ADAPTER_CONTRACT_SCHEMA,
+		id,
+		version: "2",
+		capabilities,
+		dependencies: packages,
+		detect: (context) => detectBy(detectPatterns, context),
+		loadConfig: (context) => configFor(id, context),
+		parse: (source, context) => parseCalls(source, context, patterns),
+		emit: (program, _context) => {
+			const rendered = emitCall(program);
+			return { ...rendered, dependencies: packages, residuals: [...program.residuals] };
+		},
+		validate: validatePrograms,
+	};
+}
+
+const EMOTION = adapter(
+	"emotion",
+	[
+		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
+	],
+	dependency("@emotion/css", "runtime"),
+	allRuleCapabilities("emotion", "exact"),
+	(program) => ({
+		text: `css(${programObject(program)})`,
+		imports: ['import { css } from "@emotion/css";'],
+	}),
+	[/@emotion\/(?:css|styled)/, /\bcss\s*\(\s*\{/],
+);
+
+const STYLED_COMPONENTS = adapter(
+	"styled-components",
+	[
+		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
+		{ name: "globalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
+		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+	],
+	dependency("styled-components", "peer"),
+	allRuleCapabilities("styled-components", "exact"),
+	(program) => ({
+		text: `styled.div(${programObject(program)})`,
+		imports: ['import styled from "styled-components";'],
+	}),
+	[/styled-components/, /\bstyled\s*\./],
+);
+
+const VANILLA_EXTRACT = adapter(
+	"vanilla-extract",
+	[
+		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
+		{ name: "globalStyle", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
+		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{ name: "fontFace", regex: /\bfontFace\s*\(\s*\{/g },
+	],
+	dependency("@vanilla-extract/css", "runtime"),
+	allRuleCapabilities("vanilla-extract", "unsupported"),
+	(program) => ({
+		text: `style(${programObject(program)})`,
+		imports: ['import { style } from "@vanilla-extract/css";'],
+	}),
+	[/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
+);
+
+const STITCHES = adapter(
+	"stitches",
+	[
+		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+		{ name: "globalCss", regex: /\bglobalCss\s*\(\s*\{/g },
+		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+	],
+	dependency("@stitches/react", "peer"),
+	allRuleCapabilities("stitches", "exact"),
+	(program) => ({
+		text: `css(${programObject(program)})`,
+		imports: ['import { css } from "@stitches/react";'],
+	}),
+	[/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
+);
+
+const PANDWIND = adapter(
+	"pandwind",
+	[{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g }],
+	{ packages: [] },
+	allRuleCapabilities("pandwind", "partial", { "dynamic-values": "partial" }),
+	(program) => ({ text: `css.class(${programObject(program)})`, imports: [] }),
+	[/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
+);
+
+export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>> = {
+	pandwind: PANDWIND,
+	emotion: EMOTION,
+	"styled-components": STYLED_COMPONENTS,
+	"vanilla-extract": VANILLA_EXTRACT,
+	stitches: STITCHES,
+};
+
+export function getExternalAdapter(id: string): StyleAdapter | undefined {
+	return EXTERNAL_ADAPTERS[id as ExternalAdapterId];
+}
+
+export interface AdapterMigrationOptions {
+	readonly from: ExternalAdapterId;
+	readonly to: ExternalAdapterId;
+	readonly file: string;
+	readonly root?: string;
+	readonly meta?: PandwindMeta;
+	readonly mode?: AdapterCapabilityMode;
+	readonly skipMarker?: string;
+}
+
+export interface AdapterMigrationResult {
+	readonly code: string;
+	readonly changed: boolean;
+	readonly converted: number;
+	readonly skipped: number;
+	readonly reports: readonly AdapterCapabilityReport[];
+	readonly validations: readonly AdapterValidationResult[];
+	readonly dependencies: readonly AdapterDependencies[];
+	readonly residuals: readonly StyleProgramResidual[];
+}
+
+/** Run one v2 adapter-to-adapter migration over a source file. */
+export function runAdapterMigration(
+	source: string,
+	options: AdapterMigrationOptions,
+): AdapterMigrationResult {
+	const sourceAdapter = getExternalAdapter(options.from);
+	const targetAdapter = getExternalAdapter(options.to);
+	if (sourceAdapter === undefined || targetAdapter === undefined) {
+		throw new Error(`unknown style adapter: ${options.from} -> ${options.to}`);
+	}
+	const detection = sourceAdapter.detect({ file: options.file, source, root: options.root });
+	if (!detection.matched) {
+		return {
+			code: source,
+			changed: false,
+			converted: 0,
+			skipped: 0,
+			reports: [],
+			validations: [],
+			dependencies: [],
+			residuals: [],
+		};
+	}
+	const config = sourceAdapter.loadConfig({ file: options.file, source, root: options.root });
+	const parsed = sourceAdapter.parse(source, {
+		file: options.file,
+		source,
+		root: options.root,
+		config,
+		meta: options.meta,
+	});
+	const mode = options.mode ?? "safe";
+	const marker = options.skipMarker ?? "pandwind:migrate-skip";
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	const imports = new Set<string>();
+	const reports: AdapterCapabilityReport[] = [];
+	const validations: AdapterValidationResult[] = [];
+	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
+	const residuals: StyleProgramResidual[] = [...parsed.residuals];
+	let skipped = 0;
+	for (const [index, match] of parsed.matches.entries()) {
+		const report = inspectAdapterCapabilities(targetAdapter.capabilities, match.program, mode);
+		reports.push(report);
+		if (!report.convertible) {
+			skipped++;
+			residuals.push({
+				kind: "capability",
+				text: match.sourceText,
+				hint: report.blockers.map((issue) => issue.detail).join("; "),
+			});
+			edits.push({
+				start: match.start,
+				end: match.start,
+				text: `// ${marker} (adapter capability mismatch)\n`,
+			});
+			continue;
+		}
+		const emitted = targetAdapter.emit(match.program, {
+			file: options.file,
+			config,
+			mode,
+			capability: report,
+			index,
+		});
+		for (const statement of emitted.imports ?? []) imports.add(statement);
+		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
+		residuals.push(...emitted.residuals);
+		const validation = targetAdapter.validate(match.program, match.program, emitted.residuals);
+		validations.push(validation);
+		edits.push({ start: match.start, end: match.end, text: emitted.text });
+	}
+	let code = applyEdits(source, edits);
+	for (const statement of imports) code = ensureImport(code, statement);
+	return {
+		code,
+		changed: code !== source,
+		converted: parsed.matches.length - skipped,
+		skipped,
+		reports,
+		validations,
+		dependencies,
+		residuals,
+	};
+}

@@ -69,6 +69,25 @@ export {
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
+export { EXTERNAL_ADAPTERS, getExternalAdapter, runAdapterMigration } from "./external-adapters.ts";
+export type {
+	AdapterConfigContext,
+	AdapterDependencies,
+	AdapterDependency,
+	AdapterDependencyKind,
+	AdapterDetectionContext,
+	AdapterDetectionResult,
+	AdapterEmitContext,
+	AdapterEmitResult,
+	AdapterMatch,
+	AdapterParseContext,
+	AdapterParseResult,
+	AdapterProjectConfig,
+	AdapterValidationResult,
+	StyleAdapter,
+} from "./adapter-contract.ts";
+export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 export type {
 	SemanticConditionKind,
 	StyleCondition,

@@ -1,0 +1,88 @@
+import { describe, expect, test } from "vitest";
+import {
+	ADAPTER_CONTRACT_SCHEMA,
+	EXTERNAL_ADAPTERS,
+	getExternalAdapter,
+	runAdapterMigration,
+} from "../src/swap/index.ts";
+
+describe("CSS-in-JS adapter contract v2", () => {
+	test("registers detection, config, parse, emit, dependencies, and validation for every adapter", () => {
+		const samples: Record<string, string> = {
+			pandwind: "css.class({ color: 'red' })",
+			emotion: "import '@emotion/css'; css({ color: 'red' })",
+			"styled-components": "import styled from 'styled-components'; styled.div({ color: 'red' })",
+			"vanilla-extract": "import { style } from '@vanilla-extract/css'; style({ color: 'red' })",
+			stitches: "import { createStitches } from '@stitches/react'; createStitches()",
+		};
+		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
+			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
+			expect(adapter.version).toBe("2");
+			expect(adapter.dependencies).toBeDefined();
+			expect(adapter.detect({ file: "styles.ts", source: samples[id]! })).toMatchObject({
+				matched: true,
+			});
+			const config = adapter.loadConfig({
+				file: "styles.ts",
+				source: samples[id]!,
+				root: "/project",
+			});
+			expect(config.adapter).toBe(id);
+		}
+	});
+
+	test("migrates an Emotion object into styled-components with selectors and dynamics", () => {
+		const source = `import { css } from "@emotion/css";\nconst card = css({ color: theme.foreground, "&:hover": { color: "red" } });`;
+		const result = runAdapterMigration(source, {
+			from: "emotion",
+			to: "styled-components",
+			file: "Card.tsx",
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain('import styled from "styled-components";');
+		expect(result.code).toContain("styled.div({");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain('"&:hover"');
+		expect(result.reports[0]?.convertible).toBe(true);
+		expect(result.validations[0]?.valid).toBe(true);
+	});
+
+	test("keeps vanilla-extract dynamic values as explicit residuals in safe mode", () => {
+		const source = `import { style } from "@vanilla-extract/css";\nconst card = style({ color: theme.foreground });`;
+		const result = runAdapterMigration(source, {
+			from: "vanilla-extract",
+			to: "vanilla-extract",
+			file: "Card.css.ts",
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals[0]?.kind).toBe("capability");
+		expect(result.code).toContain("pandwind:migrate-skip");
+	});
+
+	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {
+		const adapter = getExternalAdapter("stitches")!;
+		const parsed = adapter.parse(
+			`const fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
+			{
+				file: "animation.ts",
+				source: "",
+				config: { adapter: "stitches", files: [], values: {} },
+			},
+		);
+		const match = parsed.matches[0]!;
+		expect(match.program.rules[0]?.kind).toBe("keyframes");
+		const emitted = adapter.emit(match.program, {
+			file: "animation.ts",
+			config: { adapter: "stitches", files: [], values: {} },
+			mode: "safe",
+			index: 0,
+		});
+		expect(emitted.text).toContain("css(");
+		expect(emitted.residuals).toEqual([]);
+	});
+});
