@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: IN PROGRESS — runtime sheet foundation complete; semantic interop next**
+**Status: IN PROGRESS — runtime sheet and project context complete; semantic IR next**
 
 ## Context
 
@@ -224,10 +224,11 @@ context used to produce it.
 
 ## Decisions log
 
-| Date | Decision |
-| --- | --- |
-| 2026-08-26 | Runtime CSS-in-JS is an explicit product goal, not merely a build-time fallback. |
-| 2026-08-26 | Keep the core authoring surface minimal; put interoperability in the semantic IR, runtime sheet, adapters, and tooling. |
-| 2026-08-26 | Preserve the existing flat declaration IR as a fast subset and add a versioned semantic IR for richer constructs. |
-| 2026-08-26 | Use safe-by-default migrations with explicit partial mode and residual reporting. |
-| 2026-08-26 | The codemod must load the project’s real preset/config; `examplePreset` is test data only. |
+| Date       | Decision                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-08-26 | Runtime CSS-in-JS is an explicit product goal, not merely a build-time fallback.                                                     |
+| 2026-08-26 | Keep the core authoring surface minimal; put interoperability in the semantic IR, runtime sheet, adapters, and tooling.              |
+| 2026-08-26 | Preserve the existing flat declaration IR as a fast subset and add a versioned semantic IR for richer constructs.                    |
+| 2026-08-26 | Use safe-by-default migrations with explicit partial mode and residual reporting.                                                    |
+| 2026-08-26 | The codemod must load the project’s real preset/config; `examplePreset` is test data only.                                           |
+| 2026-08-27 | Generated bridge metadata is the CLI discovery boundary for project tokens; missing token context remains conservative and explicit. |
