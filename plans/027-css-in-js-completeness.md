@@ -1,6 +1,6 @@
 # CSS-in-JS completeness plan
 
-**Status: in progress — plan established; first proof slice underway**
+**Status: in progress — dynamic contract slice landed; non-Vite browser proof next**
 
 ## Context
 
@@ -164,8 +164,8 @@ interface AuthoredCssImport {
 
 ## Implementation steps
 
-1. Commit this plan and align the capability scorecard and previous plan.
-2. Complete the `css.vars()` dynamic/SSR browser contract and documentation.
+1. Commit this plan and align the capability scorecard and previous plan. **Landed.**
+2. Complete the `css.vars()` dynamic/SSR browser contract and documentation. **Landed.**
 3. Add the first non-Vite browser fixture through the unplugin path.
 4. Audit CSS conflict/order behavior and capability promotion criteria.
 5. Add representative performance measurements and regression gates.
@@ -184,7 +184,7 @@ interface AuthoredCssImport {
 
 ## Acceptance criteria
 
-- [ ] `css.vars()` has browser, SSR, hydration, fallback, invalid-input, and
+- [x] `css.vars()` has browser, SSR, hydration, fallback, invalid-input, and
       duplicate-rule coverage.
 - [ ] Vite/Chromium and one non-Vite browser fixture prove static extraction,
       runtime vars, authored CSS imports, and invalidation behavior.
@@ -205,3 +205,6 @@ interface AuthoredCssImport {
   imports but does not infer APIs from arbitrary CSS.
 - 2026-08-27: Release and publishing remain outside this implementation wave.
 - 2026-08-27: Use the existing isolated JJ workspace and focused revisions.
+- 2026-08-27: The dynamic contract slice rejects empty/non-finite runtime
+  values, keeps the existing runtime-size gate explicit, and proves conditional
+  fallback behavior in Chromium.
