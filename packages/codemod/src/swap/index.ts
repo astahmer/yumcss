@@ -153,10 +153,13 @@ export {
 	STYLE_LOWERING_REGISTRY,
 	STYLE_LOWERING_SCHEMA,
 	STYLE_LOWERINGS,
+	STYLE_LOWERING_PLUGIN_SCHEMA,
+	BUILTIN_STYLE_LOWERING_PLUGIN,
 	createStyleLoweringRegistry,
 } from "./lowering.ts";
 export type {
 	StyleLowering,
+	StyleLoweringPlugin,
 	StyleLoweringContext,
 	StyleLoweringRegistry,
 	StyleLoweringResult,
@@ -236,12 +239,15 @@ export { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "./differentia
 export {
 	VALIDATOR_SCHEMA,
 	STYLE_VALIDATORS,
+	VALIDATOR_PLUGIN_SCHEMA,
+	BUILTIN_STYLE_VALIDATOR_PLUGIN,
 	createStyleValidatorRegistry,
 } from "./validator-registry.ts";
 export type {
 	StyleValidationContext,
 	StyleValidationEvidence,
 	StyleValidator,
+	StyleValidatorPlugin,
 	StyleValidatorRegistry,
 } from "./validator-registry.ts";
 export type {
@@ -275,12 +281,15 @@ export {
 	getHostFrameworkAdapter,
 	HOST_FRAMEWORK_ADAPTERS,
 	HOST_FRAMEWORK_REGISTRY,
+	HOST_FRAMEWORK_PLUGINS,
+	HOST_FRAMEWORK_PLUGIN_SCHEMA,
 	createHostFrameworkRegistry,
 } from "./host-adapters.ts";
 export type {
 	BuiltinHostFramework,
 	HostFramework,
 	HostFrameworkAdapter,
+	HostFrameworkPlugin,
 	HostFrameworkRegistry,
 } from "./host-adapters.ts";
 export {

@@ -10,6 +10,7 @@ import type {
 } from "./adapter-contract.ts";
 
 export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
+export const VALIDATOR_PLUGIN_SCHEMA = "pandwind.style-validator-plugin/1" as const;
 
 export interface StyleValidationContext {
 	readonly source: StyleProgram;
@@ -48,9 +49,17 @@ export interface StyleValidator {
 	validate(context: StyleValidationContext): StyleValidationEvidence;
 }
 
+export interface StyleValidatorPlugin {
+	readonly schema: typeof VALIDATOR_PLUGIN_SCHEMA;
+	readonly id: string;
+	readonly validators: readonly StyleValidator[];
+}
+
 export interface StyleValidatorRegistry {
+	readonly plugins: readonly StyleValidatorPlugin[];
 	readonly validators: readonly StyleValidator[];
 	register(validator: StyleValidator): StyleValidatorRegistry;
+	registerPlugin(plugin: StyleValidatorPlugin): StyleValidatorRegistry;
 	validate(context: StyleValidationContext): AdapterValidationResult;
 }
 
@@ -158,8 +167,10 @@ const streamingValidator: StyleValidator = {
 	},
 };
 
-export function createStyleValidatorRegistry(
-	initial: readonly StyleValidator[] = [
+export const BUILTIN_STYLE_VALIDATOR_PLUGIN: StyleValidatorPlugin = {
+	schema: VALIDATOR_PLUGIN_SCHEMA,
+	id: "pandwind-core-validators",
+	validators: [
 		canonicalValidator,
 		residualValidator,
 		browserValidator,
@@ -167,9 +178,17 @@ export function createStyleValidatorRegistry(
 		dependencyValidator,
 		streamingValidator,
 	],
+};
+
+export function createStyleValidatorRegistry(
+	initial?: readonly StyleValidator[],
 ): StyleValidatorRegistry {
 	const validators = new Map<string, StyleValidator>();
+	const plugins = new Map<string, StyleValidatorPlugin>();
 	const registry: StyleValidatorRegistry = {
+		get plugins() {
+			return [...plugins.values()];
+		},
 		get validators() {
 			return [...validators.values()];
 		},
@@ -179,6 +198,15 @@ export function createStyleValidatorRegistry(
 			if (validators.has(validator.id))
 				throw new Error(`validator already registered: ${validator.id}`);
 			validators.set(validator.id, validator);
+			return registry;
+		},
+		registerPlugin(plugin) {
+			if (plugin.schema !== VALIDATOR_PLUGIN_SCHEMA)
+				throw new Error(`unsupported validator plugin schema: ${plugin.schema}`);
+			if (plugins.has(plugin.id))
+				throw new Error(`validator plugin already registered: ${plugin.id}`);
+			plugins.set(plugin.id, plugin);
+			for (const validator of plugin.validators) registry.register(validator);
 			return registry;
 		},
 		validate(context) {
@@ -196,7 +224,8 @@ export function createStyleValidatorRegistry(
 			return { valid, lossiness, canonicalSource, canonicalTarget, differences, residuals };
 		},
 	};
-	for (const validator of initial) registry.register(validator);
+	if (initial === undefined) registry.registerPlugin(BUILTIN_STYLE_VALIDATOR_PLUGIN);
+	else for (const validator of initial) registry.register(validator);
 	return registry;
 }
 

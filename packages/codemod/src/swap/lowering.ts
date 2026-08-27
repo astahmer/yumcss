@@ -7,6 +7,7 @@ import type {
 } from "./semantic-ir.ts";
 
 export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
+export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
 
 export interface StyleLoweringContext {
 	readonly program: StyleProgram;
@@ -26,9 +27,17 @@ export interface StyleLowering {
 	apply(context: StyleLoweringContext): StyleLoweringResult;
 }
 
+export interface StyleLoweringPlugin {
+	readonly schema: typeof STYLE_LOWERING_PLUGIN_SCHEMA;
+	readonly id: string;
+	readonly lowerings: readonly StyleLowering[];
+}
+
 export interface StyleLoweringRegistry {
+	readonly plugins: readonly StyleLoweringPlugin[];
 	readonly lowerings: readonly StyleLowering[];
 	register(lowering: StyleLowering): StyleLoweringRegistry;
+	registerPlugin(plugin: StyleLoweringPlugin): StyleLoweringRegistry;
 	lower(context: StyleLoweringContext): StyleLoweringResult;
 }
 
@@ -244,11 +253,21 @@ export const STYLE_LOWERINGS: readonly StyleLowering[] = [
 	runtimeAndPlugins,
 ];
 
+export const BUILTIN_STYLE_LOWERING_PLUGIN: StyleLoweringPlugin = {
+	schema: STYLE_LOWERING_PLUGIN_SCHEMA,
+	id: "pandwind-core-lowerings",
+	lowerings: STYLE_LOWERINGS,
+};
+
 export function createStyleLoweringRegistry(
-	initial: readonly StyleLowering[] = STYLE_LOWERINGS,
+	initial?: readonly StyleLowering[],
 ): StyleLoweringRegistry {
 	const lowerings = new Map<string, StyleLowering>();
+	const plugins = new Map<string, StyleLoweringPlugin>();
 	const registry: StyleLoweringRegistry = {
+		get plugins() {
+			return [...plugins.values()];
+		},
 		get lowerings() {
 			return [...lowerings.values()];
 		},
@@ -258,6 +277,15 @@ export function createStyleLoweringRegistry(
 			if (lowerings.has(lowering.id))
 				throw new Error(`lowering already registered: ${lowering.id}`);
 			lowerings.set(lowering.id, lowering);
+			return registry;
+		},
+		registerPlugin(plugin) {
+			if (plugin.schema !== STYLE_LOWERING_PLUGIN_SCHEMA)
+				throw new Error(`unsupported lowering plugin schema: ${plugin.schema}`);
+			if (plugins.has(plugin.id))
+				throw new Error(`lowering plugin already registered: ${plugin.id}`);
+			plugins.set(plugin.id, plugin);
+			for (const lowering of plugin.lowerings) registry.register(lowering);
 			return registry;
 		},
 		lower(context) {
@@ -273,7 +301,8 @@ export function createStyleLoweringRegistry(
 			return { program, residuals, applied };
 		},
 	};
-	for (const lowering of initial) registry.register(lowering);
+	if (initial === undefined) registry.registerPlugin(BUILTIN_STYLE_LOWERING_PLUGIN);
+	else for (const lowering of initial) registry.register(lowering);
 	return registry;
 }
 
