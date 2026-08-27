@@ -45,12 +45,11 @@
 import { type Expression } from "oxc-parser";
 import { parseSourceProgram } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
-import { createCx, type CxInput } from "../cx/index.ts";
-import { ATOM_REGISTRY } from "../css/atoms.ts";
-import type { CssFn } from "../css/create-css.ts";
+import { type CxInput } from "../cx/index.ts";
 import { evalLiteral, type OxcNode } from "../tw/literal.ts";
 import type { TwConfig } from "./inline.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
+import { createCxEvaluationPort } from "./cx-evaluator.ts";
 import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
 import type { OnUnresolved } from "./inline.ts";
 
@@ -636,13 +635,10 @@ export function inlineCxCalls(
 				options.importedConstants,
 			)
 		: new Map();
-	const evaluate = createCx({
-		conflicts: config.conflicts,
-		compose: config.compose,
-		...(fold === undefined
-			? {}
-			: { css: { [ATOM_REGISTRY]: fold.engine.registry } as unknown as CssFn<never> }),
-	});
+	const evaluate = createCxEvaluationPort(
+		{ conflicts: config.conflicts, compose: config.compose },
+		fold === undefined ? {} : { engine: fold.engine },
+	);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
 	const checkUnresolved = options.onUnresolved !== undefined && options.onUnresolved !== "off";
@@ -650,14 +646,9 @@ export function inlineCxCalls(
 	const unresolved: UnresolvedToken[] = [];
 
 	const mergeInputs = (inputs: CxInput[]): string | undefined => {
-		try {
-			// `true` entries are ignored by the runtime merge, so passing the
-			// evaluated list through as CxInput preserves equivalence.
-			return evaluate(...inputs);
-		} catch {
-			// Evaluation failed — leave the call so the runtime surfaces it.
-			return undefined;
-		}
+		// `true` entries are ignored by the runtime merge, so passing the
+		// evaluated list through as CxInput preserves equivalence.
+		return evaluate.merge(inputs);
 	};
 
 	walkNodes(result.program, (node) => {
