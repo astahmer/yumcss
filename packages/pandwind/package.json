@@ -13,6 +13,8 @@
 		"./stack": "./src/stack/index.ts",
 		"./stack/react": "./src/stack/react.tsx",
 		"./design": "./src/design/index.ts",
+		"./recipe": "./src/recipe/index.ts",
+		"./host": "./src/host/index.ts",
 		"./tw": "./src/tw/index.ts",
 		"./tw/generate": "./src/tw/generate-types.ts",
 		"./tw/collect": "./src/tw/collect.ts",

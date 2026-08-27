@@ -98,6 +98,20 @@ export type {
 	DifferentialSsrHooks,
 	DifferentialSsrResult,
 } from "./differential.ts";
+export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";
+export type {
+	ResolvedStyleRecipe,
+	StyleRecipeCompoundVariant,
+	StyleRecipeProgram,
+	StyleRecipeSelection,
+	StyleRecipeVariant,
+} from "./recipe-ir.ts";
+export {
+	detectHostFramework,
+	getHostFrameworkAdapter,
+	HOST_FRAMEWORK_ADAPTERS,
+} from "./host-adapters.ts";
+export type { HostFramework, HostFrameworkAdapter } from "./host-adapters.ts";
 export type {
 	SemanticConditionKind,
 	StyleCondition,
