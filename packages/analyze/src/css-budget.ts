@@ -13,7 +13,7 @@
 import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
-import { collectTwClasses } from "../../pandwind/src/tw/collect.ts";
+import { collectTwClasses } from "pandwind/tw/collect";
 
 /** One declared theme scope's extra cost (plans/015). */
 export interface ThemeScopeDelta {

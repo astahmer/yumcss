@@ -45,7 +45,7 @@ const PROP_GROUP: Record<string, string> = {
 function pandaValue(
 	entry: SwapEntry,
 	mode: "off" | "bare" | "group",
-	tokens: import("../../../pandwind/src/types/typings.ts").AnyTokens | undefined,
+	tokens: import("pandwind/types/typings").AnyTokens | undefined,
 ): string | true | number | Array<string | number> {
 	if (mode === "off") return entry.value;
 	if (typeof entry.value === "string") {

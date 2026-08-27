@@ -8,10 +8,10 @@ import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../analyze.ts";
 import { runCli } from "../cli.ts";
 import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
-import { examplePreset } from "../../../../packages/pandwind/src/preset/example-preset.ts";
-import { createStylesheet } from "../../../../packages/pandwind/src/css/create-stylesheet.ts";
-import { extractCssSources } from "../../../../packages/pandwind/src/vite/css-extract.ts";
-import { buildTokenGraph } from "../../../../packages/pandwind/src/tw/token-graph.ts";
+import { examplePreset } from "pandwind/preset/example-preset";
+import { createStylesheet } from "pandwind/css/create-stylesheet";
+import { extractCssSources } from "pandwind/vite/css-extract";
+import { buildTokenGraph } from "pandwind/tw/token-graph";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,

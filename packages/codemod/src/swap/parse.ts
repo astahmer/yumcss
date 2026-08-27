@@ -16,10 +16,10 @@
  *   resolveDesignStyle + flattie, so entries carry concrete values.
  */
 import type { PandwindMeta } from "../meta.ts";
-import { UTILITY_SUBKEYS } from "../../../pandwind/src/tw/compile.ts";
-import { flattenStyle } from "../../../pandwind/src/lib/utils.ts";
-import { resolveDesignStyle } from "../../../pandwind/src/design/resolve.ts";
-import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import { flattenStyle } from "pandwind/lib/utils";
+import { resolveDesignStyle } from "pandwind/design/resolve";
+import type { AnyTokens } from "pandwind/types/typings";
 import { matchBlock } from "../sources.ts";
 import type { SwapIR } from "./ir.ts";
 import { resolvedAuthoredToken } from "./tokens.ts";

@@ -1,4 +1,4 @@
-import { foldStackElements } from "../../../pandwind/src/vite/stack-fold.ts";
+import { foldStackElements } from "pandwind/vite/stack-fold";
 import {
 	HOST_FRAMEWORK_ADAPTERS,
 	type HostFramework,

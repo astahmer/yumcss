@@ -135,7 +135,11 @@ export {
 	HOST_FRAMEWORK_ADAPTERS,
 } from "./host-adapters.ts";
 export type { HostFramework, HostFrameworkAdapter } from "./host-adapters.ts";
-export { HOST_COMPILER_PLUGINS, HOST_COMPILER_SCHEMA, createHostCompilerPlugin } from "./host-compiler.ts";
+export {
+	HOST_COMPILER_PLUGINS,
+	HOST_COMPILER_SCHEMA,
+	createHostCompilerPlugin,
+} from "./host-compiler.ts";
 export type {
 	HostCompilerContext,
 	HostCompilerDiagnostic,

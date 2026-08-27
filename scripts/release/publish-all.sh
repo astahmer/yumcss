@@ -6,7 +6,9 @@
 # then the tools. Changesets has already rewritten workspace:* ranges to
 # real versions at `changeset version` time.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
+
+./node_modules/.bin/tsx scripts/release/check-publish-ready.mjs
 
 ORDER=(pandwind lint-plugin codemod analyze)
 

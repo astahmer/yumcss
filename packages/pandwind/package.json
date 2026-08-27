@@ -1,7 +1,17 @@
 {
 	"name": "pandwind",
 	"version": "0.1.0",
-	"private": true,
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/astahmer/pandwind.git",
+		"directory": "packages/pandwind"
+	},
+	"files": [
+		"src",
+		"README.md",
+		"LICENSE"
+	],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
@@ -19,13 +29,31 @@
 		"./tw/generate": "./src/tw/generate-types.ts",
 		"./tw/collect": "./src/tw/collect.ts",
 		"./vite": "./src/vite/index.ts",
+		"./vite/css-extract": "./src/vite/css-extract.ts",
+		"./vite/cross-module-consts": "./src/vite/cross-module-consts.ts",
+		"./vite/cx-inline": "./src/vite/cx-inline.ts",
+		"./vite/inline": "./src/vite/inline.ts",
+		"./vite/stack-fold": "./src/vite/stack-fold.ts",
 		"./unplugin": "./src/unplugin.ts",
+		"./css/create-stylesheet": "./src/css/create-stylesheet.ts",
+		"./design/resolve": "./src/design/resolve.ts",
+		"./lib/utils": "./src/lib/utils.ts",
+		"./preset/example-preset": "./src/preset/example-preset.ts",
+		"./tw/compile": "./src/tw/compile.ts",
+		"./tw/literal": "./src/tw/literal.ts",
+		"./tw/token-graph": "./src/tw/token-graph.ts",
 		"./codegen/types": "./src/tw/generate-types.ts",
 		"./codegen/theme": "./src/tw/generate-theme.ts",
 		"./codegen/collect": "./src/tw/collect.ts",
 		"./react-native": "./src/rn.ts",
+		"./types/typings": "./src/types/typings.ts",
 		"./opentui": "./src/opentui.ts",
 		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true,
+		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -66,5 +94,8 @@
 		"react": {
 			"optional": true
 		}
+	},
+	"engines": {
+		"node": ">=20"
 	}
 }

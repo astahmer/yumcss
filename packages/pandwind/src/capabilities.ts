@@ -65,20 +65,20 @@ export const CSS_IN_JS_CAPABILITIES = [
 	},
 	{
 		feature: "bundler-integration",
-		status: "partial",
+		status: "static",
 		detail:
-			"Vite and generic unplugin adapters have browser proof through Rollup; framework-specific fixtures are still needed.",
+			"Vite, unplugin, React/Preact host compiler seams, and a React server-streaming fixture are covered.",
 	},
 	{
 		feature: "source-provenance",
-		status: "partial",
+		status: "static",
 		detail:
-			"Semantic migration and analyze/inspector payloads retain source ranges and emitted rule identities when a matching preset is available.",
+			"Semantic migration and analyze/inspector payloads retain source ranges, editor links, and emitted rule identities.",
 	},
 	{
 		feature: "recipes-and-hosts",
-		status: "partial",
+		status: "static",
 		detail:
-			"Recipes, slot recipes, and renderer-neutral host adapters exist; framework-native compilers remain future work.",
+			"Recipes, slot recipes, renderer-neutral host adapters, and versioned framework-native compiler hooks exist.",
 	},
 ] as const satisfies readonly CapabilityRecord[];

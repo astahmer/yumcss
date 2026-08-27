@@ -1,15 +1,11 @@
-import {
-	inspectCssSource,
-	type CssCallSite,
-	type CssDiagnostic,
-} from "../../pandwind/src/vite/css-extract.ts";
+import { inspectCssSource, type CssCallSite, type CssDiagnostic } from "pandwind/vite/css-extract";
 
 export type {
 	AuthoredCssImport,
 	CssCallSite,
 	CssDiagnostic,
 	CssDiagnosticKind,
-} from "../../pandwind/src/vite/css-extract.ts";
+} from "pandwind/vite/css-extract";
 
 export interface AnalyzeSourceFile {
 	file: string;
@@ -17,7 +13,7 @@ export interface AnalyzeSourceFile {
 }
 
 export interface CssAnalysisReport {
-	authoredCss: Array<import("../../pandwind/src/vite/css-extract.ts").AuthoredCssImport>;
+	authoredCss: Array<import("pandwind/vite/css-extract").AuthoredCssImport>;
 	cssNamesByFile: Map<string, ReadonlySet<string>>;
 	cssSources: Array<CssCallSite>;
 	cssDiagnostics: Array<CssDiagnostic>;
@@ -46,7 +42,7 @@ export function collectCssReport(
 /** Collect explicit web stylesheet imports without parsing their CSS. */
 export function collectAuthoredCssImports(
 	files: ReadonlyArray<AnalyzeSourceFile>,
-): Array<import("../../pandwind/src/vite/css-extract.ts").AuthoredCssImport> {
+): Array<import("pandwind/vite/css-extract").AuthoredCssImport> {
 	return collectCssReport(files).authoredCss;
 }
 
@@ -77,7 +73,7 @@ export function formatCssDiagnostics(diagnostics: ReadonlyArray<CssDiagnostic>):
 }
 
 export function formatAuthoredCssImports(
-	imports: ReadonlyArray<import("../../pandwind/src/vite/css-extract.ts").AuthoredCssImport>,
+	imports: ReadonlyArray<import("pandwind/vite/css-extract").AuthoredCssImport>,
 ): string {
 	if (imports.length === 0) return "";
 	return [

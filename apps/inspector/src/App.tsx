@@ -7,6 +7,7 @@ import {
 	fetchPruneChangeset,
 	kb,
 	vscodeLink,
+	vscodeLinkAt,
 	type AnalyticsHistoryPoint,
 	type HistoryListItem,
 } from "./lib/api.ts";
@@ -673,6 +674,33 @@ function StatsView(props: { data: StudioPayload; query: string }) {
 			</section>
 
 			<ClassDrillDown data={props.data} query={props.query} />
+
+			{props.data.cssSources.length > 0 && (
+				<section>
+					<h2>CSS-in-JS provenance</h2>
+					<p className="muted">Source calls and the semantic rules emitted for each call site.</p>
+					<ul className="sites">
+						{props.data.cssSources.map((site) => (
+							<li key={`${site.file}:${site.start}`}>
+								<a href={vscodeLinkAt(props.data.meta.root, site.file, site.line, site.column)}>
+									{site.file}:{site.line}:{site.column}
+								</a>{" "}
+								— <code>{site.callKind}</code> · {site.staticArguments} static /{" "}
+								{site.dynamicArguments} dynamic
+								{site.rules !== undefined && site.rules.length > 0 && (
+									<ul>
+										{site.rules.map((rule) => (
+											<li key={rule.id}>
+												<code>{rule.id}</code> <code>{rule.css}</code>
+											</li>
+										))}
+									</ul>
+								)}
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
 
 			{c.missingCssSites.length > 0 && (
 				<section>

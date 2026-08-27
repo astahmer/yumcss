@@ -20,16 +20,16 @@
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseSync } from "oxc-parser";
-import { bindingIsShadowedOrWritten } from "../../pandwind/src/vite/cross-module-consts.ts";
+import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import {
 	collectModuleConstants,
 	evalStaticCx,
 	type ConstantScope,
 	type KnownConstant,
-} from "../../pandwind/src/vite/cx-inline.ts";
-import { extractTwConfig, inlineTwCalls, type TwConfig } from "../../pandwind/src/vite/inline.ts";
-import { compileStyles, type TwNestedStyles } from "../../pandwind/src/tw/compile.ts";
-import { evalLiteral, walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
+} from "pandwind/vite/cx-inline";
+import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
+import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
+import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
 
 export interface AnalyzeOptions {
 	/** Generated tw module config (conflicts/compose/variants metadata). */

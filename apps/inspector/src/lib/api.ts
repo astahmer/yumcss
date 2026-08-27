@@ -12,6 +12,10 @@ export async function fetchData(): Promise<StudioPayload> {
 export const vscodeLink = (root: string, file: string, line: number): string =>
 	`vscode://file/${root}/${file}:${line}`;
 
+/** Source link used by provenance views; columns are one-based for editors. */
+export const vscodeLinkAt = (root: string, file: string, line: number, column: number): string =>
+	`vscode://file/${root}/${file}:${line}:${column}`;
+
 export const kb = (bytes: number): string => `${(bytes / 1024).toFixed(2)} KB`;
 
 export interface HistoryListItem {

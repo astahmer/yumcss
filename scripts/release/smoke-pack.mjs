@@ -96,6 +96,7 @@ async function main() {
 				if (dirEntry.isDirectory()) {
 					await walkModules(path);
 				} else if (/\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) {
+					if (/\.(test|spec)\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) continue;
 					if (SWEEP_ALLOWLIST.test(path)) continue;
 					try {
 						await import(pathToFileURL(path).href);

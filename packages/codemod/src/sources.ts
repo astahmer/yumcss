@@ -16,7 +16,7 @@
  *   regions are skipped via the marker.
  */
 import { parseSync } from "oxc-parser";
-import { walk, type OxcNode } from "../../pandwind/src/tw/literal.ts";
+import { walk, type OxcNode } from "pandwind/tw/literal";
 import type { PandwindMeta } from "./meta.ts";
 import { mapToken } from "./map.ts";
 import type { MappedToken } from "./map.ts";

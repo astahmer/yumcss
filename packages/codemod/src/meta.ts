@@ -17,8 +17,8 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
-import { UTILITY_SUBKEYS } from "../../pandwind/src/tw/compile.ts";
-import type { AnyTokens } from "../../pandwind/src/types/typings.ts";
+import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import type { AnyTokens } from "pandwind/types/typings";
 
 export interface VariantMeta {
 	join: ":" | "-" | "";

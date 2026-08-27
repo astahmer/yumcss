@@ -8,7 +8,7 @@
  * sites were written for.
  */
 
-import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
+import type { AnyTokens } from "pandwind/types/typings";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";

@@ -20,6 +20,7 @@
 		"changeset": "changeset",
 		"changeset:version": "changeset version && pnpm install --no-frozen-lockfile",
 		"release:smoke": "for p in pandwind codemod analyze lint-plugin; do ./node_modules/.bin/tsx scripts/release/smoke-pack.mjs packages/$p || exit 1; done",
+		"release:check": "tsx scripts/release/check-publish-ready.mjs",
 		"release:publish": "bash scripts/release/publish-all.sh"
 	},
 	"devDependencies": {

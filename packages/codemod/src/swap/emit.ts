@@ -12,7 +12,7 @@
  */
 import type { PandwindMeta } from "../meta.ts";
 import { mapToken } from "../map.ts";
-import type { AnyTokens } from "../../../pandwind/src/types/typings.ts";
+import type { AnyTokens } from "pandwind/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
