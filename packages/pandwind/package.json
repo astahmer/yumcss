@@ -48,6 +48,7 @@
 		"./react-native": "./src/rn.ts",
 		"./types/typings": "./src/types/typings.ts",
 		"./opentui": "./src/opentui.ts",
+		"./backends": "./src/backends/index.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
