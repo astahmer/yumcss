@@ -68,6 +68,18 @@ export interface SourceScannerRegistry {
 	scan(document: SourceDocument): SourceScanResult;
 }
 
+/** Shared scanner facade consumed by build, analyze, codemod, and collection.
+ * Keeping file/language/parser policy here prevents each consumer from growing
+ * its own extension table or parser compatibility shim. */
+export interface SourceScannerService {
+	readonly registry: SourceScannerRegistry;
+	languageForFile(file: string): SourceLanguage;
+	isSupportedFile(file: string): boolean;
+	isScriptFile(file: string): boolean;
+	scan(document: SourceDocument): SourceScanResult;
+	parse(document: SourceDocument): ParseResult;
+}
+
 export function sourceLanguageForFile(file: string): SourceLanguage {
 	const extension = file.split(".").pop()?.toLowerCase();
 	return (
@@ -344,3 +356,12 @@ export function createSourceScannerRegistry(
 }
 
 export const SOURCE_SCANNER = createSourceScannerRegistry();
+
+export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
+	registry: SOURCE_SCANNER,
+	languageForFile: sourceLanguageForFile,
+	isSupportedFile: isSupportedSourceFile,
+	isScriptFile: isScriptSourceFile,
+	scan: (document) => SOURCE_SCANNER.scan(document),
+	parse: parseSourceProgram,
+};

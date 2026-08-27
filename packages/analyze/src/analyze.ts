@@ -19,7 +19,7 @@
  */
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { isScriptSourceFile, parseSourceProgram } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import {
 	collectModuleConstants,
@@ -125,7 +125,7 @@ interface CallInfo {
 
 /** The evaluator's NOT_STATIC sentinel, derived from a known-dynamic probe. */
 const NOT_STATIC: unknown = (() => {
-	const probe = parseSourceProgram({ file: "probe.ts", source: `unknownRuntimeValue` });
+	const probe = SOURCE_SCANNER_SERVICE.parse({ file: "probe.ts", source: `unknownRuntimeValue` });
 	let sentinel: unknown;
 	walk(probe.program as unknown as OxcNode, (node) => {
 		if ((node as { type?: string }).type !== "ExpressionStatement") return;
@@ -153,7 +153,7 @@ function parseModule(
 	config: TwConfig,
 	importedConstants?: Readonly<Record<string, string>>,
 ): ParsedModule {
-	const parsed = parseSourceProgram({ file, source });
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
 	const program = parsed.program as unknown as OxcNode;
 
 	const imported = new Map<string, string>();
@@ -561,7 +561,7 @@ export function collectFiles(patterns: Array<string>, root: string): Array<strin
 		for (const match of matches) {
 			if (typeof match !== "string") continue;
 			if (match.includes("node_modules")) continue;
-			if (!isScriptSourceFile(match)) continue;
+			if (!SOURCE_SCANNER_SERVICE.isScriptFile(match)) continue;
 			files.add(resolve(root, match));
 		}
 	}

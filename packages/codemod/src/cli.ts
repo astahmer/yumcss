@@ -17,7 +17,7 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
-import { isScriptSourceFile } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
@@ -120,7 +120,7 @@ function addDirectory(files: Set<string>, directory: string): void {
 		return;
 	}
 	for (const entry of entries) {
-		if (isScriptSourceFile(entry)) {
+		if (SOURCE_SCANNER_SERVICE.isScriptFile(entry)) {
 			files.add(resolve(directory, entry));
 		}
 	}

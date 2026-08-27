@@ -24,18 +24,14 @@
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import {
-	isSupportedSourceFile,
-	parseSourceProgram,
-	sourceLanguageForFile,
-} from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { evalLiteral, isTwCall, walk } from "./literal.ts";
 
 export function walkDir(dir: string, files: string[] = []): string[] {
 	for (const entry of readdirSync(dir, { withFileTypes: true })) {
 		const path = join(dir, entry.name);
 		if (entry.isDirectory()) walkDir(path, files);
-		else if (isSupportedSourceFile(entry.name)) files.push(path);
+		else if (SOURCE_SCANNER_SERVICE.isSupportedFile(entry.name)) files.push(path);
 	}
 	return files;
 }
@@ -53,9 +49,9 @@ export async function collectTwClasses(files: string[], twEntry: string): Promis
 
 	for (const file of files) {
 		const source = readFileSync(file, "utf8");
-		const language = sourceLanguageForFile(file);
+		const language = SOURCE_SCANNER_SERVICE.languageForFile(file);
 		if (!["typescript", "tsx", "javascript", "jsx"].includes(language)) continue;
-		const result = parseSourceProgram({ file, source, language });
+		const result = SOURCE_SCANNER_SERVICE.parse({ file, source, language });
 
 		walk(result.program, (node) => {
 			if (!isTwCall(node)) return;

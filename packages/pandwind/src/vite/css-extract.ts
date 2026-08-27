@@ -9,7 +9,7 @@
  * module, so no runtime stylesheet accumulation is needed for static calls.
  */
 import { type Expression } from "oxc-parser";
-import { parseSourceProgram, sourceLanguageForFile } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createCss } from "../css/create-css.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
@@ -22,19 +22,19 @@ import type {
 	StyleObject,
 } from "../types/typings.ts";
 
-const parseSync = (
+const parseSource = (
 	file: string,
 	source: string,
 	options?: { lang?: string; sourceType?: string },
 ) =>
-	parseSourceProgram({
+	SOURCE_SCANNER_SERVICE.parse({
 		file,
 		source,
 		language: options?.lang === "tsx" ? "tsx" : options?.lang === "ts" ? "typescript" : undefined,
 	});
 
 const parseLanguageFor = (file: string): "tsx" | "ts" => {
-	const language = sourceLanguageForFile(file);
+	const language = SOURCE_SCANNER_SERVICE.languageForFile(file);
 	return language === "tsx" || language === "jsx" ? "tsx" : "ts";
 };
 
@@ -256,7 +256,7 @@ function extractPatternSources(
 	id: string,
 	preset: CssPreset,
 ): Array<ExtractedCssStyle> {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -335,7 +335,7 @@ export function findCssImports(
 	id: string,
 	matchers: Array<string | RegExp>,
 ): Set<string> {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -397,7 +397,7 @@ export function inspectCssSource(
 	id: string,
 	matchers: Array<string | RegExp>,
 ): CssSourceInspection {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -512,7 +512,7 @@ export function inspectCssSource(
  * host bundler remains responsible for parsing and emitting authored CSS.
  */
 export function findAuthoredCssImports(code: string, id: string): Array<AuthoredCssImport> {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -567,7 +567,7 @@ export function findCssCallSites(
 	cssNames: ReadonlySet<string>,
 ): Array<CssCallSite> {
 	if (cssNames.size === 0) return [];
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -608,7 +608,7 @@ export function diagnoseCssSources(
 	cssNames: ReadonlySet<string>,
 ): Array<CssDiagnostic> {
 	if (cssNames.size === 0) return [];
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -679,7 +679,7 @@ export function extractCssSources(
 	cssNames: ReadonlySet<string>,
 	preset: CssPreset,
 ): Array<ExtractedCssStyle> {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -766,7 +766,7 @@ export function extractVarKeys(
 ): Array<string> {
 	if (cssNames.size === 0) return [];
 
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -804,7 +804,7 @@ export function extractCssFile(
 	matchers: Array<string | RegExp>,
 	preset: CssPreset,
 ): CssFileExtraction {
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});
@@ -881,7 +881,7 @@ export function inlineCssCalls(
 	if (cssNames.size === 0) return { code, inlined: 0 };
 
 	const engine = createCss({ className });
-	const result = parseSync(id, code, {
+	const result = parseSource(id, code, {
 		sourceType: "module",
 		lang: parseLanguageFor(id),
 	});

@@ -2,11 +2,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-	createSourceScannerRegistry,
-	isSupportedSourceFile,
-	type SourceScanResult,
-} from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import {
 	detectAlias,
@@ -50,7 +46,8 @@ export function discoverPandaFiles(
 			? [pattern]
 			: globSync(pattern, { cwd: projectRoot });
 		for (const candidate of candidates) {
-			if (typeof candidate !== "string" || !isSupportedSourceFile(candidate)) continue;
+			if (typeof candidate !== "string" || !SOURCE_SCANNER_SERVICE.isSupportedFile(candidate))
+				continue;
 			seen.add(resolve(projectRoot, candidate));
 		}
 	}
@@ -82,10 +79,9 @@ export async function loadPandaMigrationTheme(projectRoot: string): Promise<Pand
 export function scanPandaMigrationSources(
 	files: readonly PandaMigrationFile[],
 ): readonly PandaMigrationSource[] {
-	const scanner = createSourceScannerRegistry();
 	return files.map((file) => ({
 		path: file.path,
-		scan: scanner.scan({ file: file.path, source: file.source }),
+		scan: SOURCE_SCANNER_SERVICE.scan({ file: file.path, source: file.source }),
 	}));
 }
 

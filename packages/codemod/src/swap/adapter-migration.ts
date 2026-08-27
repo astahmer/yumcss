@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { ensureImport } from "../shared.ts";
-import { createSourceScannerRegistry } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
 import {
 	inspectAdapterCapabilities,
@@ -108,7 +108,7 @@ export function runAdapterMigration(
 		packageJson: options.packageJson,
 		readFile,
 	});
-	const document = createSourceScannerRegistry().scan({
+	const document = SOURCE_SCANNER_SERVICE.scan({
 		file: options.file,
 		source,
 		root: options.root,

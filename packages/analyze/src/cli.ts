@@ -9,7 +9,7 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { isScriptSourceFile } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
 	analyzeSource,
 	collectFiles,
@@ -160,7 +160,9 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	const importedConstants = args.constantsPath
 		? (JSON.parse(readFileSync(args.constantsPath, "utf8")) as Record<string, string>)
 		: undefined;
-	const files = collectFiles(patterns, args.root).filter((f) => isScriptSourceFile(f));
+	const files = collectFiles(patterns, args.root).filter((f) =>
+		SOURCE_SCANNER_SERVICE.isScriptFile(f),
+	);
 	const sourceFiles = files.map((file) => ({
 		file: file.replace(args.root + "/", ""),
 		content: readFileSync(file, "utf8"),
@@ -231,7 +233,7 @@ async function main(): Promise<void> {
 		const files = collectFiles(
 			args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"],
 			args.root,
-		).filter((f) => isScriptSourceFile(f));
+		).filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
 		const measured = await computeCssBudget(args, files);
 		const caps =
 			args.budgetsPath !== undefined ? parseBudgets(readFileSync(args.budgetsPath!, "utf8")) : {};
