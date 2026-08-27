@@ -37,6 +37,7 @@ import type {
 	CssConfigReturn,
 	DefinePresetOptions,
 } from "../types/typings.ts";
+import type { ModuleNode } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
@@ -131,8 +132,17 @@ export function pandwindCssVite(preset: CssExtractorPreset, options: PandwindCss
 		load(id: string) {
 			return core.load(id);
 		},
-		handleHotUpdate(ctx: { file: string }) {
+		handleHotUpdate(ctx: {
+			file: string;
+			modules?: ModuleNode[];
+			server?: { moduleGraph: { getModuleById(id: string): ModuleNode | undefined } };
+		}): ModuleNode[] | undefined {
 			core.invalidate(ctx.file);
+			const virtual = ctx.server?.moduleGraph.getModuleById(
+				`\0${options.virtualId ?? "pandwind:css"}.css`,
+			);
+			if (virtual === undefined) return ctx.modules;
+			return [...(ctx.modules ?? []), virtual];
 		},
 		/** Programmatic invalidation (tests, custom HMR wiring). */
 		invalidate(file: string) {
