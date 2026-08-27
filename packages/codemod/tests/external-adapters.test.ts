@@ -50,6 +50,39 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.validations[0]?.valid).toBe(true);
 	});
 
+	test("loads package/config evidence and migrates static tagged templates", () => {
+		const adapter = getExternalAdapter("emotion")!;
+		const config = adapter.loadConfig({
+			file: "Card.tsx",
+			root: "/project",
+			source: "",
+			readFile: (file) =>
+				file.endsWith("package.json")
+					? JSON.stringify({ dependencies: { "@emotion/css": "1.0.0" } })
+					: undefined,
+		});
+		expect(config.files).toEqual(["/project/package.json"]);
+		expect(config.values.packageJson).toMatchObject({ dependencies: { "@emotion/css": "1.0.0" } });
+
+		const result = runAdapterMigration(
+			'import "@emotion/css";\nconst card = css`color: red; background-color: blue;`;',
+			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
+	});
+
+	test("keeps interpolated tagged templates as runtime residuals in safe mode", () => {
+		const result = runAdapterMigration("const Card = styled.div`color: ${theme.foreground};`;", {
+			from: "styled-components",
+			to: "pandwind",
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+	});
+
 	test("keeps vanilla-extract dynamic values as explicit residuals in safe mode", () => {
 		const source = `import { style } from "@vanilla-extract/css";\nconst card = style({ color: theme.foreground });`;
 		const result = runAdapterMigration(source, {

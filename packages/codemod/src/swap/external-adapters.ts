@@ -1,4 +1,5 @@
 import type { PandwindMeta } from "../meta.ts";
+import { join } from "node:path";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
 import { ensureImport } from "../shared.ts";
@@ -41,6 +42,7 @@ export type ExternalAdapterId =
 type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
+	readonly form?: "object" | "template";
 };
 
 const dependency = (
@@ -80,12 +82,49 @@ const allRuleCapabilities = (
 	},
 });
 
-const configFor = (id: string, context: AdapterConfigContext): AdapterProjectConfig => ({
-	adapter: id,
-	root: context.root,
-	files: [],
-	values: {},
-});
+const CONFIG_FILES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
+	pandwind: ["pandwind.config.ts", "package.json"],
+	emotion: [".emotionrc", "emotion.config.js", "package.json"],
+	"styled-components": ["package.json"],
+	"vanilla-extract": ["package.json"],
+	stitches: ["stitches.config.ts", "package.json"],
+};
+
+function configFor(id: string, context: AdapterConfigContext): AdapterProjectConfig {
+	const files: string[] = [];
+	const values: Record<string, unknown> = {};
+	const readFile = context.readFile;
+	const packageText =
+		context.packageJson === undefined && context.root !== undefined && readFile !== undefined
+			? readFile(join(context.root, "package.json"))
+			: undefined;
+	let packageJson = context.packageJson;
+	if (packageJson === undefined && packageText !== undefined) {
+		try {
+			packageJson = JSON.parse(packageText) as Readonly<Record<string, unknown>>;
+		} catch {
+			values.packageJsonError = "package.json could not be parsed";
+		}
+	}
+	if (packageJson !== undefined) values.packageJson = packageJson;
+	for (const relative of CONFIG_FILES[id as ExternalAdapterId] ?? []) {
+		if (context.root === undefined || readFile === undefined) continue;
+		const file = join(context.root, relative);
+		const text = readFile(file);
+		if (text === undefined) continue;
+		files.push(file);
+		if (relative.endsWith(".json")) {
+			try {
+				values[relative] = JSON.parse(text);
+			} catch {
+				values[`${relative}:error`] = "configuration JSON could not be parsed";
+			}
+		} else {
+			values[relative] = text;
+		}
+	}
+	return { adapter: id, root: context.root, files, values };
+}
 
 function detectBy(
 	patterns: readonly RegExp[],
@@ -258,6 +297,84 @@ function parseKeyframeProgram(
 	);
 }
 
+function camelProperty(property: string): string {
+	return property
+		.trim()
+		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
+}
+
+function parseTemplateProgram(
+	body: string,
+	context: AdapterParseContext,
+	start: number,
+): StyleProgram {
+	if (body.includes("${")) {
+		return styleProgramFromRules(
+			[
+				{
+					kind: "style",
+					conditions: [],
+					declarations: [],
+					children: [],
+					order: 0,
+				},
+			],
+			{
+				source: { file: context.file, start, adapter: context.config.adapter },
+				residuals: [
+					{
+						kind: "dynamic",
+						text: body,
+						hint: "template interpolation requires a runtime adapter",
+					},
+				],
+			},
+		);
+	}
+	const declarations: StyleDeclaration[] = [];
+	for (const statement of body.split(";")) {
+		const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
+		if (trimmed === "") continue;
+		const colon = trimmed.indexOf(":");
+		if (colon <= 0) {
+			return styleProgramFromRules(
+				[
+					{
+						kind: "style",
+						conditions: [],
+						declarations: [],
+						children: [],
+						order: 0,
+					},
+				],
+				{
+					source: { file: context.file, start, adapter: context.config.adapter },
+					residuals: [
+						{ kind: "parse", text: statement, hint: "nested template CSS requires a rule parser" },
+					],
+				},
+			);
+		}
+		declarations.push({
+			conditions: [],
+			property: camelProperty(trimmed.slice(0, colon)),
+			value: { kind: "literal", value: trimmed.slice(colon + 1).trim() },
+		});
+	}
+	return styleProgramFromRules(
+		[
+			{
+				kind: "style",
+				conditions: [],
+				declarations,
+				children: [],
+				order: 0,
+			},
+		],
+		{ source: { file: context.file, start, adapter: context.config.adapter } },
+	);
+}
+
 function parseCalls(
 	source: string,
 	context: AdapterParseContext,
@@ -268,6 +385,19 @@ function parseCalls(
 	for (const pattern of patterns) {
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
+			if (pattern.form === "template") {
+				const template = match[0];
+				const firstTick = template.indexOf("`");
+				const lastTick = template.lastIndexOf("`");
+				if (firstTick === -1 || lastTick <= firstTick) continue;
+				const program = parseTemplateProgram(
+					template.slice(firstTick + 1, lastTick),
+					context,
+					start,
+				);
+				matches.push({ start, end: start + template.length, program, sourceText: template });
+				continue;
+			}
 			const open = source.indexOf("{", start);
 			if (open === -1) continue;
 			const block = matchBlock(source, open);
@@ -369,6 +499,7 @@ const EMOTION = adapter(
 	"emotion",
 	[
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 	],
@@ -398,6 +529,11 @@ const STYLED_COMPONENTS = adapter(
 	"styled-components",
 	[
 		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
+		{
+			name: "styled-template",
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+		},
 		{ name: "globalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
@@ -514,6 +650,8 @@ export interface AdapterMigrationOptions {
 	readonly file: string;
 	readonly root?: string;
 	readonly meta?: PandwindMeta;
+	readonly packageJson?: Readonly<Record<string, unknown>>;
+	readonly readFile?: (file: string) => string | undefined;
 	readonly mode?: AdapterCapabilityMode;
 	readonly skipMarker?: string;
 }
@@ -539,7 +677,12 @@ export function runAdapterMigration(
 	if (sourceAdapter === undefined || targetAdapter === undefined) {
 		throw new Error(`unknown style adapter: ${options.from} -> ${options.to}`);
 	}
-	const detection = sourceAdapter.detect({ file: options.file, source, root: options.root });
+	const detection = sourceAdapter.detect({
+		file: options.file,
+		source,
+		root: options.root,
+		packageJson: options.packageJson,
+	});
 	if (!detection.matched) {
 		return {
 			code: source,
@@ -552,7 +695,13 @@ export function runAdapterMigration(
 			residuals: [],
 		};
 	}
-	const config = sourceAdapter.loadConfig({ file: options.file, source, root: options.root });
+	const config = sourceAdapter.loadConfig({
+		file: options.file,
+		source,
+		root: options.root,
+		packageJson: options.packageJson,
+		readFile: options.readFile,
+	});
 	const parsed = sourceAdapter.parse(source, {
 		file: options.file,
 		source,
@@ -572,13 +721,21 @@ export function runAdapterMigration(
 	for (const [index, match] of parsed.matches.entries()) {
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, match.program, mode);
 		reports.push(report);
-		if (!report.convertible) {
+		const hasParseResiduals = match.program.residuals.length > 0;
+		if (!report.convertible || (mode === "safe" && hasParseResiduals)) {
 			skipped++;
-			residuals.push({
-				kind: "capability",
-				text: match.sourceText,
-				hint: report.blockers.map((issue) => issue.detail).join("; "),
-			});
+			residuals.push(
+				...match.program.residuals,
+				...(report.blockers.length === 0
+					? []
+					: [
+							{
+								kind: "capability",
+								text: match.sourceText,
+								hint: report.blockers.map((issue) => issue.detail).join("; "),
+							},
+						]),
+			);
 			edits.push({
 				start: match.start,
 				end: match.start,
