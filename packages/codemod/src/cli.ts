@@ -299,6 +299,11 @@ async function runPandaSwap(
 async function mainSwap(argv: string[]): Promise<void> {
 	const args = swapImport.parseSwapArgs(argv);
 	const root = findRepoRoot();
+	const filePaths = expandPatterns(args.patterns, root);
+	if (isExternalSwap(args)) {
+		await runExternalAdapterSwap(args, filePaths, root);
+		return;
+	}
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
 	const metaDir = resolve(root, metaDirRelative);
 
@@ -319,8 +324,6 @@ async function mainSwap(argv: string[]): Promise<void> {
 		process.exitCode = 1;
 		return;
 	}
-
-	const filePaths = expandPatterns(args.patterns, root);
 
 	if (args.from === "panda") {
 		await runPandaSwap(args, filePaths, meta);
@@ -394,6 +397,107 @@ async function mainSwap(argv: string[]): Promise<void> {
 		];
 		console.log(lines.join("\n"));
 	}
+}
+
+function isExternalAdapterId(value: string): value is import("./swap/index.ts").ExternalAdapterId {
+	return swapImport.EXTERNAL_ADAPTER_IDS.includes(
+		value as import("./swap/index.ts").ExternalAdapterId,
+	);
+}
+
+function isExternalSwap(args: swapImport.SwapCliArgs): boolean {
+	return isExternalAdapterId(args.from) || isExternalAdapterId(args.to);
+}
+
+function detectExternalSource(
+	source: string,
+	file: string,
+	root: string,
+): import("./swap/index.ts").ExternalAdapterId | undefined {
+	return swapImport.EXTERNAL_ADAPTER_IDS.map((id) => {
+		const result = swapImport.getExternalAdapter(id).detect({ file, source, root });
+		return { id, result };
+	})
+		.filter(({ result }) => result.matched)
+		.toSorted((a, b) => b.result.confidence - a.result.confidence)[0]?.id;
+}
+
+async function runExternalAdapterSwap(
+	args: swapImport.SwapCliArgs,
+	filePaths: Array<string>,
+	root: string,
+): Promise<void> {
+	if (filePaths.length === 0) {
+		console.error("codemod swap: no matching files");
+		process.exitCode = 1;
+		return;
+	}
+	const target = isExternalAdapterId(args.to)
+		? args.to
+		: args.to === "css.class"
+			? "pandwind"
+			: undefined;
+	if (target === undefined) {
+		console.error(
+			`codemod swap: external adapters currently emit to css.class (or an external adapter), not '${args.to}'`,
+		);
+		process.exitCode = 1;
+		return;
+	}
+
+	let totalConverted = 0;
+	let totalSkipped = 0;
+	let totalResiduals = 0;
+	let totalChanged = 0;
+	for (const file of filePaths) {
+		const relative = file.slice(root.length + 1);
+		let source: string;
+		try {
+			source = readFileSync(file, "utf8");
+		} catch {
+			continue;
+		}
+		const from = isExternalAdapterId(args.from)
+			? args.from
+			: detectExternalSource(source, relative, root);
+		if (from === undefined) {
+			console.log(`${relative}: no external adapter detected`);
+			continue;
+		}
+		const result = swapImport.runAdapterMigration(source, {
+			from,
+			to: target,
+			file: relative,
+			root,
+			mode: "safe",
+			skipMarker: args.skipMarker,
+		});
+		totalConverted += result.converted;
+		totalSkipped += result.skipped;
+		totalResiduals += result.residuals.length;
+		if (!result.changed) {
+			console.log(`${relative}: no changes (${from}->${target})`);
+			continue;
+		}
+		totalChanged++;
+		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
+		if (args.write) writeFileSync(file, result.code);
+		console.log(
+			`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} converted, ` +
+				`${result.skipped} skipped, ${result.residuals.length} residual(s), ${from}->${target}`,
+		);
+		if (args.report) {
+			for (const report of result.reports) {
+				if (report.blockers.length > 0)
+					console.log(`  blocker: ${report.blockers.map((issue) => issue.detail).join("; ")}`);
+			}
+		}
+	}
+	console.log(
+		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
+			`${totalConverted} converted · ${totalSkipped} skipped · ${totalResiduals} residual(s) · ` +
+			(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+	);
 }
 
 async function main(): Promise<void> {

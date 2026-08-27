@@ -1,5 +1,6 @@
 import type { PandwindMeta } from "../meta.ts";
 import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
 import { ensureImport } from "../shared.ts";
@@ -38,6 +39,14 @@ export type ExternalAdapterId =
 	| "styled-components"
 	| "vanilla-extract"
 	| "stitches";
+
+export const EXTERNAL_ADAPTER_IDS: readonly ExternalAdapterId[] = [
+	"pandwind",
+	"emotion",
+	"styled-components",
+	"vanilla-extract",
+	"stitches",
+];
 
 type CallPattern = {
 	readonly name: string;
@@ -743,12 +752,21 @@ export function runAdapterMigration(
 			residuals: [],
 		};
 	}
+	const readFile =
+		options.readFile ??
+		((file: string) => {
+			try {
+				return readFileSync(file, "utf8");
+			} catch {
+				return undefined;
+			}
+		});
 	const config = sourceAdapter.loadConfig({
 		file: options.file,
 		source,
 		root: options.root,
 		packageJson: options.packageJson,
-		readFile: options.readFile,
+		readFile,
 	});
 	const parsed = sourceAdapter.parse(source, {
 		file: options.file,

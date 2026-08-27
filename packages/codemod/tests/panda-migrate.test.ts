@@ -147,6 +147,18 @@ describe("supporting migration primitives", () => {
 		expect(args.patterns).toEqual(["site/**/*.tsx"]);
 	});
 
+	it("accepts external adapter sources and targets without requiring metadata", () => {
+		const args = parseSwapArgs([
+			"--from=emotion",
+			"--to=styled-components",
+			"--report",
+			"src/**/*.tsx",
+		]);
+		expect(args.from).toBe("emotion");
+		expect(args.to).toBe("styled-components");
+		expect(args.report).toBe(true);
+	});
+
 	it("detects tsconfig aliases and emits valid JSX wrapper types", () => {
 		const dir = makeProject();
 		expect(detectAlias(dir)).toMatchObject({
