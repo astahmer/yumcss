@@ -93,6 +93,8 @@ export interface StyleAdapter {
 	readonly schema: typeof ADAPTER_CONTRACT_SCHEMA;
 	readonly id: string;
 	readonly version: string;
+	/** Package entry points this adapter owns and may remove during migration. */
+	readonly sourceModules: readonly string[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
 	detect(context: AdapterDetectionContext): AdapterDetectionResult;

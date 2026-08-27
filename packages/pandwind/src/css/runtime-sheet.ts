@@ -167,11 +167,14 @@ const semanticRuleCss = (rule: RuntimeSemanticRule): string => {
 	);
 };
 
-const semanticRule = (rule: RuntimeSemanticRule): RuntimeRule => ({
-	id: rule.id ?? `semantic-${semanticHash(JSON.stringify(rule))}`,
+const semanticRule = (rule: RuntimeSemanticRule): RuntimeRule => {
+	const { priority: _priority, ...semanticIdentity } = rule;
+	return {
+		id: rule.id ?? `semantic-${semanticHash(JSON.stringify(semanticIdentity))}`,
 	css: semanticRuleCss(rule),
 	priority: rule.priority ?? 0,
-});
+	};
+};
 
 /** Create a deduplicating, SSR-safe runtime stylesheet. */
 export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {

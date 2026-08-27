@@ -18,6 +18,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		for (const [id, adapter] of Object.entries(EXTERNAL_ADAPTERS)) {
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
 			expect(adapter.version).toBe("2");
+			expect(adapter.sourceModules.length).toBeGreaterThan(0);
 			expect(adapter.dependencies).toBeDefined();
 			expect(adapter.detect({ file: "styles.ts", source: samples[id]! })).toMatchObject({
 				matched: true,
@@ -42,6 +43,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
+		expect(result.code).not.toContain('@emotion/css');
 		expect(result.code).toContain('import styled from "styled-components";');
 		expect(result.code).toContain("styled.div({");
 		expect(result.code).toContain("theme.foreground");
@@ -49,6 +51,32 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.reports[0]?.convertible).toBe(true);
 		expect(result.validations[0]?.valid).toBe(true);
 		expect(result.validations[0]?.lossiness).toBe("lossless");
+	});
+
+	test("preserves styled subjects and validates authored keyframe names", () => {
+		const styled = runAdapterMigration(
+			`import styled, { keyframes } from "styled-components";\nconst Card = styled(BaseButton)({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
+			{ from: "styled-components", to: "styled-components", file: "Card.tsx", mode: "safe" },
+		);
+		expect(styled.code).toContain("styled(BaseButton)({");
+		expect(styled.validations.every((validation) => validation.valid)).toBe(true);
+
+		const keyframes = runAdapterMigration(
+			`import { keyframes } from "@emotion/css";\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
+			{ from: "emotion", to: "styled-components", file: "animation.ts", mode: "safe" },
+		);
+		expect(keyframes.validations[0]?.valid).toBe(true);
+		expect(keyframes.code).toContain("keyframes({");
+	});
+
+	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
+		const result = runAdapterMigration(
+			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
+			{ from: "emotion", to: "pandwind", file: "styles.ts", mode: "safe" },
+		);
+		expect(result.code).not.toContain("@emotion/css");
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain("const css = createCss();");
 	});
 
 	test("loads package/config evidence and migrates static tagged templates", () => {
@@ -170,6 +198,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 			},
 		);
 		expect(font.matches[0]?.program.rules[0]?.kind).toBe("font-face");
+	});
+
+	test("unwraps vanilla-extract selectors containers into selector conditions", () => {
+		const vanilla = getExternalAdapter("vanilla-extract")!;
+		const parsed = vanilla.parse(
+			`style({ color: "red", selectors: { "&:hover": { color: "blue" } } });`,
+			{ file: "card.css.ts", source: "", config: { adapter: "vanilla-extract", files: [], values: {} } },
+		);
+		expect(parsed.matches[0]?.program.residuals).toEqual([]);
+		expect(parsed.matches[0]?.program.declarations[1]?.conditions[0]).toMatchObject({
+			kind: "selector",
+			name: "&:hover",
+		});
 	});
 
 	test("round-trips an ordered multi-selector global program across adapters", () => {

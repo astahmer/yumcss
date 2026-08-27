@@ -144,4 +144,53 @@ describe("versioned semantic style-program IR", () => {
 			"@keyframes fade{from{opacity:0}}body{margin:0}",
 		);
 	});
+
+	test("does not flatten selectors or nested rules through the legacy bridge", () => {
+		const program = styleProgramFromRules([
+			{
+				kind: "style",
+				selector: "&",
+				conditions: [],
+				declarations: [
+					{ conditions: [], property: "color", value: { kind: "literal", value: "red" } },
+				],
+				children: [
+					{
+						kind: "style",
+						selector: "&:hover",
+						conditions: [],
+						declarations: [
+							{ conditions: [], property: "color", value: { kind: "literal", value: "blue" } },
+						],
+						children: [],
+						order: 0,
+					},
+				],
+				order: 0,
+			},
+		]);
+
+		const lowered = swapIRFromStyleProgram(program);
+		expect(lowered.entries).toEqual([]);
+		expect(lowered.residuals).toEqual([
+			{
+				kind: "unrepresentable",
+				text: "&",
+				hint: "rich semantic structure requires a rule-capable target",
+			},
+		]);
+	});
+
+	test("unwraps adapter-owned object containers without inventing conditions", () => {
+		const program = styleProgramFromSourceObject(
+			`color: "red", selectors: { "&:hover": { color: "blue" } }`,
+			{ unwrapNestedObjectKeys: ["selectors"] },
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations.map((declaration) => declaration.conditions[0]?.name)).toEqual([
+			undefined,
+			"&:hover",
+		]);
+	});
 });

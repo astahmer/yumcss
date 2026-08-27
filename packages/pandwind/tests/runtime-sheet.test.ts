@@ -145,6 +145,21 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(client.css()).toBe(server.css());
 	});
 
+	test("deduplicates identical semantic rules registered in separate batches", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const rule = {
+			kind: "global" as const,
+			selector: "body",
+			declarations: [{ property: "margin", value: 0 }],
+		};
+
+		sheet.registerSemanticRules([{ ...rule, priority: 1 }]);
+		sheet.registerSemanticRules([{ ...rule, priority: 9 }]);
+
+		expect(sheet.snapshot().rules).toHaveLength(1);
+		expect(sheet.css()).toBe("body{margin:0}");
+	});
+
 	test("covers font-face, layers, custom properties, and conditional selectors", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		sheet.registerSemanticRules([

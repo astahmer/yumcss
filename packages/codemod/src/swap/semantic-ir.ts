@@ -103,6 +103,9 @@ export interface StyleProgramSource {
 	readonly start?: number;
 	readonly end?: number;
 	readonly adapter?: string;
+	/** Authored factory subject, for example `styled.button` or `styled(Base)`. */
+	readonly subject?: string;
+	readonly subjectKind?: "member" | "call";
 }
 
 export interface StyleProgramResidual {
@@ -128,6 +131,8 @@ export interface StyleProgramOptions {
 	readonly conditionRaw?: Readonly<Record<string, string>>;
 	/** Treat every nested object as a semantic condition of this kind. */
 	readonly nestedObjectKind?: SemanticConditionKind;
+	/** Adapter-owned object containers whose contents are the actual style object. */
+	readonly unwrapNestedObjectKeys?: readonly string[];
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 }
@@ -534,8 +539,12 @@ export function styleProgramFromSourceObject(
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
 				continue;
 			}
-			if (sourceObject(valueNode) && looksLikeCondition(name, options)) {
-				if (name !== "base") walk(valueNode, [...conditions, sourceConditionFor(name, options)]);
+			if (
+				sourceObject(valueNode) &&
+				(looksLikeCondition(name, options) || options.unwrapNestedObjectKeys?.includes(name))
+			) {
+				if (options.unwrapNestedObjectKeys?.includes(name)) walk(valueNode, conditions);
+				else if (name !== "base") walk(valueNode, [...conditions, sourceConditionFor(name, options)]);
 				else walk(valueNode, conditions);
 				continue;
 			}
@@ -578,11 +587,16 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 	const entries = [] as SwapIR["entries"];
 	const rules = program.rules.length > 0 ? program.rules : [];
 	for (const rule of rules) {
-		if (rule.kind !== "style") {
+		if (
+			rule.kind !== "style" ||
+			rule.selector !== undefined ||
+			rule.conditions.length > 0 ||
+			rule.children.length > 0
+		) {
 			residuals.push({
 				kind: "unrepresentable",
 				text: rule.name ?? rule.selector ?? rule.kind,
-				hint: `${rule.kind} rule requires a rule-capable target`,
+				hint: "rich semantic structure requires a rule-capable target",
 			});
 			continue;
 		}

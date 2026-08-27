@@ -31,6 +31,7 @@ import {
 	type StyleDeclaration,
 	type StyleProgram,
 	type StyleProgramResidual,
+	type StyleProgramSource,
 } from "./semantic-ir.ts";
 
 export type ExternalAdapterId =
@@ -160,6 +161,15 @@ function detectBy(
 function sourceName(source: string, start: number, fallback: string): string {
 	const prefix = source.slice(Math.max(0, start - 160), start);
 	return prefix.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1] ?? fallback;
+}
+
+function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
+	const match = source
+		.slice(start)
+		.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(/);
+	if (match?.[1] === undefined) return {};
+	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
+	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
 }
 
 function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
@@ -451,11 +461,13 @@ function parseCalls(
 				const firstTick = template.indexOf("`");
 				const lastTick = template.lastIndexOf("`");
 				if (firstTick === -1 || lastTick <= firstTick) continue;
-				const program = parseTemplateProgram(
+				let program = parseTemplateProgram(
 					template.slice(firstTick + 1, lastTick),
 					context,
 					start,
 				);
+				if (pattern.name.startsWith("styled"))
+					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
 				matches.push({ start, end: start + template.length, program, sourceText: template });
 				continue;
 			}
@@ -488,8 +500,15 @@ function parseCalls(
 				program = parseGlobalProgram(block.body, context, start);
 			} else {
 				const base = styleProgramFromSourceObject(block.body, {
-					source: { file: context.file, start, end, adapter: context.config.adapter },
+					source: {
+						file: context.file,
+						start,
+						end,
+						adapter: context.config.adapter,
+						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
+					},
 					sourceOffset: open + 1,
+					...(pattern.name === "style" ? { unwrapNestedObjectKeys: ["selectors"] } : {}),
 				});
 				if (pattern.name === "globalStyle") {
 					const args = source.slice(start, open);
@@ -557,6 +576,14 @@ function validatePrograms(
 	};
 }
 
+const SOURCE_MODULES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
+	pandwind: ["pandwind/css", "pandwind/css/runtime"],
+	emotion: ["@emotion/css", "@emotion/react"],
+	"styled-components": ["styled-components"],
+	"vanilla-extract": ["@vanilla-extract/css"],
+	stitches: ["@stitches/react", "@stitches/core"],
+};
+
 function adapter(
 	id: ExternalAdapterId,
 	patterns: readonly CallPattern[],
@@ -569,6 +596,7 @@ function adapter(
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "2",
+		sourceModules: SOURCE_MODULES[id],
 		capabilities,
 		dependencies: packages,
 		detect: (context) => detectBy(detectPatterns, context),
@@ -580,6 +608,68 @@ function adapter(
 		},
 		validate: validatePrograms,
 	};
+}
+
+function removeSourceImports(code: string, modules: readonly string[]): string {
+	let result = code;
+	for (const module of modules) {
+		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		result = result.replace(
+			new RegExp(
+				`^[ \\t]*import(?:[^\\n;]+?\\s+from\\s+)?[\"']${quoted}[\"'];?[ \\t]*(?:\\n|$)`,
+				"gm",
+			),
+			"",
+		);
+	}
+	return result
+		.replace(/^[ \t]*(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?[ \t]*(?:\n|$)/gm, "")
+		.replace(/^[ \t]*const\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?[ \t]*(?:\n|$)/gm, "");
+}
+
+function consolidateImports(statements: Iterable<string>): string[] {
+	const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
+	const other: string[] = [];
+	for (const statement of statements) {
+		const match = /^import\s+(.+?)\s+from\s+["']([^"']+)["'];?$/.exec(statement.trim());
+		if (match?.[1] === undefined || match[2] === undefined) {
+			other.push(statement);
+			continue;
+		}
+		const group = grouped.get(match[2]) ?? { named: new Set<string>() };
+		const specifier = match[1].trim();
+		if (specifier.startsWith("{")) {
+			for (const name of specifier.slice(1, -1).split(",")) {
+				const trimmed = name.trim();
+				if (trimmed) group.named.add(trimmed);
+			}
+		} else {
+			const [defaultPart, namedPart] = specifier.split(/\s*,\s*\{/);
+			if (defaultPart !== undefined && defaultPart !== "") group.defaultImport = defaultPart.trim();
+			if (namedPart !== undefined) {
+				for (const name of namedPart.replace(/}\s*$/, "").split(",")) {
+					const trimmed = name.trim();
+					if (trimmed) group.named.add(trimmed);
+				}
+			}
+		}
+		grouped.set(match[2], group);
+	}
+	return [
+		...[...grouped].map(([module, group]) => {
+		const named = group.named.size > 0 ? `{ ${[...group.named].sort().join(", ")} }` : "";
+		const specifier = [group.defaultImport, named].filter(Boolean).join(", ");
+		return `import ${specifier} from "${module}";`;
+		}),
+		...other,
+	];
+}
+
+function validationSource(text: string, program: StyleProgram): string {
+	const rule = program.rules[0];
+	return rule?.kind === "keyframes" && rule.name !== undefined
+		? `const ${rule.name} = ${text}`
+		: text;
 }
 
 const EMOTION = adapter(
@@ -649,7 +739,7 @@ const STYLED_COMPONENTS = adapter(
 				imports: ['import { createGlobalStyle } from "styled-components";'],
 			};
 		return {
-			text: `styled.div(${programObject(program)})`,
+			text: `${program.source?.subject ?? "styled.div"}(${programObject(program)})`,
 			imports: ['import styled from "styled-components";'],
 		};
 	},
@@ -741,7 +831,10 @@ const PANDWIND = adapter(
 	[{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g }],
 	{ packages: [] },
 	allRuleCapabilities("pandwind", "partial", { "dynamic-values": "partial" }),
-	(program) => ({ text: `css.class(${programObject(program)})`, imports: [] }),
+	(program) => ({
+		text: `css.class(${programObject(program)})`,
+		imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+	}),
 	[/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 );
 
@@ -875,9 +968,10 @@ export function runAdapterMigration(
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
-		const reparsed = targetAdapter.parse(emitted.text, {
+		const emittedForValidation = validationSource(emitted.text, match.program);
+		const reparsed = targetAdapter.parse(emittedForValidation, {
 			file: options.file,
-			source: emitted.text,
+			source: emittedForValidation,
 			root: options.root,
 			config: targetAdapter.loadConfig({
 				file: options.file,
@@ -905,8 +999,8 @@ export function runAdapterMigration(
 		validations.push(validation);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 	}
-	let code = applyEdits(source, edits);
-	for (const statement of imports) code = ensureImport(code, statement);
+	let code = removeSourceImports(applyEdits(source, edits), sourceAdapter.sourceModules);
+	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
 	return {
 		code,
 		changed: code !== source,
