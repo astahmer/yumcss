@@ -14,6 +14,14 @@ import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { collectTwClasses } from "pandwind/tw/collect";
+import {
+	PostCssArtifactAnalyzer,
+	type SheetShape,
+	type ShapeCategory,
+	type SpecificityBucket,
+} from "./css-artifact-analyzer.ts";
+
+export type { SheetShape, ShapeCategory, SpecificityBucket } from "./css-artifact-analyzer.ts";
 
 /** One declared theme scope's extra cost (plans/015). */
 interface ThemeScopeDelta {
@@ -222,165 +230,13 @@ export async function classRules(options: {
 /* Stylesheet shape — CSS Overview-style distributions                 */
 /* ------------------------------------------------------------------ */
 
-interface ShapeCategory {
-	category: string;
-	rules: number;
-	/** Approximate byte weight of the rules in this category. */
-	bytes: number;
-	/** Most frequent declaration values within the category. */
-	topValues: Array<{ value: string; count: number }>;
-}
-
-interface SpecificityBucket {
-	label: string;
-	rules: number;
-}
-
-export interface SheetShape {
-	totalRules: number;
-	totalBytes: number;
-	categories: Array<ShapeCategory>;
-	specificity: Array<SpecificityBucket>;
-}
-
-const PROPERTY_CATEGORY: Record<string, string> = {
-	color: "colors",
-	"background-color": "colors",
-	fill: "colors",
-	stroke: "colors",
-	"caret-color": "colors",
-	"border-color": "borders",
-	margin: "spacing",
-	"margin-top": "spacing",
-	"margin-right": "spacing",
-	"margin-bottom": "spacing",
-	"margin-left": "spacing",
-	padding: "spacing",
-	"padding-top": "spacing",
-	"padding-right": "spacing",
-	"padding-bottom": "spacing",
-	"padding-left": "spacing",
-	gap: "spacing",
-	"row-gap": "spacing",
-	"column-gap": "spacing",
-	"font-family": "typography",
-	"font-size": "typography",
-	"font-weight": "typography",
-	"font-style": "typography",
-	"line-height": "typography",
-	"letter-spacing": "typography",
-	"text-align": "typography",
-	"text-transform": "typography",
-	display: "layout",
-	position: "layout",
-	flex: "layout",
-	"flex-direction": "layout",
-	"flex-wrap": "layout",
-	"align-items": "layout",
-	"justify-content": "layout",
-	grid: "layout",
-	"grid-template-columns": "layout",
-	width: "layout",
-	height: "layout",
-	"min-width": "layout",
-	"min-height": "layout",
-	"max-width": "layout",
-	"max-height": "layout",
-	top: "layout",
-	right: "layout",
-	bottom: "layout",
-	left: "layout",
-	inset: "layout",
-	"z-index": "layout",
-	overflow: "layout",
-	"box-shadow": "effects",
-	opacity: "effects",
-	filter: "effects",
-	"backdrop-filter": "effects",
-	transform: "effects",
-	transition: "effects",
-	animation: "effects",
-};
-
-const categoryOf = (prop: string): string => {
-	if (PROPERTY_CATEGORY[prop] !== undefined) return PROPERTY_CATEGORY[prop]!;
-	const prefixes: Array<[RegExp, string]> = [
-		[/^border-(top|right|bottom|left)-(color|width|style)$/, "borders"],
-		[/^border-.+-radius$/, "borders"],
-		[/^border/, "borders"],
-		[/^outline-?(color|width|style|offset)?$/, "borders"],
-		[/^(text-decoration|text-emphasis)/, "typography"],
-		[/^(margin|padding)-?(block|inline)?/, "spacing"],
-		[/^(grid|place|align|justify)/, "layout"],
-	];
-	for (const [pattern, cat] of prefixes) {
-		if (pattern.test(prop)) return cat;
-	}
-	return "other";
-};
-
 /**
  * Compute the stylesheet SHAPE from a parsed compiled sheet: per-category
  * rule counts and byte weights, most frequent declaration values, and a
  * specificity histogram. CSS Overview-style, but data-only and reusable.
  */
 export function sheetShapeFromRoot(root: Root): SheetShape {
-	type Cat = { rules: number; bytes: number; values: Map<string, number> };
-	const cats = new Map<string, Cat>();
-	const spec = new Map<string, number>();
-	let totalRules = 0;
-	let totalBytes = 0;
-
-	root.walkRules((rule) => {
-		totalRules++;
-		totalBytes += rule.toString().length;
-
-		// specificity triple via token counting on the selector
-		const s = rule.selector;
-		const ids = (s.match(/#[\w-]+/g) ?? []).length;
-		const classesAttrs =
-			(s.match(/\.[\w-]+/g) ?? []).length + (s.match(/\[[^\]]+\]/g) ?? []).length;
-		const pseudos = (s.match(/:[a-zA-Z-]+/g) ?? []).length;
-		const label = `${ids}-${classesAttrs}-${pseudos}`;
-		spec.set(label, (spec.get(label) ?? 0) + 1);
-
-		const declProps = new Set<string>();
-		rule.walkDecls((decl) => {
-			const prop = decl.prop.toLowerCase();
-			const cat = categoryOf(prop);
-			let bucket = cats.get(cat);
-			if (bucket === undefined) {
-				bucket = { rules: 0, bytes: 0, values: new Map<string, number>() };
-				cats.set(cat, bucket);
-			}
-			declProps.add(cat);
-			bucket.values.set(decl.value, (bucket.values.get(decl.value) ?? 0) + 1);
-		});
-		for (const cat of declProps) {
-			const bucket = cats.get(cat)!;
-			bucket.rules++;
-			bucket.bytes += rule.toString().length;
-		}
-	});
-
-	const categories: Array<ShapeCategory> = [...cats.entries()]
-		.map(([category, c]) => ({
-			category,
-			rules: c.rules,
-			bytes: c.bytes,
-			topValues: [...c.values.entries()]
-				.toSorted((a, b) => b[1] - a[1])
-				.slice(0, 4)
-				.map(([value, count]) => ({ value, count })),
-		}))
-		.toSorted((a, b) => b.bytes - a.bytes);
-
-	const specificity: Array<SpecificityBucket> = [...spec.entries()]
-		.map(([label, rules]) => ({ label, rules }))
-		.toSorted((a, b) => b.rules - a.rules)
-		.slice(0, 8);
-
-	return { totalRules, totalBytes, categories, specificity };
+	return new PostCssArtifactAnalyzer().shape(root);
 }
 
 /** Compile the scanned classes and return their stylesheet shape. */
