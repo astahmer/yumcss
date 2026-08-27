@@ -15,6 +15,8 @@ const cx = createCx({ css: dcss as unknown as CssFn<never> });
 // cx() below still exercises the runtime conflict-resolution path.
 const cardCLose = dcss.class({ $frame: { fill: "$red-500" } });
 const cardCWin = dcss.class({ $frame: { fill: "$gray-800" } });
+const cvaButtonClass = cvaButton({ size: "lg" });
+const composeClasses = (base: string, extra: string) => cx(base, extra);
 
 export function App() {
 	return (
@@ -51,7 +53,7 @@ export function App() {
 			</section>
 			<button
 				data-testid="cva-button"
-				className={cx(cvaButton({ size: "lg" }), dcss.class({ $text: { weight: "bold" } }))}
+				className={composeClasses(cvaButtonClass, dcss.class({ $text: { weight: "bold" } }))}
 			>
 				CVA selects Pandwind classes
 			</button>
