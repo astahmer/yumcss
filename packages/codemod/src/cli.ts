@@ -410,11 +410,13 @@ function detectExternalSource(
 	file: string,
 	root: string,
 ): import("./swap/index.ts").ExternalAdapterId | undefined {
-	return swapImport.listCodemodAdapterIds().flatMap((id) => {
-		const adapter = swapImport.getCodemodAdapter(id);
-		if (adapter === undefined) return [];
-		return [{ id, result: adapter.detect({ file, source, root }) }];
-	})
+	return swapImport
+		.listCodemodAdapterIds()
+		.flatMap((id) => {
+			const adapter = swapImport.getCodemodAdapter(id);
+			if (adapter === undefined) return [];
+			return [{ id, result: adapter.detect({ file, source, root }) }];
+		})
 		.filter(({ result }) => result.matched)
 		.toSorted((a, b) => b.result.confidence - a.result.confidence)[0]?.id;
 }

@@ -314,7 +314,7 @@ function unifiedDiff(before: string, after: string, file: string): string {
 	].join("\n");
 }
 
-type SwapIrLike = import("./ir.ts").SwapIR;
+type SwapIrLike = import("../../ir.ts").SwapIR;
 
 /* ------------------------------------------------------------------ */
 /* variant (cva/sva/defineRecipe) definitions                          */

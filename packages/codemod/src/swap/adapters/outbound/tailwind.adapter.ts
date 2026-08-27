@@ -1,6 +1,7 @@
 import type { PandwindMeta } from "../../../meta.ts";
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
 
 const camel = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
@@ -48,4 +49,19 @@ const emitTailwind: Emitter = (ir, meta) => {
 	return { text: classNames.length > 0 ? JSON.stringify(classNames.join(" ")) : "", residuals: [] };
 };
 
-export default { id: "tailwind", emit: emitTailwind } as const;
+export default {
+	id: "tailwind",
+	emit: emitTailwind,
+	capabilities: {
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		adapter: "tailwind",
+		capabilities: {
+			declarations: "partial",
+			"token-values": "partial",
+			"named-conditions": "partial",
+			"pseudo-conditions": "partial",
+			"media-conditions": "partial",
+			"dynamic-values": "unsupported",
+		},
+	},
+} as const;

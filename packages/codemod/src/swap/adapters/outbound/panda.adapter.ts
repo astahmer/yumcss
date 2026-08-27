@@ -1,6 +1,6 @@
-import type { PandwindMeta } from "../../../meta.ts";
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
 import { authoredTokenRef, qualifyRef, resolvedTokenRef } from "../../tokens.ts";
 
 const propertyGroups: Record<string, string> = {
@@ -76,4 +76,19 @@ const emitPanda: Emitter = (ir, meta, context) => {
 	};
 };
 
-export default { id: "panda", emit: emitPanda } as const;
+export default {
+	id: "panda",
+	emit: emitPanda,
+	capabilities: {
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		adapter: "panda",
+		capabilities: {
+			declarations: "exact",
+			"token-values": "exact",
+			"named-conditions": "exact",
+			"pseudo-conditions": "partial",
+			"media-conditions": "partial",
+			"dynamic-values": "unsupported",
+		},
+	},
+} as const;

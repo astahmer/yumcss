@@ -14,12 +14,7 @@ import { styleProgramFromSwapIR, type StyleProgram } from "../../semantic-ir.ts"
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
 export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/2" as const;
 
-export type PandaMigrationPhase =
-	| "discovery"
-	| "conversion"
-	| "emission"
-	| "rewrite"
-	| "validation";
+type PandaMigrationPhase = "discovery" | "conversion" | "emission" | "rewrite" | "validation";
 
 export interface PandaMigrationContext {
 	readonly options: PandaMigrateOptions;

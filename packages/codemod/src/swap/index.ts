@@ -24,7 +24,6 @@ import {
 } from "./semantic-ir.ts";
 import {
 	inspectAdapterCapabilities,
-	SWAP_ADAPTER_CAPABILITIES,
 	type AdapterCapabilities,
 	type AdapterCapabilityMode,
 	type AdapterCapabilityReport,
@@ -61,6 +60,12 @@ export type SwapMissResolver = (
 
 export { createEngineMissResolver } from "./engine.ts";
 export { runPandaMigration } from "./adapters/panda/index.ts";
+export type {
+	PandaMigrateOptions,
+	PandaMigrateReport,
+	PandaCall,
+	PandaRecipeIR,
+} from "./adapters/panda/index.ts";
 export {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
@@ -68,9 +73,7 @@ export {
 } from "./adapters/panda/index.ts";
 export type {
 	PandaMigrationContext,
-	PandaMigrationPhase,
 	PandaMigrationPipeline,
-	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./adapters/panda/index.ts";
@@ -109,7 +112,6 @@ export {
 } from "./semantic-ir.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
-	SWAP_ADAPTER_CAPABILITIES,
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
@@ -137,6 +139,11 @@ export type {
 	AdapterProjectConfig,
 	AdapterValidationResult,
 	AdapterLossiness,
+	AdapterDynamicPreparationContext,
+	AdapterDynamicPreparation,
+	AdapterRewriteContext,
+	AdapterRewriteResult,
+	AdapterMigrationHooks,
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
@@ -153,7 +160,12 @@ export type {
 	StyleLoweringResult,
 } from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
-export type { CodemodAdapterSpec, AdapterRenderers } from "./external-adapters.ts";
+export type {
+	CodemodAdapterSpec,
+	AdapterRenderers,
+	AdapterSourceObjectOptions,
+	AdapterSourceObjectOptionsProvider,
+} from "./external-adapters.ts";
 export {
 	ADAPTER_MIGRATION_PIPELINE,
 	MIGRATION_PIPELINE_SCHEMA,
@@ -416,7 +428,7 @@ export function runSwap(
 		const { ir } = match;
 		siteIndex += 1;
 		const program = semanticProgramForMatch(source, match, file, options);
-		const capabilities = options.adapterCapabilities ?? SWAP_ADAPTER_CAPABILITIES[options.to];
+		const capabilities = options.adapterCapabilities ?? emitter.capabilities;
 		const capabilityReport =
 			capabilities === undefined
 				? undefined

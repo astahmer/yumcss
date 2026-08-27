@@ -703,23 +703,7 @@ function parseCalls(
 					...resolvedObjectOptions,
 					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
 				});
-				if (pattern.kind === "global") {
-					const args = source.slice(start, open);
-					const selector = /\(\s*(["'`])([^"'`]+)\1\s*,/.exec(args)?.[2] ?? "*";
-					program = styleProgramFromRules(
-						[
-							{
-								kind: "global",
-								selector,
-								conditions: [],
-								declarations: base.declarations,
-								children: [],
-								order: 0,
-							},
-						],
-						{ source: base.source, residuals: base.residuals },
-					);
-				} else if (pattern.kind === "font-face") {
+				if (pattern.kind === "font-face") {
 					program = styleProgramFromRules(
 						[
 							{

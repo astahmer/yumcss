@@ -1,9 +1,11 @@
 import type { PandwindMeta } from "../meta.ts";
 import { computeExcludedRanges } from "../sources.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
-import { SWAP_EMITTERS, type Emitter, type EmitterContext, type EmitterResult } from "./emit.ts";
+import { type EmitterContext, type EmitterResult } from "./emit.ts";
 import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";
 import type { SwapIR } from "./ir.ts";
+import type { AdapterCapabilities } from "./capabilities.ts";
+import { CORE_SWAP_TARGETS } from "./adapters/core-targets.adapter.ts";
 
 export interface SwapSourceMatch {
 	readonly start: number;
@@ -31,6 +33,7 @@ export interface SwapSourceAdapter {
 export interface SwapTargetAdapter {
 	readonly id: string;
 	emit(ir: SwapIR, meta: PandwindMeta, context: EmitterContext): EmitterResult;
+	readonly capabilities?: AdapterCapabilities;
 }
 
 export interface SwapRegistry {
@@ -43,19 +46,14 @@ export interface SwapRegistry {
 	scanSource(id: string, context: SwapSourceContext): readonly SwapSourceMatch[];
 }
 
-const target = (id: string, emit: Emitter): SwapTargetAdapter => ({ id, emit });
-
 const source = (id: string, parse: SwapSourceAdapter["parse"]): SwapSourceAdapter => ({
 	id,
 	parse,
 });
 
 export const SWAP_TARGET_ADAPTERS: readonly SwapTargetAdapter[] = [
-	target("css.class", SWAP_EMITTERS["css.class"]),
-	target("design", SWAP_EMITTERS.design),
-	target("dss", SWAP_EMITTERS.dss),
-	target("tw", SWAP_EMITTERS.tw),
-	...OUTBOUND_ADAPTERS.map((adapter) => target(adapter.id, adapter.emit)),
+	...CORE_SWAP_TARGETS,
+	...OUTBOUND_ADAPTERS,
 ];
 
 const coreSource = (id: "tw" | "css" | "design"): SwapSourceAdapter =>

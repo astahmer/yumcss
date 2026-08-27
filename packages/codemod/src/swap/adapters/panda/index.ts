@@ -19,7 +19,6 @@ export {
 export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
-	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./migration-pipeline.ts";
@@ -46,7 +45,7 @@ export {
 } from "./migration-stages.ts";
 export { expandBuiltinPattern } from "./patterns.ts";
 export { detectAlias } from "./project.ts";
-export { loadPandaTheme, emptyPandaTheme } from "./theme.ts";
+export { loadPandaTheme } from "./theme.ts";
 export type { PandaTheme } from "./theme.ts";
 export {
 	PANDA_ALIASES,
@@ -56,6 +55,5 @@ export {
 	normalizePandaStyleObject,
 	parseObjectLiteral,
 } from "./parse.ts";
-export { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 export type { PandaCall, PandaRecipeIR } from "./parse.ts";
 export { foldRecipeCall, renderJsxIndex, renderPatternModule } from "./modules.ts";
