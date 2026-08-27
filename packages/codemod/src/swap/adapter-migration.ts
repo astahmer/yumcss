@@ -13,11 +13,7 @@ import type {
 	AdapterParseContext,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
-import {
-	styleProgramFromRules,
-	type StyleProgram,
-	type StyleProgramResidual,
-} from "./semantic-ir.ts";
+import { styleProgramFromRules, type StyleProgramResidual } from "./semantic-ir.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import {
 	EXTERNAL_ADAPTER_REGISTRY,

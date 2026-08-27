@@ -114,9 +114,9 @@ describe("swap css.class -> tw", () => {
 		});
 		expect(result.converted).toBe(0);
 		expect(result.skippedByMarker).toBe(1);
-		expect(result.capabilityReports[0]?.unsupported.map((issue) => issue.capability)).toEqual([
-			"dynamic-values",
-		]);
+		expect(result.capabilityReports[0]?.unsupported.map((issue) => issue.capability)).toEqual(
+			expect.arrayContaining(["dynamic-values", "theme-context"]),
+		);
 		expect(result.code).toContain("css.class({ color: theme.foreground })");
 	});
 });

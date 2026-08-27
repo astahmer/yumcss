@@ -1,16 +1,8 @@
-import type { PandwindMeta } from "../meta.ts";
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { computeExcludedRanges, matchBlock } from "../sources.ts";
-import { ensureImport } from "../shared.ts";
-import {
-	ADAPTER_CAPABILITIES_SCHEMA,
-	inspectAdapterCapabilities,
-	type AdapterCapabilities,
-	type AdapterCapabilityMode,
-	type AdapterCapabilityReport,
-} from "./capabilities.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
@@ -41,7 +33,6 @@ import {
 } from "./style-systems.ts";
 import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
 import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
-import { createSourceScannerRegistry } from "./source-scanner.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -539,7 +530,7 @@ function parseCalls(
 						end,
 						adapter: context.config.adapter,
 						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
-						...(context.semantic?.source ?? {}),
+						...context.semantic?.source,
 					},
 					sourceOffset: open + 1,
 					...(context.semantic?.themes ? { themes: context.semantic.themes } : {}),
@@ -750,6 +741,11 @@ const EMOTION = adapter(
 	],
 	dependency("@emotion/css", "runtime"),
 	allRuleCapabilities("emotion", "exact", {
+		"theme-context": "exact",
+		"runtime-context": "exact",
+		composition: "partial",
+		"plugin-transforms": "partial",
+		"framework-semantics": "partial",
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",
@@ -789,6 +785,11 @@ const STYLED_COMPONENTS = adapter(
 	],
 	dependency("styled-components", "peer"),
 	allRuleCapabilities("styled-components", "exact", {
+		"theme-context": "exact",
+		"runtime-context": "exact",
+		composition: "partial",
+		"plugin-transforms": "partial",
+		"framework-semantics": "partial",
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",
@@ -991,7 +992,7 @@ export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>
 	stitches: STITCHES,
 	linaria: LINARIA,
 	jss: JSS,
-	...Object.fromEntries(EXTRA_ADAPTERS.map((adapter) => [adapter.id, adapter])),
+	...Object.fromEntries(EXTRA_ADAPTERS.map((extraAdapter) => [extraAdapter.id, extraAdapter])),
 };
 
 /** Built-ins are merely the default plugin set; consumers may derive a registry and discover more. */

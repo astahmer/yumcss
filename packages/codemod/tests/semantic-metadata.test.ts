@@ -2,7 +2,6 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_VALIDATORS,
 	createStyleValidatorRegistry,
-	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
 } from "../src/swap/index.ts";

@@ -7,7 +7,6 @@ import type {
 } from "./adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
-import { computeExcludedRanges } from "pandwind/source";
 import {
 	styleProgramFromSourceObject,
 	styleProgramToCanonicalCss,
@@ -56,11 +55,20 @@ const valueText = (value: StyleProgram["declarations"][number]["value"]): string
 	return JSON.stringify(value.value);
 };
 
+type ObjectNode = { values: Array<[string, string]>; children: Map<string, ObjectNode> };
+
+const renderObjectNode = (node: ObjectNode): string => {
+	const values = node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`);
+	const children = [...node.children].map(
+		([key, child]) => `${JSON.stringify(key)}: ${renderObjectNode(child)}`,
+	);
+	return `{ ${[...values, ...children].join(", ")} }`;
+};
+
 const objectText = (program: StyleProgram): string => {
-	type Node = { values: Array<[string, string]>; children: Map<string, Node> };
-	const root: Node = { values: [], children: new Map() };
+	const root: ObjectNode = { values: [], children: new Map() };
 	const add = (
-		node: Node,
+		node: ObjectNode,
 		declaration: StyleProgram["declarations"][number],
 		index: number,
 	): void => {
@@ -76,14 +84,7 @@ const objectText = (program: StyleProgram): string => {
 	};
 	const declarations = program.rules[0]?.declarations ?? program.declarations;
 	for (const declaration of declarations) add(root, declaration, 0);
-	const render = (node: Node): string => {
-		const values = node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`);
-		const children = [...node.children].map(
-			([key, child]) => `${JSON.stringify(key)}: ${render(child)}`,
-		);
-		return `{ ${[...values, ...children].join(", ")} }`;
-	};
-	return render(root);
+	return renderObjectNode(root);
 };
 
 function balanced(source: string, open: number): { end: number; body: string } | undefined {

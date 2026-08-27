@@ -547,6 +547,10 @@ export function styleProgramFromSourceObject(
 ): StyleProgram {
 	const declarations: StyleDeclaration[] = [];
 	const residuals: StyleProgramResidual[] = [];
+	const themes: StyleThemeBinding[] = [...(options.themes ?? [])];
+	const compositions: StyleComposition[] = [...(options.compositions ?? [])];
+	const themePaths = new Set(themes.map((theme) => theme.path));
+	const compositionKeys = new Set(["compose", "composes", "extend", "extends"]);
 	const addDynamicResidual = (text: string, hint: string): void => {
 		residuals.push({ kind: "dynamic", text, hint });
 	};
@@ -586,6 +590,16 @@ export function styleProgramFromSourceObject(
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
 				continue;
 			}
+			if (compositionKeys.has(name)) {
+				const reference = sourceSlice(body, valueNode).trim();
+				if (reference !== "")
+					compositions.push({
+						kind: name.startsWith("extend") ? "extends" : "mixin",
+						reference,
+						source: sourceRange(options.source, options.sourceOffset ?? 0, valueNode),
+					});
+				continue;
+			}
 			if (
 				sourceObject(valueNode) &&
 				(looksLikeCondition(name, options) || options.unwrapNestedObjectKeys?.includes(name))
@@ -597,6 +611,19 @@ export function styleProgramFromSourceObject(
 				continue;
 			}
 			const value = literalSourceValue(valueNode) ?? dynamicSourceValue(valueNode, body, options);
+			if (value.kind === "dynamic") {
+				const themeMatch = /^(?:theme|tokens)\.([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)$/.exec(
+					value.expression.trim(),
+				);
+				if (themeMatch?.[1] !== undefined && !themePaths.has(themeMatch[1])) {
+					themePaths.add(themeMatch[1]);
+					themes.push({
+						path: themeMatch[1],
+						authored: value.expression.trim(),
+						source: value.source,
+					});
+				}
+			}
 			declarations.push({ conditions, property: name, value });
 		}
 	};
@@ -621,8 +648,8 @@ export function styleProgramFromSourceObject(
 		{
 			source: options.source,
 			residuals,
-			themes: options.themes,
-			compositions: options.compositions,
+			themes,
+			compositions,
 			runtime: options.runtime,
 			plugins: options.plugins,
 		},
