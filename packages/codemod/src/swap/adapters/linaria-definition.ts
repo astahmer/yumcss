@@ -1,8 +1,8 @@
-import { adapter, allRuleCapabilities, dependency, templateCss } from "../external-adapters.ts";
+import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
 
-export const LINARIA = adapter(
-	"linaria",
-	[
+export const LINARIA_DEFINITION: AdapterDefinition = {
+	id: "linaria",
+	patterns: [
 		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{
 			name: "linaria-styled",
@@ -10,13 +10,13 @@ export const LINARIA = adapter(
 			form: "template",
 		},
 	],
-	{
+	packages: {
 		packages: [
 			dependency("@linaria/core", "peer").packages[0]!,
 			dependency("@linaria/react", "peer").packages[0]!,
 		],
 	},
-	allRuleCapabilities("linaria", "unsupported", {
+	capabilities: allRuleCapabilities("linaria", "unsupported", {
 		"dynamic-values": "partial",
 		components: "exact",
 		"font-face": "unsupported",
@@ -24,13 +24,15 @@ export const LINARIA = adapter(
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
-	(program) => {
-		const component = program.source?.subject;
+	detectPatterns: [/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
+	sourceModules: ["@linaria/core", "@linaria/react"],
+	emit(program, { templateCss }) {
 		const text = templateCss(program);
-		return component !== undefined
-			? { text: `${component}\`${text}\``, imports: ['import { styled } from "@linaria/react";'] }
+		return program.source?.subject !== undefined
+			? {
+					text: `${program.source.subject}\`${text}\``,
+					imports: ['import { styled } from "@linaria/react";'],
+				}
 			: { text: `css\`${text}\``, imports: ['import { css } from "@linaria/core";'] };
 	},
-	[/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
-	["@linaria/core", "@linaria/react"],
-);
+};

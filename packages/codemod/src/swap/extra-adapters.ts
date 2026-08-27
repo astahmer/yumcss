@@ -20,6 +20,7 @@ type ExtraAdapterOptions = {
 	packages: AdapterDependencies;
 	detect: readonly RegExp[];
 	call: RegExp;
+	form?: "object" | "template";
 	prefix: string;
 	suffix?: string;
 	namedObjects?: boolean;
@@ -126,7 +127,84 @@ function parseObjectCalls(
 			sourceOffset: open + 1,
 			...(options.namedObjects ? { nestedObjectKind: "named" as const } : {}),
 		});
-		matches.push({ start, end: block.end, program, sourceText: source.slice(start, block.end) });
+		let end = block.end;
+		// Fela commonly wraps rule objects in `() => ({ ... })`; consume the
+		// wrapper closers so replacing the complete call cannot leave invalid JS.
+		while (source[end] === ")") end++;
+		matches.push({ start, end, program, sourceText: source.slice(start, end) });
+	}
+	return { matches, residuals };
+}
+
+function camelProperty(property: string): string {
+	return property.trim().replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
+}
+
+function parseTemplateCalls(
+	id: string,
+	source: string,
+	context: AdapterParseContext,
+	options: ExtraAdapterOptions,
+): AdapterParseResult {
+	const mask = context.document?.isExcluded ?? (() => false);
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const residuals: StyleProgramResidual[] = [];
+	for (const match of source.matchAll(options.call)) {
+		const start = match.index ?? 0;
+		if (mask(start)) continue;
+		const template = match[0];
+		const firstTick = template.indexOf("`");
+		const lastTick = template.lastIndexOf("`");
+		if (firstTick === -1 || lastTick <= firstTick) continue;
+		const body = template.slice(firstTick + 1, lastTick);
+		const declarations: StyleProgram["declarations"][number][] = [];
+		const programResiduals: StyleProgramResidual[] = [];
+		if (body.includes("${")) {
+			const residual = {
+				kind: "dynamic",
+				text: body,
+				hint: `${id} template interpolation requires a runtime-aware lowering`,
+			} satisfies StyleProgramResidual;
+			programResiduals.push(residual);
+			residuals.push(residual);
+		} else {
+			for (const statement of body.split(";")) {
+				const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
+				if (trimmed === "") continue;
+				const colon = trimmed.indexOf(":");
+				if (colon <= 0) {
+					const residual = {
+						kind: "parse",
+						text: statement,
+						hint: `${id} nested template CSS requires a rule parser`,
+					} satisfies StyleProgramResidual;
+					programResiduals.push(residual);
+					residuals.push(residual);
+					break;
+				}
+				declarations.push({
+					conditions: [],
+					property: camelProperty(trimmed.slice(0, colon)),
+					value: { kind: "literal", value: trimmed.slice(colon + 1).trim() },
+				});
+			}
+		}
+		const program: StyleProgram = {
+			schema: "pandwind.style-program/3",
+			rules: [
+				{
+					kind: "style",
+					conditions: [],
+					declarations,
+					children: [],
+					order: 0,
+				},
+			],
+			declarations,
+			residuals: programResiduals,
+			source: { file: context.file, start, end: start + template.length, adapter: id },
+		};
+		matches.push({ start, end: start + template.length, program, sourceText: template });
 	}
 	return { matches, residuals };
 }
@@ -139,13 +217,19 @@ const makeAdapter = (options: ExtraAdapterOptions): StyleAdapter => ({
 	capabilities: capabilities(options.id),
 	dependencies: options.packages,
 	detect: (context) => {
-		const evidence = options.detect
-			.filter((pattern) => pattern.test(context.source))
-			.map((pattern) => pattern.source);
+		const evidence = options.detect.flatMap((pattern) => {
+			pattern.lastIndex = 0;
+			const matched = pattern.test(context.source);
+			pattern.lastIndex = 0;
+			return matched ? [pattern.source] : [];
+		});
 		return { matched: evidence.length > 0, confidence: evidence.length ? 0.8 : 0, evidence };
 	},
 	loadConfig: (context) => config(options.id, context),
-	parse: (source, context) => parseObjectCalls(options.id, source, context, options),
+	parse: (source, context) =>
+		options.form === "template"
+			? parseTemplateCalls(options.id, source, context, options)
+			: parseObjectCalls(options.id, source, context, options),
 	emit: (program) => ({
 		text: `${options.prefix}${objectText(program)}${options.suffix ?? ""}`,
 		residuals: [...program.residuals],
@@ -182,7 +266,7 @@ export const FELA = makeAdapter({
 		],
 	},
 	detect: [/from\s+["'](?:fela|react-fela)["']/g, /\brenderer\.renderRule\s*\(\s*\{/g],
-	call: /\brenderer\.renderRule\s*\(\s*\{/g,
+	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
 });
 
@@ -228,8 +312,11 @@ export const COMPILED = makeAdapter({
 	id: "compiled",
 	modules: ["@compiled/react", "@compiled/css-in-js"],
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
-	detect: [/from\s+["']@compiled\/(?:react|css-in-js)["']/g, /\bcss\s*\(\s*\{/g],
-	call: /\bcss\s*\(\s*\{/g,
+	detect: [
+		/from\s+["']@compiled\/(?:react|css-in-js)["']/g,
+		/\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(/g,
+	],
+	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
 });
 
@@ -237,8 +324,12 @@ export const SOLID_STYLED = makeAdapter({
 	id: "solid-styled",
 	modules: ["solid-styled-components"],
 	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
-	detect: [/from\s+["']solid-styled-components["']/g, /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g],
-	call: /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g,
+	detect: [
+		/from\s+["']solid-styled-components["']/g,
+		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`/g,
+	],
+	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
+	form: "template",
 	prefix: "styled.div(",
 });
 
@@ -246,8 +337,12 @@ export const VUE_STYLED = makeAdapter({
 	id: "vue-styled",
 	modules: ["vue-styled-components"],
 	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
-	detect: [/from\s+["']vue-styled-components["']/g, /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g],
-	call: /\bstyled\.[A-Za-z_$][\w$]*\s*\(\s*\{/g,
+	detect: [
+		/from\s+["'](?:vue-styled-components|@vue-styled-components\/core)["']/g,
+		/\bstyled\.[A-Za-z_$][\w$]*[^`]*`/g,
+	],
+	call: /\bstyled\.[A-Za-z_$][\w$]*[^`]*`(?:\\.|[^`])*`/g,
+	form: "template",
 	prefix: "styled.div(",
 });
 

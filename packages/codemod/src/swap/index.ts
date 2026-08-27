@@ -68,6 +68,7 @@ export type {
 	PandaMigrationPipeline,
 	PandaMigrationStage,
 	PandaMigrationStageResult,
+	PandaMigrationArtifacts,
 } from "./panda-migration-pipeline.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
@@ -271,7 +272,8 @@ export type {
 	DifferentialStreamingHooks,
 	DifferentialStreamingResult,
 } from "./differential.ts";
-export { REAL_REPOSITORY_CORPUS } from "./real-repository-corpus.ts";
+export { REAL_REPOSITORY_CORPUS, REAL_REPOSITORY_REFERENCES } from "./real-repository-corpus.ts";
+export type { RealRepositoryReference } from "./real-repository-corpus.ts";
 export type { DifferentialMatrixCase, DifferentialMatrixResult } from "./differential-matrix.ts";
 export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";
 export type {

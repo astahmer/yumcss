@@ -1,14 +1,8 @@
-import {
-	adapter,
-	allRuleCapabilities,
-	dependency,
-	firstKind,
-	programObject,
-} from "../external-adapters.ts";
+import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
 
-export const STYLED_COMPONENTS = adapter(
-	"styled-components",
-	[
+export const STYLED_COMPONENTS_DEFINITION: AdapterDefinition = {
+	id: "styled-components",
+	patterns: [
 		{ name: "styled", regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g },
 		{
 			name: "styled-template",
@@ -18,8 +12,8 @@ export const STYLED_COMPONENTS = adapter(
 		{ name: "createGlobalStyle", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
-	dependency("styled-components", "peer"),
-	allRuleCapabilities("styled-components", "exact", {
+	packages: dependency("styled-components", "peer"),
+	capabilities: allRuleCapabilities("styled-components", "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",
@@ -31,7 +25,9 @@ export const STYLED_COMPONENTS = adapter(
 		"property-rules": "unsupported",
 		components: "exact",
 	}),
-	(program) => {
+	detectPatterns: [/styled-components/, /\bstyled\s*\./],
+	sourceModules: ["styled-components"],
+	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
 			return {
@@ -48,6 +44,4 @@ export const STYLED_COMPONENTS = adapter(
 			imports: ['import styled from "styled-components";'],
 		};
 	},
-	[/styled-components/, /\bstyled\s*\./],
-	["styled-components"],
-);
+};

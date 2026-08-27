@@ -1,12 +1,34 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
 import {
 	REAL_REPOSITORY_CORPUS,
+	REAL_REPOSITORY_REFERENCES,
+	getExternalAdapter,
 	runAdapterMigration,
 	runPandaMigration,
 } from "../packages/codemod/src/swap/index.ts";
+
+const referenceRoot = "/Users/astahmer/.references";
+
+function readPinnedReference(reference: (typeof REAL_REPOSITORY_REFERENCES)[number]): string {
+	const actualCommit = execFileSync(
+		"git",
+		["-C", join(referenceRoot, reference.clone), "rev-parse", "HEAD"],
+		{
+			encoding: "utf8",
+		},
+	).trim();
+	if (actualCommit !== reference.commit)
+		throw new Error(`${reference.clone} moved: expected ${reference.commit}, got ${actualCommit}`);
+	return execFileSync(
+		"git",
+		["-C", join(referenceRoot, reference.clone), "show", `${reference.commit}:${reference.path}`],
+		{ encoding: "utf8" },
+	);
+}
 
 const emptyMeta = {
 	keys: [],
@@ -20,8 +42,21 @@ const emptyMeta = {
 
 const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	panda: ["@pandacss/dev"],
-	emotion: ["@emotion/css"],
+	emotion: ["@emotion/css", "@emotion/react"],
 	"styled-components": ["styled-components"],
+	"vanilla-extract": ["@vanilla-extract/css"],
+	stitches: ["@stitches/react"],
+	linaria: ["@linaria/core", "@linaria/react"],
+	jss: ["jss", "react-jss"],
+	fela: ["fela", "react-fela"],
+	goober: ["goober"],
+	aphrodite: ["aphrodite"],
+	style9: ["style9"],
+	treat: ["treat"],
+	compiled: ["@compiled/react", "@compiled/css-in-js"],
+	"solid-styled": ["solid-styled-components"],
+	"vue-styled": ["vue-styled-components"],
+	stylex: ["@stylexjs/stylex"],
 };
 
 function dependencyNames(value: readonly { packages: readonly { name: string }[] }[]): string[] {
@@ -31,13 +66,24 @@ function dependencyNames(value: readonly { packages: readonly { name: string }[]
 }
 
 const reports = [] as Array<Record<string, unknown>>;
-for (const fixture of REAL_REPOSITORY_CORPUS) {
+const fixtures = [
+	...REAL_REPOSITORY_CORPUS,
+	...REAL_REPOSITORY_REFERENCES.map((reference) => ({
+		...reference,
+		source: readPinnedReference(reference),
+	})),
+];
+for (const fixture of fixtures) {
 	let output = fixture.source;
 	let converted = 0;
 	let skipped = 0;
 	let residuals = 0;
 	let emittedModules: readonly string[] = [];
 	let targetPackages: string[] = [];
+	let detection = { matched: true, confidence: 1, evidence: ["panda project pipeline"] };
+	let validations = 0;
+	let residualKinds: Record<string, number> = {};
+	let manualFixes: string[] = [];
 	if (fixture.from === "panda") {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-real-corpus-"));
 		try {
@@ -57,12 +103,17 @@ for (const fixture of REAL_REPOSITORY_CORPUS) {
 			converted = report.cssCallsConverted + report.factoryElementsConverted;
 			skipped = report.cssCallsFlagged + report.factoryElementsFlagged;
 			residuals = Object.values(report.residualsByKind).reduce((total, count) => total + count, 0);
+			residualKinds = report.residualsByKind;
 			emittedModules = report.emittedModules;
 			targetPackages = ["pandwind"];
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
 	} else {
+		const sourceAdapter = getExternalAdapter(fixture.from);
+		if (sourceAdapter === undefined) throw new Error(`missing adapter ${fixture.from}`);
+		const detected = sourceAdapter.detect({ file: fixture.path, source: fixture.source });
+		detection = detected;
 		const result = runAdapterMigration(fixture.source, {
 			from: fixture.from,
 			to: fixture.to,
@@ -73,6 +124,20 @@ for (const fixture of REAL_REPOSITORY_CORPUS) {
 		converted = result.converted;
 		skipped = result.skipped;
 		residuals = result.residuals.length;
+		validations = result.validations.length;
+		residualKinds = Object.fromEntries([
+			...result.residuals.reduce(
+				(counts, residual) => counts.set(residual.kind, (counts.get(residual.kind) ?? 0) + 1),
+				new Map<string, number>(),
+			),
+		]);
+		manualFixes = [
+			...new Set(
+				result.residuals
+					.map((residual) => residual.hint)
+					.filter((hint): hint is string => hint !== undefined),
+			),
+		];
 		targetPackages = dependencyNames(result.dependencies);
 	}
 	const sourceRuntimePackages = [...(sourcePackages[fixture.from] ?? [])];
@@ -84,15 +149,21 @@ for (const fixture of REAL_REPOSITORY_CORPUS) {
 		commit: fixture.commit,
 		path: fixture.path,
 		adapterRoute: `${fixture.from} -> ${fixture.to}`,
+		detection,
 		sourceBytes: Buffer.byteLength(fixture.source),
 		outputBytes: Buffer.byteLength(output),
 		outputByteDelta: Buffer.byteLength(output) - Buffer.byteLength(fixture.source),
 		converted,
 		skipped,
 		residuals,
+		residualKinds,
+		validations,
+		manualFixes,
 		emittedModules,
 		runtimeBundleImpact: {
 			measured: false,
+			measurement: "source-artifact",
+			notMeasuredReason: "reference repositories are intentionally not installed or bundled in CI",
 			sourceRuntimePackages,
 			targetRuntimePackages: targetPackages,
 			added,
@@ -102,4 +173,21 @@ for (const fixture of REAL_REPOSITORY_CORPUS) {
 	});
 }
 
-console.log(JSON.stringify({ schema: "pandwind.real-repository-report/1", reports }, null, 2));
+console.log(
+	JSON.stringify(
+		{
+			schema: "pandwind.real-repository-report/2",
+			generatedFrom: "scripts/generate-real-repository-report.ts",
+			cloneRoot: referenceRoot,
+			sourceFiles: REAL_REPOSITORY_REFERENCES.length,
+			reports,
+			bundleImpact: {
+				measured: false,
+				reason:
+					"reference repositories are cloned without installing their dependency graphs; the runner records source/output bytes and dependency deltas without fabricating bundle numbers",
+			},
+		},
+		null,
+		2,
+	),
+);

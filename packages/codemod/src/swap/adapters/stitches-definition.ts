@@ -1,26 +1,22 @@
-import {
-	adapter,
-	allRuleCapabilities,
-	dependency,
-	firstKind,
-	programObject,
-} from "../external-adapters.ts";
+import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
 
-export const STITCHES = adapter(
-	"stitches",
-	[
+export const STITCHES_DEFINITION: AdapterDefinition = {
+	id: "stitches",
+	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 		{ name: "globalCss", regex: /\bglobalCss\s*\(\s*\{/g },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
-	dependency("@stitches/react", "peer"),
-	allRuleCapabilities("stitches", "exact", {
+	packages: dependency("@stitches/react", "peer"),
+	capabilities: allRuleCapabilities("stitches", "exact", {
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
-	(program) => {
+	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
+	sourceModules: ["@stitches/react", "@stitches/core"],
+	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
 			return {
@@ -37,6 +33,4 @@ export const STITCHES = adapter(
 			imports: ['import { css } from "@stitches/react";'],
 		};
 	},
-	[/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
-	["@stitches/react", "@stitches/core"],
-);
+};

@@ -34,13 +34,15 @@ import {
 } from "./style-systems.ts";
 import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
 import { EXTRA_ADAPTERS } from "./extra-adapters.ts";
-import { EMOTION } from "./adapters/emotion.ts";
-import { STYLED_COMPONENTS } from "./adapters/styled-components.ts";
-import { VANILLA_EXTRACT } from "./adapters/vanilla-extract.ts";
-import { STITCHES } from "./adapters/stitches.ts";
-import { LINARIA } from "./adapters/linaria.ts";
-import { JSS } from "./adapters/jss.ts";
-import { PANDWIND } from "./adapters/pandwind.ts";
+import type { AdapterDefinition, AdapterRenderers } from "./adapters/definition.ts";
+import { EMOTION_DEFINITION } from "./adapters/emotion-definition.ts";
+import { STYLED_COMPONENTS_DEFINITION } from "./adapters/styled-components-definition.ts";
+import { VANILLA_EXTRACT_DEFINITION } from "./adapters/vanilla-extract-definition.ts";
+import { STITCHES_DEFINITION } from "./adapters/stitches-definition.ts";
+import { LINARIA_DEFINITION } from "./adapters/linaria-definition.ts";
+import { JSS_DEFINITION } from "./adapters/jss-definition.ts";
+import { PANDWIND_DEFINITION } from "./adapters/pandwind-definition.ts";
+import { STYLEX_DEFINITION } from "./adapters/stylex-definition.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -148,9 +150,12 @@ function detectBy(
 	patterns: readonly RegExp[],
 	context: AdapterDetectionContext,
 ): { matched: boolean; confidence: number; evidence: string[] } {
-	const evidence = patterns.flatMap((pattern) =>
-		pattern.test(context.source) ? [pattern.source] : [],
-	);
+	const evidence = patterns.flatMap((pattern) => {
+		pattern.lastIndex = 0;
+		const matched = pattern.test(context.source);
+		pattern.lastIndex = 0;
+		return matched ? [pattern.source] : [];
+	});
 	return {
 		matched: evidence.length > 0,
 		confidence: evidence.length === 0 ? 0 : Math.min(1, 0.5 + evidence.length * 0.2),
@@ -643,30 +648,20 @@ function validatePrograms(
 	};
 }
 
-const SOURCE_MODULES: Readonly<Record<ExternalAdapterId, readonly string[]>> = {
-	pandwind: ["pandwind/css", "pandwind/css/runtime"],
-	emotion: ["@emotion/css", "@emotion/react"],
-	"styled-components": ["styled-components"],
-	"vanilla-extract": ["@vanilla-extract/css"],
-	stitches: ["@stitches/react", "@stitches/core"],
-	linaria: ["@linaria/core", "@linaria/react"],
-	jss: ["jss", "react-jss"],
-};
-
 export function adapter(
 	id: ExternalAdapterId,
 	patterns: readonly CallPattern[],
 	packages: AdapterDependencies,
 	capabilities: AdapterCapabilities,
-	emitCall: (program: StyleProgram) => { text: string; imports: readonly string[] },
+	emitCall: (program: StyleProgram) => { text: string; imports?: readonly string[] },
 	detectPatterns: readonly RegExp[],
-	_sourceModules: readonly string[] = [],
+	sourceModules: readonly string[],
 ): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "2",
-		sourceModules: _sourceModules.length > 0 ? _sourceModules : (SOURCE_MODULES[id] ?? []),
+		sourceModules,
 		capabilities,
 		dependencies: packages,
 		detect: (context) => detectBy(detectPatterns, context),
@@ -678,6 +673,22 @@ export function adapter(
 		},
 		validate: validatePrograms,
 	};
+}
+
+/** Bind an independently owned concrete definition to the shared v2 parser,
+ * validator, and configuration runtime. Definitions never import this module,
+ * which keeps the registry cycle-free. */
+function adapterFromDefinition(definition: AdapterDefinition): StyleAdapter {
+	const renderers: AdapterRenderers = { firstKind, programObject, declarationsObject, templateCss };
+	return adapter(
+		definition.id,
+		definition.patterns,
+		definition.packages,
+		definition.capabilities,
+		(program) => definition.emit(program, renderers),
+		definition.detectPatterns,
+		definition.sourceModules,
+	);
 }
 
 function removeExcludedMatches(source: string, pattern: RegExp): string {
@@ -1007,7 +1018,7 @@ const LEGACY_JSS = adapter(
 const LEGACY_PANDWIND = adapter(
 	"pandwind",
 	[{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g }],
-	{ packages: [] },
+	dependency("pandwind", "runtime"),
 	allRuleCapabilities("pandwind", "partial", { "dynamic-values": "partial" }),
 	(program) => ({
 		text: `css.class(${programObject(program)})`,
@@ -1015,16 +1026,37 @@ const LEGACY_PANDWIND = adapter(
 	}),
 	[/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 );
+
+const STYLEX = adapter(
+	"stylex",
+	[{ name: "stylex-create", regex: /\bstylex\.create\s*\(\s*\{/g }],
+	dependency("@stylexjs/stylex", "peer"),
+	allRuleCapabilities("stylex", "partial", {
+		"dynamic-values": "partial",
+		composition: "partial",
+		"font-face": "unsupported",
+		layers: "unsupported",
+		"supports-rules": "unsupported",
+		"property-rules": "unsupported",
+	}),
+	(program) => ({
+		text: `css.class(${programObject(program)})`,
+		imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+	}),
+	[/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
+	["@stylexjs/stylex"],
+);
 */
 
 export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>> = {
-	pandwind: PANDWIND,
-	emotion: EMOTION,
-	"styled-components": STYLED_COMPONENTS,
-	"vanilla-extract": VANILLA_EXTRACT,
-	stitches: STITCHES,
-	linaria: LINARIA,
-	jss: JSS,
+	pandwind: adapterFromDefinition(PANDWIND_DEFINITION),
+	emotion: adapterFromDefinition(EMOTION_DEFINITION),
+	"styled-components": adapterFromDefinition(STYLED_COMPONENTS_DEFINITION),
+	"vanilla-extract": adapterFromDefinition(VANILLA_EXTRACT_DEFINITION),
+	stitches: adapterFromDefinition(STITCHES_DEFINITION),
+	linaria: adapterFromDefinition(LINARIA_DEFINITION),
+	jss: adapterFromDefinition(JSS_DEFINITION),
+	stylex: adapterFromDefinition(STYLEX_DEFINITION),
 	...Object.fromEntries(EXTRA_ADAPTERS.map((extraAdapter) => [extraAdapter.id, extraAdapter])),
 };
 

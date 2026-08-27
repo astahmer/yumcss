@@ -23,6 +23,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			style9: "import style9 from 'style9'; style9.create({ button: { color: 'red' } })",
 			treat: "import { style } from './styles.treat'; style({ color: 'red' })",
 			compiled: "import { css } from '@compiled/react'; css({ color: 'red' })",
+			stylex: "import stylex from '@stylexjs/stylex'; stylex.create({ card: { color: 'red' } })",
 			"solid-styled":
 				"import { styled } from 'solid-styled-components'; styled.div({ color: 'red' })",
 			"vue-styled": "import styled from 'vue-styled-components'; styled.div({ color: 'red' })",

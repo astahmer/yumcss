@@ -1,21 +1,15 @@
-import {
-	adapter,
-	allRuleCapabilities,
-	dependency,
-	firstKind,
-	programObject,
-} from "../external-adapters.ts";
+import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
 
-export const EMOTION = adapter(
-	"emotion",
-	[
+export const EMOTION_DEFINITION: AdapterDefinition = {
+	id: "emotion",
+	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 	],
-	dependency("@emotion/css", "runtime"),
-	allRuleCapabilities("emotion", "exact", {
+	packages: dependency("@emotion/css", "runtime"),
+	capabilities: allRuleCapabilities("emotion", "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",
@@ -26,7 +20,9 @@ export const EMOTION = adapter(
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
-	(program) => {
+	detectPatterns: [/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
+	sourceModules: ["@emotion/css", "@emotion/react"],
+	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
 			return {
@@ -43,6 +39,4 @@ export const EMOTION = adapter(
 			imports: ['import { css } from "@emotion/css";'],
 		};
 	},
-	[/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
-	["@emotion/css", "@emotion/react"],
-);
+};

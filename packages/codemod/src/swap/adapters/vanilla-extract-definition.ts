@@ -1,27 +1,22 @@
-import {
-	adapter,
-	allRuleCapabilities,
-	declarationsObject,
-	dependency,
-	firstKind,
-	programObject,
-} from "../external-adapters.ts";
+import { allRuleCapabilities, dependency, type AdapterDefinition } from "./definition.ts";
 
-export const VANILLA_EXTRACT = adapter(
-	"vanilla-extract",
-	[
+export const VANILLA_EXTRACT_DEFINITION: AdapterDefinition = {
+	id: "vanilla-extract",
+	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
 		{ name: "globalStyle", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
 		{ name: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "fontFace", regex: /\bfontFace\s*\(\s*\{/g },
 	],
-	dependency("@vanilla-extract/css", "runtime"),
-	allRuleCapabilities("vanilla-extract", "unsupported", {
+	packages: dependency("@vanilla-extract/css", "runtime"),
+	capabilities: allRuleCapabilities("vanilla-extract", "unsupported", {
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
-	(program) => {
+	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
+	sourceModules: ["@vanilla-extract/css"],
+	emit(program, { firstKind, programObject, declarationsObject }) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
 			return {
@@ -49,6 +44,4 @@ export const VANILLA_EXTRACT = adapter(
 			imports: ['import { style } from "@vanilla-extract/css";'],
 		};
 	},
-	[/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
-	["@vanilla-extract/css"],
-);
+};
