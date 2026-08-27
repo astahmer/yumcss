@@ -207,6 +207,14 @@ function programObject(program: StyleProgram): string {
 	return renderObjectNode(root);
 }
 
+function firstKind(program: StyleProgram): StyleProgram["rules"][number]["kind"] {
+	return program.rules[0]?.kind ?? "style";
+}
+
+function globalSelector(program: StyleProgram): string {
+	return program.rules.find((rule) => rule.kind === "global")?.selector ?? "*";
+}
+
 function parseKeyframeProgram(
 	body: string,
 	context: AdapterParseContext,
@@ -366,10 +374,23 @@ const EMOTION = adapter(
 	],
 	dependency("@emotion/css", "runtime"),
 	allRuleCapabilities("emotion", "exact"),
-	(program) => ({
-		text: `css(${programObject(program)})`,
-		imports: ['import { css } from "@emotion/css";'],
-	}),
+	(program) => {
+		const kind = firstKind(program);
+		if (kind === "keyframes")
+			return {
+				text: `keyframes(${programObject(program)})`,
+				imports: ['import { keyframes } from "@emotion/css";'],
+			};
+		if (kind === "global")
+			return {
+				text: `injectGlobal(${programObject(program)})`,
+				imports: ['import { injectGlobal } from "@emotion/css";'],
+			};
+		return {
+			text: `css(${programObject(program)})`,
+			imports: ['import { css } from "@emotion/css";'],
+		};
+	},
 	[/@emotion\/(?:css|styled)/, /\bcss\s*\(\s*\{/],
 );
 
@@ -382,10 +403,23 @@ const STYLED_COMPONENTS = adapter(
 	],
 	dependency("styled-components", "peer"),
 	allRuleCapabilities("styled-components", "exact"),
-	(program) => ({
-		text: `styled.div(${programObject(program)})`,
-		imports: ['import styled from "styled-components";'],
-	}),
+	(program) => {
+		const kind = firstKind(program);
+		if (kind === "keyframes")
+			return {
+				text: `keyframes(${programObject(program)})`,
+				imports: ['import { keyframes } from "styled-components";'],
+			};
+		if (kind === "global")
+			return {
+				text: `createGlobalStyle(${programObject(program)})`,
+				imports: ['import { createGlobalStyle } from "styled-components";'],
+			};
+		return {
+			text: `styled.div(${programObject(program)})`,
+			imports: ['import styled from "styled-components";'],
+		};
+	},
 	[/styled-components/, /\bstyled\s*\./],
 );
 
@@ -399,10 +433,28 @@ const VANILLA_EXTRACT = adapter(
 	],
 	dependency("@vanilla-extract/css", "runtime"),
 	allRuleCapabilities("vanilla-extract", "unsupported"),
-	(program) => ({
-		text: `style(${programObject(program)})`,
-		imports: ['import { style } from "@vanilla-extract/css";'],
-	}),
+	(program) => {
+		const kind = firstKind(program);
+		if (kind === "keyframes")
+			return {
+				text: `keyframes(${programObject(program)})`,
+				imports: ['import { keyframes } from "@vanilla-extract/css";'],
+			};
+		if (kind === "global")
+			return {
+				text: `globalStyle(${JSON.stringify(globalSelector(program))}, ${declarationsObject(program.rules[0]!.declarations)})`,
+				imports: ['import { globalStyle } from "@vanilla-extract/css";'],
+			};
+		if (kind === "font-face")
+			return {
+				text: `fontFace(${programObject(program)})`,
+				imports: ['import { fontFace } from "@vanilla-extract/css";'],
+			};
+		return {
+			text: `style(${programObject(program)})`,
+			imports: ['import { style } from "@vanilla-extract/css";'],
+		};
+	},
 	[/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 );
 
@@ -415,10 +467,23 @@ const STITCHES = adapter(
 	],
 	dependency("@stitches/react", "peer"),
 	allRuleCapabilities("stitches", "exact"),
-	(program) => ({
-		text: `css(${programObject(program)})`,
-		imports: ['import { css } from "@stitches/react";'],
-	}),
+	(program) => {
+		const kind = firstKind(program);
+		if (kind === "keyframes")
+			return {
+				text: `keyframes(${programObject(program)})`,
+				imports: ['import { keyframes } from "@stitches/react";'],
+			};
+		if (kind === "global")
+			return {
+				text: `globalCss(${programObject(program)})`,
+				imports: ['import { globalCss } from "@stitches/react";'],
+			};
+		return {
+			text: `css(${programObject(program)})`,
+			imports: ['import { css } from "@stitches/react";'],
+		};
+	},
 	[/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 );
 

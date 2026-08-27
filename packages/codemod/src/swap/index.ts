@@ -88,6 +88,16 @@ export type {
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
+export type {
+	DifferentialBrowserResult,
+	DifferentialBrowserState,
+	DifferentialFixture,
+	DifferentialRender,
+	DifferentialResult,
+	DifferentialSsrHooks,
+	DifferentialSsrResult,
+} from "./differential.ts";
 export type {
 	SemanticConditionKind,
 	StyleCondition,
