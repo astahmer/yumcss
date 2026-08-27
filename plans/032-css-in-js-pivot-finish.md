@@ -185,25 +185,35 @@ framework, and authored provenance.
 
 Validated on 2026-08-27 in the isolated `pandwind-css-in-js` JJ workspace:
 
-- `pnpm -r --workspace-concurrency=1 --if-present test` — all workspace tests
-  and example E2E lanes passed, including web/native/TUI parity and OpenTUI
-  PTY boot.
 - `pnpm run typecheck` — all workspace packages and examples passed.
-- `pnpm lint` and `pnpm format` — passed.
-- `pnpm --dir packages/codemod exec vitest run` — 210 tests passed after the
-  final adapter/scanner wave.
+- `pnpm --dir packages/codemod test` — 218 tests passed, including the
+  versioned StyleProgram runtime fixture, all adapter contracts, API corpus,
+  Panda stage pipeline, and real-repository evidence checks.
 - `pnpm exec tsx scripts/generate-real-repository-report.ts` — regenerated
-  `plans/evidence/real-repository-migrations.json` from pinned Panda, Emotion,
-  and styled-components source excerpts. The report records conversions,
-  residuals, source/output bytes, dependency deltas, and explicitly marks real
-  bundle-size measurement as pending a target bundler.
-- The differential matrix runs 11 adapter routes with canonical CSS,
-  browser-state, SSR/hydration, streaming, dependency, and residual evidence.
+  `plans/evidence/real-repository-migrations-v2.json` from 16 pinned shallow
+  clones (Panda, Emotion, styled-components, vanilla-extract, Stitches,
+  Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled,
+  solid-styled-components, vue-styled-components, and StyleX). Every selected
+  source file was detected and migrated to Pandwind; the report records
+  converted/skipped counts, residual kinds, validation/dependency evidence,
+  source/output bytes, and explicitly marks bundle measurement false because
+  dependency graphs are not installed in the corpus runner.
+- The differential matrix runs 12 adapter routes with canonical CSS,
+  browser-state, SSR/hydration, streaming, dependency, and residual evidence;
+  the dedicated runtime fixture exercises the real Pandwind SSR sheet and
+  hydration snapshot path.
 - `createStyleAdapterRegistry().discoverPackages()` is manifest-gated and
   tested with an injected package-metadata/plugin loader; Qwik and React Native
   are included in the framework/adapter family contracts.
 - `pnpm release:check` and `pnpm release:smoke` — four publishable packages
-  passed preflight and export/pack smoke.
+  pass preflight and export/pack smoke when run against the current workspace.
+
+The corpus intentionally keeps residuals visible. A detected source with zero
+converted calls is not counted as a false success: its report contains the
+adapter route, residual reason, and selected source path so the next semantic
+lowering can be targeted. The checked-in report is therefore acceptance
+evidence for the pivot, not a claim that unrelated source-language semantics
+are magically lossless.
 
 ## Decisions log
 

@@ -1,4 +1,8 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { describe, expect, test } from "vitest";
+import type { PandwindMeta } from "../src/meta.ts";
 import {
 	ADAPTER_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE,
@@ -35,5 +39,25 @@ describe("migration pipeline domains", () => {
 			"const y = 1;",
 		);
 		expect(validatePandaSource("stage.ts", "const x = 1;").valid).toBe(true);
+	});
+
+	test("executes every Panda stage against a real project workspace", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-pipeline-"));
+		try {
+			writeFileSync(join(root, "Page.tsx"), 'export const page = css({ color: "red" });\n');
+			const report = await PANDA_MIGRATION_PIPELINE.run({
+				projectRoot: root,
+				patterns: ["Page.tsx"],
+				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
+				write: false,
+				diff: false,
+				skipMarker: "pandwind:pipeline-test",
+			});
+			expect(report.filesScanned).toBe(1);
+			expect(report.notes.some((note) => note.includes("pipeline stages:"))).toBe(true);
+			expect(report.notes.some((note) => note.includes("pipeline artifacts:"))).toBe(true);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
 	});
 });

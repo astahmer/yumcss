@@ -125,12 +125,12 @@ for (const fixture of fixtures) {
 		skipped = result.skipped;
 		residuals = result.residuals.length;
 		validations = result.validations.length;
-		residualKinds = Object.fromEntries([
-			...result.residuals.reduce(
+		residualKinds = Object.fromEntries(
+			result.residuals.reduce(
 				(counts, residual) => counts.set(residual.kind, (counts.get(residual.kind) ?? 0) + 1),
 				new Map<string, number>(),
 			),
-		]);
+		);
 		manualFixes = [
 			...new Set(
 				result.residuals

@@ -137,7 +137,9 @@ function parseObjectCalls(
 }
 
 function camelProperty(property: string): string {
-	return property.trim().replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
+	return property
+		.trim()
+		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
 }
 
 function parseTemplateCalls(
