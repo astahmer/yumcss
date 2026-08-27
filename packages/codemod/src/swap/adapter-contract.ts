@@ -5,7 +5,7 @@ import type {
 	AdapterCapabilityReport,
 } from "./capabilities.ts";
 import type { StyleProgram, StyleProgramResidual } from "./semantic-ir.ts";
-import type { SourceDocument } from "./source-scanner.ts";
+import type { SourceScanResult } from "./source-scanner.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
@@ -51,7 +51,7 @@ export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
-	readonly document?: SourceDocument;
+	readonly document?: SourceScanResult;
 }
 
 export interface AdapterMatch {
@@ -74,7 +74,7 @@ export interface AdapterEmitContext {
 	readonly index: number;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view for target emitters. */
-	readonly document?: SourceDocument;
+	readonly document?: SourceScanResult;
 }
 
 export interface AdapterEmitResult {

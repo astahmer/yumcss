@@ -445,12 +445,13 @@ function kebabProperty(property: string): string {
 }
 
 /** Emit the static subset as authored CSS for template-based adapters. */
+const templateValue = (value: StyleProgram["declarations"][number]["value"]): string => {
+	if (value.kind === "dynamic") return value.expression;
+	if (value.kind === "token") return value.authored;
+	return String(value.value);
+};
+
 function templateCss(program: StyleProgram): string {
-	const templateValue = (value: StyleProgram["declarations"][number]["value"]): string => {
-		if (value.kind === "dynamic") return value.expression;
-		if (value.kind === "token") return value.authored;
-		return String(value.value);
-	};
 	const renderRule = (rule: StyleProgram["rules"][number]): string => {
 		const declarations = rule.declarations
 			.filter((declaration) => declaration.conditions.length === 0)
@@ -639,7 +640,7 @@ function adapter(
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "2",
-		sourceModules: SOURCE_MODULES[id],
+		sourceModules: SOURCE_MODULES[id] ?? [],
 		capabilities,
 		dependencies: packages,
 		detect: (context) => detectBy(detectPatterns, context),
@@ -983,19 +984,20 @@ export const EXTERNAL_ADAPTERS: Readonly<Record<ExternalAdapterId, StyleAdapter>
 	jss: JSS,
 };
 
-const externalDialect = (adapter: StyleAdapter) =>
-	asStyleDialect(adapter, {
-		system: adapter.id === "pandwind" ? "pandwind-external" : adapter.id,
+const externalDialect = (registeredAdapter: StyleAdapter) =>
+	asStyleDialect(registeredAdapter, {
+		system: registeredAdapter.id === "pandwind" ? "pandwind-external" : registeredAdapter.id,
 		dialect: "css",
 		role: "both",
 	});
 
 /** Registry is the extension point; the object remains a read-only lookup projection. */
 export const EXTERNAL_STYLE_SYSTEMS: StyleSystemRegistry = createStyleSystemRegistry(
-	Object.values(EXTERNAL_ADAPTERS).map((adapter) =>
-		createStyleSystem(adapter.id === "pandwind" ? "pandwind-external" : adapter.id, [
-			externalDialect(adapter),
-		]),
+	Object.values(EXTERNAL_ADAPTERS).map((registeredAdapter) =>
+		createStyleSystem(
+			registeredAdapter.id === "pandwind" ? "pandwind-external" : registeredAdapter.id,
+			[externalDialect(registeredAdapter)],
+		),
 	),
 );
 
@@ -1006,8 +1008,8 @@ export function getExternalAdapter(id: string): StyleAdapter | undefined {
 }
 
 export interface AdapterMigrationOptions {
-	readonly from: ExternalAdapterId;
-	readonly to: ExternalAdapterId;
+	readonly from: string;
+	readonly to: string;
 	readonly file: string;
 	readonly root?: string;
 	readonly meta?: PandwindMeta;
@@ -1015,6 +1017,8 @@ export interface AdapterMigrationOptions {
 	readonly readFile?: (file: string) => string | undefined;
 	readonly mode?: AdapterCapabilityMode;
 	readonly skipMarker?: string;
+	/** Optional registry for third-party or core dialect routes. */
+	readonly registry?: StyleSystemRegistry;
 }
 
 export interface AdapterMigrationResult {
@@ -1033,11 +1037,9 @@ export function runAdapterMigration(
 	source: string,
 	options: AdapterMigrationOptions,
 ): AdapterMigrationResult {
-	const sourceAdapter = getExternalAdapter(options.from);
-	const targetAdapter = getExternalAdapter(options.to);
-	if (sourceAdapter === undefined || targetAdapter === undefined) {
-		throw new Error(`unknown style adapter: ${options.from} -> ${options.to}`);
-	}
+	const route = (options.registry ?? EXTERNAL_STYLE_SYSTEMS).resolveRoute(options.from, options.to);
+	const sourceAdapter = route.source;
+	const targetAdapter = route.target;
 	const detection = sourceAdapter.detect({
 		file: options.file,
 		source,

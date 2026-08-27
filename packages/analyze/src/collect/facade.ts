@@ -23,29 +23,29 @@ import { runCli } from "../cli.ts";
 import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
 
 /** Cohesive collection domain facade. Methods are grouped by responsibility. */
-export class CollectionToolkit {
-	static readonly gather = gather;
-	static readonly analyzeStyleUsage = analyzeStyleUsage;
-	static readonly buildPruneChangeset = buildPruneChangeset;
-	static readonly computeContrastWarnings = computeContrastWarnings;
-	static readonly flattenTokenGroups = flattenTokenGroups;
-	static readonly groupThemeVars = groupThemeVars;
-	static readonly parseBridgeStats = parseBridgeStats;
-	static readonly parseThemeVars = parseThemeVars;
-	static readonly parseUtilityUnions = parseUtilityUnions;
-	static readonly resolveChain = resolveChain;
-	static readonly splitTokenValue = splitTokenValue;
-	static readonly crawlCssImports = crawlCssImports;
-	static readonly collectAuthoredCssImports = collectAuthoredCssImports;
-	static readonly collectCssDiagnostics = collectCssDiagnostics;
-	static readonly collectCssProvenance = collectCssProvenance;
-	static readonly collectCssReport = collectCssReport;
-	static readonly formatAuthoredCssImports = formatAuthoredCssImports;
-	static readonly formatCssDiagnostics = formatCssDiagnostics;
-	static readonly collectFiles = collectFiles;
-	static readonly loadTwConfig = loadTwConfig;
-	static readonly runCli = runCli;
-	static readonly classRules = classRules;
-	static readonly cssBudget = cssBudget;
-	static readonly sheetShape = sheetShape;
-}
+export const CollectionToolkit = {
+	gather,
+	analyzeStyleUsage,
+	buildPruneChangeset,
+	computeContrastWarnings,
+	flattenTokenGroups,
+	groupThemeVars,
+	parseBridgeStats,
+	parseThemeVars,
+	parseUtilityUnions,
+	resolveChain,
+	splitTokenValue,
+	crawlCssImports,
+	collectAuthoredCssImports,
+	collectCssDiagnostics,
+	collectCssProvenance,
+	collectCssReport,
+	formatAuthoredCssImports,
+	formatCssDiagnostics,
+	collectFiles,
+	loadTwConfig,
+	runCli,
+	classRules,
+	cssBudget,
+	sheetShape,
+} as const;

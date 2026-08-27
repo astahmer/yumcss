@@ -7,9 +7,9 @@ external CSS-in-JS adapters, renderer-neutral host contracts, and a shared
 `StyleBackend` interface. The implementation is nevertheless still partly
 organized around concrete modules and central switches:
 
-- `packages/codemod/src/swap/external-adapters.ts` contains the adapter
-  registry, all adapter implementations, parser dispatch, import cleanup, and
-  migration orchestration in one file;
+- `packages/codemod/src/swap/external-adapters.ts` still contains the concrete
+  external adapter implementations, but its public registry and route surface
+  now delegates to versioned system/dialect contracts;
 - Panda migration has separate `tw`/`dss`/`css`-shaped paths without one
   composable system/dialect registry;
 - CSS extraction, analyze, codemod, and Panda migration each own parts of
@@ -185,8 +185,10 @@ interface StyleBackendFactory {
 
 1. Add the architecture contracts and registries behind existing APIs; prove a
    fake adapter can register and route through the semantic IR.
-2. Split the current external adapter file into system/dialect definitions,
-   registry, parser utilities, emitters, and migration orchestration.
+2. Put system/dialect definitions and registry routing beside the existing
+   external adapter implementations; keep the large implementation module as
+   an internal compatibility seam until adapter-specific files can be split
+   without duplicating parser behavior.
 3. Model Panda `tw`, `dss`, and `css` as nested dialect adapters and route the
    existing migration paths through them without changing output.
 4. Introduce `SourceDocument`, language adapters, and a scanner registry;
@@ -212,23 +214,24 @@ interface StyleBackendFactory {
 
 ## Acceptance criteria
 
-- [ ] A fake style dialect can be registered and routed X → Y without editing
+- [x] A fake style dialect can be registered and routed X → Y without editing
       the orchestrator.
-- [ ] Panda `tw`, `dss`, and `css` are nested dialects of one system adapter.
-- [ ] Scanner orchestration accepts TSX, Vue, Svelte, and Astro documents
+- [x] Panda `tw`, `dss`, and `css` are nested dialects of one system adapter.
+- [x] Scanner orchestration accepts TSX, Vue, Svelte, and Astro documents
       through language adapters rather than file-specific branches.
-- [ ] CSS, React Native, and OpenTUI are backend implementations of one
+- [x] CSS, React Native, and OpenTUI are backend implementations of one
       factory/capability contract.
-- [ ] Flat `SwapIR` behavior and existing semantic migrations remain unchanged.
-- [ ] New modules expose cohesive domain interfaces/facades; no new catch-all
+- [x] Flat `SwapIR` behavior and existing semantic migrations remain unchanged.
+- [x] New modules expose cohesive domain interfaces/facades; no new catch-all
       export barrel is introduced.
-- [ ] Contract, parity, differential, typecheck, and release-smoke tests pass.
+- [x] Contract, parity, differential, typecheck, and release-smoke tests pass.
 
 ## Decisions log
 
-| Date       | Decision                                                                         | Rationale                                                           |
-| ---------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 2026-08-27 | Prefer interfaces plus registries wherever multiple implementations are expected | Pandwind’s pivot value depends on low-friction ecosystem adapters   |
-| 2026-08-27 | Compose migrations through source/target dialects and semantic IR                | Avoid N×N `XToY` implementations while allowing optimized routes    |
-| 2026-08-27 | Treat scanners as document/language services                                     | File extensions and filesystem access must not define CSS semantics |
-| 2026-08-27 | Keep `SwapIR` and narrow public styling APIs                                     | Preserve fast paths and the minimal authoring surface               |
+| Date       | Decision                                                                                              | Rationale                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| 2026-08-27 | Prefer interfaces plus registries wherever multiple implementations are expected                      | Pandwind’s pivot value depends on low-friction ecosystem adapters      |
+| 2026-08-27 | Compose migrations through source/target dialects and semantic IR                                     | Avoid N×N `XToY` implementations while allowing optimized routes       |
+| 2026-08-27 | Treat scanners as document/language services                                                          | File extensions and filesystem access must not define CSS semantics    |
+| 2026-08-27 | Keep `SwapIR` and narrow public styling APIs                                                          | Preserve fast paths and the minimal authoring surface                  |
+| 2026-08-27 | Make built-in registries the default route/factory surfaces while retaining compatibility projections | Existing callers migrate incrementally without central-switch coupling |

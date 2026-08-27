@@ -1,10 +1,6 @@
 import { foldStackElements } from "pandwind/vite/stack-fold";
 import { stackClasses, type StackProps } from "pandwind/stack";
-import {
-	HOST_FRAMEWORK_ADAPTERS,
-	type HostFramework,
-	type HostFrameworkAdapter,
-} from "./host-adapters.ts";
+import { type HostFramework, type HostFrameworkAdapter } from "./host-adapters.ts";
 
 /** Versioned boundary for framework-native compiler integrations. */
 export const HOST_COMPILER_SCHEMA = "pandwind.host-compiler/1" as const;
@@ -100,7 +96,6 @@ function foldNativeStackMarkup(
  * return an explicit delegation warning until their native AST is available.
  */
 export function createHostCompilerPlugin(framework: HostFramework): HostCompilerPlugin {
-	const adapter = HOST_FRAMEWORK_ADAPTERS[framework];
 	return {
 		schema: HOST_COMPILER_SCHEMA,
 		name: `pandwind-host-${framework}`,

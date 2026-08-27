@@ -166,12 +166,12 @@ ${missing}</table>
 }
 
 /** Single export boundary for the inspector; serializers remain pure functions. */
-export class InspectorExport {
-	static readonly tokensToDtcg = tokensToDtcg;
-	static readonly themeVarsToCss = themeVarsToCss;
-	static readonly utilitiesToJson = utilitiesToJson;
-	static readonly coverageToJson = coverageToJson;
-	static readonly coverageToMarkdown = coverageToMarkdown;
-	static readonly coverageToHtml = coverageToHtml;
-	static readonly downloadFile = downloadFile;
-}
+export const InspectorExport = {
+	tokensToDtcg,
+	themeVarsToCss,
+	utilitiesToJson,
+	coverageToJson,
+	coverageToMarkdown,
+	coverageToHtml,
+	downloadFile,
+} as const;

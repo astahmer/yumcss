@@ -48,6 +48,9 @@ export interface StyleDialectOptions {
 	readonly role?: StyleDialectRole;
 }
 
+const dialectKey = (address: StyleDialectAddress | string): string =>
+	typeof address === "string" ? address : `${address.system}/${address.dialect}`;
+
 /** Add system metadata without changing the existing StyleAdapter contract. */
 export function asStyleDialect(
 	adapter: StyleAdapter,
@@ -77,8 +80,6 @@ export function createStyleSystemRegistry(
 	const bySystem = new Map<string, StyleSystemAdapter>();
 	const byDialect = new Map<string, StyleDialectAdapter>();
 
-	const keyFor = (address: StyleDialectAddress | string): string =>
-		typeof address === "string" ? address : `${address.system}/${address.dialect}`;
 	const register = (system: StyleSystemAdapter): StyleSystemRegistry => {
 		if (system.schema !== STYLE_SYSTEM_SCHEMA)
 			throw new Error(`unsupported style system schema: ${system.schema}`);
@@ -123,13 +124,14 @@ export function createStyleSystemRegistry(
 		},
 		getSystem: (id) => bySystem.get(id),
 		getDialect(address) {
-			return byDialect.get(keyFor(address));
+			return byDialect.get(dialectKey(address));
 		},
 		resolveRoute(from, to) {
 			const source = registry.getDialect(from);
 			const target = registry.getDialect(to);
-			if (source === undefined) throw new Error(`unknown source style dialect: ${keyFor(from)}`);
-			if (target === undefined) throw new Error(`unknown target style dialect: ${keyFor(to)}`);
+			if (source === undefined)
+				throw new Error(`unknown source style dialect: ${dialectKey(from)}`);
+			if (target === undefined) throw new Error(`unknown target style dialect: ${dialectKey(to)}`);
 			if (source.role === "target") throw new Error(`style dialect is not a source: ${source.id}`);
 			if (target.role === "source") throw new Error(`style dialect is not a target: ${target.id}`);
 			return { source, target };

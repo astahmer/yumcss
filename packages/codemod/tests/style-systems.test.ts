@@ -16,7 +16,11 @@ const stub = (id: string) => ({
 	id,
 	version: "2",
 	sourceModules: [],
-	capabilities: { schema: "pandwind.adapter-capabilities/2", adapter: id, capabilities: {} },
+	capabilities: {
+		schema: "pandwind.adapter-capabilities/2" as const,
+		adapter: id,
+		capabilities: {},
+	},
 	dependencies: { packages: [] },
 	detect: () => ({ matched: true, confidence: 1, evidence: [id] }),
 	loadConfig: () => ({ adapter: id, files: [], values: {} }),
@@ -24,7 +28,7 @@ const stub = (id: string) => ({
 	emit: () => ({ text: "", residuals: [] }),
 	validate: () => ({
 		valid: true,
-		lossiness: "lossless",
+		lossiness: "lossless" as const,
 		canonicalSource: "",
 		canonicalTarget: "",
 		differences: [],
@@ -63,7 +67,11 @@ describe("style system and dialect registry", () => {
 	});
 
 	test("registers Panda's nested dialects and Pandwind's target dialects", () => {
-		expect(PANDA_STYLE_SYSTEM.dialects.map((dialect) => dialect.dialect)).toEqual(["tw", "css"]);
+		expect(PANDA_STYLE_SYSTEM.dialects.map((dialect) => dialect.dialect)).toEqual([
+			"tw",
+			"dss",
+			"css",
+		]);
 		expect(PANDWIND_STYLE_SYSTEM.dialects.map((dialect) => dialect.dialect)).toEqual([
 			"tw",
 			"dss",

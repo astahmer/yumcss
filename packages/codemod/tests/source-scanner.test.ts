@@ -11,7 +11,7 @@ describe("language-neutral source scanner registry", () => {
 		for (const file of ["Card.tsx", "Card.vue", "Card.svelte", "Card.astro"]) {
 			const result = registry.scan({
 				file,
-				source: `// tw({ color: \"red\" })\ntw({ color: \"blue\" })`,
+				source: '// tw({ color: "red" })\ntw({ color: "blue" })',
 			});
 			expect(result.language).not.toBe("unknown");
 			expect(result.excluded.length).toBeGreaterThan(0);

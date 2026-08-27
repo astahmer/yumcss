@@ -136,10 +136,11 @@ export function createSourceScannerRegistry(
 		scan(document) {
 			const adapter = registry.detect(document);
 			if (adapter === undefined) {
+				const fallback = scanDocument(document);
 				return {
-					...scanDocument(document),
+					...fallback,
 					diagnostics: [
-						...scanDocument(document).diagnostics,
+						...fallback.diagnostics,
 						{ kind: "language", message: `no source scanner matched ${document.file}` },
 					],
 				};

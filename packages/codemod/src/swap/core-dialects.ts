@@ -2,15 +2,12 @@ import type { PandwindMeta } from "../meta.ts";
 import { matchBlock } from "../sources.ts";
 import { SWAP_EMITTERS, type Emitter } from "./emit.ts";
 import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
-import {
-	ADAPTER_CAPABILITIES_SCHEMA,
-	type AdapterCapabilities,
-	type AdapterParseResult,
-} from "./capabilities.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterDependencies,
 	type AdapterParseContext,
+	type AdapterParseResult,
 	type AdapterProjectConfig,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
@@ -52,7 +49,7 @@ const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 		"pseudo-conditions": "exact",
 		"media-conditions": "exact",
 		"selector-conditions": "exact",
-		supports: "exact",
+		"supports-conditions": "exact",
 	},
 });
 
@@ -67,7 +64,7 @@ const emptyConfig = (
 });
 
 function parseDss(source: string, context: AdapterParseContext): AdapterParseResult {
-	const matches: AdapterParseResult["matches"] = [];
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [];
 	const mask = context.document?.isExcluded ?? (() => false);
 	for (const match of source.matchAll(/\bdss\s*\(\s*\{/g)) {
@@ -196,6 +193,7 @@ function makeCoreAdapter(
 }
 
 const pandaTw = makeCoreAdapter("panda", "tw", "both", SWAP_OUTBOUND_EMITTERS.panda);
+const pandaDss = makeCoreAdapter("panda", "dss", "source", SWAP_OUTBOUND_EMITTERS.panda);
 const pandaCss = makeCoreAdapter("panda", "css", "source", SWAP_OUTBOUND_EMITTERS.panda);
 const pandwindTw = makeCoreAdapter("pandwind", "tw", "target", SWAP_EMITTERS.tw);
 const pandwindDss = makeCoreAdapter("pandwind", "dss", "target", SWAP_EMITTERS.dss);
@@ -203,6 +201,7 @@ const pandwindCss = makeCoreAdapter("pandwind", "css", "target", SWAP_EMITTERS["
 
 export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("panda", [
 	pandaTw,
+	pandaDss,
 	pandaCss,
 ]);
 export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("pandwind", [

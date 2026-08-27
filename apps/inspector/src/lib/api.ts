@@ -63,13 +63,13 @@ export async function fetchAnalyticsHistory(): Promise<Array<AnalyticsHistoryPoi
 }
 
 /** Single inspector transport facade; endpoint functions remain private seams. */
-export class InspectorApi {
-	static readonly fetchData = fetchData;
-	static readonly fetchHistoryList = fetchHistoryList;
-	static readonly fetchHistoryRun = fetchHistoryRun;
-	static readonly fetchPruneChangeset = fetchPruneChangeset;
-	static readonly fetchAnalyticsHistory = fetchAnalyticsHistory;
-	static readonly vscodeLink = vscodeLink;
-	static readonly vscodeLinkAt = vscodeLinkAt;
-	static readonly kb = kb;
-}
+export const InspectorApi = {
+	fetchData,
+	fetchHistoryList,
+	fetchHistoryRun,
+	fetchPruneChangeset,
+	fetchAnalyticsHistory,
+	vscodeLink,
+	vscodeLinkAt,
+	kb,
+} as const;

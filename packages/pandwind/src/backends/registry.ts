@@ -1,5 +1,5 @@
 import { createCssBackend, type CssBackendOptions } from "./css.ts";
-import { createObjectBackend, type ObjectBackend, type ObjectBackendOptions } from "./object.ts";
+import { createObjectBackend, type ObjectBackendOptions } from "./object.ts";
 import { createOpentuiBackend, type OpentuiBackendOptions } from "./opentui.ts";
 import { createRnBackend, type RnBackendOptions } from "./react-native.ts";
 import type { StyleBackend } from "./types.ts";
@@ -40,7 +40,7 @@ export function createStyleBackendRegistry(
 			return registry;
 		},
 		get: (id) => factories.get(id),
-		create(id, options) {
+		create<TArtifact = unknown>(id: string, options?: unknown) {
 			const factory = factories.get(id);
 			if (factory === undefined) throw new Error(`unknown style backend: ${id}`);
 			return factory.create(options) as StyleBackend<TArtifact>;

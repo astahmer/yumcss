@@ -165,7 +165,7 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 						encodeURIComponent(resolved),
 					);
 					const virtualModules = compiler.options.plugins.find(
-						(plugin: any) => typeof plugin.writeModule === "function",
+						(candidate: any) => typeof candidate.writeModule === "function",
 					);
 					virtualModules?.writeModule?.(virtualPath, "");
 					data.request = virtualPath;
