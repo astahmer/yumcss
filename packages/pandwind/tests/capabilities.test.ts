@@ -22,6 +22,6 @@ describe("CSS-in-JS capability contract", () => {
 		expect(byFeature.get("atomic-css")?.status).toBe("static");
 		expect(byFeature.get("dynamic-values")?.status).toBe("runtime");
 		expect(byFeature.get("ssr-hydration")?.status).toBe("partial");
-		expect(byFeature.get("source-provenance")?.status).toBe("partial");
+		expect(byFeature.get("source-provenance")?.status).toBe("static");
 	});
 });

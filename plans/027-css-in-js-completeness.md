@@ -1,6 +1,6 @@
 # CSS-in-JS completeness plan
 
-**Status: complete — contract, tooling, browser proof, performance gates, and adoption docs landed**
+**Status: complete — contract, tooling, browser proof, release gates, and adoption docs landed**
 
 ## Context
 
@@ -105,15 +105,15 @@ The implementation should prefer tests and tooling over new authoring syntax:
 
 ### Tech choices
 
-| Choice          | Decision                                                | Rationale                                                                      |
-| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Public API      | Keep `tw()` / `css()` / `cx()` / presets frozen         | Preserve a small surface and avoid recipe-style expansion                      |
-| Recipes         | External CVA-style libraries only for now               | CVA already composes Pandwind class strings without a Pandwind runtime feature |
-| Browser globals | Explicit `.css` imports                                 | Full CSS fidelity and library sharing without inventing a partial TS DSL       |
-| Runtime values  | `css.vars()` and host-owned insertion                   | Serializable SSR behavior without one generated rule per value                 |
-| Framework proof | Vite reference plus one non-Vite unplugin fixture       | Establish a shared contract before expanding matrix breadth                    |
-| Tooling         | Import/rule provenance, diagnostics, inspector payloads | Make static/runtime/authored ownership observable                              |
-| Release         | Deferred                                                | This work is validation and product hardening, not distribution                |
+| Choice          | Decision                                                | Rationale                                                                             |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Public API      | Keep `tw()` / `css()` / `cx()` / presets frozen         | Preserve a small surface and avoid recipe-style expansion                             |
+| Recipes         | External CVA-style libraries only for now               | CVA already composes Pandwind class strings without a Pandwind runtime feature        |
+| Browser globals | Explicit `.css` imports                                 | Full CSS fidelity and library sharing without inventing a partial TS DSL              |
+| Runtime values  | `css.vars()` and host-owned insertion                   | Serializable SSR behavior without one generated rule per value                        |
+| Framework proof | Vite reference plus one non-Vite unplugin fixture       | Establish a shared contract before expanding matrix breadth                           |
+| Tooling         | Import/rule provenance, diagnostics, inspector payloads | Make static/runtime/authored ownership observable                                     |
+| Release         | Implemented                                             | Publishable metadata, changeset workflow, preflight, provenance, and pack smoke gates |
 
 ## What this allows
 
@@ -210,7 +210,8 @@ interface AuthoredCssImport {
 - [x] Performance corpus records build, CSS, runtime, and composition costs
       with repeatable regression thresholds.
 - [x] Recommended architecture and migration patterns are documented.
-- [x] No built-in recipe/global-rule API or release work is introduced.
+- [x] No built-in recipe/global-rule authoring API is introduced; release gates
+      are implemented separately in the pivot completion wave.
 
 ## Decisions log
 
@@ -218,7 +219,8 @@ interface AuthoredCssImport {
   deferred and external CVA-style packages are supported.
 - 2026-08-27: Browser-global CSS uses explicit `.css` imports; tooling observes
   imports but does not infer APIs from arbitrary CSS.
-- 2026-08-27: Release and publishing remain outside this implementation wave.
+- 2026-08-27: Release and publishing use changesets plus explicit preflight and
+  pack smoke gates; registry publication remains operator-controlled.
 - 2026-08-27: Use the existing isolated JJ workspace and focused revisions.
 - 2026-08-27: The dynamic contract slice rejects empty/non-finite runtime
   values, keeps the existing runtime-size gate explicit, and proves conditional

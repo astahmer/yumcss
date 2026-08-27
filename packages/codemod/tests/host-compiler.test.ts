@@ -41,7 +41,17 @@ describe("framework-native host compiler contract", () => {
 			framework: "vue",
 			adapter: HOST_COMPILER_PLUGINS.vue as never,
 		});
-		expect(result.changed).toBe(false);
-		expect(result.diagnostics[0]?.severity).toBe("warning");
+		expect(result.changed).toBe(true);
+		expect(result.code).toContain('<div class="flex gap-4"');
+	});
+
+	test("uses host-native class attributes for Svelte and preserves existing classes", () => {
+		const plugin = createHostCompilerPlugin("svelte");
+		const result = plugin.transform('<Stack class="shell" direction="column">child</Stack>', {
+			file: "App.svelte",
+			framework: "svelte",
+			adapter: HOST_COMPILER_PLUGINS.svelte as never,
+		});
+		expect(result.code).toContain('<div class="shell flex flex-col">');
 	});
 });

@@ -15,7 +15,8 @@ the tradeoffs that matter for Pandwind.
 - Keep authored CSS host-owned and external CVA composition visible in the
   adoption documentation.
 - Refresh the competitor comparison using primary project documentation.
-- Do not implement `definePreset.web`, recipes, or release/publish work.
+- Keep `definePreset.web` out of this plan; recipes and release/publish gates
+  are tracked by the pivot completion plan.
 
 ## Acceptance
 
@@ -40,4 +41,5 @@ the tradeoffs that matter for Pandwind.
   authored CSS host-owned and CVA external.
 - Competitor anchors now link to current official documentation for StyleX,
   Panda, Emotion, Linaria, and vanilla-extract.
-- `definePreset.web`, recipes, and release work remain explicitly out of scope.
+- `definePreset.web` remains explicitly out of scope; recipe and release gates
+  are now covered by the completion wave.

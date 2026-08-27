@@ -18,21 +18,21 @@ the same static calls produces one rule per identity, which is safe when a
 server render is retried or a stream is rendered in chunks.
 
 The runtime sheet primitive also supports deterministic registration,
-snapshot extraction, hydration, and optional DOM insertion. A universal
-framework-specific extraction/hydration adapter is not shipped: static rules
-still belong in the generated CSS entry, while dynamic values can use the
-inline custom properties returned by `css.vars()` or an adapter-owned runtime
-sheet.
+snapshot extraction, hydration, and optional DOM insertion. The React
+`renderToPipeableStream` fixture proves that a streamed server render can
+register semantic rules once and hydrate the same snapshot without duplicates.
+Static rules still belong in the generated CSS entry, while dynamic values can
+use the inline custom properties returned by `css.vars()` or an adapter-owned
+runtime sheet.
 
 ## Integration matrix
 
-| Host/integration                             | Static extraction                                     | Dynamic values        | Proof level                                                            |
-| -------------------------------------------- | ----------------------------------------------------- | --------------------- | ---------------------------------------------------------------------- |
-| Vite                                         | Yes                                                   | `css.vars()` contract | Real Vite integration and browser example                              |
-| Rollup via unplugin                          | Yes                                                   | `css.vars()` contract | Real Rollup build and Chromium fixture                                 |
-| Webpack/Rspack/esbuild/rolldown via unplugin | Shared adapter path                                   | `css.vars()` contract | Adapter docs; add dedicated fixtures before claiming framework support |
-| React RSC                                    | Use generated CSS and serializable `css.vars()` props | Host-owned            | Guidance only; no RSC adapter is shipped                               |
-| Webpack via unplugin                         | Yes                                                   | `css.vars()` contract | Real production, CSS virtual-module, and watch-rebuild fixtures        |
-| Rspack/esbuild/rolldown via unplugin         | Shared adapter path                                   | `css.vars()` contract | Generic adapter contract; host-specific fixtures remain future work    |
-| React RSC                                    | Use generated CSS and serializable `css.vars()` props | Host-owned            | Guidance only; no RSC adapter is shipped                               |
-| Native/OpenTUI                               | Separate backend                                      | Backend-specific      | No DOM insertion or browser hydration implied                          |
+| Host/integration                             | Static extraction                                     | Dynamic values        | Proof level                                                               |
+| -------------------------------------------- | ----------------------------------------------------- | --------------------- | ------------------------------------------------------------------------- |
+| Vite                                         | Yes                                                   | `css.vars()` contract | Real Vite integration and browser example                                 |
+| Rollup via unplugin                          | Yes                                                   | `css.vars()` contract | Real Rollup build and Chromium fixture                                    |
+| Webpack/Rspack/esbuild/rolldown via unplugin | Shared adapter path                                   | `css.vars()` contract | Adapter docs; add dedicated fixtures before claiming framework support    |
+| React RSC / streaming                        | Use generated CSS and serializable `css.vars()` props | Host-owned            | `renderToPipeableStream` fixture covers stream output and sheet hydration |
+| Webpack via unplugin                         | Yes                                                   | `css.vars()` contract | Real production, CSS virtual-module, and watch-rebuild fixtures           |
+| Rspack/esbuild/rolldown via unplugin         | Shared adapter path                                   | `css.vars()` contract | Generic adapter contract; host-specific behavior remains host-owned       |
+| Native/OpenTUI                               | Separate backend                                      | Backend-specific      | No DOM insertion or browser hydration implied                             |

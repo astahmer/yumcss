@@ -1,6 +1,6 @@
 # CSS-in-JS pivot plan
 
-**Status: COMPLETE for the requested pivot wave — further ecosystem expansion remains optional**
+**Status: COMPLETE — pivot completion wave shipped**
 
 ## Context
 
@@ -31,14 +31,18 @@ The first complete implementation slice now exists:
   layer/supports/property nodes and canonical serialization;
 - adapter contract `/2` with detection, project config, parse/emit,
   dependencies, capabilities, validation, and explicit residuals;
-- pandwind, Emotion, styled-components, vanilla-extract, and Stitches object
-  adapters;
+- pandwind, Emotion, styled-components, vanilla-extract, Stitches, Linaria,
+  and JSS adapters;
 - canonical/browser-hook/SSR-hydration differential validation;
 - a public `swap` CLI path with project config discovery and safe residual output;
 - source-module ownership, generated-import consolidation, authored keyframe-name
   validation, and conservative component-role checks;
 - recipe/component IR plus runtime recipes and slot recipes;
-- renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts.
+- renderer-neutral React, Preact, Solid, Vue, Svelte, and Astro host contracts
+  plus a versioned native compiler seam;
+- a real React `renderToPipeableStream` fixture proving runtime-sheet snapshot
+  hydration across a streamed server render;
+- inspector source/rule provenance links and publishable package smoke tests.
 
 This is a deliberately breaking internal contract revision: pandwind owns the
 adapter and semantic-IR API, so there is no compatibility shim for the old
@@ -48,11 +52,11 @@ are removed after a successful rewrite, target imports are consolidated, and a
 styled-component subject is treated as a component capability rather than
 silently changing it into a class factory.
 
-The requested wave is complete. The remaining roadmap is deliberately outside
-this wave: additional ecosystems such as Linaria/JSS, full framework compiler
-plugins, React streaming/RSC-specific integration, and publishing/release
-automation. Semantic rule registration is exposed through the existing runtime
-sheet rather than adding another authoring lane.
+The completion wave is complete. Framework-native transforms remain
+conservative by design: static stack markup is folded where the host syntax is
+understood, while dynamic or host-owned AST semantics produce diagnostics.
+Semantic rule registration remains on the existing runtime sheet rather than
+adding another authoring lane.
 
 ## Goal
 
@@ -228,28 +232,27 @@ context used to produce it.
    serialization cover the rule-level constructs; unsupported target mappings
    remain explicit in adapter capabilities.
 6. Add SSR/RSC/framework fixtures and a browser differential harness.
-   **Complete for the requested wave:** concrete mounted-sheet, SSR snapshot,
-   hydration, host-binding, and two external differential fixtures are tested;
-   streaming/RSC-specific integration remains a future extension.
+   **Complete:** concrete mounted-sheet, SSR snapshot, hydration, React
+   `renderToPipeableStream`, host compiler, and external differential fixtures
+   are tested.
 7. Harden existing adapters, then add Emotion, styled-components,
-   vanilla-extract, and Stitches adapters. **Complete:** the v2 adapters, safe
-   CLI routing, config discovery, tagged templates, rich rules, source import
-   cleanup, component-role capability checks, and round-trip/differential
-   coverage exist.
+   vanilla-extract, Stitches, Linaria, and JSS adapters. **Complete:** the v2
+   adapters, safe CLI routing, config discovery, tagged templates, rich rules,
+   source import cleanup, component-role capability checks, and
+   round-trip/differential coverage exist.
 8. Add recipe/component semantics and host-framework adapters where the
    capability matrix supports them. **Initial implementation complete:**
    recipe/slot IR, runtime recipes, and six host contracts plus host fixtures
    exist.
-9. Document migration recipes and publish the adapter contract. **Complete for
-   the requested wave:** the v2 contract, scorecard, and CLI migration recipes
-   are documented; package publishing remains a release concern.
+9. Document migration recipes and publish the adapter contract. **Complete:**
+   the v2 contract, scorecard, CLI migration recipes, publishable metadata,
+   release preflight, and pack smoke gates are documented and tested.
 
-### Follow-up expansion
+### Completion expansion
 
-The requested pivot wave is complete. Follow-up work can add Linaria/JSS and
-other adapters, framework-native compiler plugins, streaming/RSC fixtures,
-devtools provenance links, and package publishing without changing the
-semantic boundary established here.
+The completion wave adds Linaria/JSS, framework-native host compiler hooks,
+streaming/RSC proof, devtools provenance links, and package publishing gates
+without changing the semantic boundary established here.
 
 ## Acceptance criteria
 

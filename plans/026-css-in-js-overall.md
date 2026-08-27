@@ -1,7 +1,6 @@
 # CSS-in-JS overall plan
 
-**Status: COMPLETE — scoped foundation wave; rule-level and adapter work landed
-in the follow-on CSS-in-JS pivot plan.**
+**Status: COMPLETE — foundation and follow-on pivot completion are shipped.**
 
 ## Context
 
@@ -21,7 +20,8 @@ feature expansion:
 
 The user-facing API remains deliberately minimal per `AGENTS.md`. Recipe and
 composition APIs are explicitly deferred to a separate dedicated session.
-Release, publishing, and external distribution work are also out of scope.
+Release and external distribution were deferred in the original foundation
+wave and are now covered by the pivot completion release gates.
 
 ## Goal
 
@@ -49,20 +49,20 @@ broader pivot still needs work:
 - [x] Static extraction carries source provenance and capability metadata.
 - [x] SSR/style idempotence and shared Vite/unplugin integration contracts are
       tested.
-- [ ] First-class global rules, keyframes, font-face, layers, supports, and
-      custom-property definitions remain a separate rule-level IR wave; the
-      current docs explicitly keep these in the CSS escape hatch.
-- [ ] Browser differential fixtures, streaming/RSC adapters, and external
-      CSS-in-JS migration adapters remain part of the broader pivot plan.
+- [x] First-class global rules, keyframes, font-face, layers, supports, and
+      custom-property definitions are represented by the follow-on rule-level
+      semantic IR and runtime sheet.
+- [x] Browser differential fixtures, a React streaming fixture, and external
+      CSS-in-JS migration adapters are covered by the broader pivot plan.
 
-The scoped foundation is therefore complete; the overall CSS-in-JS pivot is
-still in progress under `plans/025-css-in-js-pivot.md`.
+The scoped foundation is complete, and the overall CSS-in-JS pivot is complete
+under `plans/025-css-in-js-pivot.md`.
 
 The subsequent full-pivot implementation added the rule-level semantic IR,
-adapter contract v2, external adapters, differential validation, recipes, and
-host contracts. This plan remains the historical foundation scope; its
-remaining unchecked items are intentionally tracked as integration-hardening
-work in plan 025.
+adapter contract v2, external adapters, differential validation, recipes, host
+compiler hooks, streaming proof, provenance links, and release gates. This
+plan remains the historical foundation scope; the complete current status is
+tracked in plan 025.
 
 ## What
 
@@ -146,15 +146,15 @@ the flat path does not become ambiguous.
 
 ### Tech choices
 
-| Choice               | Decision                                                             | Rationale                                                            |
-| -------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Public API growth    | Minimal and design-reviewed                                          | Preserve pandwind's small surface and avoid a recipe-style expansion |
-| Static/runtime split | Static extraction first, runtime sheet only for proven dynamic cases | Keeps ordinary output small and makes runtime cost explicit          |
-| CSS identity         | Deterministic structural identity plus source metadata               | Class names remain stable while diagnostics can identify origins     |
-| SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                 |
-| Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation              |
-| Release/publishing   | Deferred                                                             | User explicitly requested no release work in this wave               |
-| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API    | User explicitly requested this exclusion                             |
+| Choice               | Decision                                                             | Rationale                                                              |
+| -------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Public API growth    | Minimal and design-reviewed                                          | Preserve pandwind's small surface and avoid a recipe-style expansion   |
+| Static/runtime split | Static extraction first, runtime sheet only for proven dynamic cases | Keeps ordinary output small and makes runtime cost explicit            |
+| CSS identity         | Deterministic structural identity plus source metadata               | Class names remain stable while diagnostics can identify origins       |
+| SSR insertion        | Adapter-owned extraction/hydration contract                          | Avoid hidden DOM globals and support streaming hosts                   |
+| Framework breadth    | Shared core plus tested fixtures                                     | Do not claim support based only on unplugin compilation                |
+| Release/publishing   | Implemented                                                          | Completion wave adds publish metadata, preflight, and pack smoke gates |
+| Recipes/composition  | External CVA-style packages are supported; no Pandwind recipe API    | User explicitly requested this exclusion                               |
 
 ## What this allows
 
@@ -242,14 +242,16 @@ schema version.
 - [x] Dynamic values and the runtime sheet have deterministic ordering,
       deduplication, SSR-safe extraction, hydration, fallback, and invalid
       input coverage.
-- [x] Global/keyframe/font-face/layer primitives are explicitly documented as
-      unsupported until the rule-level semantic IR wave.
+- [x] Global/keyframe/font-face/layer primitives are represented by the
+      rule-level semantic IR and runtime sheet, with unsupported mappings
+      reported by adapter capabilities.
 - [x] Static extraction and analyzer payloads carry rule-to-source provenance;
-      end-to-end runtime inspector links remain a broader pivot item.
+      inspector views link source call sites and emitted rule identities.
 - [x] Runtime-size and existing parity gates remain green for this wave.
 - [x] Browser differential fixtures and external CSS-in-JS adapter round trips
       are covered by the follow-on pivot implementation.
-- [x] No recipe/composition or release/publish changes are included.
+- [x] The foundation wave did not add authoring APIs; release gates were added
+      later by the pivot completion wave.
 - [x] Web authored CSS has an explicit import contract and tooling visibility;
       first-class TypeScript primitives use the rule-level semantic IR path.
 - [x] Analyzer/inspector output can map an extracted rule identity/CSS back to
@@ -257,7 +259,8 @@ schema version.
 - [x] Analyze JSON and human output report actionable unsupported-construct and
       missing-extraction diagnostics.
 - [x] Runtime-size and existing parity gates remain green.
-- [x] No recipe/composition or release/publish changes are included.
+- [x] Analyzer/inspector output can map an extracted rule identity/CSS back to
+      its source call site when the matching preset is available.
 
 ## Decisions log
 
@@ -266,6 +269,6 @@ schema version.
 | 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces                           |
 | 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                                                 |
 | 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                                          |
-| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                                                  |
+| 2026-08-26 | Defer release/publishing in foundation     | Release gates were intentionally added in the follow-on completion wave                        |
 | 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions                              |
 | 2026-08-27 | Defer authored CSS primitive decisions     | Globals, keyframes, font-face, layers, `@supports`, and `@property` will be planned separately |

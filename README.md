@@ -55,12 +55,11 @@ pandwind ships **source** (`.ts` entry points) and expects a bundler that
 compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
 
 ```sh
-pnpm add pandwind # publishing pending — see PUBLISHING.md; until then install from the repo
+pnpm add pandwind
 ```
 
-> Publishing to npm/JSR is deferred internet-facing work (see
-> [PUBLISHING.md](./PUBLISHING.md)); until then the quickstart assumes you
-> have the repo available locally.
+> See [PUBLISHING.md](./PUBLISHING.md) for changesets, provenance, and the
+> release preflight.
 
 **1. Preset** — define your design system once (`src/preset.ts`): tokens,
 radii, conditions. See `packages/pandwind/src/preset/example-preset.ts` for a

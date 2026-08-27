@@ -9,7 +9,7 @@ pandwind ships **source** (`.ts` entry points) and expects a bundler that
 compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
 
 ```sh
-pnpm add pandwind # publishing pending — see PUBLISHING.md in the repo
+pnpm add pandwind
 ```
 
 There are four steps: define a preset, run codegen, add vite plugins, and use

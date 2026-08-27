@@ -1,6 +1,6 @@
 # Plan 023 — Release prep, inspector depth, CI action, repo hygiene
 
-**Status: in progress 2026-08-26.**
+**Status: in progress 2026-08-27; npm release item complete.**
 
 ## Items
 
@@ -11,7 +11,10 @@
    `@theme` is done**, CSS custom properties flat file (`:root { --x }`), and
    **stylex config (defineVars)**. Each = one importer+exporter pair in
    token-set.ts. Not built this wave unless cheap.
-2. **npm release automation** — changesets, build step for pandwind (tsdown,
+2. **npm release automation — COMPLETE** — changesets, publishable metadata,
+   pack smoke/preflight, and provenance workflow are now shipped. A future
+   compiled-output build can replace source publishing without changing the
+   release gate. Original wording: build step for pandwind (tsdown,
    source-exports today), `files` fields, publish order pandwind → codemod →
    analyze, provenance via OIDC, tag+CHANGELOG flow. PUBLISHING.md §1 becomes
    real. Maintainer approved preparing automation; actual `npm publish` stays
