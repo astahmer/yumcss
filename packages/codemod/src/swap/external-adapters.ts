@@ -604,35 +604,36 @@ function adapter(
 	};
 }
 
+function removeExcludedMatches(source: string, pattern: RegExp): string {
+	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+	try {
+		mask = computeExcludedRanges(source, "pandwind-adapter.ts");
+	} catch {
+		// Keep cleanup best-effort for incomplete source snippets.
+	}
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const match of source.matchAll(pattern)) {
+		const start = match.index ?? 0;
+		if (mask?.isExcluded(start)) continue;
+		edits.push({ start, end: start + match[0].length, text: "" });
+	}
+	return applyEdits(source, edits);
+}
+
 function removeSourceImports(code: string, modules: readonly string[]): string {
 	let result = code;
-	const removeMatches = (source: string, pattern: RegExp): string => {
-		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
-		try {
-			mask = computeExcludedRanges(source, "pandwind-adapter.ts");
-		} catch {
-			// Keep cleanup best-effort for incomplete source snippets.
-		}
-		const edits: Array<{ start: number; end: number; text: string }> = [];
-		for (const match of source.matchAll(pattern)) {
-			const start = match.index ?? 0;
-			if (mask?.isExcluded(start)) continue;
-			edits.push({ start, end: start + match[0].length, text: "" });
-		}
-		return applyEdits(source, edits);
-	};
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		result = removeMatches(
+		result = removeExcludedMatches(
 			result,
 			new RegExp(`\\bimport\\s+(?:[^;]*?\\s+from\\s+)?["']${quoted}["']\\s*;?`, "g"),
 		);
 	}
-	result = removeMatches(
+	result = removeExcludedMatches(
 		result,
 		/\b(?:const|let|var)\s+css\s*=\s*(?:createCss|createRuntimeCss)\s*\([^;]*\);?/g,
 	);
-	return removeMatches(result, /\bconst\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?/g);
+	return removeExcludedMatches(result, /\bconst\s*\{[^}]*\}\s*=\s*createStitches\s*\([^;]*\);?/g);
 }
 
 function consolidateImports(statements: Iterable<string>): string[] {
