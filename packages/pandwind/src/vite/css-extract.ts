@@ -333,7 +333,10 @@ const isMemberCall = (callee: OxcNode | null, cssNames: ReadonlySet<string>): bo
 	);
 };
 
-const callLocation = (code: string, call: CallNode): Pick<CssSourceProvenance, "line" | "column"> => {
+const callLocation = (
+	code: string,
+	call: CallNode,
+): Pick<CssSourceProvenance, "line" | "column"> => {
 	const before = code.slice(0, call.start);
 	return {
 		line: before.split("\n").length,

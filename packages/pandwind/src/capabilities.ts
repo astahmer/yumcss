@@ -71,12 +71,12 @@ export const CSS_IN_JS_CAPABILITIES = [
 		feature: "source-provenance",
 		status: "partial",
 		detail:
-			"Semantic migration records retain source ranges; runtime inspector links remain an integration concern.",
+			"Semantic migration and analyze/inspector payloads retain source ranges and emitted rule identities when a matching preset is available.",
 	},
 	{
 		feature: "recipes-and-hosts",
 		status: "partial",
 		detail:
-			"Recipes, slot recipes, and renderer-neutral host adapters exist; framework fixtures remain to be added.",
+			"Recipes, slot recipes, and renderer-neutral host adapters exist; framework-native compilers remain future work.",
 	},
 ] as const satisfies readonly CapabilityRecord[];

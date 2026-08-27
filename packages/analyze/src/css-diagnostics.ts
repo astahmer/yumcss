@@ -6,7 +6,11 @@ import {
 	type CssDiagnostic,
 } from "../../pandwind/src/vite/css-extract.ts";
 
-export type { CssCallSite, CssDiagnostic, CssDiagnosticKind } from "../../pandwind/src/vite/css-extract.ts";
+export type {
+	CssCallSite,
+	CssDiagnostic,
+	CssDiagnosticKind,
+} from "../../pandwind/src/vite/css-extract.ts";
 
 export interface AnalyzeSourceFile {
 	file: string;
@@ -42,8 +46,7 @@ export function formatCssDiagnostics(diagnostics: ReadonlyArray<CssDiagnostic>):
 	return [
 		"css diagnostics:",
 		...diagnostics.map(
-			(d) =>
-				`    ^ ${d.file}:${d.line}:${d.column} — ${d.kind}: ${d.message} ${d.suggestion}`,
+			(d) => `    ^ ${d.file}:${d.line}:${d.column} — ${d.kind}: ${d.message} ${d.suggestion}`,
 		),
 	].join("\n");
 }

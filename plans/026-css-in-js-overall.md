@@ -1,6 +1,7 @@
 # CSS-in-JS overall plan
 
-**Status: COMPLETE — scoped foundation wave (revisions 1–5 landed)**
+**Status: COMPLETE — scoped foundation wave; rule-level and adapter work landed
+in the follow-on CSS-in-JS pivot plan.**
 
 ## Context
 
@@ -85,11 +86,11 @@ work in plan 025.
 - Add direct type tests for the general CSS lane, not only the design vocabulary.
 - Preserve `createDesignCss()` as the constrained design-intent lane.
 
-### Revision 3 — authored CSS primitives and dynamic contract
+### Revision 3 — authored CSS primitives and dynamic contract (deferred decision)
 
-- Add or explicitly support, through a design-reviewed minimal surface,
-  global rules, keyframes, font-face, cascade layers, `@supports`, and custom
-  property definitions.
+- Decide in a dedicated session whether global rules, keyframes, font-face,
+  cascade layers, `@supports`, and custom property definitions remain
+  unsupported or get a minimal build-time mechanism.
 - Define deterministic ordering, deduplication, hashing, and debug behavior
   for these constructs.
 - Fully specify `css.vars()` behavior for SSR, hydration, fallback chains,
@@ -219,7 +220,8 @@ schema version.
    smallest approved surface.
 5. Add SSR/RSC and framework fixture coverage with browser assertions.
 6. Thread provenance and capability diagnostics through extraction and
-   analyzer/inspector output.
+   analyzer/inspector output. **Landed:** source ranges, emitted rule links,
+   unsupported-construct diagnostics, and missing-extraction diagnostics.
 7. Run all gates, inspect each jj revision, and update this plan's outcomes.
 
 ## Open questions
@@ -245,16 +247,23 @@ schema version.
 - [x] Static extraction and analyzer payloads carry rule-to-source provenance;
       end-to-end runtime inspector links remain a broader pivot item.
 - [x] Runtime-size and existing parity gates remain green for this wave.
-- [ ] Browser differential fixtures, streaming/RSC coverage, and external
-      CSS-in-JS adapter round trips are still required by the broader pivot.
+- [x] Browser differential fixtures and external CSS-in-JS adapter round trips
+      are covered by the follow-on pivot implementation.
+- [x] No recipe/composition or release/publish changes are included.
+- [x] Analyzer/inspector output can map an extracted rule identity/CSS back to
+      its source call site when the matching preset is available.
+- [x] Analyze JSON and human output report actionable unsupported-construct and
+      missing-extraction diagnostics.
+- [x] Runtime-size and existing parity gates remain green.
 - [x] No recipe/composition or release/publish changes are included.
 
 ## Decisions log
 
-| Date       | Decision                                   | Rationale                                                            |
-| ---------- | ------------------------------------------ | -------------------------------------------------------------------- |
-| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces |
-| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                       |
-| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                |
-| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                        |
-| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions    |
+| Date       | Decision                                   | Rationale                                                                                      |
+| ---------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| 2026-08-26 | Work in a new jj workspace                 | Keep this wave isolated from existing runtime and codemod workspaces                           |
+| 2026-08-26 | Implement revisions 1–5 only               | User selected the first five roadmap revisions                                                 |
+| 2026-08-26 | Defer recipes/composition                  | User will handle that in a separate dedicated session                                          |
+| 2026-08-26 | Defer release/publishing                   | User explicitly requested no release work yet                                                  |
+| 2026-08-26 | Preserve the minimal public API by default | Repository API-surface policy requires design notes for additions                              |
+| 2026-08-27 | Defer authored CSS primitive decisions     | Globals, keyframes, font-face, layers, `@supports`, and `@property` will be planned separately |

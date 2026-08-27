@@ -93,11 +93,7 @@ export interface SheetShape {
 	specificity: Array<SpecificityBucket>;
 }
 
-export type {
-	CssCallSite,
-	CssDiagnostic,
-	CssDiagnosticKind,
-} from "../css-diagnostics.ts";
+export type { CssCallSite, CssDiagnostic, CssDiagnosticKind } from "../css-diagnostics.ts";
 
 export interface CollectPayload {
 	meta: { root: string };
