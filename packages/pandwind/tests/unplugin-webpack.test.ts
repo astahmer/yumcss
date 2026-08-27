@@ -138,9 +138,12 @@ describe("pandwindWebpack", () => {
 
 			const waitForBundle = async (expected: string): Promise<Stats> => {
 				const deadline = Date.now() + 5_000;
-				while (Date.now() < deadline) {
-					const build = nextBuild();
+				const poll = async (): Promise<Stats> => {
 					const remaining = deadline - Date.now();
+					if (remaining <= 0) {
+						throw new Error(`Webpack watch output never contained ${expected}`);
+					}
+					const build = nextBuild();
 					let timer: ReturnType<typeof setTimeout> | undefined;
 					const stats = await Promise.race([
 						build,
@@ -154,8 +157,9 @@ describe("pandwindWebpack", () => {
 					if (timer !== undefined) clearTimeout(timer);
 					if (stats.hasErrors()) return stats;
 					if (readFileSync(join(outputDir, "bundle.js"), "utf8").includes(expected)) return stats;
-				}
-				throw new Error(`Webpack watch output never contained ${expected}`);
+					return poll();
+				};
+				return poll();
 			};
 
 			const updatedBuild = waitForBundle("p-8 text-sm");
