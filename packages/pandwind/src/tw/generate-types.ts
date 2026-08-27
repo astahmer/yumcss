@@ -28,16 +28,13 @@ import { extractTwConfig } from "../vite/inline.ts";
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
 import {
-	buildThemeBlock,
-	buildComponentScopes,
-	buildThemeScopes,
 	createConditionResolver,
-	splitTokens,
 	type ThemeConditions,
 	themeVarsFromTokens,
 	type ThemeScopeMap,
 	type ThemeTokenGroups,
 } from "./generate-theme.ts";
+import { createThemeBridge } from "./theme-bridge.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
@@ -1212,6 +1209,7 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 	}
 
 	const base = process.cwd();
+	const themeBridge = createThemeBridge();
 	const cssEntry = resolve(base, positional[0] ?? "src/tailwind.css");
 	const outDir = resolve(base, positional[1] ?? "src");
 	// Relative `@import`s (e.g. the generated pandwind-theme.css) resolve
@@ -1234,12 +1232,12 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 					"(looked at default export and every named export for a .tokens field or raw DTCG groups)",
 			);
 		}
-		themeBlock = buildThemeBlock(
+		themeBlock = themeBridge.buildBlock(
 			groups,
 			conditions ? createConditionResolver(conditions) : undefined,
 		);
 		const themes = resolveThemes(module as Record<string, unknown>);
-		const scopeCss = buildThemeScopes(themes);
+		const scopeCss = themeBridge.buildScopes(themes);
 		if (scopeCss !== "") {
 			themeBlock = themeBlock === "" ? scopeCss : `${themeBlock}\n\n${scopeCss}`;
 		}
@@ -1247,14 +1245,11 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 		if (components !== undefined) {
 			// L3 component scopes (plans/015): $refs resolve against the vars
 			// this same run just bridged into @theme.
-			const { flatVars: bridged } = splitTokens(
-				groups,
-				conditions ? createConditionResolver(conditions) : undefined,
-			);
-			const componentCss = buildComponentScopes(
+			const { flatVars: bridged } = themeBridge.split(groups, conditions);
+			const componentCss = themeBridge.buildComponents(
 				components,
 				new Set(bridged.map((v) => v.name)),
-				conditions ? createConditionResolver(conditions) : undefined,
+				conditions,
 				(message) => console.warn(message),
 			);
 			if (componentCss !== "") {
