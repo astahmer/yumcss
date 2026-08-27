@@ -85,8 +85,20 @@ css.keyframes({ from: { opacity: 0 } });`,
 		const output = await runCli(["**/*.ts", "--tw", twPath, "--root", root, "--json"]);
 		const doc = JSON.parse(output) as {
 			authoredCss: Array<{ file: string; source: string; kind: string }>;
-			cssSources: Array<{ file: string; callKind: string; staticArguments: number }>;
-			cssDiagnostics: Array<{ kind: string; suggestion: string }>;
+			cssSources: Array<{
+				file: string;
+				callKind: string;
+				staticArguments: number;
+				dynamicArguments: number;
+			}>;
+			cssDiagnostics: Array<{
+				kind: string;
+				file: string;
+				line: number;
+				column: number;
+				message: string;
+				suggestion: string;
+			}>;
 		};
 		expect(doc.authoredCss).toEqual([
 			expect.objectContaining({
@@ -121,14 +133,16 @@ css.keyframes({ from: { opacity: 0 } });`,
 				staticArguments,
 				dynamicArguments,
 			})),
-			cssDiagnostics: doc.cssDiagnostics.map(({ kind, file, line, column, message, suggestion }) => ({
-				kind,
-				file,
-				line,
-				column,
-				message,
-				suggestion,
-			})),
+			cssDiagnostics: doc.cssDiagnostics.map(
+				({ kind, file, line, column, message, suggestion }) => ({
+					kind,
+					file,
+					line,
+					column,
+					message,
+					suggestion,
+				}),
+			),
 		}).toMatchInlineSnapshot(`
 			{
 			  "authoredCss": [
