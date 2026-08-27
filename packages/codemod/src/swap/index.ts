@@ -10,11 +10,9 @@
 import type { PandwindMeta } from "../meta.ts";
 import type { TransformOptions, TransformResult } from "../migrate.ts";
 import { applyEdits } from "../migrate.ts";
-import { computeExcludedRanges, insertSkipMarker, matchBlock } from "../sources.ts";
+import { insertSkipMarker, matchBlock } from "../sources.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
-import { parseTwCalls, parseCssLiterals } from "./parse.ts";
-import { SWAP_EMITTERS, type EmitterContext, type EmitterResult } from "./emit.ts";
-import { SWAP_OUTBOUND_EMITTERS } from "./outbound.ts";
+import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { EXTERNAL_ADAPTER_IDS, type ExternalAdapterId } from "./external-adapters.ts";
 import type { TokenRefMode } from "./tokens.ts";
 import {
@@ -31,15 +29,10 @@ import {
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
 
-type SwapEmitter = (ir: SwapIR, meta: PandwindMeta, ctx: EmitterContext) => EmitterResult;
-
-/** Every swap target: core pandwind APIs + outbound library adapters. */
-const EMITTERS: Record<string, SwapEmitter> = {
-	...SWAP_EMITTERS,
-	...SWAP_OUTBOUND_EMITTERS,
-};
-
-export const SWAP_TARGETS = [...Object.keys(EMITTERS), ...EXTERNAL_ADAPTER_IDS];
+export const SWAP_TARGETS = [
+	...SWAP_REGISTRY.targets.map((adapter) => adapter.id),
+	...EXTERNAL_ADAPTER_IDS,
+];
 export type SwapTarget =
 	| "css.class"
 	| "design"
@@ -52,10 +45,7 @@ export type SwapTarget =
 import type { SwapIR } from "./ir.ts";
 
 export const SWAP_SOURCES = [
-	"auto",
-	"tw",
-	"css",
-	"design",
+	...SWAP_REGISTRY.sources.map((adapter) => adapter.id),
 	"panda",
 	...EXTERNAL_ADAPTER_IDS,
 ] as const;
@@ -129,6 +119,19 @@ export {
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,
 } from "./systems.ts";
+export {
+	SWAP_REGISTRY,
+	SWAP_SOURCE_ADAPTERS,
+	SWAP_TARGET_ADAPTERS,
+	createSwapRegistry,
+} from "./swap-registry.ts";
+export type {
+	SwapRegistry,
+	SwapSourceAdapter,
+	SwapSourceContext,
+	SwapSourceMatch,
+	SwapTargetAdapter,
+} from "./swap-registry.ts";
 export {
 	SOURCE_SCANNER_SCHEMA,
 	SOURCE_LANGUAGE_ADAPTERS,
@@ -261,29 +264,14 @@ function collectMatches(
 	engineResolver?: MissResolver,
 	tokenize?: boolean,
 ): Array<Match> {
-	const { isExcluded } = computeExcludedRanges(source, file);
-	const matches: Array<Match> = [];
-	if (from === "auto" || from === "tw") {
-		for (const m of parseTwCalls(source, meta, isExcluded, engineResolver)) {
-			matches.push({ ...m, shape: "tw" });
-		}
-	}
-	if (from === "auto" || from === "css" || from === "design") {
-		for (const m of parseCssLiterals(source, isExcluded, { tokenize, tokens: meta.tokens })) {
-			const shape = from === "auto" ? (m.design ? "design" : "css") : (from as "css" | "design");
-			if (from === "css" && m.design) continue;
-			if (from === "design" && !m.design) continue;
-			matches.push({ start: m.start, end: m.end, ir: m.ir, shape });
-		}
-	}
-	const aligned = matches.toSorted((a, b) => a.start - b.start);
-	// Parsers end at the OBJECT literal's closing brace; the call expression
-	// owns one more character — its closing paren. Consume it, or the
-	// replacement leaves a stray `)` behind.
-	for (const m of aligned) {
-		if (source[m.end] === ")") m.end += 1;
-	}
-	return aligned;
+	if (from === "panda" || EXTERNAL_ADAPTER_IDS.includes(from)) return [];
+	return SWAP_REGISTRY.scanSource(from, {
+		source,
+		file,
+		meta,
+		engineResolver,
+		tokenize,
+	});
 }
 
 /** Run one swap pass over a file's source. */
@@ -294,7 +282,7 @@ export function runSwap(
 ): SwapTransformResult {
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const file = options.file;
-	const emitter = EMITTERS[options.to] as SwapEmitter | undefined;
+	const emitter = SWAP_REGISTRY.getTarget(options.to);
 	if (emitter === undefined) throw new Error(`codemod swap: unknown target '${options.to}'`);
 	const matches = collectMatches(
 		source,
@@ -356,7 +344,7 @@ export function runSwap(
 			skippedByMarker++;
 			continue;
 		}
-		const result = emitter(ir, meta, {
+		const result = emitter.emit(ir, meta, {
 			index: siteIndex,
 			tokenRefs,
 			sort: options.sort,
