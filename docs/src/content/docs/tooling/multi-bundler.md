@@ -42,6 +42,10 @@ the emitted bundle. This is adapter proof, not a claim that every Webpack
 framework integration is turnkey; framework loaders and CSS asset ownership
 remain host configuration.
 
+The same fixture verifies the CSS virtual module through Webpack with a
+minimal host CSS loader. Webpack users still choose the loader/injection or
+extraction policy; Pandwind supplies the generated stylesheet content.
+
 ## HMR and watch invalidation coverage
 
 The repository tests the invalidation contract at each adapter boundary:
