@@ -6,6 +6,7 @@ export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as 
 export type AdapterCapability =
 	| "declarations"
 	| "token-values"
+	| "custom-properties"
 	| "dynamic-values"
 	| "named-conditions"
 	| "pseudo-conditions"

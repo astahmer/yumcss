@@ -65,6 +65,15 @@ function resolveThemeExpression(
 	return undefined;
 }
 
+function dynamicVariableName(expression: string): string {
+	let hash = 2166136261;
+	for (const character of expression) {
+		hash ^= character.charCodeAt(0);
+		hash = Math.imul(hash, 16777619);
+	}
+	return `--pandwind-dynamic-${(hash >>> 0).toString(36)}`;
+}
+
 const dynamicAndThemes: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
 	id: "dynamic-and-theme",
@@ -80,6 +89,19 @@ const dynamicAndThemes: StyleLowering = {
 				return { ...declaration, value: { kind: "literal", value: resolved.value } };
 			}
 			if (level(target, "dynamic-values") !== "unsupported") return declaration;
+			if (level(target, "custom-properties") !== "unsupported") {
+				changed = true;
+				const variable = dynamicVariableName(value.expression);
+				residuals.push({
+					kind: "dynamic-custom-property",
+					text: value.expression,
+					hint: `bind ${variable} at runtime for target ${target.adapter}`,
+				});
+				return {
+					...declaration,
+					value: { kind: "literal", value: `var(${variable})` },
+				};
+			}
 			if (value.fallback !== undefined) {
 				changed = true;
 				residuals.push({

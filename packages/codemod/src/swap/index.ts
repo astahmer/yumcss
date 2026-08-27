@@ -69,8 +69,19 @@ export type {
 	PandaMigrationStage,
 	PandaMigrationStageResult,
 } from "./panda-migration-pipeline.ts";
-export { PANDA_DISCOVERY_SCHEMA, discoverPandaMigration } from "./panda-migration-discovery.ts";
-export type { PandaMigrationFile, PandaMigrationWorkspace } from "./panda-migration-discovery.ts";
+export {
+	PANDA_DISCOVERY_SCHEMA,
+	discoverPandaFiles,
+	discoverPandaMigration,
+	extractPandaMigrationUsage,
+	loadPandaMigrationTheme,
+	scanPandaMigrationSources,
+} from "./panda-migration-discovery.ts";
+export type {
+	PandaMigrationFile,
+	PandaMigrationSource,
+	PandaMigrationWorkspace,
+} from "./panda-migration-discovery.ts";
 export {
 	PANDA_MIGRATION_STAGES_SCHEMA,
 	convertPandaRecipe,

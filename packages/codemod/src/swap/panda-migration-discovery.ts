@@ -2,7 +2,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { globSync } from "node:fs";
 import { resolve } from "node:path";
-import { isScriptSourceFile } from "pandwind/source";
+import {
+	createSourceScannerRegistry,
+	isSupportedSourceFile,
+	type SourceScanResult,
+} from "pandwind/source";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import {
 	detectAlias,
@@ -12,11 +16,16 @@ import {
 } from "./panda-project.ts";
 import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./panda-theme.ts";
 
-export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/1" as const;
+export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/2" as const;
 
 export interface PandaMigrationFile {
 	readonly path: string;
 	readonly source: string;
+}
+
+export interface PandaMigrationSource {
+	readonly path: string;
+	readonly scan: SourceScanResult;
 }
 
 export interface PandaMigrationWorkspace {
@@ -25,18 +34,23 @@ export interface PandaMigrationWorkspace {
 	readonly aliasInfo: AliasInfo;
 	readonly theme: PandaTheme;
 	readonly usage: ProjectUsage;
+	readonly sources: readonly PandaMigrationSource[];
 	readonly outDir: string;
 	readonly notes: readonly string[];
 }
 
-function collectFiles(projectRoot: string, patterns: readonly string[]): PandaMigrationFile[] {
+/** Collect candidate source files without interpreting Panda syntax. */
+export function discoverPandaFiles(
+	projectRoot: string,
+	patterns: readonly string[],
+): PandaMigrationFile[] {
 	const seen = new Set<string>();
 	for (const pattern of patterns) {
 		const candidates = existsSync(resolve(projectRoot, pattern))
 			? [pattern]
 			: globSync(pattern, { cwd: projectRoot });
 		for (const candidate of candidates) {
-			if (typeof candidate !== "string" || !isScriptSourceFile(candidate)) continue;
+			if (typeof candidate !== "string" || !isSupportedSourceFile(candidate)) continue;
 			seen.add(resolve(projectRoot, candidate));
 		}
 	}
@@ -51,7 +65,8 @@ function collectFiles(projectRoot: string, patterns: readonly string[]): PandaMi
 	return files;
 }
 
-async function loadTheme(projectRoot: string): Promise<PandaTheme> {
+/** Load only the project theme/config layer; failures intentionally degrade to an empty theme. */
+export async function loadPandaMigrationTheme(projectRoot: string): Promise<PandaTheme> {
 	const candidate = ["panda.config.ts", "panda.config.mjs", "panda.config.js"]
 		.map((name) => resolve(projectRoot, name))
 		.find((path) => existsSync(path));
@@ -63,14 +78,31 @@ async function loadTheme(projectRoot: string): Promise<PandaTheme> {
 	}
 }
 
+/** Scan source documents through the shared language/framework scanner. */
+export function scanPandaMigrationSources(
+	files: readonly PandaMigrationFile[],
+): readonly PandaMigrationSource[] {
+	const scanner = createSourceScannerRegistry();
+	return files.map((file) => ({
+		path: file.path,
+		scan: scanner.scan({ file: file.path, source: file.source }),
+	}));
+}
+
+/** Extract project-level Panda usage after source discovery and theme loading. */
+export function extractPandaMigrationUsage(files: readonly PandaMigrationFile[]): ProjectUsage {
+	return scanProjectUsage(files);
+}
+
 /** Collect source files and project semantics without performing any writes. */
 export async function discoverPandaMigration(
 	options: Pick<PandaMigrateOptions, "projectRoot" | "patterns" | "outDirName">,
 ): Promise<PandaMigrationWorkspace> {
-	const files = collectFiles(options.projectRoot, options.patterns);
+	const files = discoverPandaFiles(options.projectRoot, options.patterns);
 	const aliasInfo = detectAlias(options.projectRoot);
-	const theme = await loadTheme(options.projectRoot);
-	const usage = scanProjectUsage(files);
+	const theme = await loadPandaMigrationTheme(options.projectRoot);
+	const sources = scanPandaMigrationSources(files);
+	const usage = extractPandaMigrationUsage(files);
 	const outDirName = options.outDirName || "pandwind";
 	return {
 		schema: PANDA_DISCOVERY_SCHEMA,
@@ -78,6 +110,7 @@ export async function discoverPandaMigration(
 		aliasInfo,
 		theme,
 		usage,
+		sources,
 		outDir: resolve(options.projectRoot, aliasInfo.targetRoot, outDirName),
 		notes: [
 			`alias: ${aliasInfo.alias || "(relative imports)"} (${aliasInfo.source})`,

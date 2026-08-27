@@ -70,6 +70,7 @@ const allRuleCapabilities = (
 		nesting: "exact",
 		ordering: "exact",
 		"token-values": "exact",
+		"custom-properties": "exact",
 		"dynamic-values": dynamic,
 		"pseudo-conditions": "exact",
 		"selector-conditions": "exact",

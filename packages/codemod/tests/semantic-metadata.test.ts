@@ -95,4 +95,29 @@ describe("semantic metadata and validator domains", () => {
 			expect.arrayContaining([expect.objectContaining({ kind: "dynamic" })]),
 		);
 	});
+
+	test("lowers unsupported dynamics to a stable custom-property contract", () => {
+		const program = styleProgramFromSourceObject("color: props.color", {});
+		const result = STYLE_LOWERING_REGISTRY.lower({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "static-target",
+				capabilities: {
+					declarations: "exact",
+					"dynamic-values": "unsupported",
+					"custom-properties": "partial",
+				},
+			},
+			mode: "partial",
+		});
+		const value = result.program.declarations[0]?.value;
+		expect(value).toMatchObject({
+			kind: "literal",
+			value: expect.stringMatching(/^var\(--pandwind-dynamic-[a-z0-9]+\)$/),
+		});
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "dynamic-custom-property" })]),
+		);
+	});
 });

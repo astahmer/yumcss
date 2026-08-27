@@ -22,8 +22,14 @@ describe("migration pipeline domains", () => {
 	test("exposes Panda as a replaceable project pipeline", () => {
 		expect(PANDA_MIGRATION_PIPELINE.schema).toBe(PANDA_MIGRATION_PIPELINE_SCHEMA);
 		expect(PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id)).toEqual([
-			"discovery",
-			"project-migration",
+			"project-discovery",
+			"theme-config",
+			"source-scanning",
+			"recipe-pattern-extraction",
+			"semantic-conversion",
+			"module-emission",
+			"rewrite-application",
+			"validation-reporting",
 		]);
 		expect(rewritePandaSource("const x = 1;", [{ start: 6, end: 7, text: "y" }])).toBe(
 			"const y = 1;",
