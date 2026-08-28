@@ -178,11 +178,10 @@ describe("static extractors survive real-world code", () => {
 				);
 			}
 		`;
-		const styles = createCssExtractionService({ matchers: [], preset: examplePreset }).extractStyles(
-			code,
-			"card.tsx",
-			new Set(["css"]),
-		);
+		const styles = createCssExtractionService({
+			matchers: [],
+			preset: examplePreset,
+		}).extractStyles(code, "card.tsx", new Set(["css"]));
 		expect(styles).toEqual([{ color: "#3182ce" }]);
 	});
 

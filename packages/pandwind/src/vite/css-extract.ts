@@ -105,6 +105,5 @@ export function createCssExtractionService(
 }
 
 /** Scanner-only composition root for consumers that do not need a preset. */
-export const createCssSourceScanner = (
-	matchers: readonly (string | RegExp)[],
-): CssSourceScanner => new CssSourceScannerService(matchers);
+export const createCssSourceScanner = (matchers: readonly (string | RegExp)[]): CssSourceScanner =>
+	new CssSourceScannerService(matchers);

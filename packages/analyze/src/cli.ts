@@ -187,7 +187,10 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		const arbitrarySites = stats.flatMap((s) =>
 			s.arbitraryValues.map((m) => ({ file: s.file, line: m.line, token: m.token })),
 		);
-		let cssBudgetJson: import("./css-budget.ts").CssBudget | Record<string, unknown> | undefined;
+		let cssBudgetJson:
+			| import("./css-budget-contracts.ts").CssBudget
+			| Record<string, unknown>
+			| undefined;
 		if (args.css) {
 			cssBudgetJson = await computeCssBudget(args, files);
 		}

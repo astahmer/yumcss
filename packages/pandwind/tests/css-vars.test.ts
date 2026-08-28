@@ -200,7 +200,7 @@ describe("design layer passthrough", () => {
 
 describe("vite pass — css.vars key collection feeds the sheet", () => {
 	test("extractVarKeys finds literal vars() keys; dynamic structures skipped", async () => {
-	const scanner = createCssSourceScanner([]);
+		const scanner = createCssSourceScanner([]);
 		const code = `
 			import { css } from "./design";
 			export const a = css.vars({ color: dynamicValue, _hover: { color: other } });
@@ -209,7 +209,7 @@ describe("vite pass — css.vars key collection feeds the sheet", () => {
 		// `dynamicValue`/`other` are identifiers — evalLiteral skips them,
 		// so the structure is only partially static; keys from the static
 		// nesting still register.
-	const keys = scanner.findVarKeys(code, "app.ts", new Set(["css"]));
+		const keys = scanner.findVarKeys(code, "app.ts", new Set(["css"]));
 		expect(keys).toContain("_hover__color");
 	});
 });

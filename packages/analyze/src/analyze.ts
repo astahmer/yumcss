@@ -32,8 +32,6 @@ import {
 	type MissingCssSite,
 } from "./css-residual-collector.ts";
 
-export type { ArbitraryValueSite, CssResidualCollector, MissingCssSite } from "./css-residual-collector.ts";
-
 export { formatReport, summarize } from "./analysis-report.ts";
 
 export interface AnalyzeOptions {

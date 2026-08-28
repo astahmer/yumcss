@@ -85,11 +85,9 @@ describe("analysis composition ports", () => {
 			},
 		};
 		const service = createFoldAnalysisService({ residuals });
-		service.analyze(
-			`cx("text-red-500")`,
-			"fixture.tsx",
-			{ config: { variants: {}, conflicts: {} } },
-		);
+		service.analyze(`cx("text-red-500")`, "fixture.tsx", {
+			config: { variants: {}, conflicts: {} },
+		});
 		expect(calls).toEqual(["missing", "arbitrary"]);
 	});
 
@@ -104,7 +102,9 @@ describe("analysis composition ports", () => {
 		const evaluator = { measure: async () => ({ ...budgetForTest }) };
 		const renderer = { format: () => "fake budget" };
 		const service = createCssBudgetService({ evaluator, renderer, inspection });
-		expect(await service.measure({ files: [], twEntry: "tw.ts", base: "." })).toEqual(budgetForTest);
+		expect(await service.measure({ files: [], twEntry: "tw.ts", base: "." })).toEqual(
+			budgetForTest,
+		);
 		expect(service.format(budgetForTest)).toBe("fake budget");
 		expect(await service.classRules({ files: [], twEntry: "tw.ts", base: "." })).toEqual([
 			{ candidate: "fake", rules: [] },

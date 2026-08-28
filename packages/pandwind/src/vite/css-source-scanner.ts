@@ -38,7 +38,7 @@ const parse = (file: string, source: string) =>
 
 const canParse = (file: string): boolean => SOURCE_SCANNER_SERVICE.isScriptFile(file);
 
-export const cssSourceMatches = (source: string, matchers: readonly (string | RegExp)[]): boolean =>
+const cssSourceMatches = (source: string, matchers: readonly (string | RegExp)[]): boolean =>
 	matchers.some((matcher) =>
 		typeof matcher === "string"
 			? source === matcher ||

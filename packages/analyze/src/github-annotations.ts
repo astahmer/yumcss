@@ -9,7 +9,7 @@
  * GitHub caps at 10 warnings per command per step and 50 total per run;
  * we cap at MAX_ANNOTATIONS and note truncation in the final line.
  */
-import type { CssBudget } from "./css-budget.ts";
+import type { CssBudget } from "./css-budget-contracts.ts";
 import type { FoldSummary } from "./analyze.ts";
 
 const MAX_ANNOTATIONS = 50;

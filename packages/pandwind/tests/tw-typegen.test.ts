@@ -16,9 +16,9 @@ describe("typegen", () => {
 				({
 					utilities: { keys: () => [] },
 					getVariants: () => [],
-				} as never),
+				}) as never,
 			catalog: {
-				collect: () => new Map([["bg", new Set<string | true>(["red"])] ]),
+				collect: () => new Map([["bg", new Set<string | true>(["red"])]]),
 				expand: () => calls.push("expand"),
 			},
 			buildConflicts: () => {

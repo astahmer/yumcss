@@ -5,10 +5,7 @@ import { expect, test } from "vitest";
 import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
-import {
-	createCssExtractionService,
-	createCssSourceScanner,
-} from "../src/vite/css-extract.ts";
+import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
 import type {
 	CssArtifactExtractor,
 	CssDiagnosticReporter,
@@ -194,7 +191,7 @@ test("css extraction façade accepts substituted policy ports", () => {
 test("the shared source service composes the extraction façade", () => {
 	const calls: string[] = [];
 	const service = createCssSourceService({
-		 scanner: {
+		scanner: {
 			matches: () => true,
 			parse: () => ({ type: "Program" }),
 			findImports: () => {
