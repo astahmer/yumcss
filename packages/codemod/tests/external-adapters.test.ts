@@ -640,6 +640,14 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.code).toContain('className={css.class({ backgroundColor: "tomato"');
 		expect(chakra.code).toContain('"&:hover"');
 
+		const merged = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box className="existing" bg="tomato" />;',
+			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(merged.code).toContain(
+			'className={cx(css.class({ backgroundColor: "tomato" }), "existing")}',
+		);
+
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',
 			{ from: "mui", to: "pandwind", file: "App.tsx", mode: "safe" },

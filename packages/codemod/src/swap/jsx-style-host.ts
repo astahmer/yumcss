@@ -80,7 +80,10 @@ export class JsxStyleHost {
 		let text = openingTag;
 		for (const raw of styleAttributes) {
 			const index = text.indexOf(raw);
-			if (index !== -1) text = `${text.slice(0, index)}${text.slice(index + raw.length)}`;
+			if (index !== -1) {
+				const whitespace = index > 0 && /[ \t]/.test(text[index - 1]!) ? 1 : 0;
+				text = `${text.slice(0, index - whitespace)}${text.slice(index + raw.length)}`;
+			}
 		}
 		const attribute = framework === "react" || framework === "preact" ? "className" : "class";
 		let needsCx = false;
