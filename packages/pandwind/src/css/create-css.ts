@@ -25,6 +25,20 @@ type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>
 type CompiledStyles = Record<string, string>;
 type CssStyle = Record<string, string>;
 
+const resetValueFor = (property: string): string | number => {
+	const cssProperty = property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
+	return cssProperty.endsWith("-width") && cssProperty.includes("border-") ? 0 : "initial";
+};
+
+const preserveNullResets = (value: unknown, property = ""): unknown => {
+	if (value === null) return resetValueFor(property);
+	if (Array.isArray(value)) return value.map((item) => preserveNullResets(item, property));
+	if (typeof value !== "object" || value === undefined) return value;
+	return Object.fromEntries(
+		Object.entries(value).map(([key, child]) => [key, preserveNullResets(child, key)]),
+	);
+};
+
 const DYNAMIC = Symbol("dynamic");
 
 const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
@@ -70,7 +84,9 @@ export function createCss(
 	};
 
 	const compileStyles = (...styles: Array<StyleObject>) => {
-		const merged = assign(...styles);
+		const merged = assign(
+			...styles.map((style) => preserveNullResets(style) as StyleObject),
+		);
 		const flat = flattenStyle(merged);
 		return compile(flat);
 	};
@@ -146,14 +162,25 @@ export function createCss(
 	};
 
 	// `{ color: "red" }` -> { style: undefined, className: "color__red" }
-	css.props = (...props: Array<CompiledStyles | DynamicReturn | string>): PropsReturn => {
+	css.props = (...props: Array<PropsInput>): PropsReturn => {
 		const compiled = [] as Array<CompiledStyles>;
 		const styles = [] as Array<CssStyle>;
 		const classNames: string[] = [];
 
-		props.forEach((current) => {
+		const add = (current: PropsInput): void => {
+			if (!current) return;
+			if (Array.isArray(current)) {
+				current.forEach(add);
+				return;
+			}
 			if (typeof current === "string") {
 				classNames.push(current);
+				return;
+			}
+			if ("class" in current && "style" in current) {
+				const vars = current as VarsOutput;
+				if (vars.class) classNames.push(vars.class);
+				if (vars.style) styles.push(vars.style);
 				return;
 			}
 			if (DYNAMIC in current) {
@@ -162,8 +189,10 @@ export function createCss(
 				return;
 			}
 
-			compiled.push(current);
-		});
+			compiled.push(current as CompiledStyles);
+		};
+
+		props.forEach(add);
 
 		return {
 			style: styles.length ? assign(...styles) : undefined,
@@ -175,13 +204,23 @@ export function createCss(
 	};
 
 	// `{ btn: { color: "red" } }` -> { btn: { color: "color__red" } }
-	css.group = <TGroup extends Record<string, StyleObject | DynamicStyles<StyleObject> | string>>(
+	css.group = <
+		TGroup extends Record<
+			string,
+			StyleObject | DynamicStyles<StyleObject> | string | ((...args: any[]) => StyleObject)
+		>,
+	>(
 		groups: TGroup,
 	) => {
 		const merged: Record<string, CompiledStyles | DynamicFn<AnyInput> | string> = {};
 
 		Object.keys(groups).forEach((currentGroup) => {
 			const groupStyles = groups[currentGroup];
+			if (typeof groupStyles === "function") {
+				merged[currentGroup] = ((...args: unknown[]) =>
+					css.vars((groupStyles as (...values: unknown[]) => StyleObject)(...args))) as never;
+				return;
+			}
 			merged[currentGroup] = transform(groupStyles!);
 		});
 
@@ -210,6 +249,16 @@ interface PropsReturn {
 	className: string | undefined;
 }
 
+type PropsInput =
+	| CompiledStyles
+	| DynamicReturn
+	| VarsOutput
+	| string
+	| readonly PropsInput[]
+	| false
+	| null
+	| undefined;
+
 type AnyInput = Record<string, unknown>;
 type DynamicFn<TInput extends AnyInput> = (input: TInput) => DynamicReturn;
 
@@ -230,17 +279,24 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 */
 	vars: (...styles: Array<TStyles>) => VarsOutput;
 	raw: (...styles: Array<TStyles>) => StyleObject;
-	props: (...styles: Array<CompiledStyles | DynamicReturn | string>) => PropsReturn;
-	group: <TGroup extends Record<string, TStyles | DynamicStyles<TStyles> | string>>(
+	props: (...styles: Array<PropsInput>) => PropsReturn;
+	group: <
+		TGroup extends Record<
+			string,
+			TStyles | DynamicStyles<TStyles> | string | ((...args: any[]) => TStyles)
+		>,
+	>(
 		styles: TGroup,
 	) => {
 		[Key in keyof TGroup]: TGroup[Key] extends { $input: infer TInput }
 			? TInput extends AnyInput
 				? DynamicFn<TInput>
 				: never
-			: TGroup[Key] extends string
-				? string
-				: CompiledStyles;
+			: TGroup[Key] extends (...args: infer TArgs) => TStyles
+				? (...args: TArgs) => VarsOutput
+				: TGroup[Key] extends string
+					? string
+					: CompiledStyles;
 	};
 	input: (name: string) => never;
 }

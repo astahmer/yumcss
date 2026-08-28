@@ -24,6 +24,21 @@ export interface VarsOutput {
 	readonly [VARS_ATOMS]?: Array<VarAtom>;
 }
 
+const UNITLESS_PROPERTIES = new Set([
+	"animation-iteration-count", "aspect-ratio", "border-image-outset", "border-image-slice",
+	"border-image-width", "box-flex", "box-flex-group", "box-ordinal-group", "column-count",
+	"columns", "flex", "flex-grow", "flex-shrink", "font-weight", "grid-area", "grid-column",
+	"grid-column-end", "grid-column-start", "grid-row", "grid-row-end", "grid-row-start",
+	"line-clamp", "line-height", "opacity", "order", "orphans", "tab-size", "widows", "z-index",
+	"zoom", "fill-opacity", "flood-opacity", "stop-opacity", "stroke-dasharray", "stroke-dashoffset",
+	"stroke-miterlimit", "stroke-opacity", "stroke-width", "scale",
+]);
+
+const runtimeValue = (property: string, value: string | number): string =>
+	typeof value === "number" && !property.startsWith("--") && !UNITLESS_PROPERTIES.has(property)
+		? `${value}px`
+		: `${value}`;
+
 export interface VarCompiler {
 	classFor(key: string): string;
 	escapeClass(cls: string): string;
@@ -70,11 +85,11 @@ class DefaultVarCompiler implements VarCompiler {
 		const style: Record<string, string> = {};
 		for (const key of Object.keys(flat).toSorted()) {
 			const raw = flat[key];
-			if ((typeof raw !== "string" && !Number.isFinite(raw)) || raw === "") continue;
+			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "") continue;
 			const { conditions, prop } = this.splitKey(key);
 			if (!prop) continue;
 			atoms.push({ cls: this.classFor(key), keys: [key] });
-			style[this.customPropFor(prop, conditions)] = `${raw}`;
+			style[this.customPropFor(prop, conditions)] = runtimeValue(prop, raw);
 		}
 		return { atoms, style };
 	}

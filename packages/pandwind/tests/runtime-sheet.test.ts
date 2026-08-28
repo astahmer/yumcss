@@ -53,6 +53,18 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.snapshot().rules).toHaveLength(1);
 	});
 
+	test("shares the default sheet across module-scoped runtime CSS instances", () => {
+		const first = createRuntimeCss(examplePreset);
+		const second = createRuntimeCss(examplePreset);
+
+		first.class({ color: "$blue-500" });
+		second.class({ padding: 4 });
+
+		expect(first.sheet).toBe(second.sheet);
+		expect(first.sheet.css()).toContain("color:#3182ce");
+		expect(first.sheet.css()).toContain("padding:4px");
+	});
+
 	test("adds var-inline rules to the same runtime sheet", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });
 		const css = createRuntimeCss(examplePreset, { sheet });
@@ -218,5 +230,29 @@ describe("runtime CSS-in-JS sheet", () => {
 		expect(sheet.css()).toContain("@font-face{font-family:Inter;src:url(inter.woff2)}");
 		expect(sheet.css()).toContain("@layer components{.card:hover{color:red}}");
 		expect(sheet.css()).toContain("@property --brand-hue{syntax:<number>;inherits:false}");
+	});
+
+	test("serializes semantic camelCase declarations as valid CSS properties", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		sheet.registerSemanticRules([
+			{
+				kind: "keyframes",
+				name: "typing",
+				children: [
+					{
+						kind: "style",
+						selector: "from",
+						declarations: [
+							{ property: "gridTemplateColumns", value: "1fr" },
+							{ property: "borderInlineEndColor", value: "transparent" },
+						],
+					},
+				],
+			},
+		]);
+
+		expect(sheet.css()).toBe(
+			"@keyframes typing{from{grid-template-columns:1fr;border-inline-end-color:transparent}}",
+		);
 	});
 });

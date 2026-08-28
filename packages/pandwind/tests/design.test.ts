@@ -302,3 +302,15 @@ test("design css().group resolves modules per slot", () => {
     }
   `);
 });
+
+test("design css().group resolves function-valued slots at invocation time", () => {
+	const css = createDesignCss(examplePreset, { debug: true });
+	const group = css.group({
+		item: ((padding: number) => ({ $raw: { padding: `${padding}px` } })) as any,
+	});
+
+	expect(css.props((group.item as any)(8))).toEqual({
+		className: "pw-padding",
+		style: { "--pw-c-padding": "8px" },
+	});
+});

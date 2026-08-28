@@ -43,8 +43,12 @@ StyleX app and the `runtime-css`, `atomic-css`, and `design-dss` Pandwind lanes
 all completed production build plus four-page static generation. The results
 are recorded in `examples/stylex-docs-migration/reports/build-matrix.json`.
 
-The browser probe is currently blocked by the pinned Waku app's own RSC
-development/standalone server route (`/RSC/R/_root.txt` returns 404 in the
-clone, while build and static generation succeed). Do not treat that
-environment failure as visual parity evidence; rerun the same probe when the
-reference app's Waku runtime is fixed.
+The browser proof is complete. The committed matrix in
+`examples/stylex-docs-migration/reports/browser-matrix.json` compares the
+clean reference server with the final migrated runtime lane across `/`,
+`/docs/learn/`, `/docs/api/`, and `/playground`. All route geometries match,
+the playground preview renders, and the migrated app has no page errors or
+failed responses. The linked migrated CSS is 25,703 bytes versus 32,195 bytes
+for the reference build. Full-page pixel diffs are intentionally not used as
+the sole oracle because the playground editor source is supposed to change;
+the rendered preview and host layout are the visual invariants.

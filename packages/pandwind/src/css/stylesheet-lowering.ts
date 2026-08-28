@@ -29,6 +29,10 @@ export const createConditionsBucket = (
 });
 
 export const isSelfSelector = (condition: string): boolean => condition.charCodeAt(0) === 38;
+const scopedClassName = (className: string, selectors: readonly string[]): string =>
+	selectors.some((selector) => selector.includes(":where(")) && className.startsWith(".")
+		? `${className}${className}`
+		: className;
 const isParentSelector = (condition: string): boolean =>
 	condition.charCodeAt(condition.length - 1) === 38;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
@@ -70,19 +74,19 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 				parser((nodes) => {
 					selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
 				}).processSync(list);
-				return selectors
+					return selectors
 					.map((selector) => {
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];
 						if (isSelfSelector(selector)) selfs.push(selector.slice(1));
 						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
-						return `${parents.join("")}${className}${selfs.join("")}`;
+						return `${parents.join("")}${scopedClassName(className, selfs)}${selfs.join("")}`;
 					})
 					.join(", ");
 			})}{${decls}}`,
 		);
 	}
-	const selectors = `${parentSelectors.join("")}${className}${selfSelectors.join("")}`;
+	const selectors = `${parentSelectors.join("")}${scopedClassName(className, selfSelectors)}${selfSelectors.join("")}`;
 	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectors}{${decls}}`);
 };
 

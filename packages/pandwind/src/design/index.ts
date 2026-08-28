@@ -59,14 +59,18 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	css.props = engine.props;
 	css.input = engine.input;
 
-	css.group = (groups: Record<string, Maybe<Design>>) => {
-		const resolved: Record<string, StyleObject> = {};
+	css.group = ((groups: Record<string, Maybe<Design> | ((...args: any[]) => Design)>) => {
+		const resolved: Record<string, StyleObject | ((...args: any[]) => StyleObject)> = {};
 		for (const key of Object.keys(groups)) {
-			const value = groups[key] as Maybe<Design>;
-			if (value) resolved[key] = resolve(value);
+			const value = groups[key];
+			if (typeof value === "function") {
+				resolved[key] = (...args: any[]) => resolve(value(...args));
+			} else if (value) {
+				resolved[key] = resolve(value);
+			}
 		}
 		return engine.group(resolved as never);
-	};
+	}) as never;
 
 	// Share the inner engine's atom registry so cx can resolve design atoms.
 	(css as CssFn & { [ATOM_REGISTRY]?: AtomRegistry })[ATOM_REGISTRY] = (

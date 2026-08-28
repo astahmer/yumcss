@@ -77,7 +77,7 @@ function runtimeKeyframes(program: StyleProgram): string {
 	const name = `pw-kf-${(rule.name ?? "animation").replace(/[^A-Za-z0-9_-]/g, "-")}`;
 	const children = rule.children.map(
 		(child) =>
-			`{ selector: ${JSON.stringify(child.selector ?? "from")}, declarations: [${child.declarations
+			`{ kind: "style", selector: ${JSON.stringify(child.selector ?? "from")}, declarations: [${child.declarations
 				.map(
 					(declaration) =>
 						`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
@@ -100,6 +100,22 @@ function runtimeFontFaces(program: StyleProgram): string {
 					.join(", ")} ] }`,
 		)
 		.join(", ");
+}
+
+function runtimeGlobalVars(program: StyleProgram): string {
+	const declarations = program.declarations
+		.map(
+			(declaration) =>
+				`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
+		)
+		.join(", ");
+	const references = program.declarations
+		.map(
+			(declaration) =>
+				`${JSON.stringify(declaration.property)}: ${JSON.stringify(`var(${declaration.property})`)}`,
+		)
+		.join(", ");
+	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;
 }
 
 function stitchesRecipeObject(
@@ -144,6 +160,16 @@ export default defineCodemodAdapter({
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 	configFiles: ["pandwind.config.ts", "package.json"],
 	emit(program, { programObject, declarationsObject }, context) {
+		if (program.source?.adapter === "stylex" && program.source.pattern === "stylex-define-vars") {
+			return {
+				text: runtimeGlobalVars(program),
+				imports: [
+					'import { createRuntimeCss } from "pandwind/css/runtime";',
+					'import { pandwindPreset } from "pandwind/preset";',
+					"const css = createRuntimeCss(pandwindPreset);",
+				],
+			};
+		}
 		const host = program.source;
 		if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
 			const framework =
@@ -215,26 +241,41 @@ export default defineCodemodAdapter({
 			dynamic &&
 			(kind === "style" || kind === undefined) &&
 			(program.source?.adapter === "vanilla-extract" || program.source?.adapter === "treat");
+		const functionDynamic =
+			program.source?.adapter === "stylex" &&
+			program.rules.some(function containsFunction(rule): boolean {
+				return (
+					rule.declarations.some(
+						(declaration) =>
+							declaration.value.kind === "dynamic" &&
+							/=>|^function\b/.test(declaration.value.expression.trim()),
+					) || rule.children.some(containsFunction)
+				);
+			});
 		const stitchesVariants =
 			program.source?.adapter === "stitches" &&
 			program.declarations.some((declaration) => declaration.conditions.length >= 2);
+		const needsRuntimeCss =
+			program.source?.adapter === "stylex" || runtimeStandalone || functionDynamic;
 		return {
 			text: stitchesVariants
 				? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`
 				: named
 					? `css.group(${programObject(program)})`
-					: runtimeStandalone
-						? `css.class(${programObject(program)})`
-						: dynamic
-							? `css.vars(${programObject(program)})`
-							: `css.class(${programObject(program)})`,
+					: functionDynamic
+						? `css.group(${programObject(program)})`
+						: runtimeStandalone
+							? `css.class(${programObject(program)})`
+							: dynamic
+								? `css.vars(${programObject(program)})`
+								: `css.class(${programObject(program)})`,
 			imports: stitchesVariants
 				? [
 						'import { createCss } from "pandwind/css";',
 						'import { createRecipe } from "pandwind/recipe";',
 						"const css = createCss();",
 					]
-				: runtimeStandalone
+				: needsRuntimeCss
 					? [
 							'import { createRuntimeCss } from "pandwind/css/runtime";',
 							'import { pandwindPreset } from "pandwind/preset";',

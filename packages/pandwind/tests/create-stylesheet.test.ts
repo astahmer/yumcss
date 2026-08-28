@@ -92,6 +92,29 @@ test("css gen prop in arbitrary pseudo selector", () => {
 	`);
 });
 
+test("css gen prop preserves class specificity inside zero-specificity selectors", () => {
+	const sheet = createStylesheet(examplePreset, { debug: false });
+	const css = createCss<typeof examplePreset>({ debug: false });
+
+	expect(
+		sheet.process([
+			css.raw({
+				"&:where(pre *)": {
+					backgroundColor: "$red-700",
+				},
+			}),
+		]),
+	).toMatchInlineSnapshot(`
+    Map {
+      "&:where(pre *)__backgroundColor__$red-700" => {
+        "css": ".\\31 o6w7dx.\\31 o6w7dx:where(pre *){background-color:#9B2C2C}",
+        "id": "&:where(pre *)__backgroundColor__$red-700",
+        "priority": 3040,
+      },
+    }
+  `);
+});
+
 test("css gen prop in arbitrary descendant selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });

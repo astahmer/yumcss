@@ -73,6 +73,8 @@ export interface StyleDynamicValue {
 
 export type StyleValue = StyleTokenValue | StyleLiteralValue | StyleDynamicValue;
 
+export type StyleValueTransform = (value: StyleValue, property?: string) => StyleValue;
+
 export interface StyleDeclaration {
 	readonly conditions: readonly StyleCondition[];
 	readonly property: string;
@@ -174,6 +176,8 @@ export interface StyleProgramOptions {
 	readonly conditionRaw?: Readonly<Record<string, string>>;
 	/** Treat every nested object as a semantic condition of this kind. */
 	readonly nestedObjectKind?: SemanticConditionKind;
+	/** Keep a source system's default named group instead of flattening it. */
+	readonly preserveDefaultGroup?: boolean;
 	/** Adapter-owned object containers whose contents are the actual style object. */
 	readonly unwrapNestedObjectKeys?: readonly string[];
 	/** Source systems such as StyleX encode conditional values under a property. */
@@ -187,7 +191,8 @@ export interface StyleProgramOptions {
 	/** Source aliases expanded into one or more canonical CSS properties. */
 	readonly propertyAliases?: Readonly<Record<string, string | readonly string[]>>;
 	/** Source-specific value normalization, for example default theme spacing. */
-	readonly valueTransforms?: Readonly<Record<string, (value: StyleValue) => StyleValue>>;
+	/** Use `*` as a fallback for every property when an adapter needs a uniform policy. */
+	readonly valueTransforms?: Readonly<Record<string, StyleValueTransform>>;
 	/** Adapter-owned array fields that expand into independent semantic rules. */
 	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
@@ -283,9 +288,10 @@ function conditionFor(name: string, options: StyleProgramOptions): StyleConditio
 	const inferredNameKind = inferSemanticConditionKind(name);
 	return {
 		kind:
-			options.nestedObjectKind ??
 			options.conditionKinds?.[name] ??
-			(inferredNameKind === "named" ? inferSemanticConditionKind(value ?? name) : inferredNameKind),
+			(inferredNameKind === "named"
+				? (options.nestedObjectKind ?? inferSemanticConditionKind(value ?? name))
+				: inferredNameKind),
 		name,
 		...(value === undefined ? {} : { value }),
 		...(options.conditionRaw?.[name] === undefined ? {} : { raw: options.conditionRaw[name] }),
@@ -438,11 +444,18 @@ function conditionedSelector(
 			condition.kind === "pseudo"
 				? (condition.value ?? condition.name)
 				: (condition.value ?? condition.raw ?? condition.name);
-		if (selectorValue.includes("&")) selector = selectorValue.replaceAll("&", selector);
+		const normalizedSelectorValue =
+			condition.kind === "selector" && selectorValue.endsWith(" &")
+				? `&${selectorValue.slice(0, -2)}`
+				: selectorValue;
+		if (normalizedSelectorValue.includes("&"))
+			selector = normalizedSelectorValue.replaceAll("&", selector);
 		else if (condition.kind === "pseudo")
-			selector += selectorValue.startsWith(":") ? selectorValue : `:${selectorValue}`;
-		else if (condition.kind === "selector") selector += selectorValue;
-		else selector += `:${selectorValue}`;
+			selector += normalizedSelectorValue.startsWith(":")
+				? normalizedSelectorValue
+				: `:${normalizedSelectorValue}`;
+		else if (condition.kind === "selector") selector += normalizedSelectorValue;
+		else selector += `:${normalizedSelectorValue}`;
 	}
 	return { selector, wrappers };
 }
@@ -452,6 +465,10 @@ function conditionedSelector(
  * intentionally structural and stable, not a browser CSS minifier.
  */
 export function styleProgramToCanonicalCss(program: StyleProgram): string {
+	const canonicalConditions = (conditions: readonly StyleCondition[]): StyleCondition[] =>
+		program.source?.adapter === "stylex"
+			? conditions.filter((condition) => !(condition.kind === "named" && condition.name === "base"))
+			: [...conditions];
 	const renderBase = (
 		rule: StyleRule,
 		declarations: readonly StyleDeclaration[],
@@ -479,7 +496,7 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 	};
 	const render = (rule: StyleRule): string => {
 		const rootDeclarations = rule.declarations.filter(
-			(declaration) => declaration.conditions.length === 0,
+			(declaration) => canonicalConditions(declaration.conditions).length === 0,
 		);
 		const baseConditions = rule.conditions;
 		let base: string;
@@ -495,10 +512,11 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 			{ conditions: StyleCondition[]; declarations: StyleDeclaration[] }
 		>();
 		for (const declaration of rule.declarations) {
-			if (declaration.conditions.length === 0) continue;
-			const key = JSON.stringify(declaration.conditions);
+			const conditions = canonicalConditions(declaration.conditions);
+			if (conditions.length === 0) continue;
+			const key = JSON.stringify(conditions);
 			const group = groups.get(key) ?? {
-				conditions: [...declaration.conditions],
+				conditions,
 				declarations: [],
 			};
 			group.declarations.push({ ...declaration, conditions: [] });
@@ -506,11 +524,7 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		}
 		const conditionalGroups = [...groups.values()];
 		if (program.source?.adapter === "stylex")
-			conditionalGroups.sort(
-				(a, b) =>
-					a.conditions.length - b.conditions.length ||
-					JSON.stringify(a.conditions).localeCompare(JSON.stringify(b.conditions)),
-			);
+			conditionalGroups.sort((a, b) => a.conditions.length - b.conditions.length);
 		const conditional = conditionalGroups.map((group) => {
 			const conditions = [...baseConditions, ...group.conditions];
 			if (rule.kind === "style" || rule.kind === "global") {
@@ -662,6 +676,31 @@ function looksLikeCondition(name: string, options: StyleProgramOptions): boolean
 	);
 }
 
+function looksLikePropertyValueConditions(
+	value: SourceNode,
+	body: string,
+	options: StyleProgramOptions,
+): boolean {
+	if (options.propertyValueConditions !== true || !sourceObject(value)) return false;
+	const properties = value.properties ?? [];
+	return (
+		properties.length > 0 &&
+		properties.every((property) => {
+			if (property.type !== "Property" || property.kind !== "init") return false;
+			const name = sourceKey(property, body, options);
+			return (
+				name === "default" ||
+				name?.startsWith(":") === true ||
+				name?.startsWith("&") === true ||
+				name?.startsWith("[") === true ||
+				name?.startsWith("@") === true ||
+				(name !== null && options.conditionKinds?.[name] !== undefined) ||
+				(name !== null && options.conditionValues?.[name] !== undefined)
+			);
+		})
+	);
+}
+
 /**
  * Parse a source object into the semantic view without weakening
  * `parseObjectLiteral` or the `SwapIR` fast path. Literal values are emitted
@@ -701,7 +740,8 @@ export function styleProgramFromSourceObject(
 				});
 			}
 		}
-		const normalizedValue = options.valueTransforms?.[name]?.(value) ?? value;
+		const valueTransform = options.valueTransforms?.[name] ?? options.valueTransforms?.["*"];
+		const normalizedValue = valueTransform?.(value, name) ?? value;
 		const aliases = options.propertyAliases?.[name] ?? name;
 		for (const canonicalProperty of typeof aliases === "string" ? [aliases] : aliases)
 			declarations.push({ conditions, property: canonicalProperty, value: normalizedValue });
@@ -841,11 +881,7 @@ export function styleProgramFromSourceObject(
 				}
 				continue;
 			}
-			if (
-				sourceObject(valueNode) &&
-				options.propertyValueConditions === true &&
-				conditions.length > 0
-			) {
+			if (looksLikePropertyValueConditions(valueNode, body, options)) {
 				addConditionalValues(name, valueNode, conditions);
 				continue;
 			}
@@ -854,7 +890,7 @@ export function styleProgramFromSourceObject(
 				(looksLikeCondition(name, options) || options.unwrapNestedObjectKeys?.includes(name))
 			) {
 				if (options.unwrapNestedObjectKeys?.includes(name)) walk(valueNode, conditions);
-				else if (name !== "base")
+				else if (name !== "base" || options.preserveDefaultGroup === true)
 					walk(valueNode, [...conditions, sourceConditionFor(name, options)]);
 				else walk(valueNode, conditions);
 				continue;

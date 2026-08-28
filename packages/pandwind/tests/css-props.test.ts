@@ -92,6 +92,29 @@ test("css props in nested condition", () => {
 	`);
 });
 
+test("css props ignores conditional falsy style arguments", () => {
+	const css = createCss({ debug: true });
+
+	expect(css.props(css({ color: "red" }), false, undefined, null)).toEqual({
+		className: "color__red",
+		style: undefined,
+	});
+});
+
+test("css props flattens nested style arrays", () => {
+	const css = createCss({ debug: true });
+
+	expect(
+		css.props([
+			css({ color: "red" }),
+			[false, css({ backgroundColor: "blue" })],
+		]),
+	).toEqual({
+		className: "color__red backgroundColor__blue",
+		style: undefined,
+	});
+});
+
 test("css with dynamic styles", () => {
 	const css = createCss<typeof examplePreset>({ debug: true });
 

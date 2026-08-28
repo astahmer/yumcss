@@ -6,5 +6,10 @@
 	"skipped": 0,
 	"residuals": 0,
 	"invalidValidations": 0,
-	"outputBytes": 304232
+	"outputBytes": 312393,
+	"staticCssBytes": 25703,
+	"referenceCssBytes": 32195,
+	"staticCssDelta": -6492,
+	"build": "passed",
+	"staticGenerationPages": 173
 }

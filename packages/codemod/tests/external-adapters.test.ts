@@ -112,6 +112,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(component.code).toContain("styled.button({");
 	});
 
+	test("keeps StyleX ancestor conditions attached to the styled element", () => {
+		const result = runAdapterMigration(
+			'import * as stylex from "@stylexjs/stylex";\n' +
+			"const styles = stylex.create({ code: { paddingBlock: { default: 3, [stylex.when.ancestor(':where(pre)')]: 8 } } });",
+			{ from: "stylex", to: "pandwind", file: "mdx.tsx", mode: "safe" },
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations[0]?.valid).toBe(true);
+		expect(result.code).toContain('"&:where(.pw-default-marker:where(pre) *)"');
+	});
+
 	test("preserves styled component subjects when targeting Emotion", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\nexport default styled.div({ color: "red" });',
@@ -232,6 +245,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
 		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
 		expect(result.code).toContain('css.sheet.registerSemanticRules([{ kind: "keyframes"');
+		expect(result.code).toContain('{ kind: "style", selector: "from"');
 	});
 
 	test("cleans source imports when the module shares a line with migrated code", () => {

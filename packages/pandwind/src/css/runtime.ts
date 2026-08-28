@@ -43,8 +43,28 @@ interface RuntimeBinding {
 	registerVars: (css: CssFn<StyleObject>) => void;
 }
 
+// Module-scoped style declarations are common in codemod output. Reusing the
+// default sheet keeps those declarations in one artifact instead of allowing
+// each module to overwrite the same `data-pandwind-sheet` element. The global
+// symbol also joins duplicate runtime copies emitted by split bundles.
+const sharedSheetsKey = Symbol.for("pandwind.runtime.default-sheet");
+type RuntimeGlobal = typeof globalThis & {
+	[sharedSheetsKey]?: RuntimeSheet;
+};
+
+function runtimeSheetFor(options: RuntimeCssOptions): RuntimeSheet {
+	if (options.sheet !== undefined) return options.sheet;
+	if (options.sheetOptions !== undefined) return createRuntimeSheet(options.sheetOptions);
+	const globalObject = globalThis as RuntimeGlobal;
+	const existing = globalObject[sharedSheetsKey];
+	if (existing !== undefined) return existing;
+	const sheet = createRuntimeSheet();
+	globalObject[sharedSheetsKey] = sheet;
+	return sheet;
+}
+
 function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): RuntimeBinding {
-	const sheet = options.sheet ?? createRuntimeSheet(options.sheetOptions);
+	const sheet = runtimeSheetFor(options);
 	const { sheet: _sheet, sheetOptions: _sheetOptions, ...cssOptions } = options;
 	const stylesheet = createStylesheet(preset, cssOptions);
 	const sync = (): void => {

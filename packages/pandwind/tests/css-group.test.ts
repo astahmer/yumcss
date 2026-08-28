@@ -80,3 +80,23 @@ test("css group accepts precompiled class strings", () => {
 	expect(styles.button).toMatch(/^\S+$/);
 	expect(css.props(styles.button).className).toBe(styles.button);
 });
+
+test("css group function values can be passed directly to props", () => {
+	const css = createCss();
+	const styles = css.group({ item: ((padding: number) => ({ padding })) as any });
+
+	const result = css.props((styles.item as any)(8));
+
+	expect(result.className).toContain("pw-padding");
+	expect(result.style).toEqual({ "--pw-c-padding": "8px" });
+});
+
+test("css group preserves null reset declarations for composed styles", () => {
+	const css = createCss({ debug: true });
+	const styles = css.group({
+		base: css.class({ borderTopWidth: 1 }),
+		withoutBorder: css.class({ borderTopWidth: null }),
+	});
+
+	expect(css.props(styles.base, styles.withoutBorder).className).toContain("borderTopWidth__0");
+});

@@ -1,5 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 
 const runtimeImports = [
 	'import { createRuntimeCss } from "pandwind/css/runtime";',
@@ -21,7 +21,112 @@ function sourceObjectOptions(source: string) {
 			`--${match[2]}`,
 		]),
 	);
-	return { conditionValues, computedKeys, propertyValueConditions: true };
+	return {
+		conditionValues,
+		computedKeys,
+		propertyValueConditions: true,
+		preserveDefaultGroup: true,
+		valueTransforms: { "*": stylexNumericValue },
+	};
+}
+
+const STYLEX_UNITLESS_PROPERTIES = new Set([
+	"animationIterationCount",
+	"aspectRatio",
+	"borderImageOutset",
+	"borderImageSlice",
+	"borderImageWidth",
+	"boxFlex",
+	"boxFlexGroup",
+	"boxOrdinalGroup",
+	"columnCount",
+	"columns",
+	"flex",
+	"flexGrow",
+	"flexNegative",
+	"flexOrder",
+	"flexPositive",
+	"flexShrink",
+	"fontWeight",
+	"gridArea",
+	"gridColumn",
+	"gridColumnEnd",
+	"gridColumnSpan",
+	"gridColumnStart",
+	"gridRow",
+	"gridRowEnd",
+	"gridRowSpan",
+	"gridRowStart",
+	"lineClamp",
+	"lineHeight",
+	"opacity",
+	"order",
+	"orphans",
+	"tabSize",
+	"widows",
+	"zIndex",
+	"zoom",
+	"fillOpacity",
+	"floodOpacity",
+	"stopOpacity",
+	"strokeDasharray",
+	"strokeDashoffset",
+	"strokeMiterlimit",
+	"strokeOpacity",
+	"strokeWidth",
+	"scale",
+]);
+
+function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
+	const numeric =
+		value.kind === "literal" && typeof value.value === "number"
+			? value.value
+			: value.kind === "dynamic"
+				? evaluateNumericExpression(value.expression)
+				: undefined;
+	if (numeric === undefined || !Number.isFinite(numeric)) return value;
+	if (STYLEX_UNITLESS_PROPERTIES.has(property ?? "")) return { kind: "literal", value: numeric };
+	return { kind: "literal", value: `${numeric}px` };
+}
+
+function evaluateNumericExpression(expression: string): number | undefined {
+	const tokens = expression.match(/\d*\.?\d+|[()+\-*/]/g);
+	if (tokens === null || tokens.join("") !== expression.replace(/\s+/g, "")) return undefined;
+	let index = 0;
+	const peek = (): string | undefined => tokens[index];
+	const consume = (): string | undefined => tokens[index++];
+	const primary = (): number | undefined => {
+		if (peek() === "(") {
+			consume();
+			const value = additive();
+			if (consume() !== ")") return undefined;
+			return value;
+		}
+		const token = consume();
+		return token === undefined ? undefined : Number(token);
+	};
+	const multiplicative = (): number | undefined => {
+		let value = primary();
+		while (value !== undefined && (peek() === "*" || peek() === "/")) {
+			const operator = consume();
+			const right = primary();
+			if (right === undefined || (operator === "/" && right === 0)) return undefined;
+			value = operator === "*" ? value * right : value / right;
+		}
+		return value;
+	};
+	const additive = (): number | undefined => {
+		let value = multiplicative();
+		while (value !== undefined && (peek() === "+" || peek() === "-")) {
+			const operator = consume();
+			const right = multiplicative();
+			if (right === undefined) return undefined;
+			value = operator === "+" ? value + right : value - right;
+		}
+		return value;
+	};
+	const value = additive();
+	return index === tokens.length ? value : undefined;
 }
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
@@ -35,7 +140,7 @@ function keyframesText(program: StyleProgram): string {
 	const name = `pw-kf-${(rule.name ?? "animation").replace(/[^A-Za-z0-9_-]/g, "-")}`;
 	const children = rule.children.map(
 		(child) =>
-			`{ selector: ${JSON.stringify(child.selector ?? "from")}, declarations: [${child.declarations
+			`{ kind: "style", selector: ${JSON.stringify(child.selector ?? "from")}, declarations: [${child.declarations
 				.map(
 					(declaration) =>
 						`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
@@ -97,6 +202,13 @@ export default defineCodemodAdapter({
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
 			if (targetId !== "pandwind" || !complete) return { code, residuals: [] };
 			let rewritten = code;
+			// StyleX permits runtime-generated selector keys such as
+			// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
+			// self-selector dialect needs the explicit `&` prefix.
+			rewritten = rewritten.replace(
+				/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=[:.\[])/g,
+				"$1$2&",
+			);
 			rewritten = rewritten.replaceAll("stylex.defineConsts(", "(");
 			rewritten = rewritten.replaceAll("stylex.types.angle(", "(");
 			rewritten = rewritten.replace(

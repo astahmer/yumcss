@@ -3,6 +3,7 @@ import type {
 	RuntimeRuleSerializer,
 	RuntimeSemanticRule,
 } from "./runtime-sheet-contracts.ts";
+import { dashCase } from "./hash.ts";
 
 const hash = (input: string): string => {
 	let value = 2166136261;
@@ -16,7 +17,7 @@ const hash = (input: string): string => {
 const declarationValue = (value: RuntimeDeclaration["value"]): string =>
 	typeof value === "string" ? value : String(value);
 const declarations = (items: readonly RuntimeDeclaration[] = []): string =>
-	items.map((item) => `${item.property}:${declarationValue(item.value)}`).join(";");
+	items.map((item) => `${dashCase(item.property)}:${declarationValue(item.value)}`).join(";");
 
 const condition = (value: string): string =>
 	/^@(media|container|supports)\b/.test(value) || value.startsWith(":") || value.startsWith("&")

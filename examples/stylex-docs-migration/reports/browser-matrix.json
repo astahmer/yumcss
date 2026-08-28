@@ -1,0 +1,238 @@
+{
+  "schema": "pandwind.stylex-docs-browser-report/1",
+  "baselineUrl": "http://127.0.0.1:4311",
+  "migratedUrl": "http://127.0.0.1:4310",
+  "allRoutesEquivalent": true,
+  "comparisons": [
+    {
+      "route": "/",
+      "shapeEqual": true,
+      "baseline": {
+        "title": "StyleX — styling system for ambitious interfaces",
+        "bodyHeight": 1270,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1270,
+          "paddingTop": "0px"
+        },
+        "homeMain": {
+          "display": "flex",
+          "width": 1440,
+          "height": 844,
+          "paddingTop": "32px"
+        },
+        "footer": {
+          "display": "block",
+          "width": 1440,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 32195,
+        "inlineCssBytes": 0,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migrated": {
+        "title": "StyleX — styling system for ambitious interfaces",
+        "bodyHeight": 1270,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1270,
+          "paddingTop": "0px"
+        },
+        "homeMain": {
+          "display": "flex",
+          "width": 1440,
+          "height": 844,
+          "paddingTop": "32px"
+        },
+        "footer": {
+          "display": "block",
+          "width": 1440,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 25703,
+        "inlineCssBytes": 15132,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migratedCssDelta": -6492
+    },
+    {
+      "route": "/docs/learn/",
+      "shapeEqual": true,
+      "baseline": {
+        "title": "Introduction | StyleX",
+        "bodyHeight": 3907,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 3851,
+          "paddingTop": "0px"
+        },
+        "homeMain": null,
+        "footer": {
+          "display": "block",
+          "width": 1148,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 32195,
+        "inlineCssBytes": 0,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migrated": {
+        "title": "Introduction | StyleX",
+        "bodyHeight": 3907,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 3851,
+          "paddingTop": "0px"
+        },
+        "homeMain": null,
+        "footer": {
+          "display": "block",
+          "width": 1148,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 25703,
+        "inlineCssBytes": 21374,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migratedCssDelta": -6492
+    },
+    {
+      "route": "/docs/api/",
+      "shapeEqual": true,
+      "baseline": {
+        "title": "API Reference | StyleX",
+        "bodyHeight": 1569,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1513,
+          "paddingTop": "0px"
+        },
+        "homeMain": null,
+        "footer": {
+          "display": "block",
+          "width": 1148,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 32195,
+        "inlineCssBytes": 0,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migrated": {
+        "title": "API Reference | StyleX",
+        "bodyHeight": 1569,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1513,
+          "paddingTop": "0px"
+        },
+        "homeMain": null,
+        "footer": {
+          "display": "block",
+          "width": 1148,
+          "height": 370,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 1,
+        "linkedCssBytes": 25703,
+        "inlineCssBytes": 21374,
+        "playgroundFrameUrls": null,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migratedCssDelta": -6492
+    },
+    {
+      "route": "/playground",
+      "shapeEqual": true,
+      "baseline": {
+        "title": "Playground | StyleX",
+        "bodyHeight": 1269,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1269,
+          "paddingTop": "0px"
+        },
+        "homeMain": {
+          "display": "flex",
+          "width": 1440,
+          "height": 844,
+          "paddingTop": "8px"
+        },
+        "footer": {
+          "display": "block",
+          "width": 1440,
+          "height": 369,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 2,
+        "linkedCssBytes": 341182,
+        "inlineCssBytes": 136765,
+        "playgroundFrameUrls": [
+          "https://2-19-8-sandpack.codesandbox.io/"
+        ],
+        "playgroundRendered": true,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migrated": {
+        "title": "Playground | StyleX",
+        "bodyHeight": 1269,
+        "main": {
+          "display": "flex",
+          "width": 1440,
+          "height": 1269,
+          "paddingTop": "0px"
+        },
+        "homeMain": {
+          "display": "flex",
+          "width": 1440,
+          "height": 844,
+          "paddingTop": "8px"
+        },
+        "footer": {
+          "display": "block",
+          "width": 1440,
+          "height": 369,
+          "paddingTop": "0px"
+        },
+        "stylesheetLinks": 2,
+        "linkedCssBytes": 334690,
+        "inlineCssBytes": 154185,
+        "playgroundFrameUrls": [
+          "https://2-19-8-sandpack.codesandbox.io/"
+        ],
+        "playgroundRendered": true,
+        "errors": [],
+        "failedResponses": []
+      },
+      "migratedCssDelta": -6492
+    }
+  ]
+}

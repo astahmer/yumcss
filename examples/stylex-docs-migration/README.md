@@ -24,6 +24,21 @@ pnpm exec tsx scripts/migrate-stylex-docs.ts atomic-css
 pnpm exec tsx scripts/migrate-stylex-docs.ts design-dss
 ```
 
+For the built browser proof, start a clean StyleX build on port `4311` and a
+migrated lane on port `4310`, then run:
+
+```sh
+node scripts/verify-stylex-docs-browser.mjs \
+  http://127.0.0.1:4311 \
+  http://127.0.0.1:4310 \
+  examples/stylex-docs-migration/reports/browser-matrix.json
+```
+
+The verifier compares the home page, representative docs pages, and the
+interactive playground. It checks route geometry, linked and inline CSS,
+browser errors, failed responses, and that the playground preview renders.
+The committed report is the latest run against the pinned reference commit.
+
 The corpus gate covers every StyleX-bearing source file under `src/` and
 requires zero safe-mode skips, residuals, or invalid semantic validations.
 The lane test is `packages/codemod/tests/stylex-docs-migration.test.ts`.
@@ -31,4 +46,7 @@ The lane test is `packages/codemod/tests/stylex-docs-migration.test.ts`.
 The copied docs app includes intentionally displayed playground examples and
 the development-only StyleX HMR probe. Those are source content/runtime
 fixtures rather than migration call sites; the migration gate does not
-silently rewrite them as executable styling code.
+silently rewrite them as executable styling code. The playground's host
+application is migrated to Pandwind; its embedded editor remains a
+StyleX-compatible sandbox so the documented interactive compiler experience
+continues to work while users edit StyleX examples.

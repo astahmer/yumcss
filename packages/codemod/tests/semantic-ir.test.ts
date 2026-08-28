@@ -156,6 +156,27 @@ describe("versioned semantic style-program IR", () => {
 		]);
 	});
 
+	test("lifts StyleX property-value conditions at the root of a named style", () => {
+		const program = styleProgramFromSourceObject(
+			"card: { boxShadow: { default: 'none', ':focus-visible': '0 0 0 2px red' } }",
+			{ nestedObjectKind: "named", propertyValueConditions: true, preserveDefaultGroup: true },
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations).toMatchObject([
+			{
+				property: "boxShadow",
+				value: { kind: "literal", value: "none" },
+				conditions: [{ name: "card" }],
+			},
+			{
+				property: "boxShadow",
+				value: { kind: "literal", value: "0 0 0 2px red" },
+				conditions: [{ name: "card" }, { kind: "selector", name: ":focus-visible" }],
+			},
+		]);
+	});
+
 	test("preserves rule-level CSS constructs and canonical ordering", () => {
 		const program = styleProgramFromRules([
 			{

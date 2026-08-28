@@ -2,7 +2,10 @@
 	"schema": "pandwind.stylex-docs-build-report/1",
 	"referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
 	"cleanBuild": true,
-	"staticGenerationPages": 4,
+	"staticGenerationPages": 173,
+	"referenceCssBytes": 32195,
+	"migratedCssBytes": 25703,
+	"migratedCssDelta": -6492,
 	"lanes": {
 		"baseline-stylex": { "build": "passed", "staticGeneration": "passed" },
 		"runtime-css": { "build": "passed", "staticGeneration": "passed" },

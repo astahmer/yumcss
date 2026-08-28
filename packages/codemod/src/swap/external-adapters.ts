@@ -232,6 +232,13 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 		return condition.value === undefined ? condition.name : `@container ${condition.value}`;
 	if (condition.kind === "supports")
 		return condition.value === undefined ? condition.name : `@supports ${condition.value}`;
+	if (condition.kind === "selector") {
+		if (condition.name.endsWith(" &")) return `&${condition.name.slice(0, -2)}`;
+		if (!condition.name.includes("&"))
+			return condition.name.startsWith(":") || condition.name.startsWith("[")
+				? `&${condition.name}`
+				: condition.name;
+		}
 	return condition.name;
 }
 
