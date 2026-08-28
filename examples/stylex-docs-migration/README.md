@@ -7,11 +7,11 @@ the read-only reference clone recorded in `/Users/astahmer/dev/pandwind/referenc
 The migration is deliberately expressed as lanes over the same
 `StylexDocsMigration` interface:
 
-- `runtime-css`: `stylex` → `createCss` / `css.group`, with runtime-sheet
+- `runtime-css`: `stylex` → `createRuntimeCss` / `css.group`, with runtime-sheet
   registration for variables and keyframes.
 - `atomic-css`: the same semantic conversion, with each named group lowered
   to `css.class` and `css.props`.
-- `design-dss`: the same declarations lowered through `createDesignCss` and
+- `design-dss`: the same declarations lowered through `createRuntimeDesignCss` and
   `$raw` so arbitrary CSS remains lossless while the design adapter stays
   replaceable. The runtime variant is used so keyframes and variable
   registrations remain SSR-safe.
