@@ -48,11 +48,15 @@ export function ensureImport(code: string, statement: string): string {
 	return lines.join("\n");
 }
 
-export function hasCssBinding(code: string): boolean {
+export function hasCssBinding(code: string, binding = "css"): boolean {
+	const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return (
-		/\b(?:const|let|var)\s+css\b|createDesignCss\(|createCss\(/.test(code) ||
+		new RegExp(`\\b(?:const|let|var)\\s+${escapedBinding}\\b`).test(code) ||
+		(binding === "css" && /createDesignCss\(|createCss\(/.test(code)) ||
 		// A bare named import of `css` also binds the engine in scope
 		// (e.g. apps re-exporting their design instance).
-		/import\s*\{[^}]*\bcss\b[^}]*}\s*from/.test(code)
+		new RegExp(
+			`import\\s*\\{[^}]*\\b(?:${escapedBinding})(?:\\s+as\\s+${escapedBinding})?\\b[^}]*}\\s*from`,
+		).test(code)
 	);
 }

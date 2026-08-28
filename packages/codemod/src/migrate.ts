@@ -36,6 +36,8 @@ export interface TransformResult {
 export interface TransformOptions {
 	mode: MigrateMode;
 	file: string;
+	/** Local binding to use for generated css.class calls. */
+	cssBinding?: string;
 	skipMarker?: string;
 	/**
 	 * Repo-root-relative directory holding the app's generated `tw.ts` /
@@ -357,7 +359,8 @@ function transformCss(
 		skippedByMarker: 0,
 	};
 
-	const canEmit = hasCssBinding(source);
+	const cssBinding = options.cssBinding ?? "css";
+	const canEmit = hasCssBinding(source, cssBinding);
 	const edits: Array<Edit> = [];
 
 	for (const match of classNameMatches(source)) {
@@ -401,7 +404,7 @@ function transformCss(
 		edits.push({
 			start: match.start,
 			end: match.start + match.full.length,
-			text: `className={ css.class({\n${body}\n}) }`,
+			text: `className={ ${cssBinding}.class({\n${body}\n}) }`,
 		});
 		result.converted++;
 	}

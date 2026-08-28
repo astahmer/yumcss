@@ -40,6 +40,9 @@ The committed `reports/` files are the checked-in proof artifacts for each lane.
 The `tw` lane currently has exact CSS selector and byte parity with the pinned
 baseline, and its representative browser routes stay within a four-pixel
 document-height tolerance.
+The `css.class` lane is also exact on those routes and reduces the external
+stylesheet by 239 bytes while emitting its runtime declarations through the
+SSR insertion hook.
 
 The upstream repository itself does not need to be JJ-versioned. Git already
 pins the external source; Pandwind JJ revisions pin the migration runner,

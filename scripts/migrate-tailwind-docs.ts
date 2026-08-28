@@ -156,23 +156,43 @@ function createLane(id: TailwindDocsLane): LaneAdapter {
 			}
 
 			const importPath = relativeModuleImport(file, "src/pandwind", "css");
-			const prepared = ensureImport(source, `import { css } from "${importPath}";`);
+			const binding = id === TailwindDocsLane.CssClass ? "pandwindCss" : "pandwindDcss";
+			const prepared = ensureImport(source, `import { css as ${binding} } from "${importPath}";`);
 			const result = transformSource(prepared, meta, {
 				mode: "css",
 				file,
+				cssBinding: binding,
 			});
 			if (id === TailwindDocsLane.CssClass) return result;
 			return {
 				...result,
-				code: result.code
-					.replace(
-						`import { css } from "${importPath}";`,
-						`import { dcss } from "${relativeModuleImport(file, "src/pandwind", "dcss")}";`,
-					)
-					.replace(/\bcss\.class\(/g, "dcss.class("),
+				code: result.code.replace(
+					`import { css as ${binding} } from "${importPath}";`,
+					`import { dcss as ${binding} } from "${relativeModuleImport(file, "src/pandwind", "dcss")}";`,
+				),
 			};
 		},
 	};
+}
+
+function runtimeStyleSheetSource(binding: "css" | "dcss"): string {
+	return `"use client";
+
+import { useRef } from "react";
+import { useServerInsertedHTML } from "next/navigation";
+import { ${binding} } from "./${binding}";
+
+export function PandwindStyleSheet() {
+	const emitted = useRef<string | undefined>(undefined);
+	useServerInsertedHTML(() => {
+		const value = ${binding}.sheet.css();
+		if (value === emitted.current) return null;
+		emitted.current = value;
+		return <style data-pandwind dangerouslySetInnerHTML={{ __html: value }} />;
+	});
+	return null;
+}
+`;
 }
 
 function laneSupportFiles(
@@ -194,10 +214,12 @@ function laneSupportFiles(
 			'import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n';
 	} else if (lane === TailwindDocsLane.CssClass) {
 		support["src/pandwind/css.ts"] =
-			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createRuntimeCss(pandwindPreset);\n';
+			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createRuntimeCss(pandwindPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
+		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("css");
 	} else {
 		support["src/pandwind/dcss.ts"] =
-			'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dcss = createRuntimeDesignCss(pandwindPreset);\n';
+			'import type { CssFn } from "pandwind/css";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dcss = createRuntimeDesignCss(pandwindPreset) as unknown as CssFn & { sheet: { css(): string } };\n';
+		support["src/pandwind/style-sheet.tsx"] = runtimeStyleSheetSource("dcss");
 	}
 	return support;
 }
@@ -302,12 +324,10 @@ export class TailwindDocsMigration {
 			await writeFile(tsconfigFile, `${JSON.stringify(tsconfig, null, 2)}\n`);
 			await cp(join(referenceRoot, "public"), join(outputRoot, "public"), { recursive: true });
 			await cp(join(referenceRoot, "src"), join(outputRoot, "src"), { recursive: true });
-			if (lane === TailwindDocsLane.Tw) {
-				const globalStylesheet = join(outputRoot, "src/app/globals.css");
-				const stylesheet = await readFile(globalStylesheet, "utf8");
-				if (!stylesheet.includes('@source not "./../pandwind";')) {
-					await writeFile(globalStylesheet, `${stylesheet}\n@source not "./../pandwind";\n`);
-				}
+			const globalStylesheet = join(outputRoot, "src/app/globals.css");
+			const stylesheet = await readFile(globalStylesheet, "utf8");
+			if (!stylesheet.includes('@source not "./../pandwind";')) {
+				await writeFile(globalStylesheet, `${stylesheet}\n@source not "./../pandwind";\n`);
 			}
 			for (const [file, code] of outputFiles) {
 				const target = join(outputRoot, file);
@@ -318,6 +338,20 @@ export class TailwindDocsMigration {
 				const target = join(outputRoot, file);
 				await mkdir(dirname(target), { recursive: true });
 				await writeFile(target, code);
+			}
+			if (lane !== TailwindDocsLane.Tw) {
+				const layoutFile = join(outputRoot, "src/app/layout.tsx");
+				const layout = await readFile(layoutFile, "utf8");
+				const withStyleSheetImport = layout.includes("PandwindStyleSheet")
+					? layout
+					: `import { PandwindStyleSheet } from "../pandwind/style-sheet";\n${layout}`;
+				await writeFile(
+					layoutFile,
+					withStyleSheetImport.replace(
+						'        <GoogleAnalytics gaId="G-TMR96VNVMT" />',
+						`        <PandwindStyleSheet />\n        <GoogleAnalytics gaId="G-TMR96VNVMT" />`,
+					),
+				);
 			}
 		}
 
