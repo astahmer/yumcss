@@ -22,11 +22,8 @@ import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
-import {
-	createTokenFormatRegistry,
-	type TokenFormatRegistry,
-} from "./swap/token-format-registry.ts";
-import type { TokenFormatId } from "./swap/token-format.ts";
+import { tokenSetCodec } from "./swap/token-set.ts";
+import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 
 interface CliArgs {
 	patterns: string[];
@@ -612,13 +609,12 @@ async function mainTokens(argv: string[]): Promise<void> {
 	}
 	to = to ?? from;
 
-	const registry: TokenFormatRegistry = createTokenFormatRegistry();
-	const set = await registry.importFile(from as TokenFormatId, resolve(input));
+	const set = await tokenSetCodec.fromFile(from as TokenFormatId, resolve(input));
 
 	const groupCount = Object.keys(set.groups).length;
 	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
 
-	const result = registry.exportText(to as TokenFormatId, set);
+	const result = tokenSetCodec.to(to as TokenFormatId, set);
 
 	if (out !== undefined) {
 		writeFileSync(resolve(out), result);

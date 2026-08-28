@@ -524,31 +524,31 @@ describe("extra token formats", () => {
 	const set = T.fromDtcgJson(fixture);
 
 	test("style dictionary round-trips and infers color type", () => {
-		const sd = T.exportStyleDictionary(set);
+		const sd = T.toStyleDictionary(set);
 		expect(sd).toContain('"value": "#3182ce"');
 		expect(sd).toContain('"type": "color"');
-		const back = T.importStyleDictionary(sd);
+		const back = T.fromStyleDictionary(sd);
 		expect(back.groups).toEqual(set.groups);
 	});
 
 	test("figma tokens round-trips with types always set", () => {
-		const fig = T.exportFigmaTokens(set);
+		const fig = T.toFigmaTokens(set);
 		expect(fig).toContain('"type": "color"');
 		expect(fig).toContain('"type": "spacing"');
-		const back = T.importFigmaTokens(fig);
+		const back = T.fromFigmaTokens(fig);
 		expect(back.groups).toEqual(set.groups);
 	});
 
 	test(":root css round-trips through the prefix map", () => {
-		const cssOut = T.exportRootCss(set);
+		const cssOut = T.toRootCss(set);
 		expect(cssOut).toContain("--color-blue-500: #3182ce;");
 		expect(cssOut).toContain("--spacing-4: 4px;");
-		const back = T.importRootCss(cssOut);
+		const back = T.fromRootCss(cssOut);
 		expect(back.groups).toEqual(set.groups);
 	});
 
 	test("stylex defineVars emits one export per group", () => {
-		const vars = T.exportStylexVars(set);
+		const vars = T.toStylexVars(set);
 		expect(vars).toContain('import { defineVars } from "@stylexjs/stylex";');
 		expect(vars).toContain("export const colors = defineVars({");
 		expect(vars).toContain('"blue-500": "#3182ce"');
