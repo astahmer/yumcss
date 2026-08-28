@@ -4,6 +4,12 @@ import { StylexDocsMigration } from "../../../scripts/migrate-stylex-docs.ts";
 const root = new URL("../../../examples/stylex-docs-migration/source/", import.meta.url).pathname;
 
 describe("StyleX docs migration lanes", () => {
+	test("runtime-css lane emits the Pandwind group API", async () => {
+		const report = await StylexDocsMigration.run(root, "runtime-css");
+		expect(report.lane).toBe("runtime-css");
+		expect(report.invalidValidations).toBe(0);
+	});
+
 	test.each(StylexDocsMigration.lanes.map((lane) => lane.id))(
 		"migrates the pinned corpus without unsafe residuals: %s",
 		async (lane) => {
