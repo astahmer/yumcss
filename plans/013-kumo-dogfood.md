@@ -8,7 +8,7 @@ library (103 .tsx sources, custom theme layers, base-ui composition). Migrating
 it onto pandwind's `tw()` via our raw-tailwind codemod is the best available
 dogfood: real-world class strings at scale, not synthetic fixtures.
 
-## Status — dry-run measurement (2026-08-23)
+## Status — COMPLETE dogfood migration evidence (2026-08-23)
 
 Cloned to `/tmp/pandwind-kumo-dogfood` (shallow). Ran
 `pandwind-codemod --to=tw` (dry) over `packages/kumo/src/**/*.{tsx,ts}` using
@@ -126,13 +126,10 @@ must share one compiler instance; noted as methodology).
    (open-import until specifier-quote terminator). All 41 codemod tests +
    parse-check over the written tree pass (1 pre-existing-broken file
    remains, see #2).
-2. **KNOWN ISSUE (unfixed) — classNameMatches ignores string/comment
-   context**: the regex converts `className='…'` occurrences inside string
-   literals and comments too. Observed damage: a vitest `it("… className=
-'contents' …")` test name rewritten to invalid syntax, and a JSDoc example
-   converted inside a comment (its classes then vanish from AST-based
-   extraction). Fix sketch: linear scan tracking quote/comment state up to
-   match index, skip when inside.
+2. **FIXED — classNameMatches string/comment context**: the matcher now uses a
+   lightweight lexical scan to skip quote and comment contents before applying
+   JSX attribute rewrites. Regression coverage preserves test names, JSDoc,
+   and real attributes.
 
 ## 8bitcn port result (2026-08-23)
 
@@ -179,8 +176,8 @@ same rules.
 - ensureImport multi-line corruption (fixed in nklnnply) initially corrupted
   52 of these files too; the clean tree was produced by resetting and
   re-running the fixed codemod — parse-check over the final tree: 0 errors.
-- classNameMatches string/comment context issue still open (see Port result
-  section above).
+- classNameMatches now ignores string/comment context; the regression is pinned
+  in the codemod safety-rails suite.
 
 ## Residual closed — data-[...] variants (2026-08-24)
 

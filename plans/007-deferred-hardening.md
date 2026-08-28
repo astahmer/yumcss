@@ -129,9 +129,9 @@ refreshed intentionally.
 
 ## D. Cross-engine CSS-dedup proof for non-tw strategies
 
-**State:** "one rule per class" is proven end-to-end for the tailwind adapter
-(css-tw-parity). Named-atoms and future modes have unit tests but no
-compiled-through-real-engine proof.
+**State: COMPLETE.** `tests/css-dedup-parity.test.ts` now proves the hash and
+named-atoms strategies through the generated stylesheet; the Tailwind adapter
+continues to use its separate real-compiler parity harness.
 **Approach:**
 
 1. Generalize `tests/css-tw-parity.test.ts`'s harness: parameterize the
@@ -144,9 +144,10 @@ compiled-through-real-engine proof.
    `ClassNameStrategy` as stable API.
    **Effort:** small-medium; mostly test-harness refactor.
 
-## E. Publish-ready packaging hygiene (pre-npm)
+## E. Publish-ready packaging hygiene (COMPLETE locally; pre-npm publication)
 
-Not urgent until someone else consumes the package:
+The exports map, quickstart, and release/change documentation are now present.
+Actual registry publication remains operator-gated:
 
 1. `exports` map audit: ensure `./css`, `./tw`, `./cx`, `/generate*` subpaths +
    `"types"` conditions are all declared; generate-theme/generate-types are
