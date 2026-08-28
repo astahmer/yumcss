@@ -57,7 +57,7 @@ export const parseCondition = (
 	return true;
 };
 
-export class CssRuleSerializer {
+class CssRuleSerializer {
 	serialize(declarations: string, conditions: ParsedConditions): string {
 		const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
 		if (selectorLists.length) {
@@ -79,7 +79,7 @@ export class CssRuleSerializer {
 							})
 							.join(", ");
 					})
-					.join(", ")}{${declarations}}`,
+					.join(",")}{${declarations}}`,
 			);
 		}
 		const selectors = `${parentSelectors.join("")}${className}${selfSelectors.join("")}`;

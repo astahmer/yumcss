@@ -5,7 +5,7 @@ import type {
 	StyleObject,
 	TokenDeclaration,
 } from "../types/typings.ts";
-import { VarCompiler } from "./var-compiler.ts";
+import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
@@ -24,6 +24,7 @@ const byPriority = <T extends { priority: number }>(values: Iterable<T>): Array<
 
 export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
 	const cache = new Map<string, Rule>();
+	const varCompiler = createVarCompiler();
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -171,7 +172,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
 		const css = cssRuleSerializer.serialize(`${prop}: ${declaration}`, {
 			...atomic.conditions,
-			className: `.${VarCompiler.escapeClass(VarCompiler.classFor(orderedKey))}`,
+			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
 		});
 		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
 	};
@@ -273,17 +274,6 @@ export const decodeAtomicPath = (presetConditions: AnyConditions, atomicPath: st
 		value,
 		priority: priorities.reduce((acc, prio) => acc + prio, 0),
 		conditions,
-	};
-};
-
-const createConditionsBucket = (partial?: Partial<ParsedConditions>): ParsedConditions => {
-	return {
-		className: "",
-		selfSelectors: [],
-		parentSelectors: [],
-		selectorLists: [],
-		atRules: [],
-		...partial,
 	};
 };
 

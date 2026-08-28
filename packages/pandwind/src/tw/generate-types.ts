@@ -36,6 +36,12 @@ import {
 } from "./generate-theme.ts";
 import { createThemeBridge } from "./theme-bridge.ts";
 
+export type {
+	DesignSystemArtifactBundle,
+	DesignSystemArtifactWriter,
+	DesignSystemArtifacts,
+} from "./codegen-artifacts.ts";
+
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
 

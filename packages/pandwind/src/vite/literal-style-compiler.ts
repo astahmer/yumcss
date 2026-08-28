@@ -17,7 +17,7 @@ export interface LiteralStyleCompilerOptions {
 	readonly debug?: boolean;
 }
 
-export class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
+class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 	readonly registry: AtomRegistry = new Map();
 	private readonly className;
 	private readonly hashFn;

@@ -4,6 +4,12 @@
  * This module knows nothing about the DOM. It is the shared boundary between
  * runtime CSS, SSR, hydration, devtools snapshots, and future sinks.
  */
+import {
+	createRuntimeRuleCanonicalizer,
+	createRuntimeOrderingPolicy,
+	type RuntimeOrderingPolicy,
+	type RuntimeRuleCanonicalizer,
+} from "./runtime-policies.ts";
 
 export interface RuntimeRule {
 	readonly id: string;
@@ -51,18 +57,19 @@ export interface RuntimeRuleStorePort {
 	hydrate(input: RuntimeSheetSnapshot): void;
 }
 
-const orderedRules = (rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[] =>
-	Array.from(rules.values()).toSorted(
-		(a, b) => a.priority - b.priority || a.id.localeCompare(b.id),
-	);
-
 export class RuntimeRuleStore implements RuntimeRuleStorePort {
 	readonly rules = new Map<string, RuntimeRule>();
 	tokens = "";
 
+	constructor(
+		private readonly ordering: RuntimeOrderingPolicy = createRuntimeOrderingPolicy(),
+		private readonly canonicalizer: RuntimeRuleCanonicalizer = createRuntimeRuleCanonicalizer(),
+	) {}
+
 	register(next: readonly RuntimeRule[]): boolean {
 		let changed = false;
-		for (const rule of next) {
+		for (const input of next) {
+			const rule = this.canonicalizer.canonicalize(input);
 			const previous = this.rules.get(rule.id);
 			if (previous?.css === rule.css && previous.priority === rule.priority) continue;
 			this.rules.set(rule.id, rule);
@@ -78,7 +85,7 @@ export class RuntimeRuleStore implements RuntimeRuleStorePort {
 	}
 
 	ordered(): RuntimeRule[] {
-		return orderedRules(this.rules);
+		return this.ordering.order(this.rules.values());
 	}
 
 	snapshot(): RuntimeSheetSnapshot {
@@ -171,9 +178,20 @@ const semanticRuleCss = (rule: RuntimeSemanticRule): string => {
 	);
 };
 
+export interface CssRuntimeRuleSerializerOptions {
+	readonly ordering?: RuntimeOrderingPolicy;
+}
+
 export class CssRuntimeRuleSerializer implements RuntimeRuleSerializer {
+	private readonly ordering: RuntimeOrderingPolicy;
+
+	constructor(options: CssRuntimeRuleSerializerOptions = {}) {
+		this.ordering = options.ordering ?? createRuntimeOrderingPolicy();
+	}
+
 	serialize(store: RuntimeRuleStorePort): string {
-		const body = orderedRules(store.rules)
+		const body = this.ordering
+			.order(store.rules.values())
 			.map((rule) => rule.css)
 			.filter(Boolean)
 			.join("\n");

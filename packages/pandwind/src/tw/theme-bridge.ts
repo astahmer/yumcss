@@ -26,7 +26,7 @@ export interface ThemeBridge {
 	split(groups: ThemeTokenGroups, conditions?: ThemeConditions): ReturnType<typeof splitTokens>;
 }
 
-export class DefaultThemeBridge implements ThemeBridge {
+class DefaultThemeBridge implements ThemeBridge {
 	buildBlock(
 		groups: ThemeTokenGroups,
 		resolveCondition?: (name: string) => ResolvedConditionParts | null,

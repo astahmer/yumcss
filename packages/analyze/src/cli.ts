@@ -10,7 +10,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { formatReport, type FoldSummary } from "./analyze.ts";
+import { collectFiles, formatReport, type FoldSummary } from "./analyze.ts";
 import { createAnalysisWorkspace, createFoldAnalysisService } from "./analysis-service.ts";
 import { cssBudget, formatCssBudget } from "./css-budget.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
@@ -226,6 +226,7 @@ async function main(): Promise<void> {
 	// --fail-over ceiling or any --budgets cap. PR-relative deltas compose by
 	// running the CLI twice (base + head) in the workflow layer.
 	if ((args.failOverBytes !== undefined || args.budgetsPath !== undefined) && args.css) {
+		const workspace = createAnalysisWorkspace();
 		const files = workspace
 			.collectFiles(args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"], args.root)
 			.filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));

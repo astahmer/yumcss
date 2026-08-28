@@ -14,8 +14,14 @@ export interface VarsOutput {
 	readonly [VARS_ATOMS]?: Array<VarAtom>;
 }
 
-export class VarCompiler {
-	static splitKey(key: string): { conditions: string[]; prop: string } {
+export interface VarCompiler {
+	classFor(key: string): string;
+	escapeClass(cls: string): string;
+	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> };
+}
+
+class DefaultVarCompiler implements VarCompiler {
+	private splitKey(key: string): { conditions: string[]; prop: string } {
 		const parts = key.split("__").filter((part) => part !== "");
 		const rawProp = parts[parts.length - 1]!;
 		return {
@@ -27,30 +33,22 @@ export class VarCompiler {
 		};
 	}
 
-	static classFor(key: string): string {
-		const { conditions, prop } = VarCompiler.splitKey(key);
+	classFor(key: string): string {
+		const { conditions, prop } = this.splitKey(key);
 		return `pw-${conditions.length > 0 ? `${conditions.join(":")}:` : ""}${prop}`;
 	}
 
-	static baseCustomProp(prop: string): string {
+	private baseCustomProp(prop: string): string {
 		return `--pw-c-${prop}`;
 	}
 
-	static customPropFor(prop: string, conditions: string[]): string {
+	private customPropFor(prop: string, conditions: string[]): string {
 		return conditions.length === 0
-			? VarCompiler.baseCustomProp(prop)
+			? this.baseCustomProp(prop)
 			: `--pw-c-${prop}_${conditions.join("_")}`;
 	}
 
-	static fallbackChain(prop: string, conditions: string[]): string {
-		let chain = `var(${VarCompiler.baseCustomProp(prop)})`;
-		for (let i = 1; i <= conditions.length; i++) {
-			chain = `var(${VarCompiler.customPropFor(prop, conditions.slice(0, i))}, ${chain})`;
-		}
-		return chain;
-	}
-
-	static escapeClass(cls: string): string {
+	escapeClass(cls: string): string {
 		return cls.replace(/:/g, "\\:");
 	}
 
@@ -60,13 +58,13 @@ export class VarCompiler {
 		for (const key of Object.keys(flat).toSorted()) {
 			const raw = flat[key];
 			if ((typeof raw !== "string" && !Number.isFinite(raw)) || raw === "") continue;
-			const { conditions, prop } = VarCompiler.splitKey(key);
+			const { conditions, prop } = this.splitKey(key);
 			if (!prop) continue;
-			atoms.push({ cls: VarCompiler.classFor(key), keys: [key] });
-			style[VarCompiler.customPropFor(prop, conditions)] = `${raw}`;
+			atoms.push({ cls: this.classFor(key), keys: [key] });
+			style[this.customPropFor(prop, conditions)] = `${raw}`;
 		}
 		return { atoms, style };
 	}
 }
 
-export const createVarCompiler = (): VarCompiler => new VarCompiler();
+export const createVarCompiler = (): VarCompiler => new DefaultVarCompiler();

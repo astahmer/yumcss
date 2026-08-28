@@ -26,6 +26,7 @@ import {
 	createTokenFormatRegistry,
 	type TokenFormatRegistry,
 } from "./swap/token-format-registry.ts";
+import type { TokenFormatId } from "./swap/token-format.ts";
 
 interface CliArgs {
 	patterns: string[];
@@ -604,7 +605,7 @@ async function mainTokens(argv: string[]): Promise<void> {
 		else throw new Error(`codemod tokens: unknown flag '${arg}' (--from= --to= --out=)`);
 	}
 	const formats = ["dtcg", "theme", "panda", "preset", "sd", "figma", "rootcss", "stylex"] as const;
-	if (from === undefined || !formats.includes(from) || input === undefined) {
+	if (from === undefined || !formats.includes(from as TokenFormatId) || input === undefined) {
 		throw new Error(
 			"usage: pandwind-codemod tokens --from=<dtcg|theme|panda|preset> --to=<dtcg|theme|panda|preset> <file> [--out=<file>]",
 		);
@@ -612,12 +613,12 @@ async function mainTokens(argv: string[]): Promise<void> {
 	to = to ?? from;
 
 	const registry: TokenFormatRegistry = createTokenFormatRegistry();
-	const set = await registry.importFile(from, resolve(input));
+	const set = await registry.importFile(from as TokenFormatId, resolve(input));
 
 	const groupCount = Object.keys(set.groups).length;
 	const tokenCount = Object.values(set.groups).reduce((a, g) => a + Object.keys(g).length, 0);
 
-	const result = registry.exportText(to, set);
+	const result = registry.exportText(to as TokenFormatId, set);
 
 	if (out !== undefined) {
 		writeFileSync(resolve(out), result);

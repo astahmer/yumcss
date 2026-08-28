@@ -1,6 +1,6 @@
 /** Runtime sinks. A browser style element is only one possible sink. */
 
-export interface RuntimeStyleElement {
+interface RuntimeStyleElement {
 	readonly tagName?: string;
 	textContent: string;
 	setAttribute(name: string, value: string): void;

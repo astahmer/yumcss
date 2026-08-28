@@ -3,7 +3,7 @@ import { join } from "node:path";
 import type { CssPreset } from "./css-extract.ts";
 import type { CssSourceService } from "./css-source-service.ts";
 
-export interface CssSourceWorkspaceEntry {
+interface CssSourceWorkspaceEntry {
 	readonly mtimeMs: number;
 	readonly sources: ReturnType<CssSourceService["extract"]>;
 	readonly varKeys: string[];
@@ -27,7 +27,7 @@ export interface CssSourceWorkspaceOptions {
 	readonly sourceService: CssSourceService;
 }
 
-export class NodeCssSourceWorkspace implements CssSourceWorkspace {
+class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	private readonly cache = new Map<string, CssSourceWorkspaceEntry>();
 
 	constructor(private readonly options: CssSourceWorkspaceOptions) {}

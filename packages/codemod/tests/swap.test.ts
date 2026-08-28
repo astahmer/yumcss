@@ -380,7 +380,7 @@ describe("token references + single-line output", () => {
 /* tokens subcommand: config-system conversions                        */
 /* ------------------------------------------------------------------ */
 
-import * as T from "../src/swap/token-set.ts";
+import { tokenSetCodec as T } from "../src/swap/token-set.ts";
 
 describe("TokenSet conversions", () => {
 	const dtcg = JSON.stringify({

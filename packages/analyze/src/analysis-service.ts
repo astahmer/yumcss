@@ -13,7 +13,7 @@ export interface FoldAnalysisPort {
 	summarize(files: Array<FileFoldStats>): FoldSummary;
 }
 
-export class FoldAnalysisService implements FoldAnalysisPort {
+class FoldAnalysisService implements FoldAnalysisPort {
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats {
 		return analyzeSource(source, file, options);
 	}
@@ -28,7 +28,7 @@ export interface AnalysisWorkspacePort {
 	collectFiles(patterns: Array<string>, root: string): Array<string>;
 }
 
-export class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
+class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 	loadConfig(twPath: string): ReturnType<typeof loadTwConfig> {
 		return loadTwConfig(twPath);
 	}

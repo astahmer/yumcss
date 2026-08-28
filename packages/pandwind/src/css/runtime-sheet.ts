@@ -10,23 +10,24 @@ import {
 	type RuntimeRule,
 	type RuntimeRuleSerializer,
 	type RuntimeSemanticRule,
-	type RuntimeSemanticRuleKind,
 	type RuntimeSheetSnapshot,
 } from "./runtime-artifacts.ts";
 import {
-	DomStyleSink,
-	type RuntimeDocument,
-	type RuntimeStyleElement,
-	type RuntimeStyleSink,
-} from "./runtime-sink.ts";
+	createRuntimeRuleCanonicalizer,
+	createRuntimeOrderingPolicy,
+	type RuntimeOrderingPolicy,
+	type RuntimeRuleCanonicalizer,
+} from "./runtime-policies.ts";
+import { DomStyleSink, type RuntimeDocument, type RuntimeStyleSink } from "./runtime-sink.ts";
 
 export type {
+	RuntimeDeclaration,
 	RuntimeRule,
 	RuntimeSemanticRule,
 	RuntimeSemanticRuleKind,
 	RuntimeSheetSnapshot,
 } from "./runtime-artifacts.ts";
-export type { RuntimeDocument, RuntimeStyleElement, RuntimeStyleSink } from "./runtime-sink.ts";
+export type { RuntimeOrderingPolicy, RuntimeRuleCanonicalizer } from "./runtime-policies.ts";
 
 const DEFAULT_ID = "pandwind";
 
@@ -41,6 +42,10 @@ export interface RuntimeSheetOptions {
 	readonly nonce?: string;
 	/** Injectable artifact serializer for alternate CSS dialects or diagnostics. */
 	readonly serializer?: RuntimeRuleSerializer;
+	/** Injectable deterministic ordering policy for SSR/devtools parity. */
+	readonly ordering?: RuntimeOrderingPolicy;
+	/** Injectable artifact canonicalization policy. */
+	readonly canonicalizer?: RuntimeRuleCanonicalizer;
 	/** Injectable sink for browser, test, or host-framework mounting. */
 	readonly sink?: RuntimeStyleSink;
 }
@@ -48,8 +53,10 @@ export interface RuntimeSheetOptions {
 /** Create a deduplicating, SSR-safe runtime stylesheet. */
 export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {
 	const id = options.id ?? DEFAULT_ID;
-	const store = new RuntimeRuleStore();
-	const serializer = options.serializer ?? new CssRuntimeRuleSerializer();
+	const ordering = options.ordering ?? createRuntimeOrderingPolicy();
+	const canonicalizer = options.canonicalizer ?? createRuntimeRuleCanonicalizer();
+	const store = new RuntimeRuleStore(ordering, canonicalizer);
+	const serializer = options.serializer ?? new CssRuntimeRuleSerializer({ ordering });
 	const sink =
 		options.sink ??
 		new DomStyleSink({

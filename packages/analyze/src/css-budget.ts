@@ -14,14 +14,9 @@ import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { collectTwClasses } from "pandwind/tw/collect";
-import {
-	PostCssArtifactAnalyzer,
-	type SheetShape,
-	type ShapeCategory,
-	type SpecificityBucket,
-} from "./css-artifact-analyzer.ts";
+import { PostCssArtifactAnalyzer, type SheetShape } from "./css-artifact-analyzer.ts";
 
-export type { SheetShape, ShapeCategory, SpecificityBucket } from "./css-artifact-analyzer.ts";
+export type { SheetShape } from "./css-artifact-analyzer.ts";
 
 /** One declared theme scope's extra cost (plans/015). */
 interface ThemeScopeDelta {

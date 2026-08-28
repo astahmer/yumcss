@@ -2,11 +2,9 @@ import { createCx, type CxInput } from "../cx/index.ts";
 import { ATOM_REGISTRY } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
+import type { TwConfig } from "./inline.ts";
 
-export interface CxEvaluationConfig {
-	readonly conflicts: Record<string, readonly string[]>;
-	readonly compose: Record<string, string>;
-}
+export type CxEvaluationConfig = Pick<TwConfig, "conflicts" | "compose">;
 
 export interface CxEvaluationPort {
 	merge(inputs: CxInput[]): string | undefined;
@@ -16,7 +14,7 @@ export interface CxEvaluationOptions {
 	readonly engine?: PandwindEngineContext;
 }
 
-export class RuntimeCxEvaluator implements CxEvaluationPort {
+class RuntimeCxEvaluator implements CxEvaluationPort {
 	private readonly evaluate: (...inputs: CxInput[]) => string;
 
 	constructor(config: CxEvaluationConfig, options: CxEvaluationOptions = {}) {

@@ -10,15 +10,10 @@ import type {
 	InlineCssResult,
 } from "./css-extract.ts";
 import {
-	diagnoseCssSources,
-	extractCssFile,
-	extractCssSources,
-	findAuthoredCssImports,
-	findCssCallSites,
-	findCssImports,
-	inlineCssCalls,
-	inspectCssSource,
-} from "./css-extract.ts";
+	createCssExtractionPipeline,
+	type CssExtractionPipeline,
+} from "./css-extraction-pipeline.ts";
+import type { CssExtractionPorts } from "./css-extraction-ports.ts";
 
 export interface CssSourceService {
 	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string>;
@@ -48,25 +43,27 @@ export interface CssSourceService {
 }
 
 /** Shared source-facing CSS service used by Vite, unplugin, and analyzers. */
-export class DefaultCssSourceService implements CssSourceService {
+class DefaultCssSourceService implements CssSourceService {
+	constructor(private readonly pipeline: CssExtractionPipeline = createCssExtractionPipeline()) {}
+
 	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string> {
-		return findCssImports(code, id, matchers);
+		return this.pipeline.findImports(code, id, matchers);
 	}
 
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection {
-		return inspectCssSource(code, id, matchers);
+		return this.pipeline.inspect(code, id, matchers);
 	}
 
 	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite> {
-		return findCssCallSites(code, id, cssNames);
+		return this.pipeline.findCallSites(code, id, cssNames);
 	}
 
 	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic> {
-		return diagnoseCssSources(code, id, cssNames);
+		return this.pipeline.diagnose(code, id, cssNames);
 	}
 
 	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport> {
-		return findAuthoredCssImports(code, id);
+		return this.pipeline.findAuthoredImports(code, id);
 	}
 
 	extract(
@@ -75,7 +72,7 @@ export class DefaultCssSourceService implements CssSourceService {
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
 	): Array<ExtractedCssStyle> {
-		return extractCssSources(code, id, cssNames, preset);
+		return this.pipeline.extract(code, id, cssNames, preset);
 	}
 
 	extractFile(
@@ -84,7 +81,7 @@ export class DefaultCssSourceService implements CssSourceService {
 		matchers: Array<string | RegExp>,
 		preset: CssPreset,
 	): CssFileExtraction {
-		return extractCssFile(code, id, matchers, preset);
+		return this.pipeline.extractFile(code, id, matchers, preset);
 	}
 
 	inline(
@@ -94,8 +91,9 @@ export class DefaultCssSourceService implements CssSourceService {
 		preset: CssPreset,
 		className: AnyClassNameStrategy,
 	): InlineCssResult {
-		return inlineCssCalls(code, id, cssNames, preset, className);
+		return this.pipeline.inline(code, id, cssNames, preset, className);
 	}
 }
 
-export const createCssSourceService = (): CssSourceService => new DefaultCssSourceService();
+export const createCssSourceService = (ports?: Partial<CssExtractionPorts>): CssSourceService =>
+	new DefaultCssSourceService(createCssExtractionPipeline(ports));

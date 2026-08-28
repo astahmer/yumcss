@@ -52,13 +52,13 @@ function walkDtcg(node: unknown, path: string[], out: TokenSet): void {
 	}
 }
 
-export function fromDtcgJson(text: string): TokenSet {
+function fromDtcgJson(text: string): TokenSet {
 	const out: TokenSet = { groups: {} };
 	walkDtcg(JSON.parse(text), [], out);
 	return out;
 }
 
-export function fromThemeCss(text: string): TokenSet {
+function fromThemeCss(text: string): TokenSet {
 	const out: TokenSet = { groups: {} };
 	for (const match of text.matchAll(/--([\w-]+)\s*:\s*([^;}]+)[;}]/g)) {
 		const rawName = match[1]!;
@@ -109,7 +109,7 @@ function flattenNested(
 	}
 }
 
-export async function fromPandaConfig(path: string): Promise<TokenSet> {
+async function fromPandaConfig(path: string): Promise<TokenSet> {
 	const mod = await importModule(path);
 	const config = (mod.default ?? Object.values(mod)[0]) as
 		| { theme?: { extend?: { tokens?: unknown }; tokens?: unknown } }
@@ -129,7 +129,7 @@ export async function fromPandaConfig(path: string): Promise<TokenSet> {
 	return out;
 }
 
-export async function fromDefinePreset(path: string): Promise<TokenSet> {
+async function fromDefinePreset(path: string): Promise<TokenSet> {
 	const mod = await importModule(path);
 	const tokens = findPresetTokens(mod);
 	if (tokens === null) throw new Error(`codemod tokens: no preset with .tokens found in ${path}`);
@@ -148,7 +148,7 @@ export async function fromDefinePreset(path: string): Promise<TokenSet> {
 /* exporters                                                           */
 /* ------------------------------------------------------------------ */
 
-export function toDtcgJson(set: TokenSet): string {
+function toDtcgJson(set: TokenSet): string {
 	const root: Record<string, unknown> = {};
 	for (const [group, values] of Object.entries(set.groups)) {
 		const groupNode: Record<string, unknown> = {};
@@ -166,7 +166,7 @@ export function toDtcgJson(set: TokenSet): string {
 	return `${JSON.stringify(root, null, "\t")}\n`;
 }
 
-export function toThemeCss(set: TokenSet): string {
+function toThemeCss(set: TokenSet): string {
 	const lines: string[] = ["@theme {"];
 	for (const [group, values] of Object.entries(set.groups)) {
 		const prefix = GROUP_TO_THEME_PREFIX[group] ?? group;
@@ -203,7 +203,7 @@ function renderTokenTree(values: Record<string, string>): string {
 }
 
 /** Panda-style nested tokens with `{ value }` leaves, as a JS object literal. */
-export function toPandaConfigSnippet(set: TokenSet): string {
+function toPandaConfigSnippet(set: TokenSet): string {
 	const groupLines = Object.entries(set.groups)
 		.map(([group, values]) => `\t\t${JSON.stringify(group)}: ${renderTokenTree(values)},`)
 		.join("\n");
@@ -211,7 +211,7 @@ export function toPandaConfigSnippet(set: TokenSet): string {
 }
 
 /** pandwind definePreset-compatible snippet using defineTokens. */
-export function toDefinePresetSnippet(set: TokenSet): string {
+function toDefinePresetSnippet(set: TokenSet): string {
 	const groupLines = Object.entries(set.groups)
 		.map(([group, values]) => {
 			const body = Object.entries(values)
@@ -253,14 +253,14 @@ function walkStyleDictionary(node: unknown, path: string[], out: TokenSet): void
 }
 
 /** Style Dictionary v4 JSON — leaves are `{ value, type? }` objects. */
-export function importStyleDictionary(text: string): TokenSet {
+function importStyleDictionary(text: string): TokenSet {
 	const out: TokenSet = { groups: {} };
 	walkStyleDictionary(JSON.parse(text), [], out);
 	return out;
 }
 
 /** Inverse: nests keys by `-`, infers `type: "color"` for hex/rgb values. */
-export function exportStyleDictionary(set: TokenSet): string {
+function exportStyleDictionary(set: TokenSet): string {
 	const root: Record<string, unknown> = {};
 	for (const [group, values] of Object.entries(set.groups)) {
 		const groupNode: Record<string, unknown> = {};
@@ -320,7 +320,7 @@ function walkFigma(node: unknown, path: string[], out: TokenSet): void {
 }
 
 /** Figma Tokens plugin JSON — leaves `{ value, type }`, type maps the group. */
-export function importFigmaTokens(text: string): TokenSet {
+function importFigmaTokens(text: string): TokenSet {
 	const out: TokenSet = { groups: {} };
 	walkFigma(JSON.parse(text), [], out);
 	return out;
@@ -331,7 +331,7 @@ function figmaTypeFor(group: string): string {
 }
 
 /** Inverse: `{ value, type }` leaves with the type always set. */
-export function exportFigmaTokens(set: TokenSet): string {
+function exportFigmaTokens(set: TokenSet): string {
 	const root: Record<string, unknown> = {};
 	for (const [group, values] of Object.entries(set.groups)) {
 		const groupNode: Record<string, unknown> = {};
@@ -379,7 +379,7 @@ function rootBlocks(text: string): string[] {
  * Custom properties declared in `:root` blocks only, using the @theme
  * prefix mapping (`--color-blue-500` -> colors["blue-500"]).
  */
-export function importRootCss(text: string): TokenSet {
+function importRootCss(text: string): TokenSet {
 	const out: TokenSet = { groups: {} };
 	for (const block of rootBlocks(text)) {
 		for (const match of block.matchAll(/--([\w-]+)\s*:\s*([^;}]+)[;}]/g)) {
@@ -396,7 +396,7 @@ export function importRootCss(text: string): TokenSet {
 }
 
 /** Flat custom properties in a single `:root` block. */
-export function exportRootCss(set: TokenSet): string {
+function exportRootCss(set: TokenSet): string {
 	const lines: string[] = [":root {"];
 	for (const [group, values] of Object.entries(set.groups)) {
 		const prefix = GROUP_TO_THEME_PREFIX[group] ?? group;
@@ -417,7 +417,7 @@ export function exportRootCss(set: TokenSet): string {
  * provided — stylex configs are code consumed by the stylex compiler, and
  * no consumer asked for that direction yet.
  */
-export function exportStylexVars(set: TokenSet): string {
+function exportStylexVars(set: TokenSet): string {
 	const blocks = Object.entries(set.groups)
 		.map(([group, values]) => {
 			const body = Object.entries(values)
@@ -428,3 +428,40 @@ export function exportStylexVars(set: TokenSet): string {
 		.join("\n\n");
 	return `import { defineVars } from "@stylexjs/stylex";\n\n${blocks}\n`;
 }
+
+/** Cohesive codec boundary consumed by format adapters and no other callers. */
+export interface TokenSetCodec {
+	fromDtcgJson(text: string): TokenSet;
+	fromThemeCss(text: string): TokenSet;
+	fromPandaConfig(path: string): Promise<TokenSet>;
+	fromDefinePreset(path: string): Promise<TokenSet>;
+	toDtcgJson(set: TokenSet): string;
+	toThemeCss(set: TokenSet): string;
+	toPandaConfigSnippet(set: TokenSet): string;
+	toDefinePresetSnippet(set: TokenSet): string;
+	importStyleDictionary(text: string): TokenSet;
+	exportStyleDictionary(set: TokenSet): string;
+	importFigmaTokens(text: string): TokenSet;
+	exportFigmaTokens(set: TokenSet): string;
+	importRootCss(text: string): TokenSet;
+	exportRootCss(set: TokenSet): string;
+	exportStylexVars(set: TokenSet): string;
+}
+
+export const tokenSetCodec: TokenSetCodec = {
+	fromDtcgJson,
+	fromThemeCss,
+	fromPandaConfig,
+	fromDefinePreset,
+	toDtcgJson,
+	toThemeCss,
+	toPandaConfigSnippet,
+	toDefinePresetSnippet,
+	importStyleDictionary,
+	exportStyleDictionary,
+	importFigmaTokens,
+	exportFigmaTokens,
+	importRootCss,
+	exportRootCss,
+	exportStylexVars,
+};

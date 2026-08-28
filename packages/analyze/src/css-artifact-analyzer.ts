@@ -1,13 +1,13 @@
 import type { Root } from "postcss";
 
-export interface ShapeCategory {
+interface ShapeCategory {
 	category: string;
 	rules: number;
 	bytes: number;
 	topValues: Array<{ value: string; count: number }>;
 }
 
-export interface SpecificityBucket {
+interface SpecificityBucket {
 	label: string;
 	rules: number;
 }
@@ -19,7 +19,7 @@ export interface SheetShape {
 	specificity: Array<SpecificityBucket>;
 }
 
-export interface CssArtifactAnalyzer {
+interface CssArtifactAnalyzer {
 	shape(root: Root): SheetShape;
 }
 
@@ -141,11 +141,11 @@ export class PostCssArtifactAnalyzer implements CssArtifactAnalyzer {
 			totalRules,
 			totalBytes,
 			categories: [...categories.entries()]
-				.map(([category, value]) => ({
+				.map(([category, bucket]) => ({
 					category,
-					rules: value.rules,
-					bytes: value.bytes,
-					topValues: [...value.values.entries()]
+					rules: bucket.rules,
+					bytes: bucket.bytes,
+					topValues: [...bucket.values.entries()]
 						.toSorted((a, b) => b[1] - a[1])
 						.slice(0, 4)
 						.map(([value, count]) => ({ value, count })),

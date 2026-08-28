@@ -9,7 +9,7 @@ export interface TokenFormatRegistry {
 	exportText(id: string, set: TokenSet): string;
 }
 
-export class DefaultTokenFormatRegistry implements TokenFormatRegistry {
+class DefaultTokenFormatRegistry implements TokenFormatRegistry {
 	private readonly adapters = new Map<TokenFormatId, TokenFormatAdapter>();
 
 	constructor(adapters: readonly TokenFormatAdapter[] = tokenFormatAdapters) {
