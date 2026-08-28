@@ -29,6 +29,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"vue-styled": "import styled from 'vue-styled-components'; styled.div({ color: 'red' })",
 			"react-native":
 				"import { StyleSheet } from 'react-native'; StyleSheet.create({ button: { color: 'red' } })",
+			bamboo: "import { css } from 'styled-system/css'; css({ color: 'red' })",
+			"next-yak": "import { css } from 'next-yak'; css`color: red;`",
 		};
 		for (const adapter of createBuiltinCodemodCatalog().adapters) {
 			const id = adapter.id;
@@ -46,6 +48,48 @@ describe("CSS-in-JS adapter contract v2", () => {
 			});
 			expect(config.adapter).toBe(id);
 		}
+	});
+
+	test("migrates Bamboo object styles with conditions", () => {
+		const result = runAdapterMigration(
+			'import { css } from "styled-system/css";\nconst button = css({ color: "red", "&:hover": { color: "blue" }, "@media (min-width: 40rem)": { color: "green" } });',
+			{ from: "bamboo", to: "emotion", file: "Button.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css } from "@emotion/css";');
+		expect(result.code).toContain('"&:hover"');
+		expect(result.code).toContain('"@media (min-width: 40rem)"');
+	});
+
+	test("migrates Next-yak css and styled template lanes", () => {
+		const css = runAdapterMigration(
+			'import { css } from "next-yak";\nconst card = css`color: red; &:hover { color: blue; }`;',
+			{ from: "next-yak", to: "emotion", file: "Card.tsx", mode: "safe" },
+		);
+		expect(css.converted).toBe(1);
+		expect(css.skipped).toBe(0);
+		expect(css.code).toContain('css({ color: "red"');
+		expect(css.code).toContain('"&:hover"');
+
+		const component = runAdapterMigration(
+			'import { styled } from "next-yak";\nconst Card = styled.button`color: red;`;',
+			{ from: "next-yak", to: "styled-components", file: "Card.tsx", mode: "safe" },
+		);
+		expect(component.converted).toBe(1);
+		expect(component.skipped).toBe(0);
+		expect(component.code).toContain("styled.button({");
+	});
+
+	test("reports Next-yak runtime interpolations instead of dropping them", () => {
+		const result = runAdapterMigration(
+			'import { styled } from "next-yak";\nconst Card = styled.button`color: ${({ theme }) => theme.color};`;',
+			{ from: "next-yak", to: "emotion", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
 	});
 
 	test("migrates Linaria static CSS templates and preserves styled subjects", () => {

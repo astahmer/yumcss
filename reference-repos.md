@@ -8,6 +8,15 @@ These are shallow, blob-filtered read-only clones under
 `/Users/astahmer/.references/<id>`. The report generator verifies each pinned
 HEAD and reads the selected file with `git show` before running the adapter.
 
+The benchmark harnesses below are additional corpus sources. Their isolated
+lanes are intentionally not treated as product dependencies: we mine their
+source/config/build semantics and run Pandwind adapters against selected files.
+
+| source corpus | repository | pinned HEAD | covered lanes |
+| ------------ | ---------- | ----------- | ------------- |
+| css-in-js-bench | https://github.com/jantimon/css-in-js-bench | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls |
+| css-in-js-arena | https://github.com/gajus/css-in-js-arena | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX |
+
 | adapter           | repository                                             | pinned HEAD                                | exercised source                                                                 |
 | ----------------- | ------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------- |
 | panda             | https://github.com/chakra-ui/panda                     | `8a71bff3dc805e247be70d120cf485c8f14f104b` | `website/app/page.tsx`                                                           |

@@ -1,11 +1,13 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
 import aphrodite from "./aphrodite.adapter.ts";
+import bamboo from "./bamboo.adapter.ts";
 import compiled from "./compiled.adapter.ts";
 import emotion from "./emotion.adapter.ts";
 import fela from "./fela.adapter.ts";
 import goober from "./goober.adapter.ts";
 import jss from "./jss.adapter.ts";
 import linaria from "./linaria.adapter.ts";
+import nextYak from "./next-yak.adapter.ts";
 import pandwind from "./pandwind.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
@@ -22,11 +24,13 @@ export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlug
 	"pandwind-builtin-adapters",
 	[
 		pandwind,
+		bamboo,
 		emotion,
 		styledComponents,
 		vanillaExtract,
 		stitches,
 		linaria,
+		nextYak,
 		jss,
 		stylex,
 		fela,

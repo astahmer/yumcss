@@ -57,6 +57,8 @@ const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	"solid-styled": ["solid-styled-components"],
 	"vue-styled": ["vue-styled-components"],
 	stylex: ["@stylexjs/stylex"],
+	bamboo: ["@bamboocss/dev", "@bamboocss/vite"],
+	"next-yak": ["next-yak"],
 };
 
 function dependencyNames(value: readonly { packages: readonly { name: string }[] }[]): string[] {

@@ -274,9 +274,20 @@ function declarationsObject(declarations: readonly StyleDeclaration[]): string {
 	return renderObjectNode(root);
 }
 
+function styleRuleNode(rule: StyleProgram["rules"][number]): ObjectNode {
+	const root = objectNode();
+	for (const declaration of rule.declarations)
+		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
+	for (const child of rule.children) {
+		const key = child.selector ?? child.name ?? child.kind;
+		root.children.push([key, styleRuleNode(child)]);
+	}
+	return root;
+}
+
 function ruleObject(rule: StyleProgram["rules"][number]): string {
 	if (rule.kind === "style" || rule.kind === "font-face" || rule.kind === "property") {
-		return declarationsObject(rule.declarations);
+		return renderObjectNode(styleRuleNode(rule));
 	}
 	if (rule.kind === "global") {
 		return `{ ${JSON.stringify(rule.selector ?? "*")}: ${declarationsObject(rule.declarations)} }`;

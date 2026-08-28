@@ -52,6 +52,8 @@ describe("third-party adapter registry", () => {
 		expect(getCodemodAdapter("fela")?.dependencies.packages[0]?.name).toBe("fela");
 		expect(registry.get("compiled")).toBeDefined();
 		expect(registry.get("react-native")).toBeDefined();
+		expect(registry.get("bamboo")).toBeDefined();
+		expect(registry.get("next-yak")).toBeDefined();
 	});
 
 	test("discovers only dependencies that advertise the package contract", async () => {
