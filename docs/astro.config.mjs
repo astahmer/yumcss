@@ -93,6 +93,7 @@ export default defineConfig({
 					label: "Reference",
 					items: [
 						"reference/implementation-status",
+						"reference/technical-overview",
 						"reference/adoption",
 						"reference/adapter-contract",
 						"reference/css-in-js-scorecard",
