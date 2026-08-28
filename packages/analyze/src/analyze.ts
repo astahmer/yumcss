@@ -17,9 +17,9 @@
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
-import { readFileSync } from "node:fs";
+import { globSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
@@ -31,6 +31,8 @@ import {
 	type CssResidualCollector,
 	type MissingCssSite,
 } from "./css-residual-collector.ts";
+
+export type { ArbitraryValueSite, CssResidualCollector, MissingCssSite } from "./css-residual-collector.ts";
 
 export { formatReport, summarize } from "./analysis-report.ts";
 
@@ -436,7 +438,15 @@ export function loadTwConfig(twPath: string): TwConfig {
 
 /** Collect unique .ts/.tsx files matching globs under root (no node_modules). */
 export function collectFiles(patterns: Array<string>, root: string): Array<string> {
-	return createSourceWorkspace()
-		.files(patterns, root)
-		.filter((file) => !file.includes("node_modules") && SOURCE_SCANNER_SERVICE.isScriptFile(file));
+	const files = new Set<string>();
+	for (const pattern of patterns) {
+		const matches = globSync(pattern, { cwd: root }) as unknown[];
+		for (const match of matches) {
+			if (typeof match !== "string") continue;
+			if (match.includes("node_modules")) continue;
+			if (!SOURCE_SCANNER_SERVICE.isScriptFile(match)) continue;
+			files.add(resolve(root, match));
+		}
+	}
+	return [...files].toSorted();
 }

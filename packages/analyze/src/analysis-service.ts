@@ -47,19 +47,11 @@ export interface FoldAnalysisDependencies {
 }
 
 class FoldAnalysisService implements FoldAnalysisPort {
-	private readonly analyzer: FileFoldAnalyzerPort;
-	private readonly summary: FoldSummaryPort;
-	private readonly report: FoldReportPort;
-
 	constructor(
-		analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
-		summary: FoldSummaryPort = { summarize },
-		report: FoldReportPort = { format: formatReport },
-	) {
-		this.analyzer = analyzer;
-		this.summary = summary;
-		this.report = report;
-	}
+		private readonly analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
+		private readonly summary: FoldSummaryPort = { summarize },
+		private readonly report: FoldReportPort = { format: formatReport },
+	) {}
 
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats {
 		return this.analyzer.analyze(source, file, options);
@@ -77,13 +69,9 @@ class FoldAnalysisService implements FoldAnalysisPort {
 export interface CssBudgetPort {
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget>;
 	format(budget: CssBudget): string;
-	classRules(
-		options: Parameters<CssBudgetEvaluator["measure"]>[0],
-	): Promise<readonly ClassDrillDown[]>;
+	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]>;
 	sheetShape(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<SheetShape>;
-	sheetShapeFromRoot(
-		root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0],
-	): SheetShape;
+	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape;
 }
 
 type SheetShape = ReturnType<CssArtifactInspectionPort["sheetShapeFromRoot"]>;
@@ -95,22 +83,17 @@ export interface CssBudgetDependencies {
 }
 
 class CssBudgetService implements CssBudgetPort {
-	private readonly evaluator: Pick<CssBudgetEvaluator, "measure">;
-	private readonly renderer: Pick<CssBudgetReportRenderer, "format">;
-	private readonly inspection: CssArtifactInspectionPort;
-
 	constructor(
-		evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
-		renderer: Pick<CssBudgetReportRenderer, "format"> = new CssBudgetReportRenderer(),
-		inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
+		private readonly evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
+		private readonly renderer: Pick<
+			CssBudgetReportRenderer,
+			"format"
+		> = new CssBudgetReportRenderer(),
+		private readonly inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
 			new TailwindCandidateScanner(),
 			new TailwindArtifactCompiler(),
 		),
-	) {
-		this.evaluator = evaluator;
-		this.renderer = renderer;
-		this.inspection = inspection;
-	}
+	) {}
 
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> {
 		return this.evaluator.measure(options);
@@ -120,9 +103,7 @@ class CssBudgetService implements CssBudgetPort {
 		return this.renderer.format(budget);
 	}
 
-	classRules(
-		options: Parameters<CssBudgetEvaluator["measure"]>[0],
-	): Promise<readonly ClassDrillDown[]> {
+	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]> {
 		return this.inspection.classRules(options);
 	}
 
@@ -130,9 +111,7 @@ class CssBudgetService implements CssBudgetPort {
 		return this.inspection.sheetShape(options);
 	}
 
-	sheetShapeFromRoot(
-		root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0],
-	): SheetShape {
+	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape {
 		return this.inspection.sheetShapeFromRoot(root);
 	}
 }
@@ -169,4 +148,8 @@ export const createFoldAnalysisService = (
 };
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
 export const createCssBudgetService = (dependencies: CssBudgetDependencies = {}): CssBudgetPort =>
-	new CssBudgetService(dependencies.evaluator, dependencies.renderer, dependencies.inspection);
+	new CssBudgetService(
+		dependencies.evaluator,
+		dependencies.renderer,
+		dependencies.inspection,
+	);
