@@ -34,6 +34,8 @@ const merged = createTw<Record<string, unknown>>({
 			collapse: ["border-collapse"],
 		},
 		opacity: { "*": ["opacity"] },
+		ring: { "*": ["ring-shadow"] },
+		"inset-ring": { "*": ["inset-ring-shadow"] },
 	},
 });
 
@@ -158,6 +160,7 @@ describe("tw last-wins merging", () => {
 		expect(merged({ px: "4", p: "6" })).toBe("p-6");
 		expect(merged({ p: "6", px: "4" })).toBe("p-6 px-4");
 		expect(merged({ p: "6", pb: "10" })).toBe("p-6 pb-10");
+		expect(merged({ ring: true, insetRing: true })).toBe("ring inset-ring");
 		expect(merged({ bg: "red-500", border: "2" })).toBe("bg-red-500 border-2");
 	});
 

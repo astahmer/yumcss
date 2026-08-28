@@ -253,6 +253,25 @@ export function canonicalProps(properties: string[]): string[] {
 }
 
 /**
+ * Tailwind's ring layers all serialize through `box-shadow`, but they are
+ * independent composition slots: `shadow`, `ring`, and `inset-ring` can
+ * coexist. Keep the ring slots distinct in the generated conflict map so
+ * runtime merging does not erase one layer when another is added.
+ */
+function conflictProps(utility: string, css: string | null): string[] {
+	const properties = canonicalProps(cssProperties(css));
+	if (utility === "ring") {
+		return properties.map((property) => (property === "box-shadow" ? "ring-shadow" : property));
+	}
+	if (utility === "inset-ring") {
+		return properties.map((property) =>
+			property === "box-shadow" ? "inset-ring-shadow" : property,
+		);
+	}
+	return properties;
+}
+
+/**
  * Utilities that compose through a shared CSS property and must never merge
  * across keys. Dash-case, including the negative variants the generator
  * produces (`-translate-x`, `-space-x`, ...).
@@ -435,7 +454,7 @@ export function buildConflicts(
 		batch.forEach((probe, index) => {
 			const result = results[index];
 			if (result === undefined || result === null) return;
-			const props = canonicalProps(cssProperties(result));
+			const props = conflictProps(dashCase(probe.utility), result);
 			const samples = sampleProps.get(probe.utility) ?? [];
 			samples.push({ value: probe.value, props });
 			sampleProps.set(probe.utility, samples);
