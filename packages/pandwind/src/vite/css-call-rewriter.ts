@@ -14,10 +14,13 @@ interface CallNode extends OxcNode {
 }
 
 export class TailwindCssCallRewriter implements CssCallRewriter {
-	constructor(
-		private readonly preset: CssPreset,
-		private readonly className: AnyClassNameStrategy,
-	) {}
+	private readonly preset: CssPreset;
+	private readonly className: AnyClassNameStrategy;
+
+	constructor(preset: CssPreset, className: AnyClassNameStrategy) {
+		this.preset = preset;
+		this.className = className;
+	}
 
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
 		if (names.size === 0) return { code, inlined: 0 };

@@ -7,7 +7,11 @@ import type {
 
 export class DomStyleElementSink implements RuntimeStyleElementSink {
 	private element: RuntimeStyleElement | undefined;
-	constructor(private readonly options: RuntimeSheetOptions) {}
+	private readonly options: RuntimeSheetOptions;
+
+	constructor(options: RuntimeSheetOptions) {
+		this.options = options;
+	}
 
 	private document(): RuntimeDocument | undefined {
 		if (this.options.document !== undefined) return this.options.document;

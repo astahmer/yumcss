@@ -83,7 +83,11 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 }
 
 export class SemanticRuleCanonicalizer {
-	constructor(private readonly serializer: RuntimeRuleSerializer = new SemanticRuleSerializer()) {}
+	private readonly serializer: RuntimeRuleSerializer;
+
+	constructor(serializer: RuntimeRuleSerializer = new SemanticRuleSerializer()) {
+		this.serializer = serializer;
+	}
 
 	canonicalize(rule: RuntimeSemanticRule) {
 		// Priority affects ordering, not identity. Excluding it keeps a rule's

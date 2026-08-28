@@ -49,12 +49,22 @@ class NoopCssCallRewriter implements CssCallRewriter {
 }
 
 class ComposedCssExtractionService implements CssExtractionService {
+	readonly scanner: CssSourceScanner;
+	readonly artifacts: CssArtifactExtractor;
+	readonly diagnostics: CssDiagnosticReporter;
+	readonly rewriter: CssCallRewriter;
+
 	constructor(
-		readonly scanner: CssSourceScanner,
-		readonly artifacts: CssArtifactExtractor,
-		readonly diagnostics: CssDiagnosticReporter,
-		readonly rewriter: CssCallRewriter,
-	) {}
+		scanner: CssSourceScanner,
+		artifacts: CssArtifactExtractor,
+		diagnostics: CssDiagnosticReporter,
+		rewriter: CssCallRewriter,
+	) {
+		this.scanner = scanner;
+		this.artifacts = artifacts;
+		this.diagnostics = diagnostics;
+		this.rewriter = rewriter;
+	}
 
 	findImports(code: string, id: string): ReadonlySet<string> {
 		return this.scanner.findImports(code, id);

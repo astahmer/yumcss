@@ -29,8 +29,11 @@ export interface CssSourceWorkspaceOptions {
 
 class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	private readonly cache = new Map<string, CssSourceWorkspaceEntry>();
+	private readonly options: CssSourceWorkspaceOptions;
 
-	constructor(private readonly options: CssSourceWorkspaceOptions) {}
+	constructor(options: CssSourceWorkspaceOptions) {
+		this.options = options;
+	}
 
 	private isScanned(file: string): boolean {
 		return (

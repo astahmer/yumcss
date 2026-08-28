@@ -62,7 +62,11 @@ export const createDesignModuleRegistry = (
 ): DesignModuleRegistry => new DefaultDesignModuleRegistry(adapters);
 
 export class DesignStyleResolver {
-	constructor(readonly registry: DesignModuleRegistry = createDesignModuleRegistry()) {}
+	readonly registry: DesignModuleRegistry;
+
+	constructor(registry: DesignModuleRegistry = createDesignModuleRegistry()) {
+		this.registry = registry;
+	}
 
 	resolve(style: Record<string, unknown>, tokens: AnyTokens | undefined): StyleObject {
 		return resolveDesignStyleWithRegistry(style, tokens, this.registry);

@@ -86,7 +86,11 @@ const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
 };
 
 export class CxCallRewriter {
-	constructor(private readonly ports: CxCompilerPorts = defaultCxCompilerPorts) {}
+	private readonly ports: CxCompilerPorts;
+
+	constructor(ports: CxCompilerPorts = defaultCxCompilerPorts) {
+		this.ports = ports;
+	}
 
 	rewrite(
 		code: string,

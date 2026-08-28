@@ -19,11 +19,19 @@ interface CallNode extends OxcNode {
 }
 
 export class DesignCssArtifactExtractor implements CssArtifactExtractor {
+	private readonly scanner: CssSourceScanner;
+	private readonly preset: CssPreset;
+	private readonly patterns: readonly CssPatternAdapter[];
+
 	constructor(
-		private readonly scanner: CssSourceScanner,
-		private readonly preset: CssPreset,
-		private readonly patterns: readonly CssPatternAdapter[] = [],
-	) {}
+		scanner: CssSourceScanner,
+		preset: CssPreset,
+		patterns: readonly CssPatternAdapter[] = [],
+	) {
+		this.scanner = scanner;
+		this.preset = preset;
+		this.patterns = patterns;
+	}
 
 	extract(code: string, id: string, names: ReadonlySet<string>): ExtractedCssStyle[] {
 		const parsed = this.parse(id, code);

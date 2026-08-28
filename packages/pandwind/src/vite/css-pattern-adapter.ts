@@ -114,12 +114,11 @@ const attributeValue = (value: OxcNode | null | undefined): unknown | null => {
 };
 
 export class PandwindPatternAdapter implements CssPatternAdapter {
-	constructor(
-		private readonly scanner: Pick<
-			import("./css-extraction-contracts.ts").CssSourceScanner,
-			"parse"
-		>,
-	) {}
+	private readonly scanner: Pick<import("./css-extraction-contracts.ts").CssSourceScanner, "parse">;
+
+	constructor(scanner: Pick<import("./css-extraction-contracts.ts").CssSourceScanner, "parse">) {
+		this.scanner = scanner;
+	}
 
 	readonly id = "pandwind-jsx-patterns";
 	canHandle(name: string): boolean {

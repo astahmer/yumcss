@@ -143,7 +143,11 @@ const authoredImports = (code: string, id: string, program: OxcNode): AuthoredCs
 };
 
 export class CssSourceScannerService implements CssSourceScanner {
-	constructor(private readonly matchers: readonly (string | RegExp)[]) {}
+	private readonly matchers: readonly (string | RegExp)[];
+
+	constructor(matchers: readonly (string | RegExp)[]) {
+		this.matchers = matchers;
+	}
 
 	matches(source: string): boolean {
 		return cssSourceMatches(source, this.matchers);

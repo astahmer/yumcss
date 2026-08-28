@@ -6,5 +6,15 @@ export default defineConfig({
 		// on cold caches that legitimately exceeds vitest's 5s default.
 		testTimeout: 30_000,
 		hookTimeout: 30_000,
+		coverage: {
+			provider: "v8",
+			reporter: ["text", "json-summary", "html"],
+			thresholds: {
+				statements: 85,
+				branches: 72,
+				functions: 84,
+				lines: 88,
+			},
+		},
 	},
 });

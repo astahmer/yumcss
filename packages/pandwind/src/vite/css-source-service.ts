@@ -53,7 +53,11 @@ export interface CssSourceServiceDependencies {
 
 /** Shared source-facing CSS service used by Vite, unplugin, and analyzers. */
 class DefaultCssSourceService implements CssSourceService {
-	constructor(private readonly dependencies: CssSourceServiceDependencies = {}) {}
+	private readonly dependencies: CssSourceServiceDependencies;
+
+	constructor(dependencies: CssSourceServiceDependencies = {}) {
+		this.dependencies = dependencies;
+	}
 
 	private scanner(matchers: readonly (string | RegExp)[]): CssSourceScanner {
 		return this.dependencies.scanner ?? new CssSourceScannerService(matchers);

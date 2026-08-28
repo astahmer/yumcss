@@ -19,11 +19,13 @@ export interface LiteralStyleCompilerOptions {
 
 class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 	readonly registry: AtomRegistry = new Map();
+	private readonly options: LiteralStyleCompilerOptions;
 	private readonly className;
 	private readonly hashFn;
 	private readonly emptyCondition;
 
-	constructor(private readonly options: LiteralStyleCompilerOptions) {
+	constructor(options: LiteralStyleCompilerOptions) {
+		this.options = options;
 		this.className = normalizeStrategy(options.className);
 		this.hashFn = createHashFn(options.debug === true);
 		this.emptyCondition = Object.keys(options.preset.conditions).find(

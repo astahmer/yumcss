@@ -29,11 +29,19 @@ const baseSelector = (candidate: string): string => {
 
 /** Artifact inspection policy, composed from the same source/compiler ports as budgets. */
 export class TailwindCssArtifactInspection implements CssArtifactInspectionPort {
+	private readonly candidates: CssCandidateScanner;
+	private readonly compiler: CssArtifactCompiler;
+	private readonly shapeAnalyzer: PostCssArtifactAnalyzer;
+
 	constructor(
-		private readonly candidates: CssCandidateScanner,
-		private readonly compiler: CssArtifactCompiler,
-		private readonly shapeAnalyzer = new PostCssArtifactAnalyzer(),
-	) {}
+		candidates: CssCandidateScanner,
+		compiler: CssArtifactCompiler,
+		shapeAnalyzer = new PostCssArtifactAnalyzer(),
+	) {
+		this.candidates = candidates;
+		this.compiler = compiler;
+		this.shapeAnalyzer = shapeAnalyzer;
+	}
 
 	async classRules(input: CssBudgetInput): Promise<readonly ClassDrillDown[]> {
 		const candidates = await this.candidates.scan(input);

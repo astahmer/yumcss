@@ -11,8 +11,10 @@ import { rootCssTokenFormat } from "./token-formats/root-css.ts";
 import { stylexTokenFormat } from "./token-formats/stylex.ts";
 
 class TokenSetCodec {
+	readonly registry: DefaultTokenFormatRegistry;
+
 	constructor(
-		readonly registry = new DefaultTokenFormatRegistry([
+		registry = new DefaultTokenFormatRegistry([
 			dtcgTokenFormat,
 			themeTokenFormat,
 			pandaTokenFormat,
@@ -22,7 +24,9 @@ class TokenSetCodec {
 			rootCssTokenFormat,
 			stylexTokenFormat,
 		]),
-	) {}
+	) {
+		this.registry = registry;
+	}
 
 	fromText(format: string, text: string): TokenSet {
 		const adapter = this.require(format);

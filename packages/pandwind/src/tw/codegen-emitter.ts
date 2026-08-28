@@ -46,7 +46,11 @@ const modifierTypes =
 type WithOpacityModifiers<T extends string> = T | \`\${T}/\${OpacityModifier}\`;`;
 
 export class TailwindTypeEmitter {
-	constructor(private readonly camelCaseProperty: (value: string) => string) {}
+	private readonly camelCaseProperty: (value: string) => string;
+
+	constructor(camelCaseProperty: (value: string) => string) {
+		this.camelCaseProperty = camelCaseProperty;
+	}
 
 	utilities(types: UtilityMap, modifierCapable: Set<string>): string {
 		const aliases: string[] = [];

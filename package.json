@@ -7,6 +7,8 @@
 		"dev": "pnpm --filter example dev",
 		"typecheck": "pnpm -r --aggregate-output typecheck",
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",
+		"test:all": "pnpm -r --workspace-concurrency=1 --if-present test",
+		"test:coverage": "pnpm --filter pandwind test:coverage && pnpm --filter pandwind-codemod test:coverage && pnpm --filter pandwind-analyze test:coverage",
 		"codemod": "pnpm --filter pandwind-codemod exec tsx src/cli.ts",
 		"inspect": "pnpm --filter inspector dev",
 		"playground": "pnpm --filter playground dev",

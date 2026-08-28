@@ -21,7 +21,11 @@ export class NodeModuleSourceReader implements ModuleSourceReader {
 }
 
 export class NodeModulePathResolver implements ModulePathResolver {
-	constructor(private readonly extensions = ["", ".ts", ".tsx", ".js", ".jsx"] as const) {}
+	private readonly extensions: readonly string[];
+
+	constructor(extensions: readonly string[] = ["", ".ts", ".tsx", ".js", ".jsx"]) {
+		this.extensions = extensions;
+	}
 
 	resolve(source: string, importerDir: string): string | undefined {
 		if (!source.startsWith(".") && !source.startsWith("/")) return undefined;
