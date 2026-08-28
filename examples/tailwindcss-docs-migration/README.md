@@ -43,6 +43,8 @@ document-height tolerance.
 The `css.class` lane is also exact on those routes and reduces the external
 stylesheet by 239 bytes while emitting its runtime declarations through the
 SSR insertion hook.
+The `design-dss` lane has the same visual and external-CSS result while using
+the design-language runtime; streamed routes may emit incremental style blocks.
 
 The upstream repository itself does not need to be JJ-versioned. Git already
 pins the external source; Pandwind JJ revisions pin the migration runner,
