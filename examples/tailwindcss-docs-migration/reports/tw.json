@@ -20,7 +20,9 @@
 	},
 	"browser": {
 		"viewport": { "width": 1280, "height": 800 },
-		"publicRoutes": 339,
+		"routeManifestEntries": 339,
+		"publicRoutes": 338,
+		"excludedRoutes": ["/_not-found"],
 		"geometryRoutesChecked": 90,
 		"geometryMismatches": 0,
 		"httpFailures": 0,

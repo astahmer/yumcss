@@ -39,9 +39,10 @@ expected to show the migrated source, so their visible text is not used as a
 visual-parity signal; layout geometry and browser errors are.
 
 The committed `reports/` files are the checked-in proof artifacts for each lane.
-The checked-in proof covers 339 public routes for HTTP reachability and 341
-generated static pages for each lane. Browser geometry has been checked on the
-first 90 public routes with zero mismatches and zero console errors. The
+The checked-in proof covers 338 public routes for HTTP reachability (the
+manifest has 339 entries including the intentional `/_not-found` 404 sentinel)
+and 341 generated static pages for each lane. Browser geometry has been checked
+on the first 90 public routes with zero mismatches and zero console errors. The
 representative routes in each report additionally cover the home page, a docs
 page, a long color page, and a blog page.
 
