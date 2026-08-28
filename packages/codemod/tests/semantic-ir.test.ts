@@ -35,6 +35,7 @@ describe("versioned semantic style-program IR", () => {
 			value: { kind: "token", ref: "blue-500", authored: "$blue-500" },
 		});
 		expect(program.source?.file).toBe("Card.tsx");
+		expect(program.sourceMap).toContainEqual(program.source);
 		expect(swapIRFromStyleProgram(program)).toEqual(ir);
 	});
 
@@ -101,6 +102,7 @@ describe("versioned semantic style-program IR", () => {
 			value: { kind: "literal", value: 0.8 },
 		});
 		expect(program.residuals).toEqual([]);
+		expect(program.sourceMap?.some((source) => source.start !== undefined)).toBe(true);
 		expect(inferSemanticConditionKind("@supports (display: grid)")).toBe("supports");
 		expect(styleProgramToCanonicalCss(program)).toBe(
 			"&{color:theme.foreground}&:hover{backgroundColor:palette.accent}@media (min-width: 40rem){&{opacity:0.8}}",

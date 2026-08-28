@@ -18,6 +18,7 @@ import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 // Single source of truth for key -> emitted-utility mapping (textColor -> "text").
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
+import type { PandwindInteropArtifact } from "pandwind/tw/interop";
 import type { AnyTokens } from "pandwind/types/typings";
 
 interface VariantMeta {
@@ -47,6 +48,8 @@ export interface PandwindMeta {
 	bridgeInverse: Map<string, { property: string; value: string }>;
 	/** Project-owned token graph used by design and token-reference adapters. */
 	tokens: AnyTokens | undefined;
+	/** Versioned generated artifact used when available; useful for diagnostics. */
+	interop: PandwindInteropArtifact | undefined;
 }
 
 const dashCase = (key: string): string => key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
@@ -147,23 +150,60 @@ function parseBridge(bridgeTs: string): Map<string, { property: string; value: s
 }
 
 export interface LoadMetaOptions {
-	typesDtsPath: string;
-	twTsPath: string;
+	typesDtsPath?: string;
+	twTsPath?: string;
 	bridgePath?: string;
+	/** Defaults beside types.d.ts/tw.ts when omitted. */
+	interopPath?: string;
 	/** Explicit project tokens for programmatic callers and tests. */
 	tokens?: AnyTokens;
 }
 
+function readInterop(path: string | undefined): PandwindInteropArtifact | undefined {
+	if (path === undefined) return undefined;
+	try {
+		const parsed = JSON.parse(readFileSync(path, "utf8")) as Partial<PandwindInteropArtifact>;
+		if (parsed.schema !== "pandwind.interop/1")
+			throw new Error(`codemod: unsupported pandwind interop schema in ${path}`);
+		return parsed as PandwindInteropArtifact;
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+		throw error;
+	}
+}
+
+function bridgeInverseFromArtifact(
+	bridge: PandwindInteropArtifact["bridge"],
+): Map<string, { property: string; value: string }> {
+	const inverse = new Map<string, { property: string; value: string }>();
+	for (const [property, values] of Object.entries(bridge)) {
+		for (const [value, utilityClass] of Object.entries(values)) {
+			if (!inverse.has(utilityClass)) inverse.set(utilityClass, { property, value });
+		}
+	}
+	return inverse;
+}
+
 export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
-	const typesDts = readFileSync(options.typesDtsPath, "utf8");
-	const twTs = readFileSync(options.twTsPath, "utf8");
+	const metadataDir = dirname(options.typesDtsPath ?? options.twTsPath ?? process.cwd());
+	const interop = readInterop(options.interopPath ?? resolve(metadataDir, "pandwind.interop.json"));
+	const typesDts =
+		options.typesDtsPath === undefined ? undefined : readFileSync(options.typesDtsPath, "utf8");
+	const twTs = options.twTsPath === undefined ? undefined : readFileSync(options.twTsPath, "utf8");
+	if (interop === undefined && (typesDts === undefined || twTs === undefined)) {
+		throw new Error(
+			"codemod: generated metadata requires pandwind.interop.json or both types.d.ts and tw.ts",
+		);
+	}
 
 	const keysByBase = new Map<string, KeyInfo[]>();
-	const keys = parseInterfaceKeys(typesDts).map(({ key, valueType }) => ({
-		key,
-		base: baseFor(key),
-		valueType,
-	}));
+	const keys =
+		interop?.utilities.map(({ key, base, valueType }) => ({ key, base, valueType })) ??
+		parseInterfaceKeys(typesDts!).map(({ key, valueType }) => ({
+			key,
+			base: baseFor(key),
+			valueType,
+		}));
 	for (const info of keys) {
 		const list = keysByBase.get(info.base) ?? [];
 		list.push(info);
@@ -173,14 +213,36 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 	return {
 		keys,
 		keysByBase,
-		valueLiterals: parseValueLiterals(typesDts),
-		variants: parseVariants(twTs),
-		conflicts: parseConflicts(twTs),
+		valueLiterals:
+			interop === undefined
+				? parseValueLiterals(typesDts!)
+				: new Map(
+						interop.utilities.map((utility) => [
+							utility.valueType ?? utility.key,
+							new Set(utility.values),
+						]),
+					),
+		variants:
+			interop === undefined
+				? parseVariants(twTs!)
+				: new Map(
+						Object.entries(interop.tw.variants).map(([name, value]) => [
+							name,
+							{ join: value.join ?? ":" },
+						]),
+					),
+		conflicts:
+			interop === undefined
+				? parseConflicts(twTs!)
+				: new Map(Object.entries(interop.tw.conflicts ?? {})),
 		bridgeInverse:
 			options.bridgePath !== undefined
 				? parseBridge(readFileSync(options.bridgePath, "utf8"))
-				: new Map(),
+				: interop === undefined
+					? new Map()
+					: bridgeInverseFromArtifact(interop.bridge),
 		tokens: options.tokens,
+		interop,
 	};
 }
 

@@ -75,6 +75,14 @@ which concrete module to import or grow a switch statement in a central runner.
 - Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.
+- Generated design-system context is exchanged through the versioned
+  `pandwind.interop.json` artifact. Codegen owns its contents; bridge generation
+  refreshes the bridge section; migration tooling may fall back to legacy
+  generated files only for pre-artifact projects. Never hardcode an example
+  preset or application-specific metadata in a generic migration path.
+- `StyleProgram.sourceMap` must retain program/rule/theme/composition and
+  dynamic-expression provenance. Recipe/component semantics belong in their
+  versioned IR and host contracts, not in opaque residual text.
 - Every refactor is split into focused JJ revisions with behavior-preserving
   tests at each boundary. Do not rewrite concurrent workspaces or move their
   heads while another agent owns them.

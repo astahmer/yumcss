@@ -4,7 +4,7 @@
  * Usage:
  *   node --import tsx src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
  *   node --import tsx src/cli.ts swap --from=<auto|tw|css|design> \
- *        --to=<css.class|design|dss|tw> [--write] [--diff] [--report] <globs...>
+ *        --to=<css.class|design|dss|tw> [--safe|--partial] [--write] [--diff] [--report[=json]] <globs...>
  *
  * Default is analysis mode: reports what WOULD change without touching
  * files. `--diff` prints unified diffs; `--write` applies. The two are not
@@ -320,6 +320,13 @@ async function mainSwap(argv: string[]): Promise<void> {
 	let totalConverted = 0;
 	let totalChanged = 0;
 	let totalResiduals = 0;
+	const reportEntries: Array<{
+		file: string;
+		changed: boolean;
+		converted: number;
+		residuals: number;
+		skipped: number;
+	}> = [];
 	for (const file of filePaths) {
 		const relative = file.slice(root.length + 1);
 		let source: string;
@@ -334,35 +341,55 @@ async function mainSwap(argv: string[]): Promise<void> {
 			file: relative,
 			metaDir: metaDirRelative,
 			skipMarker: args.skipMarker,
+			capabilityMode: args.capabilityMode,
 		});
 		totalConverted += result.converted;
 		totalResiduals += result.unmappedTokens.length;
+		reportEntries.push({
+			file: relative,
+			changed: result.changed,
+			converted: result.converted,
+			residuals: result.unmappedTokens.length,
+			skipped: result.skippedByMarker,
+		});
 		if (!result.changed) {
-			console.log(`${relative}: no changes`);
+			if (args.reportFormat !== "json") console.log(`${relative}: no changes`);
 			continue;
 		}
 		totalChanged++;
-		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
+		if (args.diff && args.reportFormat !== "json")
+			console.log(unifiedDiff(source, result.code, relative));
 		if (args.write) writeFileSync(file, result.code);
-		console.log(
-			`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
-				`${result.unmappedTokens.length} residual(s), ${result.skippedByMarker} skipped by marker`,
-		);
+		if (args.reportFormat !== "json")
+			console.log(
+				`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} call site(s) swapped to ${args.to}, ` +
+					`${result.unmappedTokens.length} residual(s), ${result.skippedByMarker} skipped by marker`,
+			);
 	}
 
-	console.log(
-		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
-			`${totalConverted} swapped · ${totalResiduals} residual(s) · swap ${args.from}->${args.to} · ` +
-			(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
-	);
+	if (args.reportFormat !== "json")
+		console.log(
+			`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
+				`${totalConverted} swapped · ${totalResiduals} residual(s) · swap ${args.from}->${args.to} · ` +
+				(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+		);
 
-	if (args.report) {
+	if (args.report && args.reportFormat === "text") {
 		const lines = [
 			"swap report:",
 			`  call sites through the target API: ${totalConverted}`,
 			`  residuals needing attention: ${totalResiduals}`,
 		];
 		console.log(lines.join("\n"));
+	} else if (args.report && args.reportFormat === "json") {
+		console.log(
+			JSON.stringify({
+				from: args.from,
+				to: args.to,
+				mode: args.capabilityMode ?? "legacy",
+				files: reportEntries,
+			}),
+		);
 	}
 }
 
@@ -417,6 +444,13 @@ async function runExternalAdapterSwap(
 	let totalSkipped = 0;
 	let totalResiduals = 0;
 	let totalChanged = 0;
+	const reportEntries: Array<{
+		file: string;
+		from: string;
+		converted: number;
+		skipped: number;
+		residuals: number;
+	}> = [];
 	for (const file of filePaths) {
 		const relative = file.slice(root.length + 1);
 		let source: string;
@@ -429,7 +463,7 @@ async function runExternalAdapterSwap(
 			? args.from
 			: detectExternalSource(source, relative, root);
 		if (from === undefined) {
-			console.log(`${relative}: no external adapter detected`);
+			if (args.reportFormat !== "json") console.log(`${relative}: no external adapter detected`);
 			continue;
 		}
 		const result = swapImport.runAdapterMigration(source, {
@@ -437,35 +471,55 @@ async function runExternalAdapterSwap(
 			to: target,
 			file: relative,
 			root,
-			mode: "safe",
+			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
+		});
+		reportEntries.push({
+			file: relative,
+			from,
+			converted: result.converted,
+			skipped: result.skipped,
+			residuals: result.residuals.length,
 		});
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
 		totalResiduals += result.residuals.length;
 		if (!result.changed) {
-			console.log(`${relative}: no changes (${from}->${target})`);
+			if (args.reportFormat !== "json") console.log(`${relative}: no changes (${from}->${target})`);
 			continue;
 		}
 		totalChanged++;
-		if (args.diff) console.log(unifiedDiff(source, result.code, relative));
+		if (args.diff && args.reportFormat !== "json")
+			console.log(unifiedDiff(source, result.code, relative));
 		if (args.write) writeFileSync(file, result.code);
-		console.log(
-			`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} converted, ` +
-				`${result.skipped} skipped, ${result.residuals.length} residual(s), ${from}->${target}`,
-		);
-		if (args.report) {
+		if (args.reportFormat !== "json")
+			console.log(
+				`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} converted, ` +
+					`${result.skipped} skipped, ${result.residuals.length} residual(s), ${from}->${target}`,
+			);
+		if (args.report && args.reportFormat === "text") {
 			for (const report of result.reports) {
 				if (report.blockers.length > 0)
 					console.log(`  blocker: ${report.blockers.map((issue) => issue.detail).join("; ")}`);
 			}
 		}
 	}
-	console.log(
-		`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
-			`${totalConverted} converted · ${totalSkipped} skipped · ${totalResiduals} residual(s) · ` +
-			(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
-	);
+	if (args.reportFormat !== "json")
+		console.log(
+			`\nsummary: ${filePaths.length} file(s) scanned · ${totalChanged} changed · ` +
+				`${totalConverted} converted · ${totalSkipped} skipped · ${totalResiduals} residual(s) · ` +
+				(args.write ? "WRITTEN" : "dry-run (use --write to apply)"),
+		);
+	if (args.report && args.reportFormat === "json") {
+		console.log(
+			JSON.stringify({
+				from: args.from,
+				to: target,
+				mode: args.capabilityMode ?? "safe",
+				files: reportEntries,
+			}),
+		);
+	}
 }
 
 async function main(): Promise<void> {

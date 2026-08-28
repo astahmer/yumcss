@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { writeFileSync } from "node:fs";
 import { buildAgentsDocument } from "./agents-json.ts";
 import { extractTwConfig } from "../vite/inline.ts";
+import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
 
 export interface GeneratedDesignSystem {
 	readonly typesDts: string;
@@ -20,6 +21,19 @@ export class CodegenArtifactWriter {
 	write(artifacts: GeneratedDesignSystem, options: CodegenWriteOptions): void {
 		writeFileSync(resolve(options.outDir, "types.d.ts"), artifacts.typesDts);
 		writeFileSync(resolve(options.outDir, "tw.ts"), artifacts.twTs);
+		writeFileSync(
+			resolve(options.outDir, "pandwind.interop.json"),
+			`${JSON.stringify(
+				buildPandwindInteropArtifact({
+					typesDts: artifacts.typesDts,
+					twTs: artifacts.twTs,
+					themeBlock: artifacts.themeBlock,
+					artifactDir: options.outDir,
+				}),
+				null,
+				"\t",
+			)}\n`,
+		);
 		if (options.agents === true) {
 			const config = extractTwConfig(artifacts.twTs);
 			if (config === undefined)

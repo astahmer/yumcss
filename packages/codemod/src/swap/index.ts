@@ -613,6 +613,9 @@ export interface SwapCliArgs {
 	outDir: string;
 	/** Regenerate existing panda migration modules. */
 	force: boolean;
+	/** Capability policy for adapter routes; external routes default to safe. */
+	capabilityMode?: AdapterCapabilityMode;
+	reportFormat: "text" | "json";
 }
 
 export function parseSwapArgs(argv: string[]): SwapCliArgs {
@@ -632,6 +635,8 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		dedup: false,
 		outDir: "",
 		force: false,
+		capabilityMode: undefined,
+		reportFormat: "text",
 	};
 	for (const arg of argv) {
 		if (arg.startsWith("--from=")) {
@@ -653,6 +658,11 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		} else if (arg === "--write") args.write = true;
 		else if (arg === "--diff") args.diff = true;
 		else if (arg === "--report") args.report = true;
+		else if (arg === "--report=json") {
+			args.report = true;
+			args.reportFormat = "json";
+		} else if (arg === "--safe") args.capabilityMode = "safe";
+		else if (arg === "--partial") args.capabilityMode = "partial";
 		else if (arg.startsWith("--out=")) args.outDir = arg.slice("--out=".length);
 		else if (arg === "--force") args.force = true;
 		else if (arg === "--engine") args.engine = true;
@@ -669,14 +679,14 @@ export function parseSwapArgs(argv: string[]): SwapCliArgs {
 		else if (arg.startsWith("--skip-marker=")) args.skipMarker = arg.slice("--skip-marker=".length);
 		else if (arg.startsWith("--")) {
 			throw new Error(
-				`codemod swap: unknown flag '${arg}' (--write --diff --report --force --from= --to= --meta= --out= --skip-marker= --token-refs= --engine --tokenize --sort --dedup)`,
+				`codemod swap: unknown flag '${arg}' (--write --diff --report[=json] --safe --partial --force --from= --to= --meta= --out= --skip-marker= --token-refs= --engine --tokenize --sort --dedup)`,
 			);
 		} else args.patterns.push(arg);
 	}
 	if (args.patterns.length === 0) {
 		throw new Error(
 			"codemod swap: no input patterns given.\n" +
-				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--write] [--diff] [--report] [--meta=<dir>] [--out=<dir>] <globs...>",
+				"usage: pandwind-codemod swap --from=<auto|tw|css|design|panda> --to=<css.class|design|tw> [--safe|--partial] [--write] [--diff] [--report[=json]] [--meta=<dir>] [--out=<dir>] <globs...>",
 		);
 	}
 	return args;

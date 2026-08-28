@@ -35,9 +35,28 @@ minimal implementation without changing orchestration.
 | Analyze/reporting   | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
 
+Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
+Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
+bridge generation refreshes the bridge section from the compiled design
+system. Migration tooling consumes that artifact when present and only falls
+back to parsing `types.d.ts`/`tw.ts` for projects generated before the artifact
+was introduced. The artifact is the project-context boundary; it must never
+contain assumptions about the example application.
+
+`pandwind.agents.json` points to this artifact in `generatedFrom` so automated
+tooling can discover the same context without guessing which generated files
+exist.
+
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
+
+`StyleProgram.sourceMap` is the provenance projection for a semantic program:
+it aggregates the program, rule, theme/composition, and dynamic-value source
+locations without forcing legacy `SwapIR` callers to pay for rich nodes.
+Recipe and component semantics live in the separate versioned recipe IR and
+host adapter contracts; they are not represented as unstructured residual
+strings.
 
 ## Locality and exports
 

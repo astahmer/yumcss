@@ -150,6 +150,8 @@ export interface StyleProgram {
 	/** Root declarations retained as the cheap projection for old emitters. */
 	readonly declarations: readonly StyleDeclaration[];
 	readonly residuals: readonly StyleProgramResidual[];
+	/** All authored source locations represented by rules and dynamic values. */
+	readonly sourceMap?: readonly StyleProgramSource[];
 	readonly source?: StyleProgramSource;
 	readonly themes?: readonly StyleThemeBinding[];
 	readonly compositions?: readonly StyleComposition[];
@@ -176,6 +178,8 @@ export interface StyleProgramOptions {
 	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
+	/** Additional provenance entries supplied by an adapter. */
+	readonly sourceMap?: readonly StyleProgramSource[];
 	readonly themes?: readonly StyleThemeBinding[];
 	readonly compositions?: readonly StyleComposition[];
 	readonly runtime?: StyleRuntimeContext;
@@ -185,6 +189,36 @@ export interface StyleProgramOptions {
 export interface StyleRuleInput extends Omit<StyleRule, "children" | "order"> {
 	readonly children?: readonly StyleRule[];
 	readonly order?: number;
+}
+
+function sourceIdentity(source: StyleProgramSource): string {
+	return JSON.stringify(source);
+}
+
+function collectSources(
+	rules: readonly StyleRule[],
+	root: StyleProgramSource | undefined,
+	provided: readonly StyleProgramSource[] | undefined,
+	themes: readonly StyleThemeBinding[] | undefined,
+	compositions: readonly StyleComposition[] | undefined,
+): readonly StyleProgramSource[] {
+	const sources = new Map<string, StyleProgramSource>();
+	const add = (source: StyleProgramSource | undefined): void => {
+		if (source !== undefined) sources.set(sourceIdentity(source), source);
+	};
+	for (const source of provided ?? []) add(source);
+	add(root);
+	for (const theme of themes ?? []) add(theme.source);
+	for (const composition of compositions ?? []) add(composition.source);
+	const visit = (rule: StyleRule): void => {
+		add(rule.source);
+		for (const declaration of rule.declarations) {
+			if (declaration.value.kind === "dynamic") add(declaration.value.source);
+		}
+		for (const child of rule.children) visit(child);
+	};
+	for (const rule of rules) visit(rule);
+	return [...sources.values()];
 }
 
 const toValue = (value: string | true | number): StyleValue => {
@@ -279,6 +313,13 @@ export function styleProgramFromSwapIR(
 			text: residual.text,
 			hint: residual.hint,
 		})),
+		sourceMap: collectSources(
+			rules,
+			options.source,
+			options.sourceMap,
+			options.themes,
+			options.compositions,
+		),
 		source: options.source,
 		themes: options.themes ?? [],
 		compositions: options.compositions ?? [],
@@ -305,6 +346,13 @@ export function styleProgramFromRules(
 			rule.kind === "style" && rule.conditions.length === 0 ? rule.declarations : [],
 		),
 		residuals: [...(options.residuals ?? [])],
+		sourceMap: collectSources(
+			ordered,
+			options.source,
+			options.sourceMap,
+			options.themes,
+			options.compositions,
+		),
 		source: options.source,
 		themes: options.themes ?? [],
 		compositions: options.compositions ?? [],

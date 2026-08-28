@@ -23,10 +23,11 @@
  *   // vite.config.ts
  *   plugins: [pandwindCssVite(examplePreset, { className: twAdapter }), ...]
  */
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { BRIDGE_PROPS, generateUtilityBridge } from "./bridge.ts";
 import { extractTwConfig } from "../vite/inline.ts";
+import { buildPandwindInteropArtifact } from "./interop-artifact.ts";
 
 const [, , cssEntryArg, twFileArg, outFileArg, presetImportArg, presetExportArg] = process.argv;
 const cwd = process.cwd();
@@ -83,4 +84,18 @@ export const twAdapter = createTwAdapter({
 `;
 
 writeFileSync(outFile, out);
+
+const interopPath = resolve(dirname(outFile), "pandwind.interop.json");
+const typesPath = resolve(dirname(twFile), "types.d.ts");
+if (existsSync(typesPath)) {
+	const themePath = resolve(dirname(outFile), "pandwind-theme.css");
+	const artifact = buildPandwindInteropArtifact({
+		typesDts: readFileSync(typesPath, "utf8"),
+		twTs: twSource,
+		bridge,
+		artifactDir: dirname(outFile),
+		themeBlock: existsSync(themePath) ? readFileSync(themePath, "utf8") : "",
+	});
+	writeFileSync(interopPath, `${JSON.stringify(artifact, null, "\t")}\n`);
+}
 console.log(`pandwind: wrote ${outFile} (${Object.keys(bridge).length} properties)`);

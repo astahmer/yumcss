@@ -40,6 +40,7 @@
 		"./lib/utils": "./src/lib/utils.ts",
 		"./preset/example-preset": "./src/preset/example-preset.ts",
 		"./tw/compile": "./src/tw/compile.ts",
+		"./tw/interop": "./src/tw/interop-artifact.ts",
 		"./tw/literal": "./src/tw/literal.ts",
 		"./tw/token-graph": "./src/tw/token-graph.ts",
 		"./codegen/types": "./src/tw/generate-types.ts",

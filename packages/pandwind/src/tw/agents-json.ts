@@ -22,7 +22,13 @@ export interface AgentsUtility {
 
 export interface AgentsDocument {
 	schema: string;
-	generatedFrom: { types: string; runtime: string; bridge?: string; theme?: string };
+	generatedFrom: {
+		types: string;
+		runtime: string;
+		bridge?: string;
+		interop: string;
+		theme?: string;
+	};
 	utilities: Record<string, AgentsUtility>;
 	variants: string[];
 	conflictsSummary: Record<string, Array<string>>;
@@ -95,6 +101,7 @@ export function buildAgentsDocument(options: {
 			types: `${options.artifactDir}/types.d.ts`,
 			runtime: `${options.artifactDir}/tw.ts`,
 			bridge: `${options.artifactDir}/bridge.ts`,
+			interop: `${options.artifactDir}/pandwind.interop.json`,
 			theme: options.themeBlock ? `${options.artifactDir}/pandwind-theme.css` : undefined,
 		},
 		utilities: utilitiesFromTypesDts(options.typesDts),

@@ -40,6 +40,7 @@ function mergePrograms(programs: readonly StyleProgram[]): StyleProgram | undefi
 		rules: present.flatMap((program) => program.rules),
 		declarations: present.flatMap((program) => program.declarations),
 		residuals: present.flatMap((program) => program.residuals),
+		sourceMap: present.flatMap((program) => program.sourceMap ?? []),
 		source: first.source,
 		themes: present.flatMap((program) => program.themes ?? []),
 		compositions: present.flatMap((program) => program.compositions ?? []),

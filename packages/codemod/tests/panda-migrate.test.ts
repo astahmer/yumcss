@@ -163,6 +163,19 @@ describe("supporting migration primitives", () => {
 		expect(args.report).toBe(true);
 	});
 
+	it("accepts explicit capability policy and machine-readable reports", () => {
+		const args = parseSwapArgs([
+			"--from=emotion",
+			"--to=pandwind",
+			"--partial",
+			"--report=json",
+			"Card.tsx",
+		]);
+		expect(args.capabilityMode).toBe("partial");
+		expect(args.report).toBe(true);
+		expect(args.reportFormat).toBe("json");
+	});
+
 	it("detects tsconfig aliases and emits valid JSX wrapper types", () => {
 		const dir = makeProject();
 		expect(detectAlias(dir)).toMatchObject({

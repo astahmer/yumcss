@@ -68,6 +68,7 @@ describe("buildAgentsDocument — determinism + shape", () => {
 		expect(doc.semanticTokens["--color-surface"]).toBe("#fff");
 		expect(doc.workflows.verifyTypes).toContain("typecheck");
 		expect(doc.generatedFrom.types).toBe("/out/types.d.ts");
+		expect(doc.generatedFrom.interop).toBe("/out/pandwind.interop.json");
 		expect(Object.keys(doc.utilities)).toContain("text");
 	});
 });
