@@ -1,1272 +1,1009 @@
 {
-  "schema": "pandwind.real-repository-report/2",
-  "generatedFrom": "scripts/generate-real-repository-report.ts",
-  "cloneRoot": "/Users/astahmer/.references",
-  "sourceFiles": 22,
-  "reports": [
-    {
-      "id": "panda-website-home",
-      "repository": "https://github.com/chakra-ui/panda",
-      "commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
-      "path": "website/app/page.tsx",
-      "adapterRoute": "panda -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 1,
-        "evidence": [
-          "panda project pipeline"
-        ]
-      },
-      "sourceBytes": 1421,
-      "outputBytes": 1420,
-      "outputByteDelta": -1,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 0,
-      "canonicalCss": {
-        "checked": false,
-        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
-      },
-      "manualFixes": [],
-      "emittedModules": [
-        "pandwind/preset.ts",
-        "pandwind/css.ts",
-        "pandwind/virtual.d.ts",
-        "pandwind/internal.ts",
-        "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts",
-        "pandwind/jsx/index.tsx"
-      ],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@pandacss/dev"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@pandacss/dev"
-        ],
-        "byteDelta": -1
-      }
-    },
-    {
-      "id": "emotion-benchmark-view",
-      "repository": "https://github.com/emotion-js/emotion",
-      "commit": "b882bcba85132554992e4bd49e94c95939bbf810",
-      "path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
-      "adapterRoute": "emotion -> styled-components",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@emotion\\/(?:css|react|styled)",
-          "\\bcss\\s*`"
-        ]
-      },
-      "sourceBytes": 164,
-      "outputBytes": 161,
-      "outputByteDelta": -3,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 16,
-        "targetBytes": 16,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@emotion/css",
-          "@emotion/react"
-        ],
-        "targetRuntimePackages": [
-          "styled-components"
-        ],
-        "added": [
-          "styled-components"
-        ],
-        "removed": [
-          "@emotion/css",
-          "@emotion/react"
-        ],
-        "byteDelta": -3
-      }
-    },
-    {
-      "id": "styled-components-benchmark-view",
-      "repository": "https://github.com/styled-components/styled-components",
-      "commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
-      "path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
-      "adapterRoute": "styled-components -> emotion",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "styled-components",
-          "\\bstyled\\s*\\."
-        ]
-      },
-      "sourceBytes": 333,
-      "outputBytes": 305,
-      "outputByteDelta": -28,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 196,
-        "targetBytes": 196,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "styled-components"
-        ],
-        "targetRuntimePackages": [
-          "@emotion/css",
-          "@emotion/styled"
-        ],
-        "added": [
-          "@emotion/css",
-          "@emotion/styled"
-        ],
-        "removed": [
-          "styled-components"
-        ],
-        "byteDelta": -28
-      }
-    },
-    {
-      "id": "panda-website",
-      "repository": "https://github.com/chakra-ui/panda",
-      "commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
-      "path": "website/app/page.tsx",
-      "adapterRoute": "panda -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 1,
-        "evidence": [
-          "panda project pipeline"
-        ]
-      },
-      "sourceBytes": 1422,
-      "outputBytes": 1421,
-      "outputByteDelta": -1,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 0,
-      "canonicalCss": {
-        "checked": false,
-        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
-      },
-      "manualFixes": [],
-      "emittedModules": [
-        "pandwind/preset.ts",
-        "pandwind/css.ts",
-        "pandwind/virtual.d.ts",
-        "pandwind/internal.ts",
-        "pandwind/recipes/index.ts",
-        "pandwind/patterns/index.ts",
-        "pandwind/jsx/index.tsx"
-      ],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@pandacss/dev"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@pandacss/dev"
-        ],
-        "byteDelta": -1
-      }
-    },
-    {
-      "id": "emotion-fixture",
-      "repository": "https://github.com/emotion-js/emotion",
-      "commit": "b882bcba85132554992e4bd49e94c95939bbf810",
-      "path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
-      "adapterRoute": "emotion -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@emotion\\/(?:css|react|styled)",
-          "\\bcss\\s*`"
-        ]
-      },
-      "sourceBytes": 164,
-      "outputBytes": 187,
-      "outputByteDelta": 23,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 16,
-        "targetBytes": 16,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@emotion/css",
-          "@emotion/react"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@emotion/css",
-          "@emotion/react"
-        ],
-        "byteDelta": 23
-      }
-    },
-    {
-      "id": "styled-components-benchmark",
-      "repository": "https://github.com/styled-components/styled-components",
-      "commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
-      "path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
-      "adapterRoute": "styled-components -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "styled-components",
-          "\\bstyled\\s*\\."
-        ]
-      },
-      "sourceBytes": 333,
-      "outputBytes": 560,
-      "outputByteDelta": 227,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 196,
-        "targetBytes": 196,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "styled-components"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "styled-components"
-        ],
-        "byteDelta": 227
-      }
-    },
-    {
-      "id": "vanilla-extract-example",
-      "repository": "https://github.com/vanilla-extract-css/vanilla-extract",
-      "commit": "881c256a867f55386f96a7fe95068300bac720e6",
-      "path": "examples/next/components/HelloWorld.css.ts",
-      "adapterRoute": "vanilla-extract -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@vanilla-extract\\/css",
-          "\\b(?:style|globalStyle|keyframes)\\s*\\("
-        ]
-      },
-      "sourceBytes": 774,
-      "outputBytes": 1008,
-      "outputByteDelta": 234,
-      "converted": 2,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 2,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 410,
-        "targetBytes": 410,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@vanilla-extract/css"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@vanilla-extract/css"
-        ],
-        "byteDelta": 234
-      }
-    },
-    {
-      "id": "stitches-react-test",
-      "repository": "https://github.com/stitchesjs/stitches",
-      "commit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
-      "path": "packages/core/tests/basic.js",
-      "adapterRoute": "stitches -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.7,
-        "evidence": [
-          "\\bcreateStitches\\s*\\("
-        ]
-      },
-      "sourceBytes": 7459,
-      "outputBytes": 7808,
-      "outputByteDelta": 349,
-      "converted": 11,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 11,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 323,
-        "targetBytes": 330,
-        "byteDelta": 7
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@stitches/react"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@stitches/react"
-        ],
-        "byteDelta": 349
-      }
-    },
-    {
-      "id": "linaria-solid-example",
-      "repository": "https://github.com/callstack/linaria",
-      "commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
-      "path": "examples/astro-solid/pages/csr.tsx",
-      "adapterRoute": "linaria -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@linaria\\/(?:core|react)",
-          "\\b(?:css|styled)\\s*`"
-        ]
-      },
-      "sourceBytes": 1175,
-      "outputBytes": 1357,
-      "outputByteDelta": 182,
-      "converted": 4,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 4,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 155,
-        "targetBytes": 155,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@linaria/core",
-          "@linaria/react"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@linaria/core",
-          "@linaria/react"
-        ],
-        "byteDelta": 182
-      }
-    },
-    {
-      "id": "jss-nested-benchmark",
-      "repository": "https://github.com/cssinjs/jss",
-      "commit": "901882a894c7e802450696ebe2ea633ae63c5977",
-      "path": "examples/inline/app.js",
-      "adapterRoute": "jss -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "from\\s+[\"'](?:jss|react-jss)[\"']",
-          "\\bcreate(?:UseStyles|StyleSheet)\\s*\\("
-        ]
-      },
-      "sourceBytes": 583,
-      "outputBytes": 653,
-      "outputByteDelta": 70,
-      "converted": 2,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 2,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 74,
-        "targetBytes": 74,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "jss",
-          "react-jss"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "jss",
-          "react-jss"
-        ],
-        "byteDelta": 70
-      }
-    },
-    {
-      "id": "fela-render-test",
-      "repository": "https://github.com/rofrischmann/fela",
-      "commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
-      "path": "packages/fela-dom/src/dom/__tests__/render-test.js",
-      "adapterRoute": "fela -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "from\\s+[\"'](?:fela|react-fela)[\"']"
-        ]
-      },
-      "sourceBytes": 5663,
-      "outputBytes": 5226,
-      "outputByteDelta": -437,
-      "converted": 8,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 8,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 398,
-        "targetBytes": 398,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "fela",
-          "react-fela"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "fela",
-          "react-fela"
-        ],
-        "byteDelta": -437
-      }
-    },
-    {
-      "id": "goober-css-test",
-      "repository": "https://github.com/cristianbote/goober",
-      "commit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
-      "path": "src/__tests__/css.test.js",
-      "adapterRoute": "goober -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "\\bcss\\s*\\(\\s*\\{"
-        ]
-      },
-      "sourceBytes": 3301,
-      "outputBytes": 3374,
-      "outputByteDelta": 73,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 8,
-        "targetBytes": 8,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "goober"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "goober"
-        ],
-        "byteDelta": 73
-      }
-    },
-    {
-      "id": "aphrodite-api-test",
-      "repository": "https://github.com/Khan/aphrodite",
-      "commit": "225f43c5802259a9e042b384a1f4f2e5b48094ea",
-      "path": "tests/index_test.js",
-      "adapterRoute": "aphrodite -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "\\bStyleSheet\\.create\\s*\\(\\s*\\{"
-        ]
-      },
-      "sourceBytes": 16434,
-      "outputBytes": 14532,
-      "outputByteDelta": -1902,
-      "converted": 22,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 22,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 1329,
-        "targetBytes": 803,
-        "byteDelta": -526
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "aphrodite"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "aphrodite"
-        ],
-        "byteDelta": -1902
-      }
-    },
-    {
-      "id": "style9-next-styles",
-      "repository": "https://github.com/johanholmerin/style9",
-      "commit": "b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42",
-      "path": "examples/nextjs/shared/styles.js",
-      "adapterRoute": "style9 -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "from\\s+[\"']style9[\"']",
-          "\\bstyle9\\.create\\s*\\(\\s*\\{"
-        ]
-      },
-      "sourceBytes": 200,
-      "outputBytes": 215,
-      "outputByteDelta": 15,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 86,
-        "targetBytes": 86,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "style9"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "style9"
-        ],
-        "byteDelta": 15
-      }
-    },
-    {
-      "id": "treat-button",
-      "repository": "https://github.com/seek-oss/treat",
-      "commit": "1cc001170ee6b66b1d960ac4097fb84597163d1c",
-      "path": "examples/gatsby-plugin-treat-example/src/components/Button.treat.js",
-      "adapterRoute": "treat -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "from\\s+[\"'](?:treat|[^\"']+\\.treat)[\"']",
-          "\\b(?:style|createTheme)\\s*\\(\\s*\\{"
-        ]
-      },
-      "sourceBytes": 439,
-      "outputBytes": 527,
-      "outputByteDelta": 88,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 208,
-        "targetBytes": 208,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "treat"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "treat"
-        ],
-        "byteDelta": 88
-      }
-    },
-    {
-      "id": "compiled-vite-example",
-      "repository": "https://github.com/atlassian-labs/compiled",
-      "commit": "0f5d2b606471b9fb92c2402d5367c3c23efd1a29",
-      "path": "fixtures/parcel-optimizer-test-app/src/index.jsx",
-      "adapterRoute": "compiled -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "from\\s+[\"']@compiled\\/(?:react|css-in-js)[\"']",
-          "\\b(?:css|styled\\.[A-Za-z_$][\\w$]*)\\s*\\("
-        ]
-      },
-      "sourceBytes": 1357,
-      "outputBytes": 1310,
-      "outputByteDelta": -47,
-      "converted": 4,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 4,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 210,
-        "targetBytes": 210,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@compiled/react",
-          "@compiled/css-in-js"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@compiled/react",
-          "@compiled/css-in-js"
-        ],
-        "byteDelta": -47
-      }
-    },
-    {
-      "id": "solid-styled-runtime",
-      "repository": "https://github.com/solidjs/solid-styled-components",
-      "commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
-      "path": "test/test.spec.tsx",
-      "adapterRoute": "solid-styled -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "\\bstyled(?:\\.[A-Za-z_$][\\w$]*|\\([^)]*\\))[^`]*`"
-        ]
-      },
-      "sourceBytes": 4251,
-      "outputBytes": 4678,
-      "outputByteDelta": 427,
-      "converted": 9,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 9,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 1018,
-        "targetBytes": 878,
-        "byteDelta": -140
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "solid-styled-components"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "solid-styled-components"
-        ],
-        "byteDelta": 427
-      }
-    },
-    {
-      "id": "vue-styled-css-test",
-      "repository": "https://github.com/vue-styled-components/core",
-      "commit": "5874630ed4d54aa955052fc864140eeae30fad2c",
-      "path": "packages/playground/src/App.vue",
-      "adapterRoute": "vue-styled -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.8,
-        "evidence": [
-          "from\\s+[\"'](?:vue-styled-components|@vue-styled-components\\/core)[\"']",
-          "\\bstyled\\.[A-Za-z_$][\\w$]*[^`]*`"
-        ]
-      },
-      "sourceBytes": 6953,
-      "outputBytes": 7759,
-      "outputByteDelta": 806,
-      "converted": 7,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 7,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 1477,
-        "targetBytes": 1476,
-        "byteDelta": -1
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "vue-styled-components"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "vue-styled-components"
-        ],
-        "byteDelta": 806
-      }
-    },
-    {
-      "id": "stylex-example",
-      "repository": "https://github.com/facebook/stylex",
-      "commit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
-      "path": "examples/example-bun/src/App.jsx",
-      "adapterRoute": "stylex -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@stylexjs\\/stylex",
-          "\\bstylex\\.create\\s*\\("
-        ]
-      },
-      "sourceBytes": 966,
-      "outputBytes": 1003,
-      "outputByteDelta": 37,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 289,
-        "targetBytes": 289,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@stylexjs/stylex"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "@stylexjs/stylex"
-        ],
-        "byteDelta": 37
-      }
-    },
-    {
-      "id": "bamboo-benchmark-realistic-button",
-      "repository": "https://github.com/jantimon/css-in-js-bench",
-      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
-      "path": "techs/bamboo/case/realistic-button/index.tsx",
-      "adapterRoute": "bamboo -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.7,
-        "evidence": [
-          "styled-system\\/css"
-        ]
-      },
-      "sourceBytes": 2729,
-      "outputBytes": 2595,
-      "outputByteDelta": -134,
-      "converted": 4,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 4,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 1131,
-        "targetBytes": 1131,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@bamboocss/dev",
-          "@bamboocss/vite"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [],
-        "byteDelta": -134
-      }
-    },
-    {
-      "id": "next-yak-benchmark-realistic-button",
-      "repository": "https://github.com/jantimon/css-in-js-bench",
-      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
-      "path": "techs/next-yak/case/realistic-button/index.tsx",
-      "adapterRoute": "next-yak -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "\\bfrom\\s+[\"']next-yak[\"']",
-          "\\b(?:css|styled)\\s*`"
-        ]
-      },
-      "sourceBytes": 2921,
-      "outputBytes": 2831,
-      "outputByteDelta": -90,
-      "converted": 3,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 3,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 379,
-        "targetBytes": 379,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "next-yak"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "next-yak"
-        ],
-        "byteDelta": -90
-      }
-    },
-    {
-      "id": "next-yak-css-prop-benchmark-realistic-button",
-      "repository": "https://github.com/jantimon/css-in-js-bench",
-      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
-      "path": "techs/next-yak-css/case/realistic-button/index.tsx",
-      "adapterRoute": "next-yak -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "\\bfrom\\s+[\"']next-yak[\"']",
-          "\\b(?:css|styled)\\s*`"
-        ]
-      },
-      "sourceBytes": 3121,
-      "outputBytes": 2723,
-      "outputByteDelta": -398,
-      "converted": 3,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 3,
-      "canonicalCss": {
-        "checked": true,
-        "equal": false,
-        "sourceBytes": 1719,
-        "targetBytes": 1768,
-        "byteDelta": 49
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "next-yak"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [
-          "next-yak"
-        ],
-        "byteDelta": -398
-      }
-    },
-    {
-      "id": "chakra-ui-box-sx",
-      "repository": "https://github.com/chakra-ui/chakra-ui",
-      "commit": "c8ef4fb3146ecb82521a878eb6545b4c9598abd6",
-      "path": "apps/www/components/chakra-mastery-ad.tsx",
-      "adapterRoute": "chakra-ui -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@chakra-ui\\/react",
-          "<(?:(?:Box|Flex|Stack|Text|Button)(?:\\s|>))"
-        ]
-      },
-      "sourceBytes": 831,
-      "outputBytes": 1260,
-      "outputByteDelta": 429,
-      "converted": 5,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 5,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 321,
-        "targetBytes": 321,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@chakra-ui/react"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [],
-        "byteDelta": 429
-      }
-    },
-    {
-      "id": "mui-box-sx",
-      "repository": "https://github.com/mui/material-ui",
-      "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
-      "path": "docs/data/material/components/box/BoxSx.tsx",
-      "adapterRoute": "mui -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@mui\\/(?:system|material)",
-          "\\bsx\\s*="
-        ]
-      },
-      "sourceBytes": 561,
-      "outputBytes": 574,
-      "outputByteDelta": 13,
-      "converted": 1,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 1,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 96,
-        "targetBytes": 96,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@mui/system",
-          "@mui/material"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [],
-        "byteDelta": 13
-      }
-    },
-    {
-      "id": "mantine-style-props",
-      "repository": "https://github.com/mantinedev/mantine",
-      "commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
-      "path": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
-      "adapterRoute": "mantine -> pandwind",
-      "detection": {
-        "matched": true,
-        "confidence": 0.9,
-        "evidence": [
-          "@mantine\\/core",
-          "\\b(?:sx|maw|fz|c|bg)\\s*="
-        ]
-      },
-      "sourceBytes": 3131,
-      "outputBytes": 3645,
-      "outputByteDelta": 514,
-      "converted": 9,
-      "skipped": 0,
-      "residuals": 0,
-      "residualKinds": {},
-      "validations": 9,
-      "canonicalCss": {
-        "checked": true,
-        "equal": true,
-        "sourceBytes": 288,
-        "targetBytes": 288,
-        "byteDelta": 0
-      },
-      "manualFixes": [],
-      "emittedModules": [],
-      "runtimeBundleImpact": {
-        "measured": false,
-        "measurement": "source-artifact",
-        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
-        "sourceRuntimePackages": [
-          "@mantine/core"
-        ],
-        "targetRuntimePackages": [
-          "pandwind"
-        ],
-        "added": [
-          "pandwind"
-        ],
-        "removed": [],
-        "byteDelta": 514
-      }
-    }
-  ],
-  "bundleImpact": {
-    "measured": false,
-    "reason": "reference repositories are cloned without installing their dependency graphs; the runner records source/output bytes and dependency deltas without fabricating bundle numbers"
-  }
+	"schema": "pandwind.real-repository-report/2",
+	"generatedFrom": "scripts/generate-real-repository-report.ts",
+	"cloneRoot": "/Users/astahmer/.references",
+	"sourceFiles": 22,
+	"reports": [
+		{
+			"id": "panda-website-home",
+			"repository": "https://github.com/chakra-ui/panda",
+			"commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
+			"path": "website/app/page.tsx",
+			"adapterRoute": "panda -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 1,
+				"evidence": ["panda project pipeline"]
+			},
+			"sourceBytes": 1421,
+			"outputBytes": 1420,
+			"outputByteDelta": -1,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 0,
+			"canonicalCss": {
+				"checked": false,
+				"reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+			},
+			"manualFixes": [],
+			"emittedModules": [
+				"pandwind/preset.ts",
+				"pandwind/css.ts",
+				"pandwind/virtual.d.ts",
+				"pandwind/internal.ts",
+				"pandwind/recipes/index.ts",
+				"pandwind/patterns/index.ts",
+				"pandwind/jsx/index.tsx"
+			],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@pandacss/dev"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@pandacss/dev"],
+				"byteDelta": -1
+			}
+		},
+		{
+			"id": "emotion-benchmark-view",
+			"repository": "https://github.com/emotion-js/emotion",
+			"commit": "b882bcba85132554992e4bd49e94c95939bbf810",
+			"path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
+			"adapterRoute": "emotion -> styled-components",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@emotion\\/(?:css|react|styled)", "\\bcss\\s*`"]
+			},
+			"sourceBytes": 164,
+			"outputBytes": 161,
+			"outputByteDelta": -3,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 16,
+				"targetBytes": 16,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@emotion/css", "@emotion/react"],
+				"targetRuntimePackages": ["styled-components"],
+				"added": ["styled-components"],
+				"removed": ["@emotion/css", "@emotion/react"],
+				"byteDelta": -3
+			}
+		},
+		{
+			"id": "styled-components-benchmark-view",
+			"repository": "https://github.com/styled-components/styled-components",
+			"commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
+			"path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
+			"adapterRoute": "styled-components -> emotion",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["styled-components", "\\bstyled\\s*\\."]
+			},
+			"sourceBytes": 333,
+			"outputBytes": 305,
+			"outputByteDelta": -28,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 196,
+				"targetBytes": 196,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["styled-components"],
+				"targetRuntimePackages": ["@emotion/css", "@emotion/styled"],
+				"added": ["@emotion/css", "@emotion/styled"],
+				"removed": ["styled-components"],
+				"byteDelta": -28
+			}
+		},
+		{
+			"id": "panda-website",
+			"repository": "https://github.com/chakra-ui/panda",
+			"commit": "8a71bff3dc805e247be70d120cf485c8f14f104b",
+			"path": "website/app/page.tsx",
+			"adapterRoute": "panda -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 1,
+				"evidence": ["panda project pipeline"]
+			},
+			"sourceBytes": 1422,
+			"outputBytes": 1421,
+			"outputByteDelta": -1,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 0,
+			"canonicalCss": {
+				"checked": false,
+				"reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+			},
+			"manualFixes": [],
+			"emittedModules": [
+				"pandwind/preset.ts",
+				"pandwind/css.ts",
+				"pandwind/virtual.d.ts",
+				"pandwind/internal.ts",
+				"pandwind/recipes/index.ts",
+				"pandwind/patterns/index.ts",
+				"pandwind/jsx/index.tsx"
+			],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@pandacss/dev"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@pandacss/dev"],
+				"byteDelta": -1
+			}
+		},
+		{
+			"id": "emotion-fixture",
+			"repository": "https://github.com/emotion-js/emotion",
+			"commit": "b882bcba85132554992e4bd49e94c95939bbf810",
+			"path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
+			"adapterRoute": "emotion -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@emotion\\/(?:css|react|styled)", "\\bcss\\s*`"]
+			},
+			"sourceBytes": 164,
+			"outputBytes": 187,
+			"outputByteDelta": 23,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 16,
+				"targetBytes": 16,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@emotion/css", "@emotion/react"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@emotion/css", "@emotion/react"],
+				"byteDelta": 23
+			}
+		},
+		{
+			"id": "styled-components-benchmark",
+			"repository": "https://github.com/styled-components/styled-components",
+			"commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
+			"path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
+			"adapterRoute": "styled-components -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["styled-components", "\\bstyled\\s*\\."]
+			},
+			"sourceBytes": 333,
+			"outputBytes": 560,
+			"outputByteDelta": 227,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 196,
+				"targetBytes": 196,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["styled-components"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["styled-components"],
+				"byteDelta": 227
+			}
+		},
+		{
+			"id": "vanilla-extract-example",
+			"repository": "https://github.com/vanilla-extract-css/vanilla-extract",
+			"commit": "881c256a867f55386f96a7fe95068300bac720e6",
+			"path": "examples/next/components/HelloWorld.css.ts",
+			"adapterRoute": "vanilla-extract -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@vanilla-extract\\/css", "\\b(?:style|globalStyle|keyframes)\\s*\\("]
+			},
+			"sourceBytes": 774,
+			"outputBytes": 1008,
+			"outputByteDelta": 234,
+			"converted": 2,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 2,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 410,
+				"targetBytes": 410,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@vanilla-extract/css"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@vanilla-extract/css"],
+				"byteDelta": 234
+			}
+		},
+		{
+			"id": "stitches-react-test",
+			"repository": "https://github.com/stitchesjs/stitches",
+			"commit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
+			"path": "packages/core/tests/basic.js",
+			"adapterRoute": "stitches -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.7,
+				"evidence": ["\\bcreateStitches\\s*\\("]
+			},
+			"sourceBytes": 7459,
+			"outputBytes": 7808,
+			"outputByteDelta": 349,
+			"converted": 11,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 11,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 323,
+				"targetBytes": 330,
+				"byteDelta": 7
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@stitches/react"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@stitches/react"],
+				"byteDelta": 349
+			}
+		},
+		{
+			"id": "linaria-solid-example",
+			"repository": "https://github.com/callstack/linaria",
+			"commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
+			"path": "examples/astro-solid/pages/csr.tsx",
+			"adapterRoute": "linaria -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@linaria\\/(?:core|react)", "\\b(?:css|styled)\\s*`"]
+			},
+			"sourceBytes": 1175,
+			"outputBytes": 1357,
+			"outputByteDelta": 182,
+			"converted": 4,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 4,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 155,
+				"targetBytes": 155,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@linaria/core", "@linaria/react"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@linaria/core", "@linaria/react"],
+				"byteDelta": 182
+			}
+		},
+		{
+			"id": "jss-nested-benchmark",
+			"repository": "https://github.com/cssinjs/jss",
+			"commit": "901882a894c7e802450696ebe2ea633ae63c5977",
+			"path": "examples/inline/app.js",
+			"adapterRoute": "jss -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": [
+					"from\\s+[\"'](?:jss|react-jss)[\"']",
+					"\\bcreate(?:UseStyles|StyleSheet)\\s*\\("
+				]
+			},
+			"sourceBytes": 583,
+			"outputBytes": 653,
+			"outputByteDelta": 70,
+			"converted": 2,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 2,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 74,
+				"targetBytes": 74,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["jss", "react-jss"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["jss", "react-jss"],
+				"byteDelta": 70
+			}
+		},
+		{
+			"id": "fela-render-test",
+			"repository": "https://github.com/rofrischmann/fela",
+			"commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
+			"path": "packages/fela-dom/src/dom/__tests__/render-test.js",
+			"adapterRoute": "fela -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": ["from\\s+[\"'](?:fela|react-fela)[\"']"]
+			},
+			"sourceBytes": 5663,
+			"outputBytes": 5226,
+			"outputByteDelta": -437,
+			"converted": 8,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 8,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 398,
+				"targetBytes": 398,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["fela", "react-fela"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["fela", "react-fela"],
+				"byteDelta": -437
+			}
+		},
+		{
+			"id": "goober-css-test",
+			"repository": "https://github.com/cristianbote/goober",
+			"commit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
+			"path": "src/__tests__/css.test.js",
+			"adapterRoute": "goober -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": ["\\bcss\\s*\\(\\s*\\{"]
+			},
+			"sourceBytes": 3301,
+			"outputBytes": 3374,
+			"outputByteDelta": 73,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 8,
+				"targetBytes": 8,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["goober"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["goober"],
+				"byteDelta": 73
+			}
+		},
+		{
+			"id": "aphrodite-api-test",
+			"repository": "https://github.com/Khan/aphrodite",
+			"commit": "225f43c5802259a9e042b384a1f4f2e5b48094ea",
+			"path": "tests/index_test.js",
+			"adapterRoute": "aphrodite -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": ["\\bStyleSheet\\.create\\s*\\(\\s*\\{"]
+			},
+			"sourceBytes": 16434,
+			"outputBytes": 14532,
+			"outputByteDelta": -1902,
+			"converted": 22,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 22,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 1329,
+				"targetBytes": 803,
+				"byteDelta": -526
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["aphrodite"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["aphrodite"],
+				"byteDelta": -1902
+			}
+		},
+		{
+			"id": "style9-next-styles",
+			"repository": "https://github.com/johanholmerin/style9",
+			"commit": "b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42",
+			"path": "examples/nextjs/shared/styles.js",
+			"adapterRoute": "style9 -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": ["from\\s+[\"']style9[\"']", "\\bstyle9\\.create\\s*\\(\\s*\\{"]
+			},
+			"sourceBytes": 200,
+			"outputBytes": 215,
+			"outputByteDelta": 15,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 86,
+				"targetBytes": 86,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["style9"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["style9"],
+				"byteDelta": 15
+			}
+		},
+		{
+			"id": "treat-button",
+			"repository": "https://github.com/seek-oss/treat",
+			"commit": "1cc001170ee6b66b1d960ac4097fb84597163d1c",
+			"path": "examples/gatsby-plugin-treat-example/src/components/Button.treat.js",
+			"adapterRoute": "treat -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": [
+					"from\\s+[\"'](?:treat|[^\"']+\\.treat)[\"']",
+					"\\b(?:style|createTheme)\\s*\\(\\s*\\{"
+				]
+			},
+			"sourceBytes": 439,
+			"outputBytes": 527,
+			"outputByteDelta": 88,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 208,
+				"targetBytes": 208,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["treat"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["treat"],
+				"byteDelta": 88
+			}
+		},
+		{
+			"id": "compiled-vite-example",
+			"repository": "https://github.com/atlassian-labs/compiled",
+			"commit": "0f5d2b606471b9fb92c2402d5367c3c23efd1a29",
+			"path": "fixtures/parcel-optimizer-test-app/src/index.jsx",
+			"adapterRoute": "compiled -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": [
+					"from\\s+[\"']@compiled\\/(?:react|css-in-js)[\"']",
+					"\\b(?:css|styled\\.[A-Za-z_$][\\w$]*)\\s*\\("
+				]
+			},
+			"sourceBytes": 1357,
+			"outputBytes": 1310,
+			"outputByteDelta": -47,
+			"converted": 4,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 4,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 210,
+				"targetBytes": 210,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@compiled/react", "@compiled/css-in-js"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@compiled/react", "@compiled/css-in-js"],
+				"byteDelta": -47
+			}
+		},
+		{
+			"id": "solid-styled-runtime",
+			"repository": "https://github.com/solidjs/solid-styled-components",
+			"commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
+			"path": "test/test.spec.tsx",
+			"adapterRoute": "solid-styled -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": ["\\bstyled(?:\\.[A-Za-z_$][\\w$]*|\\([^)]*\\))[^`]*`"]
+			},
+			"sourceBytes": 4251,
+			"outputBytes": 4678,
+			"outputByteDelta": 427,
+			"converted": 9,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 9,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 1018,
+				"targetBytes": 878,
+				"byteDelta": -140
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["solid-styled-components"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["solid-styled-components"],
+				"byteDelta": 427
+			}
+		},
+		{
+			"id": "vue-styled-css-test",
+			"repository": "https://github.com/vue-styled-components/core",
+			"commit": "5874630ed4d54aa955052fc864140eeae30fad2c",
+			"path": "packages/playground/src/App.vue",
+			"adapterRoute": "vue-styled -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.8,
+				"evidence": [
+					"from\\s+[\"'](?:vue-styled-components|@vue-styled-components\\/core)[\"']",
+					"\\bstyled\\.[A-Za-z_$][\\w$]*[^`]*`"
+				]
+			},
+			"sourceBytes": 6953,
+			"outputBytes": 7759,
+			"outputByteDelta": 806,
+			"converted": 7,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 7,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 1477,
+				"targetBytes": 1476,
+				"byteDelta": -1
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["vue-styled-components"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["vue-styled-components"],
+				"byteDelta": 806
+			}
+		},
+		{
+			"id": "stylex-example",
+			"repository": "https://github.com/facebook/stylex",
+			"commit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
+			"path": "examples/example-bun/src/App.jsx",
+			"adapterRoute": "stylex -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@stylexjs\\/stylex", "\\bstylex\\.create\\s*\\("]
+			},
+			"sourceBytes": 966,
+			"outputBytes": 1003,
+			"outputByteDelta": 37,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 289,
+				"targetBytes": 289,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@stylexjs/stylex"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["@stylexjs/stylex"],
+				"byteDelta": 37
+			}
+		},
+		{
+			"id": "bamboo-benchmark-realistic-button",
+			"repository": "https://github.com/jantimon/css-in-js-bench",
+			"commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+			"path": "techs/bamboo/case/realistic-button/index.tsx",
+			"adapterRoute": "bamboo -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.7,
+				"evidence": ["styled-system\\/css"]
+			},
+			"sourceBytes": 2729,
+			"outputBytes": 2595,
+			"outputByteDelta": -134,
+			"converted": 4,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 4,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 1131,
+				"targetBytes": 1131,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@bamboocss/dev", "@bamboocss/vite"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": [],
+				"byteDelta": -134
+			}
+		},
+		{
+			"id": "next-yak-benchmark-realistic-button",
+			"repository": "https://github.com/jantimon/css-in-js-bench",
+			"commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+			"path": "techs/next-yak/case/realistic-button/index.tsx",
+			"adapterRoute": "next-yak -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["\\bfrom\\s+[\"']next-yak[\"']", "\\b(?:css|styled)\\s*`"]
+			},
+			"sourceBytes": 2921,
+			"outputBytes": 2831,
+			"outputByteDelta": -90,
+			"converted": 3,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 3,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 379,
+				"targetBytes": 379,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["next-yak"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["next-yak"],
+				"byteDelta": -90
+			}
+		},
+		{
+			"id": "next-yak-css-prop-benchmark-realistic-button",
+			"repository": "https://github.com/jantimon/css-in-js-bench",
+			"commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+			"path": "techs/next-yak-css/case/realistic-button/index.tsx",
+			"adapterRoute": "next-yak -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["\\bfrom\\s+[\"']next-yak[\"']", "\\b(?:css|styled)\\s*`"]
+			},
+			"sourceBytes": 3121,
+			"outputBytes": 2723,
+			"outputByteDelta": -398,
+			"converted": 3,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 3,
+			"canonicalCss": {
+				"checked": true,
+				"equal": false,
+				"sourceBytes": 1719,
+				"targetBytes": 1768,
+				"byteDelta": 49
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["next-yak"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": ["next-yak"],
+				"byteDelta": -398
+			}
+		},
+		{
+			"id": "chakra-ui-box-sx",
+			"repository": "https://github.com/chakra-ui/chakra-ui",
+			"commit": "c8ef4fb3146ecb82521a878eb6545b4c9598abd6",
+			"path": "apps/www/components/chakra-mastery-ad.tsx",
+			"adapterRoute": "chakra-ui -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@chakra-ui\\/react", "<(?:(?:Box|Flex|Stack|Text|Button)(?:\\s|>))"]
+			},
+			"sourceBytes": 831,
+			"outputBytes": 1260,
+			"outputByteDelta": 429,
+			"converted": 5,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 5,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 321,
+				"targetBytes": 321,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@chakra-ui/react"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": [],
+				"byteDelta": 429
+			}
+		},
+		{
+			"id": "mui-box-sx",
+			"repository": "https://github.com/mui/material-ui",
+			"commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
+			"path": "docs/data/material/components/box/BoxSx.tsx",
+			"adapterRoute": "mui -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@mui\\/(?:system|material)", "\\bsx\\s*="]
+			},
+			"sourceBytes": 561,
+			"outputBytes": 574,
+			"outputByteDelta": 13,
+			"converted": 1,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 1,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 96,
+				"targetBytes": 96,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@mui/system", "@mui/material"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": [],
+				"byteDelta": 13
+			}
+		},
+		{
+			"id": "mantine-style-props",
+			"repository": "https://github.com/mantinedev/mantine",
+			"commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
+			"path": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
+			"adapterRoute": "mantine -> pandwind",
+			"detection": {
+				"matched": true,
+				"confidence": 0.9,
+				"evidence": ["@mantine\\/core", "\\b(?:sx|maw|fz|c|bg)\\s*="]
+			},
+			"sourceBytes": 3131,
+			"outputBytes": 3645,
+			"outputByteDelta": 514,
+			"converted": 9,
+			"skipped": 0,
+			"residuals": 0,
+			"residualKinds": {},
+			"validations": 9,
+			"canonicalCss": {
+				"checked": true,
+				"equal": true,
+				"sourceBytes": 288,
+				"targetBytes": 288,
+				"byteDelta": 0
+			},
+			"manualFixes": [],
+			"emittedModules": [],
+			"runtimeBundleImpact": {
+				"measured": false,
+				"measurement": "source-artifact",
+				"notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+				"sourceRuntimePackages": ["@mantine/core"],
+				"targetRuntimePackages": ["pandwind"],
+				"added": ["pandwind"],
+				"removed": [],
+				"byteDelta": 514
+			}
+		}
+	],
+	"bundleImpact": {
+		"measured": false,
+		"reason": "reference repositories are cloned without installing their dependency graphs; the runner records source/output bytes and dependency deltas without fabricating bundle numbers"
+	}
 }
