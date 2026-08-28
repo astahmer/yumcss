@@ -23,9 +23,13 @@ pandwind-codemod swap \
   "src/**/*.{ts,tsx}"
 ```
 
-The first adapter wave supports `emotion`, `styled-components`,
-`vanilla-extract`, `stitches`, and `pandwind`. `--to=css.class` is the
-pandwind target spelling; external targets can be selected directly too:
+The built-in adapter set covers `emotion`, `styled-components`,
+`vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
+`aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `solid-styled`,
+`vue-styled`, `bamboo`, `next-yak`, and `pandwind`. Bamboo's object dialect
+and Next-yak's extracted `css`/`styled` template and css-prop lanes share the
+same semantic adapter contract. `--to=css.class` is the pandwind target
+spelling; external targets can be selected directly too:
 
 ```sh
 pandwind-codemod swap --from=styled-components --to=emotion --write "src/**/*.tsx"
@@ -54,6 +58,13 @@ The `--report` output is a migration worklist: it shows converted and skipped
 sites, residual counts, and capability blockers. Use `--diff` before `--write`;
 partial mode is an adapter API option for controlled tooling, not the CLI's
 default safety policy.
+
+The benchmark acceptance corpus is pinned in `reference-repos.md` and
+`plans/evidence/real-repository-migrations-v2.json`. It exercises the
+`css-in-js-bench` Bamboo and Next-yak lanes plus the existing ecosystem
+references. `vanilla`, `tailwind-merge`, and `cnfast` in that benchmark are
+control/utility lanes, not CSS-in-JS source adapters, so they remain outside
+the adapter registry.
 
 ## Runtime and host boundary
 

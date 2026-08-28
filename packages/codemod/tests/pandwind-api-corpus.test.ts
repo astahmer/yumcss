@@ -49,4 +49,35 @@ describe("Pandwind public API migration corpus", () => {
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('dss({ $frame: { fill: "$blue-500" } })');
 	});
+
+	test.each([
+		[
+			"css.class",
+			"css.class(",
+			'import { css } from "./design";\nconst card = css({ backgroundColor: "#3182ce" });',
+		],
+		[
+			"design",
+			"css.class(",
+			'import { css } from "./design";\nconst card = css({ backgroundColor: "#3182ce" });',
+		],
+		[
+			"dss",
+			"dss(",
+			'import { css, dss } from "./design";\nconst card = css({ backgroundColor: "#3182ce" });',
+		],
+		[
+			"tw",
+			"tw(",
+			'import { css } from "./design";\nconst card = css({ backgroundColor: "#3182ce" });',
+		],
+	] as const)(
+		"routes a css declaration through the %s Pandwind API",
+		(target, expected, source) => {
+			const result = run(source, "css", target);
+			expect(result.converted).toBe(1);
+			expect(result.skippedByMarker).toBe(0);
+			expect(result.code).toContain(expected);
+		},
+	);
 });

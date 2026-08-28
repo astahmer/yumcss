@@ -43,8 +43,17 @@ mode pass runs. Off by default.
 
 | source              | what it converts                                                                                                                                                                                                                                                                                   | flagged (not converted)                                                                   |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `styled-components` | `styled.tag`\`...\``with only flat literal declarations →`tw({...})`when the bridge maps every declaration to typed keys, else`css.class({...})`. JSX usages are rewritten to the intrinsic tag with `className={Name}`(static classNames merge via`cx`). The styled-components import is removed. | interpolated templates, nested selectors/media queries, `styled(<Component>)` inheritance |
-| `stylex`            | `stylex.create({ name: { literalProps } })` → plain object of `css.class({...})` values; `stylex.props(a, b)` → `cx(a, b)`. The stylex import is removed.                                                                                                                                          | pseudo/`:hover`, media queries, non-literal values                                        |
+| `styled-components` | `styled.tag`\`...\`` and object calls → the selected target; intrinsic JSX subjects can be rewritten with `className={Name}` and `cx`. | interpolated values and component inheritance remain residuals unless the host contract proves a safe rewrite |
+| `stylex`            | `stylex.create({ name: { literalProps } })` → target style programs; `stylex.props(a, b)` → `cx(a, b)`. | non-literal values and unsupported rule semantics |
+| `bamboo`            | `styled-system/css` object calls, including nested selectors and conditions. | dynamic config and unsupported generated patterns |
+| `next-yak`          | extracted `css` templates, `styled.tag` templates, and css-prop source files. | runtime interpolations requiring host props/theme lowering |
+
+The same v2 adapter registry also contains `emotion`, `vanilla-extract`,
+`stitches`, `linaria`, `jss`, `fela`, `goober`, `aphrodite`, `style9`,
+`treat`, `compiled`, `solid-styled`, and `vue-styled`. Each is a separate
+adapter implementation behind the shared detection/config/parse/emit/
+validation port; adding another source or target does not require changing
+the swap orchestrator.
 
 Both require an existing pandwind `css()` binding in the file (same rule
 as `--to=css`) — the codemod never invents an import for your app's css
