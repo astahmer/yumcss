@@ -16,54 +16,28 @@
  *   src/tailwind.css -> src/types.d.ts + src/tw.ts
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
-import { buildAgentsDocument } from "./agents-json.ts";
-import { FileSystemDesignSystemArtifactWriter } from "./codegen-artifacts.ts";
-import { extractTwConfig } from "../vite/inline.ts";
+import { CodegenArtifactWriter } from "./codegen-writer.ts";
 import { camelCaseProperty } from "./camelcase-property.ts";
+import { TailwindTypeEmitter, utilityKey as emittedUtilityKey } from "./codegen-emitter.ts";
+import { longestFunctionalPrefix, TailwindUtilityCatalog } from "./codegen-catalog.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
 import {
+	buildThemeBlock,
+	buildComponentScopes,
+	buildThemeScopes,
 	createConditionResolver,
+	splitTokens,
 	type ThemeConditions,
 	themeVarsFromTokens,
 	type ThemeScopeMap,
 	type ThemeTokenGroups,
 } from "./generate-theme.ts";
-import { createThemeBridge } from "./theme-bridge.ts";
-import type { DesignSystemCodegenPorts, DesignSystemCodegenResult } from "./codegen-pipeline.ts";
-
-export type {
-	DesignSystemArtifactBundle,
-	DesignSystemArtifactWriter,
-	DesignSystemArtifacts,
-} from "./codegen-artifacts.ts";
-export type {
-	ConflictAnalyzer,
-	DesignSystemCodegenPorts,
-	DesignSystemCodegenResult,
-	DesignSystemThemeLoader,
-	RuntimeArtifactEmitter,
-	TypeArtifactEmitter,
-	UtilityCatalogBuilder,
-} from "./codegen-pipeline.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
-type TailwindDesignSystem = Awaited<ReturnType<typeof __unstable__loadDesignSystem>>;
-
-interface TailwindUtilityCatalog {
-	types: UtilityMap;
-	variants: Array<{ name: string; join: ":" | "-" | "" }>;
-	utilityKeyNames: Set<string>;
-}
-
-interface TailwindConflictAnalysis {
-	conflicts: Record<string, Record<string, string[]>>;
-	compose: string[];
-	modifierCapable: Set<string>;
-}
 
 /**
  * Static utilities that don't map to a functional utility key and whose names
@@ -71,327 +45,11 @@ interface TailwindConflictAnalysis {
  * The first segment heuristic would produce `pointer?: "events-none"`, which is
  * worse than a curated, stable prefix.
  */
-const STATIC_PREFIXES = [
-	"pointer-events",
-	"touch-pan",
-	"scroll-x",
-	"scroll-y",
-	"break-before",
-	"break-inside",
-	"place-content",
-	"place-items",
-	"place-self",
-	"justify-content",
-	"justify-items",
-	"justify-self",
-	"box-decoration",
-	"grid-flow",
-	"grid-cols",
-	"grid-rows",
-	"auto-rows",
-	"auto-cols",
-	"will-change",
-	"backdrop-blur",
-	"backdrop-brightness",
-	"backdrop-contrast",
-	"backdrop-grayscale",
-	"backdrop-hue-rotate",
-	"backdrop-invert",
-	"backdrop-opacity",
-	"backdrop-saturate",
-	"backdrop-sepia",
-	"mix-blend",
-	"sr-only",
-	"object-left",
-	"object-right",
-	"object-top",
-	"object-bottom",
-	"origin-top",
-	"origin-right",
-	"origin-bottom",
-	"origin-left",
-	"overflow-x",
-	"overflow-y",
-	"overscroll-x",
-	"overscroll-y",
-	"columns-3xs",
-	"columns-2xs",
-	"columns-xs",
-	"columns-sm",
-	"columns-md",
-	"columns-lg",
-	"columns-xl",
-	"columns-2xl",
-	"columns-3xl",
-	"columns-4xl",
-	"columns-5xl",
-	"columns-6xl",
-	"columns-7xl",
-	"space-x",
-	"space-y",
-	"divide-x",
-	"divide-y",
-	"blur-none",
-	"blur-sm",
-	"blur-md",
-	"blur-lg",
-	"blur-xl",
-	"blur-2xl",
-	"blur-3xl",
-	"brightness-0",
-	"brightness-50",
-	"brightness-75",
-	"brightness-90",
-	"brightness-95",
-	"brightness-100",
-	"brightness-105",
-	"brightness-110",
-	"brightness-125",
-	"brightness-150",
-	"brightness-200",
-	"contrast-0",
-	"contrast-50",
-	"contrast-75",
-	"contrast-100",
-	"contrast-125",
-	"contrast-150",
-	"contrast-200",
-	"saturate-0",
-	"saturate-50",
-	"saturate-100",
-	"saturate-150",
-	"saturate-200",
-	"sepia-0",
-	"sepia",
-	"invert-0",
-	"invert",
-	"grayscale-0",
-	"grayscale",
-	"not-sr-only",
-] as const;
-
-function getFunctionalTypes(system: {
-	utilities: {
-		keys: (kind: "functional" | "static") => string[];
-		getCompletions: (name: string) => unknown[];
-	};
-}): UtilityMap {
-	const types: UtilityMap = new Map();
-
-	for (const utility of system.utilities.keys("functional")) {
-		if (!types.has(utility)) types.set(utility, new Set());
-		const values = types.get(utility)!;
-
-		for (const group of system.utilities.getCompletions(utility) as Array<{
-			values: Array<string | null>;
-			modifiers: string[];
-		}>) {
-			for (const value of group.values) {
-				values.add(value === null ? true : value);
-			}
-		}
-	}
-
-	return types;
-}
-
-function longestFunctionalPrefix(candidate: string, functional: string[]): string | undefined {
-	let best: string | undefined;
-	for (const key of functional) {
-		if (candidate === key || candidate.startsWith(`${key}-`)) {
-			if (best === undefined || key.length > best.length) best = key;
-		}
-	}
-	return best;
-}
-
-function mergeStaticUtilities(
-	system: {
-		utilities: { keys: (kind: "functional" | "static") => string[] };
-	},
-	functionalKeys: string[],
-	types: UtilityMap,
-): void {
-	for (const candidate of system.utilities.keys("static")) {
-		const functional = longestFunctionalPrefix(candidate, functionalKeys);
-		if (functional !== undefined) {
-			const values = types.get(functional)!;
-			const suffix = candidate === functional ? true : candidate.slice(functional.length + 1);
-			values.add(suffix);
-			continue;
-		}
-
-		// Curated multi-segment prefixes.
-		const curated = STATIC_PREFIXES.find(
-			(prefix) => candidate === prefix || candidate.startsWith(`${prefix}-`),
-		);
-		if (curated !== undefined) {
-			const values = types.get(curated) ?? new Set<string | true>();
-			values.add(candidate === curated ? true : candidate.slice(curated.length + 1));
-			types.set(curated, values);
-			continue;
-		}
-
-		// Fallback: first segment. `sr-only` has no dash -> boolean key.
-		const dashIndex = candidate.indexOf("-");
-		const group = dashIndex === -1 ? candidate : candidate.slice(0, dashIndex);
-		const suffix = dashIndex === -1 ? true : candidate.slice(dashIndex + 1);
-		const values = types.get(group) ?? new Set<string | true>();
-		values.add(suffix);
-		types.set(group, values);
-	}
-}
-
-function unionType(values: Iterable<string | true>): string {
-	return Array.from(values)
-		.toSorted((a, b) => String(a).localeCompare(String(b), "en"))
-		.map((value) => (value === true ? "true" : JSON.stringify(value)))
-		.join(" | ");
-}
-
-/**
- * Property-signature -> sub-key suffix. Signatures are the canonicalized
- * (sorted) longhand list a value compiles to. Known signatures get readable
- * names; anything else falls back to PascalCasing the joined properties.
- */
-/**
- * Explicit property-signature -> sub-key suffix mappings.
- *
- * This table is also the WHITELIST: `expandSubkeys` only emits a sub-key
- * for a partition whose exact signature appears here. That keeps the
- * generated interface and the runtime `UTILITY_SUBKEYS` in agreement by
- * construction — overloaded concerns we deliberately do not split
- * (`background-blend-mode`/`-clip`/`-origin`, `border-collapse`, bare
- * outline resets) simply get no entry and stay on the base union only.
- */
-const SUBKEY_SUFFIXES: Record<string, string> = {
-	color: "Color",
-	"font-size,line-height": "Size",
-	"text-align": "Align",
-	"text-overflow": "Overflow",
-	"text-wrap": "Wrap",
-	// bg family:
-	"background-attachment": "Attachment",
-	"background-color": "Color",
-	"background-image": "Image",
-	"background-position": "Position",
-	"background-repeat": "Repeat",
-	"background-size": "Size",
-	// border family (widths compile style+width together in v4):
-	"border-bottom-color,border-left-color,border-right-color,border-top-color": "Color",
-	"border-bottom-style,border-bottom-width,border-left-style,border-left-width,border-right-style,border-right-width,border-top-style,border-top-width":
-		"Width",
-	"border-bottom-style,border-left-style,border-right-style,border-top-style": "Style",
-	// outline family (bare resets keep compiling offset+style together — skipped):
-	"outline-color": "Color",
-	"outline-style": "Style",
-	"outline-style,outline-width": "Width",
-	// decoration family (box-decoration-break stays on the base):
-	"text-decoration-color": "Color",
-	"text-decoration-style": "Style",
-	"text-decoration-thickness": "Thickness",
-};
-
-/**
- * Add semantic sub-key entries (`textColor`, `textSize`, ...) to the utility
- * map, derived from the generated conflict map: the base utility's values
- * are partitioned by the CSS properties they compile to, and each disjoint
- * partition becomes one typed sub-key whose values are exactly that concern.
- *
- * Purely additive — existing keys keep their full unions; sub-keys only add
- * narrower spellings that emit the same classes (runtime resolution in
- * `compile.ts` UTILITY_SUBKEYS).
- */
-function expandSubkeys(
-	types: UtilityMap,
-	conflicts: Record<string, Record<string, string[]>>,
-): void {
-	// base utility (dash-case) -> sub-keys pointing at it.
-	const subsByBase = new Map<string, string[]>();
-	for (const [subkey, base] of Object.entries(UTILITY_SUBKEYS)) {
-		const dashBase = dashCase(base);
-		const subs = subsByBase.get(dashBase) ?? [];
-		subs.push(subkey);
-		subsByBase.set(dashBase, subs);
-	}
-
-	for (const [dashBase] of subsByBase) {
-		const byValue = conflicts[dashBase];
-		if (byValue === undefined) continue;
-		const values = types.get(dashBase);
-		if (values === undefined || !values.size) continue;
-
-		const defaultProps = byValue["*"] ?? [];
-		// Partition values by compiled property signature. Boolean/empty
-		// (the bare class) stays on the base key only.
-		const partitions = new Map<string, Set<string | true>>();
-		for (const value of values) {
-			if (value === true || value === "") continue;
-			const props = byValue[value] ?? defaultProps;
-			if (props.length === 0) continue;
-			const signature = [...props].toSorted().join(",");
-			const partition = partitions.get(signature) ?? new Set<string | true>();
-			partition.add(value);
-			partitions.set(signature, partition);
-		}
-
-		// Only split concerns we explicitly named in SUBKEY_SUFFIXES — the
-		// table is the whitelist as well as the naming source, so the
-		// generated interface never advertises a sub-key the runtime does
-		// not resolve. Unnamed partitions stay on the base union only.
-		const usedSuffixes = new Set<string>();
-		for (const [signature, partition] of partitions) {
-			let suffix = SUBKEY_SUFFIXES[signature];
-			if (suffix === undefined) continue;
-			while (usedSuffixes.has(suffix)) suffix = `${suffix}Alt`;
-			usedSuffixes.add(suffix);
-
-			types.set(`${camelCaseProperty(dashBase)}${suffix}`, partition);
-		}
-	}
-}
-
-/** Emits a bare identifier when valid, quoted otherwise (`@max`, `-translateX`). */
-function tsKey(name: string): string {
-	return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name) ? name : JSON.stringify(name);
-}
-
-function utilityKey(name: string): string {
-	// Generated sub-key names (textColor) are already camelCase identifiers;
-	// camelCaseProperty would flatten them (textcolor).
-	if (!name.includes("-")) return JSON.stringify(name);
-	const camel = camelCaseProperty(name.startsWith("-") ? name.slice(1) : name);
-	return name.startsWith("-") ? `"-${camel}"` : JSON.stringify(camel);
-}
-
+// Utility catalog construction lives in codegen-catalog.ts.
 /** camelCase -> dash-case, matching the runtime's class rendering. */
 function dashCase(name: string): string {
 	return name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 }
-
-const OPACITY_STEPS = [
-	"0",
-	"5",
-	"10",
-	"15",
-	"20",
-	"25",
-	"30",
-	"35",
-	"40",
-	"45",
-	"50",
-	"55",
-	"60",
-	"65",
-	"70",
-	"75",
-	"80",
-	"85",
-	"90",
-	"95",
-	"100",
-];
 
 /**
  * Utilities that accept an opacity modifier (`bg-red-500/50`), detected by
@@ -423,32 +81,6 @@ function detectModifierUtilities(
 		if (results[index] !== null) modifierCapable.add(probe.name);
 	});
 	return modifierCapable;
-}
-
-function aliasName(name: string, used: Set<string>): string {
-	const withoutDash = name.startsWith("-") ? name.slice(1) : name;
-	const pascal = withoutDash
-		.split("-")
-		.filter(Boolean)
-		.map((part) => {
-			// Strip non-identifier characters (`@container` -> `container`).
-			const cleaned = part.replace(/[^A-Za-z0-9_$]/g, "");
-			return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-		})
-		.join("");
-	const base = name.startsWith("-") ? `Negative${pascal}` : pascal;
-	let alias = `${base}Value`;
-	let counter = 2;
-	while (used.has(alias)) alias = `${pascal}Value${counter++}`;
-	used.add(alias);
-	return alias;
-}
-
-function modifierTypeHelpers(): string {
-	const steps = OPACITY_STEPS.map((step) => JSON.stringify(step)).join(" | ");
-	return `type OpacityModifier = ${steps};
-
-type WithOpacityModifiers<T extends string> = T | \`\${T}/\${OpacityModifier}\`;`;
 }
 
 /**
@@ -888,131 +520,6 @@ function buildConflicts(
 	};
 }
 
-function getUtilitiesType(types: UtilityMap, modifierCapable: Set<string>): string {
-	const usedAliases = new Set<string>();
-	const aliasBySet = new Map<string, string>();
-	const aliases: string[] = [];
-	const lines: string[] = [];
-
-	for (const [name, values] of types) {
-		if (!values.size) continue;
-		// `true` cannot satisfy `T extends string` in `WithOpacityModifiers`,
-		// so it never goes into the template union — it's appended (once,
-		// below) to the interface entry directly instead.
-		const stringValues = [...values].filter((value): value is string => value !== true);
-		const valueType = modifierCapable.has(name)
-			? `WithOpacityModifiers<${unionType(stringValues)} | (string & {})>`
-			: `${unionType(stringValues)} | (string & {})`;
-		// Value sets repeat across utilities (the color palette is shared by
-		// bg/text/fill/stroke/...); one alias per distinct set keeps the
-		// generated file and the checker's union instances to a minimum.
-		let alias = aliasBySet.get(valueType);
-		if (alias === undefined) {
-			alias = aliasName(name, usedAliases);
-			aliasBySet.set(valueType, alias);
-			aliases.push(`type ${alias} = ${valueType};`);
-		}
-		// The runtime accepts a bare boolean flag on every key — a utility's
-		// own empty-value form, or a slot in a collision-merge array (see
-		// `tw/compile.ts`'s array handling) — regardless of whether this
-		// key's own completion probe happened to surface a distinct bare
-		// candidate. The type always allows it too, so it never falls behind
-		// what `tw()` actually does at runtime.
-		// Arrays let a single key emit multiple classes from an overloaded
-		// utility: `{ text: ["2xl", "gray-900"] }` -> "text-2xl text-gray-900".
-		lines.push(`\t${utilityKey(name)}?: ${alias} | true | Array<${alias} | true>;`);
-	}
-
-	return `${modifierTypeHelpers()}
-
-${aliases.join("\n")}
-
-interface WindUtilities {
-${lines.toSorted(alphaSort).join("\n")}
-}`;
-}
-
-function getVariantsType(
-	variants: Array<{ name: string; join: ":" | "-" | "" }>,
-	utilityKeyNames: ReadonlySet<string>,
-): string {
-	// A few Tailwind names are both a plain utility (`placeholder-gray-400`
-	// sets a value) and a pseudo-element/class variant (`placeholder:` nests
-	// further rules). `WindUtilities & { name?: WindVariants }` would
-	// silently INTERSECT both declarations of the same key into one type no
-	// value (plain or nested) can satisfy — exclude those keys from the
-	// intersection and give them an explicit union instead.
-	const collisions = variants
-		.map(({ name }) => tsKey(camelCaseProperty(name)))
-		.filter((key) => utilityKeyNames.has(key.replace(/^"|"$/g, "")));
-	const lines = variants.map(({ name }) => {
-		const key = tsKey(camelCaseProperty(name));
-		const property = key.replace(/^"|"$/g, "");
-		return collisions.includes(key)
-			? `\t${key}?: WindVariants | WindUtilities[${JSON.stringify(property)}];`
-			: `\t${key}?: WindVariants;`;
-	});
-	// Arbitrary data-attribute / aria variants (`data-[expanded]`,
-	// `group-data-[state=x]/sidebar`) aren't enumerable at codegen time —
-	// the bracket contents are open-ended — but they're still valid
-	// selectors the codemod (and hand-authored tw() calls) nest under. A
-	// template-literal index signature accepts exactly that shape; named
-	// variant keys above never match this pattern, so it doesn't widen them.
-	const arbitraryVariantIndex =
-		'\t[key: `${"" | "group-" | "peer-"}${"data" | "aria"}-[${string}]${"" | `/${string}`}`]: WindVariants;';
-	const collisionProperties = collisions.map((key) => JSON.stringify(key.replace(/^"|"$/g, "")));
-	const base =
-		collisionProperties.length > 0
-			? `Omit<WindUtilities, ${collisionProperties.join(" | ")}>`
-			: "WindUtilities";
-	return `export type WindVariants = ${base} & {\n${lines.join("\n")}\n${arbitraryVariantIndex}\n}`;
-}
-
-function getTwRuntime(
-	variants: Array<{ name: string; join: ":" | "-" | "" }>,
-	conflicts: Record<string, Record<string, string[]>>,
-	compose: string[],
-): string {
-	// Every variant is emitted (including `:`-join defaults) so consumers
-	// like the tailwind css() adapter can look any design condition up.
-	const variantEntries = variants.map(
-		({ name, join }) => `\t\t${tsKey(camelCaseProperty(name))}: { join: ${JSON.stringify(join)} },`,
-	);
-	const conflictEntries = Object.entries(conflicts)
-		.toSorted(([a], [b]) => a.localeCompare(b, "en"))
-		.map(
-			([utility, byValue]) =>
-				`\t\t${JSON.stringify(utility)}: { ${Object.entries(byValue)
-					.map(
-						([value, props]) =>
-							`${JSON.stringify(value)}: [${props.map((prop) => JSON.stringify(prop)).join(", ")}]`,
-					)
-					.join(", ")} },`,
-		);
-	const composeEntries =
-		compose.length > 0
-			? `\tcompose: [\n${compose.map((key) => `\t\t${JSON.stringify(key)},`).join("\n")}\n\t],`
-			: "";
-
-	return `import { createTw, type TwOptions } from "pandwind/tw";
-import type { WindVariants } from "./types";
-
-// Metadata export so apps can build a runtime cx() against the SAME
-// generated conflict map the vite plugins use (see createCx in pandwind/cx).
-export const __pandwindConfig: TwOptions = {
-	variants: {
-${variantEntries.join("\n")}
-	},
-${conflictEntries.length > 0 ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
-${composeEntries}
-};
-
-// The PURE annotation lets bundlers drop the whole module when every tw()
-// call in the app was statically inlined by the vite plugin.
-export const tw = /* @__PURE__ */ createTw<WindVariants>(__pandwindConfig);
-`;
-}
-
 /**
  * Detect the separator a variant uses before its argument by compiling sample
  * candidates with Tailwind's own engine — the source of truth, whatever the
@@ -1166,54 +673,7 @@ export interface GenerateDesignSystemOptions {
 	 * behavior.
 	 */
 	themeBlock?: string;
-	/** Replaceable codegen stages for alternate design-system engines. */
-	ports?: DesignSystemCodegenPorts<
-		TailwindDesignSystem,
-		TailwindUtilityCatalog,
-		TailwindConflictAnalysis
-	>;
 }
-
-const defaultCodegenPorts: DesignSystemCodegenPorts<
-	TailwindDesignSystem,
-	TailwindUtilityCatalog,
-	TailwindConflictAnalysis
-> = {
-	theme: {
-		load: (css, base, themeBlock) =>
-			__unstable__loadDesignSystem(themeBlock ? `${css}\n${themeBlock}` : css, { base }),
-	},
-	catalog: {
-		build: (system) => {
-			const functionalKeys = system.utilities.keys("functional");
-			const types = getFunctionalTypes(system);
-			mergeStaticUtilities(system, functionalKeys, types);
-			const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
-			for (const variant of system.getVariants()) {
-				variants.push({ name: variant.name, join: detectVariantJoin(system, variant) });
-			}
-			const utilityKeyNames = new Set(
-				[...types.keys()].map((name) => utilityKey(name).replace(/^"|"$/g, "")),
-			);
-			return { types, variants, utilityKeyNames };
-		},
-	},
-	conflicts: {
-		analyze: (system, catalog) => {
-			const result = buildConflicts(system, catalog.types, system.utilities.keys("functional"));
-			expandSubkeys(catalog.types, result.conflicts);
-			return { ...result, modifierCapable: detectModifierUtilities(system, catalog.types) };
-		},
-	},
-	types: {
-		emit: (catalog, analysis) =>
-			`${header}\n${getUtilitiesType(catalog.types, analysis.modifierCapable)}\n\n${getVariantsType(catalog.variants, catalog.utilityKeyNames)}\n`,
-	},
-	runtime: {
-		emit: (catalog, analysis) =>
-			getTwRuntime(catalog.variants, analysis.conflicts, analysis.compose),
-	},
-};
 
 /**
  * Generate the two artifact files for a CSS entry. Exported so tests and
@@ -1223,16 +683,46 @@ export async function generateDesignSystem(
 	css: string,
 	base: string,
 	options: GenerateDesignSystemOptions = {},
-): Promise<DesignSystemCodegenResult> {
-	const ports = options.ports ?? defaultCodegenPorts;
-	const system = await ports.theme.load(css, base, options.themeBlock);
-	const catalog = ports.catalog.build(system);
-	const analysis = ports.conflicts.analyze(system, catalog);
+): Promise<{
+	typesDts: string;
+	twTs: string;
+	utilityCount: number;
+	variantCount: number;
+}> {
+	const effectiveCss = options.themeBlock ? `${css}\n${options.themeBlock}` : css;
+	const system = await __unstable__loadDesignSystem(effectiveCss, { base });
+
+	const catalog = new TailwindUtilityCatalog();
+	const functionalKeys = system.utilities.keys("functional");
+	const types = catalog.collect(system);
+	const { conflicts, compose } = buildConflicts(system, types, functionalKeys);
+	// Sub-keys need the conflict map's per-value properties; modifier
+	// detection must see them so `textColor` inherits opacity modifiers.
+	catalog.expand(types, conflicts);
+	const modifierCapable = detectModifierUtilities(system, types);
+
+	const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
+	for (const variant of system.getVariants()) {
+		variants.push({
+			name: variant.name,
+			join: detectVariantJoin(system, variant),
+		});
+	}
+
+	const utilityKeyNames = new Set(
+		[...types.keys()].map((name) => emittedUtilityKey(name, camelCaseProperty).replace(/^"|"$/g, "")),
+	);
+	const emitter = new TailwindTypeEmitter(camelCaseProperty);
+
 	return {
-		typesDts: ports.types.emit(catalog, analysis),
-		twTs: ports.runtime.emit(catalog, analysis),
-		utilityCount: catalog.types.size,
-		variantCount: catalog.variants.length,
+		typesDts: `${header}
+${emitter.utilities(types, modifierCapable)}
+
+${emitter.variants(variants, utilityKeyNames)}
+`,
+		twTs: emitter.runtime(variants, conflicts, compose),
+		utilityCount: types.size,
+		variantCount: variants.length,
 	};
 }
 
@@ -1253,7 +743,6 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 	}
 
 	const base = process.cwd();
-	const themeBridge = createThemeBridge();
 	const cssEntry = resolve(base, positional[0] ?? "src/tailwind.css");
 	const outDir = resolve(base, positional[1] ?? "src");
 	// Relative `@import`s (e.g. the generated pandwind-theme.css) resolve
@@ -1276,12 +765,12 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 					"(looked at default export and every named export for a .tokens field or raw DTCG groups)",
 			);
 		}
-		themeBlock = themeBridge.buildBlock(
+		themeBlock = buildThemeBlock(
 			groups,
 			conditions ? createConditionResolver(conditions) : undefined,
 		);
 		const themes = resolveThemes(module as Record<string, unknown>);
-		const scopeCss = themeBridge.buildScopes(themes);
+		const scopeCss = buildThemeScopes(themes);
 		if (scopeCss !== "") {
 			themeBlock = themeBlock === "" ? scopeCss : `${themeBlock}\n\n${scopeCss}`;
 		}
@@ -1289,11 +778,14 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 		if (components !== undefined) {
 			// L3 component scopes (plans/015): $refs resolve against the vars
 			// this same run just bridged into @theme.
-			const { flatVars: bridged } = themeBridge.split(groups, conditions);
-			const componentCss = themeBridge.buildComponents(
+			const { flatVars: bridged } = splitTokens(
+				groups,
+				conditions ? createConditionResolver(conditions) : undefined,
+			);
+			const componentCss = buildComponentScopes(
 				components,
 				new Set(bridged.map((v) => v.name)),
-				conditions,
+				conditions ? createConditionResolver(conditions) : undefined,
 				(message) => console.warn(message),
 			);
 			if (componentCss !== "") {
@@ -1307,27 +799,10 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 		themeBlock,
 	});
 
-	let agentsJson: string | undefined;
-	if (agentsFlag) {
-		// plans/014 §5 — machine-readable capability file for AI agents,
-		// derived from the artifacts this run just generated.
-		const agentsConfig = extractTwConfig(twTs);
-		if (agentsConfig === undefined)
-			throw new Error("pandwind tw:codegen: could not extract config for agents.json");
-		const doc = buildAgentsDocument({
-			typesDts,
-			config: agentsConfig,
-			themeBlock,
-			artifactDir: outDir,
-		});
-		agentsJson = `${JSON.stringify(doc, null, "\t")}\n`;
-	}
-	new FileSystemDesignSystemArtifactWriter(writeFileSync, resolve).write(outDir, {
-		typesDts,
-		twTs,
-		...(themeBlock === "" ? {} : { themeBlock }),
-		...(agentsJson === undefined ? {} : { agentsJson }),
-	});
+	new CodegenArtifactWriter().write(
+		{ typesDts, twTs, themeBlock, utilityCount, variantCount },
+		{ outDir, agents: agentsFlag },
+	);
 
 	console.log(
 		`pandwind: generated types.d.ts (${utilityCount} utilities, ${variantCount} variants) and tw.ts from ${cssEntry}${

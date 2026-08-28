@@ -1,101 +1,76 @@
-/**
- * Runtime CSS sheet façade.
- *
- * Storage, serialization, and mounting are explicit ports so SSR, hydration,
- * devtools, and non-DOM hosts can reuse the same runtime artifact model.
- */
-import {
-	CssRuntimeRuleSerializer,
-	RuntimeRuleStore,
-	type RuntimeRule,
-	type RuntimeRuleSerializer,
-	type RuntimeSemanticRule,
-	type RuntimeSheetSnapshot,
-} from "./runtime-artifacts.ts";
-import {
-	createRuntimeRuleCanonicalizer,
-	createRuntimeOrderingPolicy,
-	type RuntimeOrderingPolicy,
-	type RuntimeRuleCanonicalizer,
-} from "./runtime-policies.ts";
-import { DomStyleSink, type RuntimeDocument, type RuntimeStyleSink } from "./runtime-sink.ts";
+/** Runtime stylesheet façade composed from store, canonicalizer, ordering, serializer, and DOM sink ports. */
+import { DomStyleElementSink } from "./runtime-sheet-sink.ts";
+import { PriorityOrderingPolicy, RuntimeRuleStore } from "./runtime-sheet-policies.ts";
+import { SemanticRuleCanonicalizer, SemanticRuleSerializer } from "./runtime-sheet-serializer.ts";
+import type { RuntimeRule, RuntimeSemanticRule, RuntimeSheetOptions, RuntimeSheetSnapshot } from "./runtime-sheet-contracts.ts";
 
 export type {
 	RuntimeDeclaration,
+	RuntimeDocument,
 	RuntimeRule,
+	RuntimeRuleCanonicalizer,
+	RuntimeRuleSerializer,
+	RuntimeRuleStore,
 	RuntimeSemanticRule,
 	RuntimeSemanticRuleKind,
+	RuntimeSheetOptions,
 	RuntimeSheetSnapshot,
-} from "./runtime-artifacts.ts";
-const DEFAULT_ID = "pandwind";
+	RuntimeStyleElement,
+	RuntimeStyleElementSink,
+} from "./runtime-sheet-contracts.ts";
 
-export interface RuntimeSheetOptions {
-	/** Stable attribute value used to find the sheet during hydration. */
-	readonly id?: string;
-	/** Mount automatically when rules are first registered in a browser. */
-	readonly autoMount?: boolean;
-	/** Explicit document for tests, iframes, or multiple browser roots. */
-	readonly document?: RuntimeDocument;
-	/** Optional CSP nonce applied to the generated style element. */
-	readonly nonce?: string;
-	/** Injectable artifact serializer for alternate CSS dialects or diagnostics. */
-	readonly serializer?: RuntimeRuleSerializer;
-	/** Injectable deterministic ordering policy for SSR/devtools parity. */
-	readonly ordering?: RuntimeOrderingPolicy;
-	/** Injectable artifact canonicalization policy. */
-	readonly canonicalizer?: RuntimeRuleCanonicalizer;
-	/** Injectable sink for browser, test, or host-framework mounting. */
-	readonly sink?: RuntimeStyleSink;
+export interface RuntimeSheetPorts {
+	readonly store?: RuntimeRuleStore;
+	readonly ordering?: import("./runtime-sheet-contracts.ts").RuntimeOrderingPolicy;
+	readonly canonicalizer?: import("./runtime-sheet-contracts.ts").RuntimeRuleCanonicalizer;
+	readonly serializer?: import("./runtime-sheet-contracts.ts").RuntimeRuleSerializer;
+	readonly sink?: import("./runtime-sheet-contracts.ts").RuntimeStyleElementSink;
 }
 
-/** Create a deduplicating, SSR-safe runtime stylesheet. */
-export function createRuntimeSheet(options: RuntimeSheetOptions = {}) {
-	const id = options.id ?? DEFAULT_ID;
-	const ordering = options.ordering ?? createRuntimeOrderingPolicy();
-	const canonicalizer = options.canonicalizer ?? createRuntimeRuleCanonicalizer();
-	const store = new RuntimeRuleStore(ordering, canonicalizer);
-	const serializer = options.serializer ?? new CssRuntimeRuleSerializer({ ordering });
-	const sink =
-		options.sink ??
-		new DomStyleSink({
-			id,
-			document: options.document,
-			nonce: options.nonce,
-		});
+export function createRuntimeSheet(options: RuntimeSheetOptions = {}, ports: RuntimeSheetPorts = {}) {
+	const store = ports.store ?? new RuntimeRuleStore();
+	const ordering = ports.ordering ?? new PriorityOrderingPolicy();
+	const serializer = ports.serializer ?? new SemanticRuleSerializer();
+	const canonicalizer = ports.canonicalizer ?? new SemanticRuleCanonicalizer(serializer);
+	const sink = ports.sink ?? new DomStyleElementSink(options);
+	let tokens = "";
 
-	const render = (): void => sink.update(serializer.serialize(store));
+	const css = (): string => {
+		const body = ordering.order(store.rules).map((rule) => rule.css).filter(Boolean).join("\n");
+		return [tokens, body].filter(Boolean).join("\n");
+	};
+	const render = (): void => sink.update(css());
 	const refresh = (): void => {
-		if (options.autoMount !== false) sink.mount(serializer.serialize(store));
+		if (options.autoMount !== false) sink.mount(css());
 		else render();
 	};
-	const register = (next: readonly RuntimeRule[]): void => {
-		if (store.register(next)) refresh();
+	const register = (rules: readonly RuntimeRule[]): void => {
+		if (store.register(rules)) refresh();
 	};
-	const setTokens = (next: string): void => {
-		if (store.setTokens(next)) refresh();
-	};
-	const snapshot = (): RuntimeSheetSnapshot => store.snapshot();
-	const hydrate = (input: RuntimeSheetSnapshot): void => {
-		store.hydrate(input);
+	const setTokens = (value: string): void => {
+		if (tokens === value) return;
+		tokens = value;
 		refresh();
 	};
-	const registerSemanticRules = (next: readonly RuntimeSemanticRule[]): void => {
-		register(
-			next.map((rule, index) =>
-				serializer.serializeSemantic({ ...rule, priority: rule.priority ?? index }),
-			),
-		);
+	const snapshot = (): RuntimeSheetSnapshot => ({ tokens, rules: ordering.order(store.rules) });
+	const hydrate = (value: RuntimeSheetSnapshot): void => {
+		tokens = value.tokens;
+		store.replace(value.rules);
+		refresh();
+	};
+	const registerSemanticRules = (rules: readonly RuntimeSemanticRule[]): void => {
+		register(rules.map((rule, index) => canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index })));
 	};
 
 	return {
-		id,
-		css: () => serializer.serialize(store),
+		id: options.id ?? "pandwind",
+		css,
 		register,
 		registerSemanticRules,
 		setTokens,
 		snapshot,
 		hydrate,
-		mount: () => sink.mount(serializer.serialize(store)),
+		mount: () => sink.mount(css()),
 		unmount: () => sink.unmount(),
 	};
 }

@@ -1,44 +1,31 @@
 import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type {
-	AnyConditions,
 	CssConfigReturn,
 	StyleObject,
 	TokenDeclaration,
 } from "../types/typings.ts";
-import { createVarCompiler } from "./var-compiler.ts";
+import { escapeVarClass, varClassFor } from "./vars.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
-import {
-	cssRuleSerializer,
-	defaultConditionPolicy,
-	isSelfSelector,
-} from "./css-rule-serializer.ts";
-import type { CssRuleSerializer } from "./css-rule-serializer.ts";
-import {
-	createStylesheetOrderingPolicy,
-	type ConditionPolicy,
-	type StylesheetOrderingPolicy,
-} from "./stylesheet-policies.ts";
+import { createConditionsBucket, decodeAtomicPath, genCSSRule, isSelfSelector, parseCondition } from "./stylesheet-lowering.ts";
 
-export interface StylesheetPolicies {
-	readonly conditions?: ConditionPolicy;
-	readonly ordering?: StylesheetOrderingPolicy;
-	readonly serializer?: CssRuleSerializer;
-}
+export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 
-export const createStylesheet = (
-	preset: CssConfigReturn,
-	options: CreateCssOptions = {},
-	policies: StylesheetPolicies = {},
-) => {
+type Rule = { id: string; css: string; priority: number };
+const cssVar = {
+	ref: (key: string) => `var(--${key})`,
+	declaration: (key: string, value: string) => `--${key}: ${value};`,
+};
+
+/** Priority-ordered copy of a rule cache's values. */
+const byPriority = <T extends { priority: number }>(values: Iterable<T>): Array<T> =>
+	Array.from(values).toSorted((a, b) => a.priority - b.priority);
+
+export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
 	const cache = new Map<string, Rule>();
-	const varCompiler = createVarCompiler();
-	const conditionPolicy: ConditionPolicy = policies.conditions ?? defaultConditionPolicy;
-	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
-	const serializer = policies.serializer ?? cssRuleSerializer;
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -83,14 +70,13 @@ export const createStylesheet = (
 					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
 						(part): part is string => Boolean(part),
 					);
-					const conditions = conditionPolicy.create();
-					Object.assign(conditions, {
+					const conditions = createConditionsBucket({
 						className: "",
 						parentSelectors: resolvedList.length ? [] : [":root "],
 					});
 
 					resolvedList.forEach((selector) => {
-						const isInvalid = conditionPolicy.parse(selector, conditions);
+						const isInvalid = parseCondition(selector, conditions);
 						if (!isInvalid) return;
 					});
 
@@ -99,7 +85,7 @@ export const createStylesheet = (
 					);
 
 					cssVars.set(`${tokenPath}.${condition}`, {
-						declaration: serializer.serialize(cssVar.declaration(cssVarHash, value), conditions),
+						declaration: genCSSRule(cssVar.declaration(cssVarHash, value), conditions),
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
 				}
@@ -107,9 +93,9 @@ export const createStylesheet = (
 			}
 
 			cssVars.set(tokenPath, {
-				declaration: serializer.serialize(
+				declaration: genCSSRule(
 					cssVar.declaration(cssVarHash, tokenValue),
-					Object.assign(conditionPolicy.create(), {
+					createConditionsBucket({
 						parentSelectors: [":root "],
 					}),
 				),
@@ -133,10 +119,10 @@ export const createStylesheet = (
 			const pairId = pairs.concat(orderedKey, style[key]!);
 			if (cache.has(pairId)) continue;
 
-			const atomic = decodeAtomicPath(preset.conditions, pairId, conditionPolicy);
+			const atomic = decodeAtomicPath(preset.conditions, pairId);
 			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
 
-			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
+			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
 				className: `.${classNameFor(orderedKey, style[key]!)}`,
 			});
@@ -181,14 +167,10 @@ export const createStylesheet = (
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
-		const atomic = decodeAtomicPath(
-			preset.conditions,
-			pairs.concat(orderedKey, "\u0000"),
-			conditionPolicy,
-		);
-		const css = serializer.serialize(`${prop}: ${declaration}`, {
+		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
+		const css = genCSSRule(`${prop}: ${declaration}`, {
 			...atomic.conditions,
-			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
+			className: `.${escapeVarClass(varClassFor(orderedKey))}`,
 		});
 		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
 	};
@@ -205,8 +187,7 @@ export const createStylesheet = (
 				.join("\n");
 		},
 		atomic: () => {
-			return ordering
-				.order(cache.values())
+			return byPriority(cache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
@@ -216,19 +197,16 @@ export const createStylesheet = (
 		 * each route bucket produces without re-parsing emitted CSS.
 		 */
 		atomicEntries: () =>
-			ordering.order(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			byPriority(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
 		varRules: () => {
-			return ordering
-				.order(varCache.values())
+			return byPriority(varCache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
 		/** Var toggle rules with identity — see atomicEntries. */
 		varEntries: () =>
-			ordering
-				.order(varCache.values())
-				.map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			byPriority(varCache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 	};
 
 	const generate = (styles: Array<StyleObject>) => {
@@ -248,62 +226,3 @@ export const createStylesheet = (
 		generate,
 	};
 };
-
-export const decodeAtomicPath = (
-	presetConditions: AnyConditions,
-	atomicPath: string,
-	conditionPolicy: ConditionPolicy = defaultConditionPolicy,
-) => {
-	const conditions = conditionPolicy.create();
-
-	const parts = pairs.split(atomicPath);
-	if (parts.length === 2) {
-		const [prop, value] = parts.slice(-2);
-		return {
-			prop: prop!,
-			value: value!,
-			priority: getPropertyPriority(prop!),
-			conditions,
-		};
-	}
-
-	const value = parts.slice(-1)[0]!;
-
-	let prop: string | undefined;
-	const conds = parts.slice(0, -1).reduce((acc, part) => {
-		const resolved = presetConditions[part] ?? part;
-		const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
-
-		resolvedList.forEach((selector) => {
-			const isInvalid = conditionPolicy.parse(selector, conditions);
-			if (!isInvalid) return;
-
-			if (!prop) {
-				prop = selector;
-			} else {
-				throw new Error(`Unknown condition '${selector}' used in path '${atomicPath}'`);
-			}
-		});
-
-		return acc.concat(resolved).filter(Boolean);
-	}, [] as string[]);
-	if (!prop) throw new Error(`Couldnt find property in '${parts.join(":")}'`);
-
-	const priorities = conds.map((part) =>
-		getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
-	);
-
-	return {
-		prop,
-		value,
-		priority: priorities.reduce((acc, prio) => acc + prio, 0),
-		conditions,
-	};
-};
-
-const cssVar = {
-	ref: (key: string) => `var(--${key})`,
-	declaration: (key: string, value: string) => `--${key}: ${value};`,
-};
-
-type Rule = { id: string; css: string; priority: number };
