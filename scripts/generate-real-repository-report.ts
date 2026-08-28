@@ -87,6 +87,11 @@ for (const fixture of fixtures) {
 	let targetPackages: string[] = [];
 	let detection = { matched: true, confidence: 1, evidence: ["panda project pipeline"] };
 	let validations = 0;
+	let adapterValidations: readonly {
+		canonicalSource: string;
+		canonicalTarget: string;
+		valid: boolean;
+	}[] = [];
 	let residualKinds: Record<string, number> = {};
 	let manualFixes: string[] = [];
 	if (fixture.from === "panda") {
@@ -130,6 +135,7 @@ for (const fixture of fixtures) {
 		skipped = result.skipped;
 		residuals = result.residuals.length;
 		validations = result.validations.length;
+		adapterValidations = result.validations;
 		residualKinds = Object.fromEntries(
 			result.residuals.reduce(
 				(counts, residual) => counts.set(residual.kind, (counts.get(residual.kind) ?? 0) + 1),
@@ -154,6 +160,14 @@ for (const fixture of fixtures) {
 	const removed = sourceRuntimePackages.filter(
 		(name) => sourceOwnedModules.includes(name) && !targetPackages.includes(name),
 	);
+	const canonicalSourceBytes = adapterValidations.reduce(
+		(total, validation) => total + Buffer.byteLength(validation.canonicalSource),
+		0,
+	);
+	const canonicalTargetBytes = adapterValidations.reduce(
+		(total, validation) => total + Buffer.byteLength(validation.canonicalTarget),
+		0,
+	);
 	reports.push({
 		id: fixture.id,
 		repository: fixture.repository,
@@ -169,6 +183,19 @@ for (const fixture of fixtures) {
 		residuals,
 		residualKinds,
 		validations,
+		canonicalCss:
+			adapterValidations.length === 0
+				? {
+						checked: false,
+						reason: "pipeline migration did not expose an adapter-level canonical CSS pair",
+					}
+				: {
+						checked: true,
+						equal: adapterValidations.every((validation) => validation.valid),
+						sourceBytes: canonicalSourceBytes,
+						targetBytes: canonicalTargetBytes,
+						byteDelta: canonicalTargetBytes - canonicalSourceBytes,
+					},
 		manualFixes,
 		emittedModules,
 		runtimeBundleImpact: {

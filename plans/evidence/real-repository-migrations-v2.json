@@ -25,6 +25,10 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
       "manualFixes": [],
       "emittedModules": [
         "pandwind/preset.ts",
@@ -76,6 +80,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 16,
+        "targetBytes": 16,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -121,6 +132,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 196,
+        "targetBytes": 196,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -165,6 +183,10 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
       "manualFixes": [],
       "emittedModules": [
         "pandwind/preset.ts",
@@ -216,6 +238,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 16,
+        "targetBytes": 16,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -261,6 +290,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 196,
+        "targetBytes": 196,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -304,6 +340,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 2,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 410,
+        "targetBytes": 410,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -346,6 +389,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 11,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 323,
+        "targetBytes": 330,
+        "byteDelta": 7
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -389,6 +439,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 4,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 155,
+        "targetBytes": 155,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -434,6 +491,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 2,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 74,
+        "targetBytes": 74,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -478,6 +542,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 8,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 398,
+        "targetBytes": 398,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -522,6 +593,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 8,
+        "targetBytes": 8,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -564,6 +642,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 22,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 1329,
+        "targetBytes": 803,
+        "byteDelta": -526
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -607,6 +692,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 86,
+        "targetBytes": 86,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -650,6 +742,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 208,
+        "targetBytes": 208,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -693,6 +792,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 4,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 210,
+        "targetBytes": 210,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -737,6 +843,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 9,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 1018,
+        "targetBytes": 878,
+        "byteDelta": -140
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -780,6 +893,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 7,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 1477,
+        "targetBytes": 1476,
+        "byteDelta": -1
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -823,6 +943,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 289,
+        "targetBytes": 289,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -865,6 +992,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 4,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1131,
+        "targetBytes": 1131,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -907,6 +1041,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 3,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 379,
+        "targetBytes": 379,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -950,6 +1091,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 3,
+      "canonicalCss": {
+        "checked": true,
+        "equal": false,
+        "sourceBytes": 1719,
+        "targetBytes": 1768,
+        "byteDelta": 49
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -993,6 +1141,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 5,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 321,
+        "targetBytes": 321,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1034,6 +1189,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 96,
+        "targetBytes": 96,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1076,6 +1238,13 @@
       "residuals": 0,
       "residualKinds": {},
       "validations": 9,
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 288,
+        "targetBytes": 288,
+        "byteDelta": 0
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {

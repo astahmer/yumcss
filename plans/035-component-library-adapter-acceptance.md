@@ -26,7 +26,8 @@ source syntax, aliases, token policy, and capabilities; the shared
   migration marker. They are never silently emitted as invalid CSS.
 - The pinned real-repository report covers 22 source files, including one
   Chakra UI, one MUI, and one Mantine source file. The report records source
-  and output bytes plus dependency ownership; it deliberately does not claim a
+  and output bytes, canonical CSS parity/bytes where the adapter validator can
+  expose the pair, plus dependency ownership; it deliberately does not claim a
   production bundle measurement without installing and building each project.
 
 ## Verification
