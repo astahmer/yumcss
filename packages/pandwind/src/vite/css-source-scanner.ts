@@ -9,6 +9,12 @@ import type {
 	CssSourceScanner,
 } from "./css-extraction-contracts.ts";
 
+/**
+ * Language-aware source observations for the CSS extraction façade.
+ * Parsing, import discovery, call-site classification, and diagnostics share
+ * one AST so consumers do not infer CSS from regexes or parse the module
+ * repeatedly. Extraction and rewriting remain separate ports.
+ */
 interface ImportNode extends OxcNode {
 	start?: number;
 	end?: number;

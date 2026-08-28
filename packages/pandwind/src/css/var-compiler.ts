@@ -1,6 +1,16 @@
 import { dashCase } from "./hash.ts";
 import type { FlatStyles } from "../lib/utils.ts";
 
+/**
+ * Var-inline compiler for dynamic values.
+ *
+ * The class is the stable structural identity for a flattened style key;
+ * values themselves travel through element inline styles. Conditions are
+ * encoded into the key so the stylesheet can select the right custom
+ * property without knowing the value at build time. This is intentionally
+ * not a CSS-injection path: no dynamic value is serialized into generated
+ * CSS.
+ */
 export const VARS_ATOMS = Symbol("pandwind.vars.atoms");
 
 export interface VarAtom {
@@ -43,6 +53,9 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 
 	private customPropFor(prop: string, conditions: string[]): string {
+		// A condition-specific variable falls back to the base variable through
+		// the toggle rule emitted by createStylesheet. Missing inline variants
+		// therefore inherit instead of producing an invalid declaration.
 		return conditions.length === 0
 			? this.baseCustomProp(prop)
 			: `--pw-c-${prop}_${conditions.join("_")}`;

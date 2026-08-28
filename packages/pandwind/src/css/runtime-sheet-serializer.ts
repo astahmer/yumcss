@@ -30,6 +30,8 @@ const selector = (
 	let result = value;
 	const wrappers: string[] = [];
 	for (const item of conditions) {
+		// Preserve authored condition order for nested wrappers; selector
+		// conditions compose onto the selector in the same order instead.
 		if (/^@(media|container|supports)\b/.test(item)) wrappers.push(item);
 		else if (item.startsWith("&")) result = item.replaceAll("&", result);
 		else result += item.startsWith(":") ? item : `:${item}`;
@@ -84,6 +86,8 @@ export class SemanticRuleCanonicalizer {
 	constructor(private readonly serializer: RuntimeRuleSerializer = new SemanticRuleSerializer()) {}
 
 	canonicalize(rule: RuntimeSemanticRule) {
+		// Priority affects ordering, not identity. Excluding it keeps a rule's
+		// deduplication key stable when an ordering policy changes.
 		const { priority: _priority, ...identity } = rule;
 		return {
 			id: rule.id ?? `semantic-${hash(JSON.stringify(identity))}`,

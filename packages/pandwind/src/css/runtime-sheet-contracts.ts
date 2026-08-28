@@ -1,3 +1,4 @@
+/** Flat rule after semantic lowering and serialization. */
 export interface RuntimeRule {
 	readonly id: string;
 	readonly css: string;
@@ -13,11 +14,18 @@ export type RuntimeSemanticRuleKind =
 	| "supports"
 	| "property";
 
+/** A declaration accepted by the runtime semantic-rule serializer. */
 export interface RuntimeDeclaration {
 	readonly property: string;
 	readonly value: string | number | boolean;
 }
 
+/**
+ * DOM-independent rule IR for runtime CSS, SSR, hydration, and devtools.
+ * `children` represents nested rule bodies; `conditions` preserves wrapper
+ * order. Adapters may canonicalize this richer form into the flat
+ * RuntimeRule fast path before it reaches the store.
+ */
 export interface RuntimeSemanticRule {
 	readonly id?: string;
 	readonly kind: RuntimeSemanticRuleKind;
@@ -30,6 +38,7 @@ export interface RuntimeSemanticRule {
 	readonly priority?: number;
 }
 
+/** Serializable boundary between an SSR producer and a browser consumer. */
 export interface RuntimeSheetSnapshot {
 	readonly tokens: string;
 	readonly rules: RuntimeRule[];

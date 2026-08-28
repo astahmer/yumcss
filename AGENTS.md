@@ -99,6 +99,13 @@ which concrete module to import or grow a switch statement in a central runner.
   Panda-to-Pandwind is a route family whose `tw`, `dss`, and `css` dialects are
   independently registered source adapters. The orchestrator sees only ports
   and resolves a route from the registry.
+- Comments follow ownership, not history. Keep comments that explain semantic
+  invariants, safety constraints, algorithmic trade-offs, or extension
+  contracts in the final owner module when code moves. Rephrase them to match
+  the current API; do not retain migration diaries, section banners, or
+  comments that merely narrate obvious code. A decomposition review should
+  explicitly classify removed comments as moved, retained/rephrased, or
+  intentionally discarded.
 - CLI files are composition roots: argument parsing, filesystem providers,
   registry assembly, and reporting are allowed there. Parsing, lowering,
   framework rewrites, and target emission are not.

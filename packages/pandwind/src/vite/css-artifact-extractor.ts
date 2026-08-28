@@ -10,6 +10,7 @@ import type {
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
 
+/** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
 	start: number;
 	end: number;

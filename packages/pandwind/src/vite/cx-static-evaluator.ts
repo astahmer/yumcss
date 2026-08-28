@@ -4,11 +4,23 @@ import type { PandwindEngineContext } from "./engine-context.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 
+/**
+ * Compile-time evaluator for the cx() folding pass.
+ *
+ * The evaluator is deliberately conservative: unknown values return a
+ * sentinel instead of being guessed. That keeps a build-time rewrite
+ * observationally equivalent to the runtime merge. The supported static
+ * domain is strings, the cx() falsey values, arrays, constant concatenation,
+ * logical/conditional expressions, and literal css() calls when a fold
+ * context is supplied.
+ */
 export const CX_NOT_STATIC = Symbol("pandwind.cx-not-static");
 const NOT_STATIC: typeof CX_NOT_STATIC = CX_NOT_STATIC;
 
+/** `undefined` must remain distinguishable from an expression we cannot fold. */
 export type StaticEval = CxInput | true | typeof CX_NOT_STATIC;
 
+/** A top-level constant whose value is safe to reuse at this source position. */
 export interface KnownConstant {
 	readonly value: StaticEval;
 	readonly declStart: number;
@@ -16,6 +28,11 @@ export interface KnownConstant {
 
 export type ConstantScope = Map<string, KnownConstant>;
 
+/**
+ * Merge constants discovered in an imported module with local constants.
+ * Local declarations win, while any local shadow/write removes the imported
+ * value: the imported value is not necessarily the value runtime code reads.
+ */
 export const mergeImportedConstants = (
 	program: OxcNode,
 	local: ConstantScope,
@@ -127,6 +144,8 @@ const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boole
 };
 
 export function collectModuleConstants(program: OxcNode): ConstantScope {
+	// Resolve in source order so `const B = A + "-x"` can use an earlier A.
+	// Forward references, cycles, shadowing, and writes remain dynamic.
 	const scope: ConstantScope = new Map();
 	for (const [name, candidate] of topLevelCandidates(program)) {
 		const value = evalStaticCx(candidate.init, undefined, scope);
@@ -171,6 +190,8 @@ export function evalStaticCx(
 			const name = (node as { name?: string }).name;
 			if (name === "undefined") return undefined;
 			const known = consts?.get(name ?? "");
+			// A use before the declaration would throw in the runtime TDZ; folding
+			// it would silently change that observable behavior.
 			return known !== undefined && typeof node.start === "number" && node.start >= known.declStart
 				? known.value
 				: NOT_STATIC;
@@ -277,6 +298,13 @@ export type FoldSkeleton =
 	| { kind: "cond"; testSource: string; consequent: FoldSkeleton; alternate: FoldSkeleton }
 	| { kind: "and"; testSource: string; right: FoldSkeleton };
 
+/**
+ * A partial-fold decision tree keeps only the runtime test. Every branch is
+ * fully merged with the static siblings ahead of time. `&&` is supported
+ * because its false branch is the runtime cx() falsey value; `||` and `??`
+ * are intentionally excluded because their fallback values change merge
+ * semantics when precomputed.
+ */
 export function buildFoldSkeleton(
 	node: Expression,
 	consts: ConstantScope,
@@ -323,6 +351,8 @@ export const renderFoldSkeleton = (
 	staticInputs: StaticEval[],
 	merge: (inputs: CxInput[]) => string | undefined,
 ): string | null => {
+	// Each leaf is merged through the same callback used for a full fold, so
+	// partial folding cannot invent a different conflict-resolution result.
 	const render = (current: FoldSkeleton): string | null => {
 		if (current.kind === "leaf") {
 			const merged = merge(

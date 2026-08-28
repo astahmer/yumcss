@@ -5,6 +5,7 @@ import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 
+/** Tailwind-mode rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
 	start: number;
 	end: number;

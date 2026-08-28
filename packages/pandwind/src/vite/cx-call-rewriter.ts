@@ -19,6 +19,7 @@ import {
 	type StaticEval,
 } from "./cx-static-evaluator.ts";
 
+/** Rewrites only provably equivalent cx() calls; all other calls stay runtime. */
 export interface CxCompilerPorts {
 	readonly collectConstants: (program: OxcNode) => ConstantScope;
 	readonly evaluate: (
@@ -44,9 +45,13 @@ export const defaultCxCompilerPorts: CxCompilerPorts = {
 };
 
 export interface CxCompilerOptions {
+	/** Cross-module constants already resolved by the module-graph port. */
 	readonly importedConstants?: ConstantScope;
+	/** Enables literal css()/css.class() folding through the shared engine. */
 	readonly fold?: CxFoldContext;
+	/** Disable constant propagation only for coverage/comparison harnesses. */
 	readonly constants?: boolean;
+	/** Replace one dynamic conditional with a decision over premerged strings. */
 	readonly partialFold?: boolean;
 	readonly onUnresolved?: OnUnresolved;
 }
@@ -145,6 +150,8 @@ export class CxCallRewriter {
 					inputs.push(CX_NOT_STATIC);
 					continue;
 				}
+				// Unknown helpers, spreads, and additional dynamic arguments are
+				// left intact so runtime evaluation retains its original semantics.
 				return;
 			}
 			let replacement: string | null = null;
@@ -156,6 +163,8 @@ export class CxCallRewriter {
 						unresolved.push(...collectUnresolvedTokens(merged, lines.lineOf(call.start), config));
 				}
 			} else {
+				// The emitted branches are each merged with the static siblings;
+				// only the original condition remains in application code.
 				const skeleton = this.ports.buildSkeleton(conditional.node, constants, code);
 				if (skeleton !== null)
 					replacement = this.ports.renderSkeleton(skeleton, conditional.index, inputs, merge);

@@ -7,14 +7,21 @@ export interface CssBudgetInput {
 	readonly base: string;
 }
 
+/** Finds source candidates without knowing how the target compiler emits CSS. */
 export interface CssCandidateScanner {
 	scan(input: CssBudgetInput): Promise<readonly string[]>;
 }
 
+/** Compiles candidates into a parseable artifact for the metrics policy. */
 export interface CssArtifactCompiler {
 	compile(input: CssBudgetInput, candidates: readonly string[]): Promise<Root>;
 }
 
+/**
+ * Budget result semantics: live/dead refer to scanned candidates, while byte
+ * and rule counts describe the compiler artifact. Keeping those domains
+ * separate prevents source heuristics from being mistaken for CSS evidence.
+ */
 export interface CssBudget {
 	/** Classes scanned from source that produced at least one rule. */
 	liveCandidates: number;
