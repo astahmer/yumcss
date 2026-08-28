@@ -1,5 +1,5 @@
 import type { Expression } from "oxc-parser";
-import { parseSourceProgram } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createCx, type CxInput } from "../cx/index.ts";
 import { ATOM_REGISTRY } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";
@@ -76,7 +76,7 @@ export class CxCallRewriter {
 	rewrite(code: string, id: string, config: TwConfig, cxNames: ReadonlySet<string>, options: CxCompilerOptions = {}): CxRewriteResult {
 		const fold = options.fold;
 		if (cxNames.size === 0 && fold === undefined) return { code, inlined: 0 };
-		const program = parseSourceProgram({ file: id, source: code }).program as unknown as OxcNode;
+		const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program as unknown as OxcNode;
 		const constants = options.constants === false ? new Map<string, KnownConstant>() : this.ports.mergeConstants(program, this.ports.collectConstants(program), options.importedConstants);
 		const evaluate = createCx({
 			conflicts: config.conflicts,

@@ -4,13 +4,23 @@ import type {
 	StyleObject,
 	TokenDeclaration,
 } from "../types/typings.ts";
-import { escapeVarClass, varClassFor } from "./vars.ts";
+import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
-import { createConditionsBucket, decodeAtomicPath, genCSSRule, isSelfSelector, parseCondition } from "./stylesheet-lowering.ts";
+import { isSelfSelector } from "./stylesheet-lowering.ts";
+import {
+	defaultAtomicPathDecoder,
+	defaultConditionPolicy,
+	defaultRuleSerializer,
+	createStylesheetOrderingPolicy,
+	type AtomicPathDecoderPolicy,
+	type ConditionPolicy,
+	type RuleSerializerPolicy,
+	type StylesheetOrderingPolicy,
+} from "./stylesheet-policies.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 
@@ -20,12 +30,24 @@ const cssVar = {
 	declaration: (key: string, value: string) => `--${key}: ${value};`,
 };
 
-/** Priority-ordered copy of a rule cache's values. */
-const byPriority = <T extends { priority: number }>(values: Iterable<T>): Array<T> =>
-	Array.from(values).toSorted((a, b) => a.priority - b.priority);
+export interface StylesheetPolicies {
+	readonly conditions?: ConditionPolicy;
+	readonly ordering?: StylesheetOrderingPolicy;
+	readonly serializer?: RuleSerializerPolicy;
+	readonly decoder?: AtomicPathDecoderPolicy;
+}
 
-export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOptions = {}) => {
+export const createStylesheet = (
+	preset: CssConfigReturn,
+	options: CreateCssOptions = {},
+	policies: StylesheetPolicies = {},
+) => {
 	const cache = new Map<string, Rule>();
+	const varCompiler = createVarCompiler();
+	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
+	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
+	const serializer = policies.serializer ?? defaultRuleSerializer;
+	const decoder = policies.decoder ?? defaultAtomicPathDecoder;
 
 	const hashFn = options.hashFn ?? createHashFn(Boolean(options.debug));
 	const debug = Boolean(options.debug);
@@ -70,22 +92,19 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 					const resolvedList = (Array.isArray(resolved) ? resolved : [resolved]).filter(
 						(part): part is string => Boolean(part),
 					);
-					const conditions = createConditionsBucket({
+					const conditions = Object.assign(conditionPolicy.create(), {
 						className: "",
 						parentSelectors: resolvedList.length ? [] : [":root "],
 					});
 
-					resolvedList.forEach((selector) => {
-						const isInvalid = parseCondition(selector, conditions);
-						if (!isInvalid) return;
-					});
+					resolvedList.forEach((selector) => { conditionPolicy.parse(selector, conditions); });
 
 					const priorities = resolvedList.map((part) =>
 						getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
 					);
 
 					cssVars.set(`${tokenPath}.${condition}`, {
-						declaration: genCSSRule(cssVar.declaration(cssVarHash, value), conditions),
+						declaration: serializer.serialize(cssVar.declaration(cssVarHash, value), conditions),
 						priority: priorities.reduce((acc, prio) => acc + prio, 0),
 					});
 				}
@@ -93,9 +112,9 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			}
 
 			cssVars.set(tokenPath, {
-				declaration: genCSSRule(
+				declaration: serializer.serialize(
 					cssVar.declaration(cssVarHash, tokenValue),
-					createConditionsBucket({
+					Object.assign(conditionPolicy.create(), {
 						parentSelectors: [":root "],
 					}),
 				),
@@ -119,10 +138,10 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 			const pairId = pairs.concat(orderedKey, style[key]!);
 			if (cache.has(pairId)) continue;
 
-			const atomic = decodeAtomicPath(preset.conditions, pairId);
+			const atomic = decoder.decode(preset.conditions, pairId);
 			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
 
-			const css = genCSSRule([dashCase(atomic.prop!), value].join(":"), {
+			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
 				className: `.${classNameFor(orderedKey, style[key]!)}`,
 			});
@@ -167,10 +186,10 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;
 		}
-		const atomic = decodeAtomicPath(preset.conditions, pairs.concat(orderedKey, "\u0000"));
-		const css = genCSSRule(`${prop}: ${declaration}`, {
+		const atomic = decoder.decode(preset.conditions, pairs.concat(orderedKey, "\u0000"));
+		const css = serializer.serialize(`${prop}: ${declaration}`, {
 			...atomic.conditions,
-			className: `.${escapeVarClass(varClassFor(orderedKey))}`,
+			className: `.${varCompiler.escapeClass(varCompiler.classFor(orderedKey))}`,
 		});
 		varCache.set(orderedKey, { id: orderedKey, css, priority: atomic.priority });
 	};
@@ -187,7 +206,7 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 				.join("\n");
 		},
 		atomic: () => {
-			return byPriority(cache.values())
+			return ordering.order(cache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
@@ -197,16 +216,16 @@ export const createStylesheet = (preset: CssConfigReturn, options: CreateCssOpti
 		 * each route bucket produces without re-parsing emitted CSS.
 		 */
 		atomicEntries: () =>
-			byPriority(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			ordering.order(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
 		varRules: () => {
-			return byPriority(varCache.values())
+			return ordering.order(varCache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
 		/** Var toggle rules with identity — see atomicEntries. */
 		varEntries: () =>
-			byPriority(varCache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			ordering.order(varCache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 	};
 
 	const generate = (styles: Array<StyleObject>) => {

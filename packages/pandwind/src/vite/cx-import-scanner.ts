@@ -7,7 +7,7 @@ export interface CxImportInfo {
 }
 
 /** Source-language-neutral import discovery for the cx compiler. */
-export class CxImportScanner {
+class CxImportScanner {
 	find(code: string, id: string, matches: (source: string) => boolean): CxImportInfo {
 		const info: CxImportInfo = { localNames: new Set(), sources: [] };
 		const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code, language: SOURCE_SCANNER_SERVICE.languageForFile(id) }).program;

@@ -1,4 +1,4 @@
-export const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
+const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
 
 export type TokenFormatId =
 	| "dtcg"

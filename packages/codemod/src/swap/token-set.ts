@@ -11,9 +11,7 @@ import { rootCssTokenFormat } from "./token-formats/root-css.ts";
 import { stylexTokenFormat } from "./token-formats/stylex.ts";
 import type { TokenFormatId } from "./token-format-contracts.ts";
 
-export type { TokenFormatAdapter, TokenFormatRegistry, TokenSet } from "./token-format-contracts.ts";
-
-export class TokenSetCodec {
+class TokenSetCodec {
 	constructor(readonly registry = new DefaultTokenFormatRegistry([
 		dtcgTokenFormat, themeTokenFormat, pandaTokenFormat, presetTokenFormat,
 		styleDictionaryTokenFormat, figmaTokenFormat, rootCssTokenFormat, stylexTokenFormat,

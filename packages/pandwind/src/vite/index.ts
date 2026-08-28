@@ -19,7 +19,7 @@
  */
 import { readFileSync } from "node:fs";
 import { basename } from "node:path";
-import { parseSourceProgram } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walk } from "../tw/literal.ts";
 import { findCxImports, inlineCxCalls } from "./cx-inline.ts";
 import { createCrossModuleConstResolver } from "./cross-module-consts.ts";
@@ -104,7 +104,7 @@ function findTwImports(
 	id: string,
 	isTwSource: (source: string) => boolean,
 ): ImportInfo {
-	const result = parseSourceProgram({ file: id, source: code });
+	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 	const info: ImportInfo = { localNames: new Set(), sources: [] };
 
 	walk(result.program, (node) => {
@@ -131,7 +131,7 @@ interface OxcSpecifier {
 /** Source-matcher shared by the tw and cx import detection. */
 /** Parse a module and return its program node (for const-binding scans). */
 function parseProgramForConsts(code: string, id: string): OxcNode {
-	const parsed = parseSourceProgram({ file: id, source: code }) as unknown as { program: OxcNode };
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as { program: OxcNode };
 	return parsed.program;
 }
 
@@ -147,7 +147,7 @@ function matchesSource(
 				: matcher.test(source),
 		);
 	}
-	return basename(source).replace(/\.[jt]sx?$/, "") === fallbackBasename;
+	return basename(source).split(".")[0] === fallbackBasename;
 }
 
 /**

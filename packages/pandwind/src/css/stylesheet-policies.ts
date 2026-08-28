@@ -1,9 +1,27 @@
-import type { ParsedConditions } from "./css-rule-serializer.ts";
+import {
+	createConditionsBucket,
+	decodeAtomicPath,
+	genCSSRule,
+	parseCondition,
+	type DecodedAtomicPath,
+	type ParsedConditions,
+} from "./stylesheet-lowering.ts";
+import type { AnyConditions } from "../types/typings.ts";
 
 /** Replaceable condition parser used while lowering flattened style paths. */
 export interface ConditionPolicy {
 	create(): ParsedConditions;
 	parse(selector: string, conditions: ParsedConditions): true | undefined;
+}
+
+/** Replaceable CSS rule serializer for alternate dialects and diagnostics. */
+export interface RuleSerializerPolicy {
+	serialize(declarations: string, conditions: ParsedConditions): string;
+}
+
+/** Replaceable atomic-path decoder for alternate condition/property dialects. */
+export interface AtomicPathDecoderPolicy {
+	decode(conditions: AnyConditions, path: string): DecodedAtomicPath;
 }
 
 /** Replaceable cascade ordering policy for generated stylesheet entries. */
@@ -19,3 +37,16 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
 
 export const createStylesheetOrderingPolicy = (): StylesheetOrderingPolicy =>
 	new PriorityStylesheetOrderingPolicy();
+
+export const defaultConditionPolicy: ConditionPolicy = {
+	create: createConditionsBucket,
+	parse: parseCondition,
+};
+
+export const defaultRuleSerializer: RuleSerializerPolicy = {
+	serialize: genCSSRule,
+};
+
+export const defaultAtomicPathDecoder: AtomicPathDecoderPolicy = {
+	decode: decodeAtomicPath,
+};

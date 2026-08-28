@@ -7,7 +7,7 @@
  * through verbatim (valid on any element). When the last `<Stack>` in a
  * file is erased, its `pandwind/stack` import is removed.
  */
-import { parseSourceProgram } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walk, type OxcNode } from "../tw/literal.ts";
 import { stackClasses, type StackProps } from "../stack/index.ts";
 
@@ -71,7 +71,7 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 /** Fold all literal-prop Stack elements in one module. Returns edited code. */
 export function foldStackElements(code: string, id: string): { code: string; folded: number } {
 	if (!code.includes("Stack")) return { code, folded: 0 };
-	const parsed = parseSourceProgram({ file: id, source: code });
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 
 	const targets: FoldTarget[] = [];
 	walk(parsed.program as unknown as OxcNode, (node) => {

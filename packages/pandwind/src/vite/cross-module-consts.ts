@@ -28,7 +28,7 @@
  */
 import { dirname } from "node:path";
 import { type Expression } from "oxc-parser";
-import { parseSourceProgram } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
@@ -57,7 +57,7 @@ export interface ImportBinding {
 }
 
 function parseProgram(code: string, id: string): OxcNode {
-	const result = parseSourceProgram({ file: id, source: code }) as unknown as { program: OxcNode };
+	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as { program: OxcNode };
 	return result.program;
 }
 

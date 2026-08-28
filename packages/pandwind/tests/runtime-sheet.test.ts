@@ -5,6 +5,30 @@ import {
 	createRuntimeSheet,
 } from "../src/css/runtime.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
+import type {
+	RuntimeDeclaration,
+	RuntimeDocument,
+	RuntimeRuleCanonicalizer,
+	RuntimeRuleSerializer,
+	RuntimeRuleStore,
+	RuntimeStyleElement,
+	RuntimeStyleElementSink,
+} from "../src/css/runtime-sheet.ts";
+
+type RuntimeContractSurface = {
+	document: RuntimeDocument;
+	element: RuntimeStyleElement;
+	declaration: RuntimeDeclaration;
+	store: RuntimeRuleStore;
+	canonicalizer: RuntimeRuleCanonicalizer;
+	serializer: RuntimeRuleSerializer;
+	sink: RuntimeStyleElementSink;
+};
+
+test("runtime contract surface remains type-addressable", () => {
+	const surface = undefined as unknown as RuntimeContractSurface;
+	expect(surface).toBeUndefined();
+});
 
 describe("runtime CSS-in-JS sheet", () => {
 	test("collects preset-bound css() rules for SSR without a DOM", () => {

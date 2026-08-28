@@ -8,7 +8,7 @@
  * target library.
  */
 import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
-import { parseSourceProgram } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 
 export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/3" as const;
 
@@ -581,7 +581,7 @@ export function styleProgramFromSourceObject(
 
 	let root: SourceNode | undefined;
 	try {
-		const parsed = parseSourceProgram({
+		const parsed = SOURCE_SCANNER_SERVICE.parse({
 			file: options.source?.file ?? "pandwind-style-program.tsx",
 			source: `({${body}})`,
 			language: "tsx",

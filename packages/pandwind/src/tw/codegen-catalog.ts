@@ -139,7 +139,7 @@ export function longestFunctionalPrefix(candidate: string, functional: string[])
 	return best;
 }
 
-export function mergeStaticUtilities(
+function mergeStaticUtilities(
 	system: {
 		utilities: { keys: (kind: "functional" | "static") => string[] };
 	},
@@ -229,7 +229,7 @@ const SUBKEY_SUFFIXES: Record<string, string> = {
  * narrower spellings that emit the same classes (runtime resolution in
  * `compile.ts` UTILITY_SUBKEYS).
  */
-export function expandSubkeys(
+function expandSubkeys(
 	types: UtilityMap,
 	conflicts: Record<string, Record<string, string[]>>,
 ): void {

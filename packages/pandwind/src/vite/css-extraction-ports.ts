@@ -18,10 +18,10 @@ export interface SourceScanner {
 
 /** Identifies CSS bindings and call sites without deciding how they are emitted. */
 export interface CallSiteClassifier {
-	findImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string>;
+	findImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string>;
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection;
-	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite>;
-	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport>;
+	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[];
+	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[];
 }
 
 /** Converts classified static calls into semantic styles and extracted artifacts. */
@@ -31,7 +31,7 @@ export interface ArtifactExtractor {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-	): Array<ExtractedCssStyle>;
+	): readonly ExtractedCssStyle[];
 	extractFile(
 		code: string,
 		id: string,
@@ -58,7 +58,7 @@ export interface CallRewriter {
 
 /** Reports unsupported or unextracted source constructs. */
 export interface DiagnosticReporter {
-	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic>;
+	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[];
 }
 
 export interface CssExtractionPorts {

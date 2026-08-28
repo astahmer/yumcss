@@ -16,17 +16,17 @@ import {
 import type { CssExtractionPorts } from "./css-extraction-ports.ts";
 
 export interface CssSourceService {
-	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string>;
+	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string>;
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection;
-	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite>;
-	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic>;
-	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport>;
+	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[];
+	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[];
+	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[];
 	extract(
 		code: string,
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-	): Array<ExtractedCssStyle>;
+	): readonly ExtractedCssStyle[];
 	extractFile(
 		code: string,
 		id: string,
@@ -46,7 +46,7 @@ export interface CssSourceService {
 class DefaultCssSourceService implements CssSourceService {
 	constructor(private readonly pipeline: CssExtractionPipeline = createCssExtractionPipeline()) {}
 
-	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string> {
+	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string> {
 		return this.pipeline.findImports(code, id, matchers);
 	}
 
@@ -54,15 +54,15 @@ class DefaultCssSourceService implements CssSourceService {
 		return this.pipeline.inspect(code, id, matchers);
 	}
 
-	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite> {
+	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[] {
 		return this.pipeline.findCallSites(code, id, cssNames);
 	}
 
-	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic> {
+	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[] {
 		return this.pipeline.diagnose(code, id, cssNames);
 	}
 
-	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport> {
+	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[] {
 		return this.pipeline.findAuthoredImports(code, id);
 	}
 
@@ -71,7 +71,7 @@ class DefaultCssSourceService implements CssSourceService {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-	): Array<ExtractedCssStyle> {
+	): readonly ExtractedCssStyle[] {
 		return this.pipeline.extract(code, id, cssNames, preset);
 	}
 

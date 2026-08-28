@@ -31,17 +31,17 @@ import type {
 } from "./css-extract.ts";
 
 export interface CssExtractionPipeline extends CssExtractionPorts {
-	findImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string>;
+	findImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string>;
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection;
-	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite>;
-	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport>;
-	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic>;
+	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[];
+	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[];
+	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[];
 	extract(
 		code: string,
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-	): Array<ExtractedCssStyle>;
+	): readonly ExtractedCssStyle[];
 	extractFile(
 		code: string,
 		id: string,
@@ -115,19 +115,19 @@ class DefaultCssExtractionPipeline implements CssExtractionPipeline {
 		return this.ports.diagnostics;
 	}
 
-	findImports(code: string, id: string, matchers: Array<string | RegExp>): Set<string> {
+	findImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string> {
 		return this.classifier.findImports(code, id, matchers);
 	}
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection {
 		return this.classifier.inspect(code, id, matchers);
 	}
-	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssCallSite> {
+	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[] {
 		return this.classifier.findCallSites(code, id, cssNames);
 	}
-	findAuthoredImports(code: string, id: string): Array<AuthoredCssImport> {
+	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[] {
 		return this.classifier.findAuthoredImports(code, id);
 	}
-	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): Array<CssDiagnostic> {
+	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[] {
 		return this.diagnostics.diagnose(code, id, cssNames);
 	}
 	extract(
@@ -135,7 +135,7 @@ class DefaultCssExtractionPipeline implements CssExtractionPipeline {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-	): Array<ExtractedCssStyle> {
+	): readonly ExtractedCssStyle[] {
 		return this.extractor.extract(code, id, cssNames, preset);
 	}
 	extractFile(

@@ -25,14 +25,15 @@ minimal implementation without changing orchestration.
 
 | Domain              | Port boundary                                                                   | Default implementation                                                       |
 | ------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Vite CSS extraction | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports      | `vite/css-extraction-pipeline.ts`                                            |
-| Tailwind codegen    | theme loader, utility catalog, conflict analyzer, type emitter, runtime emitter | `tw/codegen-pipeline.ts`                                                     |
-| Runtime CSS         | canonicalizer, ordering, serializer, store, sink                                | `css/runtime-policies.ts`, `css/runtime-artifacts.ts`, `css/runtime-sink.ts` |
-| Stylesheet lowering | condition, ordering, serializer, and variable compiler policies                 | `css/stylesheet-policies.ts`, `css/css-rule-serializer.ts`                   |
-| Token formats       | one normalized token set plus format adapters                                   | `codemod/swap/token-format-registry.ts`                                      |
-| `cx()` compilation  | constant discovery, expression evaluation, and class merge ports                | `vite/cx-compilation-ports.ts`                                               |
+| Vite CSS extraction | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports      | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                    |
+| Tailwind codegen    | theme loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts` |
+| Runtime CSS         | canonicalizer, ordering, serializer, store, sink                                | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts` |
+| Stylesheet lowering | condition, ordering, decoder, serializer, and variable compiler policies        | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                    |
+| Token formats       | one normalized token set plus format adapters                                   | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`         |
+| `cx()` compilation  | constant discovery, expression evaluation, imported merges, fold policy, and code emission | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts` |
 | Design vocabulary   | module adapter registry                                                         | `design/resolve.ts`                                                          |
 | Analyze/reporting   | analysis, workspace, budget, and report ports                                   | `analyze/analysis-service.ts`, `analyze/analysis-report.ts`                  |
+| Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission | `tw/bridge.ts`, `tw/bridge-generator.ts`                                     |
 
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
@@ -60,3 +61,21 @@ An architecture refactor is complete only when the domain has:
 - no ecosystem-specific branch in the caller that should depend on the port;
 - focused JJ revisions and behavior-preserving validation;
 - updated documentation when the boundary or public contract changes.
+
+## Current implementation map
+
+The CSS extraction façade is `createCssExtractionService`; its scanner and
+artifact policies are shared by the Vite path and the CSS extraction helpers.
+The Tailwind generator is a composition root: loading token/theme input,
+cataloging utilities, probing conflicts/variants, emitting source, and writing
+artifacts are separate policy modules. Runtime sheets and stylesheet lowering
+likewise accept replacement ports for storage, ordering, canonicalization,
+serialization, conditions, decoding, and sinks.
+
+Token conversion uses `TokenSetCodec` over a registered normalized set. Each
+format lives in its own adapter file (`dtcg`, `theme`, `panda`, `preset`, `sd`,
+`figma`, `rootcss`, and `stylex`). The `cx()` façade delegates to explicit
+constant, import, evaluation, fold, and rewrite policies. Analyzer/reporting
+and design vocabulary use the same port/registry pattern. New policies must
+include a minimal substitution test before they are wired into a composition
+root.

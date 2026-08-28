@@ -1,5 +1,5 @@
 /** Replaceable, independently testable stages used by Panda migration. */
-import { parseSourceProgram } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { PandwindMeta } from "../../../meta.ts";
 import { applyEdits } from "../../../migrate.ts";
 import { emitCssClass } from "../../emit.ts";
@@ -34,7 +34,7 @@ export function validatePandaSource(
 	source: string,
 ): { valid: true } | { valid: false; message: string } {
 	try {
-		parseSourceProgram({ file, source });
+		SOURCE_SCANNER_SERVICE.parse({ file, source });
 		return { valid: true };
 	} catch (error) {
 		return { valid: false, message: error instanceof Error ? error.message : String(error) };

@@ -1,4 +1,3 @@
-import type { Expression } from "oxc-parser";
 import type { OxcNode } from "../tw/literal.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import type {
@@ -23,7 +22,7 @@ export interface CssSourceProvenance {
 export interface CssCallSite extends CssSourceProvenance {
 	readonly staticArguments: number;
 	readonly dynamicArguments: number;
-	readonly rules?: readonly { id: string; css: string }[];
+	rules?: Array<{ id: string; css: string }>;
 }
 
 export type CssDiagnosticKind = "unsupported-construct" | "missing-extraction";
@@ -127,8 +126,6 @@ export interface CssExtractionService {
 	diagnose(code: string, id: string, names: ReadonlySet<string>): readonly CssDiagnostic[];
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult;
 }
-
-export type CssExpression = Expression;
 
 export type CssExtractorOptions = {
 	readonly matchers: readonly (string | RegExp)[];

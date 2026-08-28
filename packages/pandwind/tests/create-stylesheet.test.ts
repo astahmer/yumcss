@@ -24,6 +24,28 @@ test("css gen simple prop", () => {
 	`);
 });
 
+test("stylesheet lowering accepts substituted serializer and ordering policies", () => {
+	const sheet = createStylesheet(
+		examplePreset,
+		{ debug: false },
+		{
+			serializer: {
+				serialize(declarations, conditions) {
+					return `/* substituted */${conditions.className}{${declarations}}`;
+				},
+			},
+			ordering: {
+				order(values) {
+					return [...values].toReversed();
+				},
+			},
+		},
+	);
+	const css = createCss<typeof examplePreset>({ debug: false });
+	const rules = sheet.process([css.raw({ color: "$red-700" })]);
+	expect(rules.get("color__$red-700")?.css).toContain("/* substituted */");
+});
+
 test("css gen prop in known pseudo selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });

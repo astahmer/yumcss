@@ -1,10 +1,22 @@
 import { expect, test } from "vitest";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createDesignCss } from "../src/design/index.ts";
-import { resolveDesignStyle } from "../src/design/resolve.ts";
+import { createDesignModuleRegistry, DesignStyleResolver, resolveDesignStyle } from "../src/design/resolve.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 
 const tokens = examplePreset.tokens;
+
+test("design resolver accepts a substituted module adapter", () => {
+	const resolver = new DesignStyleResolver(
+		createDesignModuleRegistry([
+			{
+				key: "$frame",
+				resolve: () => ({ outline: "substituted" }),
+			},
+		]),
+	);
+	expect(resolver.resolve({ $frame: { w: 1 } }, tokens)).toEqual({ outline: "substituted" });
+});
 
 test("resolve $frame — the box", () => {
 	expect(

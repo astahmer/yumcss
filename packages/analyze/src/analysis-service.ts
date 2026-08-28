@@ -8,7 +8,8 @@ import {
 	type FileFoldStats,
 	type FoldSummary,
 } from "./analyze.ts";
-import { cssBudget, formatCssBudget, type CssBudget } from "./css-budget.ts";
+import { CssBudgetEvaluator, type CssBudget } from "./css-budget-evaluator.ts";
+import { CssBudgetReportRenderer } from "./css-budget-report.ts";
 
 export interface FoldAnalysisPort {
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats;
@@ -16,32 +17,66 @@ export interface FoldAnalysisPort {
 	format(summary: FoldSummary): string;
 }
 
+export interface FileFoldAnalyzerPort {
+	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats;
+}
+
+export interface FoldSummaryPort {
+	summarize(files: Array<FileFoldStats>): FoldSummary;
+}
+
+export interface FoldReportPort {
+	format(summary: FoldSummary): string;
+}
+
+export interface FoldAnalysisDependencies {
+	readonly analyzer?: FileFoldAnalyzerPort;
+	readonly summary?: FoldSummaryPort;
+	readonly report?: FoldReportPort;
+}
+
 class FoldAnalysisService implements FoldAnalysisPort {
+	constructor(
+		private readonly analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
+		private readonly summary: FoldSummaryPort = { summarize },
+		private readonly report: FoldReportPort = { format: formatReport },
+	) {}
+
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats {
-		return analyzeSource(source, file, options);
+		return this.analyzer.analyze(source, file, options);
 	}
 
 	summarize(files: Array<FileFoldStats>): FoldSummary {
-		return summarize(files);
+		return this.summary.summarize(files);
 	}
 
 	format(summary: FoldSummary): string {
-		return formatReport(summary);
+		return this.report.format(summary);
 	}
 }
 
 export interface CssBudgetPort {
-	measure(options: Parameters<typeof cssBudget>[0]): Promise<CssBudget>;
+	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget>;
 	format(budget: CssBudget): string;
 }
 
+export interface CssBudgetDependencies {
+	readonly evaluator?: Pick<CssBudgetEvaluator, "measure">;
+	readonly renderer?: Pick<CssBudgetReportRenderer, "format">;
+}
+
 class CssBudgetService implements CssBudgetPort {
-	measure(options: Parameters<typeof cssBudget>[0]): Promise<CssBudget> {
-		return cssBudget(options);
+	constructor(
+		private readonly evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
+		private readonly renderer: Pick<CssBudgetReportRenderer, "format"> = new CssBudgetReportRenderer(),
+	) {}
+
+	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> {
+		return this.evaluator.measure(options);
 	}
 
 	format(budget: CssBudget): string {
-		return formatCssBudget(budget);
+		return this.renderer.format(budget);
 	}
 }
 
@@ -60,6 +95,15 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 	}
 }
 
-export const createFoldAnalysisService = (): FoldAnalysisPort => new FoldAnalysisService();
+export const createFoldAnalysisService = (
+	dependencies: FoldAnalysisDependencies = {},
+): FoldAnalysisPort =>
+	new FoldAnalysisService(
+		dependencies.analyzer ?? { analyze: analyzeSource },
+		dependencies.summary ?? { summarize },
+		dependencies.report ?? { format: formatReport },
+	);
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
-export const createCssBudgetService = (): CssBudgetPort => new CssBudgetService();
+export const createCssBudgetService = (
+	dependencies: CssBudgetDependencies = {},
+): CssBudgetPort => new CssBudgetService(dependencies.evaluator, dependencies.renderer);
