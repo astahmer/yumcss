@@ -6,6 +6,7 @@ import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import {
+	createCssExtractionService,
 	diagnoseCssSources,
 	extractCssFile,
 	extractCssSources,
@@ -17,6 +18,7 @@ import {
 	inlineCssCalls,
 	isCssSource,
 } from "../src/vite/css-extract.ts";
+import type { CssArtifactExtractor, CssDiagnosticReporter, CssSourceScanner } from "../src/vite/css-extraction-contracts.ts";
 
 test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
 	const code = `
@@ -136,6 +138,33 @@ test("findCssImports collects named, default and aliased css bindings", () => {
 	expect(findCssImports(code, "app.tsx", ["css", "design"])).toEqual(
 		new Set(["css", "styles", "wind"]),
 	);
+});
+
+test("css extraction façade accepts substituted policy ports", () => {
+	const scanner: CssSourceScanner = {
+		parse: () => ({ type: "Program" }),
+		findImports: () => new Set(["css"]),
+		inspect: () => ({ authoredCss: [], cssNames: new Set(["css"]), cssSources: [], cssDiagnostics: [] }),
+		findAuthoredImports: () => [],
+		findCallSites: () => [],
+		findVarKeys: () => ["runtime__color"],
+	};
+	const artifacts: CssArtifactExtractor = {
+		extract: () => [],
+		extractFile: () => ({ sources: [], varKeys: ["runtime__color"] }),
+	};
+	const diagnostics: CssDiagnosticReporter = { diagnose: () => [] };
+	const service = createCssExtractionService({
+		matchers: [],
+		preset: examplePreset,
+		scanner,
+		artifacts,
+		diagnostics,
+		rewriter: { inline: (code) => ({ code: `${code}!`, inlined: 1 }) },
+	});
+
+	expect(service.extractFile("ignored", "ignored.ts")).toEqual({ sources: [], varKeys: ["runtime__color"] });
+	expect(service.inline("code", "ignored.ts", new Set(["css"]))).toEqual({ code: "code!", inlined: 1 });
 });
 
 test("extractCssStyles resolves design modules in literal calls", () => {
