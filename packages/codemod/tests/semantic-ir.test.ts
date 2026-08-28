@@ -109,6 +109,49 @@ describe("versioned semantic style-program IR", () => {
 		);
 	});
 
+	test("folds statically-known CSS variable references in source templates", () => {
+		const program = styleProgramFromSourceObject(
+			"color: `color-mix(in srgb, ${vars['--foreground']} 80%, transparent)`, background: vars['--background']",
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations.map((declaration) => declaration.value)).toEqual([
+			{ kind: "literal", value: "color-mix(in srgb, var(--foreground) 80%, transparent)" },
+			{ kind: "literal", value: "var(--background)" },
+		]);
+	});
+
+	test("accepts TypeScript-asserted literal computed keys", () => {
+		const program = styleProgramFromSourceObject("['--layout-offset' as any]: '8px'");
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations[0]).toMatchObject({
+			property: "--layout-offset",
+			value: { kind: "literal", value: "8px" },
+		});
+	});
+
+	test("resolves computed condition identifiers supplied by a source adapter", () => {
+		const program = styleProgramFromSourceObject(
+			"card: { display: { [TABLET_BREAK]: 'block', default: 'none' } }",
+			{
+			conditionValues: { TABLET_BREAK: "@media (max-width: 768px)" },
+			propertyValueConditions: true,
+			nestedObjectKind: "named",
+			},
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations).toMatchObject([
+			{
+				property: "display",
+				value: { kind: "literal", value: "block" },
+				conditions: [{ name: "card" }, { name: "@media (max-width: 768px)" }],
+			},
+			{ property: "display", value: { kind: "literal", value: "none" }, conditions: [{ name: "card" }] },
+		]);
+	});
+
 	test("preserves rule-level CSS constructs and canonical ordering", () => {
 		const program = styleProgramFromRules([
 			{

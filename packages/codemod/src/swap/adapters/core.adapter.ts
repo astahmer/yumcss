@@ -49,8 +49,9 @@ const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 		"pseudo-conditions": "exact",
 		"media-conditions": "exact",
 		"selector-conditions": "exact",
-		"supports-conditions": "exact",
-	},
+			"supports-conditions": "exact",
+			"framework-semantics": "exact",
+		},
 });
 
 const emptyConfig = (

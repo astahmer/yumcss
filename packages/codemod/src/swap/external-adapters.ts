@@ -47,7 +47,11 @@ type CallPattern = {
 
 export type AdapterSourceObjectOptions = Pick<
 	StyleProgramOptions,
+	| "conditionKinds"
+	| "conditionValues"
+	| "conditionRaw"
 	| "nestedObjectKind"
+	| "propertyValueConditions"
 	| "unwrapNestedObjectKeys"
 	| "variantContainerKeys"
 	| "computedKeys"

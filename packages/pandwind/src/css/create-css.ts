@@ -145,11 +145,16 @@ export function createCss(
 	};
 
 	// `{ color: "red" }` -> { style: undefined, className: "color__red" }
-	css.props = (...props: Array<CompiledStyles | DynamicReturn>): PropsReturn => {
+	css.props = (...props: Array<CompiledStyles | DynamicReturn | string>): PropsReturn => {
 		const compiled = [] as Array<CompiledStyles>;
 		const styles = [] as Array<CssStyle>;
+		const classNames: string[] = [];
 
 		props.forEach((current) => {
+			if (typeof current === "string") {
+				classNames.push(current);
+				return;
+			}
 			if (DYNAMIC in current) {
 				compiled.push(current.compiled);
 				styles.push(current.style);
@@ -161,7 +166,10 @@ export function createCss(
 
 		return {
 			style: styles.length ? assign(...styles) : undefined,
-			className: compiled.length ? Object.values(assign(...compiled)).join(" ") : undefined,
+			className:
+				compiled.length || classNames.length
+					? [...classNames, ...Object.values(assign(...compiled))].join(" ")
+					: undefined,
 		};
 	};
 
@@ -221,7 +229,7 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 */
 	vars: (...styles: Array<TStyles>) => VarsOutput;
 	raw: (...styles: Array<TStyles>) => StyleObject;
-	props: (...styles: Array<CompiledStyles | DynamicReturn>) => PropsReturn;
+	props: (...styles: Array<CompiledStyles | DynamicReturn | string>) => PropsReturn;
 	group: <TGroup extends Record<string, TStyles | DynamicStyles<TStyles>>>(
 		styles: TGroup,
 	) => {

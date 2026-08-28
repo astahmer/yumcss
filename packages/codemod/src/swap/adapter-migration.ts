@@ -108,6 +108,10 @@ export interface AdapterMigrationResult {
 
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
+function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
+	return adapter.id === "pandwind" || adapter.system === "pandwind";
+}
+
 /** Run one v2 adapter-to-adapter migration over a source file. */
 export function runAdapterMigration(
 	source: string,
@@ -205,7 +209,7 @@ export function runAdapterMigration(
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
-		if (targetAdapter.id === "pandwind" && program.source?.subject === undefined) {
+		if (isPandwindTarget(targetAdapter) && program.source?.subject === undefined) {
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
 				const binding = source
@@ -263,7 +267,7 @@ export function runAdapterMigration(
 					};
 			}
 		}
-		if (targetAdapter.id === "pandwind" && program.source?.subject !== undefined) {
+		if (isPandwindTarget(targetAdapter) && program.source?.subject !== undefined) {
 			const hasDynamic = programHasDynamic(program);
 			const hasFunctionDynamic = programHasFunctionDynamic(program);
 			const binding = source
@@ -419,7 +423,7 @@ export function runAdapterMigration(
 			}
 		}
 		if (
-			targetAdapter.id === "pandwind" &&
+			isPandwindTarget(targetAdapter) &&
 			program.source?.subject === undefined &&
 			program.source?.framework !== undefined &&
 			program.source?.subject === undefined &&

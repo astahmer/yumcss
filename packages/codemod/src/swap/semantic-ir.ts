@@ -174,6 +174,8 @@ export interface StyleProgramOptions {
 	readonly nestedObjectKind?: SemanticConditionKind;
 	/** Adapter-owned object containers whose contents are the actual style object. */
 	readonly unwrapNestedObjectKeys?: readonly string[];
+	/** Source systems such as StyleX encode conditional values under a property. */
+	readonly propertyValueConditions?: boolean;
 	/** Adapter-owned variant containers, for example Stitches `variants`. */
 	readonly variantContainerKeys?: readonly string[];
 	/** Source-adapter mappings for computed custom-property keys. */
@@ -276,11 +278,12 @@ export function inferSemanticConditionKind(name: string): SemanticConditionKind 
 
 function conditionFor(name: string, options: StyleProgramOptions): StyleCondition {
 	const value = options.conditionValues?.[name];
+	const inferredNameKind = inferSemanticConditionKind(name);
 	return {
 		kind:
 			options.nestedObjectKind ??
 			options.conditionKinds?.[name] ??
-			inferSemanticConditionKind(name),
+			(inferredNameKind === "named" ? inferSemanticConditionKind(value ?? name) : inferredNameKind),
 		name,
 		...(value === undefined ? {} : { value }),
 		...(options.conditionRaw?.[name] === undefined ? {} : { raw: options.conditionRaw[name] }),
@@ -553,6 +556,28 @@ function sourceRange(
 function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions): string | null {
 	if (node.computed === true) {
 		const expression = node.key === undefined ? "" : sourceSlice(body, node.key).trim();
+		const literal = expression.match(
+			/^(?:\[\s*)?(['"])([^'"]+)\1(?:\s+as\s+[A-Za-z_$][\w$]*)?\s*(?:\])?$/,
+		);
+		if (literal?.[2] !== undefined) return literal[2];
+		const when = expression.match(
+			/^stylex\.when\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\(\s*(['"])([^'"]+)\2\s*(?:,\s*([A-Za-z_$][\w$]*))?\s*\)$/,
+		);
+		if (when?.[1] !== undefined && when[3] !== undefined) {
+			const marker = when[4] === undefined ? "pw-default-marker" : `pw-marker-${when[4]}`;
+			const pseudo = `${marker}${when[3]}`;
+			return when[1] === "ancestor"
+				? `:where(.${pseudo} *) &`
+				: when[1] === "descendant"
+					? `&:where(:has(.${pseudo}))`
+					: when[1] === "siblingBefore"
+						? `:where(.${pseudo} ~ *) &`
+						: when[1] === "siblingAfter"
+							? `&:where(:has(~ .${pseudo}))`
+					: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
+		}
+		const conditionValue = options.conditionValues?.[expression];
+		if (conditionValue !== undefined) return conditionValue;
 		return options.computedKeys?.[expression] ?? null;
 	}
 	const key = node.key;
@@ -585,6 +610,21 @@ function dynamicSourceValue(
 			kind: "literal",
 			value: directReference,
 		};
+	const cssVariableExpression = (value: string): string =>
+		value
+			.replace(
+			/\$\{\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*\}/g,
+			"var($2)",
+			)
+			.replace(/^\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*$/, "var($2)");
+	const normalizedExpression = cssVariableExpression(sourceExpression);
+	if (normalizedExpression !== sourceExpression && !normalizedExpression.includes("${")) {
+		const value =
+			normalizedExpression.startsWith("`") && normalizedExpression.endsWith("`")
+				? normalizedExpression.slice(1, -1)
+				: normalizedExpression;
+		return { kind: "literal", value };
+	}
 	const expression = sourceExpression.replace(/\$\{([A-Za-z_$][\w$]*)\}/g, (match, name: string) =>
 		options.dynamicReferences?.[name] === undefined
 			? match
@@ -635,6 +675,30 @@ export function styleProgramFromSourceObject(
 	const compositionKeys = new Set(["compose", "composes", "extend", "extends"]);
 	const addDynamicResidual = (text: string, hint: string): void => {
 		residuals.push({ kind: "dynamic", text, hint });
+	};
+	const addDeclaration = (
+		name: string,
+		valueNode: SourceNode,
+		conditions: readonly StyleCondition[],
+	): void => {
+		const value = literalSourceValue(valueNode) ?? dynamicSourceValue(valueNode, body, options);
+		if (value.kind === "dynamic") {
+			const themeMatch = /^(?:theme|tokens)\.([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)$/.exec(
+				value.expression.trim(),
+			);
+			if (themeMatch?.[1] !== undefined && !themePaths.has(themeMatch[1])) {
+				themePaths.add(themeMatch[1]);
+				themes.push({
+					path: themeMatch[1],
+					authored: value.expression.trim(),
+					source: value.source,
+				});
+			}
+		}
+		const normalizedValue = options.valueTransforms?.[name]?.(value) ?? value;
+		const aliases = options.propertyAliases?.[name] ?? name;
+		for (const canonicalProperty of typeof aliases === "string" ? [aliases] : aliases)
+			declarations.push({ conditions, property: canonicalProperty, value: normalizedValue });
 	};
 
 	let root: SourceNode | undefined;
@@ -738,6 +802,38 @@ export function styleProgramFromSourceObject(
 			}
 			if (
 				sourceObject(valueNode) &&
+				options.propertyValueConditions === true &&
+				conditions.length > 0
+			) {
+				for (const conditionProperty of valueNode.properties ?? []) {
+					if (conditionProperty.type !== "Property" || conditionProperty.kind !== "init") {
+						addDynamicResidual(
+							sourceSlice(body, conditionProperty),
+							"conditional style values must be initialized properties",
+						);
+						continue;
+					}
+					const conditionName = sourceKey(conditionProperty, body, options);
+					const conditionValue = conditionProperty.value as SourceNode | undefined;
+					if (conditionName === null || conditionValue === undefined) {
+						addDynamicResidual(
+							sourceSlice(body, conditionProperty),
+							"conditional style values require static condition keys and values",
+						);
+						continue;
+					}
+					addDeclaration(
+						name,
+						conditionValue,
+						conditionName === "default"
+							? conditions
+							: [...conditions, sourceConditionFor(conditionName, options)],
+					);
+				}
+				continue;
+			}
+			if (
+				sourceObject(valueNode) &&
 				(looksLikeCondition(name, options) || options.unwrapNestedObjectKeys?.includes(name))
 			) {
 				if (options.unwrapNestedObjectKeys?.includes(name)) walk(valueNode, conditions);
@@ -746,24 +842,7 @@ export function styleProgramFromSourceObject(
 				else walk(valueNode, conditions);
 				continue;
 			}
-			const value = literalSourceValue(valueNode) ?? dynamicSourceValue(valueNode, body, options);
-			if (value.kind === "dynamic") {
-				const themeMatch = /^(?:theme|tokens)\.([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)$/.exec(
-					value.expression.trim(),
-				);
-				if (themeMatch?.[1] !== undefined && !themePaths.has(themeMatch[1])) {
-					themePaths.add(themeMatch[1]);
-					themes.push({
-						path: themeMatch[1],
-						authored: value.expression.trim(),
-						source: value.source,
-					});
-				}
-			}
-			const normalizedValue = options.valueTransforms?.[name]?.(value) ?? value;
-			const aliases = options.propertyAliases?.[name] ?? name;
-			for (const canonicalProperty of typeof aliases === "string" ? [aliases] : aliases)
-				declarations.push({ conditions, property: canonicalProperty, value: normalizedValue });
+			addDeclaration(name, valueNode, conditions);
 		}
 	};
 
