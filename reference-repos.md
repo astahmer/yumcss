@@ -12,10 +12,11 @@ The benchmark harnesses below are additional corpus sources. Their isolated
 lanes are intentionally not treated as product dependencies: we mine their
 source/config/build semantics and run Pandwind adapters against selected files.
 
-| source corpus   | repository                                  | pinned HEAD                                | covered lanes                                                                                     |
-| --------------- | ------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| css-in-js-bench | https://github.com/jantimon/css-in-js-bench | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls |
-| css-in-js-arena | https://github.com/gajus/css-in-js-arena    | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX                                                                         |
+| source corpus   | repository                                      | pinned HEAD                                | covered lanes                                                                                     |
+| --------------- | ----------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| css-in-js-bench | https://github.com/jantimon/css-in-js-bench     | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls |
+| css-in-js-arena | https://github.com/gajus/css-in-js-arena        | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX                                                                         |
+| tailwindcss.com | https://github.com/tailwindlabs/tailwindcss.com | `bd868a314bd05ca78acd047e3da289274dd6ccd7` | Tailwind docs Next.js app; source corpus for `tw`, `css.class`, and design-lane migration proofs  |
 
 | adapter           | repository                                             | pinned HEAD                                | exercised source                                                                 |
 | ----------------- | ------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------- |
@@ -35,7 +36,7 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | solid-styled      | https://github.com/solidjs/solid-styled-components     | `b798a6d91a02450f3649365a3cdb27a282f4b37d` | `test/test.spec.tsx`                                                             |
 | vue-styled        | https://github.com/vue-styled-components/core          | `5874630ed4d54aa955052fc864140eeae30fad2c` | `packages/playground/src/App.vue`                                                |
 | stylex            | https://github.com/facebook/stylex                     | `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4` | `packages/@stylexjs/babel-plugin/__tests__/legacy/stylex-transform-call-test.js` |
-| stylex-docs       | https://github.com/facebook/stylex                     | `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4` | `packages/docs/src`, `packages/docs/content/docs`, Waku docs application |
+| stylex-docs       | https://github.com/facebook/stylex                     | `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4` | `packages/docs/src`, `packages/docs/content/docs`, Waku docs application         |
 | bamboo            | https://github.com/jantimon/css-in-js-bench            | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/bamboo/case/realistic-button/index.tsx`                                   |
 | next-yak          | https://github.com/jantimon/css-in-js-bench            | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/next-yak/case/realistic-button/index.tsx` and css-prop lane               |
 | chakra-ui         | https://github.com/chakra-ui/chakra-ui                 | `c8ef4fb3146ecb82521a878eb6545b4c9598abd6` | `apps/www/components/chakra-mastery-ad.tsx`                                      |
