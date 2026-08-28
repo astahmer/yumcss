@@ -36,6 +36,10 @@ export default defineConfig({
 					items: ["getting-started", "why-pandwind"],
 				},
 				{
+					label: "Contributing",
+					items: ["contributing/architecture", "contributing/testing"],
+				},
+				{
 					label: "Guides",
 					items: [
 						{ label: "Basic mode", items: ["guides/basic"] },

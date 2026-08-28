@@ -40,18 +40,18 @@ arbitrary framework-specific runtime behavior can be made lossless.
 
 ## Plan audit
 
-| Plans | Current status | Canonical documentation |
-| --- | --- | --- |
-| 001–005 | Complete | [Architecture](/contributing/architecture/), [CSS-in-JS scorecard](/reference/css-in-js-scorecard/) |
-| 006, 009–012 | Complete for the shipped CI, benchmark, analyzer, roadmap, and research scope | [Benchmarks](/reference/benchmarks/), [Analyze and Studio](/tooling/analyze-and-studio/) |
-| 007–008, 013 | Complete for the implemented hardening, codemod, and dogfood lanes | [Codemod](/tooling/codemod/), [Adoption](/reference/adoption/) |
-| 014–017 | Complete for the approved runtime, theme, stack, and test waves | [Theming](/api/theming/), [Backends](/reference/backends/), [Size](/reference/size/) |
-| 018–020 | Audited; Studio/inspector capabilities are shipped, while deeper presentation polish remains non-pivot backlog | [Analyze and Studio](/tooling/analyze-and-studio/) |
-| 021–024 | Complete for CSS/RN/OpenTUI, bidirectional codemods, release gates, and Panda inbound migration | [Backends](/reference/backends/), [Adapter contract](/reference/adapter-contract/), [Adapter migrations](/interop/css-in-js-adapters/) |
-| 025–027 | Complete | [CSS-in-JS scorecard](/reference/css-in-js-scorecard/), [SSR](/reference/ssr/) |
-| 028 | Deliberately deferred | [Authored CSS](/reference/authored-css/) |
-| 029–033 | Complete for bundler adoption, pivot completion, and interface-first architecture | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/) |
-| 035–036 | Complete | This page and the repository's contributor guidance |
+| Plans        | Current status                                                                                                 | Canonical documentation                                                                                                                |
+| ------------ | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 001–005      | Complete                                                                                                       | [Architecture](/contributing/architecture/), [CSS-in-JS scorecard](/reference/css-in-js-scorecard/)                                    |
+| 006, 009–012 | Complete for the shipped CI, benchmark, analyzer, roadmap, and research scope                                  | [Benchmarks](/reference/benchmarks/), [Analyze and Studio](/tooling/analyze-and-studio/)                                               |
+| 007–008, 013 | Complete for the implemented hardening, codemod, and dogfood lanes                                             | [Codemod](/tooling/codemod/), [Adoption](/reference/adoption/)                                                                         |
+| 014–017      | Complete for the approved runtime, theme, stack, and test waves                                                | [Theming](/api/theming/), [Backends](/reference/backends/), [Size](/reference/size/)                                                   |
+| 018–020      | Audited; Studio/inspector capabilities are shipped, while deeper presentation polish remains non-pivot backlog | [Analyze and Studio](/tooling/analyze-and-studio/)                                                                                     |
+| 021–024      | Complete for CSS/RN/OpenTUI, bidirectional codemods, release gates, and Panda inbound migration                | [Backends](/reference/backends/), [Adapter contract](/reference/adapter-contract/), [Adapter migrations](/interop/css-in-js-adapters/) |
+| 025–027      | Complete                                                                                                       | [CSS-in-JS scorecard](/reference/css-in-js-scorecard/), [SSR](/reference/ssr/)                                                         |
+| 028          | Deliberately deferred                                                                                          | [Authored CSS](/reference/authored-css/)                                                                                               |
+| 029–033      | Complete for bundler adoption, pivot completion, and interface-first architecture                              | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/)                                          |
+| 035–036      | Complete                                                                                                       | This page and the repository's contributor guidance                                                                                    |
 
 ## What remains intentionally bounded
 
@@ -77,4 +77,3 @@ registered, its source language and host semantics are explicit, its target
 capabilities are checked, and representative fixtures prove canonical output
 or report a precise residual. Do not add a central library-specific branch to
 make a single migration pass.
-

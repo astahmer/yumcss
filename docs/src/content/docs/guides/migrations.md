@@ -185,12 +185,12 @@ pnpm exec pandwind-codemod swap --from=styled-components --to=css.class \
 ```tsx
 // before
 const Button = styled.button<{ $active: boolean }>`
-  color: ${({ $active }) => ($active ? "red" : "gray")};
+	color: ${({ $active }) => ($active ? "red" : "gray")};
 `;
 
 // after: the subject and prop condition are rewritten together
 const Button = ({ $active, ...props }) => (
-  <button className={css.class({ color: $active ? "red" : "gray" })} {...props} />
+	<button className={css.class({ color: $active ? "red" : "gray" })} {...props} />
 );
 ```
 

@@ -1,18 +1,33 @@
 # Plan 017 — Test coverage matrix & sweep (2026-08-23)
 
+## Operational validation (2026-08-28)
+
+The workspace now has executable regression gates:
+
+- `pnpm test:all` runs all workspace unit, integration, browser, native, TUI,
+  and PTY suites serially;
+- `pnpm test:coverage` runs V8 coverage for Pandwind, codemod, and analyzer;
+- package-local Vitest thresholds protect the measured baselines; and
+- `coverage/` reports are ignored as generated artifacts.
+
+The current baselines are 86.83% statements / 74.59% branches for Pandwind,
+76.82% / 64.51% for codemod, and 74.07% / 61.79% for analyzer. The enforced
+floors are intentionally a little below those measurements to detect
+regressions without making unrelated coverage noise a release blocker.
+
 Claim-level matrix of meaningful behavior -> asserting test -> status before
 this sweep -> action taken. "ok" = already covered; "GAP" = missing before.
 
 ## (a) compile / codegen
 
-| claim                                                  | file                                           | before | action                                                       |
-| ------------------------------------------------------ | ---------------------------------------------- | ------ | ------------------------------------------------------------ |
-| typegen unions incl opacity modifiers/arbitrary escape | tw-typegen.test.ts                             | ok     | —                                                            |
-| typegen determinism vs committed artifacts             | typegen-determinism.test.ts                    | ok     | —                                                            |
-| theme condition combos + skip-loudly                   | tw-theme-codegen.test.ts, theme-scopes.test.ts | ok     | —                                                            |
-| prune-theme keeps referenced/drops rest + real compile | prune-theme.test.ts                            | ok     | —                                                            |
+| claim                                                  | file                                           | before | action                                                                    |
+| ------------------------------------------------------ | ---------------------------------------------- | ------ | ------------------------------------------------------------------------- |
+| typegen unions incl opacity modifiers/arbitrary escape | tw-typegen.test.ts                             | ok     | —                                                                         |
+| typegen determinism vs committed artifacts             | typegen-determinism.test.ts                    | ok     | —                                                                         |
+| theme condition combos + skip-loudly                   | tw-theme-codegen.test.ts, theme-scopes.test.ts | ok     | —                                                                         |
+| prune-theme keeps referenced/drops rest + real compile | prune-theme.test.ts                            | ok     | —                                                                         |
 | bridge generation edge declarations                    | tw-adapter.test.ts, parity suites              | ok     | covered by generated-artifact consumers; direct duplicate fixture omitted |
-| theme scope blocks flip utilities; byte-stable default | theme-scopes.test.ts                           | ok     | —                                                            |
+| theme scope blocks flip utilities; byte-stable default | theme-scopes.test.ts                           | ok     | —                                                                         |
 
 ## (b) runtime
 
@@ -46,10 +61,10 @@ per-entry additions unnecessary (barrel equality asserted).
 
 ## (f) types / tstyche
 
-| claim                                    | file                                                     | before | action                                                                                                            |
-| ---------------------------------------- | -------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
-| tw/design typings                        | typings.tst.ts, design-typings.tst.ts, cx-typings.tst.ts | ok     | —                                                                                                                 |
-| stack / var-inline public typings pinned | public-typings.tst.ts                                  | ok     | dedicated tstyche assertions |
+| claim                                    | file                                                     | before | action                       |
+| ---------------------------------------- | -------------------------------------------------------- | ------ | ---------------------------- |
+| tw/design typings                        | typings.tst.ts, design-typings.tst.ts, cx-typings.tst.ts | ok     | —                            |
+| stack / var-inline public typings pinned | public-typings.tst.ts                                    | ok     | dedicated tstyche assertions |
 
 ## (g) codemod
 
@@ -72,14 +87,14 @@ per-entry additions unnecessary (barrel equality asserted).
 
 ## (i) vite integration / HMR
 
-| claim                                                 | file                       | before | action         |
-| ----------------------------------------------------- | -------------------------- | ------ | -------------- |
-| dev transform, virtual sheet, build asset, tree-shake | vite-integration.test.ts   | ok     | —              |
-| HMR: changed-file invalidation                        | vite-integration.test.ts   | ok     | —              |
+| claim                                                 | file                       | before | action                                    |
+| ----------------------------------------------------- | -------------------------- | ------ | ----------------------------------------- |
+| dev transform, virtual sheet, build asset, tree-shake | vite-integration.test.ts   | ok     | —                                         |
+| HMR: changed-file invalidation                        | vite-integration.test.ts   | ok     | —                                         |
 | HMR: file added / deleted / renamed                   | vite-integration.test.ts   | ok     | covered by current Vite integration suite |
 | invalidate() with unchanged mtime but new content     | vite-integration.test.ts   | ok     | covered by current Vite integration suite |
-| splitByRoute chunk intersection                       | css-split-by-route.test.ts | ok     | —              |
-| unplugin rollup adapters                              | unplugin-rollup.test.ts    | ok     | —              |
+| splitByRoute chunk intersection                       | css-split-by-route.test.ts | ok     | —                                         |
+| unplugin rollup adapters                              | unplugin-rollup.test.ts    | ok     | —                                         |
 
 ## Residual gaps (deliberate)
 

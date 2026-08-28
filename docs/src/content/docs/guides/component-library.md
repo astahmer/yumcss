@@ -42,18 +42,18 @@ import { cx } from "pandwind/cx";
 import { dcss } from "./styles";
 
 type ButtonProps = ComponentPropsWithoutRef<"button"> & {
-  tone?: "brand" | "quiet";
+	tone?: "brand" | "quiet";
 };
 
 export function Button({ tone = "brand", className, ...props }: ButtonProps) {
-  const styles = dcss.class({
-    $frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
-    $text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
-    _hover: { $frame: { fill: "$ink" } },
-    _focusVisible: { outline: "2px solid $brand", outlineOffset: "2px" },
-  });
+	const styles = dcss.class({
+		$frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
+		$text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
+		_hover: { $frame: { fill: "$ink" } },
+		_focusVisible: { outline: "2px solid $brand", outlineOffset: "2px" },
+	});
 
-  return <button className={cx(styles, className)} {...props} />;
+	return <button className={cx(styles, className)} {...props} />;
 }
 ```
 
@@ -71,7 +71,7 @@ import { pandwindCssVite } from "pandwind/vite";
 import { preset } from "@acme/ui/preset";
 
 export default {
-  plugins: [pandwindCssVite(preset)],
+	plugins: [pandwindCssVite(preset)],
 };
 ```
 
@@ -89,15 +89,15 @@ Expose the component entry points and the preset intentionally:
 
 ```json
 {
-  "exports": {
-    ".": "./dist/index.js",
-    "./preset": "./dist/preset.js",
-    "./styles": "./dist/styles.js"
-  },
-  "peerDependencies": {
-    "pandwind": "workspace:^",
-    "react": ">=18"
-  }
+	"exports": {
+		".": "./dist/index.js",
+		"./preset": "./dist/preset.js",
+		"./styles": "./dist/styles.js"
+	},
+	"peerDependencies": {
+		"pandwind": "workspace:^",
+		"react": ">=18"
+	}
 }
 ```
 

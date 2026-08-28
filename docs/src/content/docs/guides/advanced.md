@@ -25,9 +25,9 @@ CSS, React Native objects, or OpenTUI output where the backend supports it.
 import { pandwindVite } from "pandwind/vite";
 
 pandwindVite({
-  twSources: ["/src/tw.ts", /generated\/tw/],
-  cxSources: ["/src/cx.ts"],
-  onUnresolved: "warn",
+	twSources: ["/src/tw.ts", /generated\/tw/],
+	cxSources: ["/src/cx.ts"],
+	onUnresolved: "warn",
 });
 ```
 
@@ -42,13 +42,11 @@ import { pandwindCssVite } from "pandwind/vite";
 import { preset } from "./src/preset";
 
 pandwindCssVite(preset, {
-  cssSources: [/\/src\/styles\//],
-  include: [/\.(tsx|ts|vue|svelte|astro)$/],
-  exclude: [/\.stories\./],
-  debug: true,
-  splitByRoute: [
-    { name: "dashboard", match: /routes\/dashboard/ },
-  ],
+	cssSources: [/\/src\/styles\//],
+	include: [/\.(tsx|ts|vue|svelte|astro)$/],
+	exclude: [/\.stories\./],
+	debug: true,
+	splitByRoute: [{ name: "dashboard", match: /routes\/dashboard/ }],
 });
 ```
 
@@ -68,10 +66,7 @@ import { preset } from "./src/preset";
 
 const engine = createPandwindEngineContext({ preset });
 
-plugins: [
-  pandwindVite({ css: { preset, engine } }),
-  pandwindCssVite(preset, { engine }),
-];
+plugins: [pandwindVite({ css: { preset, engine } }), pandwindCssVite(preset, { engine })];
 ```
 
 This keeps folded classes and extracted rules on the same identity and
@@ -141,30 +136,30 @@ runtime expression/custom property or keep an explicit residual.
 
 `pandwindVite` options:
 
-| Option | Purpose |
-| --- | --- |
-| `twSources` | Generated `tw` module import sources |
-| `cxSources` | Generated `cx` module import sources |
-| `exclude` | Module-id regexes to skip |
-| `css.preset` | Preset for folded `css()` calls |
-| `css.className` | Class-name strategy for folded CSS calls |
-| `css.engine` | Shared engine context |
-| `css.cssSources` | CSS/design module import sources |
-| `onUnresolved` | `off`, `warn`, or `error` for unresolved folded tokens |
+| Option           | Purpose                                                |
+| ---------------- | ------------------------------------------------------ |
+| `twSources`      | Generated `tw` module import sources                   |
+| `cxSources`      | Generated `cx` module import sources                   |
+| `exclude`        | Module-id regexes to skip                              |
+| `css.preset`     | Preset for folded `css()` calls                        |
+| `css.className`  | Class-name strategy for folded CSS calls               |
+| `css.engine`     | Shared engine context                                  |
+| `css.cssSources` | CSS/design module import sources                       |
+| `onUnresolved`   | `off`, `warn`, or `error` for unresolved folded tokens |
 
 `pandwindCssVite` options:
 
-| Option | Purpose |
-| --- | --- |
-| `cssSources` | CSS/design imports to scan |
-| `include` / `exclude` | Files included or skipped |
-| `root` | Scan root; defaults to the current directory |
-| `virtualId` | Virtual CSS module id |
-| `className` | Tailwind or named class strategy |
-| `engine` | Shared engine context |
-| `splitByRoute` | Route-specific CSS buckets |
-| `inlineCritical` | Inline route CSS into built HTML |
-| `debug` | Add development provenance information |
+| Option                | Purpose                                      |
+| --------------------- | -------------------------------------------- |
+| `cssSources`          | CSS/design imports to scan                   |
+| `include` / `exclude` | Files included or skipped                    |
+| `root`                | Scan root; defaults to the current directory |
+| `virtualId`           | Virtual CSS module id                        |
+| `className`           | Tailwind or named class strategy             |
+| `engine`              | Shared engine context                        |
+| `splitByRoute`        | Route-specific CSS buckets                   |
+| `inlineCritical`      | Inline route CSS into built HTML             |
+| `debug`               | Add development provenance information       |
 
 The same extraction core is available through the generic unplugin entry
 point. Keep the Vite wrapper thin and use the core when integrating another

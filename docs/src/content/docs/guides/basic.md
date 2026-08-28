@@ -42,10 +42,10 @@ Add scripts to `package.json`:
 
 ```json
 {
-  "scripts": {
-    "tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src",
-    "tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
-  }
+	"scripts": {
+		"tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src",
+		"tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+	}
 }
 ```
 
@@ -71,7 +71,7 @@ import { defineConfig } from "vite";
 import { pandwindVite } from "pandwind/vite";
 
 export default defineConfig({
-  plugins: [pandwindVite(), tailwindcss(), react()],
+	plugins: [pandwindVite(), tailwindcss(), react()],
 });
 ```
 
@@ -86,20 +86,22 @@ them by hand.
 import { tw } from "./tw";
 
 export function App() {
-  return (
-    <main className={tw({
-      flex: true,
-      minH: "screen",
-      items: "center",
-      justify: "center",
-      bg: "gray-50",
-      p: "8",
-    })}>
-      <button className={tw({ bg: "blue-600", text: "white", rounded: "lg", px: "4", py: "2" })}>
-        Continue
-      </button>
-    </main>
-  );
+	return (
+		<main
+			className={tw({
+				flex: true,
+				minH: "screen",
+				items: "center",
+				justify: "center",
+				bg: "gray-50",
+				p: "8",
+			})}
+		>
+			<button className={tw({ bg: "blue-600", text: "white", rounded: "lg", px: "4", py: "2" })}>
+				Continue
+			</button>
+		</main>
+	);
 }
 ```
 
@@ -135,7 +137,7 @@ import { defineConfig } from "vite";
 import { cssPreset } from "./src/preset";
 
 export default defineConfig({
-  plugins: [pandwindCssVite(cssPreset)],
+	plugins: [pandwindCssVite(cssPreset)],
 });
 ```
 
@@ -148,7 +150,7 @@ import "pandwind:css";
 import { css } from "./css";
 
 export function Card() {
-  return <article className={css.class({ bg: "white", p: "4", rounded: "lg" })} />;
+	return <article className={css.class({ bg: "white", p: "4", rounded: "lg" })} />;
 }
 ```
 
@@ -169,10 +171,12 @@ export const dcss = createDesignCss(examplePreset);
 ```
 
 ```tsx
-<div className={dcss.class({
-  $frame: { fill: "$blue-500", pad: "16", corners: "lg" },
-  $text: { color: "$white", weight: "bold" },
-})} />
+<div
+	className={dcss.class({
+		$frame: { fill: "$blue-500", pad: "16", corners: "lg" },
+		$text: { color: "$white", weight: "bold" },
+	})}
+/>
 ```
 
 This uses the same engine as `css()`. It is a vocabulary choice, not a
@@ -180,12 +184,12 @@ separate styling runtime. See [design `css()`](/api/design-css/).
 
 ## Which lane should I choose?
 
-| Need | Start with |
-| --- | --- |
-| Tailwind utilities and the smallest runtime | `tw()` |
-| CSS objects, atomic extraction, and custom properties | `css()` |
-| A constrained design-system vocabulary | `createDesignCss(preset)` |
-| Mixing class strings from any lane | `cx()` |
-| Migrating an existing styling library | [codemod migrations](/guides/migrations/) |
+| Need                                                  | Start with                                |
+| ----------------------------------------------------- | ----------------------------------------- |
+| Tailwind utilities and the smallest runtime           | `tw()`                                    |
+| CSS objects, atomic extraction, and custom properties | `css()`                                   |
+| A constrained design-system vocabulary                | `createDesignCss(preset)`                 |
+| Mixing class strings from any lane                    | `cx()`                                    |
+| Migrating an existing styling library                 | [codemod migrations](/guides/migrations/) |
 
 Next: [Advanced mode](/guides/advanced/), [build a design system](/guides/design-system/), or [build a component library](/guides/component-library/).

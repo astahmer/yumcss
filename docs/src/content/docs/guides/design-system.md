@@ -34,30 +34,30 @@ Vite, codegen, and codemods should all consume that same module.
 import { defineTokens } from "pandwind/preset";
 
 export const tokens = defineTokens({
-  colors: {
-    $canvas: "#ffffff",
-    $ink: "#111827",
-    $muted: "#6b7280",
-    $brand: "#2563eb",
-    $onBrand: "#ffffff",
-  },
-  spacing: {
-    1: "4px",
-    2: "8px",
-    3: "12px",
-    4: "16px",
-    6: "24px",
-    8: "32px",
-  },
-  radii: {
-    sm: "4px",
-    md: "8px",
-    lg: "12px",
-    full: "9999px",
-  },
-  fonts: {
-    sans: "ui-sans-serif, system-ui, sans-serif",
-  },
+	colors: {
+		$canvas: "#ffffff",
+		$ink: "#111827",
+		$muted: "#6b7280",
+		$brand: "#2563eb",
+		$onBrand: "#ffffff",
+	},
+	spacing: {
+		1: "4px",
+		2: "8px",
+		3: "12px",
+		4: "16px",
+		6: "24px",
+		8: "32px",
+	},
+	radii: {
+		sm: "4px",
+		md: "8px",
+		lg: "12px",
+		full: "9999px",
+	},
+	fonts: {
+		sans: "ui-sans-serif, system-ui, sans-serif",
+	},
 });
 ```
 
@@ -74,19 +74,19 @@ import { definePreset, defineTheme } from "pandwind/preset";
 import { tokens } from "./tokens";
 
 const theme = defineTheme({
-  config: {} as StandardProperties,
-  tokens,
+	config: {} as StandardProperties,
+	tokens,
 });
 
 export const preset = definePreset(theme, {
-  strict: true,
-  conditions: {
-    _hover: "&:hover",
-    _focusVisible: "&:focus-visible",
-    _dark: ".dark &",
-    sm: "@media (min-width: 640px)",
-  },
-  properties: { $all: true },
+	strict: true,
+	conditions: {
+		_hover: "&:hover",
+		_focusVisible: "&:focus-visible",
+		_dark: ".dark &",
+		sm: "@media (min-width: 640px)",
+	},
+	properties: { $all: true },
 });
 ```
 
@@ -99,11 +99,11 @@ an explicit `$raw`/escape lane so they are visible to review and analysis.
 
 ```json
 {
-  "scripts": {
-    "tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts",
-    "tw:bridge": "tsx node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-    "tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
-  }
+	"scripts": {
+		"tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts",
+		"tw:bridge": "tsx node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+	}
 }
 ```
 
@@ -124,12 +124,12 @@ duplicating component styles:
 
 ```ts
 export const preset = definePreset(theme, {
-  strict: true,
-  conditions: {
-    _dark: ".dark &",
-    _highContrast: "@media (prefers-contrast: more)",
-  },
-  properties: { $all: true },
+	strict: true,
+	conditions: {
+		_dark: ".dark &",
+		_highContrast: "@media (prefers-contrast: more)",
+	},
+	properties: { $all: true },
 });
 ```
 
@@ -154,11 +154,11 @@ import { preset } from "./preset";
 export const dcss = createDesignCss(preset);
 
 export const buttonClass = (tone: "brand" | "quiet") =>
-  dcss.class({
-    $frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
-    $text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
-    _hover: { $frame: { fill: "$ink" } },
-  });
+	dcss.class({
+		$frame: { pad: "8", corners: "md", fill: tone === "brand" ? "$brand" : "$canvas" },
+		$text: { color: tone === "brand" ? "$onBrand" : "$ink", weight: "600" },
+		_hover: { $frame: { fill: "$ink" } },
+	});
 ```
 
 Document each variant and its accessibility behavior. Prefer explicit

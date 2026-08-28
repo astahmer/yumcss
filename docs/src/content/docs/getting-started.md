@@ -62,10 +62,7 @@ import { pandwindVite } from "pandwind/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [
-		pandwindVite(),
-		tailwindcss(),
-	],
+	plugins: [pandwindVite(), tailwindcss()],
 });
 ```
 
