@@ -54,6 +54,13 @@ import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "
 import type { OnUnresolved } from "./inline.ts";
 import type { CxCompilationPorts } from "./cx-compilation-ports.ts";
 
+export type {
+	ClassMergePort,
+	ConstantDiscovery,
+	CxCompilationPorts,
+	StaticExpressionEvaluator,
+} from "./cx-compilation-ports.ts";
+
 interface CallNode extends OxcNode {
 	start: number;
 	end: number;

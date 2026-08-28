@@ -20,10 +20,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { buildAgentsDocument } from "./agents-json.ts";
-import {
-	FileSystemDesignSystemArtifactWriter,
-	type DesignSystemArtifacts,
-} from "./codegen-artifacts.ts";
+import { FileSystemDesignSystemArtifactWriter } from "./codegen-artifacts.ts";
 import { extractTwConfig } from "../vite/inline.ts";
 import { camelCaseProperty } from "./camelcase-property.ts";
 import { UTILITY_SUBKEYS } from "./compile.ts";
@@ -42,6 +39,15 @@ export type {
 	DesignSystemArtifactWriter,
 	DesignSystemArtifacts,
 } from "./codegen-artifacts.ts";
+export type {
+	ConflictAnalyzer,
+	DesignSystemCodegenPorts,
+	DesignSystemCodegenResult,
+	DesignSystemThemeLoader,
+	RuntimeArtifactEmitter,
+	TypeArtifactEmitter,
+	UtilityCatalogBuilder,
+} from "./codegen-pipeline.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;

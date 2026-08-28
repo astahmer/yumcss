@@ -9,7 +9,7 @@ export interface ParsedConditions {
 	atRules: Array<string>;
 }
 
-export const createConditionsBucket = (partial?: Partial<ParsedConditions>): ParsedConditions => ({
+const createConditionsBucket = (partial?: Partial<ParsedConditions>): ParsedConditions => ({
 	className: "",
 	selfSelectors: [],
 	parentSelectors: [],
@@ -34,10 +34,7 @@ const isSelectorList = (selector: string): boolean => {
 };
 
 /** Parse one condition into its selector/at-rule buckets. */
-export const parseCondition = (
-	selector: string,
-	conditions: ParsedConditions,
-): true | undefined => {
+const parseCondition = (selector: string, conditions: ParsedConditions): true | undefined => {
 	if (!selector) return;
 	if (isSelectorList(selector)) {
 		conditions.selectorLists.push(selector);
@@ -92,7 +89,7 @@ class DefaultCssRuleSerializer implements CssRuleSerializer {
 	}
 }
 
-export const createCssRuleSerializer = (): CssRuleSerializer => new DefaultCssRuleSerializer();
+const createCssRuleSerializer = (): CssRuleSerializer => new DefaultCssRuleSerializer();
 export const cssRuleSerializer = createCssRuleSerializer();
 
 export const defaultConditionPolicy: ConditionPolicy = {

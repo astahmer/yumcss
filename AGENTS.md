@@ -95,3 +95,14 @@ which concrete module to import or grow a switch statement in a central runner.
 - Knip is a required maintenance check. Findings are fixed at the ownership
   boundary where possible. A suppression requires a documented dynamic entry
   point or generated/public contract, never convenience.
+
+## Architecture definition of done
+
+A façade alone is not considered a decomposition. The implementation is done
+only when each independently replaceable policy has a named port, an
+injectable default implementation, a composition root, and a substitution
+test. Large legacy modules may remain as infrastructure only when callers no
+longer depend on their concrete policy and the module is not exporting a bag
+of ecosystem-specific operations. Record each completed domain in
+`docs/src/content/docs/contributing/architecture.md` and keep the relevant
+JJ revision focused and described.

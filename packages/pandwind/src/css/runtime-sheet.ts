@@ -27,8 +27,6 @@ export type {
 	RuntimeSemanticRuleKind,
 	RuntimeSheetSnapshot,
 } from "./runtime-artifacts.ts";
-export type { RuntimeOrderingPolicy, RuntimeRuleCanonicalizer } from "./runtime-policies.ts";
-
 const DEFAULT_ID = "pandwind";
 
 export interface RuntimeSheetOptions {

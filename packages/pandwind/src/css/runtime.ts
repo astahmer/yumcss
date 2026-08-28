@@ -13,6 +13,7 @@ import {
 } from "./runtime-sheet.ts";
 export type { RuntimeStyleSink } from "./runtime-sink.ts";
 export type { RuntimeDocument } from "./runtime-sink.ts";
+export type { RuntimeOrderingPolicy, RuntimeRuleCanonicalizer } from "./runtime-policies.ts";
 import { VARS_ATOMS } from "./vars.ts";
 import { normalizeStrategy, type ClassNameStrategy } from "./class-name-strategy.ts";
 import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";
