@@ -15,6 +15,10 @@ pnpm add pandwind
 There are four steps: define a preset, run codegen, add vite plugins, and use
 the APIs.
 
+If you want the shortest copy-paste path, start with [Basic mode](/guides/basic/).
+This page explains the moving parts; [Advanced mode](/guides/advanced/) covers
+the complete compiler, runtime, adapter, and backend surface.
+
 ## 1. Preset
 
 Define your design system once in `src/preset.ts` — tokens, radii,
@@ -53,24 +57,39 @@ Fold literal calls at build time:
 
 ```ts
 // vite.config.ts
+import tailwindcss from "@tailwindcss/vite";
 import { pandwindVite } from "pandwind/vite";
-import { createTwAdapter } from "pandwind/tw";
-import examplePreset from "./src/preset"; // or however you expose the preset
+import { defineConfig } from "vite";
 
-export default {
+export default defineConfig({
 	plugins: [
-		pandwindVite({
-			preset: examplePreset,
-			// optional: css() atoms compile to Tailwind classes too
-			className: createTwAdapter({/* bridge + variants from generated files */}),
-		}),
+		pandwindVite(),
+		tailwindcss(),
 	],
-};
+});
 ```
 
-Without `className` the atomic engine emits hashed classes compiled by
-`pandwindCssVite`; with the adapter everything compiles through Tailwind —
-same API either way.
+This is enough for the `tw()` lane. For the `css()` or design lane, pass the
+same preset and engine to both plugins:
+
+```ts
+import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
+import { examplePreset } from "pandwind/preset";
+
+const engine = createPandwindEngineContext({ preset: examplePreset });
+
+export default defineConfig({
+	plugins: [
+		pandwindVite({ css: { preset: examplePreset, engine } }),
+		pandwindCssVite(examplePreset, { engine }),
+		tailwindcss(),
+	],
+});
+```
+
+The CSS plugin serves the extracted stylesheet through `pandwind:css`; import
+that virtual module once from your application entry point. See [the Vite
+plugin guide](/tooling/vite-plugins/) for route splitting and critical CSS.
 
 ## 4. Use it
 

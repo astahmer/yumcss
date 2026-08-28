@@ -36,6 +36,16 @@ export default defineConfig({
 					items: ["getting-started", "why-pandwind"],
 				},
 				{
+					label: "Guides",
+					items: [
+						{ label: "Basic mode", items: ["guides/basic"] },
+						{ label: "Advanced mode", items: ["guides/advanced"] },
+						{ label: "Build a design system", items: ["guides/design-system"] },
+						{ label: "Build a component library", items: ["guides/component-library"] },
+						{ label: "Migrate from another library", items: ["guides/migrations"] },
+					],
+				},
+				{
 					// "Pick one lane": each entry point is a self-contained path.
 					label: "Pick your lane",
 					items: [
