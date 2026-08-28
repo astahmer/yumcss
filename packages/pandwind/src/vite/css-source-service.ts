@@ -1,19 +1,21 @@
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import { createCssExtractionService } from "./css-extract.ts";
 import type {
-	CssPreset,
-	CssFileExtraction,
-	CssSourceInspection,
+	AuthoredCssImport,
+	CssArtifactExtractor,
+	CssCallRewriter,
 	CssCallSite,
 	CssDiagnostic,
+	CssDiagnosticReporter,
+	CssExtractionService,
+	CssFileExtraction,
+	CssPreset,
+	CssSourceInspection,
+	CssSourceScanner,
 	ExtractedCssStyle,
-	AuthoredCssImport,
 	InlineCssResult,
-} from "./css-extract.ts";
-import {
-	createCssExtractionPipeline,
-	type CssExtractionPipeline,
-} from "./css-extraction-pipeline.ts";
-import type { CssExtractionPorts } from "./css-extraction-ports.ts";
+} from "./css-extraction-contracts.ts";
+import { CssDiagnosticScanner, CssSourceScannerService } from "./css-source-scanner.ts";
 
 export interface CssSourceService {
 	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string>;
@@ -42,28 +44,59 @@ export interface CssSourceService {
 	): InlineCssResult;
 }
 
+export interface CssSourceServiceDependencies {
+	readonly scanner?: CssSourceScanner;
+	readonly artifacts?: CssArtifactExtractor;
+	readonly diagnostics?: CssDiagnosticReporter;
+	readonly rewriter?: CssCallRewriter;
+}
+
 /** Shared source-facing CSS service used by Vite, unplugin, and analyzers. */
 class DefaultCssSourceService implements CssSourceService {
-	constructor(private readonly pipeline: CssExtractionPipeline = createCssExtractionPipeline()) {}
+	constructor(private readonly dependencies: CssSourceServiceDependencies = {}) {}
+
+	private scanner(matchers: readonly (string | RegExp)[]): CssSourceScanner {
+		return this.dependencies.scanner ?? new CssSourceScannerService(matchers);
+	}
+
+	private extraction(
+		matchers: readonly (string | RegExp)[],
+		preset: CssPreset,
+		className?: AnyClassNameStrategy,
+	): CssExtractionService {
+		return createCssExtractionService({
+			matchers,
+			preset,
+			className,
+			scanner: this.dependencies.scanner,
+			artifacts: this.dependencies.artifacts,
+			diagnostics: this.dependencies.diagnostics,
+			rewriter: this.dependencies.rewriter,
+		});
+	}
 
 	findCssImports(code: string, id: string, matchers: Array<string | RegExp>): ReadonlySet<string> {
-		return this.pipeline.findImports(code, id, matchers);
+		return this.scanner(matchers).findImports(code, id);
 	}
 
 	inspect(code: string, id: string, matchers: Array<string | RegExp>): CssSourceInspection {
-		return this.pipeline.inspect(code, id, matchers);
+		return this.scanner(matchers).inspect(code, id);
 	}
 
 	findCallSites(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssCallSite[] {
-		return this.pipeline.findCallSites(code, id, cssNames);
+		return this.scanner([]).findCallSites(code, id, cssNames);
 	}
 
 	diagnose(code: string, id: string, cssNames: ReadonlySet<string>): readonly CssDiagnostic[] {
-		return this.pipeline.diagnose(code, id, cssNames);
+		return (this.dependencies.diagnostics ?? new CssDiagnosticScanner()).diagnose(
+			code,
+			id,
+			cssNames,
+		);
 	}
 
 	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[] {
-		return this.pipeline.findAuthoredImports(code, id);
+		return this.scanner([]).findAuthoredImports(code, id);
 	}
 
 	extract(
@@ -72,7 +105,7 @@ class DefaultCssSourceService implements CssSourceService {
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
 	): readonly ExtractedCssStyle[] {
-		return this.pipeline.extract(code, id, cssNames, preset);
+		return this.extraction([], preset).extract(code, id, cssNames);
 	}
 
 	extractFile(
@@ -81,7 +114,7 @@ class DefaultCssSourceService implements CssSourceService {
 		matchers: Array<string | RegExp>,
 		preset: CssPreset,
 	): CssFileExtraction {
-		return this.pipeline.extractFile(code, id, matchers, preset);
+		return this.extraction(matchers, preset).extractFile(code, id);
 	}
 
 	inline(
@@ -91,9 +124,10 @@ class DefaultCssSourceService implements CssSourceService {
 		preset: CssPreset,
 		className: AnyClassNameStrategy,
 	): InlineCssResult {
-		return this.pipeline.inline(code, id, cssNames, preset, className);
+		return this.extraction([], preset, className).inline(code, id, cssNames);
 	}
 }
 
-export const createCssSourceService = (ports?: Partial<CssExtractionPorts>): CssSourceService =>
-	new DefaultCssSourceService(createCssExtractionPipeline(ports));
+export const createCssSourceService = (
+	dependencies: CssSourceServiceDependencies = {},
+): CssSourceService => new DefaultCssSourceService(dependencies);

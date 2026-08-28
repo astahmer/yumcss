@@ -64,8 +64,10 @@ An architecture refactor is complete only when the domain has:
 
 ## Current implementation map
 
-The CSS extraction façade is `createCssExtractionService`; its scanner and
-artifact policies are shared by the Vite path and the CSS extraction helpers.
+The CSS extraction façade is `createCssExtractionService`; the shared
+`CssSourceService` delegates to that same façade rather than maintaining a
+second extraction pipeline. Its scanner and artifact policies are shared by
+the Vite path, unplugin path, and CSS extraction helpers.
 The Tailwind generator is a composition root: loading token/theme input,
 cataloging utilities, probing conflicts/variants, emitting source, and writing
 artifacts are separate policy modules. Runtime sheets and stylesheet lowering

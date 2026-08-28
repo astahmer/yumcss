@@ -23,6 +23,7 @@ import type {
 	CssDiagnosticReporter,
 	CssSourceScanner,
 } from "../src/vite/css-extraction-contracts.ts";
+import { createCssSourceService } from "../src/vite/css-source-service.ts";
 
 test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
 	const code = `
@@ -190,6 +191,38 @@ test("css extraction façade accepts substituted policy ports", () => {
 		code: "code!",
 		inlined: 1,
 	});
+});
+
+test("the shared source service composes the extraction façade", () => {
+	const calls: string[] = [];
+	const service = createCssSourceService({
+		scanner: {
+			parse: () => ({ type: "Program" }),
+			findImports: () => {
+				calls.push("scan");
+				return new Set(["css"]);
+			},
+			inspect: () => ({
+				authoredCss: [],
+				cssNames: new Set(["css"]),
+				cssSources: [],
+				cssDiagnostics: [],
+			}),
+			findAuthoredImports: () => [],
+			findCallSites: () => [],
+			findVarKeys: () => [],
+		},
+		artifacts: {
+			extract: () => [],
+			extractFile: () => {
+				calls.push("extract");
+				return { sources: [], varKeys: [] };
+			},
+		},
+	});
+
+	service.extractFile("source", "app.ts", ["css"], examplePreset);
+	expect(calls).toEqual(["extract"]);
 });
 
 test("extractCssStyles resolves design modules in literal calls", () => {
