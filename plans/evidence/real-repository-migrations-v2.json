@@ -986,8 +986,8 @@
         ]
       },
       "sourceBytes": 831,
-      "outputBytes": 1244,
-      "outputByteDelta": 413,
+      "outputBytes": 1269,
+      "outputByteDelta": 438,
       "converted": 5,
       "skipped": 0,
       "residuals": 0,
@@ -1009,7 +1009,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 413
+        "byteDelta": 438
       }
     },
     {
@@ -1027,8 +1027,8 @@
         ]
       },
       "sourceBytes": 561,
-      "outputBytes": 550,
-      "outputByteDelta": -11,
+      "outputBytes": 575,
+      "outputByteDelta": 14,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1051,7 +1051,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": -11
+        "byteDelta": 14
       }
     },
     {
@@ -1069,8 +1069,8 @@
         ]
       },
       "sourceBytes": 3131,
-      "outputBytes": 3635,
-      "outputByteDelta": 504,
+      "outputBytes": 3656,
+      "outputByteDelta": 525,
       "converted": 9,
       "skipped": 0,
       "residuals": 0,
@@ -1092,7 +1092,7 @@
           "pandwind"
         ],
         "removed": [],
-        "byteDelta": 504
+        "byteDelta": 525
       }
     }
   ],

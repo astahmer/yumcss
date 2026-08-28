@@ -762,8 +762,8 @@ export function styleProgramFromSourceObject(
 			}
 			const normalizedValue = options.valueTransforms?.[name]?.(value) ?? value;
 			const aliases = options.propertyAliases?.[name] ?? name;
-			for (const property of typeof aliases === "string" ? [aliases] : aliases)
-				declarations.push({ conditions, property, value: normalizedValue });
+			for (const canonicalProperty of typeof aliases === "string" ? [aliases] : aliases)
+				declarations.push({ conditions, property: canonicalProperty, value: normalizedValue });
 		}
 	};
 
