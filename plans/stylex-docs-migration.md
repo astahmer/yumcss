@@ -46,9 +46,10 @@ are recorded in `examples/stylex-docs-migration/reports/build-matrix.json`.
 The browser proof is complete. The committed matrix in
 `examples/stylex-docs-migration/reports/browser-matrix.json` compares the
 clean reference server with the final migrated runtime lane across `/`,
-`/docs/learn/`, `/docs/api/`, and `/playground`. All route geometries match,
-the playground preview renders, and the migrated app has no page errors or
-failed responses. The linked migrated CSS is 25,703 bytes versus 32,195 bytes
-for the reference build. Full-page pixel diffs are intentionally not used as
-the sole oracle because the playground editor source is supposed to change;
-the rendered preview and host layout are the visual invariants.
+`/docs/learn/`, `/docs/api/`, and `/playground` for each of the three lanes.
+All route geometries match, the playground preview renders, and every
+migrated app has no page errors or failed responses. The linked migrated CSS
+is 25,703 bytes versus 32,195 bytes for the reference build. Full-page pixel
+diffs are intentionally not used as the sole oracle because the playground
+editor source is supposed to change; the rendered preview and host layout are
+the visual invariants.

@@ -37,7 +37,8 @@ node scripts/verify-stylex-docs-browser.mjs \
 The verifier compares the home page, representative docs pages, and the
 interactive playground. It checks route geometry, linked and inline CSS,
 browser errors, failed responses, and that the playground preview renders.
-The committed report is the latest run against the pinned reference commit.
+The committed report is the latest run against the pinned reference commit;
+the same matrix was replayed for `runtime-css`, `atomic-css`, and `design-dss`.
 
 The corpus gate covers every StyleX-bearing source file under `src/` and
 requires zero safe-mode skips, residuals, or invalid semantic validations.

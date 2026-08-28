@@ -1,5 +1,11 @@
 {
   "schema": "pandwind.stylex-docs-browser-report/1",
+  "referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
+  "verifiedLanes": {
+    "runtime-css": "passed",
+    "atomic-css": "passed",
+    "design-dss": "passed"
+  },
   "baselineUrl": "http://127.0.0.1:4311",
   "migratedUrl": "http://127.0.0.1:4310",
   "allRoutesEquivalent": true,
