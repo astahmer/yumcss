@@ -30,6 +30,14 @@ export interface MapOutcome {
 const lastSegment = (prop: string): string => prop.split("-").pop() ?? prop;
 
 /**
+ * Tailwind's direction utilities only set `flex-direction`. The typed
+ * Pandwind `flex` key also emits `display: flex` for these values, so using
+ * it as a direct migration target can change `hidden flex-row` into visible
+ * content. Keep the original utility as a lossless residual instead.
+ */
+const FLEX_DIRECTION_VALUES = new Set(["col", "row", "col-reverse", "row-reverse"]);
+
+/**
  * Pick the tw key for an overloaded prefix using the CSS properties from the
  * conflict map: score = how many props' last segment appear in the key name
  * (case-insensitive). Ties resolve by interface order (first wins).
@@ -57,6 +65,7 @@ export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
 	const parsed: ParsedToken | null = parseToken(raw, meta);
 	if (parsed === null) return null;
 	const { prefix, value } = parsed;
+	if (prefix === "flex" && FLEX_DIRECTION_VALUES.has(value)) return null;
 
 	// `not-*` is a Tailwind variant family, not a Pandwind utility. Treating
 	// the generated `not` helper key as a normal utility drops the negation

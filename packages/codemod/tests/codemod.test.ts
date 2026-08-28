@@ -59,6 +59,12 @@ describe("mode: tw", () => {
 		expect(result.code).not.toContain('"focus-within:ring-2"');
 	});
 
+	test("direction-only flex utilities remain lossless residuals", () => {
+		const result = tw(`<div className="hidden flex-row" />`);
+		expect(result.code).toContain('"flex-row"');
+		expect(result.code).not.toContain('flex: "row"');
+	});
+
 	test("overloaded utilities pick the key matching their conflict properties", () => {
 		// text-* is overloaded across size/color/align/wrap/overflow.
 		const color = tw(`<div className="text-gray-900" />`).code;
