@@ -51,7 +51,7 @@ export class JsxStyleHost {
 			}
 			const expression = attribute.value.trim();
 			if (this.isObject(expression) && ["css", "sx", "style"].includes(attribute.name)) {
-				parts.push(expression.slice(1, -1));
+				parts.push(expression.slice(1, -1).replace(/,\s*$/, ""));
 			} else {
 				parts.push(`${attribute.name}: ${expression}`);
 			}
@@ -76,6 +76,7 @@ export class JsxStyleHost {
 		styleAttributes: readonly string[],
 		classExpression: string,
 		framework: string | undefined,
+		styleExpression?: string,
 	): JsxStyleHostRenderResult {
 		let text = openingTag;
 		for (const raw of styleAttributes) {
@@ -98,6 +99,10 @@ export class JsxStyleHost {
 		} else {
 			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
 			text = `${text.slice(0, insertion)} ${attribute}={${classExpression}}${text.slice(insertion)}`;
+		}
+		if (styleExpression !== undefined && !/\bstyle\s*=/.test(text)) {
+			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
+			text = `${text.slice(0, insertion)} style={${styleExpression}}${text.slice(insertion)}`;
 		}
 		return { text, needsCx };
 	}

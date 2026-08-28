@@ -19,6 +19,14 @@ function runtimeValue(value: StyleProgram["declarations"][number]["value"]): str
 	return JSON.stringify(value.value);
 }
 
+function hasDynamicValues(program: StyleProgram): boolean {
+	return program.rules.some(
+		(rule) =>
+			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+			hasDynamicValues({ ...program, rules: rule.children }),
+	);
+}
+
 function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgram {
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
@@ -184,17 +192,25 @@ export default defineCodemodAdapter({
 				host.framework ??
 				context?.document?.framework ??
 				(/\.(?:jsx|tsx)$/.test(context?.file ?? "") ? "react" : undefined);
+			const dynamicHost = hasDynamicValues(program);
+			const programObjectText = programObject(program);
 			const rendered = JsxStyleHost.render(
 				host.hostOpenTag,
 				host.hostStyleAttributes,
-				`css.class(${programObject(program)})`,
+				dynamicHost ? `css.vars(${programObjectText}).class` : `css.class(${programObjectText})`,
 				framework,
+				dynamicHost ? `css.vars(${programObjectText}).style` : undefined,
 			);
 			return {
 				text: rendered.text,
 				imports: [
-					'import { createCss } from "pandwind/css";',
-					"const css = createCss();",
+					dynamicHost
+						? 'import { createRuntimeCss } from "pandwind/css/runtime";'
+						: 'import { createCss } from "pandwind/css";',
+					...(dynamicHost ? ['import { pandwindPreset } from "pandwind/preset";'] : []),
+					dynamicHost
+						? "const css = createRuntimeCss(pandwindPreset);"
+						: "const css = createCss();",
 					...(rendered.needsCx ? ['import { cx } from "pandwind/cx";'] : []),
 				],
 			};

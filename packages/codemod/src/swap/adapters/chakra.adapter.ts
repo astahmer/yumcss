@@ -1,6 +1,7 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
+import { matchBlock } from "../../sources.ts";
 
 const styleProps = [
 	"css",
@@ -35,18 +36,41 @@ const styleProps = [
 	"display",
 	"flex",
 	"flexDirection",
+	"direction",
+	"wrap",
+	"pos",
 	"align",
 	"alignItems",
 	"justify",
 	"justifyContent",
 	"gap",
+	"rowGap",
+	"columnGap",
 	"fontSize",
 	"fontWeight",
 	"lineHeight",
 	"letterSpacing",
+	"fontFamily",
+	"textDecoration",
+	"textDecorationColor",
+	"textDecorationThickness",
+	"textUnderlineOffset",
 	"border",
 	"borderWidth",
+	"borderTopWidth",
+	"borderRightWidth",
+	"borderBottomWidth",
+	"borderLeftWidth",
+	"borderStyle",
 	"borderColor",
+	"borderTop",
+	"borderRight",
+	"borderBottom",
+	"borderLeft",
+	"borderTopColor",
+	"borderRightColor",
+	"borderBottomColor",
+	"borderLeftColor",
 	"borderRadius",
 	"rounded",
 	"shadow",
@@ -56,9 +80,50 @@ const styleProps = [
 	"bottom",
 	"left",
 	"inset",
+	"insetStart",
+	"insetEnd",
+	"ps",
+	"pe",
+	"ms",
+	"me",
 	"overflow",
+	"overflowX",
+	"overflowY",
 	"opacity",
 	"zIndex",
+	"visibility",
+	"alignSelf",
+	"alignContent",
+	"justifySelf",
+	"flexGrow",
+	"flexShrink",
+	"flexBasis",
+	"flexWrap",
+	"gridTemplateColumns",
+	"gridTemplateRows",
+	"gridColumn",
+	"gridRow",
+	"order",
+	"objectFit",
+	"aspectRatio",
+	"scrollMarginTop",
+	"scrollMargin",
+	"transition",
+	"transform",
+	"filter",
+	"backdropFilter",
+	"outline",
+	"outlineWidth",
+	"outlineStyle",
+	"outlineColor",
+	"outlineOffset",
+	"backgroundImage",
+	"bgGradient",
+	"gradientFrom",
+	"gradientVia",
+	"gradientTo",
+	"fill",
+	"stroke",
 	"textAlign",
 	"textTransform",
 	"whiteSpace",
@@ -97,25 +162,48 @@ const propertyAliases = {
 	maxH: "maxHeight",
 	align: "alignItems",
 	justify: "justifyContent",
+	direction: "flexDirection",
+	wrap: "flexWrap",
+	pos: "position",
+	ps: "paddingInlineStart",
+	pe: "paddingInlineEnd",
+	ms: "marginInlineStart",
+	me: "marginInlineEnd",
+	insetStart: "insetInlineStart",
+	insetEnd: "insetInlineEnd",
 } as const;
 
 function chakraValue(property: string, value: StyleValue): StyleValue {
 	if (value.kind !== "literal" || typeof value.value !== "string") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw|svh|svw)$/.test(value.value)) return value;
 	if (
-		/^(?:p|p[trblxy]|m|m[trblxy])$/.test(property) ||
+		/^(?:p|p[trblxysexy]|m|m[trblxysexy]|gap|rowGap|columnGap)$/.test(property) ||
 		property === "padding" ||
 		property.startsWith("padding") ||
 		property === "margin" ||
 		property.startsWith("margin")
 	) {
-		if (/^\d+(?:\.\d+)?$/.test(value.value))
-			return { kind: "literal", value: `var(--chakra-spacing-${value.value})` };
+		if (/^-?\d+(?:\.\d+)?$/.test(value.value)) {
+			const absolute = value.value.replace(/^-/, "");
+			const variable = `var(--chakra-spacing-${absolute})`;
+			return {
+				kind: "literal",
+				value: value.value.startsWith("-") ? `calc(${variable} * -1)` : variable,
+			};
+		}
 	}
 	if (property === "borderRadius" || property === "rounded")
 		return { kind: "literal", value: `var(--chakra-radii-${value.value})` };
 	if (property === "fontWeight")
 		return { kind: "literal", value: `var(--chakra-font-weights-${value.value})` };
+	if (property === "fontSize")
+		return { kind: "literal", value: `var(--chakra-font-sizes-${value.value})` };
+	if (property === "lineHeight")
+		return { kind: "literal", value: `var(--chakra-line-heights-${value.value})` };
+	if (property === "letterSpacing")
+		return { kind: "literal", value: `var(--chakra-letter-spacings-${value.value})` };
+	if (["width", "height", "minWidth", "maxWidth", "minHeight", "maxHeight"].includes(property))
+		return { kind: "literal", value: `var(--chakra-sizes-${value.value})` };
 	if (
 		property === "color" ||
 		property === "backgroundColor" ||
@@ -130,6 +218,20 @@ function chakraValue(property: string, value: StyleValue): StyleValue {
 			};
 	}
 	return value;
+}
+
+function objectReferences(source: string): Readonly<Record<string, string>> {
+	const references: Record<string, string> = {};
+	for (const match of source.matchAll(
+		/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:defineStyle\s*\(\s*)?\{/g,
+	)) {
+		const name = match[1];
+		const start = (match.index ?? 0) + match[0].lastIndexOf("{");
+		if (name === undefined) continue;
+		const block = matchBlock(source, start);
+		if (block !== null) references[name] = block.body;
+	}
+	return references;
 }
 
 export default defineCodemodAdapter({
@@ -153,12 +255,13 @@ export default defineCodemodAdapter({
 	// Component imports remain in place because the host element still uses Chakra's component.
 	sourceModules: [],
 	configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
-	sourceObjectOptions: {
+	sourceObjectOptions: (source) => ({
 		propertyAliases,
+		objectReferences: objectReferences(source),
 		valueTransforms: Object.fromEntries(
 			styleProps.map((property) => [property, (value: StyleValue) => chakraValue(property, value)]),
 		),
-	},
+	}),
 	emit(program, { programObject }) {
 		return {
 			text: `css(${programObject(program)})`,

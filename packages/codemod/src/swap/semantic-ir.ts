@@ -205,6 +205,8 @@ export interface StyleProgramOptions {
 	readonly computedKeyResolver?: (expression: string) => string | undefined;
 	/** Source-adapter mappings for runtime variable references in values. */
 	readonly dynamicReferences?: Readonly<Record<string, string>>;
+	/** Source-adapter object bindings that can be safely expanded at parse time. */
+	readonly objectReferences?: Readonly<Record<string, string>>;
 	/** Source aliases expanded into one or more canonical CSS properties. */
 	readonly propertyAliases?: Readonly<Record<string, string | readonly string[]>>;
 	/** Source-specific value normalization, for example default theme spacing. */
@@ -815,7 +817,26 @@ export function styleProgramFromSourceObject(
 	const walk = (object: SourceNode, conditions: readonly StyleCondition[]): void => {
 		for (const property of object.properties ?? []) {
 			if (property.type === "SpreadElement") {
-				addDynamicResidual(sourceSlice(body, property), "object spread requires a source adapter");
+				const reference = sourceSlice(body, property)
+					.trim()
+					.replace(/^\.\.\./, "")
+					.trim();
+				const referencedBody = options.objectReferences?.[reference];
+				if (referencedBody !== undefined) {
+					const referenced = styleProgramFromSourceObject(referencedBody, {
+						...options,
+						objectReferences: undefined,
+						sourceOffset: 0,
+					});
+					declarations.push(...referenced.declarations);
+					specialRules.push(...referenced.rules.filter((rule) => rule.kind !== "style"));
+					residuals.push(...referenced.residuals);
+				} else {
+					addDynamicResidual(
+						sourceSlice(body, property),
+						"object spread requires a source adapter",
+					);
+				}
 				continue;
 			}
 			if (property.type !== "Property" || property.kind !== "init") {

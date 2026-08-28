@@ -234,7 +234,11 @@ export function runAdapterMigration(
 					...(binding === undefined ? {} : { binding }),
 					...(framework === undefined ? {} : { framework }),
 				});
-				const dynamicHandled = dynamicPolicy?.handled === true;
+				const hostDynamicHandled =
+					program.source?.hostOpenTag !== undefined &&
+					program.source.hostStyleAttributes !== undefined &&
+					!programHasFunctionDynamic(program);
+				const dynamicHandled = hostDynamicHandled || dynamicPolicy?.handled === true;
 				const dynamicStandalone = dynamicPolicy?.standalone === true;
 				if (
 					(preview === undefined || preview.residuals.length > 0) &&

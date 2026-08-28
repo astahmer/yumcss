@@ -58,6 +58,7 @@ export type AdapterSourceObjectOptions = Pick<
 	| "computedKeys"
 	| "computedKeyResolver"
 	| "dynamicReferences"
+	| "objectReferences"
 	| "propertyAliases"
 	| "valueTransforms"
 	| "emissionHints"
