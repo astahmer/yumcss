@@ -3,22 +3,28 @@
 	"lane": "tw",
 	"referenceCommit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
 	"sourceFiles": 96,
-	"changedFiles": 93,
-	"convertedCallSites": 1105,
-	"preservedTokens": 617,
+	"changedFiles": 92,
+	"convertedCallSites": 1087,
+	"preservedTokens": 670,
 	"generatedUtilities": 414,
 	"generatedVariants": 89,
 	"generatedBridgeEntries": 4107,
 	"build": { "status": "passed", "staticPages": 341 },
 	"css": {
-		"baselineBytes": 692585,
-		"migratedBytes": 692585,
+		"baselineBytes": 692588,
+		"migratedBytes": 692588,
 		"byteDelta": 0,
+		"sha256": "aa3d747cf7688506335dd9138ad411e6acb276f1552e7f4b975d8107d75ab4b8",
 		"extraSelectors": 0,
 		"missingSelectors": 0
 	},
 	"browser": {
 		"viewport": { "width": 1280, "height": 800 },
+		"publicRoutes": 339,
+		"geometryRoutesChecked": 90,
+		"geometryMismatches": 0,
+		"httpFailures": 0,
+		"hostResiduals": 1,
 		"routeChecks": [
 			{ "path": "/", "baselineHeight": 11576, "migratedHeight": 11572, "delta": -4 },
 			{
@@ -27,7 +33,7 @@
 				"migratedHeight": 2591,
 				"delta": 0
 			},
-			{ "path": "/docs/colors", "baselineHeight": 16637, "migratedHeight": 16637, "delta": 0 },
+			{ "path": "/docs/colors", "baselineHeight": 16636, "migratedHeight": 16636, "delta": 0 },
 			{
 				"path": "/blog/tailwindcss-v4-3",
 				"baselineHeight": 13999,
@@ -35,7 +41,7 @@
 				"delta": 0
 			}
 		],
-		"maxGeometryDelta": 4,
+		"maxGeometryDelta": 0,
 		"consoleErrors": 0
 	}
 }

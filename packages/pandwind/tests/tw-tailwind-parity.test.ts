@@ -88,6 +88,20 @@ function standardProps(className: string, css: string | null): string[] {
 	return canonicalProps([...props]);
 }
 
+/**
+ * Tailwind serializes ring and inset-ring into the shared box-shadow
+ * declaration, but its utilities compose through independent shadow layers.
+ * The generated conflict map names those semantic layers explicitly so cx()
+ * does not incorrectly make `ring` and `inset-ring` mutually exclusive.
+ */
+function semanticProps(utility: string, props: string[]): string[] {
+	if (props.length === 1 && props[0] === "box-shadow") {
+		if (utility === "ring") return ["ring-shadow"];
+		if (utility === "inset-ring") return ["inset-ring-shadow"];
+	}
+	return props;
+}
+
 let config: ReturnType<typeof loadTwConfig>;
 let ds: Awaited<ReturnType<typeof __unstable__loadDesignSystem>>;
 
@@ -117,12 +131,12 @@ describe("full design-system sweep", () => {
 						failures.push(`${className}: does not compile`);
 						return;
 					}
-					const actual = standardProps(className, css);
 					const decomposed = decompose(className, config.conflicts);
 					if (decomposed === null) {
 						failures.push(`${className}: no generated utility key covers it`);
 						return;
 					}
+					const actual = semanticProps(decomposed.utility, standardProps(className, css));
 					const expected = expectedProps(decomposed.utility, decomposed.value, config.conflicts);
 					verified += 1;
 					if (JSON.stringify(actual) !== JSON.stringify(expected)) {

@@ -14,11 +14,16 @@
 		"baselineExternalBytes": 692588,
 		"migratedExternalBytes": 692349,
 		"externalByteDelta": -239,
+		"migratedSha256": "cf6473ab7885e62ecb2bc3e43ada9446e5567fa935d7ee4b5c47d29389a351e7",
 		"runtimeStyleBytes": { "/": 1113, "/docs/installation/using-vite": 308, "/docs/colors": 334 },
 		"status": "same-or-smaller-external-css"
 	},
 	"browser": {
 		"viewport": { "width": 1280, "height": 800 },
+		"publicRoutes": 339,
+		"geometryRoutesChecked": 90,
+		"geometryMismatches": 0,
+		"httpFailures": 0,
 		"routeChecks": [
 			{ "path": "/", "baselineHeight": 11576, "migratedHeight": 11576, "delta": 0 },
 			{
@@ -27,7 +32,7 @@
 				"migratedHeight": 2591,
 				"delta": 0
 			},
-			{ "path": "/docs/colors", "baselineHeight": 16637, "migratedHeight": 16637, "delta": 0 },
+			{ "path": "/docs/colors", "baselineHeight": 16636, "migratedHeight": 16636, "delta": 0 },
 			{
 				"path": "/blog/tailwindcss-v4-3",
 				"baselineHeight": 13999,
