@@ -130,6 +130,11 @@ describe("cx() matches tailwind-merge on the bench corpus", () => {
 });
 
 describe("cx() matches tailwind-merge on targeted v2 defect pairs", () => {
+	test("keeps parenthesized arbitrary values opaque", () => {
+		expect(cx("border-x", "border-x-(--pattern-fg)")).toBe(
+			"border-x border-x-(--pattern-fg)",
+		);
+	});
 	const pairs: Array<Array<string>> = [
 		["text-xs", "leading-tight"],
 		["leading-tight", "text-xs"],

@@ -295,6 +295,11 @@ const signatureFromTwClass = (
 
 	const utility = puUtility;
 	const value = puValue;
+	// Parenthesized Tailwind arbitrary-property values (for example
+	// `border-x-(--pattern-fg)`) are opaque to the generated conflict map.
+	// Treating the fallback `*` group as authoritative can incorrectly remove
+	// a separate width/style utility, so preserve these tokens verbatim.
+	if (value.startsWith("(") && value.endsWith(")")) return null;
 
 	if (compose?.has(utility)) {
 		return [`${prefix}|~${utility}`];

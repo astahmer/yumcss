@@ -65,6 +65,12 @@ describe("mode: tw", () => {
 		expect(result.code).not.toContain('flex: "row"');
 	});
 
+	test("parenthesized arbitrary values remain lossless residuals", () => {
+		const result = tw(`<div className="border-x border-x-(--pattern-fg)" />`);
+		expect(result.code).toContain('borderX: true');
+		expect(result.code).toContain('"border-x-(--pattern-fg)"');
+	});
+
 	test("overloaded utilities pick the key matching their conflict properties", () => {
 		// text-* is overloaded across size/color/align/wrap/overflow.
 		const color = tw(`<div className="text-gray-900" />`).code;

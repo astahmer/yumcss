@@ -159,6 +159,10 @@ export function parseToken(raw: string, meta: PandwindMeta): ParsedToken | null 
 
 	let value = split.value;
 	let opacity: string | undefined;
+	// Tailwind's parenthesized arbitrary-property shorthand (`w-(--size)`)
+	// is not a typed design-system value. Keeping it literal avoids making the
+	// target runtime guess its conflict group or silently changing precedence.
+	if (value.startsWith("(") && value.endsWith(")")) return null;
 	const slashIndex = findTopLevelSlash(value);
 	if (slashIndex !== -1) {
 		opacity = value.slice(slashIndex + 1);
