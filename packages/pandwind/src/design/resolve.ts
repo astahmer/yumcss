@@ -27,7 +27,12 @@ const isModuleKey = isDesignModuleKey;
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
 
-export type { DesignModuleAdapter, DesignModuleContext, DesignModuleRegistry, TokenLookup } from "./contracts.ts";
+export type {
+	DesignModuleAdapter,
+	DesignModuleContext,
+	DesignModuleRegistry,
+	TokenLookup,
+} from "./contracts.ts";
 
 export class DefaultDesignModuleRegistry implements DesignModuleRegistry {
 	private readonly adapters = new Map<ModuleKey, DesignModuleAdapter>();
@@ -106,4 +111,8 @@ const resolveDesignStyleWithRegistry = (
 	return out;
 };
 
-const BUILTIN_DESIGN_MODULES: readonly DesignModuleAdapter[] = [frameModule, layoutModule, textModule];
+const BUILTIN_DESIGN_MODULES: readonly DesignModuleAdapter[] = [
+	frameModule,
+	layoutModule,
+	textModule,
+];

@@ -225,7 +225,11 @@ async function generateUtilityBridge(
 }
 
 export class UtilityBridgeGenerator {
-	async generate(entry: string, base: string, options: { props?: readonly string[]; values?: ReadonlySet<string> } = {}): Promise<UtilityBridge> {
+	async generate(
+		entry: string,
+		base: string,
+		options: { props?: readonly string[]; values?: ReadonlySet<string> } = {},
+	): Promise<UtilityBridge> {
 		return generateUtilityBridge(entry, base, options);
 	}
 }

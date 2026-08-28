@@ -2,7 +2,12 @@
 import { DomStyleElementSink } from "./runtime-sheet-sink.ts";
 import { PriorityOrderingPolicy, RuntimeRuleStore } from "./runtime-sheet-policies.ts";
 import { SemanticRuleCanonicalizer, SemanticRuleSerializer } from "./runtime-sheet-serializer.ts";
-import type { RuntimeRule, RuntimeSemanticRule, RuntimeSheetOptions, RuntimeSheetSnapshot } from "./runtime-sheet-contracts.ts";
+import type {
+	RuntimeRule,
+	RuntimeSemanticRule,
+	RuntimeSheetOptions,
+	RuntimeSheetSnapshot,
+} from "./runtime-sheet-contracts.ts";
 
 export type {
 	RuntimeDeclaration,
@@ -27,7 +32,10 @@ export interface RuntimeSheetPorts {
 	readonly sink?: import("./runtime-sheet-contracts.ts").RuntimeStyleElementSink;
 }
 
-export function createRuntimeSheet(options: RuntimeSheetOptions = {}, ports: RuntimeSheetPorts = {}) {
+export function createRuntimeSheet(
+	options: RuntimeSheetOptions = {},
+	ports: RuntimeSheetPorts = {},
+) {
 	const store = ports.store ?? new RuntimeRuleStore();
 	const ordering = ports.ordering ?? new PriorityOrderingPolicy();
 	const serializer = ports.serializer ?? new SemanticRuleSerializer();
@@ -36,7 +44,11 @@ export function createRuntimeSheet(options: RuntimeSheetOptions = {}, ports: Run
 	let tokens = "";
 
 	const css = (): string => {
-		const body = ordering.order(store.rules).map((rule) => rule.css).filter(Boolean).join("\n");
+		const body = ordering
+			.order(store.rules)
+			.map((rule) => rule.css)
+			.filter(Boolean)
+			.join("\n");
 		return [tokens, body].filter(Boolean).join("\n");
 	};
 	const render = (): void => sink.update(css());
@@ -59,7 +71,11 @@ export function createRuntimeSheet(options: RuntimeSheetOptions = {}, ports: Run
 		refresh();
 	};
 	const registerSemanticRules = (rules: readonly RuntimeSemanticRule[]): void => {
-		register(rules.map((rule, index) => canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index })));
+		register(
+			rules.map((rule, index) =>
+				canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index }),
+			),
+		);
 	};
 
 	return {

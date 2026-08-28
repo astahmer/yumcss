@@ -68,7 +68,10 @@ export interface CssBudgetDependencies {
 class CssBudgetService implements CssBudgetPort {
 	constructor(
 		private readonly evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
-		private readonly renderer: Pick<CssBudgetReportRenderer, "format"> = new CssBudgetReportRenderer(),
+		private readonly renderer: Pick<
+			CssBudgetReportRenderer,
+			"format"
+		> = new CssBudgetReportRenderer(),
 	) {}
 
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> {
@@ -104,6 +107,5 @@ export const createFoldAnalysisService = (
 		dependencies.report ?? { format: formatReport },
 	);
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
-export const createCssBudgetService = (
-	dependencies: CssBudgetDependencies = {},
-): CssBudgetPort => new CssBudgetService(dependencies.evaluator, dependencies.renderer);
+export const createCssBudgetService = (dependencies: CssBudgetDependencies = {}): CssBudgetPort =>
+	new CssBudgetService(dependencies.evaluator, dependencies.renderer);

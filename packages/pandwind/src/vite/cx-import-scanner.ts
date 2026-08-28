@@ -10,20 +10,39 @@ export interface CxImportInfo {
 class CxImportScanner {
 	find(code: string, id: string, matches: (source: string) => boolean): CxImportInfo {
 		const info: CxImportInfo = { localNames: new Set(), sources: [] };
-		const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code, language: SOURCE_SCANNER_SERVICE.languageForFile(id) }).program;
+		const program = SOURCE_SCANNER_SERVICE.parse({
+			file: id,
+			source: code,
+			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+		}).program;
 		const queue: unknown[] = [program];
 		for (let head = 0; head < queue.length; head++) {
 			const current = queue[head];
-			if (Array.isArray(current)) { queue.push(...current); continue; }
+			if (Array.isArray(current)) {
+				queue.push(...current);
+				continue;
+			}
 			if (current === null || typeof current !== "object") continue;
 			const node = current as OxcNode;
 			if (node.type === "ImportDeclaration") {
-				const declaration = node as { source?: { value?: string }; specifiers?: Array<{ type?: string; imported?: { name?: string }; local?: { name?: string } }> };
+				const declaration = node as {
+					source?: { value?: string };
+					specifiers?: Array<{
+						type?: string;
+						imported?: { name?: string };
+						local?: { name?: string };
+					}>;
+				};
 				const source = declaration.source?.value;
 				if (typeof source === "string" && matches(source)) {
 					info.sources.push(source);
 					for (const specifier of declaration.specifiers ?? []) {
-						if (specifier.type === "ImportSpecifier" && specifier.imported?.name === "cx" && specifier.local?.name !== undefined) info.localNames.add(specifier.local.name);
+						if (
+							specifier.type === "ImportSpecifier" &&
+							specifier.imported?.name === "cx" &&
+							specifier.local?.name !== undefined
+						)
+							info.localNames.add(specifier.local.name);
 					}
 				}
 			}

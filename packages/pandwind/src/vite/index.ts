@@ -131,7 +131,9 @@ interface OxcSpecifier {
 /** Source-matcher shared by the tw and cx import detection. */
 /** Parse a module and return its program node (for const-binding scans). */
 function parseProgramForConsts(code: string, id: string): OxcNode {
-	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as { program: OxcNode };
+	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as {
+		program: OxcNode;
+	};
 	return parsed.program;
 }
 

@@ -4,7 +4,14 @@ export interface RuntimeRule {
 	readonly priority: number;
 }
 
-export type RuntimeSemanticRuleKind = "style" | "global" | "keyframes" | "font-face" | "layer" | "supports" | "property";
+export type RuntimeSemanticRuleKind =
+	| "style"
+	| "global"
+	| "keyframes"
+	| "font-face"
+	| "layer"
+	| "supports"
+	| "property";
 
 export interface RuntimeDeclaration {
 	readonly property: string;

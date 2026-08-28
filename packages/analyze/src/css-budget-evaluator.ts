@@ -111,7 +111,6 @@ export async function measureCssBudget(options: {
 	};
 }
 
-
 export class CssBudgetEvaluator {
 	measure(options: Parameters<typeof measureCssBudget>[0]): Promise<CssBudget> {
 		return measureCssBudget(options);

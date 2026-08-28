@@ -11,16 +11,26 @@ export interface ParsedConditions {
 	readonly atRules: string[];
 }
 
-export const createConditionsBucket = (partial: Partial<ParsedConditions> = {}): {
+export const createConditionsBucket = (
+	partial: Partial<ParsedConditions> = {},
+): {
 	className: string;
 	selfSelectors: string[];
 	parentSelectors: string[];
 	selectorLists: string[];
 	atRules: string[];
-} => ({ className: "", selfSelectors: [], parentSelectors: [], selectorLists: [], atRules: [], ...partial });
+} => ({
+	className: "",
+	selfSelectors: [],
+	parentSelectors: [],
+	selectorLists: [],
+	atRules: [],
+	...partial,
+});
 
 export const isSelfSelector = (condition: string): boolean => condition.charCodeAt(0) === 38;
-const isParentSelector = (condition: string): boolean => condition.charCodeAt(condition.length - 1) === 38;
+const isParentSelector = (condition: string): boolean =>
+	condition.charCodeAt(condition.length - 1) === 38;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
 const isSelectorList = (selector: string): boolean => {
 	let parentheses = 0;
@@ -32,7 +42,15 @@ const isSelectorList = (selector: string): boolean => {
 	return false;
 };
 
-export const parseCondition = (selector: string, conditions: { selfSelectors: string[]; parentSelectors: string[]; selectorLists: string[]; atRules: string[] }): true | undefined => {
+export const parseCondition = (
+	selector: string,
+	conditions: {
+		selfSelectors: string[];
+		parentSelectors: string[];
+		selectorLists: string[];
+		atRules: string[];
+	},
+): true | undefined => {
 	if (!selector) return;
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
 	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
@@ -45,17 +63,24 @@ export const parseCondition = (selector: string, conditions: { selfSelectors: st
 export const genCSSRule = (decls: string, conditions: ParsedConditions): string => {
 	const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
 	if (selectorLists.length) {
-		return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectorLists.map((list) => {
-			const selectors: string[] = [];
-			parser((nodes) => { selectors.push(...nodes.nodes.map((node) => node.toString().trim())); }).processSync(list);
-			return selectors.map((selector) => {
-				const selfs = [...selfSelectors];
-				const parents = [...parentSelectors];
-				if (isSelfSelector(selector)) selfs.push(selector.slice(1));
-				else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
-				return `${parents.join("")}${className}${selfs.join("")}`;
-			}).join(", ");
-		})}{${decls}}`);
+		return atRules.reduce(
+			(acc, atRule) => `${atRule}{${acc}}`,
+			`${selectorLists.map((list) => {
+				const selectors: string[] = [];
+				parser((nodes) => {
+					selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
+				}).processSync(list);
+				return selectors
+					.map((selector) => {
+						const selfs = [...selfSelectors];
+						const parents = [...parentSelectors];
+						if (isSelfSelector(selector)) selfs.push(selector.slice(1));
+						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
+						return `${parents.join("")}${className}${selfs.join("")}`;
+					})
+					.join(", ");
+			})}{${decls}}`,
+		);
 	}
 	const selectors = `${parentSelectors.join("")}${className}${selfSelectors.join("")}`;
 	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectors}{${decls}}`);
@@ -68,7 +93,10 @@ export interface DecodedAtomicPath {
 	readonly conditions: ReturnType<typeof createConditionsBucket>;
 }
 
-export function decodeAtomicPath(presetConditions: AnyConditions, atomicPath: string): DecodedAtomicPath {
+export function decodeAtomicPath(
+	presetConditions: AnyConditions,
+	atomicPath: string,
+): DecodedAtomicPath {
 	const conditions = createConditionsBucket();
 	const parts = pairs.split(atomicPath);
 	if (parts.length === 2) {
@@ -89,6 +117,13 @@ export function decodeAtomicPath(presetConditions: AnyConditions, atomicPath: st
 		return acc.concat(resolved).filter(Boolean);
 	}, [] as string[]);
 	if (prop === undefined) throw new Error(`Couldnt find property in '${parts.join(":")}'`);
-	const priorities = conds.map((part) => getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part));
-	return { prop, value, priority: priorities.reduce((sum, priority) => sum + priority, 0), conditions };
+	const priorities = conds.map((part) =>
+		getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
+	);
+	return {
+		prop,
+		value,
+		priority: priorities.reduce((sum, priority) => sum + priority, 0),
+		conditions,
+	};
 }

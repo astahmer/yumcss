@@ -14,6 +14,10 @@
 				"src/index.ts",
 				"src/{css,cx,preset,stack,design,recipe,host,tw,vite}/index.ts",
 				"src/{unplugin,source-scanner,rn,opentui}.ts",
+				"src/css/create-stylesheet.ts",
+				"src/css/stylesheet-lowering.ts",
+				"src/css/runtime.ts",
+				"src/tw/generate-types.ts",
 				"tests/**/*.test.ts",
 				"tests/**/*.tst.ts"
 			],
@@ -58,6 +62,7 @@
 		"pandwind",
 		"pandwind-analyze",
 		"postcss",
+		"postcss-selector-parser",
 		"react",
 		"react-native",
 		"react-native-web",

@@ -40,9 +40,24 @@ const summary: FoldSummary = {
 describe("analysis composition ports", () => {
 	test("orchestration accepts substituted analyzer, summary, and report policies", () => {
 		const calls: string[] = [];
-		const analyzer: FileFoldAnalyzerPort = { analyze: () => { calls.push("analyze"); return stats; } };
-		const summaryPolicy: FoldSummaryPort = { summarize: () => { calls.push("summarize"); return summary; } };
-		const report: FoldReportPort = { format: () => { calls.push("format"); return "fake report"; } };
+		const analyzer: FileFoldAnalyzerPort = {
+			analyze: () => {
+				calls.push("analyze");
+				return stats;
+			},
+		};
+		const summaryPolicy: FoldSummaryPort = {
+			summarize: () => {
+				calls.push("summarize");
+				return summary;
+			},
+		};
+		const report: FoldReportPort = {
+			format: () => {
+				calls.push("format");
+				return "fake report";
+			},
+		};
 		const service = createFoldAnalysisService({
 			analyzer,
 			summary: summaryPolicy,

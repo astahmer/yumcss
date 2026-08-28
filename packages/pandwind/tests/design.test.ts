@@ -1,7 +1,11 @@
 import { expect, test } from "vitest";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { createDesignCss } from "../src/design/index.ts";
-import { createDesignModuleRegistry, DesignStyleResolver, resolveDesignStyle } from "../src/design/resolve.ts";
+import {
+	createDesignModuleRegistry,
+	DesignStyleResolver,
+	resolveDesignStyle,
+} from "../src/design/resolve.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 
 const tokens = examplePreset.tokens;

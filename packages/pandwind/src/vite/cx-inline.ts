@@ -1,11 +1,20 @@
 /** Public façade for compile-time cx() folding. */
 import type { TwConfig, OnUnresolved } from "./inline.ts";
-import type { CxFoldContext, ConstantScope, KnownConstant, StaticEval } from "./cx-static-evaluator.ts";
-import { CxCallRewriter, defaultCxCompilerPorts, type CxCompilerOptions, type CxCompilerPorts } from "./cx-call-rewriter.ts";
+import type { CxFoldContext, ConstantScope } from "./cx-static-evaluator.ts";
+import {
+	CxCallRewriter,
+	type CxCompilerOptions,
+	type CxCompilerPorts,
+} from "./cx-call-rewriter.ts";
 import { cxImportScanner, type CxImportInfo } from "./cx-import-scanner.ts";
 import type { UnresolvedToken } from "./unresolved.ts";
 
-export type { ConstantScope, CxFoldContext, KnownConstant, StaticEval } from "./cx-static-evaluator.ts";
+export type {
+	ConstantScope,
+	CxFoldContext,
+	KnownConstant,
+	StaticEval,
+} from "./cx-static-evaluator.ts";
 export { collectModuleConstants, evalStaticCx } from "./cx-static-evaluator.ts";
 export type { CxImportInfo } from "./cx-import-scanner.ts";
 export type { CxCompilerOptions, CxCompilerPorts } from "./cx-call-rewriter.ts";
@@ -25,7 +34,11 @@ export interface InlineCxCallsOptions extends CxCompilerOptions {
 	readonly onUnresolved?: OnUnresolved;
 }
 
-export function findCxImports(code: string, id: string, isCxSource: (source: string) => boolean): CxImportInfo {
+export function findCxImports(
+	code: string,
+	id: string,
+	isCxSource: (source: string) => boolean,
+): CxImportInfo {
 	return cxImportScanner.find(code, id, isCxSource);
 }
 

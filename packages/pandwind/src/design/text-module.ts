@@ -89,8 +89,9 @@ const resolveText = (props: Record<string, unknown>, token: TokenLookup): StyleO
 	return out;
 };
 
-
 export const textModule: DesignModuleAdapter = {
 	key: "$text",
-	resolve(props, { token }) { return resolveText(props, token); },
+	resolve(props, { token }) {
+		return resolveText(props, token);
+	},
 };

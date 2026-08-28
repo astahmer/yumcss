@@ -1,9 +1,5 @@
 import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
-import type {
-	CssConfigReturn,
-	StyleObject,
-	TokenDeclaration,
-} from "../types/typings.ts";
+import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
@@ -97,7 +93,9 @@ export const createStylesheet = (
 						parentSelectors: resolvedList.length ? [] : [":root "],
 					});
 
-					resolvedList.forEach((selector) => { conditionPolicy.parse(selector, conditions); });
+					resolvedList.forEach((selector) => {
+						conditionPolicy.parse(selector, conditions);
+					});
 
 					const priorities = resolvedList.map((part) =>
 						getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
@@ -206,7 +204,8 @@ export const createStylesheet = (
 				.join("\n");
 		},
 		atomic: () => {
-			return ordering.order(cache.values())
+			return ordering
+				.order(cache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
@@ -219,13 +218,16 @@ export const createStylesheet = (
 			ordering.order(cache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 		/** Var-inline toggle rules (see processVarKey), priority-ordered. */
 		varRules: () => {
-			return ordering.order(varCache.values())
+			return ordering
+				.order(varCache.values())
 				.map((v) => v.css)
 				.join("\n");
 		},
 		/** Var toggle rules with identity — see atomicEntries. */
 		varEntries: () =>
-			ordering.order(varCache.values()).map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
+			ordering
+				.order(varCache.values())
+				.map((v) => ({ id: v.id, css: v.css, priority: v.priority })),
 	};
 
 	const generate = (styles: Array<StyleObject>) => {

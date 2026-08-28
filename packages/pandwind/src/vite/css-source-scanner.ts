@@ -36,15 +36,17 @@ const parse = (file: string, source: string) =>
 		language: SOURCE_SCANNER_SERVICE.languageForFile(file),
 	});
 
+const canParse = (file: string): boolean => SOURCE_SCANNER_SERVICE.isScriptFile(file);
+
 export const cssSourceMatches = (source: string, matchers: readonly (string | RegExp)[]): boolean =>
 	matchers.some((matcher) =>
 		typeof matcher === "string"
 			? source === matcher ||
-				 source.endsWith(`/${matcher}`) ||
-				 source.endsWith(`/${matcher}.ts`) ||
-				 source.endsWith(`/${matcher}.tsx`) ||
-				 source.endsWith(`/${matcher}.js`) ||
-				 source.endsWith(`/${matcher}.jsx`)
+				source.endsWith(`/${matcher}`) ||
+				source.endsWith(`/${matcher}.ts`) ||
+				source.endsWith(`/${matcher}.tsx`) ||
+				source.endsWith(`/${matcher}.js`) ||
+				source.endsWith(`/${matcher}.jsx`)
 			: matcher.test(source),
 	);
 
@@ -91,10 +93,7 @@ const isObjectLiteral = (argument: unknown): boolean => {
 	return typeof literal === "object" && literal !== null;
 };
 
-const collectNames = (
-	program: OxcNode,
-	matchers: readonly (string | RegExp)[],
-): Set<string> => {
+const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]): Set<string> => {
 	const names = new Set<string>();
 	walk(program, (node) => {
 		if (node.type !== "ImportDeclaration") return;
@@ -145,15 +144,17 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 
 	findImports(code: string, id: string): ReadonlySet<string> {
+		if (!canParse(id)) return new Set();
 		return collectNames(parse(id, code).program as unknown as OxcNode, this.matchers);
 	}
 
 	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[] {
+		if (!canParse(id)) return [];
 		return authoredImports(code, id, parse(id, code).program as unknown as OxcNode);
 	}
 
 	findCallSites(code: string, id: string, names: ReadonlySet<string>): readonly CssCallSite[] {
-		if (names.size === 0) return [];
+		if (names.size === 0 || !canParse(id)) return [];
 		const sites: CssCallSite[] = [];
 		walk(parse(id, code).program, (node) => {
 			if (node.type !== "CallExpression") return;
@@ -175,6 +176,8 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 
 	inspect(code: string, id: string): CssSourceInspection {
+		if (!canParse(id))
+			return { authoredCss: [], cssNames: new Set(), cssSources: [], cssDiagnostics: [] };
 		const program = parse(id, code).program as unknown as OxcNode;
 		const cssNames = collectNames(program, this.matchers);
 		const cssSources = this.findCallSites(code, id, cssNames);
@@ -187,6 +190,7 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 
 	findVarKeys(code: string, id: string, names: ReadonlySet<string>): readonly string[] {
+		if (names.size === 0 || !canParse(id)) return [];
 		const keys = new Set<string>();
 		walk(parse(id, code).program, (node) => {
 			if (node.type !== "CallExpression") return;
@@ -206,9 +210,21 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 }
 
-const collectObjectKeys = (node: OxcNode | null | undefined, prefix: string, out: Set<string>): void => {
+const collectObjectKeys = (
+	node: OxcNode | null | undefined,
+	prefix: string,
+	out: Set<string>,
+): void => {
 	if (node?.type !== "ObjectExpression") return;
-	for (const property of (node as { properties?: Array<{ type?: string; key?: { name?: string; value?: string }; value?: OxcNode }> }).properties ?? []) {
+	for (const property of (
+		node as {
+			properties?: Array<{
+				type?: string;
+				key?: { name?: string; value?: string };
+				value?: OxcNode;
+			}>;
+		}
+	).properties ?? []) {
 		if (property.type === "SpreadElement") continue;
 		const key = property.key?.name ?? property.key?.value;
 		if (typeof key !== "string") continue;
@@ -235,7 +251,8 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			const call = node as CallNode;
 			if (call.callee?.type !== "MemberExpression") return;
 			const object = (call.callee as { object?: OxcNode | null }).object;
-			if (object?.type !== "Identifier" || !names.has((object as { name?: string }).name ?? "")) return;
+			if (object?.type !== "Identifier" || !names.has((object as { name?: string }).name ?? ""))
+				return;
 			const member = memberName(call.callee);
 			const start = call.start;
 			const position = location(code, start);
@@ -247,7 +264,8 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 					end: call.end,
 					...position,
 					message: unsupported.get(member)!,
-					suggestion: "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+					suggestion:
+						"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
 				});
 				return;
 			}
@@ -261,8 +279,12 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 					start,
 					end: call.end,
 					...position,
-					message: call.arguments.length === 0 ? `${kind} has no style object to extract.` : `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
-					suggestion: "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+					message:
+						call.arguments.length === 0
+							? `${kind} has no style object to extract.`
+							: `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
+					suggestion:
+						"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
 				});
 			}
 		});

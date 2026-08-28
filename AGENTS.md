@@ -1,5 +1,7 @@
 # Agent guidance — pandwind
 
+For every decision, ask what the best expert in that field would do and why they would reject your current choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge correct, never for what satisfies the stated constraints most cheaply. Every trade-off you take must be stated to the user, never absorbed.
+
 ## API surface policy (read before proposing features)
 
 The **user-facing API is deliberately frozen**: `tw()` / `css()` / `cx()` /
@@ -94,7 +96,11 @@ which concrete module to import or grow a switch statement in a central runner.
   framework rewrites, and target emission are not.
 - Knip is a required maintenance check. Findings are fixed at the ownership
   boundary where possible. A suppression requires a documented dynamic entry
-  point or generated/public contract, never convenience.
+  point or generated/public contract, never convenience. Public package
+  subpaths must be listed as Knip production entries when they are not
+  reachable from the root export. `postcss-selector-parser` is intentionally
+  suppressed because it is required by those public stylesheet/bridge
+  subpaths, while Knip's production dependency graph does not follow them.
 
 ## Architecture definition of done
 

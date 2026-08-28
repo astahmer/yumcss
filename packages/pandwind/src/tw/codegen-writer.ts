@@ -22,15 +22,20 @@ export class CodegenArtifactWriter {
 		writeFileSync(resolve(options.outDir, "tw.ts"), artifacts.twTs);
 		if (options.agents === true) {
 			const config = extractTwConfig(artifacts.twTs);
-			if (config === undefined) throw new Error("pandwind tw:codegen: could not extract config for agents.json");
+			if (config === undefined)
+				throw new Error("pandwind tw:codegen: could not extract config for agents.json");
 			const doc = buildAgentsDocument({
 				typesDts: artifacts.typesDts,
 				config,
 				themeBlock: artifacts.themeBlock,
 				artifactDir: options.outDir,
 			});
-			writeFileSync(resolve(options.outDir, "pandwind.agents.json"), `${JSON.stringify(doc, null, "\t")}\n`);
+			writeFileSync(
+				resolve(options.outDir, "pandwind.agents.json"),
+				`${JSON.stringify(doc, null, "\t")}\n`,
+			);
 		}
-		if (artifacts.themeBlock !== "") writeFileSync(resolve(options.outDir, "pandwind-theme.css"), `${artifacts.themeBlock}\n`);
+		if (artifacts.themeBlock !== "")
+			writeFileSync(resolve(options.outDir, "pandwind-theme.css"), `${artifacts.themeBlock}\n`);
 	}
 }

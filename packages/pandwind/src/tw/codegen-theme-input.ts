@@ -12,7 +12,6 @@ import {
 	type ThemeTokenGroups,
 } from "./generate-theme.ts";
 
-
 /**
  * Find preset condition definitions (`Record<string, string | string[]>`)
  * inside an imported tokens/preset module: the first object carrying a
@@ -119,7 +118,10 @@ export function resolveComponents(
 }
 
 export async function loadThemeBlock(modulePath: string, base: string): Promise<string> {
-	const module = await import(pathToFileURL(resolveModulePath(modulePath, base)).href) as Record<string, unknown>;
+	const module = (await import(pathToFileURL(resolveModulePath(modulePath, base)).href)) as Record<
+		string,
+		unknown
+	>;
 	const groups = resolveTokenGroups(module);
 	const conditions = resolvePresetConditions(module);
 	if (groups === undefined) {
@@ -127,19 +129,26 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 			`pandwind tw:codegen: no bridgeable token groups found in ${modulePath} (looked at default export and every named export for a .tokens field or raw DTCG groups)`,
 		);
 	}
-	let themeBlock = buildThemeBlock(groups, conditions ? createConditionResolver(conditions) : undefined);
+	let themeBlock = buildThemeBlock(
+		groups,
+		conditions ? createConditionResolver(conditions) : undefined,
+	);
 	const scopeCss = buildThemeScopes(resolveThemes(module));
 	if (scopeCss !== "") themeBlock = themeBlock === "" ? scopeCss : `${themeBlock}\\n\\n${scopeCss}`;
 	const components = resolveComponents(module);
 	if (components !== undefined) {
-		const { flatVars } = splitTokens(groups, conditions ? createConditionResolver(conditions) : undefined);
+		const { flatVars } = splitTokens(
+			groups,
+			conditions ? createConditionResolver(conditions) : undefined,
+		);
 		const componentCss = buildComponentScopes(
 			components,
 			new Set(flatVars.map((variable) => variable.name)),
 			conditions ? createConditionResolver(conditions) : undefined,
 			(message) => console.warn(message),
 		);
-		if (componentCss !== "") themeBlock = themeBlock === "" ? componentCss : `${themeBlock}\\n\\n${componentCss}`;
+		if (componentCss !== "")
+			themeBlock = themeBlock === "" ? componentCss : `${themeBlock}\\n\\n${componentCss}`;
 	}
 	return themeBlock;
 }

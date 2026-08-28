@@ -80,20 +80,12 @@ export interface CssSourceScanner {
 }
 
 export interface CssArtifactExtractor {
-	extract(
-		code: string,
-		id: string,
-		names: ReadonlySet<string>,
-	): ExtractedCssStyle[];
+	extract(code: string, id: string, names: ReadonlySet<string>): ExtractedCssStyle[];
 	extractFile(code: string, id: string): CssFileExtraction;
 }
 
 export interface CssCallRewriter {
-	inline(
-		code: string,
-		id: string,
-		names: ReadonlySet<string>,
-	): InlineCssResult;
+	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult;
 }
 
 export interface CssDiagnosticReporter {
@@ -103,11 +95,7 @@ export interface CssDiagnosticReporter {
 export interface CssPatternAdapter {
 	readonly id: string;
 	canHandle(name: string): boolean;
-	extract(
-		code: string,
-		id: string,
-		preset: CssPreset,
-	): readonly ExtractedCssStyle[];
+	extract(code: string, id: string, preset: CssPreset): readonly ExtractedCssStyle[];
 }
 
 export interface CssExtractionService {

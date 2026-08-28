@@ -10,7 +10,6 @@
  * says how much merge work disappeared; the budget says what the remaining
  * classes cost in shipped stylesheet bytes.
  */
-import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse, type Root } from "postcss";
 import { collectTwClasses } from "pandwind/tw/collect";
@@ -20,10 +19,12 @@ export type { SheetShape } from "./css-artifact-analyzer.ts";
 
 import { CssBudgetEvaluator, type CssBudget } from "./css-budget-evaluator.ts";
 export type { CssBudget } from "./css-budget-evaluator.ts";
-export const cssBudget = (options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> =>
-	new CssBudgetEvaluator().measure(options);
+export const cssBudget = (
+	options: Parameters<CssBudgetEvaluator["measure"]>[0],
+): Promise<CssBudget> => new CssBudgetEvaluator().measure(options);
 import { CssBudgetReportRenderer } from "./css-budget-report.ts";
-export const formatCssBudget = (budget: CssBudget): string => new CssBudgetReportRenderer().format(budget);
+export const formatCssBudget = (budget: CssBudget): string =>
+	new CssBudgetReportRenderer().format(budget);
 interface ClassRule {
 	selector: string;
 	declarations: string;

@@ -61,8 +61,9 @@ const resolveLayout = (props: Record<string, unknown>, token: TokenLookup): Styl
 	return out;
 };
 
-
 export const layoutModule: DesignModuleAdapter = {
 	key: "$layout",
-	resolve(props, { token }) { return resolveLayout(props, token); },
+	resolve(props, { token }) {
+		return resolveLayout(props, token);
+	},
 };

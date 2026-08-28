@@ -1,5 +1,5 @@
 import type { Expression } from "oxc-parser";
-import { createCx, type CxInput } from "../cx/index.ts";
+import type { CxInput } from "../cx/index.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
@@ -51,17 +51,31 @@ const nodes = function* (root: unknown): Generator<OxcNode> {
 	}
 };
 
-interface Candidate { init: Expression; decl: OxcNode }
+interface Candidate {
+	init: Expression;
+	decl: OxcNode;
+}
 
 const topLevelCandidates = (program: OxcNode): Map<string, Candidate> => {
 	const candidates = new Map<string, Candidate>();
 	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
-		if ((statement as { type?: string }).type !== "VariableDeclaration" || (statement as { kind?: string }).kind !== "const") continue;
+		if (
+			(statement as { type?: string }).type !== "VariableDeclaration" ||
+			(statement as { kind?: string }).kind !== "const"
+		)
+			continue;
 		for (const declaration of (statement as { declarations?: OxcNode[] }).declarations ?? []) {
 			const binding = (declaration as { id?: OxcNode }).id;
 			const init = (declaration as { init?: Expression | null }).init;
 			const name = (binding as { type?: string; name?: string } | undefined)?.name;
-			if ((binding as { type?: string } | undefined)?.type !== "Identifier" || init === undefined || init === null || name === undefined || candidates.has(name)) continue;
+			if (
+				(binding as { type?: string } | undefined)?.type !== "Identifier" ||
+				init === undefined ||
+				init === null ||
+				name === undefined ||
+				candidates.has(name)
+			)
+				continue;
 			candidates.set(name, { init, decl: declaration });
 		}
 	}
@@ -90,7 +104,8 @@ const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boole
 				break;
 			case "AssignmentExpression": {
 				let target = (node as { left?: OxcNode }).left;
-				while (target?.type === "MemberExpression") target = (target as { object?: OxcNode }).object;
+				while (target?.type === "MemberExpression")
+					target = (target as { object?: OxcNode }).object;
 				if (isBinding(target, name)) return true;
 				break;
 			}
@@ -98,7 +113,11 @@ const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boole
 				if (isBinding((node as { argument?: OxcNode }).argument, name)) return true;
 				break;
 		}
-		if (node.type === "FunctionDeclaration" || node.type === "FunctionExpression" || node.type === "ArrowFunctionExpression") {
+		if (
+			node.type === "FunctionDeclaration" ||
+			node.type === "FunctionExpression" ||
+			node.type === "ArrowFunctionExpression"
+		) {
 			for (const parameter of (node as { params?: OxcNode[] }).params ?? []) {
 				if ([...nodes(parameter)].some((inner) => isBinding(inner, name))) return true;
 			}
@@ -112,7 +131,10 @@ export function collectModuleConstants(program: OxcNode): ConstantScope {
 	for (const [name, candidate] of topLevelCandidates(program)) {
 		const value = evalStaticCx(candidate.init, undefined, scope);
 		if (value === NOT_STATIC || risky(program, name, new Set([candidate.decl]))) continue;
-		scope.set(name, { value, declStart: (candidate.decl as { start?: number }).start ?? Number.POSITIVE_INFINITY });
+		scope.set(name, {
+			value,
+			declStart: (candidate.decl as { start?: number }).start ?? Number.POSITIVE_INFINITY,
+		});
 	}
 	return scope;
 }
@@ -120,29 +142,43 @@ export function collectModuleConstants(program: OxcNode): ConstantScope {
 const cssCall = (node: Expression, fold: CxFoldContext): boolean => {
 	const call = node as unknown as { callee?: OxcNode | null };
 	const callee = call.callee;
-	if (callee?.type === "Identifier") return fold.cssNames.has((callee as { name?: string }).name ?? "");
+	if (callee?.type === "Identifier")
+		return fold.cssNames.has((callee as { name?: string }).name ?? "");
 	if (callee?.type !== "MemberExpression") return false;
 	const object = (callee as { object?: OxcNode | null }).object;
 	const property = (callee as { property?: { name?: string } | null }).property?.name;
-	return object?.type === "Identifier" && fold.cssNames.has((object as { name?: string }).name ?? "") && property === "class";
+	return (
+		object?.type === "Identifier" &&
+		fold.cssNames.has((object as { name?: string }).name ?? "") &&
+		property === "class"
+	);
 };
 
-export function evalStaticCx(node: Expression | undefined, fold?: CxFoldContext, consts?: ConstantScope): StaticEval {
+export function evalStaticCx(
+	node: Expression | undefined,
+	fold?: CxFoldContext,
+	consts?: ConstantScope,
+): StaticEval {
 	if (node === undefined) return NOT_STATIC;
 	switch (node.type) {
 		case "Literal": {
 			const value = (node as { value?: unknown }).value;
-			return typeof value === "string" || value === false || value === null || value === true ? value as CxInput : NOT_STATIC;
+			return typeof value === "string" || value === false || value === null || value === true
+				? (value as CxInput)
+				: NOT_STATIC;
 		}
 		case "Identifier": {
 			const name = (node as { name?: string }).name;
 			if (name === "undefined") return undefined;
 			const known = consts?.get(name ?? "");
-			return known !== undefined && typeof node.start === "number" && node.start >= known.declStart ? known.value : NOT_STATIC;
+			return known !== undefined && typeof node.start === "number" && node.start >= known.declStart
+				? known.value
+				: NOT_STATIC;
 		}
 		case "TemplateLiteral": {
 			const expressions = (node as { expressions?: Expression[] }).expressions ?? [];
-			const quasis = (node as { quasis?: Array<{ value: { cooked?: string; raw: string } }> }).quasis ?? [];
+			const quasis =
+				(node as { quasis?: Array<{ value: { cooked?: string; raw: string } }> }).quasis ?? [];
 			let value = quasis[0]?.value.cooked ?? quasis[0]?.value.raw ?? "";
 			for (let index = 0; index < expressions.length; index++) {
 				const part = evalStaticCx(expressions[index], fold, consts);
@@ -160,7 +196,8 @@ export function evalStaticCx(node: Expression | undefined, fold?: CxFoldContext,
 		case "ArrayExpression": {
 			const values: StaticEval[] = [];
 			for (const element of (node as { elements?: Expression[] }).elements ?? []) {
-				if (element === null || (element as { type?: string }).type === "SpreadElement") return NOT_STATIC;
+				if (element === null || (element as { type?: string }).type === "SpreadElement")
+					return NOT_STATIC;
 				const value = evalStaticCx(element, fold, consts);
 				if (value === NOT_STATIC) return NOT_STATIC;
 				values.push(value);
@@ -172,41 +209,61 @@ export function evalStaticCx(node: Expression | undefined, fold?: CxFoldContext,
 			if (left === NOT_STATIC) return NOT_STATIC;
 			const right = () => evalStaticCx((node as { right: Expression }).right, fold, consts);
 			switch ((node as { operator?: string }).operator) {
-				case "&&": return isTruthy(left) ? right() : left;
-				case "||": return isTruthy(left) ? left : right();
-				case "??": return left !== null && left !== undefined ? left : right();
-				default: return NOT_STATIC;
+				case "&&":
+					return isTruthy(left) ? right() : left;
+				case "||":
+					return isTruthy(left) ? left : right();
+				case "??":
+					return left !== null && left !== undefined ? left : right();
+				default:
+					return NOT_STATIC;
 			}
 		}
 		case "ConditionalExpression": {
 			const test = evalStaticCx((node as { test: Expression }).test, fold, consts);
 			if (test === NOT_STATIC) return NOT_STATIC;
-			return isTruthy(test) ? evalStaticCx((node as { consequent: Expression }).consequent, fold, consts) : evalStaticCx((node as { alternate: Expression }).alternate, fold, consts);
+			return isTruthy(test)
+				? evalStaticCx((node as { consequent: Expression }).consequent, fold, consts)
+				: evalStaticCx((node as { alternate: Expression }).alternate, fold, consts);
 		}
 		case "CallExpression": {
 			if (fold === undefined || !cssCall(node, fold)) return NOT_STATIC;
 			const classes: string[] = [];
 			for (const argument of (node as unknown as { arguments: Expression[] }).arguments) {
 				const literal = evalLiteralForCx(argument, consts);
-				if (literal === NOT_STATIC || typeof literal !== "object" || literal === null || Array.isArray(literal)) return NOT_STATIC;
+				if (
+					literal === NOT_STATIC ||
+					typeof literal !== "object" ||
+					literal === null ||
+					Array.isArray(literal)
+				)
+					return NOT_STATIC;
 				const compiled = fold.engine.foldLiteralStyle(literal as Record<string, unknown>);
 				if (compiled === null) return NOT_STATIC;
 				classes.push(compiled);
 			}
 			return classes.join(" ");
 		}
-		default: return NOT_STATIC;
+		default:
+			return NOT_STATIC;
 	}
 }
 
 const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => {
 	const value = evalStaticCx(node, undefined, consts);
-	if (value !== NOT_STATIC && (typeof value !== "object" || value === null || Array.isArray(value))) return value;
+	if (value !== NOT_STATIC && (typeof value !== "object" || value === null || Array.isArray(value)))
+		return value;
 	if (node.type !== "ObjectExpression") return NOT_STATIC;
 	const result: Record<string, unknown> = {};
 	for (const property of node.properties) {
-		if (property.type !== "Property" || property.computed || property.method || property.shorthand) return NOT_STATIC;
-		const key = property.key.type === "Identifier" ? property.key.name : property.key.type === "Literal" && typeof property.key.value === "string" ? property.key.value : undefined;
+		if (property.type !== "Property" || property.computed || property.method || property.shorthand)
+			return NOT_STATIC;
+		const key =
+			property.key.type === "Identifier"
+				? property.key.name
+				: property.key.type === "Literal" && typeof property.key.value === "string"
+					? property.key.value
+					: undefined;
 		if (key === undefined) return NOT_STATIC;
 		const propertyValue = evalLiteralForCx(property.value, consts);
 		if (propertyValue === NOT_STATIC) return NOT_STATIC;
@@ -220,19 +277,42 @@ export type FoldSkeleton =
 	| { kind: "cond"; testSource: string; consequent: FoldSkeleton; alternate: FoldSkeleton }
 	| { kind: "and"; testSource: string; right: FoldSkeleton };
 
-export function buildFoldSkeleton(node: Expression, consts: ConstantScope, code: string): FoldSkeleton | null {
+export function buildFoldSkeleton(
+	node: Expression,
+	consts: ConstantScope,
+	code: string,
+): FoldSkeleton | null {
 	const value = evalStaticCx(node, undefined, consts);
 	if (value !== NOT_STATIC) return { kind: "leaf", value };
 	const type = (node as { type?: string }).type;
 	if (type === "ConditionalExpression") {
-		const consequent = buildFoldSkeleton((node as { consequent: Expression }).consequent, consts, code);
-		const alternate = buildFoldSkeleton((node as { alternate: Expression }).alternate, consts, code);
+		const consequent = buildFoldSkeleton(
+			(node as { consequent: Expression }).consequent,
+			consts,
+			code,
+		);
+		const alternate = buildFoldSkeleton(
+			(node as { alternate: Expression }).alternate,
+			consts,
+			code,
+		);
 		if (consequent === null || alternate === null) return null;
-		return { kind: "cond", testSource: code.slice((node as { start: number }).start, (node as { end: number }).end), consequent, alternate };
+		return {
+			kind: "cond",
+			testSource: code.slice((node as { start: number }).start, (node as { end: number }).end),
+			consequent,
+			alternate,
+		};
 	}
 	if (type === "LogicalExpression" && (node as { operator?: string }).operator === "&&") {
 		const right = buildFoldSkeleton((node as { right: Expression }).right, consts, code);
-		return right === null ? null : { kind: "and", testSource: code.slice((node as { start: number }).start, (node as { end: number }).end), right };
+		return right === null
+			? null
+			: {
+					kind: "and",
+					testSource: code.slice((node as { start: number }).start, (node as { end: number }).end),
+					right,
+				};
 	}
 	return null;
 }
@@ -245,17 +325,27 @@ export const renderFoldSkeleton = (
 ): string | null => {
 	const render = (current: FoldSkeleton): string | null => {
 		if (current.kind === "leaf") {
-			const merged = merge(staticInputs.map((value, index) => (index === dynamicIndex ? current.value : value)) as CxInput[]);
+			const merged = merge(
+				staticInputs.map((value, index) =>
+					index === dynamicIndex ? current.value : value,
+				) as CxInput[],
+			);
 			return merged === undefined ? null : JSON.stringify(merged);
 		}
 		if (current.kind === "cond") {
 			const consequent = render(current.consequent);
 			const alternate = render(current.alternate);
-			return consequent === null || alternate === null ? null : `((${current.testSource}) ? ${consequent} : ${alternate})`;
+			return consequent === null || alternate === null
+				? null
+				: `((${current.testSource}) ? ${consequent} : ${alternate})`;
 		}
 		const truthy = render(current.right);
-		const falsy = merge(staticInputs.map((value, index) => (index === dynamicIndex ? false : value)) as CxInput[]);
-		return truthy === null || falsy === undefined ? null : `((${current.testSource}) ? ${truthy} : ${JSON.stringify(falsy)})`;
+		const falsy = merge(
+			staticInputs.map((value, index) => (index === dynamicIndex ? false : value)) as CxInput[],
+		);
+		return truthy === null || falsy === undefined
+			? null
+			: `((${current.testSource}) ? ${truthy} : ${JSON.stringify(falsy)})`;
 	};
 	return render(skeleton);
 };

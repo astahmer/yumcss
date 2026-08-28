@@ -2,7 +2,9 @@ import type { RuntimeOrderingPolicy, RuntimeRule } from "./runtime-sheet-contrac
 
 export class PriorityOrderingPolicy implements RuntimeOrderingPolicy {
 	order(rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[] {
-		return Array.from(rules.values()).toSorted((a, b) => a.priority - b.priority || a.id.localeCompare(b.id));
+		return Array.from(rules.values()).toSorted(
+			(a, b) => a.priority - b.priority || a.id.localeCompare(b.id),
+		);
 	}
 }
 

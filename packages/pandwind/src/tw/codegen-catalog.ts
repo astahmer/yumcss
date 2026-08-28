@@ -3,7 +3,8 @@ import { UTILITY_SUBKEYS } from "./compile.ts";
 
 type Values = Set<string | true>;
 export type UtilityMap = Map<string, Values>;
-const dashCase = (name: string): string => name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+const dashCase = (name: string): string =>
+	name.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 
 const STATIC_PREFIXES = [
 	"pointer-events",
@@ -129,7 +130,10 @@ export function getFunctionalTypes(system: {
 	return types;
 }
 
-export function longestFunctionalPrefix(candidate: string, functional: string[]): string | undefined {
+export function longestFunctionalPrefix(
+	candidate: string,
+	functional: string[],
+): string | undefined {
 	let best: string | undefined;
 	for (const key of functional) {
 		if (candidate === key || candidate.startsWith(`${key}-`)) {

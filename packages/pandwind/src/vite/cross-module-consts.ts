@@ -57,7 +57,9 @@ export interface ImportBinding {
 }
 
 function parseProgram(code: string, id: string): OxcNode {
-	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as { program: OxcNode };
+	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as {
+		program: OxcNode;
+	};
 	return result.program;
 }
 

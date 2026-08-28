@@ -23,17 +23,17 @@ minimal implementation without changing orchestration.
 
 ## Boundaries
 
-| Domain              | Port boundary                                                                   | Default implementation                                                       |
-| ------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Vite CSS extraction | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports      | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                    |
+| Domain              | Port boundary                                                                                          | Default implementation                                                                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vite CSS extraction | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports                             | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                                                                                                  |
 | Tailwind codegen    | theme loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts` |
-| Runtime CSS         | canonicalizer, ordering, serializer, store, sink                                | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts` |
-| Stylesheet lowering | condition, ordering, decoder, serializer, and variable compiler policies        | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                    |
-| Token formats       | one normalized token set plus format adapters                                   | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`         |
-| `cx()` compilation  | constant discovery, expression evaluation, imported merges, fold policy, and code emission | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts` |
-| Design vocabulary   | module adapter registry                                                         | `design/resolve.ts`                                                          |
-| Analyze/reporting   | analysis, workspace, budget, and report ports                                   | `analyze/analysis-service.ts`, `analyze/analysis-report.ts`                  |
-| Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission | `tw/bridge.ts`, `tw/bridge-generator.ts`                                     |
+| Runtime CSS         | canonicalizer, ordering, serializer, store, sink                                                       | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                          |
+| Stylesheet lowering | condition, ordering, decoder, serializer, and variable compiler policies                               | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                 |
+| Token formats       | one normalized token set plus format adapters                                                          | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                      |
+| `cx()` compilation  | constant discovery, expression evaluation, imported merges, fold policy, and code emission             | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                     |
+| Design vocabulary   | module adapter registry                                                                                | `design/resolve.ts`                                                                                                                                        |
+| Analyze/reporting   | analysis, workspace, budget, and report ports                                                          | `analyze/analysis-service.ts`, `analyze/analysis-report.ts`                                                                                                |
+| Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission                        | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                   |
 
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a

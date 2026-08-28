@@ -87,8 +87,9 @@ const resolveFrame = (props: Record<string, unknown>, token: TokenLookup): Style
 	return out;
 };
 
-
 export const frameModule: DesignModuleAdapter = {
 	key: "$frame",
-	resolve(props, { token }) { return resolveFrame(props, token); },
+	resolve(props, { token }) {
+		return resolveFrame(props, token);
+	},
 };

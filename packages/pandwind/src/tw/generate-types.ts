@@ -82,7 +82,9 @@ export async function generateDesignSystem(
 	}
 
 	const utilityKeyNames = new Set(
-		[...types.keys()].map((name) => emittedUtilityKey(name, camelCaseProperty).replace(/^"|"$/g, "")),
+		[...types.keys()].map((name) =>
+			emittedUtilityKey(name, camelCaseProperty).replace(/^"|"$/g, ""),
+		),
 	);
 	const emitter = new TailwindTypeEmitter(camelCaseProperty);
 
@@ -121,7 +123,8 @@ if (process.argv[1]?.endsWith("generate-types.ts")) {
 	// against the CSS entry's directory, not the invocation cwd.
 	const cssBase = dirname(cssEntry);
 
-	const themeBlock = tokensModulePath === undefined ? "" : await loadThemeBlock(tokensModulePath, base);
+	const themeBlock =
+		tokensModulePath === undefined ? "" : await loadThemeBlock(tokensModulePath, base);
 
 	const css = readFileSync(cssEntry, "utf8");
 	const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(css, cssBase, {

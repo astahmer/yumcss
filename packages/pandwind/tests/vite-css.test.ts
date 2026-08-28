@@ -18,7 +18,11 @@ import {
 	inlineCssCalls,
 	isCssSource,
 } from "../src/vite/css-extract.ts";
-import type { CssArtifactExtractor, CssDiagnosticReporter, CssSourceScanner } from "../src/vite/css-extraction-contracts.ts";
+import type {
+	CssArtifactExtractor,
+	CssDiagnosticReporter,
+	CssSourceScanner,
+} from "../src/vite/css-extraction-contracts.ts";
 
 test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
 	const code = `
@@ -140,11 +144,26 @@ test("findCssImports collects named, default and aliased css bindings", () => {
 	);
 });
 
+test("the CSS scanner ignores stylesheet and virtual module ids", () => {
+	const scanner = createCssExtractionService({ matchers: ["css"], preset: examplePreset }).scanner;
+	const source = 'import { css } from "./design"; css({ color: "red" });';
+
+	expect(scanner.findImports(source, "styles.css")).toEqual(new Set());
+	expect(scanner.findAuthoredImports(source, "styles.css")).toEqual([]);
+	expect(scanner.findCallSites(source, "\0pandwind:css.css", new Set(["css"]))).toEqual([]);
+	expect(scanner.findVarKeys(source, "styles.css", new Set(["css"]))).toEqual([]);
+});
+
 test("css extraction façade accepts substituted policy ports", () => {
 	const scanner: CssSourceScanner = {
 		parse: () => ({ type: "Program" }),
 		findImports: () => new Set(["css"]),
-		inspect: () => ({ authoredCss: [], cssNames: new Set(["css"]), cssSources: [], cssDiagnostics: [] }),
+		inspect: () => ({
+			authoredCss: [],
+			cssNames: new Set(["css"]),
+			cssSources: [],
+			cssDiagnostics: [],
+		}),
 		findAuthoredImports: () => [],
 		findCallSites: () => [],
 		findVarKeys: () => ["runtime__color"],
@@ -163,8 +182,14 @@ test("css extraction façade accepts substituted policy ports", () => {
 		rewriter: { inline: (code) => ({ code: `${code}!`, inlined: 1 }) },
 	});
 
-	expect(service.extractFile("ignored", "ignored.ts")).toEqual({ sources: [], varKeys: ["runtime__color"] });
-	expect(service.inline("code", "ignored.ts", new Set(["css"]))).toEqual({ code: "code!", inlined: 1 });
+	expect(service.extractFile("ignored", "ignored.ts")).toEqual({
+		sources: [],
+		varKeys: ["runtime__color"],
+	});
+	expect(service.inline("code", "ignored.ts", new Set(["css"]))).toEqual({
+		code: "code!",
+		inlined: 1,
+	});
 });
 
 test("extractCssStyles resolves design modules in literal calls", () => {

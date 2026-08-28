@@ -1,4 +1,9 @@
-import type { RuntimeDocument, RuntimeSheetOptions, RuntimeStyleElement, RuntimeStyleElementSink } from "./runtime-sheet-contracts.ts";
+import type {
+	RuntimeDocument,
+	RuntimeSheetOptions,
+	RuntimeStyleElement,
+	RuntimeStyleElementSink,
+} from "./runtime-sheet-contracts.ts";
 
 export class DomStyleElementSink implements RuntimeStyleElementSink {
 	private element: RuntimeStyleElement | undefined;
@@ -10,7 +15,10 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 	}
 
 	mount(css: string): boolean {
-		if (this.element !== undefined) { this.element.textContent = css; return true; }
+		if (this.element !== undefined) {
+			this.element.textContent = css;
+			return true;
+		}
 		const document = this.document();
 		if (document === undefined) return false;
 		const id = this.options.id ?? "pandwind";
@@ -26,6 +34,11 @@ export class DomStyleElementSink implements RuntimeStyleElementSink {
 		return true;
 	}
 
-	update(css: string): void { if (this.element !== undefined) this.element.textContent = css; }
-	unmount(): void { this.element?.remove(); this.element = undefined; }
+	update(css: string): void {
+		if (this.element !== undefined) this.element.textContent = css;
+	}
+	unmount(): void {
+		this.element?.remove();
+		this.element = undefined;
+	}
 }

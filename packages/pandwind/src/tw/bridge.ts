@@ -19,13 +19,6 @@
  * Multi-property utilities are only used when nothing else exists (`text-sm`
  * sets font-size + line-height).
  */
-import { __unstable__loadDesignSystem } from "@tailwindcss/node";
-import { parse } from "postcss";
-import type { Rule } from "postcss";
-import selectorParser from "postcss-selector-parser";
-import { canonicalProps } from "./generate-types.ts";
-import { resolveVar, simplifyCalc } from "./theme.ts";
-
 /** `property -> resolved value -> utility class`. */
 export type { UtilityBridge } from "./bridge-generator.ts";
 export { BRIDGE_PROPS } from "./bridge-generator.ts";

@@ -35,10 +35,8 @@ function renderCssBudget(budget: CssBudget): string {
 	return lines.join("\n");
 }
 
-
 export class CssBudgetReportRenderer {
 	format(budget: CssBudget): string {
 		return renderCssBudget(budget);
 	}
 }
-
