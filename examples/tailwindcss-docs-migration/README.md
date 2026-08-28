@@ -36,6 +36,11 @@ acceptance contract is: the app builds, route generation succeeds, browser
 errors stay empty, route geometry stays equal, and unsupported source tokens
 are preserved rather than silently dropped.
 
+The committed `reports/` files are the checked-in proof artifacts for each lane.
+The `tw` lane currently has exact CSS selector and byte parity with the pinned
+baseline, and its representative browser routes stay within a four-pixel
+document-height tolerance.
+
 The upstream repository itself does not need to be JJ-versioned. Git already
 pins the external source; Pandwind JJ revisions pin the migration runner,
 generated metadata contract, and lane proof reports. The same policy applies

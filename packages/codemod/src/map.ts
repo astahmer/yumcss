@@ -58,6 +58,11 @@ export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
 	if (parsed === null) return null;
 	const { prefix, value } = parsed;
 
+	// `not-*` is a Tailwind variant family, not a Pandwind utility. Treating
+	// the generated `not` helper key as a normal utility drops the negation
+	// and emits the opposite selector. Preserve the source token instead.
+	if (prefix === "not") return null;
+
 	const perValue = meta.conflicts.get(prefix);
 	if (perValue === undefined) return null;
 

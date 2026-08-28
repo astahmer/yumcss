@@ -1,0 +1,41 @@
+{
+	"schema": "pandwind.tailwind-docs-lane-report/1",
+	"lane": "tw",
+	"referenceCommit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+	"sourceFiles": 96,
+	"changedFiles": 93,
+	"convertedCallSites": 1105,
+	"preservedTokens": 617,
+	"generatedUtilities": 414,
+	"generatedVariants": 89,
+	"generatedBridgeEntries": 4107,
+	"build": { "status": "passed", "staticPages": 341 },
+	"css": {
+		"baselineBytes": 692585,
+		"migratedBytes": 692585,
+		"byteDelta": 0,
+		"extraSelectors": 0,
+		"missingSelectors": 0
+	},
+	"browser": {
+		"viewport": { "width": 1280, "height": 800 },
+		"routeChecks": [
+			{ "path": "/", "baselineHeight": 11576, "migratedHeight": 11572, "delta": -4 },
+			{
+				"path": "/docs/installation/using-vite",
+				"baselineHeight": 2591,
+				"migratedHeight": 2591,
+				"delta": 0
+			},
+			{ "path": "/docs/colors", "baselineHeight": 16637, "migratedHeight": 16637, "delta": 0 },
+			{
+				"path": "/blog/tailwindcss-v4-3",
+				"baselineHeight": 13999,
+				"migratedHeight": 13999,
+				"delta": 0
+			}
+		],
+		"maxGeometryDelta": 4,
+		"consoleErrors": 0
+	}
+}

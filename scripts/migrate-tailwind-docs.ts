@@ -186,7 +186,7 @@ function laneSupportFiles(
 		"src/pandwind/pandwind.interop.json": `${JSON.stringify(metadata.interop, null, 2)}\n`,
 	};
 	if (lane === TailwindDocsLane.Tw) {
-		support["src/pandwind/tw-classes.ts"] =
+		support["src/app/pandwind-tw-classes.ts"] =
 			`export const pandwindTailwindClasses = ${JSON.stringify(
 				[...mappedTokens].toSorted().join(" "),
 			)};\n`;
@@ -302,6 +302,13 @@ export class TailwindDocsMigration {
 			await writeFile(tsconfigFile, `${JSON.stringify(tsconfig, null, 2)}\n`);
 			await cp(join(referenceRoot, "public"), join(outputRoot, "public"), { recursive: true });
 			await cp(join(referenceRoot, "src"), join(outputRoot, "src"), { recursive: true });
+			if (lane === TailwindDocsLane.Tw) {
+				const globalStylesheet = join(outputRoot, "src/app/globals.css");
+				const stylesheet = await readFile(globalStylesheet, "utf8");
+				if (!stylesheet.includes('@source not "./../pandwind";')) {
+					await writeFile(globalStylesheet, `${stylesheet}\n@source not "./../pandwind";\n`);
+				}
+			}
 			for (const [file, code] of outputFiles) {
 				const target = join(outputRoot, file);
 				await mkdir(dirname(target), { recursive: true });

@@ -230,4 +230,9 @@ describe("mapToken unit behavior", () => {
 		expect(mapped!.value).toBe(true);
 		expect(mapped!.key).toBe("flex");
 	});
+
+	test("unsupported negated and named data conditions stay verbatim", () => {
+		expect(mapToken("not-in-data-dragging:animate-ping", meta)).toBeNull();
+		expect(mapToken("data-focus:outline-none", meta)).toBeNull();
+	});
 });

@@ -77,6 +77,11 @@ function parseVariants(token: string, meta: PandwindMeta): { variants: string[];
 	let i = 0;
 	while (i < segments.length - 1) {
 		const segment = segments[i]!;
+		// Named data/aria conditions such as `data-focus` are opaque selectors.
+		// Splitting them into the generic `data` and `focus` variants changes
+		// their meaning; only bracketed attribute conditions are structurally
+		// safe to expose as an open variant key below.
+		if (/^(?:(?:group|peer)-)?(?:data|aria)-/.test(segment)) break;
 		if (meta.variants.has(camelCase(segment))) {
 			variants.push(camelCase(segment));
 			i++;
