@@ -103,6 +103,8 @@ export interface StyleProgramSource {
 	readonly start?: number;
 	readonly end?: number;
 	readonly adapter?: string;
+	/** Source-adapter pattern that owns this program, for specialized emission. */
+	readonly pattern?: string;
 	/** Authored factory subject, for example `styled.button` or `styled(Base)`. */
 	readonly subject?: string;
 	readonly subjectKind?: "member" | "call";
@@ -502,7 +504,14 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 			group.declarations.push({ ...declaration, conditions: [] });
 			groups.set(key, group);
 		}
-		const conditional = [...groups.values()].map((group) => {
+		const conditionalGroups = [...groups.values()];
+		if (program.source?.adapter === "stylex")
+			conditionalGroups.sort(
+				(a, b) =>
+					a.conditions.length - b.conditions.length ||
+					JSON.stringify(a.conditions).localeCompare(JSON.stringify(b.conditions)),
+			);
+		const conditional = conditionalGroups.map((group) => {
 			const conditions = [...baseConditions, ...group.conditions];
 			if (rule.kind === "style" || rule.kind === "global") {
 				const resolved = conditionedSelector(rule, conditions);
@@ -574,7 +583,7 @@ function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions)
 						? `:where(.${pseudo} ~ *) &`
 						: when[1] === "siblingAfter"
 							? `&:where(:has(~ .${pseudo}))`
-					: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
+							: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
 		}
 		const conditionValue = options.conditionValues?.[expression];
 		if (conditionValue !== undefined) return conditionValue;
@@ -612,10 +621,7 @@ function dynamicSourceValue(
 		};
 	const cssVariableExpression = (value: string): string =>
 		value
-			.replace(
-			/\$\{\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*\}/g,
-			"var($2)",
-			)
+			.replace(/\$\{\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*\}/g, "var($2)")
 			.replace(/^\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*$/, "var($2)");
 	const normalizedExpression = cssVariableExpression(sourceExpression);
 	if (normalizedExpression !== sourceExpression && !normalizedExpression.includes("${")) {
@@ -699,6 +705,41 @@ export function styleProgramFromSourceObject(
 		const aliases = options.propertyAliases?.[name] ?? name;
 		for (const canonicalProperty of typeof aliases === "string" ? [aliases] : aliases)
 			declarations.push({ conditions, property: canonicalProperty, value: normalizedValue });
+	};
+	const addConditionalValues = (
+		name: string,
+		valueNode: SourceNode,
+		conditions: readonly StyleCondition[],
+	): void => {
+		if (!sourceObject(valueNode)) {
+			addDeclaration(name, valueNode, conditions);
+			return;
+		}
+		for (const conditionProperty of valueNode.properties ?? []) {
+			if (conditionProperty.type !== "Property" || conditionProperty.kind !== "init") {
+				addDynamicResidual(
+					sourceSlice(body, conditionProperty),
+					"conditional style values must be initialized properties",
+				);
+				continue;
+			}
+			const conditionName = sourceKey(conditionProperty, body, options);
+			const conditionValue = conditionProperty.value as SourceNode | undefined;
+			if (conditionName === null || conditionValue === undefined) {
+				addDynamicResidual(
+					sourceSlice(body, conditionProperty),
+					"conditional style values require static condition keys and values",
+				);
+				continue;
+			}
+			addConditionalValues(
+				name,
+				conditionValue,
+				conditionName === "default"
+					? conditions
+					: [...conditions, sourceConditionFor(conditionName, options)],
+			);
+		}
 	};
 
 	let root: SourceNode | undefined;
@@ -805,31 +846,7 @@ export function styleProgramFromSourceObject(
 				options.propertyValueConditions === true &&
 				conditions.length > 0
 			) {
-				for (const conditionProperty of valueNode.properties ?? []) {
-					if (conditionProperty.type !== "Property" || conditionProperty.kind !== "init") {
-						addDynamicResidual(
-							sourceSlice(body, conditionProperty),
-							"conditional style values must be initialized properties",
-						);
-						continue;
-					}
-					const conditionName = sourceKey(conditionProperty, body, options);
-					const conditionValue = conditionProperty.value as SourceNode | undefined;
-					if (conditionName === null || conditionValue === undefined) {
-						addDynamicResidual(
-							sourceSlice(body, conditionProperty),
-							"conditional style values require static condition keys and values",
-						);
-						continue;
-					}
-					addDeclaration(
-						name,
-						conditionValue,
-						conditionName === "default"
-							? conditions
-							: [...conditions, sourceConditionFor(conditionName, options)],
-					);
-				}
+				addConditionalValues(name, valueNode, conditions);
 				continue;
 			}
 			if (

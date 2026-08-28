@@ -760,6 +760,10 @@ function parseCalls(
 					program = base;
 				}
 			}
+			program = {
+				...program,
+				source: { ...program.source, pattern: pattern.name },
+			};
 			matches.push({ start, end, program, sourceText: source.slice(start, end) });
 		}
 	}

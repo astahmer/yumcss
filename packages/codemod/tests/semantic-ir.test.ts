@@ -135,9 +135,9 @@ describe("versioned semantic style-program IR", () => {
 		const program = styleProgramFromSourceObject(
 			"card: { display: { [TABLET_BREAK]: 'block', default: 'none' } }",
 			{
-			conditionValues: { TABLET_BREAK: "@media (max-width: 768px)" },
-			propertyValueConditions: true,
-			nestedObjectKind: "named",
+				conditionValues: { TABLET_BREAK: "@media (max-width: 768px)" },
+				propertyValueConditions: true,
+				nestedObjectKind: "named",
 			},
 		);
 
@@ -148,7 +148,11 @@ describe("versioned semantic style-program IR", () => {
 				value: { kind: "literal", value: "block" },
 				conditions: [{ name: "card" }, { name: "@media (max-width: 768px)" }],
 			},
-			{ property: "display", value: { kind: "literal", value: "none" }, conditions: [{ name: "card" }] },
+			{
+				property: "display",
+				value: { kind: "literal", value: "none" },
+				conditions: [{ name: "card" }],
+			},
 		]);
 	});
 
