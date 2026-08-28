@@ -1,5 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const styleProps = [
 	"css",
@@ -132,7 +133,7 @@ function chakraValue(property: string, value: StyleValue): StyleValue {
 }
 
 export default defineCodemodAdapter({
-	id: "chakra-ui",
+	id: CodemodAdapterId.ChakraUi,
 	patterns: [
 		{
 			name: "chakra-style-props",
@@ -142,7 +143,7 @@ export default defineCodemodAdapter({
 		},
 	],
 	packages: dependency("@chakra-ui/react", "peer"),
-	capabilities: allRuleCapabilities("chakra-ui", "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		"framework-semantics": "partial",

@@ -1,9 +1,10 @@
 import { applyEdits } from "../../migrate.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
-	if (context.targetId !== "pandwind" || !context.complete) {
+	if (context.targetId !== CodemodAdapterId.Pandwind || !context.complete) {
 		return { code: context.code, residuals: [] };
 	}
 	const edits: Array<{ start: number; end: number; text: string }> = [];
@@ -26,7 +27,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 }
 
 export default defineCodemodAdapter({
-	id: "jss",
+	id: CodemodAdapterId.Jss,
 	patterns: [
 		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g, objectKind: "named" },
 		{
@@ -48,7 +49,7 @@ export default defineCodemodAdapter({
 			dependency("react-jss", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities("jss", "unsupported", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
 		"named-conditions": "exact",
 		"dynamic-values": "partial",
 		"rule-level": "partial",

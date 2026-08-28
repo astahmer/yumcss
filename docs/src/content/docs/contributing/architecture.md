@@ -64,6 +64,17 @@ Concrete ecosystem policy belongs in its adapter module. CLI files only parse
 arguments, assemble registries/providers, and render reports. Generic AST,
 filesystem, CSS, and serialization mechanics belong in infrastructure ports.
 
+Built-in registry identities are enum-backed. Codemod adapter/source/target
+ids, pattern ids, plugin ids, token-format ids, validator/lowering ids, and
+pipeline stage ids are defined once in the owning identity module and reused
+at every composition boundary. Shared orchestration must not compare raw
+ecosystem strings such as `adapter === "stylex"`; adapters normalize those
+differences into neutral IR metadata or registry-selected ports. Third-party
+ids remain extensible through branded plugin identifiers. Authored CSS values,
+property names, package specifiers in emitted source, and IR discriminants are
+data rather than registry identities and remain strings where that is the
+appropriate type.
+
 Prefer one cohesive façade, registry, or class over a module that exports a
 collection of unrelated operations. Export a primitive only when it is an
 independent contract or a narrow public entry point. Knip is the required

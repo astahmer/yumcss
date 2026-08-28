@@ -1,6 +1,7 @@
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
+import { CodemodAdapterId } from "../../identifiers.ts";
 
 const stylexImport = 'import * as stylex from "@stylexjs/stylex";';
 const conditionMap: Record<string, string> = {
@@ -49,11 +50,11 @@ const emitStylex: Emitter = (ir, _meta, context) => {
 };
 
 export default {
-	id: "stylex",
+	id: CodemodAdapterId.StyleX,
 	emit: emitStylex,
 	capabilities: {
 		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: "stylex",
+		adapter: CodemodAdapterId.StyleX,
 		capabilities: {
 			declarations: "partial",
 			"token-values": "partial",

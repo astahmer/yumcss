@@ -10,6 +10,7 @@ import {
 import { parsePandaCalls, type PandaCall } from "./parse.ts";
 import { scanFactoryElements } from "./panda-migrate.ts";
 import { styleProgramFromSwapIR, type StyleProgram } from "../../semantic-ir.ts";
+import { CodemodAdapterId, PandaMigrationStageId } from "../../identifiers.ts";
 
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
 export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/2" as const;
@@ -59,14 +60,14 @@ export interface PandaMigrationPipeline {
 export function createPandaMigrationPipeline(
 	stages: readonly PandaMigrationStage[] = [
 		{
-			id: "project-discovery",
+			id: PandaMigrationStageId.ProjectDiscovery,
 			phase: "discovery",
 			async run({ options }) {
 				return { workspace: await discoverPandaMigration(options) };
 			},
 		},
 		{
-			id: "theme-config",
+			id: PandaMigrationStageId.ThemeConfig,
 			phase: "discovery",
 			async run({ options, workspace }) {
 				if (workspace === undefined) throw new Error("theme-config requires project discovery");
@@ -78,7 +79,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "source-scanning",
+			id: PandaMigrationStageId.SourceScanning,
 			phase: "discovery",
 			async run({ workspace }) {
 				if (workspace === undefined) throw new Error("source-scanning requires project discovery");
@@ -90,7 +91,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "recipe-pattern-extraction",
+			id: PandaMigrationStageId.RecipePatternExtraction,
 			phase: "conversion",
 			async run({ workspace }) {
 				if (workspace === undefined)
@@ -103,7 +104,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "semantic-conversion",
+			id: PandaMigrationStageId.SemanticConversion,
 			phase: "conversion",
 			async run({ workspace }) {
 				if (workspace === undefined)
@@ -122,7 +123,7 @@ export function createPandaMigrationPipeline(
 										file: "panda-migration",
 										start: call.start,
 										end: call.end,
-										adapter: "panda",
+										adapter: CodemodAdapterId.Panda,
 									},
 								}),
 							],
@@ -142,7 +143,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "module-emission",
+			id: PandaMigrationStageId.ModuleEmission,
 			phase: "emission",
 			async run({ workspace, artifacts }) {
 				if (workspace === undefined) throw new Error("module emission requires project discovery");
@@ -161,7 +162,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "rewrite-application",
+			id: PandaMigrationStageId.RewriteApplication,
 			phase: "rewrite",
 			async run({ workspace, artifacts }) {
 				if (workspace === undefined) throw new Error("rewrite stage requires project discovery");
@@ -192,7 +193,7 @@ export function createPandaMigrationPipeline(
 			},
 		},
 		{
-			id: "validation-reporting",
+			id: PandaMigrationStageId.ValidationReporting,
 			phase: "validation",
 			async run({ options, workspace, completedStages, artifacts }) {
 				const report = await runPandaMigration({ ...options, workspace });

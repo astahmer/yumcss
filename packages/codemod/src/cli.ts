@@ -22,6 +22,7 @@ import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
+import { CodemodAdapterId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 
@@ -429,8 +430,8 @@ async function runExternalAdapterSwap(
 	}
 	const target = isExternalAdapterId(args.to)
 		? args.to
-		: args.to === "css.class"
-			? "pandwind"
+		: args.to === SwapTargetId.CssClass
+			? CodemodAdapterId.Pandwind
 			: undefined;
 	if (target === undefined) {
 		console.error(

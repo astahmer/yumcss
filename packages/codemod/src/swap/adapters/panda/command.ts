@@ -1,8 +1,9 @@
 import { inferCommonRoot, runPandaMigration } from "./panda-migrate.ts";
 import type { ProjectMigrationCommand } from "../../project-command.ts";
+import { CodemodAdapterId } from "../../identifiers.ts";
 
 const pandaMigrationCommand: ProjectMigrationCommand = {
-	id: "panda",
+	id: CodemodAdapterId.Panda,
 	async run(context) {
 		if (context.filePaths.length === 0) {
 			console.error("codemod swap: no matching files for project migration");

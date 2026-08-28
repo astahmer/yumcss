@@ -6,6 +6,11 @@ import {
 } from "../external-adapters.ts";
 import type { AdapterEmitContext } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
+import {
+	CodemodAdapterId,
+	StyleProgramCompositionKind,
+	StyleProgramEmissionHint,
+} from "../identifiers.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
@@ -103,7 +108,8 @@ function runtimeFontFaces(program: StyleProgram): string {
 }
 
 function runtimeGlobalVars(program: StyleProgram): string {
-	const declarations = program.declarations
+	const declarations = program.rules
+		.flatMap((rule) => rule.declarations)
 		.map(
 			(declaration) =>
 				`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
@@ -145,22 +151,24 @@ function stitchesRecipeObject(
 }
 
 export default defineCodemodAdapter({
-	id: "pandwind",
+	id: CodemodAdapterId.Pandwind,
 	patterns: [
 		{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
 		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
 		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
 	],
 	packages: dependency("pandwind", "runtime"),
-	capabilities: allRuleCapabilities("pandwind", "exact", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
 		"named-conditions": "exact",
 		"framework-semantics": "exact",
+		composition: "exact",
+		recipes: "exact",
 	}),
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 	configFiles: ["pandwind.config.ts", "package.json"],
 	emit(program, { programObject, declarationsObject }, context) {
-		if (program.source?.adapter === "stylex" && program.source.pattern === "stylex-define-vars") {
+		if (program.emissionHints?.includes(StyleProgramEmissionHint.GlobalVariables)) {
 			return {
 				text: runtimeGlobalVars(program),
 				imports: [
@@ -240,23 +248,24 @@ export default defineCodemodAdapter({
 		const runtimeStandalone =
 			dynamic &&
 			(kind === "style" || kind === undefined) &&
-			(program.source?.adapter === "vanilla-extract" || program.source?.adapter === "treat");
-		const functionDynamic =
-			program.source?.adapter === "stylex" &&
-			program.rules.some(function containsFunction(rule): boolean {
-				return (
-					rule.declarations.some(
-						(declaration) =>
-							declaration.value.kind === "dynamic" &&
-							/=>|^function\b/.test(declaration.value.expression.trim()),
-					) || rule.children.some(containsFunction)
-				);
-			});
+			program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeClass) === true;
+		const functionDynamic = program.rules.some(function containsFunction(rule): boolean {
+			return (
+				rule.declarations.some(
+					(declaration) =>
+						declaration.value.kind === "dynamic" &&
+						/=>|^function\b/.test(declaration.value.expression.trim()),
+				) || rule.children.some(containsFunction)
+			);
+		});
 		const stitchesVariants =
-			program.source?.adapter === "stitches" &&
-			program.declarations.some((declaration) => declaration.conditions.length >= 2);
+			program.compositions?.some(
+				(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
+			) === true && program.declarations.some((declaration) => declaration.conditions.length >= 2);
 		const needsRuntimeCss =
-			program.source?.adapter === "stylex" || runtimeStandalone || functionDynamic;
+			program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
+			runtimeStandalone ||
+			functionDynamic;
 		return {
 			text: stitchesVariants
 				? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`

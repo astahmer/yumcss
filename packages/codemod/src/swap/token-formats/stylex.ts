@@ -1,7 +1,7 @@
-import type { TokenFormatAdapter } from "../token-format-contracts.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 export const stylexTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "stylex",
+	id: TokenFormatId.StyleX,
 	canImport: false,
 	canExport: true,
 	export(set) {

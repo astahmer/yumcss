@@ -1,4 +1,8 @@
-import type { TokenFormatAdapter, TokenFormatRegistry } from "./token-format-contracts.ts";
+import {
+	TOKEN_FORMAT_SCHEMA,
+	type TokenFormatAdapter,
+	type TokenFormatRegistry,
+} from "./token-format-contracts.ts";
 export class DefaultTokenFormatRegistry implements TokenFormatRegistry {
 	private readonly entries = new Map<string, TokenFormatAdapter>();
 	constructor(initial: readonly TokenFormatAdapter[] = []) {
@@ -8,7 +12,7 @@ export class DefaultTokenFormatRegistry implements TokenFormatRegistry {
 		return [...this.entries.values()];
 	}
 	register(adapter: TokenFormatAdapter): TokenFormatRegistry {
-		if (adapter.schema !== "pandwind.token-format/1") {
+		if (adapter.schema !== TOKEN_FORMAT_SCHEMA) {
 			throw new Error(`unsupported token format schema: ${adapter.schema}`);
 		}
 		if (this.entries.has(adapter.id))

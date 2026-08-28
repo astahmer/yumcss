@@ -9,6 +9,11 @@
  */
 import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import {
+	StyleProgramConditionOrder,
+	StyleProgramCompositionKind,
+	type StyleProgramEmissionHint,
+} from "./identifiers.ts";
 
 export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/3" as const;
 
@@ -119,6 +124,13 @@ export interface StyleProgramSource {
 	readonly hostAttribute?: string;
 }
 
+export interface StyleProgramCanonicalization {
+	/** Conditions that are semantic defaults rather than emitted selectors. */
+	readonly ignoredConditions?: readonly Pick<StyleCondition, "kind" | "name">[];
+	/** Ordering policy for conditional declaration groups. */
+	readonly conditionalOrder?: StyleProgramConditionOrder;
+}
+
 export interface StyleThemeBinding {
 	readonly path: string;
 	readonly authored?: string;
@@ -127,7 +139,7 @@ export interface StyleThemeBinding {
 }
 
 export interface StyleComposition {
-	readonly kind: "mixin" | "extends" | "recipe" | "slot";
+	readonly kind: StyleProgramCompositionKind;
 	readonly reference: string;
 	readonly source?: StyleProgramSource;
 	readonly program?: StyleProgram;
@@ -167,6 +179,9 @@ export interface StyleProgram {
 	readonly compositions?: readonly StyleComposition[];
 	readonly runtime?: StyleRuntimeContext;
 	readonly plugins?: readonly StylePluginTransform[];
+	/** Generic target-neutral emission intent supplied by a source adapter. */
+	readonly emissionHints?: readonly StyleProgramEmissionHint[];
+	readonly canonicalization?: StyleProgramCanonicalization;
 }
 
 export interface StyleProgramOptions {
@@ -186,6 +201,8 @@ export interface StyleProgramOptions {
 	readonly variantContainerKeys?: readonly string[];
 	/** Source-adapter mappings for computed custom-property keys. */
 	readonly computedKeys?: Readonly<Record<string, string>>;
+	/** Source-adapter resolver for computed keys that need semantic lowering. */
+	readonly computedKeyResolver?: (expression: string) => string | undefined;
 	/** Source-adapter mappings for runtime variable references in values. */
 	readonly dynamicReferences?: Readonly<Record<string, string>>;
 	/** Source aliases expanded into one or more canonical CSS properties. */
@@ -203,6 +220,8 @@ export interface StyleProgramOptions {
 	readonly compositions?: readonly StyleComposition[];
 	readonly runtime?: StyleRuntimeContext;
 	readonly plugins?: readonly StylePluginTransform[];
+	readonly emissionHints?: readonly StyleProgramEmissionHint[];
+	readonly canonicalization?: StyleProgramCanonicalization;
 }
 
 export interface StyleRuleInput extends Omit<StyleRule, "children" | "order"> {
@@ -346,6 +365,8 @@ export function styleProgramFromSwapIR(
 		compositions: options.compositions ?? [],
 		runtime: options.runtime,
 		plugins: options.plugins ?? [],
+		emissionHints: options.emissionHints ?? [],
+		canonicalization: options.canonicalization,
 	};
 }
 
@@ -379,6 +400,8 @@ export function styleProgramFromRules(
 		compositions: options.compositions ?? [],
 		runtime: options.runtime,
 		plugins: options.plugins ?? [],
+		emissionHints: options.emissionHints ?? [],
+		canonicalization: options.canonicalization,
 	};
 }
 
@@ -466,9 +489,14 @@ function conditionedSelector(
  */
 export function styleProgramToCanonicalCss(program: StyleProgram): string {
 	const canonicalConditions = (conditions: readonly StyleCondition[]): StyleCondition[] =>
-		program.source?.adapter === "stylex"
-			? conditions.filter((condition) => !(condition.kind === "named" && condition.name === "base"))
-			: [...conditions];
+		conditions.filter(
+			(condition) =>
+				!program.canonicalization?.ignoredConditions?.some(
+					(ignored) =>
+						ignored.name === condition.name &&
+						(ignored.kind === undefined || ignored.kind === condition.kind),
+				),
+		);
 	const renderBase = (
 		rule: StyleRule,
 		declarations: readonly StyleDeclaration[],
@@ -523,7 +551,7 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 			groups.set(key, group);
 		}
 		const conditionalGroups = [...groups.values()];
-		if (program.source?.adapter === "stylex")
+		if (program.canonicalization?.conditionalOrder === StyleProgramConditionOrder.Depth)
 			conditionalGroups.sort((a, b) => a.conditions.length - b.conditions.length);
 		const conditional = conditionalGroups.map((group) => {
 			const conditions = [...baseConditions, ...group.conditions];
@@ -576,6 +604,12 @@ function sourceRange(
 	return { ...base, start, end };
 }
 
+function cssVariableExpression(value: string): string {
+	return value
+		.replace(/\$\{\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*\}/g, "var($2)")
+		.replace(/^\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*$/, "var($2)");
+}
+
 function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions): string | null {
 	if (node.computed === true) {
 		const expression = node.key === undefined ? "" : sourceSlice(body, node.key).trim();
@@ -583,22 +617,8 @@ function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions)
 			/^(?:\[\s*)?(['"])([^'"]+)\1(?:\s+as\s+[A-Za-z_$][\w$]*)?\s*(?:\])?$/,
 		);
 		if (literal?.[2] !== undefined) return literal[2];
-		const when = expression.match(
-			/^stylex\.when\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\(\s*(['"])([^'"]+)\2\s*(?:,\s*([A-Za-z_$][\w$]*))?\s*\)$/,
-		);
-		if (when?.[1] !== undefined && when[3] !== undefined) {
-			const marker = when[4] === undefined ? "pw-default-marker" : `pw-marker-${when[4]}`;
-			const pseudo = `${marker}${when[3]}`;
-			return when[1] === "ancestor"
-				? `:where(.${pseudo} *) &`
-				: when[1] === "descendant"
-					? `&:where(:has(.${pseudo}))`
-					: when[1] === "siblingBefore"
-						? `:where(.${pseudo} ~ *) &`
-						: when[1] === "siblingAfter"
-							? `&:where(:has(~ .${pseudo}))`
-							: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
-		}
+		const resolved = options.computedKeyResolver?.(expression);
+		if (resolved !== undefined) return resolved;
 		const conditionValue = options.conditionValues?.[expression];
 		if (conditionValue !== undefined) return conditionValue;
 		return options.computedKeys?.[expression] ?? null;
@@ -633,10 +653,6 @@ function dynamicSourceValue(
 			kind: "literal",
 			value: directReference,
 		};
-	const cssVariableExpression = (value: string): string =>
-		value
-			.replace(/\$\{\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*\}/g, "var($2)")
-			.replace(/^\s*(?:vars|tokens)\s*\[\s*(['"])(--[^'"]+)\1\s*\]\s*$/, "var($2)");
 	const normalizedExpression = cssVariableExpression(sourceExpression);
 	if (normalizedExpression !== sourceExpression && !normalizedExpression.includes("${")) {
 		const value =
@@ -846,7 +862,9 @@ export function styleProgramFromSourceObject(
 				const reference = sourceSlice(body, valueNode).trim();
 				if (reference !== "")
 					compositions.push({
-						kind: name.startsWith("extend") ? "extends" : "mixin",
+						kind: name.startsWith("extend")
+							? StyleProgramCompositionKind.Extends
+							: StyleProgramCompositionKind.Mixin,
 						reference,
 						source: sourceRange(options.source, options.sourceOffset ?? 0, valueNode),
 					});
@@ -924,6 +942,8 @@ export function styleProgramFromSourceObject(
 			compositions,
 			runtime: options.runtime,
 			plugins: options.plugins,
+			emissionHints: options.emissionHints,
+			canonicalization: options.canonicalization,
 		},
 	);
 }

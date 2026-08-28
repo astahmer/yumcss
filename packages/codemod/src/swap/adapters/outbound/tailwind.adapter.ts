@@ -2,6 +2,7 @@ import type { PandwindMeta } from "../../../meta.ts";
 import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
+import { CodemodAdapterId } from "../../identifiers.ts";
 
 const camel = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
@@ -50,11 +51,11 @@ const emitTailwind: Emitter = (ir, meta) => {
 };
 
 export default {
-	id: "tailwind",
+	id: CodemodAdapterId.Tailwind,
 	emit: emitTailwind,
 	capabilities: {
 		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: "tailwind",
+		adapter: CodemodAdapterId.Tailwind,
 		capabilities: {
 			declarations: "partial",
 			"token-values": "partial",

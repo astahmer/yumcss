@@ -1,4 +1,5 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
+import { CodemodPluginId } from "../identifiers.ts";
 import aphrodite from "./aphrodite.adapter.ts";
 import bamboo from "./bamboo.adapter.ts";
 import chakra from "./chakra.adapter.ts";
@@ -24,7 +25,7 @@ import vueStyled from "./vue-styled.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
 export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlugin(
-	"pandwind-builtin-adapters",
+	CodemodPluginId.BuiltinAdapters,
 	[
 		pandwind,
 		bamboo,

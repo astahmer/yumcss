@@ -1,4 +1,5 @@
 import type { StyleAdapter } from "./adapter-contract.ts";
+import { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 import {
 	createStyleAdapterManifest,
 	readAdapterPackageDeclaration,
@@ -78,7 +79,7 @@ function isStyleAdapter(value: unknown): value is StyleAdapter {
 	return (
 		typeof value === "object" &&
 		value !== null &&
-		(value as { schema?: unknown }).schema === "pandwind.style-adapter/2" &&
+		(value as { schema?: unknown }).schema === ADAPTER_CONTRACT_SCHEMA &&
 		typeof (value as { id?: unknown }).id === "string" &&
 		typeof (value as { parse?: unknown }).parse === "function" &&
 		typeof (value as { emit?: unknown }).emit === "function"

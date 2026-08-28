@@ -1,7 +1,8 @@
 import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
-	id: "emotion",
+	id: CodemodAdapterId.Emotion,
 	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
@@ -25,7 +26,7 @@ export default defineCodemodAdapter({
 			{ name: "@emotion/styled", kind: "peer" },
 		],
 	},
-	capabilities: allRuleCapabilities("emotion", "exact", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Emotion, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",

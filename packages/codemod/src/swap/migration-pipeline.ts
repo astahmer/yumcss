@@ -1,5 +1,6 @@
 import type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 import { runAdapterMigration } from "./adapter-migration.ts";
+import { MigrationStageId } from "./identifiers.ts";
 
 /** Versioned orchestration boundary for source/target adapter migrations. */
 export const MIGRATION_PIPELINE_SCHEMA = "pandwind.migration-pipeline/1" as const;
@@ -27,7 +28,10 @@ export interface AdapterMigrationPipeline {
  */
 export function createAdapterMigrationPipeline(
 	stages: readonly MigrationStage<AdapterMigrationInput, AdapterMigrationResult>[] = [
-		{ id: "adapter-migration", run: ({ source, options }) => runAdapterMigration(source, options) },
+		{
+			id: MigrationStageId.AdapterMigration,
+			run: ({ source, options }) => runAdapterMigration(source, options),
+		},
 	],
 ): AdapterMigrationPipeline {
 	return {

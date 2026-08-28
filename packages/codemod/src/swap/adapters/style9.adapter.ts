@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const style9 = makeExtraAdapter({
-	id: "style9",
+	id: CodemodAdapterId.Style9,
 	modules: ["style9"],
 	packages: { packages: [{ name: "style9", kind: "runtime" }] },
 	detect: [/from\s+["']style9["']/g, /\bstyle9\.create\s*\(\s*\{/g],

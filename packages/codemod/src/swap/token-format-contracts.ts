@@ -1,15 +1,16 @@
-const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
+export const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
 
 /** Versioned normalized token IR shared by every source and target format. */
-export type TokenFormatId =
-	| "dtcg"
-	| "theme"
-	| "panda"
-	| "preset"
-	| "sd"
-	| "figma"
-	| "rootcss"
-	| "stylex";
+export enum TokenFormatId {
+	Dtcg = "dtcg",
+	Theme = "theme",
+	Panda = "panda",
+	Preset = "preset",
+	StyleDictionary = "sd",
+	Figma = "figma",
+	RootCss = "rootcss",
+	StyleX = "stylex",
+}
 
 export interface TokenSet {
 	/** group -> flat token key -> resolved value; adapters own nesting rules. */

@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const compiled = makeExtraAdapter({
-	id: "compiled",
+	id: CodemodAdapterId.Compiled,
 	modules: ["@compiled/react", "@compiled/css-in-js"],
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
 	detect: [

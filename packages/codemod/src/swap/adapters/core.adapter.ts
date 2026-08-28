@@ -25,6 +25,7 @@ import {
 	swapIRFromStyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
+import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "../identifiers.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: "runtime" }],
@@ -49,9 +50,9 @@ const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 		"pseudo-conditions": "exact",
 		"media-conditions": "exact",
 		"selector-conditions": "exact",
-			"supports-conditions": "exact",
-			"framework-semantics": "exact",
-		},
+		"supports-conditions": "exact",
+		"framework-semantics": "exact",
+	},
 });
 
 const emptyConfig = (
@@ -92,7 +93,7 @@ function parseCoreDialect(
 	context: AdapterParseContext,
 ): AdapterParseResult {
 	const excluded = context.document?.isExcluded ?? (() => false);
-	if (id === "tw") {
+	if (id === SwapSourceId.Tw) {
 		if (context.meta === undefined)
 			return {
 				matches: [],
@@ -114,7 +115,7 @@ function parseCoreDialect(
 			residuals: [],
 		};
 	}
-	if (id === "dss") return parseDss(source, context);
+	if (id === SwapSourceId.Dss) return parseDss(source, context);
 	return {
 		matches: parseCssLiterals(source, excluded, { tokens: context.meta?.tokens }).map((match) => ({
 			start: match.start,
@@ -135,7 +136,7 @@ function parseCoreDialect(
 
 function makeCoreAdapter(
 	system: string,
-	dialect: string,
+	dialect: SwapSourceId,
 	role: "source" | "target" | "both",
 	emitter: Emitter,
 ): StyleDialectAdapter {
@@ -145,9 +146,9 @@ function makeCoreAdapter(
 		id,
 		version: "1",
 		sourceModules:
-			dialect === "tw"
+			dialect === SwapSourceId.Tw
 				? ["pandwind/tw"]
-				: dialect === "dss"
+				: dialect === SwapSourceId.Dss
 					? ["pandwind/design"]
 					: ["pandwind/css"],
 		capabilities: CORE_CAPABILITIES(id),
@@ -193,23 +194,52 @@ function makeCoreAdapter(
 	return asStyleDialect(adapter, { system, dialect, role });
 }
 
-const pandaTw = makeCoreAdapter("panda", "tw", "both", OUTBOUND_EMITTERS.panda);
-const pandaDss = makeCoreAdapter("panda", "dss", "source", OUTBOUND_EMITTERS.panda);
-const pandaCss = makeCoreAdapter("panda", "css", "source", OUTBOUND_EMITTERS.panda);
-const pandwindTw = makeCoreAdapter("pandwind", "tw", "target", SWAP_EMITTERS.tw);
-const pandwindDss = makeCoreAdapter("pandwind", "dss", "target", SWAP_EMITTERS.dss);
-const pandwindCss = makeCoreAdapter("pandwind", "css", "target", SWAP_EMITTERS["css.class"]);
+const pandaTw = makeCoreAdapter(
+	CodemodAdapterId.Panda,
+	SwapSourceId.Tw,
+	"both",
+	OUTBOUND_EMITTERS[CodemodAdapterId.Panda],
+);
+const pandaDss = makeCoreAdapter(
+	CodemodAdapterId.Panda,
+	SwapSourceId.Dss,
+	"source",
+	OUTBOUND_EMITTERS[CodemodAdapterId.Panda],
+);
+const pandaCss = makeCoreAdapter(
+	CodemodAdapterId.Panda,
+	SwapSourceId.Css,
+	"source",
+	OUTBOUND_EMITTERS[CodemodAdapterId.Panda],
+);
+const pandwindTw = makeCoreAdapter(
+	CodemodAdapterId.Pandwind,
+	SwapSourceId.Tw,
+	"target",
+	SWAP_EMITTERS[SwapSourceId.Tw],
+);
+const pandwindDss = makeCoreAdapter(
+	CodemodAdapterId.Pandwind,
+	SwapSourceId.Dss,
+	"target",
+	SWAP_EMITTERS[SwapSourceId.Dss],
+);
+const pandwindCss = makeCoreAdapter(
+	CodemodAdapterId.Pandwind,
+	SwapSourceId.Css,
+	"target",
+	SWAP_EMITTERS[SwapTargetId.CssClass],
+);
 
-export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("panda", [
+export const PANDA_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(CodemodAdapterId.Panda, [
 	pandaTw,
 	pandaDss,
 	pandaCss,
 ]);
-export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem("pandwind", [
-	pandwindTw,
-	pandwindDss,
-	pandwindCss,
-]);
+export const PANDWIND_STYLE_SYSTEM: StyleSystemAdapter = createStyleSystem(
+	CodemodAdapterId.Pandwind,
+	[pandwindTw, pandwindDss, pandwindCss],
+);
 export const CORE_STYLE_SYSTEMS: readonly StyleSystemAdapter[] = [
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,

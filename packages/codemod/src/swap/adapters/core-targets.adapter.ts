@@ -1,6 +1,7 @@
 import { SWAP_EMITTERS } from "../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
 import type { SwapTargetAdapter } from "../swap-registry.ts";
+import { SwapTargetId } from "../identifiers.ts";
 
 const target = (
 	id: string,
@@ -14,9 +15,9 @@ const capabilities = (
 
 export const CORE_SWAP_TARGETS: readonly SwapTargetAdapter[] = [
 	target(
-		"css.class",
-		SWAP_EMITTERS["css.class"],
-		capabilities("css.class", {
+		SwapTargetId.CssClass,
+		SWAP_EMITTERS[SwapTargetId.CssClass],
+		capabilities(SwapTargetId.CssClass, {
 			declarations: "exact",
 			"token-values": "exact",
 			"named-conditions": "exact",
@@ -29,9 +30,9 @@ export const CORE_SWAP_TARGETS: readonly SwapTargetAdapter[] = [
 		}),
 	),
 	target(
-		"design",
-		SWAP_EMITTERS.design,
-		capabilities("design", {
+		SwapTargetId.Design,
+		SWAP_EMITTERS[SwapTargetId.Design],
+		capabilities(SwapTargetId.Design, {
 			declarations: "exact",
 			"token-values": "exact",
 			"named-conditions": "partial",
@@ -39,9 +40,9 @@ export const CORE_SWAP_TARGETS: readonly SwapTargetAdapter[] = [
 		}),
 	),
 	target(
-		"dss",
-		SWAP_EMITTERS.dss,
-		capabilities("dss", {
+		SwapTargetId.Dss,
+		SWAP_EMITTERS[SwapTargetId.Dss],
+		capabilities(SwapTargetId.Dss, {
 			declarations: "exact",
 			"token-values": "exact",
 			"named-conditions": "partial",
@@ -49,9 +50,9 @@ export const CORE_SWAP_TARGETS: readonly SwapTargetAdapter[] = [
 		}),
 	),
 	target(
-		"tw",
-		SWAP_EMITTERS.tw,
-		capabilities("tw", {
+		SwapTargetId.Tw,
+		SWAP_EMITTERS[SwapTargetId.Tw],
+		capabilities(SwapTargetId.Tw, {
 			declarations: "exact",
 			"token-values": "partial",
 			"named-conditions": "exact",

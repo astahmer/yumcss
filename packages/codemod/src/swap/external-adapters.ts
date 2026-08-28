@@ -43,6 +43,7 @@ type CallPattern = {
 	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
 	readonly styleProps?: readonly string[];
+	readonly transform?: (program: StyleProgram, context: AdapterParseContext) => StyleProgram;
 };
 
 export type AdapterSourceObjectOptions = Pick<
@@ -55,9 +56,13 @@ export type AdapterSourceObjectOptions = Pick<
 	| "unwrapNestedObjectKeys"
 	| "variantContainerKeys"
 	| "computedKeys"
+	| "computedKeyResolver"
 	| "dynamicReferences"
 	| "propertyAliases"
 	| "valueTransforms"
+	| "emissionHints"
+	| "canonicalization"
+	| "compositions"
 >;
 export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
@@ -238,7 +243,7 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 			return condition.name.startsWith(":") || condition.name.startsWith("[")
 				? `&${condition.name}`
 				: condition.name;
-		}
+	}
 	return condition.name;
 }
 
@@ -767,6 +772,7 @@ function parseCalls(
 					program = base;
 				}
 			}
+			program = pattern.transform?.(program, context) ?? program;
 			program = {
 				...program,
 				source: { ...program.source, pattern: pattern.name },

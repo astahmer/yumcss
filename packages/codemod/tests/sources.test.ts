@@ -14,6 +14,7 @@ import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { transformSource } from "../src/migrate.ts";
 import { examplePreset } from "pandwind/preset";
+import { CodemodAdapterId } from "../src/swap/index.ts";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
 const meta = loadMetaFromSources({
@@ -30,7 +31,7 @@ function styled(source: string) {
 	return transformSource(`${CSS_BINDING}\n${source}`, meta, {
 		mode: "keep",
 		file: "test.tsx",
-		sources: ["styled-components"],
+		sources: [CodemodAdapterId.StyledComponents],
 	});
 }
 
@@ -38,7 +39,7 @@ function stylex(source: string) {
 	return transformSource(`${CSS_BINDING}\n${source}`, meta, {
 		mode: "keep",
 		file: "test.tsx",
-		sources: ["stylex"],
+		sources: [CodemodAdapterId.StyleX],
 	});
 }
 
@@ -109,7 +110,7 @@ const Extended = styled(Base)\`
 		const result = transformSource("const Card = styled.div`\n\tcolor: red;\n`;", meta, {
 			mode: "keep",
 			file: "t.tsx",
-			sources: ["styled-components"],
+			sources: [CodemodAdapterId.StyledComponents],
 		});
 		expect(result.converted).toBe(0);
 		expect(result.code).toContain("needs an existing pandwind css binding");
@@ -182,7 +183,7 @@ export const Icon = styled.div\`
 		const result = transformSource(source, meta, {
 			mode: "keep",
 			file: "c.tsx",
-			sources: ["styled-components"],
+			sources: [CodemodAdapterId.StyledComponents],
 		});
 		expect(result.converted).toBe(1); // only the REAL component
 		expect(result.code).toContain("// docs: const Fake = styled.div");
@@ -198,7 +199,7 @@ export const Card = styled.div\`
 		const result = transformSource(source, meta, {
 			mode: "keep",
 			file: "s.tsx",
-			sources: ["styled-components"],
+			sources: [CodemodAdapterId.StyledComponents],
 		});
 		expect(result.converted).toBe(1);
 		expect(result.code).toContain('snippet = "const Fake = styled.div');

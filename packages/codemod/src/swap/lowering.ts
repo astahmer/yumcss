@@ -5,6 +5,7 @@ import type {
 	StyleProgramResidual,
 	StyleRule,
 } from "./semantic-ir.ts";
+import { StyleLoweringId } from "./identifiers.ts";
 
 export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
 export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
@@ -85,7 +86,7 @@ function dynamicVariableName(expression: string): string {
 
 const dynamicAndThemes: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
-	id: "dynamic-and-theme",
+	id: StyleLoweringId.DynamicAndTheme,
 	apply: ({ program, target }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let changed = false;
@@ -135,14 +136,14 @@ const dynamicAndThemes: StyleLowering = {
 				? { ...program, rules, declarations: program.declarations.map(transform), themes }
 				: program,
 			residuals,
-			applied: changed ? ["dynamic-and-theme"] : [],
+			applied: changed ? [StyleLoweringId.DynamicAndTheme] : [],
 		};
 	},
 };
 
 const composition: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
-	id: "composition-flatten",
+	id: StyleLoweringId.CompositionFlatten,
 	apply: ({ program, target }) => {
 		if ((program.compositions?.length ?? 0) === 0 || level(target, "composition") !== "unsupported")
 			return { program, residuals: [], applied: [] };
@@ -167,14 +168,14 @@ const composition: StyleLowering = {
 				compositions: undefined,
 			},
 			residuals,
-			applied: ["composition-flatten"],
+			applied: [StyleLoweringId.CompositionFlatten],
 		};
 	},
 };
 
 const runtimeAndPlugins: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
-	id: "runtime-and-plugin",
+	id: StyleLoweringId.RuntimeAndPlugin,
 	apply: ({ program, target }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let rules = program.rules;
@@ -242,7 +243,7 @@ const runtimeAndPlugins: StyleLowering = {
 					}
 				: program,
 			residuals,
-			applied: applied ? ["runtime-and-plugin"] : [],
+			applied: applied ? [StyleLoweringId.RuntimeAndPlugin] : [],
 		};
 	},
 };
@@ -255,7 +256,7 @@ export const STYLE_LOWERINGS: readonly StyleLowering[] = [
 
 export const BUILTIN_STYLE_LOWERING_PLUGIN: StyleLoweringPlugin = {
 	schema: STYLE_LOWERING_PLUGIN_SCHEMA,
-	id: "pandwind-core-lowerings",
+	id: StyleLoweringId.Builtin,
 	lowerings: STYLE_LOWERINGS,
 };
 

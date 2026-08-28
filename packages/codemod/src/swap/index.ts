@@ -28,6 +28,7 @@ import {
 	type AdapterCapabilityMode,
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
+import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
 
 const builtinAdapterCatalog = createBuiltinCodemodCatalog();
 const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
@@ -36,20 +37,12 @@ export const SWAP_TARGETS = [
 	...SWAP_REGISTRY.targets.map((adapter) => adapter.id),
 	...builtinAdapterIds,
 ];
-export type SwapTarget =
-	| "css.class"
-	| "design"
-	| "dss"
-	| "tw"
-	| "tailwind"
-	| "panda"
-	| "stylex"
-	| ExternalAdapterId;
+export type SwapTarget = SwapTargetId | CodemodAdapterId | ExternalAdapterId;
 import type { SwapIR } from "./ir.ts";
 
 export const SWAP_SOURCES = [
 	...SWAP_REGISTRY.sources.map((adapter) => adapter.id),
-	"panda",
+	CodemodAdapterId.Panda,
 	...builtinAdapterIds,
 ] as const;
 export type SwapSource = (typeof SWAP_SOURCES)[number];
@@ -110,6 +103,24 @@ export {
 	styleProgramToCanonicalCss,
 	swapIRFromStyleProgram,
 } from "./semantic-ir.ts";
+export {
+	CodemodAdapterId,
+	CodemodPatternId,
+	CodemodPluginId,
+	SwapSourceId,
+	SwapTargetId,
+	StyleProgramCompositionKind,
+	StyleProgramConditionOrder,
+	StyleProgramEmissionHint,
+	StyleValidatorId,
+	StyleLoweringId,
+	MigrationStageId,
+	HostComponentRewriterId,
+	PandaMigrationStageId,
+	externalIdentifier,
+} from "./identifiers.ts";
+export type { ExternalIdentifier } from "./identifiers.ts";
+export { TokenFormatId } from "./token-format-contracts.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	inspectAdapterCapabilities,
@@ -392,7 +403,7 @@ function collectMatches(
 	engineResolver?: MissResolver,
 	tokenize?: boolean,
 ): Array<Match> {
-	if (from === "panda" || builtinAdapterIds.includes(from)) return [];
+	if (from === CodemodAdapterId.Panda || builtinAdapterIds.includes(from)) return [];
 	return [
 		...SWAP_REGISTRY.scanSource(from, {
 			source,
@@ -460,8 +471,9 @@ export function runSwap(
 		}
 		// Only in-house class-string targets ride an existing pandwind css
 		// binding; external libraries bring their own imports.
-		const needsCssTarget = options.to === "css.class" || options.to === "design";
-		const needsDssTarget = options.to === "dss";
+		const needsCssTarget =
+			options.to === SwapTargetId.CssClass || options.to === SwapTargetId.Design;
+		const needsDssTarget = options.to === SwapTargetId.Dss;
 		const hasDssBinding =
 			/\b(?:const|let|var)\s+dss\b/.test(code) || /import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
 		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
@@ -514,7 +526,7 @@ export function runSwap(
 		// Target-import hygiene: tw targets need the app's generated tw module
 		// unless the file already binds it; css.class/design ride the existing
 		// css binding (gated above).
-		if (options.to === "tw" && options.metaDir !== undefined && options.metaDir !== "") {
+		if (options.to === SwapTargetId.Tw && options.metaDir !== undefined && options.metaDir !== "") {
 			if (
 				!/\btw\s*\(/.test(
 					code

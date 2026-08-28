@@ -6,8 +6,18 @@ import {
 	runAdapterMigration,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
+import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
 
-export type StylexDocsLane = "runtime-css" | "atomic-css" | "design-dss";
+export enum StylexDocsLane {
+	RuntimeCss = "runtime-css",
+	AtomicCss = "atomic-css",
+	DesignDss = "design-dss",
+}
+
+enum StylexDocsMode {
+	Atomic = "atomic",
+	Design = "design",
+}
 
 export interface StylexDocsLaneReport {
 	readonly lane: StylexDocsLane;
@@ -88,10 +98,10 @@ async function ensureRuntimeStaticCss(
 		.map((file) => `import ${JSON.stringify(`./${file.slice(4)}`)};`)
 		.join("\n");
 	const factory =
-		lane === "design-dss"
+		lane === StylexDocsLane.DesignDss
 			? 'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst dcss = createRuntimeDesignCss(pandwindPreset, { sheet: pandwindRuntime.sheet });'
 			: 'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst css = createRuntimeCss(pandwindPreset, { sheet: pandwindRuntime.sheet });';
-	const api = lane === "design-dss" ? "dcss" : "css";
+	const api = lane === StylexDocsLane.DesignDss ? "dcss" : "css";
 	const groups = staticGroupCalls
 		.map((call) => call.replace(/^\b(?:css|dcss)\.group/, `${api}.group`))
 		.join("\n");
@@ -217,7 +227,7 @@ function objectEntrySeparator(entry: string): number {
 	return -1;
 }
 
-function rewriteNamedGroups(source: string, mode: "atomic" | "design"): string {
+function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 	let output = source;
 	const calls = [...source.matchAll(/\bcss\.group\s*\(/g)].reverse();
 	for (const call of calls) {
@@ -231,8 +241,10 @@ function rewriteNamedGroups(source: string, mode: "atomic" | "design"): string {
 			if (separator < 0) return entry;
 			const key = entry.slice(0, separator).trim();
 			const value = entry.slice(separator + 1).trim();
-			const functionValue = /^(?:async\s+)?(?:function\b|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/.test(value);
-			return mode === "atomic"
+			const functionValue = /^(?:async\s+)?(?:function\b|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/.test(
+				value,
+			);
+			return mode === StylexDocsMode.Atomic
 				? functionValue
 					? `${key}: ${value}`
 					: `${key}: ${value}`
@@ -243,7 +255,7 @@ function rewriteNamedGroups(source: string, mode: "atomic" | "design"): string {
 		const replacement = `css.group({ ${entries.join(", ")} })`;
 		output = `${output.slice(0, start)}${replacement}${output.slice(end + 1)}`;
 	}
-	if (mode === "design") {
+	if (mode === StylexDocsMode.Design) {
 		output = output.replaceAll(
 			/import \{ create(?:Runtime)?Css \} from "pandwind\/css(?:\/runtime)?";/g,
 			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
@@ -273,8 +285,11 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	// plugin. Keep migrated token literals in the token-definition shape that
 	// compiler understands so the preview exercises the same values as the
 	// reference playground while the host page uses Pandwind.
-	output = output.replaceAll("export const colors = ({", "export const colors = stylex.defineVars({");
-	if (lane === "design-dss") {
+	output = output.replaceAll(
+		"export const colors = ({",
+		"export const colors = stylex.defineVars({",
+	);
+	if (lane === StylexDocsLane.DesignDss) {
 		output = output.replaceAll("createRuntimeCss", "createRuntimeDesignCss");
 		output = output.replace(
 			/const css = createRuntimeDesignCss\(pandwindPreset(?:, \{ sheet: pandwindRuntime\.sheet \})?\);/g,
@@ -296,21 +311,13 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 				`    code: ${JSON.stringify(JSON.stringify({ name: "pandwind", main: "./index.js" }, null, 2))},`,
 				"  },",
 			],
-			[
-				"  '/node_modules/pandwind/index.js': {",
-				`    code: ${JSON.stringify(index)},`,
-				"  },",
-			],
+			["  '/node_modules/pandwind/index.js': {", `    code: ${JSON.stringify(index)},`, "  },"],
 			[
 				"  '/node_modules/pandwind/css/runtime.js': {",
 				`    code: ${JSON.stringify(runtime)},`,
 				"  },",
 			],
-			[
-				"  '/node_modules/pandwind/preset.js': {",
-				`    code: ${JSON.stringify(preset)},`,
-				"  },",
-			],
+			["  '/node_modules/pandwind/preset.js': {", `    code: ${JSON.stringify(preset)},`, "  },"],
 		]
 			.flat()
 			.join("\n");
@@ -321,7 +328,7 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 	}
 	output = output.replace(
 		'import * as stylex from "@stylexjs/stylex";\n\nexport default function Logo',
-		lane === "design-dss"
+		lane === StylexDocsLane.DesignDss
 			? 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst dcss = createRuntimeDesignCss(pandwindPreset);\n\nexport default function Logo'
 			: 'import * as stylex from "@stylexjs/stylex";\nimport { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\nconst css = createRuntimeCss(pandwindPreset);\n\nexport default function Logo',
 	);
@@ -333,17 +340,20 @@ function createLane(id: StylexDocsLane): StylexDocsMigrationLane {
 		id,
 		migrate(source, context) {
 			const result = runAdapterMigration(source, {
-				from: "stylex",
-				to: "pandwind",
+				from: CodemodAdapterId.StyleX,
+				to: CodemodAdapterId.Pandwind,
 				file: context.file,
 				root: context.root,
 				mode: "safe",
 				semantic: { source: { file: context.file, framework: "react" } },
 			});
-			if (id === "runtime-css") return result;
+			if (id === StylexDocsLane.RuntimeCss) return result;
 			return {
 				...result,
-				code: rewriteNamedGroups(result.code, id === "atomic-css" ? "atomic" : "design"),
+				code: rewriteNamedGroups(
+					result.code,
+					id === StylexDocsLane.AtomicCss ? StylexDocsMode.Atomic : StylexDocsMode.Design,
+				),
 			};
 		},
 	};
@@ -351,9 +361,9 @@ function createLane(id: StylexDocsLane): StylexDocsMigrationLane {
 
 export class StylexDocsMigration {
 	static readonly lanes: readonly StylexDocsMigrationLane[] = [
-		createLane("runtime-css"),
-		createLane("atomic-css"),
-		createLane("design-dss"),
+		createLane(StylexDocsLane.RuntimeCss),
+		createLane(StylexDocsLane.AtomicCss),
+		createLane(StylexDocsLane.DesignDss),
 	];
 
 	static async run(

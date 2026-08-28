@@ -1,4 +1,8 @@
-import type { TokenFormatAdapter, TokenSet } from "../token-format-contracts.ts";
+import {
+	TokenFormatId,
+	type TokenFormatAdapter,
+	type TokenSet,
+} from "../token-format-contracts.ts";
 import {
 	createTokenSet,
 	findPresetTokens,
@@ -20,7 +24,7 @@ const read = async (path: string): Promise<TokenSet> => {
 
 export const presetTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "preset",
+	id: TokenFormatId.Preset,
 	canImport: true,
 	canExport: true,
 	importFile: read,

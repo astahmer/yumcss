@@ -2,6 +2,7 @@ import type { SwapEntry } from "../../ir.ts";
 import type { Emitter } from "../../emit.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../../capabilities.ts";
 import { authoredTokenRef, qualifyRef, resolvedTokenRef } from "../../tokens.ts";
+import { CodemodAdapterId } from "../../identifiers.ts";
 
 const propertyGroups: Record<string, string> = {
 	backgroundColor: "colors",
@@ -77,11 +78,11 @@ const emitPanda: Emitter = (ir, meta, context) => {
 };
 
 export default {
-	id: "panda",
+	id: CodemodAdapterId.Panda,
 	emit: emitPanda,
 	capabilities: {
 		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: "panda",
+		adapter: CodemodAdapterId.Panda,
 		capabilities: {
 			declarations: "exact",
 			"token-values": "exact",

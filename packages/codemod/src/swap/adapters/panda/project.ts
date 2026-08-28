@@ -14,6 +14,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { CodemodAdapterId } from "../../identifiers.ts";
 
 /* ------------------------------------------------------------------ */
 /* alias resolution                                                    */
@@ -233,7 +234,7 @@ function scanFileUsage(file: string, source: string, usage: ProjectUsage): void 
 	)) {
 		for (const rawSpec of imp[1]!.split(",")) {
 			const spec = rawSpec.trim();
-			const name = spec === "panda" ? "" : (spec.split(/\s+as\s+/)[0] ?? "");
+			const name = spec === CodemodAdapterId.Panda ? "" : (spec.split(/\s+as\s+/)[0] ?? "");
 			if (name !== "") usage.jsxComponents.add(name);
 		}
 	}

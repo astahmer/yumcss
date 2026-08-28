@@ -1,10 +1,11 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterId, StyleProgramEmissionHint } from "../identifiers.ts";
 
 const runtimeFallbackVar =
 	"const fallbackVar = (variable, fallback) => `var(${variable}, ${fallback})`;";
 
 export default defineCodemodAdapter({
-	id: "vanilla-extract",
+	id: CodemodAdapterId.VanillaExtract,
 	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
 		{ name: "globalStyle", kind: "global", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
@@ -12,7 +13,7 @@ export default defineCodemodAdapter({
 		{ name: "fontFace", kind: "font-face", regex: /\bfontFace\s*\(\s*\{/g },
 	],
 	packages: dependency("@vanilla-extract/css", "runtime"),
-	capabilities: allRuleCapabilities("vanilla-extract", "unsupported", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.VanillaExtract, "unsupported", {
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
@@ -23,16 +24,16 @@ export default defineCodemodAdapter({
 	migration: {
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
-				targetId === "pandwind" &&
+				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === "style"),
 			standalone:
-				targetId === "pandwind" &&
+				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === "style"),
 		}),
 		rewrite: ({ code, targetId, complete }) => {
-			if (targetId !== "pandwind" || !complete) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 			let rewritten = code.replace(
 				/\b(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createVar\s*\(\s*\)\s*;/g,
 				(_match, declaration, name: string) => `${declaration} ${name} = "--pw-${name}";`,
@@ -62,6 +63,7 @@ export default defineCodemodAdapter({
 		);
 		return {
 			unwrapNestedObjectKeys: ["vars", "selectors"],
+			emissionHints: [StyleProgramEmissionHint.RuntimeClass],
 			computedKeys,
 			dynamicReferences,
 		};

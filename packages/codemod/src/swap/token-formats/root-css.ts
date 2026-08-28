@@ -1,5 +1,5 @@
 import { createTokenSet, putToken } from "../token-format-support.ts";
-import type { TokenFormatAdapter } from "../token-format-contracts.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 const prefixes: Record<string, string> = {
 	color: "colors",
 	spacing: "spacing",
@@ -23,7 +23,7 @@ const blocks = (text: string): string[] =>
 	});
 export const rootCssTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "rootcss",
+	id: TokenFormatId.RootCss,
 	canImport: true,
 	canExport: true,
 	importText(text) {

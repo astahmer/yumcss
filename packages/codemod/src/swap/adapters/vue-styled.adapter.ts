@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const vueStyled = makeExtraAdapter({
-	id: "vue-styled",
+	id: CodemodAdapterId.VueStyled,
 	modules: ["vue-styled-components"],
 	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
 	detect: [

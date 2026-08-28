@@ -1,5 +1,9 @@
 import { createTokenSet, exportNested, putToken } from "../token-format-support.ts";
-import type { TokenFormatAdapter, TokenSet } from "../token-format-contracts.ts";
+import {
+	TokenFormatId,
+	type TokenFormatAdapter,
+	type TokenSet,
+} from "../token-format-contracts.ts";
 
 const walk = (node: unknown, path: string[], out: TokenSet): void => {
 	if (typeof node !== "object" || node === null) return;
@@ -13,7 +17,7 @@ const walk = (node: unknown, path: string[], out: TokenSet): void => {
 
 export const dtcgTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "dtcg",
+	id: TokenFormatId.Dtcg,
 	canImport: true,
 	canExport: true,
 	importText(text) {

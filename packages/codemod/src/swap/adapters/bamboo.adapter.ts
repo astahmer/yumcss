@@ -1,8 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 /** Bamboo CSS uses the Panda-compatible styled-system object dialect. */
 export default defineCodemodAdapter({
-	id: "bamboo",
+	id: CodemodAdapterId.Bamboo,
 	patterns: [{ name: "css", regex: /\bcss\s*\(\s*\{/g }],
 	packages: {
 		packages: [
@@ -11,7 +12,7 @@ export default defineCodemodAdapter({
 		],
 		files: ["bamboo.config.ts"],
 	},
-	capabilities: allRuleCapabilities("bamboo", "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Bamboo, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "unsupported",
 		composition: "partial",

@@ -1,7 +1,8 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
-	id: "linaria",
+	id: CodemodAdapterId.Linaria,
 	patterns: [
 		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{
@@ -17,7 +18,7 @@ export default defineCodemodAdapter({
 			dependency("@linaria/react", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities("linaria", "unsupported", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
 		"dynamic-values": "partial",
 		components: "exact",
 		"font-face": "unsupported",

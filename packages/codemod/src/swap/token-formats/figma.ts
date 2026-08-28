@@ -1,5 +1,9 @@
 import { createTokenSet, putToken, exportNested } from "../token-format-support.ts";
-import type { TokenFormatAdapter, TokenSet } from "../token-format-contracts.ts";
+import {
+	TokenFormatId,
+	type TokenFormatAdapter,
+	type TokenSet,
+} from "../token-format-contracts.ts";
 const types: Record<string, string> = {
 	color: "colors",
 	spacing: "spacing",
@@ -24,7 +28,7 @@ const walk = (node: unknown, path: string[], out: TokenSet): void => {
 };
 export const figmaTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "figma",
+	id: TokenFormatId.Figma,
 	canImport: true,
 	canExport: true,
 	importText(text) {

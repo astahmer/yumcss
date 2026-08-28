@@ -1,5 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const spacing = new Set([
 	"m",
@@ -76,7 +77,7 @@ function muiTransforms(
 }
 
 export default defineCodemodAdapter({
-	id: "mui",
+	id: CodemodAdapterId.Mui,
 	patterns: [
 		{
 			name: "mui-sx",
@@ -92,7 +93,7 @@ export default defineCodemodAdapter({
 			dependency("@mui/material", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities("mui", "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		"framework-semantics": "partial",

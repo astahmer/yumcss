@@ -6,6 +6,7 @@ import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";
 import type { SwapIR } from "./ir.ts";
 import type { AdapterCapabilities } from "./capabilities.ts";
 import { CORE_SWAP_TARGETS } from "./adapters/core-targets.adapter.ts";
+import { SwapSourceId } from "./identifiers.ts";
 
 export interface SwapSourceMatch {
 	readonly start: number;
@@ -56,9 +57,11 @@ export const SWAP_TARGET_ADAPTERS: readonly SwapTargetAdapter[] = [
 	...OUTBOUND_ADAPTERS,
 ];
 
-const coreSource = (id: "tw" | "css" | "design"): SwapSourceAdapter =>
+const coreSource = (
+	id: SwapSourceId.Tw | SwapSourceId.Css | SwapSourceId.Design,
+): SwapSourceAdapter =>
 	source(id, (context, excluded) => {
-		if (id === "tw")
+		if (id === SwapSourceId.Tw)
 			return parseTwCalls(context.source, context.meta, excluded, context.engineResolver).map(
 				(match) => ({
 					...match,
@@ -69,12 +72,12 @@ const coreSource = (id: "tw" | "css" | "design"): SwapSourceAdapter =>
 			tokenize: context.tokenize,
 			tokens: context.meta.tokens,
 		})
-			.filter((match) => (id === "design" ? match.design : !match.design))
+			.filter((match) => (id === SwapSourceId.Design ? match.design : !match.design))
 			.map((match) => ({ start: match.start, end: match.end, ir: match.ir, shape: id }));
 	});
 
-const autoSource = source("auto", (context, excluded) => [
-	...coreSource("tw").parse(context, excluded),
+const autoSource = source(SwapSourceId.Auto, (context, excluded) => [
+	...coreSource(SwapSourceId.Tw).parse(context, excluded),
 	...parseCssLiterals(context.source, excluded, {
 		tokenize: context.tokenize,
 		tokens: context.meta.tokens,
@@ -88,9 +91,9 @@ const autoSource = source("auto", (context, excluded) => [
 
 export const SWAP_SOURCE_ADAPTERS: readonly SwapSourceAdapter[] = [
 	autoSource,
-	coreSource("tw"),
-	coreSource("css"),
-	coreSource("design"),
+	coreSource(SwapSourceId.Tw),
+	coreSource(SwapSourceId.Css),
+	coreSource(SwapSourceId.Design),
 ];
 
 export function createSwapRegistry(

@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const aphrodite = makeExtraAdapter({
-	id: "aphrodite",
+	id: CodemodAdapterId.Aphrodite,
 	modules: ["aphrodite"],
 	packages: { packages: [{ name: "aphrodite", kind: "runtime" }] },
 	detect: [/from\s+["']aphrodite["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],

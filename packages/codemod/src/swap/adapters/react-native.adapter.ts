@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const reactNative = makeExtraAdapter({
-	id: "react-native",
+	id: CodemodAdapterId.ReactNative,
 	modules: ["react-native"],
 	packages: { packages: [{ name: "react-native", kind: "peer" }] },
 	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],

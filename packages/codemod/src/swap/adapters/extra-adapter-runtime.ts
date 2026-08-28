@@ -29,7 +29,10 @@ export interface ExtraAdapterOptions {
 	readonly prefix: string;
 	readonly suffix?: string;
 	readonly namedObjects?: boolean;
-	readonly sourceObjectOptions?: Pick<StyleProgramOptions, "nestedObjectKind" | "arrayRuleKinds">;
+	readonly sourceObjectOptions?: Pick<
+		StyleProgramOptions,
+		"nestedObjectKind" | "arrayRuleKinds" | "emissionHints"
+	>;
 	readonly migration?: AdapterMigrationHooks;
 }
 

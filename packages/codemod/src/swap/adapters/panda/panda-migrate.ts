@@ -18,6 +18,7 @@ import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
 import { ensureImport } from "../../../shared.ts";
+import { CodemodAdapterId } from "../../identifiers.ts";
 import {
 	foldRecipeCall,
 	renderCssBootstrap,
@@ -1324,7 +1325,7 @@ function removeUnusedFactoryImports(source: string): string {
 				.map((specifier) => specifier.trim())
 				.filter((specifier) => {
 					const name = specifier.split(/\s+as\s+/)[0]!;
-					return name !== "panda" || hasFactoryUse;
+					return name !== CodemodAdapterId.Panda || hasFactoryUse;
 				})
 				.filter(Boolean);
 			return kept.length === 0 ? "" : `import { ${kept.join(", ")} } from ${quote}${path}${quote};`;

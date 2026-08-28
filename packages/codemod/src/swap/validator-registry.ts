@@ -8,6 +8,7 @@ import type {
 	AdapterLossiness,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
+import { StyleValidatorId } from "./identifiers.ts";
 
 export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
 export const VALIDATOR_PLUGIN_SCHEMA = "pandwind.style-validator-plugin/1" as const;
@@ -65,12 +66,12 @@ export interface StyleValidatorRegistry {
 
 const canonicalValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "canonical-css",
+	id: StyleValidatorId.CanonicalCss,
 	validate: ({ source, target }) => {
 		const canonicalSource = styleProgramToCanonicalCss(source);
 		const canonicalTarget = styleProgramToCanonicalCss(target);
 		return {
-			validator: "canonical-css",
+			validator: StyleValidatorId.CanonicalCss,
 			valid: canonicalSource === canonicalTarget,
 			lossiness: canonicalSource === canonicalTarget ? "lossless" : "unsupported",
 			differences: canonicalSource === canonicalTarget ? [] : ["canonical CSS differs"],
@@ -80,9 +81,9 @@ const canonicalValidator: StyleValidator = {
 
 const residualValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "residuals",
+	id: StyleValidatorId.Residuals,
 	validate: ({ residuals }) => ({
-		validator: "residuals",
+		validator: StyleValidatorId.Residuals,
 		valid: residuals.length === 0,
 		lossiness: residuals.length === 0 ? "lossless" : "lossy",
 		differences: residuals.length === 0 ? [] : [`${residuals.length} residual conversion(s)`],
@@ -92,15 +93,20 @@ const residualValidator: StyleValidator = {
 
 const browserValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "browser-states",
+	id: StyleValidatorId.BrowserStates,
 	validate: ({ browser }) => {
 		if (browser === undefined || browser.length === 0)
-			return { validator: "browser-states", valid: true, lossiness: "lossless", differences: [] };
+			return {
+				validator: StyleValidatorId.BrowserStates,
+				valid: true,
+				lossiness: "lossless",
+				differences: [],
+			};
 		const differences = browser
 			.filter((state) => state.source !== state.target)
 			.map((state) => `browser state differs: ${state.name}`);
 		return {
-			validator: "browser-states",
+			validator: StyleValidatorId.BrowserStates,
 			valid: differences.length === 0,
 			lossiness: differences.length === 0 ? "lossless" : "unsupported",
 			differences,
@@ -110,10 +116,15 @@ const browserValidator: StyleValidator = {
 
 const ssrValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "ssr-hydration",
+	id: StyleValidatorId.SsrHydration,
 	validate: ({ ssr }) => {
 		if (ssr === undefined)
-			return { validator: "ssr-hydration", valid: true, lossiness: "lossless", differences: [] };
+			return {
+				validator: StyleValidatorId.SsrHydration,
+				valid: true,
+				lossiness: "lossless",
+				differences: [],
+			};
 		const differences: string[] = [];
 		if (ssr.source.server.html !== ssr.target.server.html) differences.push("SSR HTML differs");
 		if (ssr.source.server.css !== ssr.target.server.css) differences.push("SSR CSS differs");
@@ -122,7 +133,7 @@ const ssrValidator: StyleValidator = {
 		if (ssr.source.hydrated.css !== ssr.target.hydrated.css)
 			differences.push("hydrated CSS differs");
 		return {
-			validator: "ssr-hydration",
+			validator: StyleValidatorId.SsrHydration,
 			valid: differences.length === 0,
 			lossiness: differences.length === 0 ? "lossless" : "unsupported",
 			differences,
@@ -132,14 +143,19 @@ const ssrValidator: StyleValidator = {
 
 const dependencyValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "dependencies",
+	id: StyleValidatorId.Dependencies,
 	validate: ({ dependencies }) => {
 		if (dependencies === undefined)
-			return { validator: "dependencies", valid: true, lossiness: "lossless", differences: [] };
+			return {
+				validator: StyleValidatorId.Dependencies,
+				valid: true,
+				lossiness: "lossless",
+				differences: [],
+			};
 		const targetNames = new Set(dependencies.target.packages.map((dependency) => dependency.name));
 		const differences = targetNames.size === 0 ? ["target adapter declares no dependencies"] : [];
 		return {
-			validator: "dependencies",
+			validator: StyleValidatorId.Dependencies,
 			valid: differences.length === 0,
 			lossiness: differences.length === 0 ? "lossless" : "unsupported",
 			differences,
@@ -149,17 +165,22 @@ const dependencyValidator: StyleValidator = {
 
 const streamingValidator: StyleValidator = {
 	schema: VALIDATOR_SCHEMA,
-	id: "rsc-streaming",
+	id: StyleValidatorId.RscStreaming,
 	validate: ({ streaming }) => {
 		if (streaming === undefined)
-			return { validator: "rsc-streaming", valid: true, lossiness: "lossless", differences: [] };
+			return {
+				validator: StyleValidatorId.RscStreaming,
+				valid: true,
+				lossiness: "lossless",
+				differences: [],
+			};
 		const differences =
 			streaming.source.length !== streaming.target.length ||
 			streaming.source.some((chunk, index) => chunk !== streaming.target[index])
 				? ["RSC streaming chunks differ"]
 				: [];
 		return {
-			validator: "rsc-streaming",
+			validator: StyleValidatorId.RscStreaming,
 			valid: differences.length === 0,
 			lossiness: differences.length === 0 ? "lossless" : "unsupported",
 			differences,
@@ -169,7 +190,7 @@ const streamingValidator: StyleValidator = {
 
 export const BUILTIN_STYLE_VALIDATOR_PLUGIN: StyleValidatorPlugin = {
 	schema: VALIDATOR_PLUGIN_SCHEMA,
-	id: "pandwind-core-validators",
+	id: StyleValidatorId.Builtin,
 	validators: [
 		canonicalValidator,
 		residualValidator,

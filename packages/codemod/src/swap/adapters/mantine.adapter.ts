@@ -1,5 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const styleProps = [
 	"style",
@@ -117,7 +118,7 @@ function mantineValue(property: string, value: StyleValue): StyleValue {
 }
 
 export default defineCodemodAdapter({
-	id: "mantine",
+	id: CodemodAdapterId.Mantine,
 	patterns: [
 		{
 			name: "mantine-style-props",
@@ -127,7 +128,7 @@ export default defineCodemodAdapter({
 		},
 	],
 	packages: dependency("@mantine/core", "peer"),
-	capabilities: allRuleCapabilities("mantine", "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		"framework-semantics": "partial",

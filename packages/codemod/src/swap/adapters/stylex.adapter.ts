@@ -1,11 +1,35 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
+import {
+	CodemodAdapterId,
+	CodemodPatternId,
+	StyleProgramConditionOrder,
+	StyleProgramEmissionHint,
+} from "../identifiers.ts";
 
 const runtimeImports = [
 	'import { createRuntimeCss } from "pandwind/css/runtime";',
 	'import { pandwindPreset } from "pandwind/preset";',
 	"const css = createRuntimeCss(pandwindPreset);",
 ] as const;
+
+function stylexWhenCondition(expression: string): string | undefined {
+	const when = expression.match(
+		/^stylex\.when\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\(\s*(['"])([^'"]+)\2\s*(?:,\s*([A-Za-z_$][\w$]*))?\s*\)$/,
+	);
+	if (when?.[1] === undefined || when[3] === undefined) return undefined;
+	const marker = when[4] === undefined ? "pw-default-marker" : `pw-marker-${when[4]}`;
+	const pseudo = `${marker}${when[3]}`;
+	return when[1] === "ancestor"
+		? `:where(.${pseudo} *) &`
+		: when[1] === "descendant"
+			? `&:where(:has(.${pseudo}))`
+			: when[1] === "siblingBefore"
+				? `:where(.${pseudo} ~ *) &`
+				: when[1] === "siblingAfter"
+					? `&:where(:has(~ .${pseudo}))`
+					: `:where(.${pseudo} ~ *, :has(~ .${pseudo})) &`;
+}
 
 function sourceObjectOptions(source: string) {
 	const conditionValues = Object.fromEntries(
@@ -24,8 +48,13 @@ function sourceObjectOptions(source: string) {
 	return {
 		conditionValues,
 		computedKeys,
+		computedKeyResolver: stylexWhenCondition,
 		propertyValueConditions: true,
 		preserveDefaultGroup: true,
+		canonicalization: {
+			ignoredConditions: [{ kind: "named" as const, name: "base" }],
+			conditionalOrder: StyleProgramConditionOrder.Depth,
+		},
 		valueTransforms: { "*": stylexNumericValue },
 	};
 }
@@ -151,7 +180,7 @@ function keyframesText(program: StyleProgram): string {
 }
 
 function varsText(program: StyleProgram): string {
-	const declarations = program.declarations;
+	const declarations = program.rules.flatMap((rule) => rule.declarations);
 	const registration = declarations
 		.map(
 			(declaration) =>
@@ -167,15 +196,39 @@ function varsText(program: StyleProgram): string {
 	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${registration}] }]), { ${references} })`;
 }
 
+function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
+	const root = program.rules[0];
+	return {
+		...program,
+		rules:
+			root === undefined
+				? program.rules
+				: [{ ...root, kind: "global", selector: ":root" }, ...program.rules.slice(1)],
+		emissionHints: [...(program.emissionHints ?? []), StyleProgramEmissionHint.GlobalVariables],
+	};
+}
+
 export default defineCodemodAdapter({
-	id: "stylex",
+	id: CodemodAdapterId.StyleX,
 	patterns: [
-		{ name: "stylex-create", regex: /\bstylex\.create\s*\(\s*\{/g, objectKind: "named" },
-		{ name: "stylex-keyframes", regex: /\bstylex\.keyframes\s*\(\s*\{/g, kind: "keyframes" },
-		{ name: "stylex-define-vars", regex: /\bstylex\.defineVars\s*\(\s*\{/g },
+		{
+			name: CodemodPatternId.StyleXCreate,
+			regex: /\bstylex\.create\s*\(\s*\{/g,
+			objectKind: "named",
+		},
+		{
+			name: CodemodPatternId.StyleXKeyframes,
+			regex: /\bstylex\.keyframes\s*\(\s*\{/g,
+			kind: "keyframes",
+		},
+		{
+			name: CodemodPatternId.StyleXDefineVars,
+			regex: /\bstylex\.defineVars\s*\(\s*\{/g,
+			transform: normalizeStyleXVariables,
+		},
 	],
 	packages: dependency("@stylexjs/stylex", "peer"),
-	capabilities: allRuleCapabilities("stylex", "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
 		"dynamic-values": "partial",
 		composition: "partial",
 		"font-face": "unsupported",
@@ -190,7 +243,7 @@ export default defineCodemodAdapter({
 	migration: {
 		prepareDynamic: ({ source, targetId, binding }) => ({
 			handled:
-				targetId === "pandwind" &&
+				targetId === CodemodAdapterId.Pandwind &&
 				binding !== undefined &&
 				(new RegExp(
 					`\\bstylex\\.props\\([\\s\\S]*?\\b${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*(?:\\.|\\[)`,
@@ -200,13 +253,13 @@ export default defineCodemodAdapter({
 					).test(source)),
 		}),
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
-			if (targetId !== "pandwind" || !complete) return { code, residuals: [] };
+			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 			let rewritten = code;
 			// StyleX permits runtime-generated selector keys such as
 			// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
 			// self-selector dialect needs the explicit `&` prefix.
 			rewritten = rewritten.replace(
-				/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=[:.\[])/g,
+				/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=(?:[:.]|\u005b))/g,
 				"$1$2&",
 			);
 			rewritten = rewritten.replaceAll("stylex.defineConsts(", "(");
@@ -241,13 +294,13 @@ export default defineCodemodAdapter({
 		},
 	},
 	emit(program, { programObject }) {
-		if (program.source?.pattern === "stylex-keyframes") {
+		if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
 			return {
 				text: keyframesText(program),
 				imports: runtimeImports,
 			};
 		}
-		if (program.source?.pattern === "stylex-define-vars") {
+		if (program.source?.pattern === CodemodPatternId.StyleXDefineVars) {
 			return {
 				text: varsText(program),
 				imports: runtimeImports,

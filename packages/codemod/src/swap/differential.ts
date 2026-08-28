@@ -36,6 +36,7 @@ function mergeParsedPrograms(
 		{
 			source: programs[0]?.source,
 			residuals: [...residuals, ...programs.flatMap((program) => program.residuals)],
+			canonicalization: programs[0]?.canonicalization,
 		},
 	);
 }

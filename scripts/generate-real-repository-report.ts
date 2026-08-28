@@ -9,6 +9,7 @@ import {
 	runAdapterMigration,
 	runPandaMigration,
 } from "../packages/codemod/src/swap/index.ts";
+import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
 
 const referenceRoot = "/Users/astahmer/.references";
 const corpus = createRealRepositoryCorpus();
@@ -94,7 +95,7 @@ for (const fixture of fixtures) {
 	}[] = [];
 	let residualKinds: Record<string, number> = {};
 	let manualFixes: string[] = [];
-	if (fixture.from === "panda") {
+	if (fixture.from === CodemodAdapterId.Panda) {
 		const root = mkdtempSync(join(tmpdir(), "pandwind-real-corpus-"));
 		try {
 			const file = join(root, "Page.tsx");
@@ -154,7 +155,7 @@ for (const fixture of fixtures) {
 	const sourceRuntimePackages = [...(sourcePackages[fixture.from] ?? [])];
 	const added = targetPackages.filter((name) => !sourceRuntimePackages.includes(name));
 	const sourceOwnedModules =
-		fixture.from === "panda"
+		fixture.from === CodemodAdapterId.Panda
 			? sourceRuntimePackages
 			: (getCodemodAdapter(fixture.from)?.sourceModules ?? []);
 	const removed = sourceRuntimePackages.filter(

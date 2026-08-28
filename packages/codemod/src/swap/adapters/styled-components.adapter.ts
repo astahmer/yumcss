@@ -1,7 +1,8 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
-	id: "styled-components",
+	id: CodemodAdapterId.StyledComponents,
 	patterns: [
 		{
 			name: "styled",
@@ -18,7 +19,7 @@ export default defineCodemodAdapter({
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
 	packages: dependency("styled-components", "peer"),
-	capabilities: allRuleCapabilities("styled-components", "exact", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",

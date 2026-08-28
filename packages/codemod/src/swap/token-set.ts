@@ -1,6 +1,6 @@
 /** Token interoperability façade: one normalized set, many format adapters. */
 import { DefaultTokenFormatRegistry } from "./token-format-registry.ts";
-import type { TokenFormatAdapter, TokenSet } from "./token-format-contracts.ts";
+import { TokenFormatId, type TokenFormatAdapter, type TokenSet } from "./token-format-contracts.ts";
 import { dtcgTokenFormat } from "./token-formats/dtcg.ts";
 import { themeTokenFormat } from "./token-formats/theme.ts";
 import { pandaTokenFormat } from "./token-formats/panda.ts";
@@ -52,43 +52,43 @@ class TokenSetCodec {
 	}
 
 	fromDtcgJson(text: string): TokenSet {
-		return this.fromText("dtcg", text);
+		return this.fromText(TokenFormatId.Dtcg, text);
 	}
 	toDtcgJson(set: TokenSet): string {
-		return this.to("dtcg", set);
+		return this.to(TokenFormatId.Dtcg, set);
 	}
 	fromThemeCss(text: string): TokenSet {
-		return this.fromText("theme", text);
+		return this.fromText(TokenFormatId.Theme, text);
 	}
 	toThemeCss(set: TokenSet): string {
-		return this.to("theme", set);
+		return this.to(TokenFormatId.Theme, set);
 	}
 	fromStyleDictionary(text: string): TokenSet {
-		return this.fromText("sd", text);
+		return this.fromText(TokenFormatId.StyleDictionary, text);
 	}
 	toStyleDictionary(set: TokenSet): string {
-		return this.to("sd", set);
+		return this.to(TokenFormatId.StyleDictionary, set);
 	}
 	fromFigmaTokens(text: string): TokenSet {
-		return this.fromText("figma", text);
+		return this.fromText(TokenFormatId.Figma, text);
 	}
 	toFigmaTokens(set: TokenSet): string {
-		return this.to("figma", set);
+		return this.to(TokenFormatId.Figma, set);
 	}
 	fromRootCss(text: string): TokenSet {
-		return this.fromText("rootcss", text);
+		return this.fromText(TokenFormatId.RootCss, text);
 	}
 	toRootCss(set: TokenSet): string {
-		return this.to("rootcss", set);
+		return this.to(TokenFormatId.RootCss, set);
 	}
 	toStylexVars(set: TokenSet): string {
-		return this.to("stylex", set);
+		return this.to(TokenFormatId.StyleX, set);
 	}
 	fromDefinePreset(path: string): Promise<TokenSet> {
-		return this.fromFile("preset", path);
+		return this.fromFile(TokenFormatId.Preset, path);
 	}
 	fromPandaConfig(path: string): Promise<TokenSet> {
-		return this.fromFile("panda", path);
+		return this.fromFile(TokenFormatId.Panda, path);
 	}
 
 	private require(format: string): TokenFormatAdapter {

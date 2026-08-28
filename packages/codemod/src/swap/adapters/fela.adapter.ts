@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const fela = makeExtraAdapter({
-	id: "fela",
+	id: CodemodAdapterId.Fela,
 	modules: ["fela", "react-fela"],
 	packages: {
 		packages: [

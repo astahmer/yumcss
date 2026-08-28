@@ -1,12 +1,13 @@
 import { describe, expect, test } from "vitest";
 import { StylexDocsMigration } from "../../../scripts/migrate-stylex-docs.ts";
+import { StylexDocsLane } from "../../../scripts/migrate-stylex-docs.ts";
 
 const root = new URL("../../../examples/stylex-docs-migration/source/", import.meta.url).pathname;
 
 describe("StyleX docs migration lanes", () => {
 	test("runtime-css lane emits the Pandwind group API", async () => {
-		const report = await StylexDocsMigration.run(root, "runtime-css");
-		expect(report.lane).toBe("runtime-css");
+		const report = await StylexDocsMigration.run(root, StylexDocsLane.RuntimeCss);
+		expect(report.lane).toBe(StylexDocsLane.RuntimeCss);
 		expect(report.invalidValidations).toBe(0);
 	});
 

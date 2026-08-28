@@ -1,5 +1,5 @@
 import { createTokenSet, putToken } from "../token-format-support.ts";
-import type { TokenFormatAdapter } from "../token-format-contracts.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 
 const prefixes: Record<string, string> = {
 	color: "colors",
@@ -16,7 +16,7 @@ const reverse = Object.fromEntries(
 );
 export const themeTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
-	id: "theme",
+	id: TokenFormatId.Theme,
 	canImport: true,
 	canExport: true,
 	importText(text) {

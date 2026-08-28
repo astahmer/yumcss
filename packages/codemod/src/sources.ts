@@ -21,10 +21,11 @@ import { mapToken } from "./map.ts";
 import type { MappedToken } from "./map.ts";
 import type { TransformResult } from "./migrate.ts";
 import { ensureImport, hasCssBinding } from "./shared.ts";
+import { CodemodAdapterId } from "./swap/identifiers.ts";
 
-export type SourceId = "styled-components" | "stylex";
+export type SourceId = CodemodAdapterId.StyledComponents | CodemodAdapterId.StyleX;
 
-const SOURCE_IDS: SourceId[] = ["styled-components", "stylex"];
+const SOURCE_IDS: SourceId[] = [CodemodAdapterId.StyledComponents, CodemodAdapterId.StyleX];
 
 export function parseSourceList(value: string): SourceId[] {
 	const ids: SourceId[] = [];
@@ -530,9 +531,9 @@ export function runSourcePasses(
 ): string {
 	let working = source;
 	for (const id of sources) {
-		if (id === "styled-components") {
+		if (id === CodemodAdapterId.StyledComponents) {
 			working = transformStyledComponents(working, meta, options, result);
-		} else if (id === "stylex") {
+		} else if (id === CodemodAdapterId.StyleX) {
 			working = transformStylex(working, meta, options, result);
 		}
 	}

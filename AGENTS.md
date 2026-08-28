@@ -57,6 +57,21 @@ which concrete module to import or grow a switch statement in a central runner.
 - Registries are the extension point; unions and maps are derived from the
   registry where possible. Tests must prove that a fake/minimal adapter can be
   registered without changing core orchestration.
+- Built-in identity values are enum-backed. Adapter ids, source/target
+  dialect ids, pattern ids, plugin ids, token-format ids, backend ids, and
+  validator/lowering ids must use exported TypeScript enums (or an equivalent
+  typed identifier owned by their registry), never repeated raw string
+  comparisons or untyped string literals. Third-party ids remain extensible
+  through a branded identifier factory and the plugin registry.
+- Do not leak ecosystem branches into shared orchestration. Code outside an
+  owning adapter must not contain checks such as `adapter === "stylex"` or
+  `from === "panda"`; adapter-specific behavior is normalized into neutral
+  IR metadata or selected through a registry port. Enum values are the only
+  allowed identity comparison at the composition boundary.
+- This rule is about identities and policies, not authored data. CSS property
+  names, CSS values, package specifiers embedded in emitted source, regex
+  patterns, diagnostics, and user-authored names may remain strings when they
+  are not registry keys or control-flow identities.
 - Third-party style adapters use the versioned plugin registry in
   `pandwind-codemod/swap`; discovery is explicit and injectable, never an
   ambient global scan. A plugin may export one adapter, a plugin object, or an

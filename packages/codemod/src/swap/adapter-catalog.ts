@@ -7,6 +7,7 @@ import {
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
 import { PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
+import { CodemodAdapterId } from "./identifiers.ts";
 
 export interface CodemodAdapterCatalog {
 	readonly adapters: StyleAdapterRegistry["adapters"];
@@ -22,17 +23,15 @@ export function createBuiltinCodemodCatalog(): CodemodAdapterCatalog {
 	return {
 		adapters,
 		registry,
-		systems: createStyleSystemRegistry(
-			[
-				PANDWIND_STYLE_SYSTEM,
-				...adapters
-					.filter((adapter) => adapter.id !== "pandwind")
-					.map((adapter) =>
-						createStyleSystem(adapter.id, [
-							asStyleDialect(adapter, { system: adapter.id, dialect: "css", role: "both" }),
-						]),
-					),
-			],
-		),
+		systems: createStyleSystemRegistry([
+			PANDWIND_STYLE_SYSTEM,
+			...adapters
+				.filter((adapter) => adapter.id !== CodemodAdapterId.Pandwind)
+				.map((adapter) =>
+					createStyleSystem(adapter.id, [
+						asStyleDialect(adapter, { system: adapter.id, dialect: "css", role: "both" }),
+					]),
+				),
+		]),
 	};
 }

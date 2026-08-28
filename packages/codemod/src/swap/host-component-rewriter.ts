@@ -1,6 +1,7 @@
 import { computeExcludedRanges } from "../sources.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import { HOST_FRAMEWORK_REGISTRY, getHostFrameworkAdapter } from "./host-adapters.ts";
+import { HostComponentRewriterId } from "./identifiers.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
 
@@ -450,7 +451,7 @@ export function rewriteDynamicExpressionCarrier(
 const rewriters: readonly HostComponentRewriter[] = [
 	{
 		schema: HOST_COMPONENT_REWRITER_SCHEMA,
-		id: "jsx-intrinsic-component",
+		id: HostComponentRewriterId.JsxIntrinsicComponent,
 		frameworks: HOST_FRAMEWORK_REGISTRY.adapters
 			.filter((adapter) => adapter.syntax === "jsx")
 			.map((adapter) => adapter.id),
@@ -460,7 +461,7 @@ const rewriters: readonly HostComponentRewriter[] = [
 	},
 	{
 		schema: HOST_COMPONENT_REWRITER_SCHEMA,
-		id: "template-intrinsic-component",
+		id: HostComponentRewriterId.TemplateIntrinsicComponent,
 		frameworks: HOST_FRAMEWORK_REGISTRY.adapters
 			.filter((adapter) => adapter.syntax === "template")
 			.map((adapter) => adapter.id),

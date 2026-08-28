@@ -1,7 +1,8 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
 
 const solidStyled = makeExtraAdapter({
-	id: "solid-styled",
+	id: CodemodAdapterId.SolidStyled,
 	modules: ["solid-styled-components"],
 	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
 	detect: [

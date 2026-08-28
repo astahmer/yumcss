@@ -22,6 +22,7 @@ import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+import { CodemodAdapterId } from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
@@ -109,7 +110,7 @@ export interface AdapterMigrationResult {
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
 function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
-	return adapter.id === "pandwind" || adapter.system === "pandwind";
+	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
 }
 
 /** Run one v2 adapter-to-adapter migration over a source file. */
@@ -475,6 +476,7 @@ export function runAdapterMigration(
 						{
 							source: program.source,
 							residuals: reparsed.residuals,
+							canonicalization: program.canonicalization,
 						},
 					);
 		const validation = targetAdapter.validate(program, targetProgram, [

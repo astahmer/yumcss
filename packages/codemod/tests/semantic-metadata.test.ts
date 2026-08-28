@@ -5,6 +5,7 @@ import {
 	createStyleValidatorRegistry,
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
+	StyleProgramCompositionKind,
 } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/index.ts";
 
@@ -13,7 +14,7 @@ describe("semantic metadata and validator domains", () => {
 		const program = styleProgramFromSourceObject("color: theme.colors.foreground, padding: 2", {
 			source: { file: "Card.tsx", framework: "react" },
 			themes: [{ path: "colors.foreground", authored: "theme.colors.foreground" }],
-			compositions: [{ kind: "mixin", reference: "surface" }],
+			compositions: [{ kind: StyleProgramCompositionKind.Mixin, reference: "surface" }],
 			runtime: { phase: "render", framework: "react", dependencies: ["theme"] },
 			plugins: [{ id: "emotion/serialize", input: "theme.colors.foreground" }],
 		});
