@@ -62,6 +62,24 @@ interface LaneAdapter {
 	transform(source: string, file: string, meta: PandwindMeta): TransformResult;
 }
 
+/**
+ * Headless UI owns the ref/Fragment contract for transition children. A
+ * utility-only rewrite cannot safely alter that host composition: on the
+ * pinned docs checkout, changing classes inside an anchored MenuItems
+ * transition triggers a production hydration error even though its emitted
+ * CSS is byte-identical. Preserve that host subtree as a lossless residual
+ * until a dedicated Headless UI host adapter can rewrite the composition.
+ */
+const tailwindDocsHostAdapter = {
+	preservedSource(source: string, file: string): boolean {
+		return (
+			file.endsWith(".tsx") &&
+			source.includes('from "@headlessui/react"') &&
+			/<Transition[\s\S]*<MenuItems[\s\S]*\banchor=/.test(source)
+		);
+	},
+};
+
 interface GeneratedMetadata {
 	readonly meta: PandwindMeta;
 	readonly typesDts: string;
@@ -148,6 +166,21 @@ function createLane(id: TailwindDocsLane): LaneAdapter {
 		id,
 		transform(source, file, meta) {
 			if (id === TailwindDocsLane.Tw) {
+				if (tailwindDocsHostAdapter.preservedSource(source, file)) {
+					return {
+						code: source,
+						changed: false,
+						converted: 0,
+						unmappedTokens: [
+							{
+								file,
+								token: "<Transition><MenuItems anchor> host composition",
+								reason: "preserved because Headless UI owns the production ref/Fragment contract",
+							},
+						],
+						skippedByMarker: 0,
+					};
+				}
 				return transformSource(source, meta, {
 					mode: "tw",
 					file,

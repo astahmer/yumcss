@@ -18,6 +18,13 @@ describe("Tailwind docs migration corpus", () => {
 				expect(report.generatedUtilities).toBeGreaterThan(400);
 				expect(report.generatedVariants).toBeGreaterThan(80);
 				expect(report.generatedBridgeEntries).toBeGreaterThan(4000);
+				if (lane === TailwindDocsLane.Tw) {
+					expect(
+						report.residuals.some((residual) =>
+							residual.reason.includes("Headless UI owns the production ref/Fragment contract"),
+						),
+					).toBe(true);
+				}
 			}
 		},
 		30_000,
