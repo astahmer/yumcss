@@ -1,4 +1,5 @@
 import parser from "postcss-selector-parser";
+import type { ConditionPolicy } from "./stylesheet-policies.ts";
 
 export interface ParsedConditions {
 	className: string;
@@ -57,7 +58,11 @@ export const parseCondition = (
 	return true;
 };
 
-class CssRuleSerializer {
+export interface CssRuleSerializer {
+	serialize(declarations: string, conditions: ParsedConditions): string;
+}
+
+class DefaultCssRuleSerializer implements CssRuleSerializer {
 	serialize(declarations: string, conditions: ParsedConditions): string {
 		const { className, selfSelectors, parentSelectors, selectorLists, atRules } = conditions;
 		if (selectorLists.length) {
@@ -87,4 +92,10 @@ class CssRuleSerializer {
 	}
 }
 
-export const cssRuleSerializer = new CssRuleSerializer();
+export const createCssRuleSerializer = (): CssRuleSerializer => new DefaultCssRuleSerializer();
+export const cssRuleSerializer = createCssRuleSerializer();
+
+export const defaultConditionPolicy: ConditionPolicy = {
+	create: createConditionsBucket,
+	parse: parseCondition,
+};
