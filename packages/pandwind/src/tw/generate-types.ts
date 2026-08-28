@@ -35,6 +35,7 @@ import {
 	type ThemeTokenGroups,
 } from "./generate-theme.ts";
 import { createThemeBridge } from "./theme-bridge.ts";
+import type { DesignSystemCodegenPorts, DesignSystemCodegenResult } from "./codegen-pipeline.ts";
 
 export type {
 	DesignSystemArtifactBundle,
@@ -44,6 +45,19 @@ export type {
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
+type TailwindDesignSystem = Awaited<ReturnType<typeof __unstable__loadDesignSystem>>;
+
+interface TailwindUtilityCatalog {
+	types: UtilityMap;
+	variants: Array<{ name: string; join: ":" | "-" | "" }>;
+	utilityKeyNames: Set<string>;
+}
+
+interface TailwindConflictAnalysis {
+	conflicts: Record<string, Record<string, string[]>>;
+	compose: string[];
+	modifierCapable: Set<string>;
+}
 
 /**
  * Static utilities that don't map to a functional utility key and whose names
@@ -1146,7 +1160,54 @@ export interface GenerateDesignSystemOptions {
 	 * behavior.
 	 */
 	themeBlock?: string;
+	/** Replaceable codegen stages for alternate design-system engines. */
+	ports?: DesignSystemCodegenPorts<
+		TailwindDesignSystem,
+		TailwindUtilityCatalog,
+		TailwindConflictAnalysis
+	>;
 }
+
+const defaultCodegenPorts: DesignSystemCodegenPorts<
+	TailwindDesignSystem,
+	TailwindUtilityCatalog,
+	TailwindConflictAnalysis
+> = {
+	theme: {
+		load: (css, base, themeBlock) =>
+			__unstable__loadDesignSystem(themeBlock ? `${css}\n${themeBlock}` : css, { base }),
+	},
+	catalog: {
+		build: (system) => {
+			const functionalKeys = system.utilities.keys("functional");
+			const types = getFunctionalTypes(system);
+			mergeStaticUtilities(system, functionalKeys, types);
+			const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
+			for (const variant of system.getVariants()) {
+				variants.push({ name: variant.name, join: detectVariantJoin(system, variant) });
+			}
+			const utilityKeyNames = new Set(
+				[...types.keys()].map((name) => utilityKey(name).replace(/^"|"$/g, "")),
+			);
+			return { types, variants, utilityKeyNames };
+		},
+	},
+	conflicts: {
+		analyze: (system, catalog) => {
+			const result = buildConflicts(system, catalog.types, system.utilities.keys("functional"));
+			expandSubkeys(catalog.types, result.conflicts);
+			return { ...result, modifierCapable: detectModifierUtilities(system, catalog.types) };
+		},
+	},
+	types: {
+		emit: (catalog, analysis) =>
+			`${header}\n${getUtilitiesType(catalog.types, analysis.modifierCapable)}\n\n${getVariantsType(catalog.variants, catalog.utilityKeyNames)}\n`,
+	},
+	runtime: {
+		emit: (catalog, analysis) =>
+			getTwRuntime(catalog.variants, analysis.conflicts, analysis.compose),
+	},
+};
 
 /**
  * Generate the two artifact files for a CSS entry. Exported so tests and
@@ -1156,45 +1217,16 @@ export async function generateDesignSystem(
 	css: string,
 	base: string,
 	options: GenerateDesignSystemOptions = {},
-): Promise<
-	DesignSystemArtifacts & {
-		utilityCount: number;
-		variantCount: number;
-	}
-> {
-	const effectiveCss = options.themeBlock ? `${css}\n${options.themeBlock}` : css;
-	const system = await __unstable__loadDesignSystem(effectiveCss, { base });
-
-	const functionalKeys = system.utilities.keys("functional");
-	const types = getFunctionalTypes(system);
-	mergeStaticUtilities(system, functionalKeys, types);
-	const { conflicts, compose } = buildConflicts(system, types, functionalKeys);
-	// Sub-keys need the conflict map's per-value properties; modifier
-	// detection must see them so `textColor` inherits opacity modifiers.
-	expandSubkeys(types, conflicts);
-	const modifierCapable = detectModifierUtilities(system, types);
-
-	const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
-	for (const variant of system.getVariants()) {
-		variants.push({
-			name: variant.name,
-			join: detectVariantJoin(system, variant),
-		});
-	}
-
-	const utilityKeyNames = new Set(
-		[...types.keys()].map((name) => utilityKey(name).replace(/^"|"$/g, "")),
-	);
-
+): Promise<DesignSystemCodegenResult> {
+	const ports = options.ports ?? defaultCodegenPorts;
+	const system = await ports.theme.load(css, base, options.themeBlock);
+	const catalog = ports.catalog.build(system);
+	const analysis = ports.conflicts.analyze(system, catalog);
 	return {
-		typesDts: `${header}
-${getUtilitiesType(types, modifierCapable)}
-
-${getVariantsType(variants, utilityKeyNames)}
-`,
-		twTs: getTwRuntime(variants, conflicts, compose),
-		utilityCount: types.size,
-		variantCount: variants.length,
+		typesDts: ports.types.emit(catalog, analysis),
+		twTs: ports.runtime.emit(catalog, analysis),
+		utilityCount: catalog.types.size,
+		variantCount: catalog.variants.length,
 	};
 }
 
