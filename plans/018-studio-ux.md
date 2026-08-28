@@ -1,5 +1,9 @@
 # Plan 018 — Studio UX review (2026-08-23)
 
+**Status: Audited, non-blocking.** The filter blocker and the pivot-relevant
+inspector features are shipped. The remaining items below are presentation
+polish and are not required for migration correctness or adapter extensibility.
+
 Full UI/UX review of apps/inspector. Ordered by impact; effort S/M/L.
 
 ## Fixed during this review
@@ -24,7 +28,9 @@ Full UI/UX review of apps/inspector. Ordered by impact; effort S/M/L.
 11. **Error recovery hint** — error state should suggest "is the dev server running?" alongside retry. S.
 12. **Per-file literal-vs-token coverage %** (panda-cloud token-analyzer steal) — needs analyze-side data first. L.
 
-## Residual / not started
+## Residual / intentionally parked
 
-- Items 1-11 above (only the filter fix landed; steering capped scope).
+- Items 1-11 above remain optional UX work; later inspector work shipped
+  provenance, drill-down, history, export, and reporting surfaces without
+  making every polish item a pivot dependency.
 - Deeper redesign candidates deferred to a dedicated pass once real usage feedback exists.

@@ -56,7 +56,8 @@ new-mode feat / docs separately). Never touch `/Users/astahmer/dev/pandwind`.
   stylesheet generator uses (condition parts sorted), so runtime names and
   generated selectors match byte-for-byte. Covered by tests/named-atoms.test.ts
   incl. cx() merge parity with the default mode.
-- Deliberately out of scope: full panda/stylex emulation (no real consumer yet),
-  cross-engine CSS-dedup proof for non-tw modes (plan 006 of TODO backlog).
+- Deliberately out of scope in this original wave: full panda/stylex emulation
+  and cross-engine CSS-dedup proof. Those were added by the later adapter and
+  differential suites; see plans 021 and 032.
 - Size: css entry 2256 -> 2406 min bytes (+150, strategy plumbing + named-atoms
   export); snapshot refreshed intentionally. Hard budget 2900 unchanged.

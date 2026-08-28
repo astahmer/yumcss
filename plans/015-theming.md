@@ -1,4 +1,8 @@
-# Plan 015 — Multi-theme architecture (planning doc, no code yet)
+# Plan 015 — Multi-theme architecture
+
+**Status: COMPLETE.** L1/L2 theme scopes and the L3 component-scope tier are
+implemented, tested against real Tailwind compilation, and documented in
+`docs/src/content/docs/api/theming.md`.
 
 ## Problem
 
@@ -45,8 +49,9 @@ Reject unless A hits a wall (e.g. themes differing in structure, not values).
 
 ## Status
 
-Planning. Implementation only after kumo/8bitcn ports land (they provide the
-real-world corpus to validate against).
+The initial implementation gate was satisfied after the Kumo/8bitcn corpus
+work. The remaining theme work is ordinary ecosystem expansion, not an
+unimplemented architecture decision.
 
 ## Status update (2026-08-23) — L1+L2+theme scopes IMPLEMENTED
 
@@ -67,7 +72,7 @@ coordination: element inline style beats every selector-scoped binding, so a
 sets for that element, while non-inline siblings keep following the active
 theme. No fallback-chain changes needed.
 
-### L3 component tier — designed follow-up (not yet implemented)
+### L3 component tier — historical design sketch
 
 Data model: component-scope alias blocks re-binding semantic vars at class
 scope — `.button { --sm-button-bg: var(--color-primary); }`. Author names map

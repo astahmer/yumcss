@@ -1,5 +1,9 @@
 # Plan 006 — CI wiring + fresh size/bench numbers
 
+**Status: COMPLETE.** CI workflows, size/bench artifacts, and the documented
+local gate are present. The plan's original “repo has no `.github/`” wording is
+historical context.
+
 ## Goal
 
 1. The runtime-size gate currently rides on local `pnpm test`; wire CI so regressions
@@ -41,3 +45,12 @@
 
 Work only inside your workspace dir. Split/describe logical revisions (ci feat /
 docs chore separately). Never touch `/Users/astahmer/dev/pandwind`.
+
+## Outcomes
+
+- `.github/workflows/ci.yml`, `pr-report.yml`, `release.yml`, and
+  `visual-artifacts.yml` provide the repository automation lanes.
+- `BENCH.md`, `SIZE.md`, and the root scripts document the current measurement
+  commands and committed runtime budgets.
+- The current release and verification gates are summarized in
+  `docs/src/content/docs/reference/implementation-status.md`.

@@ -1,5 +1,9 @@
 # Plan 009 — docs/bench truth pass
 
+**Status: COMPLETE.** The runtime-size tables, benchmark methodology, and cx
+performance narrative were refreshed; later cold-path experiments remain
+explicitly parked in plan 010 rather than being presented as completed work.
+
 Part 1: refresh BENCH.md + SIZE.md/README after cx v3 + smarter compiler:
 
 - BENCH.md: whole-input cache explanation; fresh cx-bench.mts numbers vs real

@@ -1,6 +1,9 @@
 # Plan 023 — Release prep, inspector depth, CI action, repo hygiene
 
-**Status: in progress 2026-08-27; npm release item complete.**
+**Status: COMPLETE for the local release/inspector scope (2026-08-27).**
+Design-format adapters, npm metadata and smoke gates, inspector crawling and
+analytics, examples, the reusable analyze action, and the standalone lint
+package are present. Actual `npm publish` remains an operator-gated action.
 
 ## Items
 

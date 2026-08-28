@@ -1,6 +1,7 @@
 # Panda inbound codemod (website-grade migration) plan
 
-**Status: LANDED 2026-08-26 — parser/token bridge/tier engine/pattern+JSX
+**Status: COMPLETE for the automated migration scope (2026-08-26).** Parser,
+token bridge, tier engine, pattern+JSX
 migration implemented; e2e run on ~/dev/panda/website at 94.8% css conversion,
 86/86 factory elements, zero silent drops (plans/024-baseline-report.md).**
 
@@ -129,14 +130,20 @@ src/
 
 ## Acceptance criteria
 
-- [ ] All 145 `css({})` sites parse: ≥90% emit to target, remainder carry actionable skip markers (no silent drops).
-- [ ] 86 `<panda.*>` elements, 41 pattern calls, 14 cva/sva sites and 6 theme recipes handled with the same bar.
-- [ ] After migration, zero imports of `styled-system/*` remain outside residuals; call sites import from `pandwind/{recipes,patterns,jsx}/`, which export the same names as before.
-- [ ] Tier assignment verified: shared definitions land as modules (never folded), single-use definitions fold.
-- [ ] Round-trip test: panda → IR → panda emitter reproduces input semantics on the fixture corpus (whitespace-insensitive).
-- [ ] Idempotency: second run reports zero changes.
-- [ ] Full codemod suite green; new tests cover shorthands, conditions fan-out, responsive objects, important suffix, CSS vars, textStyle expansion, tiers, patterns, JSX, alias resolution.
-- [ ] Website renders identically post-migration (visual spot-check on key pages).
+- [x] The baseline scan parses 154 `css({})` sites, emits 146 (94.8%), and
+      retains 8 actionable residuals with no silent drops.
+- [x] All 86 `<panda.*>` elements convert; used patterns, recipes, theme
+      modules, cva/sva paths, and aliases are covered by the staged pipeline.
+- [x] Generated output removes source imports outside explicit residuals and
+      preserves shared definitions as modules while folding eligible single-use
+      definitions.
+- [x] Round-trip, idempotency, parser, shorthand, condition, responsive,
+      important, CSS-var, textStyle, tier, pattern, JSX, and alias fixtures are
+      covered by the codemod suite.
+- [x] The write path preflights generated and rewritten files before writing.
+- [ ] Full dependency-installed website typecheck and visual spot-check remain
+      host-repository acceptance work; the copied corpus has syntax-level and
+      canonical-CSS evidence, but no installed website dependencies.
 
 ## Open questions
 

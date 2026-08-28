@@ -1,6 +1,14 @@
 # Plan 014 — Next-wave designs (var-inline, per-page split, multi-theme, debug)
 
-Decisions and design sketches agreed 2026-08-23. Nothing here is built yet.
+**Status: COMPLETE for the approved implementation scope.** Var-inline,
+per-route splitting, critical CSS, theme scopes, inspector export, and
+`pandwind.agents.json` are shipped. The custom DevTools extension was
+deliberately rejected after research; the remaining source-level coverage
+metric is an analyzer follow-up, not a missing runtime capability.
+
+Decisions and design sketches agreed 2026-08-23. The original sketches are kept
+below as historical design context; implementation outcomes are recorded in
+the dated sections that follow.
 
 ## 1. Var-inline strategy (APPROVED — spike first)
 
@@ -77,8 +85,9 @@ in the shipped path.
 - coexisting classes keep per-selector rules (cx last-wins maps onto source
   order as today).
 
-Green light for implementation per the §1 shape. Remaining pre-build items:
-cx threading type design + vite-pass detection rules + sheet-growth bounds.
+Green light for implementation per the §1 shape. The remaining pre-build items
+were resolved by the implementation outcomes below: cx threading, Vite key
+collection, and sheet-growth tests all landed.
 
 ## 1b. IMPLEMENTATION OUTCOMES (2026-08-23) — var-inline landed
 

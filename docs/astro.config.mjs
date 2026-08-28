@@ -78,9 +78,13 @@ export default defineConfig({
 				{
 					label: "Reference",
 					items: [
+						"reference/implementation-status",
 						"reference/adoption",
+						"reference/adapter-contract",
+						"reference/css-in-js-scorecard",
 						"reference/authored-css",
 						"reference/backends",
+						"reference/ssr",
 						"reference/size",
 						"reference/benchmarks",
 						"reference/limitations",

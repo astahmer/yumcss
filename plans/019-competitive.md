@@ -24,7 +24,11 @@ Sources: known landscape (npm-checked where noted) + the user's GitHub stars
 
 Legend: ✅ first-class · ⚠️ partial/different shape · ❌ absent · n/a not applicable to model.
 
-## What we don't have (honest)
+## What we did not have in the 2026-08-24 snapshot (historical)
+
+The following list is retained as research context. The current implementation
+status and shipped evidence are tracked in the reference docs, not this point-
+in-time competitive snapshot.
 
 1. **Ecosystem gravity**: no preset/plugin marketplace, no docs site, no
    community templates. Tailwind/Uno win on this alone today.
@@ -197,8 +201,13 @@ css-parser` against the compiled sheet for specificity/complexity views.
 Deliberately not chased: Figma bidirectional sync, multi-platform token
 distribution, hosted SaaS — pipeline products, not inspector features.
 
-## Studio v3 residual notes (2026-08-24)
+## Studio v3 residual notes (2026-08-24, reconciled)
 
-- DONE: feature 1 per-class rule drill-down (analyze `classRules()` + studio Coverage panel, playwright-verifiable).
-- NOT DONE (remaining from the deep-scan ranked list): 2. CSS Overview-style shape dashboard (property-category distributions, specificity histogram) 3. history persistence + run diff (plans/020 adopt #3: snapshot entries with parent pointer) 4. self-contained HTML report export 5. analyze --github-annotations
-- Implementation notes for whoever picks these up: cssBudget/classRules in packages/analyze/src/css-budget.ts are the data source; gather.ts wires payload (coverage.classDrillDown); UI in apps/inspector/src/App.tsx.
+- DONE: per-class rule drill-down (analyze `classRules()` + studio Coverage
+  panel, Playwright-verifiable).
+- DONE: CSS-shape dashboard, history persistence and run diff, self-contained
+  HTML export, and `analyze --github-annotations`; these are covered by the
+  current inspector/analyzer tests and workflows.
+- Remaining competitive ideas are optional product polish or integrations,
+  not gaps in the CSS-in-JS pivot boundary. Current evidence and public
+  behavior are summarized in `docs/src/content/docs/tooling/analyze-and-studio.md`.

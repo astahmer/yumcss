@@ -22,10 +22,18 @@ Every adapter provides:
   explicit `lossless`, `lossy`, or `unsupported` classification;
 - `capabilities` and `dependencies` — explicit support and installation data.
 
-The built-in registry currently includes pandwind, Emotion,
-styled-components, vanilla-extract, and Stitches. The common migration entry
-point is `runAdapterMigration`, while `runDifferentialFixture` reparses the
-emitted target and can add browser-state and SSR/hydration checks.
+The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
+styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,
+Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled, StyleX,
+Solid/Vue styled systems, Bamboo, Next-yak, and React Native. The common
+migration entry point is `runAdapterMigration`, while `runDifferentialFixture`
+reparses the emitted target and can add browser-state, SSR/hydration,
+streaming, dependency, and framework checks.
+
+Third-party packages opt in through the explicit plugin manifest convention
+documented in [`ADAPTER_SDK.md`](https://github.com/astahmer/pandwind/blob/main/packages/codemod/ADAPTER_SDK.md).
+Discovery reads only packages advertised by the project metadata; Pandwind
+does not scan or execute arbitrary `node_modules` code.
 
 ## Safety modes
 

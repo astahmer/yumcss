@@ -1,5 +1,9 @@
 # Plan 010 — Next wave briefs
 
+**Status: COMPLETE for the approved waves.** Items A–H were implemented or
+investigated with evidence. The untried cx cold-path ideas at the end are
+optional experiments, not a correctness or pivot requirement.
+
 ## A. SIZE micro-touch (bitset delta)
 
 Refresh SIZE.md tables/prose and runtime-budget.json headroom commentary for

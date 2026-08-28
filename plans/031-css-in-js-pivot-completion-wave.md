@@ -1,5 +1,10 @@
 # CSS-in-JS pivot completion wave
 
+**Status: COMPLETE for this wave.** The extension mechanism, shared scanner,
+validator registry, external adapter families, semantic metadata, and
+differential corpus landed. New ecosystems continue through the same plugin
+contract and are not a reason to reopen the completed core wave.
+
 ## Goal
 
 Make Pandwind a practical pivot boundary for migrating between independent

@@ -82,6 +82,7 @@ placeholder strings under `allowBuilds` ("set this to true or false"), which
 made pnpm skip esbuild/swc postinstalls — vitest couldn't even start. Set both
 to `true` in a separate chore revision.
 
-**Still open** (deliberately out of scope): compile-time `cx()` hoisting for
-literal calls (plan 003) — that removes the remaining per-call bookkeeping for
-static apps entirely.
+Compile-time `cx()` hoisting for literal calls was deliberately tracked in
+plan 003 and has since landed. The remaining cold-path experiments are
+optional optimization work recorded in plan 010; they are not a correctness
+gap in this runtime-performance plan.

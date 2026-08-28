@@ -17,9 +17,14 @@ Monaco + Shiki. Styled with pandwind itself.
 A local read-only dashboard over the [analyze](#analyze) machinery:
 
 - **Coverage tab** — fold elimination, CSS budget, dead candidates,
-  missing-css warnings with editor links.
+  missing-css warnings, and class-to-rule drill-down with editor links.
 - **Design-system tab** — theme vars, typed utility unions, bridge map,
-  preset tokens.
+  preset tokens, component scopes, and exportable DTCG/`@theme` artifacts.
+- **Graph tab** — token alias graph, cycles, and provenance.
+- **History and usage tabs** — persisted run snapshots/diffs and token/property
+  usage analytics when the local inspector server is enabled.
+- **Reports** — self-contained HTML/JSON/Markdown exports and CI-friendly
+  `--github-annotations` output from the analyzer.
 
 Extend the CLI, not the app, when adding metrics.
 

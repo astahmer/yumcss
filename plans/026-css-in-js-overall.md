@@ -21,7 +21,8 @@ feature expansion:
 The user-facing API remains deliberately minimal per `AGENTS.md`. Recipe and
 composition APIs are explicitly deferred to a separate dedicated session.
 Release and external distribution were deferred in the original foundation
-wave and are now covered by the pivot completion release gates.
+wave and are now covered by the pivot completion release gates. Actual registry
+publication remains operator-gated and is intentionally outside local CI.
 
 ## Goal
 
@@ -167,7 +168,9 @@ the flat path does not become ambiguous.
 ## What this does not allow
 
 - No recipe, slot, `styled()` or component-composition API in this wave.
-- No npm publish, release automation, provenance setup, or public distribution.
+- No direct npm publish from an automated workspace turn; release automation,
+  provenance metadata, preflight, and pack smoke are now shipped by the
+  follow-on completion wave.
 - No silent approximation of unsupported selectors, CSS rules, or runtime
   expressions.
 - No hidden global stylesheet injection for native or non-DOM targets.

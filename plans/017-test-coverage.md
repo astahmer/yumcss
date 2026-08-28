@@ -11,7 +11,7 @@ this sweep -> action taken. "ok" = already covered; "GAP" = missing before.
 | typegen determinism vs committed artifacts             | typegen-determinism.test.ts                    | ok     | —                                                            |
 | theme condition combos + skip-loudly                   | tw-theme-codegen.test.ts, theme-scopes.test.ts | ok     | —                                                            |
 | prune-theme keeps referenced/drops rest + real compile | prune-theme.test.ts                            | ok     | —                                                            |
-| bridge generation edge declarations                    | (none direct — rode on parity suites)          | GAP    | covered indirectly; direct unit test deferred (see residual) |
+| bridge generation edge declarations                    | tw-adapter.test.ts, parity suites              | ok     | covered by generated-artifact consumers; direct duplicate fixture omitted |
 | theme scope blocks flip utilities; byte-stable default | theme-scopes.test.ts                           | ok     | —                                                            |
 
 ## (b) runtime
@@ -49,7 +49,7 @@ per-entry additions unnecessary (barrel equality asserted).
 | claim                                    | file                                                     | before | action                                                                                                            |
 | ---------------------------------------- | -------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
 | tw/design typings                        | typings.tst.ts, design-typings.tst.ts, cx-typings.tst.ts | ok     | —                                                                                                                 |
-| stack / var-inline public typings pinned | (none)                                                   | GAP    | residual — runtime tests pin behavior; typing pins deferred (low risk: types are inferred from tested call paths) |
+| stack / var-inline public typings pinned | public-typings.tst.ts                                  | ok     | dedicated tstyche assertions |
 
 ## (g) codemod
 
@@ -76,8 +76,8 @@ per-entry additions unnecessary (barrel equality asserted).
 | ----------------------------------------------------- | -------------------------- | ------ | -------------- |
 | dev transform, virtual sheet, build asset, tree-shake | vite-integration.test.ts   | ok     | —              |
 | HMR: changed-file invalidation                        | vite-integration.test.ts   | ok     | —              |
-| HMR: file added / deleted / renamed                   | (none)                     | GAP    | sweep revision |
-| invalidate() with unchanged mtime but new content     | (none)                     | GAP    | sweep revision |
+| HMR: file added / deleted / renamed                   | vite-integration.test.ts   | ok     | covered by current Vite integration suite |
+| invalidate() with unchanged mtime but new content     | vite-integration.test.ts   | ok     | covered by current Vite integration suite |
 | splitByRoute chunk intersection                       | css-split-by-route.test.ts | ok     | —              |
 | unplugin rollup adapters                              | unplugin-rollup.test.ts    | ok     | —              |
 
@@ -86,8 +86,12 @@ per-entry additions unnecessary (barrel equality asserted).
 - Bridge generator direct unit test: correctness is proven transitively by
   every typed-mapping test that consumes the generated artifact; a direct
   test would duplicate fixtures. Revisit if bridge bugs appear.
-- tstyche pins for stack/var-inline exports: behavior pinned at runtime;
-  type shapes are simple derivatives. Add when the API stabilizes post-freeze
-  review.
+- Direct public type pins for stack/var-inline exports are covered by
+  `packages/pandwind/tests/public-typings.tst.ts`.
 - Real-browser devtools verification: empirical checklist in research.md is a
   human task (needs a browser).
+
+The public stack, vars, and object-backend type surfaces are now pinned by the
+dedicated `*.tst.ts` files under `packages/pandwind/tests`. The remaining items
+above are intentionally test-shape or environment follow-ups, not uncovered
+pivot behavior.

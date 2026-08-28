@@ -206,7 +206,7 @@ Remaining (smaller):
 - [x] css backend behind the new interface: existing suites (parity, adapter,
       named-atoms) green byte-identical (step 1, size baseline +91 B min for the
       seam — intentional, sanctioned via `pnpm test:size -u`).
-- [ ] Each new backend: vocabulary-subset typing, condition policy tests,
+- [x] Each implemented backend: vocabulary-subset typing, condition policy tests,
       cx merge parity tests against the css backend semantics.
   - [x] react-native (step 3): value/unit policy + shorthand expansion +
         condition-policy + stable-identity/cx tests (`backends-react-native.test.ts`).
@@ -229,6 +229,10 @@ Remaining (smaller):
         assertions + PTY smoke).
 - [x] No new required user-facing API for existing web apps (zero-churn upgrade;
       object backends are additive subpath exports).
+
+Canvas and build-time Metro remain explicitly deferred because this workspace
+has no concrete consumer or target semantics to validate. They are extension
+points, not missing implementations of the CSS/RN/OpenTUI contract.
 
 ## Decisions log
 
