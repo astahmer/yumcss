@@ -6,6 +6,7 @@ import {
 } from "../external-adapters.ts";
 import type { AdapterEmitContext } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
+import { JsxStyleHost } from "../jsx-style-host.ts";
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
 	if (value.kind === "dynamic") return value.expression;
@@ -143,6 +144,27 @@ export default defineCodemodAdapter({
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 	configFiles: ["pandwind.config.ts", "package.json"],
 	emit(program, { programObject, declarationsObject }, context) {
+		const host = program.source;
+		if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
+			const framework =
+				host.framework ??
+				context?.document?.framework ??
+				(/\.(?:jsx|tsx)$/.test(context?.file ?? "") ? "react" : undefined);
+			const rendered = JsxStyleHost.render(
+				host.hostOpenTag,
+				host.hostStyleAttributes,
+				`css.class(${programObject(program)})`,
+				framework,
+			);
+			return {
+				text: rendered.text,
+				imports: [
+					'import { createCss } from "pandwind/css";',
+					"const css = createCss();",
+					...(rendered.needsCx ? ['import { cx } from "pandwind/cx";'] : []),
+				],
+			};
+		}
 		const kind = program.rules[0]?.kind;
 		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
 			return (

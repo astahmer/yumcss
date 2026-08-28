@@ -23,7 +23,7 @@ pandwind-codemod swap \
   "src/**/*.{ts,tsx}"
 ```
 
-The built-in adapter set covers `emotion`, `styled-components`,
+The built-in adapter set covers `emotion`, `styled-components`, `chakra-ui`, `mui`, `mantine`,
 `vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
 `aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `solid-styled`,
 `vue-styled`, `bamboo`, `next-yak`, and `pandwind`. Bamboo's object dialect

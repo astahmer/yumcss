@@ -2,7 +2,7 @@
   "schema": "pandwind.real-repository-report/2",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "/Users/astahmer/.references",
-  "sourceFiles": 19,
+  "sourceFiles": 22,
   "reports": [
     {
       "id": "panda-website-home",
@@ -858,8 +858,8 @@
         ]
       },
       "sourceBytes": 2729,
-      "outputBytes": 2589,
-      "outputByteDelta": -140,
+      "outputBytes": 2595,
+      "outputByteDelta": -134,
       "converted": 4,
       "skipped": 0,
       "residuals": 0,
@@ -881,11 +881,8 @@
         "added": [
           "pandwind"
         ],
-        "removed": [
-          "@bamboocss/dev",
-          "@bamboocss/vite"
-        ],
-        "byteDelta": -140
+        "removed": [],
+        "byteDelta": -134
       }
     },
     {
@@ -972,6 +969,130 @@
           "next-yak"
         ],
         "byteDelta": -398
+      }
+    },
+    {
+      "id": "chakra-ui-box-sx",
+      "repository": "https://github.com/chakra-ui/chakra-ui",
+      "commit": "c8ef4fb3146ecb82521a878eb6545b4c9598abd6",
+      "path": "apps/www/components/chakra-mastery-ad.tsx",
+      "adapterRoute": "chakra-ui -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.9,
+        "evidence": [
+          "@chakra-ui\\/react",
+          "<(?:(?:Box|Flex|Stack|Text|Button)(?:\\s|>))"
+        ]
+      },
+      "sourceBytes": 831,
+      "outputBytes": 1244,
+      "outputByteDelta": 413,
+      "converted": 5,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 5,
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "@chakra-ui/react"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": 413
+      }
+    },
+    {
+      "id": "mui-box-sx",
+      "repository": "https://github.com/mui/material-ui",
+      "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
+      "path": "docs/data/material/components/box/BoxSx.tsx",
+      "adapterRoute": "mui -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.9,
+        "evidence": [
+          "@mui\\/(?:system|material)",
+          "\\bsx\\s*="
+        ]
+      },
+      "sourceBytes": 561,
+      "outputBytes": 550,
+      "outputByteDelta": -11,
+      "converted": 1,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 1,
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "@mui/system",
+          "@mui/material"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": -11
+      }
+    },
+    {
+      "id": "mantine-style-props",
+      "repository": "https://github.com/mantinedev/mantine",
+      "commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
+      "path": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
+      "adapterRoute": "mantine -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.9,
+        "evidence": [
+          "@mantine\\/core",
+          "\\b(?:sx|maw|fz|c|bg)\\s*="
+        ]
+      },
+      "sourceBytes": 3131,
+      "outputBytes": 3635,
+      "outputByteDelta": 504,
+      "converted": 9,
+      "skipped": 0,
+      "residuals": 0,
+      "residualKinds": {},
+      "validations": 9,
+      "manualFixes": [],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "@mantine/core"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [],
+        "byteDelta": 504
       }
     }
   ],

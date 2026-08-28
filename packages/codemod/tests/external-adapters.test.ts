@@ -31,12 +31,15 @@ describe("CSS-in-JS adapter contract v2", () => {
 				"import { StyleSheet } from 'react-native'; StyleSheet.create({ button: { color: 'red' } })",
 			bamboo: "import { css } from 'styled-system/css'; css({ color: 'red' })",
 			"next-yak": "import { css } from 'next-yak'; css`color: red;`",
+			"chakra-ui": "import { Box } from '@chakra-ui/react'; <Box bg='tomato' />",
+			mui: "import { Box } from '@mui/material'; <Box sx={{ color: 'red' }} />",
+			mantine: "import { Box } from '@mantine/core'; <Box c='red' />",
 		};
 		for (const adapter of createBuiltinCodemodCatalog().adapters) {
 			const id = adapter.id;
 			expect(adapter.schema).toBe(ADAPTER_CONTRACT_SCHEMA);
 			expect(adapter.version).toBe("2");
-			expect(adapter.sourceModules.length).toBeGreaterThan(0);
+			expect(adapter.sourceModules).toBeDefined();
 			expect(adapter.dependencies).toBeDefined();
 			expect(adapter.detect({ file: "styles.ts", source: samples[id]! })).toMatchObject({
 				matched: true,
@@ -623,5 +626,51 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("<Base {...props} class={cx(");
 		expect(result.code).toContain("css.vars({ color:");
 		expect(result.code).toContain(")(props) });");
+	});
+
+	test("lowers Chakra, MUI, and Mantine host style props without removing component imports", () => {
+		const chakra = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="tomato" p="16px" _hover={{ bg: "blue" }} data-kind="card" />;',
+			{ from: "chakra-ui", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(chakra.converted).toBe(1);
+		expect(chakra.skipped).toBe(0);
+		expect(chakra.residuals).toEqual([]);
+		expect(chakra.code).toContain('import { Box } from "@chakra-ui/react";');
+		expect(chakra.code).toContain('className={css.class({ backgroundColor: "tomato"');
+		expect(chakra.code).toContain('"&:hover"');
+
+		const mui = runAdapterMigration(
+			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',
+			{ from: "mui", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(mui.converted).toBe(1);
+		expect(mui.skipped).toBe(0);
+		expect(mui.residuals).toEqual([]);
+		expect(mui.code).toContain('import { Box } from "@mui/material";');
+		expect(mui.code).toContain('margin: "16px"');
+		expect(mui.code).toContain('padding: "8px"');
+
+		const mantine = runAdapterMigration(
+			'import { Box } from "@mantine/core";\nexport const App = () => <Box c="red" bg="#fff" mx="16px" />;',
+			{ from: "mantine", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(mantine.converted).toBe(1);
+		expect(mantine.skipped).toBe(0);
+		expect(mantine.residuals).toEqual([]);
+		expect(mantine.code).toContain('import { Box } from "@mantine/core";');
+		expect(mantine.code).toContain('color: "red"');
+		expect(mantine.code).toContain('backgroundColor: "#fff"');
+	});
+
+	test("keeps callback-valued host styles as explicit residuals", () => {
+		const result = runAdapterMigration(
+			'import { Box } from "@mui/material";\nexport const App = ({ theme }) => <Box sx={(theme) => ({ color: theme.palette.primary.main })} />;',
+			{ from: "mui", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "dynamic-values")).toBe(true);
+		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 });

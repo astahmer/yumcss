@@ -59,6 +59,9 @@ const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	stylex: ["@stylexjs/stylex"],
 	bamboo: ["@bamboocss/dev", "@bamboocss/vite"],
 	"next-yak": ["next-yak"],
+	"chakra-ui": ["@chakra-ui/react"],
+	mui: ["@mui/system", "@mui/material"],
+	mantine: ["@mantine/core"],
 };
 
 function dependencyNames(value: readonly { packages: readonly { name: string }[] }[]): string[] {
@@ -144,7 +147,13 @@ for (const fixture of fixtures) {
 	}
 	const sourceRuntimePackages = [...(sourcePackages[fixture.from] ?? [])];
 	const added = targetPackages.filter((name) => !sourceRuntimePackages.includes(name));
-	const removed = sourceRuntimePackages.filter((name) => !targetPackages.includes(name));
+	const sourceOwnedModules =
+		fixture.from === "panda"
+			? sourceRuntimePackages
+			: (getCodemodAdapter(fixture.from)?.sourceModules ?? []);
+	const removed = sourceRuntimePackages.filter(
+		(name) => sourceOwnedModules.includes(name) && !targetPackages.includes(name),
+	);
 	reports.push({
 		id: fixture.id,
 		repository: fixture.repository,

@@ -31,6 +31,7 @@ import {
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
+import { JsxStyleHost } from "./jsx-style-host.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -38,9 +39,10 @@ export type ExternalAdapterId = string;
 type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
-	readonly form?: "object" | "template" | "reference";
+	readonly form?: "object" | "template" | "reference" | "jsx-style";
 	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
+	readonly styleProps?: readonly string[];
 };
 
 export type AdapterSourceObjectOptions = Pick<
@@ -50,6 +52,8 @@ export type AdapterSourceObjectOptions = Pick<
 	| "variantContainerKeys"
 	| "computedKeys"
 	| "dynamicReferences"
+	| "propertyAliases"
+	| "valueTransforms"
 >;
 export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
@@ -212,7 +216,10 @@ function styledSubject(source: string, start: number): Partial<StyleProgramSourc
 }
 
 function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
-	if (condition.raw !== undefined) return condition.raw;
+	if (condition.raw !== undefined) {
+		if (condition.raw.startsWith("_")) return `&:${condition.raw.slice(1)}`;
+		return condition.raw;
+	}
 	if (condition.kind === "pseudo")
 		return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
 	if (condition.kind === "media")
@@ -607,6 +614,24 @@ function parseCalls(
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;
+			if (pattern.form === "jsx-style") {
+				const tag = JsxStyleHost.parse(
+					source,
+					start,
+					context,
+					pattern.styleProps ?? [],
+					adapterSource(context, start),
+				);
+				if (tag !== undefined) {
+					const program = styleProgramFromSourceObject(tag.body, {
+						...resolvedObjectOptions,
+						source: tag.source,
+						sourceOffset: start,
+					});
+					matches.push({ start, end: tag.end, program, sourceText: tag.openingTag });
+				}
+				continue;
+			}
 			if (pattern.form === "reference") {
 				const reference = match[1];
 				if (reference === undefined) continue;

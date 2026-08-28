@@ -54,6 +54,9 @@ describe("third-party adapter registry", () => {
 		expect(registry.get("react-native")).toBeDefined();
 		expect(registry.get("bamboo")).toBeDefined();
 		expect(registry.get("next-yak")).toBeDefined();
+		expect(registry.get("chakra-ui")).toBeDefined();
+		expect(registry.get("mui")).toBeDefined();
+		expect(registry.get("mantine")).toBeDefined();
 	});
 
 	test("discovers only dependencies that advertise the package contract", async () => {

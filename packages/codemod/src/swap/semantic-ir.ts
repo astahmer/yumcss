@@ -107,6 +107,12 @@ export interface StyleProgramSource {
 	readonly subject?: string;
 	readonly subjectKind?: "member" | "call";
 	readonly framework?: string;
+	/** Original JSX opening element when a source adapter owns style props. */
+	readonly hostOpenTag?: string;
+	/** Source attributes consumed by the style-prop adapter. */
+	readonly hostStyleAttributes?: readonly string[];
+	/** Marks a style program that must be rendered back into its host element. */
+	readonly hostAttribute?: string;
 }
 
 export interface StyleThemeBinding {
@@ -174,6 +180,10 @@ export interface StyleProgramOptions {
 	readonly computedKeys?: Readonly<Record<string, string>>;
 	/** Source-adapter mappings for runtime variable references in values. */
 	readonly dynamicReferences?: Readonly<Record<string, string>>;
+	/** Source aliases expanded into one or more canonical CSS properties. */
+	readonly propertyAliases?: Readonly<Record<string, string | readonly string[]>>;
+	/** Source-specific value normalization, for example default theme spacing. */
+	readonly valueTransforms?: Readonly<Record<string, (value: StyleValue) => StyleValue>>;
 	/** Adapter-owned array fields that expand into independent semantic rules. */
 	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
 	/** Absolute offset of the supplied source-object body in the source file. */
@@ -750,7 +760,10 @@ export function styleProgramFromSourceObject(
 					});
 				}
 			}
-			declarations.push({ conditions, property: name, value });
+			const normalizedValue = options.valueTransforms?.[name]?.(value) ?? value;
+			const aliases = options.propertyAliases?.[name] ?? name;
+			for (const property of typeof aliases === "string" ? [aliases] : aliases)
+				declarations.push({ conditions, property, value: normalizedValue });
 		}
 	};
 

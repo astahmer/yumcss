@@ -1,12 +1,15 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
 import aphrodite from "./aphrodite.adapter.ts";
 import bamboo from "./bamboo.adapter.ts";
+import chakra from "./chakra.adapter.ts";
 import compiled from "./compiled.adapter.ts";
 import emotion from "./emotion.adapter.ts";
 import fela from "./fela.adapter.ts";
 import goober from "./goober.adapter.ts";
 import jss from "./jss.adapter.ts";
 import linaria from "./linaria.adapter.ts";
+import mantine from "./mantine.adapter.ts";
+import mui from "./mui.adapter.ts";
 import nextYak from "./next-yak.adapter.ts";
 import pandwind from "./pandwind.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
@@ -25,11 +28,14 @@ export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlug
 	[
 		pandwind,
 		bamboo,
+		chakra,
 		emotion,
 		styledComponents,
 		vanillaExtract,
 		stitches,
 		linaria,
+		mantine,
+		mui,
 		nextYak,
 		jss,
 		stylex,

@@ -12,10 +12,10 @@ The benchmark harnesses below are additional corpus sources. Their isolated
 lanes are intentionally not treated as product dependencies: we mine their
 source/config/build semantics and run Pandwind adapters against selected files.
 
-| source corpus | repository | pinned HEAD | covered lanes |
-| ------------ | ---------- | ----------- | ------------- |
+| source corpus   | repository                                  | pinned HEAD                                | covered lanes                                                                                     |
+| --------------- | ------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
 | css-in-js-bench | https://github.com/jantimon/css-in-js-bench | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls |
-| css-in-js-arena | https://github.com/gajus/css-in-js-arena | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX |
+| css-in-js-arena | https://github.com/gajus/css-in-js-arena    | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX                                                                         |
 
 | adapter           | repository                                             | pinned HEAD                                | exercised source                                                                 |
 | ----------------- | ------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------- |
@@ -35,5 +35,11 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | solid-styled      | https://github.com/solidjs/solid-styled-components     | `b798a6d91a02450f3649365a3cdb27a282f4b37d` | `test/test.spec.tsx`                                                             |
 | vue-styled        | https://github.com/vue-styled-components/core          | `5874630ed4d54aa955052fc864140eeae30fad2c` | `packages/playground/src/App.vue`                                                |
 | stylex            | https://github.com/facebook/stylex                     | `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4` | `packages/@stylexjs/babel-plugin/__tests__/legacy/stylex-transform-call-test.js` |
-| bamboo            | https://github.com/jantimon/css-in-js-bench             | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/bamboo/case/realistic-button/index.tsx`                                   |
-| next-yak          | https://github.com/jantimon/css-in-js-bench             | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/next-yak/case/realistic-button/index.tsx` and css-prop lane               |
+| bamboo            | https://github.com/jantimon/css-in-js-bench            | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/bamboo/case/realistic-button/index.tsx`                                   |
+| next-yak          | https://github.com/jantimon/css-in-js-bench            | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/next-yak/case/realistic-button/index.tsx` and css-prop lane               |
+| chakra-ui         | https://github.com/chakra-ui/chakra-ui                 | `c8ef4fb3146ecb82521a878eb6545b4c9598abd6` | `apps/www/components/chakra-mastery-ad.tsx`                                      |
+| mui               | https://github.com/mui/material-ui                     | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                    |
+| mantine           | https://github.com/mantinedev/mantine                  | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx`                   |
+| chakra-ui         | https://github.com/chakra-ui/chakra-ui                 | `c8ef4fb3146ecb82521a878eb6545b4c9598abd6` | `apps/www/components/chakra-mastery-ad.tsx`                                      |
+| mui               | https://github.com/mui/material-ui                     | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                    |
+| mantine           | https://github.com/mantinedev/mantine                  | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/mantine.dev/src/components/HomePage/HomePage.tsx`                          |

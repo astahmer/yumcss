@@ -41,12 +41,15 @@ pnpm codemod "src/**/*.tsx" --from=styled-components,stylex --to=css --diff --wr
 Detectors that rewrite other styling libraries onto pandwind APIs BEFORE the
 mode pass runs. Off by default.
 
-| source              | what it converts                                                                                                                                                                                                                                                                                   | flagged (not converted)                                                                   |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `styled-components` | `styled.tag`\`...\`` and object calls → the selected target; intrinsic JSX subjects can be rewritten with `className={Name}` and `cx`. | interpolated values and component inheritance remain residuals unless the host contract proves a safe rewrite |
-| `stylex`            | `stylex.create({ name: { literalProps } })` → target style programs; `stylex.props(a, b)` → `cx(a, b)`. | non-literal values and unsupported rule semantics |
-| `bamboo`            | `styled-system/css` object calls, including nested selectors and conditions. | dynamic config and unsupported generated patterns |
-| `next-yak`          | extracted `css` templates, `styled.tag` templates, and css-prop source files. | runtime interpolations requiring host props/theme lowering |
+| source              | what it converts                                                                                                                   | flagged (not converted)                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `styled-components` | `styled.tag`\`...\``and object calls → the selected target; intrinsic JSX subjects can be rewritten with`className={Name}`and`cx`. | interpolated values and component inheritance remain residuals unless the host contract proves a safe rewrite |
+| `stylex`            | `stylex.create({ name: { literalProps } })` → target style programs; `stylex.props(a, b)` → `cx(a, b)`.                            | non-literal values and unsupported rule semantics                                                             |
+| `bamboo`            | `styled-system/css` object calls, including nested selectors and conditions.                                                       | dynamic config and unsupported generated patterns                                                             |
+| `next-yak`          | extracted `css` templates, `styled.tag` templates, and css-prop source files.                                                      | runtime interpolations requiring host props/theme lowering                                                    |
+| `chakra-ui`         | Chakra JSX style props on components such as `Box`, including aliases and pseudo props.                                            | project-specific theme extensions and non-style component props                                               |
+| `mui`               | MUI `sx` objects, spacing aliases, inline theme palette values, and styled object calls.                                           | callback `sx`, responsive values requiring a project theme, and custom system functions                       |
+| `mantine`           | Mantine style props and `style`/`sx` objects with CSS-variable token lowering.                                                     | callback/array styles and project-specific theme extensions                                                   |
 
 The same v2 adapter registry also contains `emotion`, `vanilla-extract`,
 `stitches`, `linaria`, `jss`, `fela`, `goober`, `aphrodite`, `style9`,
