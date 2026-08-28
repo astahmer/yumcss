@@ -264,10 +264,10 @@ describe("css with custom tailwind hashFn", () => {
 		});
 
 		expect(css(styles as never)).toMatchInlineSnapshot(`
-      {
-        "dark__md__hover__color": "dark:md:hover:text-sky-600",
-      }
-    `);
+			{
+			  "dark__md__hover__color": "dark:hover:md:text-sky-600",
+			}
+		`);
 
 		sheet.process([styles]);
 		expect(sheet.gen.atomic()).toMatchInlineSnapshot(

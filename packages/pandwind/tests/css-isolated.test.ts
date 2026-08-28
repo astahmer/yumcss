@@ -107,13 +107,13 @@ test("css fn prop in known at rule", () => {
 		}),
 	).toMatchInlineSnapshot(
 		`
-    {
-      "class": "i4ah8r",
-      "css": {
-        "sm__color": "i4ah8r",
-      },
-    }
-  `,
+		{
+		  "class": "yu75ve",
+		  "css": {
+		    "sm__color": "yu75ve",
+		  },
+		}
+	`,
 	);
 });
 
@@ -236,13 +236,13 @@ test("css fn prop with multiple selectors in :is also in selector list", () => {
 		}),
 	).toMatchInlineSnapshot(
 		`
-    {
-      "class": "hyytnx",
-      "css": {
-        "&:is(:active, [data-active=true])__&:disabled, &[data-disabled=true]__color": "hyytnx",
-      },
-    }
-  `,
+		{
+		  "class": "migzmv",
+		  "css": {
+		    "&:is(:active, [data-active=true])__&:disabled, &[data-disabled=true]__color": "migzmv",
+		  },
+		}
+	`,
 	);
 });
 
@@ -267,12 +267,12 @@ test("css fn prop in nested unknown at rule in pseudo selector", () => {
 		}),
 	).toMatchInlineSnapshot(
 		`
-    {
-      "class": "u3ow6h",
-      "css": {
-        "_disabled__[data-active] &__@media (min-width: 640px)___hover__color": "u3ow6h",
-      },
-    }
-  `,
+		{
+		  "class": "icev1y",
+		  "css": {
+		    "_disabled__[data-active] &__@media (min-width: 640px)___hover__color": "icev1y",
+		  },
+		}
+	`,
 	);
 });

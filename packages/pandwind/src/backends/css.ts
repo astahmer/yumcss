@@ -18,6 +18,13 @@ export interface CssBackendOptions {
 	className?: AnyClassNameStrategy;
 }
 
+const canonicalStyleKey = (key: string): string =>
+	key
+		.split("__")
+		.filter((part) => part !== "")
+		.toSorted()
+		.join("__");
+
 const CSS_BACKEND_CAPABILITIES: BackendCapabilityContract = {
 	schema: "pandwind.style-backend-capabilities/1",
 	artifact: "stylesheet",
@@ -54,8 +61,12 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 	const declare = (key: string, value: string): string => {
 		const rawValue = String(value);
+		// The stylesheet canonicalizes flattened condition paths before it
+		// hashes them. Do the same at declaration time so inverted nesting
+		// (`{ color: { _hover: value } }`) cannot produce an atom with no rule.
+		const orderedKey = canonicalStyleKey(key);
 		if (strategy !== undefined) {
-			const custom = strategy.toClassName(key, rawValue);
+			const custom = strategy.toClassName(orderedKey, rawValue);
 			if (custom !== null) {
 				// Sheet-backed strategies compile through this engine's own
 				// stylesheet, so their classes join the atom registry — that is
@@ -64,7 +75,9 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 				return custom;
 			}
 		}
-		const atom = hashFn(key, rawValue);
+		const atom = hashFn(orderedKey, rawValue);
+		// Keep the written key for cx()'s property-signature parser; only the
+		// class identity uses the canonical key shared with the stylesheet.
 		if (!atoms.has(atom)) atoms.set(atom, key);
 		return atom;
 	};

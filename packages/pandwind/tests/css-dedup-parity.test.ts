@@ -23,14 +23,10 @@
  * The tw adapter is deliberately out of scope here: its classes are compiled
  * by external Tailwind, not by this engine's stylesheet.
  *
- * Known engine divergence pinned below (see "inverted condition nesting"):
- * the runtime registers atoms under the written flatten order while the
- * stylesheet generator canonicalizes condition parts by sorting them, so
- * INVERTED nesting (`{ color: { _hover: "..." } }`) produces a rule keyed
- * differently from the runtime atom in hash mode. Canonical authoring
- * (conditions outermost, `_hover: { ... }`) is unaffected. Named-atoms is
- * immune because the strategy applies the same sort. This is documented in
- * plans/010-next-wave.md outcomes rather than fixed here (test-only change).
+ * Both runtime declaration and stylesheet generation canonicalize flattened
+ * condition paths, so inverted nesting (`{ color: { _hover: "..." } }`) is
+ * equivalent to canonical authoring (`{ _hover: { color: "..." } }`) in every
+ * sheet-backed mode.
  */
 import { parse, type Rule, type Root } from "postcss";
 import { readFileSync } from "node:fs";
@@ -261,7 +257,7 @@ describe("cx survivor recompilation", () => {
 	);
 });
 
-describe("known engine divergence — pinned consciously (test-only change)", () => {
+describe("condition-path canonicalization", () => {
 	test("inverted condition nesting: named-atoms matches its sheet rule", () => {
 		const { compile, root } = makeMode(createNamedAtomsStrategy());
 		const atoms = compile({ color: { _hover: "red" } });
@@ -269,15 +265,10 @@ describe("known engine divergence — pinned consciously (test-only change)", ()
 		expect(rules.length).toBe(1);
 	});
 
-	test.fails(
-		"inverted condition nesting: hash-mode runtime atom has NO matching sheet rule " +
-			"(runtime hashes the written key order, the stylesheet sorts condition " +
-			"parts — pre-existing divergence, see plans/010-next-wave.md outcomes)",
-		() => {
-			const { compile, root } = makeMode(undefined);
-			const atoms = compile({ color: { _hover: "red" } });
-			const atom = Object.values(atoms)[0]!;
-			expect(rulesForClassName(root(), atom).length).toBe(1); // currently 0
-		},
-	);
+	test("inverted condition nesting: hash-mode runtime atom matches its sheet rule", () => {
+		const { compile, root } = makeMode(undefined);
+		const atoms = compile({ color: { _hover: "red" } });
+		const atom = Object.values(atoms)[0]!;
+		expect(rulesForClassName(root(), atom).length).toBe(1);
+	});
 });

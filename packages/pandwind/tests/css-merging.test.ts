@@ -102,13 +102,13 @@ test("css merging in nested condition", () => {
 			},
 		),
 	).toMatchInlineSnapshot(`
-    {
-      "class": "margin__3px sm__height__3px sm___hover__color__$green-300",
-      "css": {
-        "margin": "margin__3px",
-        "sm___hover__color": "sm___hover__color__$green-300",
-        "sm__height": "sm__height__3px",
-      },
-    }
-  `);
+		{
+		  "class": "margin__3px height__sm__3px _hover__color__sm__$green-300",
+		  "css": {
+		    "margin": "margin__3px",
+		    "sm___hover__color": "_hover__color__sm__$green-300",
+		    "sm__height": "height__sm__3px",
+		  },
+		}
+	`);
 });

@@ -85,11 +85,11 @@ test("css props in nested condition", () => {
 			}),
 		),
 	).toMatchInlineSnapshot(`
-    {
-      "className": "margin__3px sm__height__3px sm___hover__color__$green-300",
-      "style": undefined,
-    }
-  `);
+		{
+		  "className": "margin__3px height__sm__3px _hover__color__sm__$green-300",
+		  "style": undefined,
+		}
+	`);
 });
 
 test("css with dynamic styles", () => {
