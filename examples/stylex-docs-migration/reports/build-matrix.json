@@ -1,0 +1,12 @@
+{
+	"schema": "pandwind.stylex-docs-build-report/1",
+	"referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
+	"cleanBuild": true,
+	"staticGenerationPages": 4,
+	"lanes": {
+		"baseline-stylex": { "build": "passed", "staticGeneration": "passed" },
+		"runtime-css": { "build": "passed", "staticGeneration": "passed" },
+		"atomic-css": { "build": "passed", "staticGeneration": "passed" },
+		"design-dss": { "build": "passed", "staticGeneration": "passed" }
+	}
+}

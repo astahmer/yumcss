@@ -84,7 +84,7 @@ function runtimeKeyframes(program: StyleProgram): string {
 				)
 				.join(", ")}] }`,
 	);
-	return `(css.sheet.register([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
+	return `(css.sheet.registerSemanticRules([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
 }
 
 function runtimeFontFaces(program: StyleProgram): string {

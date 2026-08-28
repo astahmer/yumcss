@@ -13,7 +13,8 @@ The migration is deliberately expressed as lanes over the same
   to `css.class` and `css.props`.
 - `design-dss`: the same declarations lowered through `createDesignCss` and
   `$raw` so arbitrary CSS remains lossless while the design adapter stays
-  replaceable.
+  replaceable. The runtime variant is used so keyframes and variable
+  registrations remain SSR-safe.
 
 Run one lane and print its proof report:
 

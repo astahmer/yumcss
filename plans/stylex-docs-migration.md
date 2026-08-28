@@ -13,7 +13,10 @@ Each lane is an independent JJ revision rooted at the same source snapshot:
   runtime styles.
 - `atomic-css`: static rules become Pandwind `css.class` values composed with
   `cx`.
-- `utility-tw`: declarations lower through the generated Pandwind `tw` bridge.
+- `utility-tw`: reserved for a utility/token corpus. It is not claimed for
+  this app because arbitrary StyleX declarations have no lossless `tw`
+  equivalent without expanding the frozen public API; the current executable
+  docs lanes are `runtime-css`, `atomic-css`, and `design-dss`.
 - `design-dss`: declarations lower through `createDesignCss` and the `dss`
   vocabulary where the design preset can represent them.
 
@@ -32,3 +35,16 @@ For every lane the harness must report:
 
 “Perfect” means the result passes all six checks. A dry codemod report alone is
 not equivalence proof.
+
+## Current evidence
+
+The pinned clone was built from a clean `dist/` four times: the original
+StyleX app and the `runtime-css`, `atomic-css`, and `design-dss` Pandwind lanes
+all completed production build plus four-page static generation. The results
+are recorded in `examples/stylex-docs-migration/reports/build-matrix.json`.
+
+The browser probe is currently blocked by the pinned Waku app's own RSC
+development/standalone server route (`/RSC/R/_root.txt` returns 404 in the
+clone, while build and static generation succeed). Do not treat that
+environment failure as visual parity evidence; rerun the same probe when the
+reference app's Waku runtime is fixed.

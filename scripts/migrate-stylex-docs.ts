@@ -90,18 +90,20 @@ function rewriteNamedGroups(source: string, mode: "atomic" | "design"): string {
 	}
 	if (mode === "design") {
 		output = output.replaceAll(
-			'import { createCss } from "pandwind/css";',
-			'import { createDesignCss } from "pandwind/design";',
+			/import \{ create(?:Runtime)?Css \} from "pandwind\/css(?:\/runtime)?";/g,
+			'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
 		);
 		output = output.replaceAll(
-			"const css = createCss();",
-			"const dcss = createDesignCss(pandwindPreset);",
+			/const css = create(?:Runtime)?Css\(pandwindPreset\);/g,
+			"const dcss = createRuntimeDesignCss(pandwindPreset);",
 		);
-		output = output.replaceAll("css.group(", "dcss.group(");
-		output = output.replace(
-			/import \{ createDesignCss \} from "pandwind\/design";/,
-			'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
-		);
+		output = output.replaceAll(/\bcss\./g, "dcss.");
+		if (!output.includes('from "pandwind/preset"')) {
+			output = output.replace(
+				'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
+				'import { createRuntimeDesignCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";',
+			);
+		}
 	}
 	return output;
 }
@@ -191,13 +193,16 @@ export class StylexDocsMigration {
 
 if (import.meta.main) {
 	const lane = process.argv[2] as StylexDocsLane | undefined;
+	const root = process.argv[3] ?? "examples/stylex-docs-migration/source";
+	const outputRoot = process.argv[4];
 	if (lane === undefined)
 		throw new Error(
-			"Usage: tsx scripts/migrate-stylex-docs.ts <runtime-css|atomic-css|design-dss>",
+			"Usage: tsx scripts/migrate-stylex-docs.ts <runtime-css|atomic-css|design-dss> [root] [output-root]",
 		);
 	const report = await StylexDocsMigration.run(
-		resolve("examples/stylex-docs-migration/source"),
+		resolve(root),
 		lane,
+		outputRoot === undefined ? undefined : resolve(outputRoot),
 	);
 	console.log(JSON.stringify(report, null, 2));
 }

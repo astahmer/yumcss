@@ -231,7 +231,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("@emotion/css");
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
 		expect(result.code).toContain("const css = createRuntimeCss(pandwindPreset);");
-		expect(result.code).toContain('css.sheet.register([{ kind: "keyframes"');
+		expect(result.code).toContain('css.sheet.registerSemanticRules([{ kind: "keyframes"');
 	});
 
 	test("cleans source imports when the module shares a line with migrated code", () => {

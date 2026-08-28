@@ -75,7 +75,8 @@ export function createCss(
 		return compile(flat);
 	};
 
-	const transform = (styles: StyleObject | DynamicStyles) => {
+	const transform = (styles: StyleObject | DynamicStyles | string) => {
+		if (typeof styles === "string") return styles;
 		if ("$input" in styles) {
 			// Omit the $input property before flattening
 			const { $input: _$input, ...rest } = styles as DynamicStyles;
@@ -174,10 +175,10 @@ export function createCss(
 	};
 
 	// `{ btn: { color: "red" } }` -> { btn: { color: "color__red" } }
-	css.group = <TGroup extends Record<string, StyleObject | DynamicStyles<StyleObject>>>(
+	css.group = <TGroup extends Record<string, StyleObject | DynamicStyles<StyleObject> | string>>(
 		groups: TGroup,
 	) => {
-		const merged: Record<string, CompiledStyles | DynamicFn<AnyInput>> = {};
+		const merged: Record<string, CompiledStyles | DynamicFn<AnyInput> | string> = {};
 
 		Object.keys(groups).forEach((currentGroup) => {
 			const groupStyles = groups[currentGroup];
@@ -230,14 +231,16 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	vars: (...styles: Array<TStyles>) => VarsOutput;
 	raw: (...styles: Array<TStyles>) => StyleObject;
 	props: (...styles: Array<CompiledStyles | DynamicReturn | string>) => PropsReturn;
-	group: <TGroup extends Record<string, TStyles | DynamicStyles<TStyles>>>(
+	group: <TGroup extends Record<string, TStyles | DynamicStyles<TStyles> | string>>(
 		styles: TGroup,
 	) => {
 		[Key in keyof TGroup]: TGroup[Key] extends { $input: infer TInput }
 			? TInput extends AnyInput
 				? DynamicFn<TInput>
 				: never
-			: CompiledStyles;
+			: TGroup[Key] extends string
+				? string
+				: CompiledStyles;
 	};
 	input: (name: string) => never;
 }

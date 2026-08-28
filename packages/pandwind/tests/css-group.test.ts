@@ -72,3 +72,11 @@ test("css group", () => {
     }
   `);
 });
+
+test("css group accepts precompiled class strings", () => {
+	const css = createCss();
+	const styles = css.group({ button: css.class({ color: "red" }) });
+
+	expect(styles.button).toMatch(/^\S+$/);
+	expect(css.props(styles.button).className).toBe(styles.button);
+});

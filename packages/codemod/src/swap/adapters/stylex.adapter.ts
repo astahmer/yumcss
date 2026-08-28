@@ -42,7 +42,7 @@ function keyframesText(program: StyleProgram): string {
 				)
 				.join(", ")}] }`,
 	);
-	return `(css.sheet.register([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
+	return `(css.sheet.registerSemanticRules([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
 }
 
 function varsText(program: StyleProgram): string {
@@ -59,7 +59,7 @@ function varsText(program: StyleProgram): string {
 				`${JSON.stringify(declaration.property)}: ${JSON.stringify(`var(${declaration.property})`)}`,
 		)
 		.join(", ");
-	return `(css.sheet.register([{ kind: "global", selector: ":root", declarations: [${registration}] }]), { ${references} })`;
+	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${registration}] }]), { ${references} })`;
 }
 
 export default defineCodemodAdapter({
