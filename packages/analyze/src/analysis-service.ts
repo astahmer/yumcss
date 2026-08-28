@@ -3,14 +3,17 @@ import {
 	collectFiles,
 	loadTwConfig,
 	summarize,
+	formatReport,
 	type AnalyzeOptions,
 	type FileFoldStats,
 	type FoldSummary,
 } from "./analyze.ts";
+import { cssBudget, formatCssBudget, type CssBudget } from "./css-budget.ts";
 
 export interface FoldAnalysisPort {
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats;
 	summarize(files: Array<FileFoldStats>): FoldSummary;
+	format(summary: FoldSummary): string;
 }
 
 class FoldAnalysisService implements FoldAnalysisPort {
@@ -20,6 +23,25 @@ class FoldAnalysisService implements FoldAnalysisPort {
 
 	summarize(files: Array<FileFoldStats>): FoldSummary {
 		return summarize(files);
+	}
+
+	format(summary: FoldSummary): string {
+		return formatReport(summary);
+	}
+}
+
+export interface CssBudgetPort {
+	measure(options: Parameters<typeof cssBudget>[0]): Promise<CssBudget>;
+	format(budget: CssBudget): string;
+}
+
+class CssBudgetService implements CssBudgetPort {
+	measure(options: Parameters<typeof cssBudget>[0]): Promise<CssBudget> {
+		return cssBudget(options);
+	}
+
+	format(budget: CssBudget): string {
+		return formatCssBudget(budget);
 	}
 }
 
@@ -40,3 +62,4 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 
 export const createFoldAnalysisService = (): FoldAnalysisPort => new FoldAnalysisService();
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
+export const createCssBudgetService = (): CssBudgetPort => new CssBudgetService();

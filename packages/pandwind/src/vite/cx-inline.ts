@@ -52,6 +52,7 @@ import type { PandwindEngineContext } from "./engine-context.ts";
 import { createCxEvaluationPort } from "./cx-evaluator.ts";
 import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
 import type { OnUnresolved } from "./inline.ts";
+import type { CxCompilationPorts } from "./cx-compilation-ports.ts";
 
 interface CallNode extends OxcNode {
 	start: number;
@@ -583,6 +584,8 @@ export interface InlineCxCallsOptions {
 	partialFold?: boolean;
 	/** Collect folded tokens outside the design system (onUnresolved lane). */
 	onUnresolved?: OnUnresolved;
+	/** Replaceable discovery, evaluation, and merge policies. */
+	ports?: CxCompilationPorts;
 }
 
 /**
@@ -628,17 +631,29 @@ export function inlineCxCalls(
 	const enablePartialFold = options.partialFold !== false;
 
 	const result = parseSourceProgram({ file: id, source: code });
-	const consts = enableConstants
-		? mergeImported(
-				result.program as unknown as OxcNode,
-				collectModuleConstants(result.program as unknown as OxcNode),
-				options.importedConstants,
-			)
-		: new Map();
-	const evaluate = createCxEvaluationPort(
+	const evaluator = createCxEvaluationPort(
 		{ conflicts: config.conflicts, compose: config.compose },
 		fold === undefined ? {} : { engine: fold.engine },
 	);
+	const ports: CxCompilationPorts = options.ports ?? {
+		constants: { discover: (program) => collectModuleConstants(program as OxcNode) },
+		evaluator: {
+			evaluate: (node, context, constants) =>
+				evalStaticCx(
+					node as Expression,
+					context as CxFoldContext | undefined,
+					constants as ConstantScope | undefined,
+				),
+		},
+		merger: evaluator,
+	};
+	const consts = enableConstants
+		? mergeImported(
+				result.program as unknown as OxcNode,
+				ports.constants.discover(result.program as unknown as OxcNode) as ConstantScope,
+				options.importedConstants,
+			)
+		: new Map();
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
 	const checkUnresolved = options.onUnresolved !== undefined && options.onUnresolved !== "off";
@@ -648,7 +663,7 @@ export function inlineCxCalls(
 	const mergeInputs = (inputs: CxInput[]): string | undefined => {
 		// `true` entries are ignored by the runtime merge, so passing the
 		// evaluated list through as CxInput preserves equivalence.
-		return evaluate.merge(inputs);
+		return ports.merger.merge(inputs);
 	};
 
 	walkNodes(result.program, (node) => {
@@ -661,7 +676,7 @@ export function inlineCxCalls(
 		const inputs: StaticEval[] = [];
 		let dynamicConditional: { index: number; node: Expression } | undefined;
 		for (let i = 0; i < args.length; i++) {
-			const value = evalStaticCx(args[i], fold, consts);
+			const value = ports.evaluator.evaluate(args[i], fold, consts) as StaticEval;
 			if (value !== NOT_STATIC) {
 				inputs.push(value);
 				continue;

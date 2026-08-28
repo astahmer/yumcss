@@ -10,9 +10,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { collectFiles, formatReport, type FoldSummary } from "./analyze.ts";
-import { createAnalysisWorkspace, createFoldAnalysisService } from "./analysis-service.ts";
-import { cssBudget, formatCssBudget } from "./css-budget.ts";
+import { collectFiles, type FoldSummary } from "./analyze.ts";
+import {
+	createAnalysisWorkspace,
+	createCssBudgetService,
+	createFoldAnalysisService,
+} from "./analysis-service.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 import {
 	collectCssReport,
@@ -127,6 +130,7 @@ function parseArgs(argv: Array<string>): CliArgs {
 
 /** Shared CSS-budget computation for both output lanes. */
 async function computeCssBudget(args: CliArgs, files: Array<string>) {
+	const budgetService = createCssBudgetService();
 	const themeCssPath = resolve(args.root, "src/pandwind-theme.css");
 	let themeCss: string | undefined;
 	try {
@@ -134,7 +138,7 @@ async function computeCssBudget(args: CliArgs, files: Array<string>) {
 	} catch {
 		themeCss = undefined;
 	}
-	return cssBudget({
+	return budgetService.measure({
 		files: files.map((f) => resolve(args.root, f)),
 		twEntry: args.twPath,
 		themeCss,
@@ -203,7 +207,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		);
 	}
 	if (args.css && !args.json) {
-		return formatCssBudget(await computeCssBudget(args, files));
+		return createCssBudgetService().format(await computeCssBudget(args, files));
 	}
 
 	if (args.githubAnnotations) {
@@ -211,7 +215,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		const truncated = false;
 		return formatAnnotations(annotations, truncated);
 	}
-	const report = formatReport(summary);
+	const report = analysis.format(summary);
 	const authoredCssReport = formatAuthoredCssImports(authoredCss);
 	const formattedCssReport = formatCssDiagnostics(cssDiagnostics);
 	return [report, authoredCssReport, formattedCssReport].filter(Boolean).join("\n\n");
