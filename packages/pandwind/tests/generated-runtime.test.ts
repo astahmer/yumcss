@@ -27,7 +27,8 @@ describe("generated tw runtime", () => {
 
 	test("merges conflicting utilities from the generated conflict map", () => {
 		expect(tw({ px: "4", p: "6" })).toBe("p-6");
-		expect(tw({ p: "6", px: "4" })).toBe("px-4");
+		expect(tw({ p: "6", px: "4" })).toBe("p-6 px-4");
+		expect(tw({ p: "6", pb: "10" })).toBe("p-6 pb-10");
 		expect(tw({ text: ["2xl", "gray-900", "center"] })).toBe("text-2xl text-gray-900 text-center");
 		expect(tw({ border: ["2", "red-500"] })).toBe("border-2 border-red-500");
 		expect(tw({ bg: ["red-500/50", "blue-500"] })).toBe("bg-blue-500");

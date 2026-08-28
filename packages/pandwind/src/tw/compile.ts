@@ -122,10 +122,9 @@ function isNestedStyles(value: TwValue | TwNestedStyles): value is TwNestedStyle
 
 interface Emitted {
 	className: string;
-	signature: string;
+	/** Conflict signatures still contributed by this emitted class. */
+	ownedSignatures: string[];
 }
-
-const EMPTY_SIGNATURE = "";
 
 function visit(
 	styles: TwNestedStyles,
@@ -218,7 +217,7 @@ function push(
 	value: string,
 ): void {
 	if (conflicts === undefined) {
-		classes.push({ className, signature: EMPTY_SIGNATURE });
+		classes.push({ className, ownedSignatures: [] });
 		return;
 	}
 
@@ -237,33 +236,37 @@ function push(
 		const previous = signatures.get(signature);
 		if (previous !== undefined) {
 			classes[previous]!.className = "";
+			classes[previous]!.ownedSignatures = [];
 			signatures.delete(signature);
 		}
-		classes.push({ className, signature });
+		classes.push({ className, ownedSignatures: [signature] });
 		signatures.set(signature, classes.length - 1);
 		return;
 	}
 
 	if (props.length === 0) {
-		classes.push({ className, signature: EMPTY_SIGNATURE });
+		classes.push({ className, ownedSignatures: [] });
 		return;
 	}
 
-	// Last key wins per property: a later class drops every earlier class
-	// that sets any of the same (canonicalized) property under the same
-	// variant prefix. `p-6` (padding) removes `px-4` (padding-inline) because
-	// their expanded longhand sets overlap.
+	// Last key wins per property. When a later class overlaps only part of an
+	// earlier multi-property utility, keep the earlier class for its surviving
+	// longhands (`p-6 pb-10` must retain `p-6` for top/inline padding).
+	const ownedSignatures = props.map((prop) => `${prefix}|${prop}`);
 	for (const prop of props) {
 		const signature = `${prefix}|${prop}`;
 		const previous = signatures.get(signature);
 		if (previous !== undefined) {
-			classes[previous]!.className = "";
+			const previousOwned = classes[previous]!.ownedSignatures;
+			const ownedIndex = previousOwned.indexOf(signature);
+			if (ownedIndex !== -1) previousOwned.splice(ownedIndex, 1);
+			if (previousOwned.length === 0) classes[previous]!.className = "";
 			signatures.delete(signature);
 		}
 	}
-	classes.push({ className, signature: EMPTY_SIGNATURE });
-	for (const prop of props) {
-		signatures.set(`${prefix}|${prop}`, classes.length - 1);
+	classes.push({ className, ownedSignatures });
+	for (const signature of ownedSignatures) {
+		signatures.set(signature, classes.length - 1);
 	}
 }
 

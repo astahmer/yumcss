@@ -156,7 +156,8 @@ describe("tw semantic sub-keys (overloaded utilities)", () => {
 describe("tw last-wins merging", () => {
 	test("later keys drop earlier conflicting utilities", () => {
 		expect(merged({ px: "4", p: "6" })).toBe("p-6");
-		expect(merged({ p: "6", px: "4" })).toBe("px-4");
+		expect(merged({ p: "6", px: "4" })).toBe("p-6 px-4");
+		expect(merged({ p: "6", pb: "10" })).toBe("p-6 pb-10");
 		expect(merged({ bg: "red-500", border: "2" })).toBe("bg-red-500 border-2");
 	});
 
@@ -179,7 +180,7 @@ describe("tw last-wins merging", () => {
 	});
 
 	test("unknown values fall back to the utility default", () => {
-		expect(merged({ p: "6", px: "bogus" })).toBe("px-bogus");
+		expect(merged({ p: "6", px: "bogus" })).toBe("p-6 px-bogus");
 	});
 
 	test("no conflicts meta means no merging", () => {
