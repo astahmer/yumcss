@@ -71,6 +71,52 @@ function hasSkipMarker(source: string, index: number, marker: string): boolean {
 	return sameLine || previousLine;
 }
 
+function isCodePosition(source: string, end: number): boolean {
+	let quote: "'" | '"' | "`" | null = null;
+	let lineComment = false;
+	let blockComment = false;
+	let escaped = false;
+
+	for (let index = 0; index < end; index++) {
+		const char = source[index]!;
+		const next = source[index + 1];
+
+		if (lineComment) {
+			if (char === "\n") lineComment = false;
+			continue;
+		}
+		if (blockComment) {
+			if (char === "*" && next === "/") {
+				blockComment = false;
+				index++;
+			}
+			continue;
+		}
+		if (quote !== null) {
+			if (escaped) {
+				escaped = false;
+			} else if (char === "\\") {
+				escaped = true;
+			} else if (char === quote) {
+				quote = null;
+			}
+			continue;
+		}
+
+		if (char === "/" && next === "/") {
+			lineComment = true;
+			index++;
+		} else if (char === "/" && next === "*") {
+			blockComment = true;
+			index++;
+		} else if (char === "'" || char === '"' || char === "`") {
+			quote = char;
+		}
+	}
+
+	return quote === null && !lineComment && !blockComment;
+}
+
 function classNameMatches(
 	source: string,
 ): Array<{ full: string; classString: string; start: number }> {
@@ -78,6 +124,7 @@ function classNameMatches(
 	const regex = /\bclassName\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*"([^"]*)"\s*\})/g;
 	for (const match of source.matchAll(regex)) {
 		const index = match.index ?? 0;
+		if (!isCodePosition(source, index)) continue;
 		// `el.className = "..."` is a plain DOM property assignment, not a
 		// JSX attribute — the tw()/css() replacements emit `={ ... }`, which
 		// is JSX-expression-container syntax and invalid outside JSX.

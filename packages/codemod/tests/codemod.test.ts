@@ -202,6 +202,21 @@ describe("safety rails", () => {
 		const cxSecond = cxMode(cxFirst.code);
 		expect(cxSecond.changed).toBe(false);
 	});
+
+	test("does not rewrite className text inside strings or comments", () => {
+		const source = [
+			`const example = 'className="p-4"';`,
+			`// <div className="p-6" />`,
+			`/* <div className="p-8" /> */`,
+			`export const A = () => <div className="p-2" />;`,
+		].join("\n");
+		const result = tw(source);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain(`const example = 'className="p-4"';`);
+		expect(result.code).toContain(`// <div className="p-6" />`);
+		expect(result.code).toContain(`/* <div className="p-8" /> */`);
+		expect(result.code).toContain("tw({");
+	});
 });
 
 describe("mapToken unit behavior", () => {
