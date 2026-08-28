@@ -66,6 +66,10 @@ function splitTopLevel(token: string, separator: ":"): string[] {
 const camelCase = (name: string): string =>
 	name.length > 0 ? name[0]!.toLowerCase() + name.slice(1) : name;
 
+/** Convert the kebab spelling used by Tailwind into a generated variant key. */
+const variantKey = (name: string): string =>
+	camelCase(name.replace(/-([a-z])/g, (_, character: string) => character.toUpperCase()));
+
 /**
  * Consume leading variant segments while they match known variants.
  * Compound dash forms (`group-hover`) split into a nested chain when both
@@ -82,8 +86,9 @@ function parseVariants(token: string, meta: PandwindMeta): { variants: string[];
 		// their meaning; only bracketed attribute conditions are structurally
 		// safe to expose as an open variant key below.
 		if (/^(?:(?:group|peer)-)?(?:data|aria)-/.test(segment)) break;
-		if (meta.variants.has(camelCase(segment))) {
-			variants.push(camelCase(segment));
+		const directVariant = variantKey(segment);
+		if (meta.variants.has(directVariant)) {
+			variants.push(directVariant);
 			i++;
 			continue;
 		}

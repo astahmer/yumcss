@@ -53,6 +53,12 @@ describe("mode: tw", () => {
 		expect(result.code).toContain("md:");
 	});
 
+	test("kebab-case variants resolve to the generated camelCase keys", () => {
+		const result = tw(`<div className="focus-within:ring-2" />`);
+		expect(result.code).toContain("focusWithin:");
+		expect(result.code).not.toContain('"focus-within:ring-2"');
+	});
+
 	test("overloaded utilities pick the key matching their conflict properties", () => {
 		// text-* is overloaded across size/color/align/wrap/overflow.
 		const color = tw(`<div className="text-gray-900" />`).code;
