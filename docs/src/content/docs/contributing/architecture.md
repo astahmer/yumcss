@@ -26,13 +26,13 @@ minimal implementation without changing orchestration.
 | Domain              | Port boundary                                                                                          | Default implementation                                                                                                                                     |
 | ------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Vite CSS extraction | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports                             | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                                                                                                  |
-| Tailwind codegen    | theme loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts` |
+| Tailwind codegen    | theme loader, design-system loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts`, `tw/generate-types.ts` |
 | Runtime CSS         | canonicalizer, ordering, serializer, store, sink                                                       | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                          |
 | Stylesheet lowering | condition, ordering, decoder, serializer, and variable compiler policies                               | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                 |
 | Token formats       | one normalized token set plus format adapters                                                          | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                      |
 | `cx()` compilation  | constant discovery, expression evaluation, imported merges, fold policy, and code emission             | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                     |
 | Design vocabulary   | module adapter registry                                                                                | `design/resolve.ts`                                                                                                                                        |
-| Analyze/reporting   | analysis, workspace, budget, and report ports                                                          | `analyze/analysis-service.ts`, `analyze/analysis-report.ts`                                                                                                |
+| Analyze/reporting   | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts` |
 | Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission                        | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                   |
 
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
@@ -64,14 +64,24 @@ An architecture refactor is complete only when the domain has:
 
 ## Current implementation map
 
-The CSS extraction façade is `createCssExtractionService`; the shared
-`CssSourceService` delegates to that same façade rather than maintaining a
-second extraction pipeline. Its scanner and artifact policies are shared by
-the Vite path, unplugin path, and CSS extraction helpers.
+The CSS extraction façade is `createCssExtractionService`; scanner-only callers
+use `createCssSourceScanner`. The shared `CssSourceService` delegates to that
+same façade rather than maintaining a second extraction pipeline. Its scanner
+and artifact policies are shared by the Vite path, unplugin path, and analyze
+package. There is no parallel bag of extraction functions.
+
 The Tailwind generator is a composition root: loading token/theme input,
-cataloging utilities, probing conflicts/variants, emitting source, and writing
-artifacts are separate policy modules. Runtime sheets and stylesheet lowering
-likewise accept replacement ports for storage, ordering, canonicalization,
+loading the Tailwind design system, cataloging utilities, probing
+conflicts/variants, emitting source, and writing artifacts are separate policy
+modules. `createDesignSystemCodegen` accepts substitutions for every policy;
+`generateDesignSystem` is only the default convenience façade.
+
+CSS budget analysis follows the same rule. `CssBudgetEvaluator` composes source
+candidate scanning, artifact compilation, and metrics; `TailwindCssArtifactInspection`
+composes those same ports for class drill-down and stylesheet shape. The CLI
+and studio use `createCssBudgetService`, whose substitution test covers both
+budget and inspection paths. Runtime sheets and stylesheet lowering likewise
+accept replacement ports for storage, ordering, canonicalization,
 serialization, conditions, decoding, and sinks.
 
 Token conversion uses `TokenSetCodec` over a registered normalized set. Each
