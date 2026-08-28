@@ -25,6 +25,14 @@ import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwi
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
+import {
+	DefaultCssResidualCollector,
+	type ArbitraryValueSite,
+	type CssResidualCollector,
+	type MissingCssSite,
+} from "./css-residual-collector.ts";
+
+export type { ArbitraryValueSite, CssResidualCollector, MissingCssSite } from "./css-residual-collector.ts";
 
 export { formatReport, summarize } from "./analysis-report.ts";
 
@@ -50,31 +58,6 @@ export interface AnalyzeOptions {
 interface CallSite {
 	line: number;
 	reason: string;
-}
-
-/**
- * A statically-known class token that Tailwind will NOT compile — reported
- * as a warning ("runtime class without CSS"). Collected only from
- * fully/partially folded cx() string arguments (tw() literals are typed at
- * the call site and cannot typo; runtime cx() arguments are unknowable).
- * Custom/foreign classes passed through cx() will false-positive here —
- * list them in `AnalyzeOptions.missingCssIgnore`.
- */
-interface MissingCssSite {
-	line: number;
-	token: string;
-}
-
-/**
- * A statically-known class token using Tailwind arbitrary-value bracket
- * syntax (`w-[13px]`, `bg-[#0f0]`, `hover:[margin-top:7px]`). These DO
- * compile — they are flagged as a separate off-design-system lane, not as
- * missing CSS. Same collection scope and `missingCssIgnore` opt-out as the
- * missing-CSS lane.
- */
-interface ArbitraryValueSite {
-	line: number;
-	token: string;
 }
 
 export interface FileFoldStats {
@@ -109,6 +92,10 @@ export interface FoldSummary {
 	entryEliminatedPct: number;
 	totalMissingCss: number;
 	totalArbitraryValues: number;
+}
+
+export interface AnalyzeSourceDependencies {
+	readonly residuals?: CssResidualCollector;
 }
 
 type FoldKind = "full" | "partial" | "runtime";
@@ -367,6 +354,7 @@ export function analyzeSource(
 	source: string,
 	file: string,
 	options: AnalyzeOptions,
+	dependencies: AnalyzeSourceDependencies = {},
 ): FileFoldStats {
 	const mod = parseModule(source, file, options.config, options.importedConstants);
 
@@ -382,6 +370,7 @@ export function analyzeSource(
 	twFolded = working.inlined;
 
 	const ignore = options.missingCssIgnore;
+	const residuals = dependencies.residuals ?? new DefaultCssResidualCollector();
 	const missingCss: Array<MissingCssSite> = [];
 	const arbitraryValues: Array<ArbitraryValueSite> = [];
 	for (const call of mod.calls) {
@@ -403,9 +392,11 @@ export function analyzeSource(
 		if (call.kind !== "runtime") {
 			const values = call.args.map((arg) => evalStaticCx(arg as never, undefined, mod.consts));
 			missingCss.push(
-				...collectMissingCss(values, mod.lineStarts, call.start, options.config, ignore),
+				...residuals.missingCss(values, mod.lineStarts, call.start, options.config, ignore),
 			);
-			arbitraryValues.push(...collectArbitraryValues(values, mod.lineStarts, call.start, ignore));
+			arbitraryValues.push(
+				...residuals.arbitraryValues(values, mod.lineStarts, call.start, ignore),
+			);
 		}
 	}
 
@@ -424,111 +415,6 @@ export function analyzeSource(
 		twFolded,
 	};
 }
-
-/**
- * Missing-CSS warnings lane (inspired by panda's missing-css-warnings
- * plugin): every statically-known class token from folded cx() calls must be
- * a real Tailwind candidate — anything else renders unstyled.
- *
- * A token "has CSS" when, after stripping variant prefixes:
- * - it contains an arbitrary-value bracket (Tailwind compiles those by
- *   construction), or
- * - the generated conflict map knows it (whole-key entry, or utility +
- *   value / opacity-modified value / `*` fallback). The map is derived
- *   from real Tailwind compilation, so membership implies compilability.
- */
-const topLevelColon = (token: string): number => {
-	let depth = 0;
-	for (let i = 0; i < token.length; i++) {
-		const char = token[i];
-		if (char === "[") depth++;
-		else if (char === "]") depth--;
-		else if (char === ":" && depth === 0) return i;
-	}
-	return -1;
-};
-
-const tokenHasCss = (token: string, config: TwConfig): boolean => {
-	let rest = token;
-	for (;;) {
-		const colon = topLevelColon(rest);
-		if (colon === -1) break;
-		const prefix = rest.slice(0, colon);
-		// Unknown variant prefix => Tailwind emits nothing for this token.
-		if (config.variants?.[prefix] === undefined) return false;
-		rest = rest.slice(colon + 1);
-	}
-	if (rest.includes("[")) return true;
-	if (config.conflicts === undefined) return true; // no map => lane disabled
-	const conflicts = config.conflicts as Record<string, Record<string, string[]>>;
-	const whole = conflicts[rest];
-	if (whole !== undefined) return Object.keys(whole).length > 0;
-	let i = rest.length;
-	for (;;) {
-		i = rest.lastIndexOf("-", i - 1);
-		if (i <= 0) return false;
-		const byValue = conflicts[rest.slice(0, i)];
-		if (byValue === undefined) continue;
-		const value = rest.slice(i + 1);
-		if (byValue[value] !== undefined || byValue["*"] !== undefined) return true;
-		const slash = value.lastIndexOf("/");
-		if (slash > 0 && slash < value.length - 1 && byValue[value.slice(0, slash)] !== undefined) {
-			return true;
-		}
-	}
-};
-
-const collectMissingCss = (
-	values: Array<unknown>,
-	lineStarts: Array<number>,
-	start: number,
-	config: TwConfig,
-	ignore: ReadonlySet<string> | undefined,
-): Array<MissingCssSite> => {
-	const sites = new Map<string, MissingCssSite>();
-	for (const value of values) {
-		if (typeof value !== "string" || value === "") continue;
-		for (const token of value.split(/\s+/)) {
-			if (token === "" || ignore?.has(token) || tokenHasCss(token, config)) continue;
-			sites.set(token, { line: lineOf(lineStarts, start), token });
-		}
-	}
-	return [...sites.values()];
-};
-
-/**
- * Off-design-system lane: after stripping variant prefixes, does the utility
- * itself use arbitrary-value bracket syntax? Mirrors the `[` check inside
- * tokenHasCss (arbitrary brackets always compile) but reports instead of
- * passing. Variant prefixes are skipped without validity checking — an
- * arbitrary value under any variant is equally off-system.
- */
-const tokenIsArbitrary = (token: string): boolean => {
-	let rest = token;
-	for (;;) {
-		const colon = topLevelColon(rest);
-		if (colon === -1) break;
-		rest = rest.slice(colon + 1);
-	}
-	return rest.includes("[");
-};
-
-const collectArbitraryValues = (
-	values: Array<unknown>,
-	lineStarts: Array<number>,
-	start: number,
-	ignore: ReadonlySet<string> | undefined,
-): Array<ArbitraryValueSite> => {
-	const sites = new Map<string, ArbitraryValueSite>();
-	for (const value of values) {
-		if (typeof value !== "string" || value === "") continue;
-		for (const token of value.split(/\s+/)) {
-			if (token === "" || ignore?.has(token) || !tokenIsArbitrary(token)) continue;
-			sites.set(token, { line: lineOf(lineStarts, start), token });
-		}
-	}
-	return [...sites.values()];
-};
 
 function lineOf(lineStarts: Array<number>, offset: number): number {
 	let lo = 0;

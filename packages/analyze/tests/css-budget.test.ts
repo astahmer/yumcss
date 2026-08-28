@@ -2,7 +2,10 @@
  * CSS budget lane — theme scope delta accounting (plans/015) + report.
  */
 import { describe, expect, test } from "vitest";
-import { formatCssBudget, type CssBudget } from "../src/css-budget.ts";
+import { createCssBudgetService } from "../src/analysis-service.ts";
+import type { CssBudget } from "../src/css-budget.ts";
+
+const formatCssBudget = (value: CssBudget): string => createCssBudgetService().format(value);
 
 const budget = (over: Partial<CssBudget>): CssBudget => ({
 	liveCandidates: 10,

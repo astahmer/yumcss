@@ -5,6 +5,6 @@ describe("CollectionToolkit facade", () => {
 	test("keeps collection responsibilities behind one domain object", () => {
 		expect(CollectionToolkit.groupThemeVars).toBeTypeOf("function");
 		expect(CollectionToolkit.collectCssDiagnostics).toBeTypeOf("function");
-		expect(CollectionToolkit.cssBudget).toBeTypeOf("function");
+		expect(CollectionToolkit.createCssBudgetService).toBeTypeOf("function");
 	});
 });

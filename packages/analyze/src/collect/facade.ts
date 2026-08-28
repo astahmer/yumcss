@@ -20,7 +20,7 @@ import {
 } from "../css-diagnostics.ts";
 import { collectFiles, loadTwConfig } from "../analyze.ts";
 import { runCli } from "../cli.ts";
-import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
+import { createCssBudgetService } from "../analysis-service.ts";
 
 /** Cohesive collection domain facade. Methods are grouped by responsibility. */
 export const CollectionToolkit = {
@@ -45,7 +45,5 @@ export const CollectionToolkit = {
 	collectFiles,
 	loadTwConfig,
 	runCli,
-	classRules,
-	cssBudget,
-	sheetShape,
+	createCssBudgetService,
 } as const;

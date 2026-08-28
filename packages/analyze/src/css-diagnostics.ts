@@ -1,4 +1,8 @@
-import { inspectCssSource, type CssCallSite, type CssDiagnostic } from "pandwind/vite/css-extract";
+import {
+	createCssSourceScanner,
+	type CssCallSite,
+	type CssDiagnostic,
+} from "pandwind/vite/css-extract";
 
 export type {
 	AuthoredCssImport,
@@ -28,7 +32,7 @@ export function collectCssReport(
 ): CssAnalysisReport {
 	return files.reduce<CssAnalysisReport>(
 		(report, { file, content }) => {
-			const inspection = inspectCssSource(content, file, [...matchers]);
+			const inspection = createCssSourceScanner(matchers).inspect(content, file);
 			report.cssNamesByFile.set(file, inspection.cssNames);
 			report.authoredCss.push(...inspection.authoredCss);
 			report.cssSources.push(...inspection.cssSources);

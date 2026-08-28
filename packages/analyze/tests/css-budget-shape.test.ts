@@ -1,7 +1,7 @@
 /** Stylesheet shape: category/byte/specificity distributions over parsed rules. */
 import { parse } from "postcss";
 import { describe, expect, test } from "vitest";
-import { sheetShapeFromRoot } from "../src/css-budget.ts";
+import { createCssBudgetService } from "../src/analysis-service.ts";
 
 const css = `
 .a { color: red; padding: 4px; }
@@ -11,7 +11,7 @@ const css = `
 `;
 
 describe("sheetShapeFromRoot", () => {
-	const shape = sheetShapeFromRoot(parse(css));
+	const shape = createCssBudgetService().sheetShapeFromRoot(parse(css));
 
 	test("counts total rules and bytes", () => {
 		expect(shape.totalRules).toBe(4);

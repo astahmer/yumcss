@@ -8,8 +8,17 @@ import {
 	type FileFoldStats,
 	type FoldSummary,
 } from "./analyze.ts";
-import { CssBudgetEvaluator, type CssBudget } from "./css-budget-evaluator.ts";
+import type { CssResidualCollector } from "./css-residual-collector.ts";
+import { CssBudgetEvaluator } from "./css-budget-evaluator.ts";
+import type { CssBudget } from "./css-budget-contracts.ts";
 import { CssBudgetReportRenderer } from "./css-budget-report.ts";
+import {
+	TailwindCssArtifactInspection,
+	type ClassDrillDown,
+	type CssArtifactInspectionPort,
+} from "./css-artifact-inspection.ts";
+import { TailwindArtifactCompiler } from "./css-budget-compiler.ts";
+import { TailwindCandidateScanner } from "./css-budget-candidates.ts";
 
 export interface FoldAnalysisPort {
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats;
@@ -31,6 +40,8 @@ export interface FoldReportPort {
 
 export interface FoldAnalysisDependencies {
 	readonly analyzer?: FileFoldAnalyzerPort;
+	/** Residual policy used by the default source analyzer. */
+	readonly residuals?: CssResidualCollector;
 	readonly summary?: FoldSummaryPort;
 	readonly report?: FoldReportPort;
 }
@@ -58,11 +69,17 @@ class FoldAnalysisService implements FoldAnalysisPort {
 export interface CssBudgetPort {
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget>;
 	format(budget: CssBudget): string;
+	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]>;
+	sheetShape(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<SheetShape>;
+	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape;
 }
+
+type SheetShape = ReturnType<CssArtifactInspectionPort["sheetShapeFromRoot"]>;
 
 export interface CssBudgetDependencies {
 	readonly evaluator?: Pick<CssBudgetEvaluator, "measure">;
 	readonly renderer?: Pick<CssBudgetReportRenderer, "format">;
+	readonly inspection?: CssArtifactInspectionPort;
 }
 
 class CssBudgetService implements CssBudgetPort {
@@ -72,6 +89,10 @@ class CssBudgetService implements CssBudgetPort {
 			CssBudgetReportRenderer,
 			"format"
 		> = new CssBudgetReportRenderer(),
+		private readonly inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
+			new TailwindCandidateScanner(),
+			new TailwindArtifactCompiler(),
+		),
 	) {}
 
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> {
@@ -80,6 +101,18 @@ class CssBudgetService implements CssBudgetPort {
 
 	format(budget: CssBudget): string {
 		return this.renderer.format(budget);
+	}
+
+	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]> {
+		return this.inspection.classRules(options);
+	}
+
+	sheetShape(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<SheetShape> {
+		return this.inspection.sheetShape(options);
+	}
+
+	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape {
+		return this.inspection.sheetShapeFromRoot(root);
 	}
 }
 
@@ -100,12 +133,23 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 
 export const createFoldAnalysisService = (
 	dependencies: FoldAnalysisDependencies = {},
-): FoldAnalysisPort =>
-	new FoldAnalysisService(
-		dependencies.analyzer ?? { analyze: analyzeSource },
+): FoldAnalysisPort => {
+	const analyzer =
+		dependencies.analyzer ??
+		({
+			analyze: (source, file, options) =>
+				analyzeSource(source, file, options, { residuals: dependencies.residuals }),
+		} satisfies FileFoldAnalyzerPort);
+	return new FoldAnalysisService(
+		analyzer,
 		dependencies.summary ?? { summarize },
 		dependencies.report ?? { format: formatReport },
 	);
+};
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
 export const createCssBudgetService = (dependencies: CssBudgetDependencies = {}): CssBudgetPort =>
-	new CssBudgetService(dependencies.evaluator, dependencies.renderer);
+	new CssBudgetService(
+		dependencies.evaluator,
+		dependencies.renderer,
+		dependencies.inspection,
+	);

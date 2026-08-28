@@ -1,11 +1,14 @@
 import { describe, expect, test } from "vitest";
+import { parse } from "postcss";
 import {
 	createFoldAnalysisService,
+	createCssBudgetService,
 	type FileFoldAnalyzerPort,
 	type FoldReportPort,
 	type FoldSummaryPort,
 } from "../src/analysis-service.ts";
 import type { FileFoldStats, FoldSummary } from "../src/analyze.ts";
+import type { CssResidualCollector } from "../src/css-residual-collector.ts";
 
 const stats: FileFoldStats = {
 	file: "fixture.tsx",
@@ -68,4 +71,57 @@ describe("analysis composition ports", () => {
 		expect(service.format(summary)).toBe("fake report");
 		expect(calls).toEqual(["analyze", "summarize", "format"]);
 	});
+
+	test("default analyzer accepts a substituted residual policy", () => {
+		const calls: string[] = [];
+		const residuals: CssResidualCollector = {
+			missingCss: () => {
+				calls.push("missing");
+				return [];
+			},
+			arbitraryValues: () => {
+				calls.push("arbitrary");
+				return [];
+			},
+		};
+		const service = createFoldAnalysisService({ residuals });
+		service.analyze(
+			`cx("text-red-500")`,
+			"fixture.tsx",
+			{ config: { variants: {}, conflicts: {} } },
+		);
+		expect(calls).toEqual(["missing", "arbitrary"]);
+	});
+
+	test("CSS budget service composes evaluator, renderer, and artifact inspection ports", async () => {
+		const root = parse("");
+		const shape = { totalRules: 0, totalBytes: 0, categories: [], specificity: [] };
+		const inspection = {
+			classRules: async () => [{ candidate: "fake", rules: [] }],
+			sheetShape: async () => shape,
+			sheetShapeFromRoot: () => shape,
+		};
+		const evaluator = { measure: async () => ({ ...budgetForTest }) };
+		const renderer = { format: () => "fake budget" };
+		const service = createCssBudgetService({ evaluator, renderer, inspection });
+		expect(await service.measure({ files: [], twEntry: "tw.ts", base: "." })).toEqual(budgetForTest);
+		expect(service.format(budgetForTest)).toBe("fake budget");
+		expect(await service.classRules({ files: [], twEntry: "tw.ts", base: "." })).toEqual([
+			{ candidate: "fake", rules: [] },
+		]);
+		expect(await service.sheetShape({ files: [], twEntry: "tw.ts", base: "." })).toBe(shape);
+		expect(service.sheetShapeFromRoot(root)).toBe(shape);
+	});
 });
+
+const budgetForTest = {
+	liveCandidates: 1,
+	deadCandidates: 0,
+	deadSample: [],
+	cssBytes: 1,
+	cssGzipBytes: 1,
+	rules: 1,
+	componentScopeRules: 0,
+	perPrefix: [],
+	themeScopes: [],
+};

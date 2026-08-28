@@ -9,7 +9,7 @@
  *   buildPruneChangeset
  * - transitive css @import crawling: crawlCssImports
  * - re-exports of the analyze core primitives the collectors compose
- *   (runCli, cssBudget, classRules, sheetShape, collectFiles, loadTwConfig)
+ *   (runCli, createCssBudgetService, collectFiles, loadTwConfig)
  */
 export { gather } from "./gather.ts";
 export { CollectionToolkit } from "./facade.ts";
@@ -58,4 +58,8 @@ export type {
 // whole collection toolbox from one specifier.
 export { collectFiles, loadTwConfig } from "../analyze.ts";
 export { runCli } from "../cli.ts";
-export { classRules, cssBudget, sheetShape } from "../css-budget.ts";
+export {
+	createCssBudgetService,
+	type CssBudgetPort,
+	type CssBudgetDependencies,
+} from "../analysis-service.ts";

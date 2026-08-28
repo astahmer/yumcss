@@ -1,4 +1,4 @@
-import type { CssBudget } from "./css-budget-evaluator.ts";
+import type { CssBudget } from "./css-budget-contracts.ts";
 
 /** Human-readable budget report. */
 function renderCssBudget(budget: CssBudget): string {

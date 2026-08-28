@@ -1,16 +1,16 @@
 /**
  * Node-side data gatherer for the studio. Reuses the analyze package's own
- * entry points (runCli / cssBudget / loadTwConfig) — no duplicated analysis
+ * entry points (runCli / createCssBudgetService / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { collectFiles, loadTwConfig } from "../analyze.ts";
 import { runCli } from "../cli.ts";
-import { classRules, cssBudget, sheetShape } from "../css-budget.ts";
+import { createCssBudgetService } from "../analysis-service.ts";
 import { examplePreset } from "pandwind/preset/example-preset";
 import { createStylesheet } from "pandwind/css/create-stylesheet";
-import { extractCssSources } from "pandwind/vite/css-extract";
+import { createCssExtractionService } from "pandwind/vite/css-extract";
 import { buildTokenGraph } from "pandwind/tw/token-graph";
 import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
@@ -39,6 +39,8 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
 	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
 	const isDogfoodApp = APP === DEFAULT_APP;
+	const cssBudgetService = createCssBudgetService();
+	const cssExtraction = createCssExtractionService({ matchers: [], preset: examplePreset });
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
 
 	// --- coverage: the CLI is the single interface to fold analysis.
@@ -78,14 +80,14 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	} catch {
 		themeCss = "";
 	}
-	const budgetPromise = cssBudget({
+	const budgetPromise = cssBudgetService.measure({
 		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
 		base: appSrc("."),
 	});
 	const budget = await budgetPromise;
-	const shape = await sheetShape({
+	const shape = await cssBudgetService.sheetShape({
 		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
@@ -93,7 +95,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	});
 
 	// Per-class rule drill-down data (capped: the UI searches, not paginates).
-	const drills = await classRules({
+	const drills = await cssBudgetService.classRules({
 		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
@@ -178,7 +180,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const cssSourcesByStart = new Map(cssSources.map((site) => [`${site.file}:${site.start}`, site]));
 	for (const { file, content } of appSourceFiles) {
 		const names = cssReport.cssNamesByFile.get(file) ?? new Set<string>();
-		for (const extracted of extractCssSources(content, file, names, examplePreset)) {
+		for (const extracted of cssExtraction.extract(content, file, names)) {
 			const site = cssSourcesByStart.get(`${file}:${extracted.provenance.start}`);
 			if (site === undefined) continue;
 			const sheet = createStylesheet(examplePreset);

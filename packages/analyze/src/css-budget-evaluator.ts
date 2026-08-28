@@ -1,118 +1,35 @@
-import { gzipSync } from "node:zlib";
-import { compile } from "@tailwindcss/node";
-import { parse, type Root } from "postcss";
-import { collectTwClasses } from "pandwind/tw/collect";
+import type {
+	CssArtifactCompiler,
+	CssBudget,
+	CssBudgetInput,
+	CssBudgetMetrics,
+	CssCandidateScanner,
+} from "./css-budget-contracts.ts";
+import { TailwindArtifactCompiler } from "./css-budget-compiler.ts";
+import { TailwindCandidateScanner } from "./css-budget-candidates.ts";
+import { DefaultCssBudgetMetrics } from "./css-budget-metrics.ts";
 
-/** One declared theme scope's extra cost (plans/015). */
-interface ThemeScopeDelta {
-	scope: string;
-	/** Bytes of the override block (author CSS shipped as-is). */
-	bytes: number;
-	/** Custom-property bindings in the block. */
-	vars: number;
+export interface CssBudgetEvaluatorDependencies {
+	readonly candidates?: CssCandidateScanner;
+	readonly compiler?: CssArtifactCompiler;
+	readonly metrics?: CssBudgetMetrics;
 }
 
-export interface CssBudget {
-	/** Classes scanned from source that produced at least one rule. */
-	liveCandidates: number;
-	/** Scanned classes that produced no rules (unknown/dead utilities). */
-	deadCandidates: number;
-	/** Sample of dead candidates (bounded, for the report). */
-	deadSample: Array<string>;
-	/** Generated CSS bytes (minified by Tailwind). */
-	cssBytes: number;
-	/** Gzipped CSS bytes. */
-	cssGzipBytes: number;
-	/** Number of rules in the compiled sheet. */
-	rules: number;
-	/** Component scope-block rules (`.pwc-*`) present in the theme bridge. */
-	componentScopeRules: number;
-	/** Rules per top-level utility prefix (`bg`, `flex`, `md:hover:bg`…), top 15. */
-	perPrefix: Array<{ prefix: string; rules: number }>;
-	/** Per-theme-scope extra cost, when a theme bridge was supplied. */
-	themeScopes: Array<ThemeScopeDelta>;
-}
-
-const unescape = (c: string): string => c.replace(/\\/g, "");
-
-const prefixOf = (selector: string): string => {
-	// Strip escape noise and pseudo tails: `.sm\:hover\:bg-red-500:hover` ->
-	// "sm:hover:bg". Good enough for a budget breakdown.
-	const cls = new RegExp("\\.([A-Za-z0-9_:[\\]/\\-.%]+)").exec(selector)?.[1] ?? selector;
-	return cls.replace(/\\/g, "");
-};
-
-export async function measureCssBudget(options: {
-	files: Array<string>;
-	twEntry: string;
-	themeCss?: string;
-	base: string;
-}): Promise<CssBudget> {
-	const componentScopeRules = (options.themeCss?.match(/\.pwc-[a-z0-9-]+[^{]*{/g) ?? []).length;
-	const classes = await collectTwClasses(options.files, options.twEntry);
-	const cssInput = `@import "tailwindcss";\n${options.themeCss ?? ""}\n`;
-	const compiled = await compile(cssInput, { base: options.base, onDependency: () => {} });
-	const built = compiled.build(classes);
-	const root: Root = parse(built);
-
-	const perPrefixMap = new Map<string, number>();
-	let liveRules = 0;
-	root.walkRules((rule) => {
-		liveRules++;
-		const key = prefixOf(rule.selector);
-		perPrefixMap.set(key, (perPrefixMap.get(key) ?? 0) + 1);
-	});
-
-	// Dead-candidate detection: a candidate is alive when its unescaped
-	// class name appears in some compiled selector.
-	const selectorText = (() => {
-		let text = "";
-		root.walkRules((rule) => {
-			text += `${rule.selector}\n`;
-		});
-		return text;
-	})();
-	const live = new Set<string>();
-	for (const candidate of classes) {
-		const plain = unescape(candidate);
-		if (selectorText.includes(plain.split(":")[0] ?? plain)) live.add(candidate);
-	}
-	const dead = classes.filter((c) => !live.has(c));
-
-	const themeScopes: Array<ThemeScopeDelta> = [];
-	if (options.themeCss !== undefined) {
-		const scopeRegex = /\[data-theme="([^"]+)"\]\s*\{([^}]*)\}/g;
-		for (const match of options.themeCss.matchAll(scopeRegex)) {
-			const body = match[2] ?? "";
-			themeScopes.push({
-				scope: match[1] ?? "?",
-				bytes: Buffer.byteLength(match[0] ?? ""),
-				vars: (body.match(/--[/\w-]+\s*:/g) ?? []).length,
-			});
-		}
-		themeScopes.sort((a, b) => a.scope.localeCompare(b.scope));
-	}
-
-	const perPrefix = [...perPrefixMap.entries()]
-		.map(([prefix, count]) => ({ prefix, rules: count }))
-		.toSorted((a, b) => b.rules - a.rules)
-		.slice(0, 15);
-
-	return {
-		liveCandidates: live.size,
-		deadCandidates: dead.length,
-		deadSample: dead.slice(0, 10),
-		cssBytes: Buffer.byteLength(built),
-		cssGzipBytes: gzipSync(Buffer.from(built)).byteLength,
-		rules: liveRules,
-		componentScopeRules,
-		perPrefix,
-		themeScopes,
-	};
-}
-
+/** Budget use case. Source discovery, compilation, and accounting are ports. */
 export class CssBudgetEvaluator {
-	measure(options: Parameters<typeof measureCssBudget>[0]): Promise<CssBudget> {
-		return measureCssBudget(options);
+	private readonly candidates: CssCandidateScanner;
+	private readonly compiler: CssArtifactCompiler;
+	private readonly metrics: CssBudgetMetrics;
+
+	constructor(dependencies: CssBudgetEvaluatorDependencies = {}) {
+		this.candidates = dependencies.candidates ?? new TailwindCandidateScanner();
+		this.compiler = dependencies.compiler ?? new TailwindArtifactCompiler();
+		this.metrics = dependencies.metrics ?? new DefaultCssBudgetMetrics();
+	}
+
+	async measure(input: CssBudgetInput): Promise<CssBudget> {
+		const candidates = await this.candidates.scan(input);
+		const root = await this.compiler.compile(input, candidates);
+		return this.metrics.measure(root, candidates, input.themeCss);
 	}
 }
