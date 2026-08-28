@@ -9,10 +9,12 @@ The short version of the decisions behind this repo lives in
 [TODO.md](https://github.com/astahmer/pandwind/blob/main/TODO.md) under _What
 we deliberately don't do (and why)_. The highlights:
 
-- **No chakra/emotion-style runtime CSS-in-JS** — a mini runtime that resolves
-  styles at runtime is exactly the perf and caching cost we're avoiding.
-- **No panda-style PostCSS pipeline or mini runtime** — Tailwind compiles
-  once, statically; `tw()` output is plain class strings.
+- **No mandatory runtime CSS-in-JS** — the build-time `tw()` lane and literal
+  extraction can ship only class strings, while the explicit `pandwind/css`
+  runtime lane supports dynamic styles, SSR, hydration, and ordered sheets.
+- **No mandatory Panda-style PostCSS pipeline** — Tailwind compiles once for
+  the utility lane, and the atomic runtime/compiler remains independently
+  selectable.
 - **No built-in recipe API or config files** — a minimalist styling API you
   can hold in your head; use an external CVA-style package when variant
   selection is useful, and keep browser-global CSS in ordinary CSS files.
@@ -20,8 +22,9 @@ we deliberately don't do (and why)_. The highlights:
   from the engine, so they can't drift from what Tailwind compiles.
 - **No 500-prop CSS API** — the design `css()` surface is ~30 Figma-inspector
   props; everything else lives under `$raw` on purpose.
-- **No panda-like runtime bloat** — the shipped runtime is ~3.7 KB gz for
-  css+tw+cx; the stylesheet generator is build-time only.
+- **No panda-like runtime bloat by default** — build-time users can tree-shake
+  the runtime away, while runtime CSS-in-JS consumers opt into the sheet
+  contract explicitly.
 
 The user-facing API is deliberately frozen: `tw()` / `css()` / `cx()` /
 `createDesignCss` presets, the `ClassNameStrategy` contract, and the codegen

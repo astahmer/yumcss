@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createRealRepositoryCorpus } from "../src/swap/index.ts";
+import { createBuiltinCodemodCatalog, createRealRepositoryCorpus } from "../src/swap/index.ts";
 
 const corpus = createRealRepositoryCorpus();
 
@@ -48,6 +48,11 @@ describe("pinned real repository corpus", () => {
 					path: reference.path,
 				}),
 			);
+		}
+		const registeredSources = new Set(corpus.references.map((reference) => reference.from));
+		for (const adapter of createBuiltinCodemodCatalog().adapters) {
+			if (adapter.id === "pandwind" || adapter.id === "react-native") continue;
+			expect(registeredSources.has(adapter.id)).toBe(true);
 		}
 	});
 

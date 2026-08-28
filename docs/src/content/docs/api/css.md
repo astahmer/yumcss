@@ -28,9 +28,10 @@ const css = createCss(
 );
 ```
 
-It is the "better stylex + panda" half of the repo: no runtime style
-resolution, merged at object-build time via property priorities. See
-`packages/pandwind/tests/css-*.test.ts` for the behavior contract.
+It is the "better stylex + panda" half of the repo: literal calls can be
+extracted at build time, while dynamic calls use the runtime style resolver
+and its ordered sheet contract. See `packages/pandwind/tests/css-*.test.ts`
+for the behavior contract.
 
 ## The surface at a glance — return shapes
 

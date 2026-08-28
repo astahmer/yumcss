@@ -7,7 +7,7 @@ sidebar:
 
 `tw()` takes a Panda-like object, types it against your real Tailwind design
 system, and returns a class string. Tailwind stays the single CSS engine: no
-PostCSS config, no runtime CSS-in-JS.
+PostCSS config or runtime CSS injection.
 
 > **Lane 1 of 3 — when to use this:** you already run Tailwind (or want its
 > ecosystem) and want typed, merge-safe utility objects instead of raw class

@@ -36,9 +36,10 @@ real-repository evidence.
 
 ## Why
 
-The original value proposition is not another isolated CSS-in-JS runtime. It is
-an interop boundary that lets a project leave or adopt a styling system without
-rewriting every framework/compiler/backend integration. That promise fails if
+The original value proposition is not another isolated CSS-in-JS syntax. It is
+an interop boundary, including a real runtime CSS-in-JS lane, that lets a project
+leave or adopt a styling system without rewriting every framework/compiler/backend
+integration. That promise fails if
 adapters remain statically coupled, scanner behavior differs by lane, or
 unsupported semantics are silently approximated.
 
