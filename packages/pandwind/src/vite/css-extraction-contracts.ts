@@ -71,6 +71,7 @@ export interface InlineCssResult {
 }
 
 export interface CssSourceScanner {
+	matches(source: string): boolean;
 	parse(code: string, id: string): OxcNode;
 	findImports(code: string, id: string): ReadonlySet<string>;
 	inspect(code: string, id: string): CssSourceInspection;

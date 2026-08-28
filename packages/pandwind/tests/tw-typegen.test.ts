@@ -2,13 +2,46 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
-import { generateDesignSystem } from "../src/tw/generate-types.ts";
+import { createDesignSystemCodegen, generateDesignSystem } from "../src/tw/generate-types.ts";
 import { UTILITY_SUBKEYS } from "../src/tw/compile.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const css = readFileSync(resolve(app, "src/tailwind.css"), "utf8");
 
 describe("typegen", () => {
+	test("composition root accepts substituted codegen policies", async () => {
+		const calls: string[] = [];
+		const generator = createDesignSystemCodegen({
+			loader: async () =>
+				({
+					utilities: { keys: () => [] },
+					getVariants: () => [],
+				} as never),
+			catalog: {
+				collect: () => new Map([["bg", new Set<string | true>(["red"])] ]),
+				expand: () => calls.push("expand"),
+			},
+			buildConflicts: () => {
+				calls.push("conflicts");
+				return { conflicts: {}, compose: [] };
+			},
+			detectModifiers: () => {
+				calls.push("modifiers");
+				return new Set();
+			},
+			detectVariantJoin: () => ":",
+			emitter: {
+				utilities: () => "utilities",
+				variants: () => "variants",
+				runtime: () => "runtime",
+			},
+		});
+		const output = await generator.generate("", ".");
+		expect(output.typesDts).toContain("utilities");
+		expect(output.twTs).toBe("runtime");
+		expect(calls).toEqual(["conflicts", "expand", "modifiers"]);
+	});
+
 	test("generates utilities, variants and runtime metadata", async () => {
 		const { typesDts, twTs, utilityCount, variantCount } = await generateDesignSystem(
 			css,

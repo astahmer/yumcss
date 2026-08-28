@@ -7,22 +7,19 @@ import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import {
 	createCssExtractionService,
-	diagnoseCssSources,
-	extractCssFile,
-	extractCssSources,
-	extractCssStyles,
-	extractVarKeys,
-	findAuthoredCssImports,
-	findCssCallSites,
-	findCssImports,
-	inlineCssCalls,
-	isCssSource,
+	createCssSourceScanner,
 } from "../src/vite/css-extract.ts";
 import type {
 	CssArtifactExtractor,
 	CssDiagnosticReporter,
 	CssSourceScanner,
 } from "../src/vite/css-extraction-contracts.ts";
+
+const scan = (matchers: readonly (string | RegExp)[] = []) => createCssSourceScanner(matchers);
+const extract = (matchers: readonly (string | RegExp)[] = []) =>
+	createCssExtractionService({ matchers, preset: examplePreset });
+const inline = () =>
+	createCssExtractionService({ matchers: [], preset: examplePreset, className: twMode() });
 import { createCssSourceService } from "../src/vite/css-source-service.ts";
 
 test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
@@ -31,7 +28,7 @@ test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
 		import styles from "@acme/theme/styles.css?inline";
 		import { css } from "./design";
 	`;
-	const imports = findAuthoredCssImports(code, "src/main.tsx");
+	const imports = scan().findAuthoredImports(code, "src/main.tsx");
 
 	expect(imports).toHaveLength(2);
 	expect(imports[0]).toMatchObject({
@@ -54,7 +51,7 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 		const a = css.class({ $text: { color: "$blue-500" } });
 		const b = css({ $text: { color } });
 	`;
-	const sites = findCssCallSites(code, "src/card.tsx", new Set(["css"]));
+	const sites = scan().findCallSites(code, "src/card.tsx", new Set(["css"]));
 
 	expect(sites).toHaveLength(2);
 	expect(sites[0]).toMatchObject({
@@ -78,7 +75,7 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 		css.keyframes({ from: { opacity: 0 } });
 		css.class({ $text: { color } });
 	`;
-	const diagnostics = diagnoseCssSources(code, "src/card.tsx", new Set(["css"]));
+	const diagnostics = extract().diagnose(code, "src/card.tsx", new Set(["css"]));
 
 	expect(diagnostics).toHaveLength(2);
 	expect(diagnostics[0]).toMatchObject({
@@ -97,7 +94,7 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 
 test("extractCssSources records stable call provenance without changing styles", () => {
 	const code = `\n\nimport { css as design } from "./design";\nconst a = design.class({ $text: { color: "$blue-500" } });`;
-	const sources = extractCssSources(code, "/src/card.tsx", new Set(["design"]), examplePreset);
+	const sources = extract().extract(code, "/src/card.tsx", new Set(["design"]));
 
 	expect(sources).toHaveLength(1);
 	expect(sources[0]).toMatchObject({
@@ -118,19 +115,19 @@ test("extractCssFile keeps styles and var keys equivalent in one parse", () => {
 		css({ $text: { color: "$blue-500" } });
 		css.vars({ color: "runtime" });
 	`;
-	const names = findCssImports(code, "app.ts", ["css"]);
-	const combined = extractCssFile(code, "app.ts", ["css"], examplePreset);
+	const names = scan(["css"]).findImports(code, "app.ts");
+	const combined = extract(["css"]).extractFile(code, "app.ts");
 
-	expect(combined.sources).toEqual(extractCssSources(code, "app.ts", names, examplePreset));
-	expect(combined.varKeys).toEqual(extractVarKeys(code, "app.ts", names));
+	expect(combined.sources).toEqual(extract().extract(code, "app.ts", names));
+	expect(combined.varKeys).toEqual(scan().findVarKeys(code, "app.ts", names));
 });
 
 test("isCssSource matches css/design basenames", () => {
 	const matchers = ["css", "design"];
-	expect(isCssSource("./design", matchers)).toBe(true);
-	expect(isCssSource("../css.ts", matchers)).toBe(true);
-	expect(isCssSource("pandwind/design", matchers)).toBe(true);
-	expect(isCssSource("./styles", matchers)).toBe(false);
+	expect(scan(matchers).matches("./design")).toBe(true);
+	expect(scan(matchers).matches("../css.ts")).toBe(true);
+	expect(scan(matchers).matches("pandwind/design")).toBe(true);
+	expect(scan(matchers).matches("./styles")).toBe(false);
 });
 
 test("findCssImports collects named, default and aliased css bindings", () => {
@@ -140,7 +137,7 @@ test("findCssImports collects named, default and aliased css bindings", () => {
 		import { css as wind } from "pandwind/design";
 		import { tw } from "./tw";
 	`;
-	expect(findCssImports(code, "app.tsx", ["css", "design"])).toEqual(
+	expect(scan(["css", "design"]).findImports(code, "app.tsx")).toEqual(
 		new Set(["css", "styles", "wind"]),
 	);
 });
@@ -157,6 +154,7 @@ test("the CSS scanner ignores stylesheet and virtual module ids", () => {
 
 test("css extraction façade accepts substituted policy ports", () => {
 	const scanner: CssSourceScanner = {
+		matches: () => true,
 		parse: () => ({ type: "Program" }),
 		findImports: () => new Set(["css"]),
 		inspect: () => ({
@@ -196,7 +194,8 @@ test("css extraction façade accepts substituted policy ports", () => {
 test("the shared source service composes the extraction façade", () => {
 	const calls: string[] = [];
 	const service = createCssSourceService({
-		scanner: {
+		 scanner: {
+			matches: () => true,
 			parse: () => ({ type: "Program" }),
 			findImports: () => {
 				calls.push("scan");
@@ -232,7 +231,7 @@ test("extractCssStyles resolves design modules in literal calls", () => {
 		const b = css.class({ $layout: { flow: "stackY", gap: "16" } });
 		const c = css.raw({ $text: { color: "$red-300" } });
 	`;
-	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([
+	expect(extract().extractStyles(code, "app.ts", new Set(["css"]))).toEqual([
 		{ width: "20px", backgroundColor: "#3182ce" },
 		{ display: "flex", flexDirection: "column", gap: "16px" },
 		{ color: "#FC8181" },
@@ -246,7 +245,7 @@ test("extractCssStyles skips dynamic calls and processes each argument", () => {
 		const a = css({ $frame: { fill: color } });
 		const b = css({ $frame: { w: "20" } }, { $frame: { h: "20" } });
 	`;
-	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([
+	expect(extract().extractStyles(code, "app.ts", new Set(["css"]))).toEqual([
 		{ width: "20px" },
 		{ height: "20px" },
 	]);
@@ -257,7 +256,7 @@ test("extractCssStyles ignores raw css() from non-matching sources", () => {
 		import { other } from "./not-css";
 		const a = other({ $frame: { w: "20" } });
 	`;
-	expect(extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).toEqual([]);
+	expect(extract().extractStyles(code, "app.ts", new Set(["css"]))).toEqual([]);
 });
 
 /** Minimal bridge + variants for the tailwind-mode inlining tests. */
@@ -277,7 +276,7 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 		const a = css.class({ $text: { color: "$blue-500" } });
 		const b = css({ $frame: { fill: "$red-500" } });
 	`;
-	const result = inlineCssCalls(code, "app.ts", new Set(["css"]), examplePreset, twMode());
+	const result = inline().inline(code, "app.ts", new Set(["css"]));
 	expect(result.inlined).toBe(2);
 	expect(result.code).toContain('const a = "text-blue-500";');
 	expect(result.code).toContain('const b = {"backgroundColor":"bg-red-500"};');
@@ -292,7 +291,7 @@ test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => 
 		const c = css.props({});
 		const d = css.class({ $text: { color: "$blue-500" } }, { $frame: { fill: "$red-500" } });
 	`;
-	const result = inlineCssCalls(code, "app.ts", new Set(["css"]), examplePreset, twMode());
+	const result = inline().inline(code, "app.ts", new Set(["css"]));
 	expect(result.inlined).toBe(1);
 	expect(result.code).toContain("const a = css.class({ $text: { color } });");
 	expect(result.code).toContain('const b = css.raw({ $text: { color: "$blue-500" } });');

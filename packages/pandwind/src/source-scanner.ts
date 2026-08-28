@@ -283,6 +283,18 @@ const extensionForLanguage = (language: SourceLanguage): string | undefined =>
 		mdx: ".mdx",
 	})[language as keyof Record<string, string>];
 
+const languageForAdapterExtension = (
+	adapter: SourceLanguageAdapter,
+	extension: string,
+): SourceLanguage | undefined => {
+	const normalized = extension.toLowerCase();
+	return (
+		adapter.languages.find(
+			(language) => extensionForLanguage(language)?.toLowerCase() === normalized,
+		) ?? adapter.languages[0]
+	);
+};
+
 const makeAdapter = (id: string, languages: readonly SourceLanguage[]): SourceLanguageAdapter => ({
 	schema: SOURCE_SCANNER_SCHEMA,
 	id,
@@ -352,10 +364,7 @@ export function createSourceLanguageClassifier(
 	for (const adapter of adapters) {
 		const extensions = adapter.extensions ?? [];
 		for (const extension of extensions) {
-			const language =
-				adapter.languages.find(
-					(candidate) => extensionForLanguage(candidate)?.toLowerCase() === extension.toLowerCase(),
-				) ?? (adapter.languages.length === 1 ? adapter.languages[0] : undefined);
+			const language = languageForAdapterExtension(adapter, extension);
 			if (language !== undefined && !languagesByExtension.has(extension.toLowerCase()))
 				languagesByExtension.set(extension.toLowerCase(), language);
 		}
@@ -439,9 +448,15 @@ export const SOURCE_SCANNER = createSourceScannerRegistry();
 
 export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 	registry: SOURCE_SCANNER,
-	languageForFile: sourceLanguageForFile,
-	isSupportedFile: isSupportedSourceFile,
-	isScriptFile: isScriptSourceFile,
+	// Route all callers through the live registry. This is what makes a
+	// registered scanner plugin effective outside the registry object itself.
+	languageForFile: (file) => SOURCE_SCANNER.languageForFile(file),
+	isSupportedFile: (file) => SOURCE_SCANNER.isSupportedFile(file),
+	isScriptFile: (file) => SOURCE_SCANNER.isScriptFile(file),
 	scan: (document) => SOURCE_SCANNER.scan(document),
-	parse: parseSourceProgram,
+	parse: (document) =>
+		parseSourceProgram({
+			...document,
+			language: document.language ?? SOURCE_SCANNER.languageForFile(document.file),
+		}),
 };

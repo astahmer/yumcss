@@ -166,7 +166,7 @@ describe("tailwind adapter arbitrary fallbacks always compile", () => {
 
 describe("static extractors survive real-world code", () => {
 	test("css() calls are found in JSX-heavy modules", async () => {
-		const { extractCssStyles } = await import("../src/vite/css-extract.ts");
+		const { createCssExtractionService } = await import("../src/vite/css-extract.ts");
 		const code = `
 			import { css } from "./design";
 			export function Card({ title, color }) {
@@ -178,12 +178,16 @@ describe("static extractors survive real-world code", () => {
 				);
 			}
 		`;
-		const styles = extractCssStyles(code, "card.tsx", new Set(["css"]), examplePreset);
+		const styles = createCssExtractionService({ matchers: [], preset: examplePreset }).extractStyles(
+			code,
+			"card.tsx",
+			new Set(["css"]),
+		);
 		expect(styles).toEqual([{ color: "#3182ce" }]);
 	});
 
 	test("template literals, spreads and optional chaining never break extraction", async () => {
-		const { extractCssStyles } = await import("../src/vite/css-extract.ts");
+		const { createCssExtractionService } = await import("../src/vite/css-extract.ts");
 		const code = `
 			import { css } from "./design";
 			const base = { $text: { color: "$gray-900" } };
@@ -192,7 +196,13 @@ describe("static extractors survive real-world code", () => {
 			const b = css.class(theme?.dark ? { $text: { color: "$white" } } : base);
 			export const c = [a, b, dyn].join(" ");
 		`;
-		expect(() => extractCssStyles(code, "app.ts", new Set(["css"]), examplePreset)).not.toThrow();
+		expect(() =>
+			createCssExtractionService({ matchers: [], preset: examplePreset }).extractStyles(
+				code,
+				"app.ts",
+				new Set(["css"]),
+			),
+		).not.toThrow();
 	});
 
 	test("tw() inlining leaves dynamic calls untouched", async () => {
