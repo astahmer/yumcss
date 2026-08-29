@@ -6,7 +6,7 @@ import {
 import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
 
 describe("migration program policy", () => {
-	test("default policy recognizes nested dynamic and raw selector semantics", () => {
+	test("default policy leaves selector-scoped declarations to static lowering", () => {
 		const program = styleProgramFromRules([
 			{
 				kind: "style",

@@ -16,6 +16,48 @@ const camelProperty = (property: string): string =>
 interface TemplateInterpolation {
 	readonly marker: string;
 	readonly expression: string;
+	readonly conditionalFragment?: {
+		readonly parameter: string;
+		readonly condition: string;
+		readonly body: string;
+	};
+}
+
+function conditionalCssFragment(
+	expression: string,
+): TemplateInterpolation["conditionalFragment"] | undefined {
+	const arrow = expression.indexOf("=>");
+	if (arrow < 0) return undefined;
+	const parameter = expression.slice(0, arrow).trim();
+	const body = expression.slice(arrow + 2).trim();
+	const cssStart = body.indexOf("css`");
+	if (cssStart < 0) return undefined;
+	const prefix = body.slice(0, cssStart).trim();
+	const condition = prefix.endsWith("&&")
+		? prefix.slice(0, -2).trim()
+		: prefix.endsWith("?")
+			? prefix.slice(0, -1).trim()
+			: undefined;
+	if (condition === undefined || parameter.length === 0 || condition.length === 0) return undefined;
+	const openTick = cssStart + "css".length;
+	const closeTick = findTemplateLiteralEnd(body, openTick);
+	if (closeTick === undefined) return undefined;
+	const tail = body.slice(closeTick + 1).trim();
+	if (tail !== "" && !/^:\s*(?:''|""|undefined)$/.test(tail)) return undefined;
+	return { parameter, condition, body: body.slice(openTick + 1, closeTick) };
+}
+
+function conditionalFragmentDeclaration(
+	fragment: NonNullable<TemplateInterpolation["conditionalFragment"]>,
+): Declaration | undefined {
+	try {
+		const nested = parse(fragment.body, { from: "<styled-components-fragment>" });
+		if (nested.nodes?.every((node) => node.type === "decl") !== true) return undefined;
+		const declarations = nested.nodes.filter((node): node is Declaration => node.type === "decl");
+		return declarations.length === 1 ? declarations[0] : undefined;
+	} catch {
+		return undefined;
+	}
 }
 
 function resolveNamedCssTemplate(
@@ -107,7 +149,12 @@ function extractInterpolations(body: string): {
 		if (block === null) continue;
 		css += body.slice(cursor, index);
 		const marker = `__PANDWIND_INTERPOLATION_${values.length}__`;
-		values.push({ marker, expression: block.body.trim() });
+		const expression = block.body.trim();
+		values.push({
+			marker,
+			expression,
+			conditionalFragment: conditionalCssFragment(expression),
+		});
 		css += marker;
 		index = block.end - 1;
 		cursor = block.end;
@@ -118,7 +165,11 @@ function extractInterpolations(body: string): {
 		/(^|[;{}]\s*)__PANDWIND_INTERPOLATION_(\d+)__(?=\s*[;{}]|$)/g,
 		(_match, prefix: string, index: string) => {
 			const value = values[Number(index)];
-			if (value !== undefined)
+			if (
+				value !== undefined &&
+				(value.conditionalFragment === undefined ||
+					conditionalFragmentDeclaration(value.conditionalFragment) === undefined)
+			)
 				fragmentResiduals.push({
 					kind: "parse",
 					text: `\${${value.expression}}`,
@@ -137,6 +188,18 @@ function dynamicValue(
 ): StyleDeclaration["value"] {
 	const markers = interpolations.filter((item) => raw.includes(item.marker));
 	if (markers.length === 0) return { kind: "literal", value: raw.trim() };
+	if (markers.length === 1 && raw.trim() === markers[0]!.marker) {
+		const fragment = markers[0]!.conditionalFragment;
+		if (fragment !== undefined) {
+			const declaration = conditionalFragmentDeclaration(fragment);
+			if (declaration !== undefined)
+				return {
+					kind: "dynamic",
+					expression: `(${fragment.parameter}) => (${fragment.condition}) ? ${JSON.stringify(declaration.value.trim())} : undefined`,
+					lowering: "custom-property",
+				};
+		}
+	}
 	for (const marker of markers)
 		residuals.push({
 			kind: "dynamic",
@@ -155,6 +218,14 @@ function dynamicValue(
 		expression: `\`${expression.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``,
 		lowering: "residual",
 	};
+}
+
+/** Styled template syntax treats a leading combinator as relative to its subject. */
+function normalizeNestedSelector(selector: string): string {
+	const selectors = selector.split(",").map((part) => part.trim());
+	if (selectors.some((part) => /^[+>~]/.test(part)))
+		return selectors.map((part) => (/^[+>~]/.test(part) ? `& ${part}` : part)).join(", ");
+	return selector;
 }
 
 /** Find a template's closing backtick without mistaking nested expression templates for it. */
@@ -246,7 +317,7 @@ export function parseAdapterTemplate(
 				const nested = parseContainer(rule, conditions);
 				children.push({
 					kind: "style",
-					selector: rule.selector,
+					selector: normalizeNestedSelector(rule.selector),
 					conditions,
 					declarations: nested.declarations,
 					children: nested.children,
@@ -258,6 +329,14 @@ export function parseAdapterTemplate(
 			const atRule = node as AtRule;
 			const name = atRule.name.toLowerCase();
 			if (name === "media" || name === "container") {
+				if (atRule.params.includes("__PANDWIND_INTERPOLATION_")) {
+					residuals.push({
+						kind: "dynamic",
+						text: atRule.params,
+						hint: "dynamic media/container conditions require a runtime template fallback",
+					});
+					continue;
+				}
 				const nestedConditions = [
 					...conditions,
 					{ kind: name, name: atRule.params, value: atRule.params },
@@ -332,12 +411,30 @@ export function parseAdapterTemplate(
 		return { declarations, children };
 	};
 	const parsed = parseContainer(root);
+	const conditionalDeclarations = extracted.values.flatMap((value) => {
+		const fragment = value.conditionalFragment;
+		const declaration =
+			fragment === undefined ? undefined : conditionalFragmentDeclaration(fragment);
+		return declaration === undefined || fragment === undefined
+			? []
+			: [
+					{
+						conditions: [],
+						property: camelProperty(declaration.prop),
+						value: {
+							kind: "dynamic" as const,
+							expression: `(${fragment.parameter}) => (${fragment.condition}) ? ${JSON.stringify(declaration.value.trim())} : undefined`,
+							lowering: "custom-property" as const,
+						},
+					},
+				];
+	});
 	return styleProgramFromRules(
 		[
 			{
 				kind: "style",
 				conditions: [],
-				declarations: parsed.declarations,
+				declarations: [...parsed.declarations, ...conditionalDeclarations],
 				children: parsed.children,
 				order: 0,
 			},

@@ -86,7 +86,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(component.code).toContain("styled.button({");
 	});
 
-	test("preserves nested media conditions in styled-components templates", () => {
+	test("statically lowers nested media selector templates", () => {
 		const result = runAdapterMigration(
 			'import styled, { css } from "styled-components";\n' +
 				"const Card = styled.div`display: block; ${css`color: red;`} @media (max-width: 40em) { display: none; &:hover { color: blue; } }`;",
@@ -95,9 +95,25 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(2);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("createRuntimeCss");
 		expect(result.code).toContain('"@media (max-width: 40em)"');
 		expect(result.code).toContain('"&:hover"');
 		expect(result.code).toContain('"@media (max-width: 40em)": { display: "none"');
+	});
+
+	test("preserves styled shorthand selectors and conditional css fragments", () => {
+		const result = runAdapterMigration(
+			'import styled, { css } from "styled-components";\n' +
+				"const Link = styled.a`display: flex; & + h2, + h3 { margin-top: 0.5em; } ${p => p.$next && css`justify-content: flex-end;`}`;",
+			{ from: "styled-components", to: "pandwind", file: "Link.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(2);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"& + h2, & + h3"');
+		expect(result.code).toContain("justifyContent");
+		expect(result.code).toContain("p.$next");
+		expect(result.code).not.toContain("createRuntimeCss");
 	});
 
 	test("inlines named static CSS fragments before target emission", () => {
@@ -458,7 +474,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain(
 			'const Card = (() => { const style = css.class({ color: "red" });',
 		);
-		expect(result.code).toContain('<div {...attrs} {...props} className={cx(style, "');
+		expect(result.code).toContain('<Component {...attrs} {...rest} className={cx(style, "');
 		expect(result.code).toContain('component.__pandwindClassName = "');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -498,7 +514,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(staticResult.code).toContain(
 			'const Card = (() => { const style = css.class({ color: "red", backgroundColor: "blue" });',
 		);
-		expect(staticResult.code).toContain('<div {...attrs} {...props} className={cx(style, "');
+		expect(staticResult.code).toContain('<Component {...attrs} {...rest} className={cx(style, "');
 		expect(staticResult.code).toContain('component.__pandwindClassName = "');
 		expect(staticResult.code).not.toContain("createRuntimeCss");
 
@@ -514,6 +530,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(dynamicResult.code).not.toContain("createRuntimeCss");
 	});
 
+	test("preserves polymorphic styled subjects without forwarding the as control prop", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Icon = styled.svg`color: red;`;\n" +
+				'export const App = () => <Icon as="span" data-kind="icon" />;',
+			{ from: "styled-components", to: "pandwind", file: "Icon.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('const Component = props.as ?? "svg"');
+		expect(result.code).toContain("const { as: _as, ...rest } = props");
+		expect(result.code).toContain("<Component {...attrs} {...rest}");
+	});
+
 	test("preserves the static class of a composed styled subject", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
@@ -526,7 +556,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain(
-			`cx(style, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Heading"))}, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Column"))}, props.className)`,
+			`composedCx(style, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Heading"))}, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Column"))}, props.className)`,
 		);
 	});
 
@@ -568,7 +598,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("css.vars({ color: theme.foreground })");
-		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain("const Card = (() =>");
 		expect(result.code).toContain('<Card data-testid="card" />');
 	});
 
@@ -585,6 +615,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("css.vars({ color: theme.foreground })");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain("createRuntimeCss");
+	});
+
+	test("keeps dynamic media conditions on the explicit runtime fallback path", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Section = styled.div`display: grid; @media (min-width: ${650 / 16}em) { grid-template-columns: 1fr; }`;\n" +
+				"export const App = () => <Section />;",
+			{ from: "styled-components", to: "pandwind", file: "Section.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("createRuntimeCss");
+		expect(result.code).toContain("min-width:");
+		expect(result.code).toContain("String((typeof (650 / 16)");
+		expect(result.code).not.toContain("__PANDWIND_INTERPOLATION_");
 	});
 
 	test("lowers StyleX dynamic groups through its props host and runtime engine", () => {
@@ -827,7 +873,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.code).not.toContain("createRuntimeCss");
 		expect(solid.code).toContain("((props) => props.color)(props)");
 		expect(solid.code).toContain('import { createCx } from "pandwind/cx";');
-		expect(solid.code).toContain("class={cx(staticClass, dynamic.class, props.class)}");
+		expect(solid.code).toContain('class={cx(staticClass, dynamic.class, "pw-sc-');
 
 		const vue = runAdapterMigration(
 			'import styled from "vue-styled-components";\n' +
@@ -864,7 +910,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.converted).toBe(2);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("<Base {...attrs} {...props} class={cx(");
+		expect(result.code).toContain(
+			"<Component {...attrs} {...rest} class={composedCx.vars(staticClass, dynamic",
+		);
+		expect(result.code).toContain(".class} style={{ ...props.style, ...dynamic.style }}");
 		expect(result.code).toContain("css.vars({ color:");
 		expect(result.code).toContain(")(props) });");
 	});

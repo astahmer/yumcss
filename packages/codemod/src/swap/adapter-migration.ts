@@ -370,14 +370,23 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 					// Keep the original subject in the host context for the target
 					// emitter, but remove it from the style program so the component
 					// capability is satisfied by a target-owned static wrapper.
+					const requiresRawTemplate = programPolicy.needsRawTemplate(program);
 					program = {
 						...program,
-						...(program.residuals.every((residual) => residual.kind === "dynamic")
-							? { residuals: [] }
-							: {}),
+						...(requiresRawTemplate
+							? {
+									residuals: [],
+									emissionHints: [
+										...(program.emissionHints ?? []),
+										StyleProgramEmissionHint.RawTemplate,
+									],
+								}
+							: program.residuals.every((residual) => residual.kind === "dynamic")
+								? { residuals: [] }
+								: {}),
 						source: { ...program.source, subject: undefined },
 					};
-					wrapComponent = program.residuals.length === 0;
+					wrapComponent = requiresRawTemplate || program.residuals.length === 0;
 				} else if (standaloneExport || frameworkWrapper) {
 					program = { ...program, source: { ...program.source, subject: undefined } };
 					if (frameworkWrapper)

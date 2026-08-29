@@ -39,18 +39,16 @@ class DefaultMigrationProgramPolicy implements MigrationProgramPolicy {
 			(program.source?.subjectAttrs !== undefined &&
 				/=>|\bfunction\b|\b(?:props|theme|attrs)\b/.test(program.source.subjectAttrs)) ||
 			program.residuals.some((residual) => residual.kind === "parse") ||
+			program.residuals.some(
+				(residual) => residual.kind === "dynamic" && residual.hint?.includes("condition") === true,
+			) ||
 			(program.source?.template !== undefined &&
 				/\$\{\s*(?:[A-Z_$][\w$]*|\([^)]*\)\s*=>\s*[A-Z_$][\w$]*)\s*\}/.test(
 					program.source.template,
 				))
 		)
 			return true;
-		return program.rules.some(
-			(rule) =>
-				rule.children.some(
-					(child) => child.selector !== undefined && !child.selector.trim().startsWith("&"),
-				) || rule.children.some((child) => this.needsRawTemplate({ ...program, rules: [child] })),
-		);
+		return false;
 	}
 }
 
