@@ -144,6 +144,12 @@ export type {
 	AdapterContractProbe,
 	AdapterContractReport,
 } from "./adapter-contract-suite.ts";
+export { ValidatorContractSuite } from "./validator-contract-suite.ts";
+export type {
+	ValidatorContractFailure,
+	ValidatorContractProbe,
+	ValidatorContractReport,
+} from "./validator-contract-suite.ts";
 export {
 	createMigrationProgramPolicy,
 	DEFAULT_MIGRATION_PROGRAM_POLICY,
@@ -269,6 +275,16 @@ export type {
 	SwapTargetAdapter,
 } from "./swap-registry.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
+export {
+	DIFFERENTIAL_CORPUS_RUNNER_SCHEMA,
+	DifferentialCorpusRunner,
+} from "./differential-runner.ts";
+export type {
+	DifferentialCorpusCase,
+	DifferentialCorpusCatalog,
+	DifferentialCorpusResult,
+	DifferentialCorpusRunnerPort,
+} from "./differential-runner.ts";
 export { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "./differential-matrix.ts";
 export {
 	VALIDATOR_SCHEMA,
