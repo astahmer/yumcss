@@ -16,14 +16,6 @@ const SOURCE_PASS_ADAPTERS: readonly SourcePassAdapter[] = [styledComponents, st
 
 export type SourceId = SourcePassId;
 export type { SourcePassAdapter, SourcePassOptions } from "./source-pass-contract.ts";
-export {
-	applyEdits,
-	camelProperty,
-	computeExcludedRanges,
-	insertSkipMarker,
-	matchBlock,
-	splitTopLevel,
-} from "./source-pass-utils.ts";
 
 export interface SourcePassRegistry {
 	readonly adapters: readonly SourcePassAdapter[];
