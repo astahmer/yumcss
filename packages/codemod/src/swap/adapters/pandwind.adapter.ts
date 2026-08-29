@@ -334,6 +334,96 @@ function staticComponent(
 	};
 }
 
+function selectProgramDeclarations(
+	program: StyleProgram,
+	select: (value: StyleProgram["declarations"][number]["value"]) => boolean,
+): StyleProgram {
+	const selectRule = (
+		rule: StyleProgram["rules"][number],
+	): StyleProgram["rules"][number] | undefined => {
+		const declarations = rule.declarations.filter((declaration) => select(declaration.value));
+		const children = rule.children.flatMap((child) => {
+			const selected = selectRule(child);
+			return selected === undefined ? [] : [selected];
+		});
+		return declarations.length === 0 && children.length === 0
+			? undefined
+			: { ...rule, declarations, children };
+	};
+	return {
+		...program,
+		declarations: program.declarations.filter((declaration) => select(declaration.value)),
+		rules: program.rules.flatMap((rule) => {
+			const selected = selectRule(rule);
+			return selected === undefined ? [] : [selected];
+		}),
+		residuals: [],
+	};
+}
+
+/**
+ * Lower a dynamic styled rule to static atoms plus inline custom properties.
+ * This is still a runtime value path, but it does not create or inject CSS at
+ * runtime; only values that genuinely depend on props/theme stay dynamic.
+ */
+function hybridComponent(
+	program: StyleProgram,
+	programObject: AdapterRenderers["programObject"],
+	context: AdapterEmitContext | undefined,
+): { text: string; imports: readonly string[] } | undefined {
+	const host = context?.host;
+	const subject = host?.subject ?? program.source?.subject;
+	const framework = host?.framework ?? program.source?.framework;
+	const template = program.source?.template;
+	if (
+		host?.binding === undefined ||
+		subject === undefined ||
+		framework === undefined ||
+		template === undefined ||
+		program.residuals.some((residual) => residual.kind === "parse") ||
+		hasComponentSelectorInterpolation(template) ||
+		/\bLiveEditor\b/.test(subject)
+	)
+		return undefined;
+	if (
+		framework !== BuiltinHostFramework.React &&
+		framework !== BuiltinHostFramework.Preact &&
+		framework !== BuiltinHostFramework.Solid
+	)
+		return undefined;
+	const tag = intrinsicTagForSubject(subject);
+	const base = componentExpressionForSubject(subject);
+	if (tag === undefined && base === undefined) return undefined;
+	const hasDynamic = program.rules.some(function containsDynamic(rule): boolean {
+		return (
+			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+			rule.children.some(containsDynamic)
+		);
+	});
+	if (!hasDynamic) return undefined;
+	const staticProgram = selectProgramDeclarations(program, (value) => value.kind !== "dynamic");
+	const dynamicProgram = selectProgramDeclarations(program, (value) => value.kind === "dynamic");
+	const dynamicObject = programObject(
+		mapRuntimeProps(dynamicProgram, framework === BuiltinHostFramework.Solid ? "props" : "props"),
+	);
+	const staticClass =
+		staticProgram.rules.length === 0 ? '""' : `css.class(${programObject(staticProgram)})`;
+	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
+	const component = tag ?? base;
+	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
+	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
+	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
+	return {
+		text: `(() => { const staticClass = ${staticClass}; const component = (props) => { const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(staticClass, dynamic.class, props.${classAttribute})} style={{ ...dynamic.style, ...props.style }} />; }; return component; })()`,
+		imports: [
+			'import { createCss } from "pandwind/css";',
+			"const css = createCss();",
+			'import { createCx } from "pandwind/cx";',
+			"const cx = createCx();",
+		],
+	};
+}
+
 function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | undefined): string {
 	const rule = program.rules[0]!;
 	const name = `pw-kf-${(context?.host?.binding ?? rule.name ?? "animation").replace(
@@ -697,6 +787,8 @@ export default defineCodemodAdapter({
 		if (context?.host?.wrapComponent === true) {
 			const component = staticComponent(program, programObject, context);
 			if (component !== undefined) return component;
+			const hybrid = hybridComponent(program, programObject, context);
+			if (hybrid !== undefined) return hybrid;
 		}
 		const host = program.source;
 		if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {

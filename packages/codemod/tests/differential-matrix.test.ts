@@ -1,9 +1,16 @@
 import { describe, expect, test } from "vitest";
-import { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "../src/swap/index.ts";
+import {
+	DIFFERENTIAL_MATRIX_SCHEMA,
+	DifferentialCorpusContractSuite,
+	runDifferentialMatrix,
+} from "../src/swap/index.ts";
 import { differentialMatrixFixtures } from "./differential-matrix.fixtures.ts";
 
 describe("production differential matrix", () => {
 	test("covers adapter families with browser, SSR, hydration, streaming, and dependency evidence", () => {
+		DifferentialCorpusContractSuite.assert(
+			DifferentialCorpusContractSuite.inspect(differentialMatrixFixtures),
+		);
 		const result = runDifferentialMatrix(differentialMatrixFixtures);
 		expect(result.schema).toBe(DIFFERENTIAL_MATRIX_SCHEMA);
 		expect(result.cases).toHaveLength(differentialMatrixFixtures.cases.length);

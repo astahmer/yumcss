@@ -1,5 +1,6 @@
 import type { PandaMigrateOptions, PandaMigrateReport } from "./panda-migrate.ts";
-import { runPandaMigration, scanFactoryElements } from "./panda-migrate.ts";
+import { runPandaMigration } from "./panda-migrate.ts";
+import { PandaFactoryAdapter } from "./factory-adapter.ts";
 import {
 	discoverPandaMigration,
 	extractPandaMigrationUsage,
@@ -25,7 +26,7 @@ export interface PandaMigrationServices {
 		excluded: (start: number) => boolean,
 		options?: { theme?: PandaTheme },
 	): readonly PandaCall[];
-	scanFactoryElements: typeof scanFactoryElements;
+	factoryAdapter: typeof PandaFactoryAdapter;
 	run(options: PandaMigrateOptions): Promise<PandaMigrateReport>;
 }
 
@@ -41,7 +42,7 @@ export function createPandaMigrationServices(
 		scanSources: scanPandaMigrationSources,
 		extractUsage: extractPandaMigrationUsage,
 		parseCalls: parsePandaCalls,
-		scanFactoryElements,
+		factoryAdapter: PandaFactoryAdapter,
 		run: runPandaMigration,
 		...overrides,
 	};

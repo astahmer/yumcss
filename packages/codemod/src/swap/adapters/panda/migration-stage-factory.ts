@@ -136,8 +136,8 @@ export function createPandaMigrationStages(
 						end: call.end,
 						kind: PandaRewriteCandidateKind.StyleCall,
 					}));
-					const factories = services
-						.scanFactoryElements(file.source, scan.isExcluded)
+					const factories = services.factoryAdapter
+						.scan(file.source, scan.isExcluded)
 						.map((element) => ({
 							file: path,
 							start: element.start,

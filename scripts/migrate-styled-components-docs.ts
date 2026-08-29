@@ -32,6 +32,8 @@ export interface StyledComponentsDocsLaneReport {
 	readonly convertedCallSites: number;
 	readonly staticCallSites: number;
 	readonly runtimeFallbackCallSites: number;
+	readonly dynamicValueCallSites: number;
+	readonly staticCssCoverageRatio: number;
 	readonly staticExtractionRatio: number;
 	readonly skippedCallSites: number;
 	readonly sourceBytes: number;
@@ -88,6 +90,23 @@ function containsDynamic(program: StyleProgram): boolean {
 	);
 }
 
+function hasComponentSelectorInterpolation(template: string): boolean {
+	return /\$\{\s*(?:[A-Z_$][\w$]*|\([^)]*\)\s*=>\s*[A-Z_$][\w$]*)\s*\}/.test(template);
+}
+
+function requiresRuntimeCss(program: StyleProgram): boolean {
+	if (program.residuals.some((residual) => residual.kind === "parse")) return true;
+	if (program.source?.subjectAttrs !== undefined) return true;
+	if (
+		program.source?.template !== undefined &&
+		hasComponentSelectorInterpolation(program.source.template)
+	)
+		return true;
+	return program.rules.some(function hasRuntimeRule(rule): boolean {
+		return rule.kind !== "style" || rule.children.some(hasRuntimeRule);
+	});
+}
+
 function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): string {
 	const needsRuntime = /\bcss\.(?:class|vars|group|props|raw|input|sheet)\b/.test(source);
 	const needsTemplate = /\bcssTemplate\s*`/.test(source);
@@ -139,6 +158,9 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		const staticCallSites = parsed.matches.filter(
 			(match) => match.program.residuals.length === 0 && !containsDynamic(match.program),
 		).length;
+		const runtimeFallbackCallSites = parsed.matches.filter((match) =>
+			requiresRuntimeCss(match.program),
+		).length;
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Pandwind,
@@ -153,7 +175,6 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 			.replaceAll('import { pandwindPreset } from "pandwind/preset";\n', "")
 			.replaceAll("const css = createRuntimeCss(pandwindPreset);\n", "");
 		const runtimeCode = withRuntimeImports(normalizedCode, this.lane);
-		const runtimeFallbackCallSites = parsed.matches.length - staticCallSites;
 		if (this.lane === StyledComponentsDocsLane.RuntimeCss)
 			return { ...result, code: runtimeCode, staticCallSites, runtimeFallbackCallSites };
 		return {
@@ -251,11 +272,13 @@ function staticCssFromSource(files: ReadonlyMap<string, string>): string {
 		preset: staticPreset as never,
 	});
 	const styles: StyleObject[] = [];
+	const sheet = createStylesheet(staticPreset as never);
 	for (const [file, source] of files) {
-		for (const extracted of extraction.extractFile(source, file).sources)
-			styles.push(extracted.style);
+		const extracted = extraction.extractFile(source, file);
+		for (const style of extracted.sources) styles.push(style.style);
+		for (const key of extracted.varKeys) sheet.processVarKey(key);
 	}
-	return createStylesheet(staticPreset as never).generate(styles);
+	return [sheet.generate(styles), sheet.gen.varRules()].filter((value) => value !== "").join("\n");
 }
 
 function collectorSafeSource(source: string): string {
@@ -421,6 +444,7 @@ export class StyledComponentsDocsMigration {
 		let convertedCallSites = 0;
 		let staticCallSites = 0;
 		let runtimeFallbackCallSites = 0;
+		let dynamicValueCallSites = 0;
 		let skippedCallSites = 0;
 		let sourceBytes = 0;
 		let outputBytes = 0;
@@ -434,6 +458,7 @@ export class StyledComponentsDocsMigration {
 			convertedCallSites += result.converted;
 			staticCallSites += result.staticCallSites;
 			runtimeFallbackCallSites += result.runtimeFallbackCallSites;
+			dynamicValueCallSites += Math.max(0, result.converted - result.staticCallSites);
 			skippedCallSites += result.skipped;
 			sourceBytes += Buffer.byteLength(source);
 			outputBytes += Buffer.byteLength(result.code);
@@ -457,10 +482,12 @@ export class StyledComponentsDocsMigration {
 			convertedCallSites,
 			staticCallSites,
 			runtimeFallbackCallSites,
-			staticExtractionRatio:
-				staticCallSites + runtimeFallbackCallSites === 0
+			dynamicValueCallSites,
+			staticCssCoverageRatio:
+				convertedCallSites === 0
 					? 1
-					: staticCallSites / (staticCallSites + runtimeFallbackCallSites),
+					: (convertedCallSites - runtimeFallbackCallSites) / convertedCallSites,
+			staticExtractionRatio: convertedCallSites === 0 ? 1 : staticCallSites / convertedCallSites,
 			skippedCallSites,
 			sourceBytes,
 			outputBytes,

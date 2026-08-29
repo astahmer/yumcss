@@ -145,6 +145,12 @@ export {
 export { createStyleMigrationUseCase, runAdapterMigration } from "./adapter-migration.ts";
 export type { StyleMigrationUseCase } from "./adapter-migration.ts";
 export { AdapterContractSuite } from "./adapter-contract-suite.ts";
+export { AdapterCoverageSuite } from "./adapter-coverage-suite.ts";
+export type {
+	AdapterCoverageFailure,
+	AdapterCoverageProbe,
+	AdapterCoverageReport,
+} from "./adapter-coverage-suite.ts";
 export type {
 	AdapterContractFailure,
 	AdapterContractProbe,
@@ -156,6 +162,11 @@ export type {
 	ValidatorContractProbe,
 	ValidatorContractReport,
 } from "./validator-contract-suite.ts";
+export { DifferentialCorpusContractSuite } from "./differential-contract-suite.ts";
+export type {
+	DifferentialContractFailure,
+	DifferentialContractReport,
+} from "./differential-contract-suite.ts";
 export {
 	createMigrationProgramPolicy,
 	DEFAULT_MIGRATION_PROGRAM_POLICY,

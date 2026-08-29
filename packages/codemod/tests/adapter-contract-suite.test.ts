@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	AdapterContractSuite,
+	AdapterCoverageSuite,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	requiredAdapterCapabilities,
@@ -68,5 +69,19 @@ describe("adapter contract suite", () => {
 				}
 			}
 		}
+	});
+
+	test("the registry cannot add an adapter without capability coverage", () => {
+		const registry = createBuiltinCodemodCatalog().registry;
+		const probes = new Map(
+			Object.entries(adapterFixtures).map(([adapter, source]) => [
+				adapter,
+				{ file: "fixture.tsx", source },
+			]),
+		);
+		const reports = AdapterCoverageSuite.inspectRegistry(registry, probes);
+		for (const report of reports) AdapterCoverageSuite.assert(report);
+		expect(reports.every((report) => report.matches > 0)).toBe(true);
+		expect(reports.every((report) => report.exercisedCapabilities.length > 0)).toBe(true);
 	});
 });

@@ -229,6 +229,7 @@ export default defineCodemodAdapter({
 	],
 	packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
+		"named-conditions": "exact",
 		"dynamic-values": "partial",
 		composition: "partial",
 		"font-face": "unsupported",
