@@ -225,6 +225,26 @@ lowering can be targeted. The checked-in report is therefore acceptance
 evidence for the pivot, not a claim that unrelated source-language semantics
 are magically lossless.
 
+## Latest architecture completion evidence
+
+Validated on 2026-08-29 after the interface-first completion pass:
+
+- `ValidatorContractSuite` now validates every registered validator and accepts
+  a branded third-party validator at the same registry boundary.
+- `DifferentialCorpusRunner` owns matrix execution through an injectable port;
+  the versioned matrix module is only a compatibility projection.
+- Target-specific host/raw-template policy is selected through the target
+  adapter contract; neutral migration orchestration contains no Pandwind
+  identity branch.
+- Panda's eight default migration stages are constructed by an injectable
+  `PandaMigrationStageFactory`; the pipeline façade only executes stage ports.
+- Every registered codemod adapter has a real parse/emit fixture, and CI derives
+  required capabilities from each fixture and rejects unsupported declarations.
+- The complete codemod suite passes 36 files / 293 tests. Workspace-wide tests,
+  coverage thresholds, lint, format, Knip, and release preflight/pack smoke also
+  pass. The focused JJ revisions are `2e2260a3`, `cf214073`, `d8409281`,
+  `f0d38311`, `6ea99b74`, `7438a48`, and the current empty working-copy child.
+
 ## Decisions log
 
 - 2026-08-27 — Keep `SwapIR` as the cheap path; use StyleProgram only when
