@@ -1,0 +1,28 @@
+{
+	"lane": "css-class",
+	"referenceCommit": "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
+	"migration": {
+		"sourceFiles": 91,
+		"changedFiles": 91,
+		"convertedCallSites": 661,
+		"skippedCallSites": 0,
+		"residuals": 0
+	},
+	"build": {
+		"generatedPages": 277,
+		"exitCode": 0
+	},
+	"routeProof": {
+		"discoveredRoutes": 263,
+		"comparableRoutes": 261,
+		"excludedBaselineRoutes": [
+			"/blog/10-announcing-chakra-ui-mcp-server",
+			"/blog/11-improved-developer-experience"
+		],
+		"candidateFailures": 0,
+		"baselineCssPlusInlineStyleBytes": 40711034,
+		"candidateCssPlusInlineStyleBytes": 40588607,
+		"deltaBytes": -122427,
+		"candidateRuntimeStyleBytes": 3761455
+	}
+}
