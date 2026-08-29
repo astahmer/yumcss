@@ -14,6 +14,7 @@ import {
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	componentAttrsExpressionForSubject,
 	componentExpressionForSubject,
@@ -231,8 +232,13 @@ function runtimeComponent(
 		framework === undefined
 	)
 		return undefined;
-	const object = programObject(mapRuntimeProps(program, framework === "vue" ? "attrs" : "props"));
-	if (framework === "vue") {
+	const object = programObject(
+		mapRuntimeProps(
+			program,
+			framework === BuiltinHostFramework.Vue ? "attrs" : "props",
+		),
+	);
+	if (framework === BuiltinHostFramework.Vue) {
 		return {
 			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => css.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
 			imports: [
@@ -244,7 +250,7 @@ function runtimeComponent(
 		};
 	}
 	if (framework !== "solid" && framework !== "react" && framework !== "preact") return undefined;
-	const classAttribute = framework === "solid" ? "class" : "className";
+	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	if (tag === undefined) {
 		return {
 			text: `(props) => { const style = css.vars(${object}); const Base = ${componentExpression}; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Base {...attrs} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
@@ -435,7 +441,7 @@ function runtimeRawComponent(
 	const normalizedTemplate = augmentAncestorSelectors(hostTemplate, rootSelector);
 	const cssText = runtimeTemplateExpression(normalizedTemplate, context?.file);
 	const staticCssText = runtimeStaticTemplateExpression(normalizedTemplate, context?.file, source);
-	const classAttribute = framework === "solid" ? "class" : "className";
+	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const componentAttrs =
 		host?.subjectAttrs ??
 		(subject === undefined ? undefined : componentAttrsExpressionForSubject(subject));

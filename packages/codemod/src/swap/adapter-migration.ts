@@ -24,6 +24,7 @@ import { removeSourceImports } from "./external-adapters.ts";
 import { MigrationText } from "./migration-text.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import { CodemodAdapterId, CodemodStyleIdentity, StyleProgramEmissionHint } from "./identifiers.ts";
+import { BuiltinHostFramework } from "./host-adapters.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
@@ -375,10 +376,10 @@ export function runAdapterMigration(
 				binding !== undefined &&
 				tag !== undefined &&
 				sourceModuleEvidence &&
-				(framework === "solid" ||
-					framework === "vue" ||
-					framework === "react" ||
-					framework === "preact");
+				(framework === BuiltinHostFramework.Solid ||
+					framework === BuiltinHostFramework.Vue ||
+					framework === BuiltinHostFramework.React ||
+					framework === BuiltinHostFramework.Preact);
 			if (canWrapComponent) {
 				program = {
 					...program,

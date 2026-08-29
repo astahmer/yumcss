@@ -140,6 +140,12 @@ export {
 } from "./migration-program-policy.ts";
 export type { MigrationProgramPolicy } from "./migration-program-policy.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
+export { AdapterContractSuite } from "./adapter-contract-suite.ts";
+export type {
+	AdapterContractFailure,
+	AdapterContractProbe,
+	AdapterContractReport,
+} from "./adapter-contract-suite.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
@@ -300,6 +306,7 @@ export type {
 	StyleRecipeVariant,
 } from "./recipe-ir.ts";
 export {
+	BuiltinHostFramework,
 	detectHostFramework,
 	getHostFrameworkAdapter,
 	HOST_FRAMEWORK_ADAPTERS,
@@ -309,7 +316,6 @@ export {
 	createHostFrameworkRegistry,
 } from "./host-adapters.ts";
 export type {
-	BuiltinHostFramework,
 	HostFramework,
 	HostFrameworkAdapter,
 	HostFrameworkPlugin,
