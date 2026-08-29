@@ -32,6 +32,9 @@ export enum CodemodAdapterId {
 	Tailwind = "tailwind",
 }
 
+/** Built-in source passes accepted by the non-swap CLI pipeline. */
+export type SourcePassId = CodemodAdapterId.StyledComponents | CodemodAdapterId.StyleX;
+
 export enum CodemodPatternId {
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",

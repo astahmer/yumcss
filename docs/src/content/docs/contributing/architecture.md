@@ -131,6 +131,14 @@ Codemod, Vite, analyzer, Panda discovery, and Tailwind collection use these
 boundaries instead of maintaining independent recursive walks or extension
 tables. A scanner plugin can add a language without changing those consumers.
 
+The flat CLI's optional `--from` source passes use the same locality rule:
+`sources.ts` is only a composition root and registry, while the
+styled-components and StyleX passes live in their own adapter modules. The
+`SourcePassRegistry` accepts injected adapters, so a test or future CLI can
+replace the built-ins without changing migration orchestration. Shared block
+matching, source masking, edit application, and marker insertion are
+infrastructure in `source-pass-utils.ts`, not ecosystem policy.
+
 The codemod registry is guarded by `AdapterContractSuite`, which probes every
 registered adapter through detection/configuration, parsing, emission, and
 validation. Host-only adapters may intentionally have no removable source

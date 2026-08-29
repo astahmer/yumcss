@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
-import { matchBlock } from "../sources.ts";
+import { matchBlock } from "../source-pass-utils.ts";
 import { computeExcludedRanges } from "pandwind/source";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {

@@ -17,7 +17,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { createSourceWorkspace } from "pandwind/source";
-import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
+import { computeExcludedRanges, matchBlock } from "../../../source-pass-utils.ts";
 import { ensureImport } from "../../../shared.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import {

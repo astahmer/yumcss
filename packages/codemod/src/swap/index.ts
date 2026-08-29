@@ -10,7 +10,7 @@
 import type { PandwindMeta } from "../meta.ts";
 import type { TransformOptions, TransformResult } from "../migrate.ts";
 import { applyEdits } from "../migrate.ts";
-import { insertSkipMarker, matchBlock } from "../sources.ts";
+import { insertSkipMarker, matchBlock } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";

@@ -1,4 +1,4 @@
-import { matchBlock } from "../sources.ts";
+import { matchBlock } from "../source-pass-utils.ts";
 import { parse, type AtRule, type Container, type Declaration, type Rule } from "postcss";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import {

@@ -1,7 +1,7 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
-import { matchBlock } from "../../sources.ts";
+import { matchBlock } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
 
 const styleProps = [

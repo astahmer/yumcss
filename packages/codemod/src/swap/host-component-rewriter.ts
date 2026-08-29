@@ -1,4 +1,4 @@
-import { computeExcludedRanges } from "../sources.ts";
+import { computeExcludedRanges } from "../source-pass-utils.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import {
 	BuiltinHostFramework,

@@ -3,7 +3,7 @@ import {
 	defineCodemodAdapter,
 	type AdapterRenderers,
 } from "../external-adapters.ts";
-import { matchBlock } from "../../sources.ts";
+import { matchBlock } from "../../source-pass-utils.ts";
 import type { AdapterEmitContext } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 import {
