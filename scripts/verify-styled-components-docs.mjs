@@ -217,6 +217,10 @@ const compareScreenshots = async (page, baselineScreenshot, candidateScreenshot,
 			let changedPixels = 0;
 			let maskedPixels = 0;
 			let maxChannelDelta = 0;
+			let minChangedX = first.width;
+			let minChangedY = first.height;
+			let maxChangedX = -1;
+			let maxChangedY = -1;
 			for (let index = 0; index < firstPixels.length; index += 4) {
 				const pixel = index / 4;
 				const x = pixel % first.width;
@@ -236,7 +240,13 @@ const compareScreenshots = async (page, baselineScreenshot, candidateScreenshot,
 					maxChannelDelta = Math.max(maxChannelDelta, delta);
 					changed ||= delta > 0;
 				}
-				if (changed) changedPixels += 1;
+				if (changed) {
+					changedPixels += 1;
+					minChangedX = Math.min(minChangedX, x);
+					minChangedY = Math.min(minChangedY, y);
+					maxChangedX = Math.max(maxChangedX, x);
+					maxChangedY = Math.max(maxChangedY, y);
+				}
 			}
 			return {
 				width: first.width,
@@ -245,6 +255,15 @@ const compareScreenshots = async (page, baselineScreenshot, candidateScreenshot,
 				maskedPixels,
 				changedPixelRatio: changedPixels / (first.width * first.height),
 				maxChannelDelta,
+				changedBounds:
+					changedPixels === 0
+						? null
+						: {
+								x: minChangedX,
+								y: minChangedY,
+								width: maxChangedX - minChangedX + 1,
+								height: maxChangedY - minChangedY + 1,
+							},
 			};
 		},
 		{
