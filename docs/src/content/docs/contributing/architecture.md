@@ -139,3 +139,42 @@ styles, screenshots, and console errors at the same viewport. CSS accounting
 compares linked stylesheets plus inline SSR styles against the baseline, with
 the Pandwind runtime artifact reported separately. This keeps a migration from
 being called complete merely because the codemod changed every source file.
+
+The styled-components documentation site is a second acceptance corpus. Its
+reference checkout is pinned in `reference-repos.md` and is never edited. The
+`StyledComponentsDocsMigration` façade registers two target lanes,
+`runtime-css` and `design-css`; both use the same source adapter and differ
+only in the Pandwind target factory. The lane adapter owns styled-components
+template/object parsing, subjects, `.attrs`, globals, keyframes, and framework
+rewrites; the runner owns only source-file discovery, materialization, and
+evidence accounting.
+
+The reproducible command is:
+
+```sh
+pnpm exec tsx scripts/migrate-styled-components-docs.ts runtime-css /tmp/pandwind-styled-runtime
+pnpm exec tsx scripts/migrate-styled-components-docs.ts design-css /tmp/pandwind-styled-design
+pnpm exec tsx scripts/verify-styled-components-docs.mjs \
+  http://localhost:3100 http://localhost:3261 http://localhost:3262 \
+  /tmp/styled-baseline /tmp/styled-components-docs-verification.json
+```
+
+The pinned corpus currently converts 54 source files and 285 call sites with
+zero skipped sites and zero codemod residuals in each lane. A complete site
+claim still requires the disposable app's direct Next production build, the
+full public-route status/SSR matrix, and browser geometry/computed-style
+checks against the unmodified reference. External services used by the
+reference app, such as GitHub's releases API, are treated as fixture inputs;
+rate limits are infrastructure failures, not evidence of a successful
+migration. The latest proof completed both production builds, all 55 public
+routes (31 HTML routes), with zero HTTP/rendering failures, zero browser page
+errors, successful hydration probes, and exact screenshot plus geometry parity
+for every HTML route in both lanes. The stable browser state is
+`prefers-reduced-motion: reduce`; the reference homepage's requestAnimationFrame
+cube is held at its SSR pose so the comparison is repeatable without masking
+content. Measured total transfer was 624,471 bytes for runtime CSS and 625,164
+bytes for design CSS versus 1,321,804 bytes for the baseline (reductions of
+697,333 and 696,640 bytes). The lane also migrates styled-theming's runtime
+theme functions through a generated client-only `ThemeProvider`/context module,
+so theme-dependent padding, margins, colors, and variants remain exact after
+hydration rather than becoming residuals.
