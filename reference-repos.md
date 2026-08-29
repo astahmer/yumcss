@@ -20,6 +20,7 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | shadcn-ui       | https://github.com/shadcn-ui/ui/tree/main/apps/v4 | `683a5a9b370acdb7785a0529434e6a3b8c7e0441` | `apps/v4` Next.js/React 19/Tailwind v4 docs and registry application; source corpus for Pandwind API migration proofs |
 | effect-website  | https://github.com/Effect-TS/website              | `366419b44eb2bd353cbe3d3e41fa4e8c735e63ee` | `apps/web` Astro/Tailwind v4 documentation website; source corpus for static-first Pandwind migration proofs          |
 | posthog-com     | https://github.com/PostHog/posthog.com              | `8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff`         | Gatsby 4/Tailwind 3 website corpus for static-first `tw`, `css.class`, and design-lane migration proofs              |
+| astryx          | https://github.com/facebook/astryx/tree/main/apps/docsite | `8359f1a3601766e3a96ae0805e9487ac3dc17754` | `apps/docsite` Next.js/React 19 StyleX documentation site; source corpus for StyleX-to-Pandwind static, utility, and design-lane proofs |
 
 | adapter           | repository                                             | pinned HEAD                                | exercised source                                                                 |
 | ----------------- | ------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------- |
