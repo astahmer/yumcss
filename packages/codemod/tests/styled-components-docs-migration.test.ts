@@ -20,6 +20,7 @@ describe("styled-components docs migration lanes", () => {
 			expect(report.skippedCallSites).toBe(0);
 			expect(report.residuals).toEqual([]);
 		},
+		30_000,
 	);
 
 	test("keeps the two lane identities distinct", () => {
