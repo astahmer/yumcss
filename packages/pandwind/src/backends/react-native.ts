@@ -8,7 +8,7 @@ import {
 } from "./conversion.ts";
 import { createObjectBackend, type ObjectBackend, type ObjectBackendOptions } from "./object.ts";
 import type { StyleBackendFactory } from "./registry.ts";
-import { STYLE_BACKEND_SCHEMA, type BackendCapabilityContract } from "./types.ts";
+import { BuiltinBackendId, STYLE_BACKEND_SCHEMA, type BackendCapabilityContract } from "./types.ts";
 
 const KEEP_STRING = new Set(["fontWeight", "fontFamily", "fontVariant"]);
 const UNSUPPORTED = new Set([
@@ -109,7 +109,7 @@ export const REACT_NATIVE_BACKEND: StyleBackendFactory<
 	Record<string, unknown>
 > = {
 	schema: STYLE_BACKEND_SCHEMA,
-	id: "react-native",
+	id: BuiltinBackendId.ReactNative,
 	capabilities: REACT_NATIVE_BACKEND_CAPABILITIES,
 	create: createRnBackend,
 };

@@ -25,7 +25,7 @@ export {
 	createStyleBackendRegistry,
 } from "./registry.ts";
 export type {
-	BuiltinBackendId,
+	StyleBackendId,
 	StyleBackendFactory,
 	StyleBackendPlugin,
 	StyleBackendRegistry,
@@ -40,4 +40,6 @@ export type {
 	FlatStyleIR,
 	StyleBackend,
 } from "./types.ts";
+export { BuiltinBackendId } from "./types.ts";
+export { externalBackendId } from "./types.ts";
 export { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";

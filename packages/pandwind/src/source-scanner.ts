@@ -11,27 +11,31 @@ export type {
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
-export type SourceLanguage =
-	| "typescript"
-	| "tsx"
-	| "javascript"
-	| "jsx"
-	| "vue"
-	| "svelte"
-	| "astro"
-	| "mdx"
-	| (string & {});
+export enum SourceLanguageId {
+	TypeScript = "typescript",
+	Tsx = "tsx",
+	JavaScript = "javascript",
+	Jsx = "jsx",
+	Vue = "vue",
+	Svelte = "svelte",
+	Astro = "astro",
+	Mdx = "mdx",
+	Unknown = "unknown",
+}
 
-export type SourceFramework =
-	| "react"
-	| "preact"
-	| "solid"
-	| "qwik"
-	| "vue"
-	| "svelte"
-	| "astro"
-	| "mdx"
-	| (string & {});
+export enum SourceFrameworkId {
+	React = "react",
+	Preact = "preact",
+	Solid = "solid",
+	Qwik = "qwik",
+	Vue = "vue",
+	Svelte = "svelte",
+	Astro = "astro",
+	Mdx = "mdx",
+}
+
+export type SourceLanguage = SourceLanguageId | (string & {});
+export type SourceFramework = SourceFrameworkId | (string & {});
 
 export interface SourceDocument {
 	readonly file: string;
@@ -119,10 +123,10 @@ export function isScriptSourceFile(file: string): boolean {
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
-	language === "typescript" ||
-	language === "tsx" ||
-	language === "javascript" ||
-	language === "jsx";
+	language === SourceLanguageId.TypeScript ||
+	language === SourceLanguageId.Tsx ||
+	language === SourceLanguageId.JavaScript ||
+	language === SourceLanguageId.Jsx;
 
 function lexicalExcludedRanges(source: string): SourceRange[] {
 	const ranges: SourceRange[] = [];
@@ -169,7 +173,7 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 		throw new Error(`source language ${language} does not expose an oxc program`);
 	return parseSync(document.file, document.source, {
 		sourceType: "module",
-		lang: language === "tsx" || language === "jsx" ? "tsx" : "ts",
+		lang: language === SourceLanguageId.Tsx || language === SourceLanguageId.Jsx ? "tsx" : "ts",
 	});
 }
 
@@ -261,11 +265,11 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 				message: error instanceof Error ? error.message : "unable to parse source",
 			});
 		}
-	} else if (language === "unknown") {
+	} else if (language === SourceLanguageId.Unknown) {
 		diagnostics.push({ kind: "language", message: `no registered language for ${document.file}` });
 	} else {
 		excluded =
-			language === "mdx"
+			language === SourceLanguageId.Mdx
 				? mdxExcludedRanges(document.source)
 				: lexicalExcludedRanges(document.source);
 	}
@@ -280,14 +284,14 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 
 const extensionForLanguage = (language: SourceLanguage): string | undefined =>
 	({
-		typescript: ".ts",
-		tsx: ".tsx",
-		javascript: ".js",
-		jsx: ".jsx",
-		vue: ".vue",
-		svelte: ".svelte",
-		astro: ".astro",
-		mdx: ".mdx",
+		[SourceLanguageId.TypeScript]: ".ts",
+		[SourceLanguageId.Tsx]: ".tsx",
+		[SourceLanguageId.JavaScript]: ".js",
+		[SourceLanguageId.Jsx]: ".jsx",
+		[SourceLanguageId.Vue]: ".vue",
+		[SourceLanguageId.Svelte]: ".svelte",
+		[SourceLanguageId.Astro]: ".astro",
+		[SourceLanguageId.Mdx]: ".mdx",
 	})[language as keyof Record<string, string>];
 
 const languageForAdapterExtension = (
@@ -335,33 +339,33 @@ const makeFrameworkAdapter = (
 export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeFrameworkAdapter(
 		"jsx-react",
-		"react",
-		["typescript", "tsx", "javascript", "jsx"],
+		SourceFrameworkId.React,
+		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
 		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
 	),
 	makeFrameworkAdapter(
 		"jsx-preact",
-		"preact",
-		["typescript", "tsx", "javascript", "jsx"],
+		SourceFrameworkId.Preact,
+		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
 		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
 	),
 	makeFrameworkAdapter(
 		"jsx-solid",
-		"solid",
-		["typescript", "tsx", "javascript", "jsx"],
+		SourceFrameworkId.Solid,
+		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
 		[/from\s+["']solid-js(?:\/|["'])/],
 	),
 	makeFrameworkAdapter(
 		"jsx-qwik",
-		"qwik",
-		["typescript", "tsx", "javascript", "jsx"],
+		SourceFrameworkId.Qwik,
+		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
 		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
 	),
-	makeAdapter("mdx", ["mdx"]),
-	makeAdapter("typescript", ["typescript", "tsx", "javascript", "jsx"]),
-	makeAdapter("vue", ["vue"]),
-	makeAdapter("svelte", ["svelte"]),
-	makeAdapter("astro", ["astro"]),
+	makeAdapter(SourceLanguageId.Mdx, [SourceLanguageId.Mdx]),
+	makeAdapter(SourceLanguageId.TypeScript, [SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx]),
+	makeAdapter(SourceLanguageId.Vue, [SourceLanguageId.Vue]),
+	makeAdapter(SourceLanguageId.Svelte, [SourceLanguageId.Svelte]),
+	makeAdapter(SourceLanguageId.Astro, [SourceLanguageId.Astro]),
 ];
 
 export function createSourceLanguageClassifier(
@@ -379,10 +383,10 @@ export function createSourceLanguageClassifier(
 	return {
 		languageForFile(file) {
 			const extension = `.${file.split(".").pop()?.toLowerCase() ?? ""}`;
-			return languagesByExtension.get(extension) ?? "unknown";
+		return languagesByExtension.get(extension) ?? SourceLanguageId.Unknown;
 		},
 		isSupportedFile(file) {
-			return this.languageForFile(file) !== "unknown";
+			return this.languageForFile(file) !== SourceLanguageId.Unknown;
 		},
 		isScriptFile(file) {
 			return isOxcLanguage(this.languageForFile(file));

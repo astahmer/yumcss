@@ -46,6 +46,22 @@ export type FlatStyleIR = Record<string, string>;
 
 export const STYLE_BACKEND_SCHEMA = "pandwind.style-backend/1" as const;
 
+/** Built-in backend identities are compile-time enums; plugins use branded ids. */
+export const enum BuiltinBackendId {
+	Css = "css",
+	Object = "object",
+	ReactNative = "react-native",
+	OpenTui = "opentui",
+}
+
+/** Built-in backend identities are enum-backed; plugins use branded ids. */
+export type StyleBackendId =
+	| BuiltinBackendId
+	| (string & { readonly __pandwindBackendId: unique symbol });
+
+export const externalBackendId = (value: string): StyleBackendId =>
+	value as StyleBackendId;
+
 export type BackendCapabilityLevel = "unsupported" | "partial" | "exact";
 export type BackendLossiness = "lossless" | "lossy" | "unsupported";
 export type BackendArtifactKind = "stylesheet" | "style-object" | (string & {});

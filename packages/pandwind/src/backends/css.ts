@@ -11,6 +11,7 @@ import {
 	type StyleBackend,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
+import { BuiltinBackendId } from "./types.ts";
 
 export interface CssBackendOptions {
 	debug?: boolean;
@@ -89,7 +90,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 export const CSS_BACKEND: StyleBackendFactory<CssBackendOptions, string> = {
 	schema: STYLE_BACKEND_SCHEMA,
-	id: "css",
+	id: BuiltinBackendId.Css,
 	capabilities: CSS_BACKEND_CAPABILITIES,
 	create: createCssBackend,
 };

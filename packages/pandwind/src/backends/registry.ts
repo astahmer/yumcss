@@ -1,12 +1,15 @@
 import { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";
 import { STYLE_BACKEND_SCHEMA, type StyleBackend } from "./types.ts";
 import type { BackendCapabilityContract } from "./types.ts";
+import type { StyleBackendId } from "./types.ts";
+
+export type { BuiltinBackendId, StyleBackendId } from "./types.ts";
 
 export { STYLE_BACKEND_SCHEMA } from "./types.ts";
 
 export interface StyleBackendFactory<TOptions = unknown, TArtifact = unknown> {
 	readonly schema: typeof STYLE_BACKEND_SCHEMA;
-	readonly id: string;
+	readonly id: StyleBackendId;
 	readonly capabilities: BackendCapabilityContract;
 	create(options?: TOptions): StyleBackend<TArtifact>;
 }
@@ -21,8 +24,8 @@ export interface StyleBackendRegistry {
 	readonly factories: readonly StyleBackendFactory[];
 	register(factory: StyleBackendFactory): StyleBackendRegistry;
 	registerPlugin(plugin: StyleBackendPlugin): StyleBackendRegistry;
-	get(id: string): StyleBackendFactory | undefined;
-	create<TArtifact = unknown>(id: string, options?: unknown): StyleBackend<TArtifact>;
+	get(id: StyleBackendId | string): StyleBackendFactory | undefined;
+	create<TArtifact = unknown>(id: StyleBackendId | string, options?: unknown): StyleBackend<TArtifact>;
 }
 
 export function createStyleBackendRegistry(
@@ -57,8 +60,6 @@ export function createStyleBackendRegistry(
 	for (const factory of initial) registry.register(factory);
 	return registry;
 }
-
-export type BuiltinBackendId = "css" | "object" | "react-native" | "opentui";
 
 /** Built-ins are composed here; individual adapters do not know the registry. */
 export const STYLE_BACKEND_FACTORIES: readonly StyleBackendFactory[] =
