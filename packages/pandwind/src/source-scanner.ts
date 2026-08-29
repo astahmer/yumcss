@@ -110,6 +110,36 @@ export interface SourceScannerService {
 	parse(document: SourceDocument): ParseResult;
 }
 
+export interface SourceScannerContractReport {
+	readonly scanner: string;
+	readonly failures: readonly string[];
+	readonly valid: boolean;
+}
+
+/** Generic registry contract for built-in and plugin-provided language adapters. */
+export class SourceScannerContractSuite {
+	static inspect(registry: Pick<SourceScannerRegistry, "adapters">): readonly SourceScannerContractReport[] {
+		return registry.adapters.map((adapter) => {
+			const failures: string[] = [];
+			if (adapter.schema !== SOURCE_SCANNER_SCHEMA) failures.push("invalid scanner schema");
+			if (adapter.id.trim() === "") failures.push("scanner id is empty");
+			if (adapter.languages.length === 0) failures.push("scanner has no language");
+			try {
+				const language = adapter.languages[0];
+				const result = adapter.scan({ file: "contract" + (extensionForLanguage(language!) ?? ".txt"), source: "" });
+				if (result.language !== language) failures.push("scanner returned an unexpected language");
+			} catch (error) {
+				failures.push(error instanceof Error ? error.message : "scanner lifecycle threw");
+			}
+			return { scanner: adapter.id, failures, valid: failures.length === 0 };
+		});
+	}
+
+	static assert(report: SourceScannerContractReport): void {
+		if (!report.valid) throw new Error(`${report.scanner} scanner contract failed: ${report.failures.join("; ")}`);
+	}
+}
+
 export function sourceLanguageForFile(file: string): SourceLanguage {
 	return SOURCE_LANGUAGE_CLASSIFIER.languageForFile(file);
 }

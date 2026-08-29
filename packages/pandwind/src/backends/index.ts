@@ -42,4 +42,6 @@ export type {
 } from "./types.ts";
 export { BuiltinBackendId } from "./types.ts";
 export { externalBackendId } from "./types.ts";
+export { BackendContractSuite } from "./contract-suite.ts";
+export type { BackendContractProbe, BackendContractReport } from "./contract-suite.ts";
 export { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";

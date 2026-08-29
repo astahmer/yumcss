@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	SOURCE_SCANNER_SCHEMA,
+	SourceScannerContractSuite,
 	createSourceScannerRegistry,
 	type SourceLanguageAdapter,
 } from "pandwind/source";
@@ -94,5 +95,10 @@ describe("language-neutral source scanner registry", () => {
 			source: "const card = css`color: red;`;",
 		});
 		expect(result.isExcluded(result.document.source.indexOf("css`"))).toBe(false);
+	});
+
+	test("applies one contract suite to every registered scanner adapter", () => {
+		for (const report of SourceScannerContractSuite.inspect(createSourceScannerRegistry()))
+			SourceScannerContractSuite.assert(report);
 	});
 });

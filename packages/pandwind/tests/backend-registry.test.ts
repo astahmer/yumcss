@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_BACKEND_SCHEMA,
 	STYLE_BACKENDS,
+	BackendContractSuite,
 	BuiltinBackendId,
 	createStyleBackendRegistry,
 	externalBackendId,
@@ -36,5 +37,10 @@ describe("style backend registry", () => {
 		const plugin = STYLE_BACKENDS.factories[0]!;
 		const registry = createStyleBackendRegistry().registerPlugin(plugin);
 		expect(registry.plugins.map((entry) => entry.id)).toEqual([plugin.id]);
+	});
+
+	test("applies one contract suite to every registered backend", () => {
+		for (const factory of STYLE_BACKENDS.factories)
+			BackendContractSuite.assert(BackendContractSuite.inspect(factory));
 	});
 });
