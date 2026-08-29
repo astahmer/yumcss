@@ -492,7 +492,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("<div className={Card.class} style={Card.style} />");
 	});
 
-	test("lowers StyleX dynamic groups through its props host and runtime engine", () => {
+	test("lowers StyleX groups through the static props host", () => {
 		const result = runAdapterMigration(
 			'import * as stylex from "@stylexjs/stylex";\n' +
 				"const styles = stylex.create({ card: { color: colors.foreground } });\n" +
@@ -504,8 +504,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("css.group({ card: { color: colors.foreground } })");
 		expect(result.code).toContain("css.props(styles.card)");
-		expect(result.code).toContain("createRuntimeCss(pandwindPreset)");
-		expect(result.code).toContain('from "pandwind/css/runtime"');
+		expect(result.code).not.toContain("createRuntimeCss");
+		expect(result.code).toContain('from "pandwind/css"');
 	});
 
 	test("lowers inline dynamic tagged templates through the host carrier", () => {

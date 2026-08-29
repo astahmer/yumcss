@@ -8,6 +8,7 @@ import type { AdapterEmitContext } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
+	CodemodPatternId,
 	StyleProgramCompositionKind,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
@@ -243,7 +244,10 @@ export default defineCodemodAdapter({
 				) || rule.children.some(containsFunction)
 			);
 		});
-		if (hasFunctionDynamic) {
+		const stylexDynamicGroup =
+			program.source?.adapter === CodemodAdapterId.StyleX &&
+			program.source.pattern === CodemodPatternId.StyleXCreate;
+		if ((context?.host?.wrapComponent === true || hasFunctionDynamic) && !stylexDynamicGroup) {
 			const component = runtimeComponent(program, programObject, context);
 			if (component !== undefined) return component;
 		}
@@ -309,9 +313,10 @@ export default defineCodemodAdapter({
 				(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
 			) === true && program.declarations.some((declaration) => declaration.conditions.length >= 2);
 		const needsRuntimeCss =
-			program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
-			runtimeStandalone ||
-			functionDynamic;
+			!stylexDynamicGroup &&
+			(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
+				runtimeStandalone ||
+				functionDynamic);
 		return {
 			text: stitchesVariants
 				? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`

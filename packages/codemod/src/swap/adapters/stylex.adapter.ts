@@ -13,6 +13,11 @@ const runtimeImports = [
 	"const css = createRuntimeCss(pandwindPreset);",
 ] as const;
 
+const staticImports = [
+	'import { createCss } from "pandwind/css";',
+	"const css = createCss();",
+] as const;
+
 function stylexWhenCondition(expression: string): string | undefined {
 	const when = expression.match(
 		/^stylex\.when\.(ancestor|descendant|siblingBefore|siblingAfter|anySibling)\(\s*(['"])([^'"]+)\2\s*(?:,\s*([A-Za-z_$][\w$]*))?\s*\)$/,
@@ -293,7 +298,7 @@ export default defineCodemodAdapter({
 			rewritten = rewritten.replaceAll("stylex.props(", "css.props(");
 			return {
 				code: rewritten,
-				imports: rewritten === code ? [] : runtimeImports,
+				imports: rewritten === code ? [] : staticImports,
 				residuals: [],
 			};
 		},
