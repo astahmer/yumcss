@@ -41,51 +41,7 @@ import {
 	type MigrationProgramPolicy,
 } from "./migration-program-policy.ts";
 import type { AdapterTargetMigrationPolicy } from "./adapter-contract.ts";
-
-function tagForStandalone(source: string, start: number): string | undefined {
-	const subject = source
-		.slice(start)
-		.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-		.trim();
-	return subject === undefined ? undefined : intrinsicTagForSubject(subject);
-}
-
-function isStandaloneDefaultExport(source: string, start: number): boolean {
-	return /export\s+default\s*$/.test(source.slice(0, start));
-}
-
-function bindingForMatch(source: string, start: number): string | undefined {
-	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
-}
-
-function classExpressionFromEmission(emitted: string): string | undefined {
-	const expression = emitted.trim();
-	return expression.length === 0 ? undefined : expression;
-}
-
-function selectNonOverlappingMatches<
-	T extends { start: number; end: number; program: StyleProgram },
->(matches: readonly T[]): readonly T[] {
-	const selected: T[] = [];
-	for (const match of matches.toSorted(
-		(left, right) => left.start - right.start || right.end - left.end,
-	)) {
-		const containing = selected.at(-1);
-		if (containing === undefined || match.start >= containing.end) {
-			selected.push(match);
-			continue;
-		}
-		if (
-			containing.start <= match.start &&
-			match.end <= containing.end &&
-			containing.program.source?.hostOpenTag !== undefined
-		)
-			continue;
-		if (match.start === containing.start && match.end > containing.end)
-			selected[selected.length - 1] = match;
-	}
-	return selected;
-}
+import { MigrationMatchPolicy } from "./migration-match-policy.ts";
 
 export interface AdapterMigrationOptions {
 	readonly from: string;
@@ -233,7 +189,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 		const componentRewriteKeys = new Set<string>();
 		const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
 		let skipped = 0;
-		for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
+		for (const [index, match] of MigrationMatchPolicy.nonOverlapping(parsed.matches).entries()) {
 			const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).lower({
 				program: match.program,
 				target: targetAdapter.capabilities,
@@ -376,7 +332,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 					tag !== undefined &&
 					framework !== undefined &&
 					getHostComponentRewriter(framework)?.rewriteStandalone !== undefined &&
-					isStandaloneDefaultExport(source, match.start);
+					MigrationMatchPolicy.isStandaloneDefaultExport(source, match.start);
 				const frameworkWrapper =
 					hasFunctionDynamic &&
 					binding !== undefined &&
@@ -506,18 +462,18 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 				document,
 				meta: options.meta,
 				host: {
-					...(bindingForMatch(source, match.start) === undefined
+					...(MigrationMatchPolicy.binding(source, match.start) === undefined
 						? {}
-						: { binding: bindingForMatch(source, match.start) }),
+						: { binding: MigrationMatchPolicy.binding(source, match.start) }),
 					...(program.source?.framework ? { framework: program.source.framework } : {}),
 					...(sourceSubject ? { subject: sourceSubject } : {}),
 					...(program.source?.subjectAttrs ? { subjectAttrs: program.source.subjectAttrs } : {}),
-					...(bindingForMatch(source, match.start) === undefined
+					...(MigrationMatchPolicy.binding(source, match.start) === undefined
 						? {}
 						: {
 								stableClassName: CodemodStyleIdentity.className(
 									options.file,
-									bindingForMatch(source, match.start)!,
+									MigrationMatchPolicy.binding(source, match.start)!,
 								),
 							}),
 					...(wrapComponent ? { wrapComponent: true } : {}),
@@ -528,7 +484,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			residuals.push(...emitted.residuals);
 			const declarationRewrite = pendingComponentDeclarationRewrites.get(index);
 			if (declarationRewrite !== undefined) {
-				const classExpression = classExpressionFromEmission(emitted.text);
+				const classExpression = MigrationMatchPolicy.classExpression(emitted.text);
 				if (classExpression === undefined) {
 					residuals.push({
 						kind: "host-framework",
@@ -548,10 +504,10 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 				program.source?.subject === undefined &&
 				program.source?.framework !== undefined &&
 				program.source?.subject === undefined &&
-				tagForStandalone(source, match.start) !== undefined &&
-				isStandaloneDefaultExport(source, match.start)
+				MigrationMatchPolicy.standaloneTag(source, match.start) !== undefined &&
+				MigrationMatchPolicy.isStandaloneDefaultExport(source, match.start)
 			) {
-				const tag = tagForStandalone(source, match.start);
+				const tag = MigrationMatchPolicy.standaloneTag(source, match.start);
 				const rewriter =
 					tag === undefined ? undefined : getHostComponentRewriter(program.source.framework);
 				if (tag !== undefined && rewriter?.rewriteStandalone !== undefined) {
@@ -570,7 +526,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 					expression: emitted.text,
 				});
 			}
-			const emittedBinding = bindingForMatch(source, match.start);
+			const emittedBinding = MigrationMatchPolicy.binding(source, match.start);
 			if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 			const emittedForValidation = MigrationText.validationSource(emitted.text, program);
 			const reparsed = targetAdapter.parse(emittedForValidation, {

@@ -167,6 +167,12 @@ export type {
 	DifferentialContractFailure,
 	DifferentialContractReport,
 } from "./differential-contract-suite.ts";
+export { RealMigrationProofDimension, RealMigrationProofSuite } from "./real-proof-suite.ts";
+export type {
+	RealMigrationProof,
+	RealMigrationProofFailure,
+	RealMigrationProofReport,
+} from "./real-proof-suite.ts";
 export {
 	createMigrationProgramPolicy,
 	DEFAULT_MIGRATION_PROGRAM_POLICY,
