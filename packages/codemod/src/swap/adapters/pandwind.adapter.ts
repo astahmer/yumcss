@@ -17,7 +17,6 @@ import { JsxStyleHost } from "../jsx-style-host.ts";
 import {
 	componentAttrsExpressionForSubject,
 	componentExpressionForSubject,
-	componentTagForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 
@@ -414,7 +413,7 @@ function runtimeRawComponent(
 		CodemodStyleIdentity.className(context?.file ?? "component", host.binding);
 	const liveEditorHost = /\bLiveEditor\b/.test(host.subject ?? subject ?? "");
 	const hostTemplate = liveEditorHost
-		? template.replace(/\$\{\s*editorMixin\s*\}/g, "\${__pandwindSanitizeHostStyles(editorMixin)}")
+		? template.replace(/\$\{\s*editorMixin\s*\}/g, "${__pandwindSanitizeHostStyles(editorMixin)}")
 		: template;
 	const source = context?.document?.document.source;
 	// styled-components intentionally gives rules added by a composed base

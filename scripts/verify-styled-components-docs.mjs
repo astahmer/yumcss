@@ -74,8 +74,8 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 	const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	const errors = [];
-	page.on("pageerror", (error) => errors.push(error.stack ?? error.message));
-	page.on("console", (message) => {
+	page.addListener("pageerror", (error) => errors.push(error.stack ?? error.message));
+	page.addListener("console", (message) => {
 		if (message.type() === "error") errors.push(message.text());
 	});
 	await page.addInitScript(() => {
@@ -205,8 +205,8 @@ const compareScreenshots = async (page, baselineScreenshot, candidateScreenshot,
 			const decode = (value) =>
 				new Promise((resolve, reject) => {
 					const image = new Image();
-					image.onload = () => resolve(image);
-					image.onerror = reject;
+					image.addEventListener("load", () => resolve(image), { once: true });
+					image.addEventListener("error", reject, { once: true });
 					image.src = `data:image/png;base64,${value}`;
 				});
 			const [first, second] = await Promise.all([decode(baseline), decode(candidate)]);

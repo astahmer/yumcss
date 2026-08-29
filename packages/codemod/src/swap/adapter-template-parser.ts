@@ -18,7 +18,7 @@ interface TemplateInterpolation {
 }
 
 function resolveNamedCssTemplate(source: string, name: string): string | undefined {
-	const declaration = new RegExp(name + "[ ]*=[ ]*(?:css[ ]*)?" + "`").exec(source);
+	const declaration = new RegExp(`${name}[ ]*=[ ]*(?:css[ ]*)?\\x60`).exec(source);
 	if (declaration === null) return undefined;
 	const openTick = declaration.index + declaration[0].length - 1;
 	const closeTick = findTemplateLiteralEnd(source, openTick);
@@ -36,10 +36,10 @@ function expandStyleFragments(body: string, source: string): string {
 			const block = matchBlock(expanded, index + 1);
 			if (block === null) continue;
 			const expression = block.body.trim();
-			const inline = new RegExp("^(?:mobile|phone)[(][ ]*css" + "`" + "([^]*)" + "`[ ]*[)]$").exec(
+			const inline = new RegExp("^(?:mobile|phone)[(][ ]*css\\x60([^]*)\\x60[ ]*[)]$").exec(
 				expression,
 			);
-			const direct = new RegExp("^css" + "`" + "([^]*)" + "`$").exec(expression);
+			const direct = new RegExp("^css\\x60([^]*)\\x60$").exec(expression);
 			const named = /^[A-Za-z_$][\\w$]*$/.test(expression)
 				? resolveNamedCssTemplate(source, expression)
 				: undefined;

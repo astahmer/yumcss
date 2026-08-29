@@ -25,7 +25,8 @@
 		"**/dist/**",
 		"**/docs/.astro/**",
 		"**/docs/node_modules/**",
-		"**/packages/analyze/tests/fixtures/**"
+		"**/packages/analyze/tests/fixtures/**",
+		"**/examples/stylex-docs-migration/source/**"
 	],
 	"jsPlugins": ["./packages/lint-plugin/src/index.js"],
 	"overrides": [
@@ -45,6 +46,20 @@
 				"pandwind-extraction/no-dollar-raw": "off",
 				"pandwind-extraction/no-arbitrary-values": "off",
 				"pandwind-extraction/design-tokens-only": "off"
+			}
+		},
+		{
+			"files": ["**/scripts/**", "**/packages/codemod/tests/**"],
+			"rules": {
+				"eslint/no-await-in-loop": "off",
+				"typescript/no-extraneous-class": "off",
+				"unicorn/consistent-function-scoping": "off"
+			}
+		},
+		{
+			"files": ["**/packages/codemod/src/swap/identifiers.ts"],
+			"rules": {
+				"typescript/no-extraneous-class": "off"
 			}
 		}
 	]

@@ -1,9 +1,11 @@
-import { computeExcludedRanges, matchBlock } from "../sources.ts";
+import { computeExcludedRanges } from "../sources.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import { HOST_FRAMEWORK_REGISTRY, getHostFrameworkAdapter } from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
+
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export interface HostComponentRewriteRequest {
 	readonly source: string;
@@ -260,7 +262,6 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 }
 
 function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
-	const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const declarationPattern = new RegExp(
 		`((?:export\\s+)?(?:const|let|var)\\s+${escapeRegExp(request.binding)}\\s*=\\s*)${escapeRegExp(request.classExpression)}\\s*;`,
 	);
