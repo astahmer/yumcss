@@ -15,6 +15,18 @@ export default defineCodemodAdapter({
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
 			form: "template",
 		},
+		{
+			name: "createGlobalStyle-template",
+			kind: "global",
+			regex: /\bcreateGlobalStyle\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+		},
+		{
+			name: "keyframes-template",
+			kind: "keyframes",
+			regex: /\bkeyframes\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+		},
 		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],

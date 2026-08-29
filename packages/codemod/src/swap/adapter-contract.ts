@@ -98,6 +98,8 @@ export interface AdapterEmitContext {
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly subject?: string;
+		/** Ask a target to emit a host component instead of a style value. */
+		readonly wrapComponent?: boolean;
 	};
 }
 

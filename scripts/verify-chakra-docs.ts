@@ -46,7 +46,9 @@ async function inspect(
 	base: string,
 	routes: readonly string[],
 	expectedStatuses?: Readonly<Record<string, number>>,
+	options: { readonly collectMetrics?: boolean } = {},
 ): Promise<ServerResult> {
+	const collectMetrics = options.collectMetrics ?? true;
 	const cssCache = new Map<string, number>();
 	let cssBytes = 0;
 	let inlineStyleBytes = 0;
@@ -64,9 +66,9 @@ async function inspect(
 				reason: `HTTP ${response.status}; expected baseline HTTP ${expectedStatus}`,
 			});
 		}
-		if (!response.ok) {
+		if (!response.ok || !collectMetrics) {
 			if (expectedStatuses === undefined)
-				failures.push({ route, reason: `HTTP ${response.status}` });
+				if (!response.ok) failures.push({ route, reason: `HTTP ${response.status}` });
 			continue;
 		}
 		if (html.includes("Application error") || html.includes("Unhandled Runtime Error"))
@@ -102,10 +104,18 @@ const baselineDiscovery = await inspect(baselineUrl, routes);
 const comparableRoutes = routes.filter((route) => baselineDiscovery.statuses[route] === 200);
 const excludedRoutes = routes.filter((route) => baselineDiscovery.statuses[route] !== 200);
 const baseline = await inspect(baselineUrl, comparableRoutes);
-const [cssClass, designCss] = await Promise.all([
+const [cssClassStatuses, designCssStatuses, cssClass, designCss] = await Promise.all([
+	inspect(cssUrl, routes, baselineDiscovery.statuses, { collectMetrics: false }),
+	inspect(designUrl, routes, baselineDiscovery.statuses, { collectMetrics: false }),
 	inspect(cssUrl, comparableRoutes, baselineDiscovery.statuses),
 	inspect(designUrl, comparableRoutes, baselineDiscovery.statuses),
 ]);
+const withStatusProof = (metrics: ServerResult, statuses: ServerResult): ServerResult => ({
+	...metrics,
+	failures: [...statuses.failures, ...metrics.failures],
+});
+const cssClassProof = withStatusProof(cssClass, cssClassStatuses);
+const designCssProof = withStatusProof(designCss, designCssStatuses);
 const comparable = (candidate: ServerResult) => ({
 	cssPlusInlineStyleBytes: candidate.cssBytes + candidate.inlineStyleBytes,
 	runtimeStyleBytes: candidate.runtimeStyleBytes,
@@ -124,11 +134,13 @@ const report = {
 	excludedRoutes,
 	baselineFailures: baselineDiscovery.failures,
 	baseline: summarized(baseline),
-	cssClass: summarized(cssClass),
-	designCss: summarized(designCss),
+	cssClass: summarized(cssClassProof),
+	designCss: summarized(designCssProof),
 	cssClassDelta:
-		comparable(cssClass).cssPlusInlineStyleBytes - comparable(baseline).cssPlusInlineStyleBytes,
+		comparable(cssClassProof).cssPlusInlineStyleBytes -
+		comparable(baseline).cssPlusInlineStyleBytes,
 	designCssDelta:
-		comparable(designCss).cssPlusInlineStyleBytes - comparable(baseline).cssPlusInlineStyleBytes,
+		comparable(designCssProof).cssPlusInlineStyleBytes -
+		comparable(baseline).cssPlusInlineStyleBytes,
 };
 console.log(JSON.stringify(report, null, 2));

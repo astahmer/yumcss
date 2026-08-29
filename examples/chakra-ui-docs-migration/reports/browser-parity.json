@@ -1,0 +1,60 @@
+{
+	"viewport": { "width": 1280, "height": 720, "devicePixelRatio": 2 },
+	"routes": [
+		{
+			"path": "/launch-week",
+			"applicationErrors": 0,
+			"bodyHeight": 3006,
+			"elements": {
+				"Chakra UI": {
+					"x": 344.6015625,
+					"y": 324,
+					"width": 590.796875,
+					"height": 88,
+					"fontSize": "80px",
+					"color": "rgb(250, 250, 250)"
+				},
+				"AI": {
+					"x": 482.515625,
+					"y": 644,
+					"width": 25.40625,
+					"height": 36,
+					"fontSize": "24px",
+					"color": "rgb(94, 234, 212)"
+				},
+				"DX": {
+					"x": 615.265625,
+					"y": 644,
+					"width": 34.015625,
+					"height": 36,
+					"fontSize": "24px",
+					"color": "rgb(163, 207, 255)"
+				},
+				"Live": {
+					"x": 750.265625,
+					"y": 644,
+					"width": 53.5703125,
+					"height": 36,
+					"fontSize": "24px",
+					"color": "rgb(216, 180, 254)"
+				}
+			},
+			"nextImageGeometry": [
+				{ "x": 680, "y": 950, "width": 568, "height": 320 },
+				{ "x": 680, "y": 1522.78125, "width": 568, "height": 320 },
+				{ "x": 680, "y": 2095.5625, "width": 568, "height": 320 }
+			]
+		},
+		{
+			"path": "/docs/styling/overview",
+			"applicationErrors": 0,
+			"bodyHeight": 1396,
+			"h1": { "text": "Styling", "x": 324, "y": 188, "width": 620, "height": 38 },
+			"h2Count": 3,
+			"buttonCount": 11,
+			"imageCount": 0
+		}
+	],
+	"lanes": ["baseline", "css-class", "design-css"],
+	"assertion": "All listed geometry and counts were identical across baseline and both Pandwind lanes."
+}

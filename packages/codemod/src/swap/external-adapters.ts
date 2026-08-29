@@ -725,8 +725,16 @@ function parseCalls(
 				}
 				const template = source.slice(start, lastTick + 1);
 				let program = parseTemplateProgram(source.slice(firstTick + 1, lastTick), context, start);
-				if (pattern.kind === "styled")
-					program = { ...program, source: { ...program.source, ...styledSubject(source, start) } };
+				program = {
+					...program,
+					source: {
+						...program.source,
+						...(pattern.kind === "styled" ? styledSubject(source, start) : {}),
+						...(context.document?.framework ? { framework: context.document.framework } : {}),
+						...context.semantic?.source,
+					},
+				};
+				program = pattern.transform?.(program, context) ?? program;
 				matches.push({ start, end: start + template.length, program, sourceText: template });
 				continue;
 			}

@@ -41,9 +41,10 @@ pnpm exec tsx scripts/verify-chakra-docs.ts \
 
 It enumerates the baseline's statically emitted HTML routes, removes routes
 that the baseline itself serves as non-200 (currently two stale upstream blog
-artifacts), and checks the resulting 261 user-facing routes for HTTP/status
-parity, application-error markers, linked stylesheet bytes, inline SSR styles,
-and Pandwind runtime styles for both lanes. The Next build log is the
+artifacts), checks HTTP/status parity across all 263 discovered routes, and
+checks application-error markers, linked stylesheet bytes, inline SSR styles,
+and Pandwind runtime styles across the 261 baseline-200 routes for both lanes.
+The Next build log is the
 complementary proof for all 277 generated routes, including dynamic and API
 entries.
 

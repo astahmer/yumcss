@@ -48,6 +48,7 @@ const check = (name, actual, expected) => {
 const server = spawn("pnpm", ["exec", "vite", "--port", String(PORT), "--strictPort"], {
 	cwd: new URL("..", import.meta.url).pathname,
 	stdio: ["ignore", "pipe", "pipe"],
+	detached: true,
 });
 const serverLogs = [];
 server.stdout.on("data", (d) => serverLogs.push(d.toString()));
@@ -153,7 +154,13 @@ try {
 		await page.screenshot({ path: process.env.PW_SCREENSHOT, fullPage: true });
 	}
 	if (browser) await browser.close();
-	server.kill("SIGTERM");
+	if (server.pid !== undefined) {
+		try {
+			process.kill(-server.pid, "SIGTERM");
+		} catch {
+			server.kill("SIGTERM");
+		}
+	}
 }
 
 if (failures.length > 0) {
