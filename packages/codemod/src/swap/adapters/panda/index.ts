@@ -24,6 +24,11 @@ export type {
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./migration-pipeline.ts";
+export {
+	DEFAULT_PANDA_MIGRATION_STAGE_FACTORY,
+	createPandaMigrationStages,
+} from "./migration-stage-factory.ts";
+export type { PandaMigrationStageFactory } from "./migration-stage-factory.ts";
 export { createPandaMigrationServices } from "./pipeline-services.ts";
 export type {
 	PandaMigrationServices,

@@ -72,6 +72,11 @@ export type {
 	PandaMigrationArtifacts,
 	PandaMigrationPipelineOptions,
 } from "./adapters/panda/index.ts";
+export {
+	DEFAULT_PANDA_MIGRATION_STAGE_FACTORY,
+	createPandaMigrationStages,
+} from "./adapters/panda/index.ts";
+export type { PandaMigrationStageFactory } from "./adapters/panda/index.ts";
 export { createPandaMigrationServices } from "./adapters/panda/index.ts";
 export type {
 	PandaMigrationServices,
