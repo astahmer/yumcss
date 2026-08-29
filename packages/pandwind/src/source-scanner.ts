@@ -217,11 +217,7 @@ export function computeExcludedRanges(
 			}
 			return;
 		}
-		if (
-			n.type === "Literal" ||
-			n.type === "TemplateLiteral" ||
-			n.type === "JSXText"
-		)
+		if (n.type === "Literal" || n.type === "TemplateLiteral" || n.type === "JSXText")
 			excluded.push([n.start, n.end]);
 	});
 	const filtered = excluded

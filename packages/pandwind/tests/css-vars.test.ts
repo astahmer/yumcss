@@ -149,7 +149,9 @@ describe("sheet generation", () => {
 	test("property-first responsive keys preserve the property in the declaration", () => {
 		const sheet = createStylesheet(responsivePreset);
 		sheet.processVarKey("padding-left__md");
-		expect(sheet.gen.varRules()).toContain("@media (min-width: 768px){.pw-md\\:padding-left{padding-left:");
+		expect(sheet.gen.varRules()).toContain(
+			"@media (min-width: 768px){.pw-md\\:padding-left{padding-left:",
+		);
 	});
 
 	test("rules are deduped across repeated processing", () => {

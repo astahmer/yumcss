@@ -86,9 +86,7 @@ export function createCss(
 	};
 
 	const compileStyles = (...styles: Array<StyleObject>) => {
-		const merged = assign(
-			...styles.map((style) => preserveNullResets(style) as StyleObject),
-		);
+		const merged = assign(...styles.map((style) => preserveNullResets(style) as StyleObject));
 		const flat = flattenStyle(merged);
 		return compile(flat);
 	};

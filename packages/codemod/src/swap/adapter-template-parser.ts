@@ -18,9 +18,7 @@ interface TemplateInterpolation {
 }
 
 function resolveNamedCssTemplate(source: string, name: string): string | undefined {
-	const declaration = new RegExp(
-		name + "[ ]*=[ ]*(?:css[ ]*)?" + "`",
-	).exec(source);
+	const declaration = new RegExp(name + "[ ]*=[ ]*(?:css[ ]*)?" + "`").exec(source);
 	if (declaration === null) return undefined;
 	const openTick = declaration.index + declaration[0].length - 1;
 	const closeTick = findTemplateLiteralEnd(source, openTick);

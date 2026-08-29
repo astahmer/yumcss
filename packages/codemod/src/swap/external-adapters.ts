@@ -819,10 +819,7 @@ export function removeSourceImports(
 	let result = code;
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		const pattern = new RegExp(
-			`\\bimport\\s+([^;]*?)\\s+from\\s+(["'])${quoted}\\2\\s*;?`,
-			"g",
-		);
+		const pattern = new RegExp(`\\bimport\\s+([^;]*?)\\s+from\\s+(["'])${quoted}\\2\\s*;?`, "g");
 		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 		try {
 			mask = computeExcludedRanges(result, file);
@@ -879,18 +876,22 @@ export function removeSourceImports(
 				namedBlock === undefined
 					? []
 					: namedBlock.split(",").flatMap((entry) => {
-						const trimmed = entry.trim();
-						if (trimmed === "") return [];
-						const parts = trimmed.split(/\s+as\s+/);
-						const imported = parts[0]!;
-						const local = parts[1] ?? imported;
-						return isReferenced(local) ? [trimmed] : [];
-					});
-			const keptDefault = defaultImport !== undefined && isReferenced(defaultImport) ? defaultImport : undefined;
-			const keptNamespace = namespace !== undefined && isReferenced(namespace) ? `* as ${namespace}` : undefined;
-			const kept = [keptDefault, keptNamespace, named.length > 0 ? `{ ${named.join(", ")} }` : undefined].filter(
-				(value): value is string => value !== undefined,
-			);
+							const trimmed = entry.trim();
+							if (trimmed === "") return [];
+							const parts = trimmed.split(/\s+as\s+/);
+							const imported = parts[0]!;
+							const local = parts[1] ?? imported;
+							return isReferenced(local) ? [trimmed] : [];
+						});
+			const keptDefault =
+				defaultImport !== undefined && isReferenced(defaultImport) ? defaultImport : undefined;
+			const keptNamespace =
+				namespace !== undefined && isReferenced(namespace) ? `* as ${namespace}` : undefined;
+			const kept = [
+				keptDefault,
+				keptNamespace,
+				named.length > 0 ? `{ ${named.join(", ")} }` : undefined,
+			].filter((value): value is string => value !== undefined);
 			edits.push({
 				start,
 				end: start + match[0].length,
@@ -898,10 +899,7 @@ export function removeSourceImports(
 			});
 		}
 		result = applyEdits(result, edits);
-		result = removeExcludedMatches(
-			result,
-			new RegExp(`\\bimport\\s*["']${quoted}["']\\s*;?`, "g"),
-		);
+		result = removeExcludedMatches(result, new RegExp(`\\bimport\\s*["']${quoted}["']\\s*;?`, "g"));
 	}
 	return result;
 }

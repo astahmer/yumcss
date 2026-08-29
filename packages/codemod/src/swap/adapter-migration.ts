@@ -22,11 +22,7 @@ import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import {
-	CodemodAdapterId,
-	CodemodStyleIdentity,
-	StyleProgramEmissionHint,
-} from "./identifiers.ts";
+import { CodemodAdapterId, CodemodStyleIdentity, StyleProgramEmissionHint } from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
@@ -53,7 +49,7 @@ function programHasFunctionDynamic(program: StyleProgram): boolean {
 		return (
 			rule.declarations.some(
 				(declaration) =>
-			declaration.value.kind === "dynamic" &&
+					declaration.value.kind === "dynamic" &&
 					/=>|\bfunction\b/.test(declaration.value.expression),
 			) || rule.children.some(containsFunction)
 		);
@@ -66,9 +62,7 @@ function programNeedsRawTemplate(program: StyleProgram): boolean {
 	return program.rules.some(function hasRawSelector(rule): boolean {
 		return (
 			rule.children.some(
-				(child) =>
-					child.selector !== undefined &&
-					!child.selector.trim().startsWith("&"),
+				(child) => child.selector !== undefined && !child.selector.trim().startsWith("&"),
 			) || rule.children.some(hasRawSelector)
 		);
 	});
@@ -263,9 +257,7 @@ export function runAdapterMigration(
 			mode,
 		});
 		let program = lowering.program;
-		const rawTemplateResidual = program.residuals.some(
-			(residual) => residual.kind === "parse",
-		);
+		const rawTemplateResidual = program.residuals.some((residual) => residual.kind === "parse");
 		if (
 			isPandwindTarget(targetAdapter) &&
 			program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
@@ -387,8 +379,10 @@ export function runAdapterMigration(
 				componentExpressionForSubject(program.source.subject) !== undefined &&
 				framework !== undefined &&
 				rewriter !== undefined &&
-					sourceModuleEvidence &&
-				(needsRawTemplate || tag === undefined || componentPreview?.residuals.length !== 0 ||
+				sourceModuleEvidence &&
+				(needsRawTemplate ||
+					tag === undefined ||
+					componentPreview?.residuals.length !== 0 ||
 					program.residuals.some((residual) => residual.kind === "parse")) &&
 				(needsRawTemplate ||
 					(program.residuals.every(
@@ -406,21 +400,21 @@ export function runAdapterMigration(
 				binding !== undefined &&
 				tag !== undefined &&
 				sourceModuleEvidence &&
-					(framework === "solid" ||
+				(framework === "solid" ||
 					framework === "vue" ||
 					framework === "react" ||
-						framework === "preact");
+					framework === "preact");
 			if (canWrapComponent) {
 				program = {
 					...program,
 					residuals: [],
 					...(rawTemplateResidual || needsRawTemplate
 						? {
-							emissionHints: [
-								...(program.emissionHints ?? []),
-								StyleProgramEmissionHint.RawTemplate,
-							],
-						}
+								emissionHints: [
+									...(program.emissionHints ?? []),
+									StyleProgramEmissionHint.RawTemplate,
+								],
+							}
 						: {}),
 					source: { ...program.source, subject: undefined },
 				};

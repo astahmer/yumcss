@@ -142,9 +142,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("removes an unused styled import from TSX with JSX text references", () => {
 		const result = runAdapterMigration(
 			'import { Link as LinkIcon } from "@styled-icons/material";\n' +
-			'import styled from "styled-components";\n' +
-			'export const Card = styled.div`color: red;`;\n' +
-			'export const Copy = () => <p>styled-components keeps this text</p>;\n',
+				'import styled from "styled-components";\n' +
+				"export const Card = styled.div`color: red;`;\n" +
+				"export const Copy = () => <p>styled-components keeps this text</p>;\n",
 			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.residuals).toEqual([]);
@@ -162,9 +162,15 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const second = migrate("components/Second.tsx");
 		expect(first.residuals).toEqual([]);
 		expect(second.residuals).toEqual([]);
-		expect(first.code).toContain(`id: "${CodemodStyleIdentity.className("components/First.tsx", "Wrapper")}"`);
-		expect(second.code).toContain(`id: "${CodemodStyleIdentity.className("components/Second.tsx", "Wrapper")}"`);
-		expect(first.code).not.toContain(CodemodStyleIdentity.className("components/Second.tsx", "Wrapper"));
+		expect(first.code).toContain(
+			`id: "${CodemodStyleIdentity.className("components/First.tsx", "Wrapper")}"`,
+		);
+		expect(second.code).toContain(
+			`id: "${CodemodStyleIdentity.className("components/Second.tsx", "Wrapper")}"`,
+		);
+		expect(first.code).not.toContain(
+			CodemodStyleIdentity.className("components/Second.tsx", "Wrapper"),
+		);
 	});
 
 	test("wraps a standalone styled intrinsic default export for React", () => {
@@ -210,9 +216,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("resolves theme-function bindings before dynamic style registration", () => {
 		const result = runAdapterMigration(
 			'import { ThemeProvider } from "styled-components";\n' +
-			'import theme from "styled-theming";\n' +
-			'const color = theme("mode", { light: "white", dark: "black" });\n' +
-			'const Box = styled.div`color: ${color};`;',
+				'import theme from "styled-theming";\n' +
+				'const color = theme("mode", { light: "white", dark: "black" });\n' +
+				"const Box = styled.div`color: ${color};`;",
 			{
 				from: "styled-components",
 				to: "pandwind",
@@ -222,7 +228,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 			},
 		);
 		const themeAssignment = result.code.indexOf("usePandwindTheme()");
-		const registration = result.code.indexOf("css.sheet.register", result.code.indexOf("const component"));
+		const registration = result.code.indexOf(
+			"css.sheet.register",
+			result.code.indexOf("const component"),
+		);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { usePandwindTheme } from "pandwind/theme";');
 		expect(themeAssignment).toBeGreaterThan(-1);

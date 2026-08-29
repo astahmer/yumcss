@@ -96,9 +96,7 @@ export class JsxStyleHost {
 		if (existing !== null) {
 			const value = existing[4] ?? JSON.stringify(existing[2] ?? existing[3] ?? "");
 			const spreadClass =
-				spread !== undefined && spread.index > existing.index
-					? `, ${spread[1]}.className`
-					: "";
+				spread !== undefined && spread.index > existing.index ? `, ${spread[1]}.className` : "";
 			const replacement = `${existing[1]}${attribute}={cx(${classExpression}, ${value}${spreadClass})}`;
 			text = `${text.slice(0, existing.index)}${replacement}${text.slice(existing.index + existing[0].length)}`;
 			if (spread !== undefined && spread.index > existing.index) {

@@ -44,9 +44,7 @@ const inspectHttp = async (baseUrl, routes, expectedStatuses) => {
 		if (html.includes("Application error") || html.includes("Unhandled Runtime Error"))
 			failures.push({ route, reason: "rendered application error" });
 		for (const href of new Set(
-			[...html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)].map(
-				(match) => match[1],
-			),
+			[...html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)].map((match) => match[1]),
 		)) {
 			if (!cssCache.has(href)) {
 				const stylesheet = await fetch(new URL(href, baseUrl));
@@ -83,7 +81,7 @@ const browserShape = async (browser, baseUrl, route) => {
 	await page.addInitScript(() => {
 		// The reference homepage's cube advances from requestAnimationFrame even
 		// under reduced motion. Preserve its SSR pose for deterministic parity.
-		(globalThis).__scLogoRotation = {
+		globalThis.__scLogoRotation = {
 			subscribe: () => () => undefined,
 			start: () => undefined,
 			stop: () => undefined,
@@ -188,67 +186,73 @@ const browserShape = async (browser, baseUrl, route) => {
 };
 
 const compareScreenshots = async (page, baselineScreenshot, candidateScreenshot, masks) =>
-	page.evaluate(async ({ baseline, candidate, masks: excluded }) => {
-		const decode = (value) =>
-			new Promise((resolve, reject) => {
-				const image = new Image();
-				image.onload = () => resolve(image);
-				image.onerror = reject;
-				image.src = `data:image/png;base64,${value}`;
-			});
-		const [first, second] = await Promise.all([decode(baseline), decode(candidate)]);
-		if (first.width !== second.width || first.height !== second.height)
+	page.evaluate(
+		async ({ baseline, candidate, masks: excluded }) => {
+			const decode = (value) =>
+				new Promise((resolve, reject) => {
+					const image = new Image();
+					image.onload = () => resolve(image);
+					image.onerror = reject;
+					image.src = `data:image/png;base64,${value}`;
+				});
+			const [first, second] = await Promise.all([decode(baseline), decode(candidate)]);
+			if (first.width !== second.width || first.height !== second.height)
+				return {
+					width: first.width,
+					height: first.height,
+					changedPixels: first.width * first.height,
+					changedPixelRatio: 1,
+					maxChannelDelta: 255,
+				};
+			const canvas = document.createElement("canvas");
+			canvas.width = first.width;
+			canvas.height = first.height;
+			const context = canvas.getContext("2d", { willReadFrequently: true });
+			if (!context) throw new Error("Canvas 2D context is unavailable");
+			context.drawImage(first, 0, 0);
+			const firstPixels = context.getImageData(0, 0, first.width, first.height).data;
+			context.clearRect(0, 0, first.width, first.height);
+			context.drawImage(second, 0, 0);
+			const secondPixels = context.getImageData(0, 0, second.width, second.height).data;
+			let changedPixels = 0;
+			let maskedPixels = 0;
+			let maxChannelDelta = 0;
+			for (let index = 0; index < firstPixels.length; index += 4) {
+				const pixel = index / 4;
+				const x = pixel % first.width;
+				const y = Math.floor(pixel / first.width);
+				if (
+					excluded.some(
+						(mask) =>
+							x >= mask.x && x < mask.x + mask.width && y >= mask.y && y < mask.y + mask.height,
+					)
+				) {
+					maskedPixels += 1;
+					continue;
+				}
+				let changed = false;
+				for (let channel = 0; channel < 3; channel += 1) {
+					const delta = Math.abs(firstPixels[index + channel] - secondPixels[index + channel]);
+					maxChannelDelta = Math.max(maxChannelDelta, delta);
+					changed ||= delta > 0;
+				}
+				if (changed) changedPixels += 1;
+			}
 			return {
 				width: first.width,
 				height: first.height,
-				changedPixels: first.width * first.height,
-				changedPixelRatio: 1,
-				maxChannelDelta: 255,
+				changedPixels,
+				maskedPixels,
+				changedPixelRatio: changedPixels / (first.width * first.height),
+				maxChannelDelta,
 			};
-		const canvas = document.createElement("canvas");
-		canvas.width = first.width;
-		canvas.height = first.height;
-		const context = canvas.getContext("2d", { willReadFrequently: true });
-		if (!context) throw new Error("Canvas 2D context is unavailable");
-		context.drawImage(first, 0, 0);
-		const firstPixels = context.getImageData(0, 0, first.width, first.height).data;
-		context.clearRect(0, 0, first.width, first.height);
-		context.drawImage(second, 0, 0);
-		const secondPixels = context.getImageData(0, 0, second.width, second.height).data;
-		let changedPixels = 0;
-		let maskedPixels = 0;
-		let maxChannelDelta = 0;
-		for (let index = 0; index < firstPixels.length; index += 4) {
-			const pixel = index / 4;
-			const x = pixel % first.width;
-			const y = Math.floor(pixel / first.width);
-			if (excluded.some((mask) =>
-				x >= mask.x && x < mask.x + mask.width && y >= mask.y && y < mask.y + mask.height,
-			)) {
-				maskedPixels += 1;
-				continue;
-			}
-			let changed = false;
-			for (let channel = 0; channel < 3; channel += 1) {
-				const delta = Math.abs(firstPixels[index + channel] - secondPixels[index + channel]);
-				maxChannelDelta = Math.max(maxChannelDelta, delta);
-				changed ||= delta > 0;
-			}
-			if (changed) changedPixels += 1;
-		}
-		return {
-			width: first.width,
-			height: first.height,
-			changedPixels,
-			maskedPixels,
-			changedPixelRatio: changedPixels / (first.width * first.height),
-			maxChannelDelta,
-		};
-	}, {
-		baseline: baselineScreenshot.toString("base64"),
-		candidate: candidateScreenshot.toString("base64"),
-		masks,
-	});
+		},
+		{
+			baseline: baselineScreenshot.toString("base64"),
+			candidate: candidateScreenshot.toString("base64"),
+			masks,
+		},
+	);
 
 const routes = await routesFromBuild(baselineRoot);
 const baseline = await inspectHttp(baselineUrl, routes);
@@ -266,7 +270,9 @@ for (const route of baseline.htmlRoutes) {
 await browser.close();
 
 const comparisonPageBrowser = await chromium.launch();
-const comparisonPage = await comparisonPageBrowser.newPage({ viewport: { width: 1440, height: 900 } });
+const comparisonPage = await comparisonPageBrowser.newPage({
+	viewport: { width: 1440, height: 900 },
+});
 const browserComparisons = [];
 for (const route of baseline.htmlRoutes) {
 	const base = browserLanes.baseline[route];
@@ -304,7 +310,7 @@ for (const route of baseline.htmlRoutes) {
 		candidate.hydration.ok;
 	browserComparisons.push({
 		route,
- 		runtimeEquivalent: equivalent(runtimeCandidate, runtimeScreenshotDiff),
+		runtimeEquivalent: equivalent(runtimeCandidate, runtimeScreenshotDiff),
 		designEquivalent: equivalent(designCandidate, designScreenshotDiff),
 		baseline: shapeOf(base),
 		runtime: shapeOf(runtimeCandidate),
@@ -336,9 +342,11 @@ const report = {
 	designTransferDelta: totalBytes(design) - totalBytes(baseline),
 	browserComparisons,
 	allRuntimeRoutesEquivalent:
-		runtime.failures.length === 0 && browserComparisons.every((comparison) => comparison.runtimeEquivalent),
+		runtime.failures.length === 0 &&
+		browserComparisons.every((comparison) => comparison.runtimeEquivalent),
 	allDesignRoutesEquivalent:
-		design.failures.length === 0 && browserComparisons.every((comparison) => comparison.designEquivalent),
+		design.failures.length === 0 &&
+		browserComparisons.every((comparison) => comparison.designEquivalent),
 };
 const text = `${JSON.stringify(report, null, 2)}\n`;
 if (reportPath) await writeFile(reportPath, text);

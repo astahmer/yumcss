@@ -74,7 +74,7 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 				parser((nodes) => {
 					selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
 				}).processSync(list);
-					return selectors
+				return selectors
 					.map((selector) => {
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];

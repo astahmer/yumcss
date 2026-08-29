@@ -48,25 +48,32 @@ function hasFunctionDynamicValues(program: StyleProgram): boolean {
 
 function hasThemeContextValues(program: StyleProgram, source: string | undefined): boolean {
 	if (source === undefined || !source.includes("ThemeProvider")) return false;
-	return program.rules.some((rule) =>
-		rule.declarations.some((declaration) => {
-			if (declaration.value.kind !== "dynamic") return false;
-			const binding = declaration.value.expression.trim();
-			if (!/^[A-Za-z_$][\w$]*$/.test(binding)) return false;
-			const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-			return new RegExp(`(?:const|let|var)\\s+${escaped}\\s*=\\s*theme(?:\\.variants)?\\s*\\(`).test(source);
-		}) || hasThemeContextValues({ ...program, rules: rule.children }, source),
+	return program.rules.some(
+		(rule) =>
+			rule.declarations.some((declaration) => {
+				if (declaration.value.kind !== "dynamic") return false;
+				const binding = declaration.value.expression.trim();
+				if (!/^[A-Za-z_$][\w$]*$/.test(binding)) return false;
+				const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+				return new RegExp(
+					`(?:const|let|var)\\s+${escaped}\\s*=\\s*theme(?:\\.variants)?\\s*\\(`,
+				).test(source);
+			}) || hasThemeContextValues({ ...program, rules: rule.children }, source),
 	);
 }
 
 function sourceBindingIsStatic(expression: string, source: string | undefined): boolean {
 	if (!/^[A-Za-z_$][\w$]*$/.test(expression) || source === undefined) return false;
 	const escaped = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	const declaration = new RegExp(`(?:const|let|var)\\s+${escaped}\\s*=\\s*([^;]+)`).exec(source)?.[1];
+	const declaration = new RegExp(`(?:const|let|var)\\s+${escaped}\\s*=\\s*([^;]+)`).exec(
+		source,
+	)?.[1];
 	if (declaration === undefined || /[`]|=>|\bfunction\b/.test(declaration)) return false;
 	const value = declaration.trim();
-	return /^(?:["'`]|[-+]?\d|true\b|false\b|null\b|[([{])/.test(value) ||
-		/\bregisterSemanticRules\s*\(/.test(value);
+	return (
+		/^(?:["'`]|[-+]?\d|true\b|false\b|null\b|[([{])/.test(value) ||
+		/\bregisterSemanticRules\s*\(/.test(value)
+	);
 }
 
 function isStaticTemplateExpression(expression: string, source?: string): boolean {
@@ -131,13 +138,13 @@ function cssBlockEnd(source: string, open: number): number | undefined {
 			}
 		}
 		if (source[index] === '"' || source[index] === "'") {
-				const quote = source[index];
+			const quote = source[index];
+			index++;
+			while (index < source.length && source[index] !== quote) {
+				if (source[index] === "\\") index++;
 				index++;
-				while (index < source.length && source[index] !== quote) {
-					if (source[index] === "\\") index++;
-					index++;
-				}
-				continue;
+			}
+			continue;
 		}
 		if (source[index] === "{") depth++;
 		if (source[index] === "}" && --depth === 0) return index;
@@ -164,27 +171,25 @@ function augmentAncestorSelectors(template: string, rootSelector: string): strin
 }
 
 function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgram {
-		const expressionWithProps = (expression: string): string => {
-			if (!expression.includes("=>") && !/\bfunction\b/.test(expression)) return expression;
-			if (!expression.startsWith("`") || !expression.endsWith("`"))
-				return /=>|\bfunction\b/.test(expression)
-					? `(${expression})(${parameter})`
-					: expression;
-			let output = "";
-			let cursor = 0;
-			for (let index = 0; index < expression.length; index++) {
-				if (expression[index] !== "$" || expression[index + 1] !== "{") continue;
-				const block = matchBlock(expression, index + 1);
-				if (block === null) continue;
-				output += expression.slice(cursor, index) + "${";
-				const value = block.body.trim();
-				output += /=>|\bfunction\b/.test(value) ? `(${value})(${parameter})` : value;
-				output += "}";
-				index = block.end - 1;
-				cursor = block.end;
-			}
-			return output + expression.slice(cursor);
-		};
+	const expressionWithProps = (expression: string): string => {
+		if (!expression.includes("=>") && !/\bfunction\b/.test(expression)) return expression;
+		if (!expression.startsWith("`") || !expression.endsWith("`"))
+			return /=>|\bfunction\b/.test(expression) ? `(${expression})(${parameter})` : expression;
+		let output = "";
+		let cursor = 0;
+		for (let index = 0; index < expression.length; index++) {
+			if (expression[index] !== "$" || expression[index + 1] !== "{") continue;
+			const block = matchBlock(expression, index + 1);
+			if (block === null) continue;
+			output += expression.slice(cursor, index) + "${";
+			const value = block.body.trim();
+			output += /=>|\bfunction\b/.test(value) ? `(${value})(${parameter})` : value;
+			output += "}";
+			index = block.end - 1;
+			cursor = block.end;
+		}
+		return output + expression.slice(cursor);
+	};
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
 		value:
@@ -216,7 +221,8 @@ function runtimeComponent(
 		subject?.match(/^styled\(\s*["']([a-z][\w-]*)["']\s*\)/)?.[1] ??
 		subject?.match(/^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/)?.[1];
 	const framework = host?.framework ?? program.source?.framework;
-	const componentExpression = subject === undefined ? undefined : componentExpressionForSubject(subject);
+	const componentExpression =
+		subject === undefined ? undefined : componentExpressionForSubject(subject);
 	const componentAttrs =
 		host?.subjectAttrs ??
 		(subject === undefined ? undefined : componentAttrsExpressionForSubject(subject));
@@ -324,15 +330,15 @@ function runtimeTemplateExpression(template: string, file?: string): string {
 		if (block === null) continue;
 		const staticPart = template.slice(cursor, index);
 		if (staticPart !== "") pieces.push(JSON.stringify(staticPart));
-		const expression = block.body
-			.trim()
-			.replace(/\bcss(?:\s*<[^`]*>)?\s*`/g, "cssTemplate`");
+		const expression = block.body.trim().replace(/\bcss(?:\s*<[^`]*>)?\s*`/g, "cssTemplate`");
 		const subject =
 			/^(?:\(\s*[^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*([A-Z_$][\w$]*)$/.exec(expression)?.[1] ??
 			(/^[A-Z_$][\w$]*$/.test(expression) ? expression : undefined);
 		if (subject !== undefined) {
 			const fallback =
-				file === undefined ? `.pw-sc-${subject}` : `.${CodemodStyleIdentity.className(file, subject)}`;
+				file === undefined
+					? `.pw-sc-${subject}`
+					: `.${CodemodStyleIdentity.className(file, subject)}`;
 			pieces.push(
 				`(typeof ${subject} !== "undefined" && typeof ${subject}.__pandwindClassName === "string" ? "." + ${subject}.__pandwindClassName : ${JSON.stringify(fallback)})`,
 			);
@@ -374,9 +380,9 @@ function runtimeStaticTemplateExpression(template: string, file?: string, source
 		pieces.push(
 			subject !== undefined
 				? JSON.stringify(fallback)
-			: isStaticTemplateExpression(expression, source)
-				? `String(((${expression})) ?? "")`
-				: JSON.stringify(""),
+				: isStaticTemplateExpression(expression, source)
+					? `String(((${expression})) ?? "")`
+					: JSON.stringify(""),
 		);
 		index = block.end - 1;
 		cursor = block.end;
@@ -423,19 +429,13 @@ function runtimeRawComponent(
 		new RegExp(
 			`(?:export\\s+)?(?:const|let|var)\\s+${componentBinding}\\s*=\\s*styled\\s*[.(]`,
 		).test(source) &&
-		new RegExp(`styled\\s*\\(\\s*${baseBinding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\)`).test(
-			source,
-		);
-	const rootSelector = composedBase
-		? `:where(.${stableClass})`
-		: `.${stableClass}`;
+		new RegExp(
+			`styled\\s*\\(\\s*${baseBinding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\)`,
+		).test(source);
+	const rootSelector = composedBase ? `:where(.${stableClass})` : `.${stableClass}`;
 	const normalizedTemplate = augmentAncestorSelectors(hostTemplate, rootSelector);
 	const cssText = runtimeTemplateExpression(normalizedTemplate, context?.file);
-	const staticCssText = runtimeStaticTemplateExpression(
-		normalizedTemplate,
-		context?.file,
-		source,
-	);
+	const staticCssText = runtimeStaticTemplateExpression(normalizedTemplate, context?.file, source);
 	const classAttribute = framework === "solid" ? "class" : "className";
 	const componentAttrs =
 		host?.subjectAttrs ??

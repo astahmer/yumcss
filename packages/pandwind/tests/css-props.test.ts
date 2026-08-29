@@ -104,12 +104,7 @@ test("css props ignores conditional falsy style arguments", () => {
 test("css props flattens nested style arrays", () => {
 	const css = createCss({ debug: true });
 
-	expect(
-		css.props([
-			css({ color: "red" }),
-			[false, css({ backgroundColor: "blue" })],
-		]),
-	).toEqual({
+	expect(css.props([css({ color: "red" }), [false, css({ backgroundColor: "blue" })]])).toEqual({
 		className: "color__red backgroundColor__blue",
 		style: undefined,
 	});

@@ -51,7 +51,8 @@ interface LaneAdapter {
 function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): string {
 	const needsRuntime = /\bcss\.(?:class|vars|group|props|raw|input|sheet)\b/.test(source);
 	const needsTemplate = /\bcssTemplate\s*`/.test(source);
-	const needsThemeProvider = /import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["']/.test(source);
+	const needsThemeProvider =
+		/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["']/.test(source);
 	const normalizedSource = needsThemeProvider
 		? source.replace(
 				/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["'];/g,
@@ -68,11 +69,9 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 	).test(runtimeSource);
 	const hasTemplate = runtimeSource.includes("const cssTemplate =");
 	const imports =
-		(hasRuntime
-			? ""
-			: `import { ${runtimeBinding} } from "@/pandwind/runtime";\n`) +
+		(hasRuntime ? "" : `import { ${runtimeBinding} } from "@/pandwind/runtime";\n`) +
 		(needsTemplate && !hasTemplate
-			? "const cssTemplate = (strings, ...values) => values.some((value) => typeof value === \"function\") ? (props) => strings.reduce((output, string, index) => { const value = values[index]; const resolved = typeof value === \"function\" ? (value.__pandwindClassName === undefined ? value(props) : \".\" + value.__pandwindClassName) : value; return output + string + (resolved ?? \"\"); }, \"\") : strings.reduce((output, string, index) => output + string + (values[index] ?? \"\"), \"\");\n"
+			? 'const cssTemplate = (strings, ...values) => values.some((value) => typeof value === "function") ? (props) => strings.reduce((output, string, index) => { const value = values[index]; const resolved = typeof value === "function" ? (value.__pandwindClassName === undefined ? value(props) : "." + value.__pandwindClassName) : value; return output + string + (resolved ?? ""); }, "") : strings.reduce((output, string, index) => output + string + (values[index] ?? ""), "");\n'
 			: "");
 	if (imports === "") return runtimeSource;
 	const directive = /^(?:["']use client["'];\s*\n?)/.exec(runtimeSource)?.[0];
@@ -99,12 +98,10 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 			.replaceAll('import { pandwindPreset } from "pandwind/preset";\n', "")
 			.replaceAll("const css = createRuntimeCss(pandwindPreset);\n", "");
 		const runtimeCode = withRuntimeImports(normalizedCode, this.lane);
-		if (this.lane === StyledComponentsDocsLane.RuntimeCss)
-			return { ...result, code: runtimeCode };
+		if (this.lane === StyledComponentsDocsLane.RuntimeCss) return { ...result, code: runtimeCode };
 		return {
 			...result,
-			code: runtimeCode
-				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1"),
+			code: runtimeCode.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1"),
 		};
 	}
 }
@@ -201,7 +198,8 @@ function collectorSafeSource(source: string): string {
 }
 
 function runtimeModule(lane: StyledComponentsDocsLane): string {
-	const factory = lane === StyledComponentsDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
+	const factory =
+		lane === StyledComponentsDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
 	const binding = lane === StyledComponentsDocsLane.DesignCss ? "dcss" : "css";
 	return `import { ${factory}, createRuntimeSheet } from "pandwind/css/runtime";
 import { pandwindPreset } from "./preset";
@@ -321,7 +319,10 @@ async function materialize(
 	if (!layoutSource.includes("../pandwind-static.css"))
 		await writeFile(
 			layoutFile,
-			layoutSource.replace("import './theme-base.css';", "import './theme-base.css';\nimport '../pandwind-static.css';"),
+			layoutSource.replace(
+				"import './theme-base.css';",
+				"import './theme-base.css';\nimport '../pandwind-static.css';",
+			),
 		);
 }
 
