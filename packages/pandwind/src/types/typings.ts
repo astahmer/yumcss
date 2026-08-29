@@ -1,7 +1,9 @@
 import type { AnySelector } from "./selectors.d.ts";
 
-export interface StyleObject
-	 extends Record<string, string | number | null | Record<string, unknown> | undefined> {}
+export interface StyleObject extends Record<
+	string,
+	string | number | null | Record<string, unknown> | undefined
+> {}
 
 /* -----------------------------------------------------------------------------
  * properties config
