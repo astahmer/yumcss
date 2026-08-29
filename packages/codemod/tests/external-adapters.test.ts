@@ -286,8 +286,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("export const Card = (() => {");
-		expect(result.code).toContain(`id: "${CodemodStyleIdentity.className("Card.tsx", "Card")}"`);
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
 		expect(result.code).toContain("theme.foreground");
+		expect(result.code).not.toContain("createRuntimeCss");
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
@@ -306,10 +307,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			},
 		);
 		const themeAssignment = result.code.indexOf("usePandwindTheme()");
-		const registration = result.code.indexOf(
-			"css.sheet.register",
-			result.code.indexOf("const component"),
-		);
+		const registration = result.code.indexOf("css.vars", result.code.indexOf("const component"));
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { usePandwindTheme } from "pandwind/theme";');
 		expect(themeAssignment).toBeGreaterThan(-1);
@@ -512,7 +510,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(dynamicResult.converted).toBe(1);
 		expect(dynamicResult.residuals).toEqual([]);
-		expect(dynamicResult.code).toContain("createRuntimeCss");
+		expect(dynamicResult.code).toContain("css.vars");
+		expect(dynamicResult.code).not.toContain("createRuntimeCss");
 	});
 
 	test("preserves the static class of a composed styled subject", () => {
@@ -583,8 +582,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain(`id: "${CodemodStyleIdentity.className("Card.tsx", "Card")}"`);
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
 		expect(result.code).toContain("<Card />");
+		expect(result.code).not.toContain("createRuntimeCss");
 	});
 
 	test("lowers StyleX dynamic groups through its props host and runtime engine", () => {
@@ -823,12 +823,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(solid.converted).toBe(1);
 		expect(solid.residuals).toEqual([]);
-		expect(solid.code).toContain(
-			`__pandwindVariantClass("${CodemodStyleIdentity.className("Card.tsx", "Card")}"`,
-		);
+		expect(solid.code).toContain("css.vars");
+		expect(solid.code).not.toContain("createRuntimeCss");
 		expect(solid.code).toContain("((props) => props.color)(props)");
 		expect(solid.code).toContain('import { createCx } from "pandwind/cx";');
-		expect(solid.code).toContain('class={cx(className, "pw-sc-1dn651e-Card", props.class)}');
+		expect(solid.code).toContain("class={cx(staticClass, dynamic.class, props.class)}");
 
 		const vue = runAdapterMigration(
 			'import styled from "vue-styled-components";\n' +

@@ -111,7 +111,7 @@ own matrix entry.
 
 The styled-components lane is static-first: its current pinned corpus has 80
 fully static call sites, 205 dynamic values lowered without runtime CSS
-injection, and 60 opaque runtime fallbacks. The fallback is an explicit safety
+injection, and 43 opaque runtime fallbacks. The fallback is an explicit safety
 boundary, not a silent loss of styling; the next improvement is to lower those
 specific semantics, not to make runtime CSS the default.
 

@@ -26,8 +26,10 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	requiresHostWrapper: ({ source, binding }) => {
 		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		return (
-			new RegExp(`styled\\s*\\(\\s*${escaped}\\s*\\)`).test(source) ||
-			new RegExp(`<${escaped}(?:\\s|/?>)`).test(source)
+			/\b(?:from\s+|import\s*\()?['"]styled-components['"]/.test(source) &&
+			(new RegExp(`styled\\s*\\(\\s*${escaped}\\s*\\)`).test(source) ||
+				new RegExp(`(?:const|let|var)\\s+${escaped}\\s*=\\s*styled(?:\\.|\\s*\\()`).test(source) ||
+				new RegExp(`<${escaped}(?:\\s|/?>)`).test(source))
 		);
 	},
 	handlesRawTemplate: () => true,
@@ -278,6 +280,40 @@ function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgr
 	};
 }
 
+function mapThemeRuntimeValues(
+	program: StyleProgram,
+	source: string | undefined,
+	parameter = "props",
+): StyleProgram {
+	const themeBindings = new Set<string>();
+	if (source !== undefined) {
+		for (const match of source.matchAll(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*theme\s*\(/g))
+			themeBindings.add(match[1]!);
+	}
+	const declaration = (item: StyleProgram["declarations"][number]) => {
+		if (item.value.kind !== "dynamic" || !themeBindings.has(item.value.expression.trim()))
+			return item;
+		const binding = item.value.expression.trim();
+		return {
+			...item,
+			value: {
+				...item.value,
+				expression: `(typeof ${binding} === "function" ? ${binding}(${parameter}) : ${binding})`,
+			},
+		};
+	};
+	const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...item,
+		declarations: item.declarations.map(declaration),
+		children: item.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(declaration),
+		rules: program.rules.map(rule),
+	};
+}
+
 function runtimeComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
@@ -474,8 +510,10 @@ function hybridComponent(
 	if (!hasDynamic) return undefined;
 	const staticProgram = selectProgramDeclarations(program, (value) => value.kind !== "dynamic");
 	const dynamicProgram = selectProgramDeclarations(program, (value) => value.kind === "dynamic");
+	const source = context?.document?.document.source;
+	const needsThemeContext = hasThemeContextValues(program, source);
 	const dynamicObject = programObject(
-		mapRuntimeProps(dynamicProgram, framework === BuiltinHostFramework.Solid ? "props" : "props"),
+		mapThemeRuntimeValues(mapRuntimeProps(dynamicProgram, "props"), source, "props"),
 	);
 	const staticClass =
 		staticProgram.rules.length === 0 ? '""' : `css.class(${programObject(staticProgram)})`;
@@ -484,15 +522,19 @@ function hybridComponent(
 	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
 	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
 	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
+	const themeContextAssignment = needsThemeContext
+		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
+		: "";
 	const inheritedClass =
 		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	return {
-		text: `(() => { const staticClass = ${staticClass}; const component = (props) => { const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(staticClass, dynamic.class${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})} style={{ ...dynamic.style, ...props.style }} />; }; return component; })()`,
+		text: `(() => { const staticClass = ${staticClass}; const component = (props) => { ${themeContextAssignment} const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(staticClass, dynamic.class${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})} style={{ ...dynamic.style, ...props.style }} />; }; return component; })()`,
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
+			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
 	};
 }

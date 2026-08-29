@@ -249,7 +249,7 @@ Validated on 2026-08-29 after the interface-first completion pass:
   lanes, zero server/browser failures, equivalent browser states, and 623,777
   bytes versus 1,321,407 bytes for the reference. Its migration report
   separates 80 fully static call sites, 205 dynamic values lowered without
-  runtime CSS injection, and 60 opaque runtime fallbacks.
+  runtime CSS injection, and 43 opaque runtime fallbacks.
 
 ## Decisions log
 

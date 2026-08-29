@@ -96,14 +96,22 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 
 function requiresRuntimeCss(program: StyleProgram): boolean {
 	if (program.residuals.some((residual) => residual.kind === "parse")) return true;
-	if (program.source?.subjectAttrs !== undefined) return true;
+	if (
+		program.source?.subjectAttrs !== undefined &&
+		/=>|\bfunction\b|\b(?:props|theme|attrs)\b/.test(program.source.subjectAttrs)
+	)
+		return true;
 	if (
 		program.source?.template !== undefined &&
 		hasComponentSelectorInterpolation(program.source.template)
 	)
 		return true;
 	return program.rules.some(function hasRuntimeRule(rule): boolean {
-		return rule.kind !== "style" || rule.children.some(hasRuntimeRule);
+		return (
+			(rule.kind !== "style" &&
+				rule.declarations.some((declaration) => declaration.value.kind === "dynamic")) ||
+			rule.children.some(hasRuntimeRule)
+		);
 	});
 }
 
