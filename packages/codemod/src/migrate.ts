@@ -385,7 +385,7 @@ function transformCss(
 		let allMapped = tokens.length > 0;
 
 		for (const token of tokens) {
-			const resolved = meta.bridgeInverse.get(token);
+			const resolved = meta.bridgeDeclarations.get(token);
 			if (resolved === undefined) {
 				allMapped = false;
 				result.unmappedTokens.push({
@@ -394,7 +394,8 @@ function transformCss(
 					reason: "not in generated bridge (css mode)",
 				});
 			} else {
-				declarations.push([camelProperty(resolved.property), resolved.value]);
+				for (const declaration of resolved)
+					declarations.push([camelProperty(declaration.property), declaration.value]);
 			}
 		}
 		if (!allMapped) continue;

@@ -43,6 +43,21 @@ that the source construct still needs a richer lowering. The migration is only
 lossless when the residual remains in the generated source and the browser
 comparison passes.
 
+The final proof for commit `683a5a9b370acdb7785a0529434e6a3b8c7e0441` covers
+730 HTTP routes and 10 browser routes. All three lanes have equivalent route
+statuses and pixel-identical screenshots. Aggregate unique external CSS is
+2,751,794 bytes in the baseline and in every lane; the `tw` lane also has the
+same 47,304 bytes of inline CSS. The `css` and `dcss` lanes intentionally add
+runtime SSR style artifacts (205,517 and 206,069 aggregate inline bytes) to
+implement their runtime APIs. Those lanes therefore prove external CSS and
+browser semantics, not zero-cost runtime transport.
+
+For the `tw` lane, generated Pandwind metadata is excluded from Tailwind's
+automatic source scan. A generated source catalog preserves the original
+authored candidates, so typed `tw()` object keys cannot accidentally become
+extra Tailwind utilities. This is what makes the external CSS comparison
+strict rather than merely visual.
+
 The external repository does not need JJ versioning. Its Git SHA pins the
 source; separate Pandwind JJ revisions record the harness and the `tw`, `css`,
 and `dcss` proof results.

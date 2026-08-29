@@ -5,7 +5,7 @@
   "sourceFiles": 235,
   "changedFiles": 82,
   "convertedCallSites": 151,
-  "residualCount": 4813,
+  "residualCount": 4812,
   "residualSamples": [
     {
       "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
@@ -259,9 +259,9 @@
     }
   ],
   "sourceBytes": 832319,
-  "outputBytes": 848110,
-  "outputByteDelta": 15791,
+  "outputBytes": 853774,
+  "outputByteDelta": 21455,
   "generatedUtilities": 419,
   "generatedVariants": 108,
-  "generatedBridgeEntries": 763
+  "generatedBridgeEntries": 772
 }

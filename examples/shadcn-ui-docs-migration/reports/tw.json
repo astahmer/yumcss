@@ -4,8 +4,8 @@
   "referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
   "sourceFiles": 235,
   "changedFiles": 233,
-  "convertedCallSites": 1966,
-  "residualCount": 1016,
+  "convertedCallSites": 1940,
+  "residualCount": 1101,
   "residualSamples": [
     {
       "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
@@ -35,6 +35,11 @@
     {
       "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
       "token": "-translate-y-1/2",
+      "reason": "no typed mapping"
+    },
+    {
+      "file": "apps/v4/app/(app)/(create)/components/action-menu.tsx",
+      "token": "animate-none!",
       "reason": "no typed mapping"
     },
     {
@@ -105,6 +110,11 @@
     {
       "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
       "token": "bg-(--color)",
+      "reason": "no typed mapping"
+    },
+    {
+      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+      "token": "max-h-92",
       "reason": "no typed mapping"
     },
     {
@@ -229,6 +239,11 @@
     },
     {
       "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+      "token": "md:gap-3.25",
+      "reason": "no typed mapping"
+    },
+    {
+      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
       "token": "md:flex-col",
       "reason": "no typed mapping"
     },
@@ -241,27 +256,12 @@
       "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
       "token": "-mt-3",
       "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:**:[button,a]:w-full",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/font-picker.tsx",
-      "token": "group/picker",
-      "reason": "no typed mapping"
     }
   ],
   "sourceBytes": 832319,
-  "outputBytes": 922373,
-  "outputByteDelta": 90054,
+  "outputBytes": 921694,
+  "outputByteDelta": 89375,
   "generatedUtilities": 419,
   "generatedVariants": 108,
-  "generatedBridgeEntries": 763
+  "generatedBridgeEntries": 772
 }

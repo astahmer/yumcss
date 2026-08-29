@@ -18,15 +18,16 @@ import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
-import { mapClassList } from "../packages/codemod/src/map.ts";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const defaultReferenceRoot = "/Users/astahmer/.references/shadcn-ui";
 const appRootName = "apps/v4";
-// Avoid an app-local `pandwind/` directory: Next's resolver can otherwise
-// shadow the installed package when resolving `pandwind/*` subpaths.
+// Keep generated support beside the app so package-local resolution works.
+// The materializer excludes metadata from Tailwind's automatic source scan;
+// the explicit class catalog lives under app/ so it can still be scanned.
 const supportRoot = `${appRootName}/pw`;
+const sourceCatalogFile = `${appRootName}/pandwind-source.txt`;
 
 export enum ShadcnV4MigrationLane {
 	Tw = "tw",
@@ -89,6 +90,26 @@ async function collectSourceFiles(root: string): Promise<string[]> {
 	return files.toSorted();
 }
 
+async function collectSourceCatalog(root: string): Promise<string> {
+	const contents: string[] = [];
+	const sourceRoots = ["app", "components", "content", "lib"];
+	const visit = async (directory: string): Promise<void> => {
+		for (const entry of await readdir(directory, { withFileTypes: true })) {
+			if (entry.name === "node_modules" || entry.name === ".next" || entry.name.startsWith("."))
+				continue;
+			const absolute = join(directory, entry.name);
+			if (entry.isDirectory()) {
+				await visit(absolute);
+				continue;
+			}
+			if (!SOURCE_SCANNER_SERVICE.isSupportedFile(entry.name)) continue;
+			contents.push(await readFile(absolute, "utf8"));
+		}
+	};
+	for (const sourceRoot of sourceRoots) await visit(join(root, appRootName, sourceRoot));
+	return contents.join("\n");
+}
+
 function bridgeEntryCount(bridge: Record<string, Record<string, string>>): number {
 	return Object.values(bridge).reduce((total, values) => total + Object.keys(values).length, 0);
 }
@@ -133,9 +154,13 @@ function createLane(lane: ShadcnV4MigrationLane): LaneAdapter {
 					metaDir: supportRoot,
 				});
 
-			const binding = lane === ShadcnV4MigrationLane.Css ? "css" : "dcss";
-			const importPath = relativeModuleImport(file, supportRoot, binding);
-			const prepared = ensureImport(source, `import { ${binding} } from "${importPath}";`);
+			const exported = lane === ShadcnV4MigrationLane.Css ? "css" : "dcss";
+			const binding = lane === ShadcnV4MigrationLane.Css ? "__pandwindCss" : "__pandwindDcss";
+			const importPath = relativeModuleImport(file, supportRoot, exported);
+			const prepared = ensureImport(
+				source,
+				`import { ${exported} as ${binding} } from "${importPath}";`,
+			);
 			return transformSource(prepared, metadata, {
 				mode: "css",
 				file,
@@ -161,7 +186,7 @@ function styleSheetSource(lane: ShadcnV4MigrationLane): string {
 function supportFiles(
 	metadata: GeneratedMetadata,
 	lane: ShadcnV4MigrationLane,
-	mappedTokens: ReadonlySet<string>,
+	sourceCatalog: string,
 ): Record<string, string> {
 	const files: Record<string, string> = {
 		[`${supportRoot}/types.d.ts`]: metadata.typesDts,
@@ -170,9 +195,7 @@ function supportFiles(
 	};
 	if (lane === ShadcnV4MigrationLane.Tw) {
 		files[`${supportRoot}/cx.ts`] = runtimeSource(lane);
-		files[`${supportRoot}/classes.ts`] = `export const pandwindTailwindClasses = ${JSON.stringify(
-			[...mappedTokens].toSorted().join(" "),
-		)};\n`;
+		files[sourceCatalogFile] = sourceCatalog;
 	} else {
 		files[`${supportRoot}/${lane}.ts`] = runtimeSource(lane);
 		files[`${supportRoot}/style-sheet.tsx`] = styleSheetSource(lane);
@@ -186,7 +209,7 @@ async function materialize(
 	lane: ShadcnV4MigrationLane,
 	metadata: GeneratedMetadata,
 	transformed: ReadonlyMap<string, string>,
-	mappedTokens: ReadonlySet<string>,
+	sourceCatalog: string,
 ): Promise<void> {
 	await mkdir(outputRoot, { recursive: true });
 	for (const entry of await readdir(referenceRoot, { withFileTypes: true })) {
@@ -203,7 +226,7 @@ async function materialize(
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
 	}
-	for (const [file, code] of Object.entries(supportFiles(metadata, lane, mappedTokens))) {
+	for (const [file, code] of Object.entries(supportFiles(metadata, lane, sourceCatalog))) {
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
@@ -227,12 +250,22 @@ async function materialize(
 		pandwind: `file:${join(repositoryRoot, "packages/pandwind")}`,
 	};
 	await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
-	if (lane === ShadcnV4MigrationLane.Tw) {
-		const stylesheet = join(outputRoot, appRootName, "app/globals.css");
-		const source = await readFile(stylesheet, "utf8");
-		if (!source.includes('@source "../pw";'))
-			await writeFile(stylesheet, `${source}\n@source "../pw";\n`);
-	}
+	const stylesheet = join(outputRoot, appRootName, "app/globals.css");
+	const source = await readFile(stylesheet, "utf8");
+	const supportSource = relative(`${appRootName}/app`, supportRoot).replaceAll("\\", "/");
+	const exclusionDirectives = [
+		`@source not "${supportSource}";`,
+		`@source not "../app";`,
+		`@source not "../components";`,
+		`@source not "../content";`,
+		`@source not "../lib";`,
+	];
+	const sourceDirective = `@source "${relative(`${appRootName}/app`, sourceCatalogFile).replaceAll("\\", "/")}";`;
+	const directives = [...exclusionDirectives];
+	if (lane === ShadcnV4MigrationLane.Tw) directives.push(sourceDirective);
+	const missingDirectives = directives.filter((directive) => !source.includes(directive));
+	if (missingDirectives.length > 0)
+		await writeFile(stylesheet, `${source}\n${missingDirectives.join("\n")}\n`);
 	if (lane !== ShadcnV4MigrationLane.Tw) {
 		const layoutFile = join(outputRoot, appRootName, "app/layout.tsx");
 		const layout = await readFile(layoutFile, "utf8");
@@ -274,17 +307,11 @@ export class ShadcnV4Migration {
 		let residualCount = 0;
 		let sourceBytes = 0;
 		let outputBytes = 0;
-		const mappedTokens = new Set<string>();
+		const sourceCatalog =
+			lane === ShadcnV4MigrationLane.Tw ? await collectSourceCatalog(referenceRoot) : "";
 		for (const absolute of await collectSourceFiles(referenceRoot)) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
-			for (const match of source.matchAll(
-				/\bclassName\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*"([^"]*)"\s*\})/g,
-			)) {
-				const classString = match[1] ?? match[2] ?? match[3] ?? "";
-				for (const token of mapClassList(classString, metadata.meta).mapped)
-					mappedTokens.add(token.raw);
-			}
 			const result = adapter.transform(source, file, metadata.meta);
 			if (!result.changed && result.unmappedTokens.length === 0) continue;
 			sourceFiles++;
@@ -304,7 +331,7 @@ export class ShadcnV4Migration {
 				lane,
 				metadata,
 				transformed,
-				mappedTokens,
+				sourceCatalog,
 			);
 		const report: ShadcnV4MigrationReport = {
 			schema: "pandwind.shadcn-v4-migration/1",

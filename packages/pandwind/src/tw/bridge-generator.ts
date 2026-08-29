@@ -61,6 +61,8 @@ export const BRIDGE_PROPS = [
 	"min-height",
 	"max-height",
 	"display",
+	"-webkit-box-orient",
+	"-webkit-line-clamp",
 	"flex-direction",
 	"flex-wrap",
 	"justify-content",
