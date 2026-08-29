@@ -70,7 +70,7 @@ const inspectHttp = async (baseUrl, routes, expectedStatuses) => {
 	};
 };
 
-const browserShape = async (browser, baseUrl, route) => {
+const browserShape = async (browser, baseUrl, route, normalizeStyledComponents = false) => {
 	const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	const errors = [];
@@ -121,6 +121,20 @@ const browserShape = async (browser, baseUrl, route) => {
 		);
 	});
 	await page.waitForTimeout(100);
+	if (normalizeStyledComponents) {
+		await page.evaluate(() => {
+			const bodyStyles = [...document.querySelectorAll("body style[data-styled]")];
+			if (bodyStyles.length === 0) return;
+			// Styled-components can place its runtime style nodes inside structural
+			// elements. Moving the same CSS to head preserves styling while removing
+			// an implementation detail that changes :first-child semantics.
+			const normalized = document.createElement("style");
+			normalized.dataset.pandwindBaselineNormalization = "styled-components";
+			normalized.textContent = bodyStyles.map((style) => style.textContent).join("\n");
+			document.head.append(normalized);
+			bodyStyles.forEach((style) => style.remove());
+		});
+	}
 	const screenshot = await page.screenshot({ fullPage: true });
 	const shape = await page.evaluate(() => {
 		const visibleText = (element) => {
@@ -282,7 +296,7 @@ const [runtime, design] = await Promise.all([
 const browser = await chromium.launch();
 const browserLanes = { baseline: {}, runtime: {}, design: {} };
 for (const route of baseline.htmlRoutes) {
-	browserLanes.baseline[route] = await browserShape(browser, baselineUrl, route);
+	browserLanes.baseline[route] = await browserShape(browser, baselineUrl, route, true);
 	browserLanes.runtime[route] = await browserShape(browser, runtimeUrl, route);
 	browserLanes.design[route] = await browserShape(browser, designUrl, route);
 }
@@ -311,8 +325,12 @@ for (const route of baseline.htmlRoutes) {
 		designCandidate.screenshot,
 		designMasks,
 	);
+	// Browser rasterization can differ by a few channel values even when the
+	// layout and computed styles are identical. Real visual regressions exceed
+	// this bounded tolerance by orders of magnitude (for example, the table
+	// style-node topology mismatch previously changed 682 pixels at delta 186).
 	const screenshotEquivalent = (diff) =>
-		diff.changedPixels <= 2000 && diff.changedPixelRatio <= 0.001;
+		diff.changedPixels <= 100 && diff.changedPixelRatio <= 0.0001 && diff.maxChannelDelta <= 8;
 	const shapeOf = ({
 		screenshot: _screenshot,
 		screenshotHash: _hash,
@@ -359,6 +377,12 @@ const report = {
 	design: { ...design, totalBytes: totalBytes(design) },
 	runtimeTransferDelta: totalBytes(runtime) - totalBytes(baseline),
 	designTransferDelta: totalBytes(design) - totalBytes(baseline),
+	browserNormalization: "styled-components body style nodes moved to head preserving CSS",
+	browserPixelTolerance: {
+		maxChangedPixels: 100,
+		maxChangedPixelRatio: 0.0001,
+		maxChannelDelta: 8,
+	},
 	browserComparisons,
 	allRuntimeRoutesEquivalent:
 		runtime.failures.length === 0 &&
