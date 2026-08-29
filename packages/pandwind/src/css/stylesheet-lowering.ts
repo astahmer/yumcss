@@ -1,7 +1,7 @@
 import parser from "postcss-selector-parser";
 import { pairs } from "../lib/utils.ts";
 import type { AnyConditions } from "../types/typings.ts";
-import { getPropertyPriority } from "./property-priorities.ts";
+import { getPropertyPriority, isKnownCssProperty } from "./property-priorities.ts";
 
 export interface ParsedConditions {
 	readonly className: string;
@@ -45,6 +45,8 @@ const isSelectorList = (selector: string): boolean => {
 	}
 	return false;
 };
+const isSelectorPath = (part: string): boolean =>
+	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
 
 export const parseCondition = (
 	selector: string,
@@ -108,6 +110,50 @@ export function decodeAtomicPath(
 		return { prop: prop!, value: value!, priority: getPropertyPriority(prop!), conditions };
 	}
 	const value = parts.at(-1)!;
+	const pathParts = parts.slice(0, -1);
+	const knownPropertyIndexes = pathParts
+		.map((part, index) => (isKnownCssProperty(part) ? index : -1))
+		.filter((index) => index !== -1);
+	const propertyIndexes =
+		knownPropertyIndexes.length === 1
+			? knownPropertyIndexes
+			: knownPropertyIndexes.length === 0 && pathParts.some(isSelectorPath)
+				? pathParts
+					.map((part, index) => (/^(?:[A-Za-z_][\w-]*|--[\w-]+)$/.test(part) ? index : -1))
+					.filter((index) => index !== -1)
+			: [];
+	// Flattened style objects put the property either before or after nested
+	// conditions. Once the property catalog identifies that segment, every
+	// other segment is unambiguously a condition—even when it is an authored
+	// selector such as `+ h2` or an arbitrary at-rule.
+	if (propertyIndexes.length === 1) {
+		const propertyIndex = propertyIndexes[0]!;
+		const prop = pathParts[propertyIndex]!;
+		const conditionPaths = pathParts.filter((_part, index) => index !== propertyIndex);
+		for (const path of conditionPaths) {
+			const resolved = presetConditions[path] ?? path;
+			const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
+			for (const selector of resolvedList) {
+				const normalized = normalizeArbitrarySelector(selector);
+				const invalid = parseCondition(normalized, conditions);
+				if (invalid !== undefined)
+					throw new Error(`Unknown condition '${selector}' used in path '${atomicPath}'`);
+			}
+		}
+		const priorities = conditionPaths.flatMap((path) => {
+			const resolved = presetConditions[path] ?? path;
+			const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
+			return resolvedList.map((part) =>
+				getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
+			);
+		});
+		return {
+			prop,
+			value,
+			priority: getPropertyPriority(prop) + priorities.reduce((sum, priority) => sum + priority, 0),
+			conditions,
+		};
+	}
 	let prop: string | undefined;
 	const conds = parts.slice(0, -1).reduce((acc, part) => {
 		const resolved = presetConditions[part] ?? part;
@@ -131,3 +177,17 @@ export function decodeAtomicPath(
 		conditions,
 	};
 }
+
+/** Make CSS-in-JS selector shorthand explicit before the selector policy parses it. */
+const normalizeArbitrarySelector = (selector: string): string => {
+	if (isAtRule(selector)) return selector;
+	if (isSelectorList(selector)) {
+		const selectors: string[] = [];
+		parser((nodes) => {
+			selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
+		}).processSync(selector);
+		return selectors.map(normalizeArbitrarySelector).join(", ");
+	}
+	if (isSelfSelector(selector) || isParentSelector(selector)) return selector;
+	return `& ${selector}`;
+};

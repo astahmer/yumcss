@@ -240,6 +240,23 @@ test("css gen prop in selector list", () => {
 	);
 });
 
+test("css gen prop preserves shorthand selector-list combinators", () => {
+	const sheet = createStylesheet(examplePreset, { debug: false });
+	const css = createCss({ debug: false });
+
+	const rule = sheet.process([
+		css.raw({
+			"+ h3, + h4": {
+				marginTop: "0.5em",
+			},
+		}),
+	]).values().next().value;
+
+	expect(rule?.css).toContain("+ h3");
+	expect(rule?.css).toContain("+ h4");
+	expect(rule?.css).toMatch(/^\.[^,]+ \+ h3, \.[^,]+ \+ h4\{margin-top/);
+});
+
 test("css gen prop with multiple selectors in :is", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });
