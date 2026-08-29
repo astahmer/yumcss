@@ -20,7 +20,8 @@ import {
 } from "./semantic-ir.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
-import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
+import { removeSourceImports } from "./external-adapters.ts";
+import { MigrationText } from "./migration-text.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import { CodemodAdapterId, CodemodStyleIdentity, StyleProgramEmissionHint } from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
@@ -34,39 +35,10 @@ import {
 	type HostComponentRewriteRequest,
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
-
-function programHasDynamic(program: StyleProgram): boolean {
-	return program.rules.some(function containsDynamic(rule): boolean {
-		return (
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some(containsDynamic)
-		);
-	});
-}
-
-function programHasFunctionDynamic(program: StyleProgram): boolean {
-	return program.rules.some(function containsFunction(rule): boolean {
-		return (
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					/=>|\bfunction\b/.test(declaration.value.expression),
-			) || rule.children.some(containsFunction)
-		);
-	});
-}
-
-function programNeedsRawTemplate(program: StyleProgram): boolean {
-	if (program.source?.template !== undefined) return true;
-	if (program.source?.subjectAttrs !== undefined) return true;
-	return program.rules.some(function hasRawSelector(rule): boolean {
-		return (
-			rule.children.some(
-				(child) => child.selector !== undefined && !child.selector.trim().startsWith("&"),
-			) || rule.children.some(hasRawSelector)
-		);
-	});
-}
+import {
+	DEFAULT_MIGRATION_PROGRAM_POLICY,
+	type MigrationProgramPolicy,
+} from "./migration-program-policy.ts";
 
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source
@@ -131,6 +103,8 @@ export interface AdapterMigrationOptions {
 	readonly loweringRegistry?: StyleLoweringRegistry;
 	/** Framework/project metadata that cannot be recovered from syntax alone. */
 	readonly semantic?: AdapterParseContext["semantic"];
+	/** Semantic detection policy; replaceable for framework-specific migrations. */
+	readonly programPolicy?: MigrationProgramPolicy;
 }
 
 export interface AdapterMigrationResult {
@@ -230,6 +204,7 @@ export function runAdapterMigration(
 		};
 	}
 	const mode = options.mode ?? "safe";
+	const programPolicy = options.programPolicy ?? DEFAULT_MIGRATION_PROGRAM_POLICY;
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const imports = new Set<string>();
@@ -271,7 +246,7 @@ export function runAdapterMigration(
 		let wrapComponent = false;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		if (isPandwindTarget(targetAdapter) && program.source?.subject === undefined) {
-			const hasDynamic = programHasDynamic(program);
+			const hasDynamic = programPolicy.hasDynamic(program);
 			if (hasDynamic) {
 				const binding = source
 					.slice(0, match.start)
@@ -297,7 +272,7 @@ export function runAdapterMigration(
 				const hostDynamicHandled =
 					program.source?.hostOpenTag !== undefined &&
 					program.source.hostStyleAttributes !== undefined &&
-					!programHasFunctionDynamic(program);
+					!programPolicy.hasFunctionDynamic(program);
 				const semanticRuleHandled = program.rules.some(
 					(rule) => rule.kind === "global" || rule.kind === "keyframes",
 				);
@@ -343,9 +318,9 @@ export function runAdapterMigration(
 			}
 		}
 		if (isPandwindTarget(targetAdapter) && program.source?.subject !== undefined) {
-			const hasDynamic = programHasDynamic(program);
-			const hasFunctionDynamic = programHasFunctionDynamic(program);
-			const needsRawTemplate = programNeedsRawTemplate(program);
+			const hasDynamic = programPolicy.hasDynamic(program);
+			const hasFunctionDynamic = programPolicy.hasFunctionDynamic(program);
+			const needsRawTemplate = programPolicy.needsRawTemplate(program);
 			const binding = source
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
@@ -586,7 +561,7 @@ export function runAdapterMigration(
 		}
 		const emittedBinding = bindingForMatch(source, match.start);
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
-		const emittedForValidation = validationSource(emitted.text, program);
+		const emittedForValidation = MigrationText.validationSource(emitted.text, program);
 		const reparsed = targetAdapter.parse(emittedForValidation, {
 			file: options.file,
 			source: emittedForValidation,
@@ -719,7 +694,7 @@ export function runAdapterMigration(
 		imports.delete("const css = createCss();");
 	}
 	let code = runtimeEdited;
-	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
+	for (const statement of MigrationText.consolidateImports(imports)) code = ensureImport(code, statement);
 	if (skipped === 0 && residuals.length === 0)
 		code = removeSourceImports(code, sourceAdapter.sourceModules, options.file);
 	return {

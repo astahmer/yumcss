@@ -128,6 +128,17 @@ export {
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
+export { AdapterContractSuite } from "./adapter-contract-suite.ts";
+export type {
+	AdapterContractFailure,
+	AdapterContractProbe,
+	AdapterContractReport,
+} from "./adapter-contract-suite.ts";
+export {
+	createMigrationProgramPolicy,
+	DEFAULT_MIGRATION_PROGRAM_POLICY,
+} from "./migration-program-policy.ts";
+export type { MigrationProgramPolicy } from "./migration-program-policy.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";

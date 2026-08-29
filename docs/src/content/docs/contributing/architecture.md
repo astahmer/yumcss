@@ -123,6 +123,21 @@ and design vocabulary use the same port/registry pattern. New policies must
 include a minimal substitution test before they are wired into a composition
 root.
 
+Source discovery has one filesystem port as well. `SourceWorkspace` resolves
+paths and reads documents without interpreting their language; `SourceScanner`
+selects a registered language adapter and owns parsing/exclusion ranges.
+Codemod, Vite, analyzer, Panda discovery, and Tailwind collection use these
+boundaries instead of maintaining independent recursive walks or extension
+tables. A scanner plugin can add a language without changing those consumers.
+
+The codemod registry is guarded by `AdapterContractSuite`, which probes every
+registered adapter through detection/configuration, parsing, emission, and
+validation. Host-only adapters may intentionally have no removable source
+module. Backend registries use the same contract shape, with enum-backed
+built-in identities and branded third-party identities. These contract suites
+are architectural tests: they do not replace adapter-owned semantic fixtures,
+browser differential tests, or real-repository acceptance corpora.
+
 ## Real repository migration proof
 
 The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
