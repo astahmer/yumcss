@@ -5,12 +5,15 @@ import {
 	type DifferentialResult,
 } from "./differential.ts";
 import { styleProgramToCanonicalCss, type StyleProgram } from "./semantic-ir.ts";
+import { DifferentialProofKind } from "./identifiers.ts";
 
 export const DIFFERENTIAL_CORPUS_RUNNER_SCHEMA = "pandwind.differential-corpus-runner/1" as const;
 
 export interface DifferentialCorpusCase extends Omit<DifferentialFixture, "name"> {
 	readonly id: string;
 	readonly expected: "pass" | "residual";
+	/** Dimensions are required evidence, not automatically fabricated probes. */
+	readonly proofs: readonly DifferentialProofKind[];
 }
 
 export interface DifferentialCorpusCatalog {
@@ -29,32 +32,6 @@ export interface DifferentialCorpusRunnerPort {
 	run(catalog: DifferentialCorpusCatalog): DifferentialCorpusResult;
 }
 
-const css = (program: StyleProgram): string => styleProgramToCanonicalCss(program);
-const render = (program: StyleProgram): DifferentialRender => ({
-	html: `<div data-style="${css(program)}"></div>`,
-	css: css(program),
-});
-
-function withProofHooks(fixture: DifferentialCorpusCase): DifferentialFixture {
-	return {
-		...fixture,
-		name: fixture.id,
-		browserStates: [
-			{ name: "initial", source: css, target: css },
-			{ name: "hover", source: css, target: css },
-			{ name: "responsive", source: css, target: css },
-		],
-		ssr: {
-			source: { render, hydrate: (server) => server },
-			target: { render, hydrate: (server) => server },
-		},
-		streaming: {
-			source: { render: (program) => ["<style>", css(program), "</style>"] },
-			target: { render: (program) => ["<style>", css(program), "</style>"] },
-		},
-	};
-}
-
 /** Application service for running a complete source/target proof corpus. */
 export class DifferentialCorpusRunner implements DifferentialCorpusRunnerPort {
 	constructor(
@@ -64,7 +41,35 @@ export class DifferentialCorpusRunner implements DifferentialCorpusRunnerPort {
 	) {}
 
 	run(catalog: DifferentialCorpusCatalog): DifferentialCorpusResult {
-		const cases = catalog.cases.map((fixture) => this.runFixture(withProofHooks(fixture)));
+		const cases = catalog.cases.map((fixture) => {
+			const result = this.runFixture({ ...fixture, name: fixture.id });
+			const missing = fixture.proofs.filter((proof) => {
+				switch (proof) {
+					case DifferentialProofKind.CanonicalCss:
+						return result.canonicalSource === "" || result.canonicalTarget === "";
+					case DifferentialProofKind.BrowserStates:
+						return result.browser.length === 0;
+					case DifferentialProofKind.SsrHydration:
+						return result.ssr === undefined;
+					case DifferentialProofKind.RscStreaming:
+						return result.streaming === undefined;
+					case DifferentialProofKind.Dependencies:
+						return result.dependencies.length < 2;
+					case DifferentialProofKind.Residuals:
+						return result.residuals === undefined;
+				}
+			});
+			return missing.length === 0
+				? result
+				: {
+						...result,
+						valid: false,
+						differences: [
+							...result.differences,
+							`missing explicit proof dimensions: ${missing.join(", ")}`,
+						],
+					};
+		});
 		const passed = cases.filter((result, index) => {
 			const expected = catalog.cases[index]?.expected;
 			return expected === "residual" ? !result.valid : result.valid;

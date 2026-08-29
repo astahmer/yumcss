@@ -863,7 +863,7 @@ export function removeSourceImports(
 			const isReferenced = (name: string): boolean => {
 				if (declaredNames.has(name)) return false;
 				const references = new RegExp(
-					`\\b${name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`,
+					`(?<![-\\w$])${name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}(?![-\\w$])`,
 					"g",
 				);
 				for (const reference of remainder.matchAll(references)) {

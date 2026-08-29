@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
+	DifferentialProofKind,
 	DifferentialCorpusRunner,
 	STYLE_VALIDATORS,
 	ValidatorContractSuite,
@@ -49,6 +50,29 @@ describe("proof contract ports", () => {
 			cases: [
 				{
 					id: "emotion-to-pandwind-contract",
+					proofs: [
+						DifferentialProofKind.CanonicalCss,
+						DifferentialProofKind.BrowserStates,
+						DifferentialProofKind.SsrHydration,
+						DifferentialProofKind.RscStreaming,
+						DifferentialProofKind.Dependencies,
+						DifferentialProofKind.Residuals,
+					],
+					browserStates: [{ name: "initial", source: () => "same", target: () => "same" }],
+					ssr: {
+						source: {
+							render: () => ({ html: "same", css: "same" }),
+							hydrate: (server) => server,
+						},
+						target: {
+							render: () => ({ html: "same", css: "same" }),
+							hydrate: (server) => server,
+						},
+					},
+					streaming: {
+						source: { render: () => ["same"] },
+						target: { render: () => ["same"] },
+					},
 					sourceAdapter: CodemodAdapterId.Emotion,
 					targetAdapter: CodemodAdapterId.Pandwind,
 					file: "Card.tsx",

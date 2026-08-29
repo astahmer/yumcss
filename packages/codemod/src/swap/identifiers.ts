@@ -94,6 +94,16 @@ export enum StyleValidatorId {
 	Builtin = "pandwind-core-validators",
 }
 
+/** Proof dimensions a differential corpus must explicitly provide. */
+export enum DifferentialProofKind {
+	CanonicalCss = "canonical-css",
+	BrowserStates = "browser-states",
+	SsrHydration = "ssr-hydration",
+	RscStreaming = "rsc-streaming",
+	Dependencies = "dependencies",
+	Residuals = "residuals",
+}
+
 export type StyleValidatorIdentifier = StyleValidatorId | ExternalIdentifier;
 
 export enum StyleLoweringId {

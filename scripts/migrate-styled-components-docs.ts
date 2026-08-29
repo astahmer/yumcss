@@ -9,8 +9,15 @@
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigration } from "../packages/codemod/src/swap/index.ts";
-import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.ts";
+import {
+	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
+	runAdapterMigration,
+} from "../packages/codemod/src/swap/index.ts";
+import type { AdapterMigrationResult, StyleProgram } from "../packages/codemod/src/swap/index.ts";
+import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
+import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
+import type { StyleObject } from "../packages/pandwind/src/types/typings.ts";
 
 export enum StyledComponentsDocsLane {
 	RuntimeCss = "runtime-css",
@@ -23,6 +30,9 @@ export interface StyledComponentsDocsLaneReport {
 	readonly sourceFiles: number;
 	readonly changedFiles: number;
 	readonly convertedCallSites: number;
+	readonly staticCallSites: number;
+	readonly runtimeFallbackCallSites: number;
+	readonly staticExtractionRatio: number;
 	readonly skippedCallSites: number;
 	readonly sourceBytes: number;
 	readonly outputBytes: number;
@@ -45,7 +55,37 @@ const defaultReferenceRoot = "/Users/astahmer/.references/styled-components-webs
 const supportRoot = "pandwind";
 
 interface LaneAdapter {
-	transform(source: string, file: string, root: string): AdapterMigrationResult;
+	transform(
+		source: string,
+		file: string,
+		root: string,
+	): AdapterMigrationResult & {
+		readonly staticCallSites: number;
+		readonly runtimeFallbackCallSites: number;
+	};
+}
+
+const staticPreset = {
+	strict: false,
+	properties: {},
+	tokens: {},
+	conditions: {
+		base: "",
+		sm: "@media (min-width: 640px)",
+		md: "@media (min-width: 768px)",
+		lg: "@media (min-width: 1024px)",
+		xl: "@media (min-width: 1280px)",
+		_light: ":root &",
+		_dark: ".dark &",
+	},
+} as const;
+
+function containsDynamic(program: StyleProgram): boolean {
+	return program.rules.some(
+		(rule) =>
+			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+			rule.children.some((child) => containsDynamic({ ...program, rules: [child] })),
+	);
 }
 
 function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): string {
@@ -83,7 +123,22 @@ function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): str
 class StyledComponentsLaneAdapter implements LaneAdapter {
 	constructor(private readonly lane: StyledComponentsDocsLane) {}
 
-	transform(source: string, file: string, root: string): AdapterMigrationResult {
+	transform(
+		source: string,
+		file: string,
+		root: string,
+	): AdapterMigrationResult & {
+		readonly staticCallSites: number;
+		readonly runtimeFallbackCallSites: number;
+	} {
+		const sourceAdapter = createBuiltinCodemodCatalog().registry.get(
+			CodemodAdapterId.StyledComponents,
+		)!;
+		const config = sourceAdapter.loadConfig({ file, source, root });
+		const parsed = sourceAdapter.parse(source, { file, source, root, config });
+		const staticCallSites = parsed.matches.filter(
+			(match) => match.program.residuals.length === 0 && !containsDynamic(match.program),
+		).length;
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Pandwind,
@@ -98,10 +153,14 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 			.replaceAll('import { pandwindPreset } from "pandwind/preset";\n', "")
 			.replaceAll("const css = createRuntimeCss(pandwindPreset);\n", "");
 		const runtimeCode = withRuntimeImports(normalizedCode, this.lane);
-		if (this.lane === StyledComponentsDocsLane.RuntimeCss) return { ...result, code: runtimeCode };
+		const runtimeFallbackCallSites = parsed.matches.length - staticCallSites;
+		if (this.lane === StyledComponentsDocsLane.RuntimeCss)
+			return { ...result, code: runtimeCode, staticCallSites, runtimeFallbackCallSites };
 		return {
 			...result,
 			code: runtimeCode.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1"),
+			staticCallSites,
+			runtimeFallbackCallSites,
 		};
 	}
 }
@@ -184,6 +243,19 @@ import GlobalStyles from "../components/GlobalStyles";
 GlobalStyles();
 process.stdout.write(runtimeSheet.css());
 `;
+}
+
+function staticCssFromSource(files: ReadonlyMap<string, string>): string {
+	const extraction = createCssExtractionService({
+		matchers: ["css"],
+		preset: staticPreset as never,
+	});
+	const styles: StyleObject[] = [];
+	for (const [file, source] of files) {
+		for (const extracted of extraction.extractFile(source, file).sources)
+			styles.push(extracted.style);
+	}
+	return createStylesheet(staticPreset as never).generate(styles);
 }
 
 function collectorSafeSource(source: string): string {
@@ -304,13 +376,14 @@ async function materialize(
 		collectorStubs.push([target, code]);
 		await writeFile(target, safe);
 	}
-	let staticCss = "";
+	let staticCss = staticCssFromSource(files);
 	try {
-		staticCss = execFileSync(tsx, [collectorFile], {
+		const runtimeCss = execFileSync(tsx, [collectorFile], {
 			cwd: outputRoot,
 			encoding: "utf8",
 			maxBuffer: 16 * 1024 * 1024,
 		});
+		staticCss = [staticCss, runtimeCss].filter((value) => value.trim() !== "").join("\n");
 	} finally {
 		for (const [target, code] of collectorStubs) await writeFile(target, code);
 	}
@@ -346,6 +419,8 @@ export class StyledComponentsDocsMigration {
 		let sourceFiles = 0;
 		let changedFiles = 0;
 		let convertedCallSites = 0;
+		let staticCallSites = 0;
+		let runtimeFallbackCallSites = 0;
 		let skippedCallSites = 0;
 		let sourceBytes = 0;
 		let outputBytes = 0;
@@ -357,6 +432,8 @@ export class StyledComponentsDocsMigration {
 			sourceFiles++;
 			changedFiles += Number(result.changed);
 			convertedCallSites += result.converted;
+			staticCallSites += result.staticCallSites;
+			runtimeFallbackCallSites += result.runtimeFallbackCallSites;
 			skippedCallSites += result.skipped;
 			sourceBytes += Buffer.byteLength(source);
 			outputBytes += Buffer.byteLength(result.code);
@@ -378,6 +455,12 @@ export class StyledComponentsDocsMigration {
 			sourceFiles,
 			changedFiles,
 			convertedCallSites,
+			staticCallSites,
+			runtimeFallbackCallSites,
+			staticExtractionRatio:
+				staticCallSites + runtimeFallbackCallSites === 0
+					? 1
+					: staticCallSites / (staticCallSites + runtimeFallbackCallSites),
 			skippedCallSites,
 			sourceBytes,
 			outputBytes,

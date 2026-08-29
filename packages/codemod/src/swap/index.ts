@@ -125,6 +125,7 @@ export {
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
 	StyleValidatorId,
+	DifferentialProofKind,
 	StyleLoweringId,
 	MigrationStageId,
 	HostComponentRewriterId,
