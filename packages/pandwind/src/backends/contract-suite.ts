@@ -1,5 +1,5 @@
 import { STYLE_BACKEND_SCHEMA, type StyleBackendFactory } from "./registry.ts";
-import { BuiltinBackendId } from "./types.ts";
+import { BuiltinBackendId } from "./backend-identifiers.ts";
 
 export interface BackendContractProbe {
 	readonly options?: unknown;
@@ -38,4 +38,3 @@ export class BackendContractSuite {
 		if (!report.valid) throw new Error(`${report.backend} backend contract failed: ${report.failures.join("; ")}`);
 	}
 }
-

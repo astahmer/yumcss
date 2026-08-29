@@ -8,7 +8,8 @@ import {
 } from "./conversion.ts";
 import { createObjectBackend, type ObjectBackend, type ObjectBackendOptions } from "./object.ts";
 import type { StyleBackendFactory } from "./registry.ts";
-import { BuiltinBackendId, STYLE_BACKEND_SCHEMA, type BackendCapabilityContract } from "./types.ts";
+import { BuiltinBackendId } from "./backend-identifiers.ts";
+import { STYLE_BACKEND_SCHEMA, type BackendCapabilityContract } from "./types.ts";
 
 const KEEP_STRING = new Set(["fontWeight", "fontFamily", "fontVariant"]);
 const UNSUPPORTED = new Set([

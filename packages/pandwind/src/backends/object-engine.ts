@@ -7,7 +7,7 @@ import {
 	type StyleBackend,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
-import { BuiltinBackendId } from "./types.ts";
+import { BuiltinBackendId } from "./backend-identifiers.ts";
 
 /** A target style object: camelCase props, target-native values. */
 export type TargetStyle = Record<string, unknown>;

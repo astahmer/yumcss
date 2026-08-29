@@ -40,7 +40,7 @@ export type {
 	FlatStyleIR,
 	StyleBackend,
 } from "./types.ts";
-export { BuiltinBackendId } from "./types.ts";
+export { BuiltinBackendId } from "./backend-identifiers.ts";
 export { externalBackendId } from "./types.ts";
 export { BackendContractSuite } from "./contract-suite.ts";
 export type { BackendContractProbe, BackendContractReport } from "./contract-suite.ts";

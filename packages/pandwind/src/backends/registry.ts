@@ -3,7 +3,8 @@ import { STYLE_BACKEND_SCHEMA, type StyleBackend } from "./types.ts";
 import type { BackendCapabilityContract } from "./types.ts";
 import type { StyleBackendId } from "./types.ts";
 
-export type { BuiltinBackendId, StyleBackendId } from "./types.ts";
+export { BuiltinBackendId } from "./backend-identifiers.ts";
+export type { StyleBackendId } from "./types.ts";
 
 export { STYLE_BACKEND_SCHEMA } from "./types.ts";
 
@@ -51,7 +52,7 @@ export function createStyleBackendRegistry(
 			return registry;
 		},
 		get: (id) => factories.get(id),
-		create<TArtifact = unknown>(id: string, options?: unknown) {
+		create<TArtifact = unknown>(id: StyleBackendId | string, options?: unknown) {
 			const factory = factories.get(id);
 			if (factory === undefined) throw new Error(`unknown style backend: ${id}`);
 			return factory.create(options) as StyleBackend<TArtifact>;
