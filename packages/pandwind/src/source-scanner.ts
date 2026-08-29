@@ -1,5 +1,11 @@
 import { parseSync, type ParseResult } from "oxc-parser";
 import { walk, type OxcNode } from "./tw/literal.ts";
+export { createSourceWorkspace, SOURCE_WORKSPACE_SCHEMA } from "./source-workspace.ts";
+export type {
+	SourceWorkspace,
+	SourceWorkspaceDependencies,
+	SourceWorkspaceQuery,
+} from "./source-workspace.ts";
 
 /** Versioned, package-level source analysis protocol shared by every lane. */
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;

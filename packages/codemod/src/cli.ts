@@ -15,9 +15,8 @@
  * plus outbound emission to plain tailwind classes via the tw target.
  */
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { globSync } from "node:fs";
 import { resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { createSourceWorkspace, SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
@@ -83,6 +82,7 @@ function parseArgs(argv: string[]): CliArgs {
 
 function expandPatterns(patterns: string[], baseDir: string): string[] {
 	const files = new Set<string>();
+	const workspace = createSourceWorkspace();
 	for (const pattern of patterns) {
 		const absolute = resolve(baseDir, pattern);
 		let stat;
@@ -99,32 +99,15 @@ function expandPatterns(patterns: string[], baseDir: string): string[] {
 			files.add(absolute);
 			continue;
 		}
-		for (const file of globSync(pattern, { cwd: baseDir })) {
-			const resolved = resolve(baseDir, file);
-			try {
-				if (statSync(resolved).isFile()) files.add(resolved);
-			} catch {
-				// ignore unreadable entries
-			}
-		}
+		for (const file of workspace.files({ root: baseDir, patterns: [pattern] })) files.add(file);
 	}
 	return [...files].toSorted();
 }
 
 function addDirectory(files: Set<string>, directory: string): void {
-	let entries;
-	try {
-		entries = globSync("**/*", {
-			cwd: directory,
-			exclude: (p) => statSync(resolve(directory, p)).isDirectory(),
-		});
-	} catch {
-		return;
-	}
-	for (const entry of entries) {
-		if (SOURCE_SCANNER_SERVICE.isScriptFile(entry)) {
-			files.add(resolve(directory, entry));
-		}
+	const workspace = createSourceWorkspace();
+	for (const entry of workspace.files({ root: directory, patterns: ["**/*"] })) {
+		if (SOURCE_SCANNER_SERVICE.isScriptFile(entry)) files.add(entry);
 	}
 }
 

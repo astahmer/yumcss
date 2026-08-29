@@ -13,9 +13,10 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
+import { createSourceWorkspace } from "pandwind/source";
 import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
 import { ensureImport } from "../../../shared.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
@@ -781,9 +782,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	/* ---- variant definitions: recipe libs first, then inline cva/sva ---- */
 	const libPaths = new Set(
-		globSync(`{**/*.recipe.ts,**/*.recipe.tsx}`, { cwd: projectRoot }).map((p) =>
-			resolve(projectRoot, p),
-		),
+		createSourceWorkspace().files({
+			root: projectRoot,
+			patterns: ["**/*.recipe.ts", "**/*.recipe.tsx"],
+		}),
 	);
 	const seenDefs = new Set<string>();
 	const libDefs: Array<RecipeDef> = [];
