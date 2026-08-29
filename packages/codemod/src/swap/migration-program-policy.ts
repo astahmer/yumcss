@@ -28,7 +28,14 @@ class DefaultMigrationProgramPolicy implements MigrationProgramPolicy {
 	}
 
 	needsRawTemplate(program: StyleProgram): boolean {
-		if (program.source?.template !== undefined || program.source?.subjectAttrs !== undefined)
+		// A template is source syntax, not a reason to retain the source runtime.
+		// Once its declarations parsed without residuals, the target can emit the
+		// equivalent static object/class and the old CSS-in-JS runtime disappears.
+		// Keep raw syntax only for genuinely dynamic or host-attribute semantics.
+		if (
+			program.source?.subjectAttrs !== undefined ||
+			program.residuals.some((residual) => residual.kind === "dynamic" || residual.kind === "parse")
+		)
 			return true;
 		return program.rules.some(
 			(rule) =>

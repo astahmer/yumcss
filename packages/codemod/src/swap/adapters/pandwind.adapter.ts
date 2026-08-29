@@ -283,6 +283,57 @@ function runtimeComponent(
 	};
 }
 
+/**
+ * Preserve a styled component's host API without retaining a CSS runtime.
+ * Static declarations are emitted through `css.class`; only the component
+ * wrapper remains because consumers may import the styled binding from other
+ * modules that are outside the current codemod file.
+ */
+function staticComponent(
+	program: StyleProgram,
+	programObject: AdapterRenderers["programObject"],
+	context: AdapterEmitContext | undefined,
+): { text: string; imports: readonly string[] } | undefined {
+	const host = context?.host;
+	const subject = host?.subject ?? program.source?.subject;
+	const framework = host?.framework ?? program.source?.framework;
+	if (host?.binding === undefined || subject === undefined || framework === undefined)
+		return undefined;
+	if (
+		program.rules.some(function containsDynamic(rule): boolean {
+			return (
+				rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+				rule.children.some(containsDynamic)
+			);
+		})
+	)
+		return undefined;
+	if (
+		framework !== BuiltinHostFramework.React &&
+		framework !== BuiltinHostFramework.Preact &&
+		framework !== BuiltinHostFramework.Solid
+	)
+		return undefined;
+	const tag = intrinsicTagForSubject(subject);
+	const base = componentExpressionForSubject(subject);
+	if (tag === undefined && base === undefined) return undefined;
+	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
+	const component = tag ?? base;
+	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
+	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
+	const style = `css.class(${programObject(program)})`;
+	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
+	return {
+		text: `(() => { const style = ${style}; const component = (props) => { const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(style, props.${classAttribute})} />; }; return component; })()`,
+		imports: [
+			'import { createCss } from "pandwind/css";',
+			"const css = createCss();",
+			'import { createCx } from "pandwind/cx";',
+			"const cx = createCx();",
+		],
+	};
+}
+
 function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | undefined): string {
 	const rule = program.rules[0]!;
 	const name = `pw-kf-${(context?.host?.binding ?? rule.name ?? "animation").replace(
@@ -590,6 +641,20 @@ export default defineCodemodAdapter({
 	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 	emit(program, { programObject, declarationsObject }, context) {
 		if (program.source?.pattern === CodemodPatternId.CssTemplate) {
+			if (
+				program.residuals.length === 0 &&
+				!program.rules.some(function containsDynamic(rule): boolean {
+					return (
+						rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+						rule.children.some(containsDynamic)
+					);
+				})
+			) {
+				return {
+					text: `css.class(${programObject(program)})`,
+					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+				};
+			}
 			return {
 				text: `cssTemplate\`${program.source.template ?? ""}\``,
 				imports: [],
@@ -627,6 +692,10 @@ export default defineCodemodAdapter({
 			program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
 		) {
 			const component = runtimeRawComponent(program, context);
+			if (component !== undefined) return component;
+		}
+		if (context?.host?.wrapComponent === true) {
+			const component = staticComponent(program, programObject, context);
 			if (component !== undefined) return component;
 		}
 		const host = program.source;

@@ -162,15 +162,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const second = migrate("components/Second.tsx");
 		expect(first.residuals).toEqual([]);
 		expect(second.residuals).toEqual([]);
-		expect(first.code).toContain(
-			`id: "${CodemodStyleIdentity.className("components/First.tsx", "Wrapper")}"`,
-		);
-		expect(second.code).toContain(
-			`id: "${CodemodStyleIdentity.className("components/Second.tsx", "Wrapper")}"`,
-		);
-		expect(first.code).not.toContain(
-			CodemodStyleIdentity.className("components/Second.tsx", "Wrapper"),
-		);
+		expect(first.code).toContain('css.class({ display: "flex" })');
+		expect(second.code).toContain('css.class({ display: "flex" })');
+		expect(first.code).not.toContain("createRuntimeCss");
+		expect(second.code).not.toContain("createRuntimeCss");
 	});
 
 	test("wraps a standalone styled intrinsic default export for React", () => {
@@ -384,7 +379,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
-	test("loads package/config evidence and migrates static tagged templates", () => {
+	test("loads package/config evidence and statically extracts tagged templates", () => {
 		const adapter = getCodemodAdapter("emotion")!;
 		const config = adapter.loadConfig({
 			file: "Card.tsx",
@@ -403,7 +398,34 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
-		expect(result.code).toContain("cssTemplate`color: red; background-color: blue;`");
+		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
+		expect(result.code).not.toContain("cssTemplate`");
+	});
+
+	test("statically extracts styled-components templates and leaves runtime only for dynamics", () => {
+		const staticResult = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div`color: red; background-color: blue;`;\n" +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(staticResult.converted).toBe(1);
+		expect(staticResult.residuals).toEqual([]);
+		expect(staticResult.code).toContain(
+			'const Card = css.class({ color: "red", backgroundColor: "blue" })',
+		);
+		expect(staticResult.code).toContain("<div className={Card} />");
+		expect(staticResult.code).not.toContain("createRuntimeCss");
+
+		const dynamicResult = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div`color: ${theme.foreground};`;\n" +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(dynamicResult.converted).toBe(1);
+		expect(dynamicResult.residuals).toEqual([]);
+		expect(dynamicResult.code).toContain("createRuntimeCss");
 	});
 
 	test("uses the default project reader and reports unsupported rule kinds", () => {
