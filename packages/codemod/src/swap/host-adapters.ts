@@ -163,8 +163,14 @@ const builtin = {
 		["svelte"],
 		(file, source) => file.endsWith(".svelte") || /from\s+["']svelte["']/.test(source),
 	),
-	astro: makeAdapter(BuiltinHostFramework.Astro, [".astro"], "class", true, true, ["astro"], (file) =>
-		file.endsWith(".astro"),
+	astro: makeAdapter(
+		BuiltinHostFramework.Astro,
+		[".astro"],
+		"class",
+		true,
+		true,
+		["astro"],
+		(file) => file.endsWith(".astro"),
 	),
 } satisfies Record<BuiltinHostFramework, HostFrameworkAdapter>;
 

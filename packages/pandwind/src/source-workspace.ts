@@ -76,4 +76,3 @@ class NodeSourceWorkspace implements SourceWorkspace {
 export const createSourceWorkspace = (
 	dependencies: SourceWorkspaceDependencies = {},
 ): SourceWorkspace => new NodeSourceWorkspace(dependencies);
-

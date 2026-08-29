@@ -97,10 +97,7 @@ export function createHostCompilerPlugin(framework: HostFramework): HostCompiler
 			return host.detect(file, source);
 		},
 		transform(source, context) {
-			if (
-				framework === BuiltinHostFramework.React ||
-				framework === BuiltinHostFramework.Preact
-			) {
+			if (framework === BuiltinHostFramework.React || framework === BuiltinHostFramework.Preact) {
 				const folded = foldStackElements(source, context.file);
 				return { code: folded.code, changed: folded.code !== source, diagnostics: [], framework };
 			}

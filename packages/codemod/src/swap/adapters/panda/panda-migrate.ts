@@ -84,10 +84,6 @@ export interface PandaMigrateReport {
 
 type FileEntry = PandaMigrationFile;
 
-function resolve(root: string, p: string): string {
-	return p.startsWith("/") ? p : `${root}/${p}`;
-}
-
 /** Longest common directory of all collected files (project-root guess). */
 export function inferCommonRoot(files: Array<{ path: string }>): string {
 	if (files.length === 0) return process.cwd();

@@ -98,6 +98,7 @@ export interface CodemodAdapterSpec {
 	): Pick<AdapterEmitResult, "text" | "imports">;
 }
 
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped adapter construction policy
 export class CodemodAdapterKit {
 	static dependency(
 		name: string,

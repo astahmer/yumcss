@@ -25,6 +25,7 @@ export interface AdapterContractReport {
  * an ecosystem: a new adapter gets the same identity, config, parse, emit,
  * and validation checks as every built-in adapter.
  */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped contract policy
 export class AdapterContractSuite {
 	static inspect(adapter: StyleAdapter, probe: AdapterContractProbe = {}): AdapterContractReport {
 		const file = probe.file ?? "fixture.tsx";
@@ -50,27 +51,29 @@ export class AdapterContractSuite {
 			const config = adapter.loadConfig({ file, source });
 			const parsed = adapter.parse(source, { file, source, config });
 			if (!Array.isArray(parsed.matches)) fail("parse", "parse result matches must be an array");
-			if (!Array.isArray(parsed.residuals)) fail("parse", "parse result residuals must be an array");
+			if (!Array.isArray(parsed.residuals))
+				fail("parse", "parse result residuals must be an array");
 			for (const match of parsed.matches) {
 				const emitted = adapter.emit(match.program, {
 					file,
 					config,
 					mode: "safe",
-						capability: {
-							adapter: adapter.id,
-							convertible: true,
-							blockers: [],
-							mode: "safe",
-							requirements: [],
-							exact: [],
-							partial: [],
-							unsupported: [],
-						},
+					capability: {
+						adapter: adapter.id,
+						convertible: true,
+						blockers: [],
+						mode: "safe",
+						requirements: [],
+						exact: [],
+						partial: [],
+						unsupported: [],
+					},
 					index: 0,
 				});
 				if (typeof emitted.text !== "string") fail("emit", "emission text must be a string");
 				const validation = adapter.validate(match.program, match.program);
-				if (typeof validation.valid !== "boolean") fail("validate", "validation must report valid boolean");
+				if (typeof validation.valid !== "boolean")
+					fail("validate", "validation must report valid boolean");
 			}
 		} catch (error) {
 			fail("lifecycle", error instanceof Error ? error.message : "adapter lifecycle threw");

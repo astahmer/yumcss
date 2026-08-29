@@ -15,8 +15,16 @@ describe("source workspace port", () => {
 			"/project/src/Card.vue",
 		]);
 		expect(workspace.documents({ root: "/project", patterns: ["**/*"] })).toEqual([
-			{ file: "/project/src/Card.tsx", root: "/project", source: "source for /project/src/Card.tsx" },
-			{ file: "/project/src/Card.vue", root: "/project", source: "source for /project/src/Card.vue" },
+			{
+				file: "/project/src/Card.tsx",
+				root: "/project",
+				source: "source for /project/src/Card.tsx",
+			},
+			{
+				file: "/project/src/Card.vue",
+				root: "/project",
+				source: "source for /project/src/Card.vue",
+			},
 		]);
 	});
 

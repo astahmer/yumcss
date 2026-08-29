@@ -11,28 +11,31 @@ export type {
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
-export enum SourceLanguageId {
-	TypeScript = "typescript",
-	Tsx = "tsx",
-	JavaScript = "javascript",
-	Jsx = "jsx",
-	Vue = "vue",
-	Svelte = "svelte",
-	Astro = "astro",
-	Mdx = "mdx",
-	Unknown = "unknown",
-}
+/** Runtime-compatible typed identities; enum syntax cannot load in Vite's strip-only Node path. */
+export const SourceLanguageId = {
+	TypeScript: "typescript",
+	Tsx: "tsx",
+	JavaScript: "javascript",
+	Jsx: "jsx",
+	Vue: "vue",
+	Svelte: "svelte",
+	Astro: "astro",
+	Mdx: "mdx",
+	Unknown: "unknown",
+} as const;
+export type SourceLanguageId = (typeof SourceLanguageId)[keyof typeof SourceLanguageId];
 
-export enum SourceFrameworkId {
-	React = "react",
-	Preact = "preact",
-	Solid = "solid",
-	Qwik = "qwik",
-	Vue = "vue",
-	Svelte = "svelte",
-	Astro = "astro",
-	Mdx = "mdx",
-}
+export const SourceFrameworkId = {
+	React: "react",
+	Preact: "preact",
+	Solid: "solid",
+	Qwik: "qwik",
+	Vue: "vue",
+	Svelte: "svelte",
+	Astro: "astro",
+	Mdx: "mdx",
+} as const;
+export type SourceFrameworkId = (typeof SourceFrameworkId)[keyof typeof SourceFrameworkId];
 
 export type SourceLanguage = SourceLanguageId | (string & {});
 export type SourceFramework = SourceFrameworkId | (string & {});
@@ -117,8 +120,11 @@ export interface SourceScannerContractReport {
 }
 
 /** Generic registry contract for built-in and plugin-provided language adapters. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped scanner contract policy
 export class SourceScannerContractSuite {
-	static inspect(registry: Pick<SourceScannerRegistry, "adapters">): readonly SourceScannerContractReport[] {
+	static inspect(
+		registry: Pick<SourceScannerRegistry, "adapters">,
+	): readonly SourceScannerContractReport[] {
 		return registry.adapters.map((adapter) => {
 			const failures: string[] = [];
 			if (adapter.schema !== SOURCE_SCANNER_SCHEMA) failures.push("invalid scanner schema");
@@ -126,7 +132,10 @@ export class SourceScannerContractSuite {
 			if (adapter.languages.length === 0) failures.push("scanner has no language");
 			try {
 				const language = adapter.languages[0];
-				const result = adapter.scan({ file: "contract" + (extensionForLanguage(language!) ?? ".txt"), source: "" });
+				const result = adapter.scan({
+					file: "contract" + (extensionForLanguage(language!) ?? ".txt"),
+					source: "",
+				});
 				if (result.language !== language) failures.push("scanner returned an unexpected language");
 			} catch (error) {
 				failures.push(error instanceof Error ? error.message : "scanner lifecycle threw");
@@ -136,7 +145,8 @@ export class SourceScannerContractSuite {
 	}
 
 	static assert(report: SourceScannerContractReport): void {
-		if (!report.valid) throw new Error(`${report.scanner} scanner contract failed: ${report.failures.join("; ")}`);
+		if (!report.valid)
+			throw new Error(`${report.scanner} scanner contract failed: ${report.failures.join("; ")}`);
 	}
 }
 
@@ -370,29 +380,54 @@ export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeFrameworkAdapter(
 		"jsx-react",
 		SourceFrameworkId.React,
-		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
+		[
+			SourceLanguageId.TypeScript,
+			SourceLanguageId.Tsx,
+			SourceLanguageId.JavaScript,
+			SourceLanguageId.Jsx,
+		],
 		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
 	),
 	makeFrameworkAdapter(
 		"jsx-preact",
 		SourceFrameworkId.Preact,
-		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
+		[
+			SourceLanguageId.TypeScript,
+			SourceLanguageId.Tsx,
+			SourceLanguageId.JavaScript,
+			SourceLanguageId.Jsx,
+		],
 		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
 	),
 	makeFrameworkAdapter(
 		"jsx-solid",
 		SourceFrameworkId.Solid,
-		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
+		[
+			SourceLanguageId.TypeScript,
+			SourceLanguageId.Tsx,
+			SourceLanguageId.JavaScript,
+			SourceLanguageId.Jsx,
+		],
 		[/from\s+["']solid-js(?:\/|["'])/],
 	),
 	makeFrameworkAdapter(
 		"jsx-qwik",
 		SourceFrameworkId.Qwik,
-		[SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx],
+		[
+			SourceLanguageId.TypeScript,
+			SourceLanguageId.Tsx,
+			SourceLanguageId.JavaScript,
+			SourceLanguageId.Jsx,
+		],
 		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
 	),
 	makeAdapter(SourceLanguageId.Mdx, [SourceLanguageId.Mdx]),
-	makeAdapter(SourceLanguageId.TypeScript, [SourceLanguageId.TypeScript, SourceLanguageId.Tsx, SourceLanguageId.JavaScript, SourceLanguageId.Jsx]),
+	makeAdapter(SourceLanguageId.TypeScript, [
+		SourceLanguageId.TypeScript,
+		SourceLanguageId.Tsx,
+		SourceLanguageId.JavaScript,
+		SourceLanguageId.Jsx,
+	]),
 	makeAdapter(SourceLanguageId.Vue, [SourceLanguageId.Vue]),
 	makeAdapter(SourceLanguageId.Svelte, [SourceLanguageId.Svelte]),
 	makeAdapter(SourceLanguageId.Astro, [SourceLanguageId.Astro]),
@@ -413,7 +448,7 @@ export function createSourceLanguageClassifier(
 	return {
 		languageForFile(file) {
 			const extension = `.${file.split(".").pop()?.toLowerCase() ?? ""}`;
-		return languagesByExtension.get(extension) ?? SourceLanguageId.Unknown;
+			return languagesByExtension.get(extension) ?? SourceLanguageId.Unknown;
 		},
 		isSupportedFile(file) {
 			return this.languageForFile(file) !== SourceLanguageId.Unknown;

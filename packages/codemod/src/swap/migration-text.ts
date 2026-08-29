@@ -1,6 +1,7 @@
 import type { StyleProgram } from "./semantic-ir.ts";
 
 /** Text policies shared by migration orchestration, independent of adapters. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped migration text policy
 export class MigrationText {
 	static consolidateImports(statements: Iterable<string>): string[] {
 		const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
@@ -20,7 +21,8 @@ export class MigrationText {
 				}
 			} else {
 				const [defaultPart, namedPart] = specifier.split(/\s*,\s*\{/);
-				if (defaultPart !== undefined && defaultPart !== "") group.defaultImport = defaultPart.trim();
+				if (defaultPart !== undefined && defaultPart !== "")
+					group.defaultImport = defaultPart.trim();
 				if (namedPart !== undefined) {
 					for (const name of namedPart.replace(/}\s*$/, "").split(",")) {
 						const trimmed = name.trim();
@@ -32,9 +34,10 @@ export class MigrationText {
 		}
 		return [
 			...[...grouped].map(([module, group]) => {
-				const named = group.named.size > 0 ? "{ " + [...group.named].toSorted().join(", ") + " }" : "";
+				const named =
+					group.named.size > 0 ? "{ " + [...group.named].toSorted().join(", ") + " }" : "";
 				const specifier = [group.defaultImport, named].filter(Boolean).join(", ");
-				return "import " + specifier + " from \"" + module + "\";";
+				return "import " + specifier + ' from "' + module + '";';
 			}),
 			...other,
 		];

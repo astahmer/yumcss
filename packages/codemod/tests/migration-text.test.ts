@@ -15,7 +15,9 @@ describe("migration text policies", () => {
 	test("preserves keyframe bindings during target validation", () => {
 		expect(
 			MigrationText.validationSource("keyframes({})", {
-				rules: [{ kind: "keyframes", name: "spin", declarations: [], conditions: [], children: [] }],
+				rules: [
+					{ kind: "keyframes", name: "spin", declarations: [], conditions: [], children: [] },
+				],
 			} as never),
 		).toBe("const spin = keyframes({})");
 	});

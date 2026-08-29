@@ -20,6 +20,7 @@ export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
 	PandaMigrationPipelineOptions,
+	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./migration-pipeline.ts";

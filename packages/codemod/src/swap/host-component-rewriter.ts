@@ -284,8 +284,7 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			],
 		};
 	}
-	const classAttribute =
-		request.framework === BuiltinHostFramework.Solid ? "class" : "className";
+	const classAttribute = request.framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const declaration =
 		`${declarationMatch[1]}(props) => <${request.tag} {...props} ` +
 		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
@@ -400,8 +399,7 @@ function rewriteStandaloneJsx(
 	}
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
-	const classAttribute =
-		request.framework === BuiltinHostFramework.Solid ? "class" : "className";
+	const classAttribute = request.framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = (props) => <${request.tag} {...props} ` +

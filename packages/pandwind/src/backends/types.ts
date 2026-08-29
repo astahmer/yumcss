@@ -51,8 +51,7 @@ export type StyleBackendId =
 	| import("./backend-identifiers.ts").BuiltinBackendId
 	| (string & { readonly __pandwindBackendId: unique symbol });
 
-export const externalBackendId = (value: string): StyleBackendId =>
-	value as StyleBackendId;
+export const externalBackendId = (value: string): StyleBackendId => value as StyleBackendId;
 
 export type BackendCapabilityLevel = "unsupported" | "partial" | "exact";
 export type BackendLossiness = "lossless" | "lossy" | "unsupported";

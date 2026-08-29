@@ -67,6 +67,7 @@ export {
 export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
+	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 	PandaMigrationPipelineOptions,

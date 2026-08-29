@@ -12,6 +12,7 @@ export interface BackendContractReport {
 }
 
 /** Generic substitution suite shared by built-in and third-party backends. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped backend contract policy
 export class BackendContractSuite {
 	static inspect(
 		factory: StyleBackendFactory,
@@ -24,7 +25,8 @@ export class BackendContractSuite {
 			failures.push("declaration capability is missing");
 		try {
 			const options =
-				probe.options ?? (factory.id === BuiltinBackendId.Object ? { name: factory.id } : undefined);
+				probe.options ??
+				(factory.id === BuiltinBackendId.Object ? { name: factory.id } : undefined);
 			const backend = factory.create(options);
 			if (backend.name.trim() === "") failures.push("backend name is empty");
 			backend.declare("color", "red");
@@ -35,6 +37,7 @@ export class BackendContractSuite {
 	}
 
 	static assert(report: BackendContractReport): void {
-		if (!report.valid) throw new Error(`${report.backend} backend contract failed: ${report.failures.join("; ")}`);
+		if (!report.valid)
+			throw new Error(`${report.backend} backend contract failed: ${report.failures.join("; ")}`);
 	}
 }

@@ -77,9 +77,9 @@ export function createPandaMigrationPipeline(
 		{
 			id: PandaMigrationStageId.ThemeConfig,
 			phase: PandaMigrationPhase.Discovery,
-			async run({ options, workspace }) {
+			async run({ options: migrationOptions, workspace }) {
 				if (workspace === undefined) throw new Error("theme-config requires project discovery");
-				const theme = await services.loadTheme(options.projectRoot);
+				const theme = await services.loadTheme(migrationOptions.projectRoot);
 				return {
 					workspace: { ...workspace, theme },
 					notes: [`theme/config stage loaded ${theme.tokenVars.size} token variable(s)`],
@@ -207,8 +207,8 @@ export function createPandaMigrationPipeline(
 		{
 			id: PandaMigrationStageId.ValidationReporting,
 			phase: PandaMigrationPhase.Validation,
-			async run({ options, workspace, completedStages, artifacts }) {
-				const report = await services.run({ ...options, workspace });
+			async run({ options: migrationOptions, workspace, completedStages, artifacts }) {
+				const report = await services.run({ ...migrationOptions, workspace });
 				return {
 					report: {
 						...report,
@@ -229,8 +229,8 @@ export function createPandaMigrationPipeline(
 	return {
 		schema: PANDA_MIGRATION_PIPELINE_SCHEMA,
 		stages,
-		async run(options) {
-			let context: PandaMigrationContext = { options, completedStages: [] };
+		async run(migrationOptions) {
+			let context: PandaMigrationContext = { options: migrationOptions, completedStages: [] };
 			for (const stage of stages) {
 				// Stages are sequential by contract: each stage consumes prior context.
 				// oxlint-disable-next-line no-await-in-loop
