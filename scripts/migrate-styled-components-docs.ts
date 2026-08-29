@@ -106,7 +106,28 @@ function containsDynamic(program: StyleProgram): boolean {
 }
 
 function hasComponentSelectorInterpolation(template: string): boolean {
-	return /\$\{\s*(?:[A-Z_$][\w$]*|\([^)]*\)\s*=>\s*[A-Z_$][\w$]*)\s*\}/.test(template);
+	const isSelectorPosition = (end: number): boolean => {
+		for (let index = end; index < template.length; index++) {
+			const character = template[index];
+			if (character === ";" || character === "}") return false;
+			if (character === "{") return true;
+		}
+		return false;
+	};
+	for (let index = 0; index < template.length; index++) {
+		if (template[index] !== "$" || template[index + 1] !== "{") continue;
+		const end = template.indexOf("}", index + 2);
+		if (end < 0) continue;
+		const expression = template.slice(index + 2, end).trim();
+		if (
+			(/^[A-Z_$][\w$]*$/.test(expression) ||
+				/^(?:\(\s*[^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*[A-Z_$][\w$]*$/.test(expression)) &&
+			isSelectorPosition(end + 1)
+		)
+			return true;
+		index = end;
+	}
+	return false;
 }
 
 function requiresRuntimeCss(program: StyleProgram): boolean {

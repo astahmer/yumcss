@@ -111,12 +111,12 @@ own matrix entry.
 
 The styled-components lane is static-first: its current pinned corpus has 82
 fully static call sites, 203 dynamic values lowered without runtime CSS
-injection, and 44 opaque runtime fallbacks. The fallback is an explicit safety
+injection, and 42 opaque runtime fallbacks. The fallback is an explicit safety
 boundary, not a silent loss of styling; the next improvement is to lower those
 specific semantics, not to make runtime CSS the default.
 
 The latest styled-components proof covers 55 routes (31 HTML routes), with no
 server or browser failures, equivalent browser states in both static lanes, and
-623,777 bytes versus 1,321,407 bytes for the reference. The comparator moves
+546,103 bytes versus 1,321,407 bytes for the reference. The comparator moves
 reference styled-components style nodes to `head` while preserving their CSS,
 so the result measures rendered CSS behavior rather than injection topology.

@@ -40,12 +40,11 @@ class DefaultMigrationProgramPolicy implements MigrationProgramPolicy {
 				/=>|\bfunction\b|\b(?:props|theme|attrs)\b/.test(program.source.subjectAttrs)) ||
 			program.residuals.some((residual) => residual.kind === "parse") ||
 			program.residuals.some(
-				(residual) => residual.kind === "dynamic" && residual.hint?.includes("condition") === true,
-			) ||
-			(program.source?.template !== undefined &&
-				/\$\{\s*(?:[A-Z_$][\w$]*|\([^)]*\)\s*=>\s*[A-Z_$][\w$]*)\s*\}/.test(
-					program.source.template,
-				))
+				(residual) =>
+					residual.kind === "dynamic" &&
+					(residual.hint?.includes("condition") === true ||
+						residual.hint?.includes("selector") === true),
+			)
 		)
 			return true;
 		return false;

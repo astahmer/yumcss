@@ -186,6 +186,14 @@ function hasUnsafeTemplateDynamic(template: string, source?: string): boolean {
 }
 
 function hasComponentSelectorInterpolation(template: string): boolean {
+	const isSelectorPosition = (end: number): boolean => {
+		for (let index = end; index < template.length; index++) {
+			const character = template[index];
+			if (character === ";" || character === "}") return false;
+			if (character === "{") return true;
+		}
+		return false;
+	};
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
 		const block = matchBlock(template, index + 1);
@@ -194,8 +202,9 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 		if (
 			/^[A-Z_$][\w$]*$/.test(expression) ||
 			/^(?:\(\s*[^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*[A-Z_$][\w$]*$/.test(expression)
-		)
-			return true;
+		) {
+			if (isSelectorPosition(block.end)) return true;
+		}
 		index = block.end - 1;
 	}
 	return false;

@@ -18,9 +18,9 @@ describe("styled-components docs migration lanes", () => {
 			expect(report.changedFiles).toBe(54);
 			expect(report.convertedCallSites).toBe(285);
 			expect(report.staticCallSites).toBe(82);
-			expect(report.runtimeFallbackCallSites).toBe(44);
+			expect(report.runtimeFallbackCallSites).toBe(42);
 			expect(report.dynamicValueCallSites).toBe(203);
-			expect(report.staticCssCoverageRatio).toBeCloseTo((285 - 44) / 285);
+			expect(report.staticCssCoverageRatio).toBeCloseTo((285 - 42) / 285);
 			expect(report.staticExtractionRatio).toBeCloseTo(82 / 285);
 			expect(report.skippedCallSites).toBe(0);
 			expect(report.residuals).toEqual([]);
