@@ -28,8 +28,8 @@ description: Migrate a real repository from Tailwind, Panda, StyleX, styled-comp
 - Never silently drop a declaration, selector, theme dependency, composition,
   plugin transform, or framework behavior. Emit a structured residual or add
   the missing adapter/lowering.
-- Migration is `source adapter → StyleProgram/SwapIR → target adapter →
-validator`; do not create bespoke `XToPandwind` branches.
+- Migration is a pipeline: source adapter → StyleProgram/SwapIR → target
+  adapter → validator; do not create bespoke `XToPandwind` branches.
 - Static extraction is the default. Runtime CSS is an explicit, measured
   fallback—not the normal answer for dynamic values.
 - Keep adapter-specific logic inside its adapter. Shared runners consume
