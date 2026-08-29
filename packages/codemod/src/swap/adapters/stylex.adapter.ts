@@ -39,12 +39,16 @@ function sourceObjectOptions(source: string) {
 			),
 		].map((match) => [match[1], match[3]]),
 	);
-	const computedKeys = Object.fromEntries(
-		[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
+	const computedKeys = Object.fromEntries([
+		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
 			`${match[1]}.${match[2]}`,
 			`--${match[2]}`,
 		]),
-	);
+		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\[(['"])(--[^'"]+)\2\]/g)].map((match) => [
+			match[0],
+			match[3],
+		]),
+	]);
 	return {
 		conditionValues,
 		computedKeys,
