@@ -98,6 +98,9 @@ export interface AdapterEmitContext {
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly subject?: string;
+		readonly subjectAttrs?: string;
+		/** Deterministic file-scoped class used by runtime component wrappers. */
+		readonly stableClassName?: string;
 		/** Ask a target to emit a host component instead of a style value. */
 		readonly wrapComponent?: boolean;
 	};

@@ -117,6 +117,7 @@ export {
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
+	CodemodStyleIdentity,
 	externalIdentifier,
 } from "./identifiers.ts";
 export type { ExternalIdentifier } from "./identifiers.ts";

@@ -115,6 +115,8 @@ export interface StyleProgramSource {
 	/** Authored factory subject, for example `styled.button` or `styled(Base)`. */
 	readonly subject?: string;
 	readonly subjectKind?: "member" | "call";
+	/** Authored `.attrs(...)` expression attached to a styled subject. */
+	readonly subjectAttrs?: string;
 	readonly framework?: string;
 	/** Original JSX opening element when a source adapter owns style props. */
 	readonly hostOpenTag?: string;
@@ -122,6 +124,8 @@ export interface StyleProgramSource {
 	readonly hostStyleAttributes?: readonly string[];
 	/** Marks a style program that must be rendered back into its host element. */
 	readonly hostAttribute?: string;
+	/** Original template body retained for a lossless runtime global fallback. */
+	readonly template?: string;
 }
 
 interface StyleProgramCanonicalization {

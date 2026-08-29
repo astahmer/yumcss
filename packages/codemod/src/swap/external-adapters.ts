@@ -30,7 +30,7 @@ import {
 	type StyleProgramResidual,
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
-import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
+import { findTemplateLiteralEnd, parseAdapterTemplate } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
@@ -221,10 +221,76 @@ function adapterSource(
 }
 
 function styledSubject(source: string, start: number): Partial<StyleProgramSource> {
-	const match = source.slice(start).match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/);
-	if (match?.[1] === undefined) return {};
-	const subject = `styled${match[1].replace(/\s+/g, " ").replace(/\.\s+/g, ".")}`;
-	return { subject, subjectKind: match[1].trim().startsWith(".") ? "member" : "call" };
+	const firstTick = findStyledTemplateStart(source, start);
+	const end = firstTick === -1 ? findStyledObjectOpen(source, start) : firstTick;
+	if (end === -1) return {};
+	const prefix = source.slice(start, end).trim();
+	const match = prefix.match(/^styled\s*(?:\.|\()/);
+	if (match === null) return {};
+	const attrs = subjectAttrs(prefix);
+	return {
+		subject: prefix,
+		subjectKind: prefix.slice("styled".length).trim().startsWith(".") ? "member" : "call",
+		...(attrs === undefined ? {} : { subjectAttrs: attrs }),
+	};
+}
+
+function findStyledObjectOpen(source: string, start: number): number {
+	const statementEnd = source.indexOf(";", start);
+	const segment = source.slice(start, statementEnd === -1 ? source.length : statementEnd);
+	let result = -1;
+	for (const match of segment.matchAll(/\(\s*\{/g)) result = start + (match.index ?? 0);
+	return result;
+}
+
+function findStyledTemplateStart(source: string, start: number): number {
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === quote && source[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"') {
+			quote = character;
+			continue;
+		}
+		if (character === "`") {
+			if (depth === 0) return index;
+			quote = character;
+			continue;
+		}
+		if (character === "(" || character === "{" || character === "[") depth++;
+		if (character === ")" || character === "}" || character === "]") depth = Math.max(0, depth - 1);
+	}
+	return -1;
+}
+
+function subjectAttrs(subject: string): string | undefined {
+	const markerStart = subject.indexOf(".attrs");
+	if (markerStart === -1) return undefined;
+	const open = subject.indexOf("(", markerStart + ".attrs".length);
+	if (open === -1) return undefined;
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = open; index < subject.length; index++) {
+		const character = subject[index]!;
+		if (quote !== undefined) {
+			if (character === quote && subject[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "(") depth++;
+		if (character === ")") {
+			depth--;
+			if (depth === 0) return subject.slice(open + 1, index).trim();
+		}
+	}
+	return undefined;
 }
 
 function conditionKey(condition: StyleProgram["rules"][number]["conditions"][number]): string {
@@ -439,147 +505,12 @@ function parseGlobalProgram(
 	);
 }
 
-function camelProperty(property: string): string {
-	return property
-		.trim()
-		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
-}
-
-function templateDynamicExpression(rawValue: string): string {
-	const interpolation = /^\$\{([\s\S]+)\}$/.exec(rawValue.trim());
-	if (interpolation?.[1] !== undefined) return interpolation[1].trim();
-	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
-}
-
 function parseTemplateProgram(
 	body: string,
 	context: AdapterParseContext,
 	start: number,
 ): StyleProgram {
-	const parseBlock = (
-		input: string,
-	): {
-		declarations: StyleDeclaration[];
-		children: StyleProgram["rules"][number][];
-		residuals: StyleProgramResidual[];
-	} => {
-		const declarations: StyleDeclaration[] = [];
-		const children: StyleProgram["rules"][number][] = [];
-		const residuals: StyleProgramResidual[] = [];
-		let cursor = 0;
-		let order = 0;
-		const addTemplateDeclaration = (statement: string): void => {
-			const trimmed = statement.replace(/\/\*.*?\*\//gs, "").trim();
-			if (trimmed === "") return;
-			const colon = trimmed.indexOf(":");
-			if (colon <= 0) {
-				residuals.push({
-					kind: "parse",
-					text: statement,
-					hint: "nested template CSS requires a rule parser",
-				});
-				return;
-			}
-			const rawValue = trimmed.slice(colon + 1).trim();
-			const interpolation = /\$\{([\s\S]+)\}/.exec(rawValue);
-			let value: StyleDeclaration["value"];
-			if (interpolation?.[1] !== undefined) {
-				const expression = templateDynamicExpression(rawValue);
-				value = { kind: "dynamic", expression, lowering: "residual" };
-				residuals.push({
-					kind: "dynamic",
-					text: rawValue,
-					hint: interpolation[1]?.includes("=>")
-						? "function interpolation requires a framework prop wrapper"
-						: "template interpolation requires a runtime-aware lowering",
-				});
-			} else {
-				value = { kind: "literal", value: rawValue };
-			}
-			declarations.push({
-				conditions: [],
-				property: camelProperty(trimmed.slice(0, colon)),
-				value,
-			});
-		};
-		while (cursor < input.length) {
-			while (/\s/.test(input[cursor] ?? "")) cursor++;
-			if (cursor >= input.length) break;
-			let index = cursor;
-			let parens = 0;
-			let quote: string | undefined;
-			let delimiter: ";" | "{" | undefined;
-			for (; index < input.length; index++) {
-				const character = input[index]!;
-				if (quote !== undefined) {
-					if (character === quote && input[index - 1] !== "\\\\") quote = undefined;
-					continue;
-				}
-				if (character === "'" || character === '"') {
-					quote = character;
-					continue;
-				}
-				if (character === "(") parens++;
-				if (character === ")") parens--;
-				if (character === "$" && input[index + 1] === "{") {
-					const interpolation = matchBlock(input, index + 1);
-					if (interpolation !== null) {
-						index = interpolation.end - 1;
-						continue;
-					}
-				}
-				if (parens === 0 && (character === ";" || character === "{")) {
-					delimiter = character;
-					break;
-				}
-			}
-			if (delimiter === "{") {
-				const selector = input.slice(cursor, index).trim();
-				const block = matchBlock(input, index);
-				if (block === null || selector === "") {
-					residuals.push({
-						kind: "parse",
-						text: input.slice(cursor),
-						hint: "unbalanced template CSS",
-					});
-					break;
-				}
-				const nested = parseBlock(block.body);
-				children.push({
-					kind: "style",
-					selector,
-					conditions: [],
-					declarations: nested.declarations,
-					children: nested.children,
-					order: order++,
-				});
-				residuals.push(...nested.residuals);
-				cursor = block.end;
-				continue;
-			}
-			if (delimiter === ";") {
-				addTemplateDeclaration(input.slice(cursor, index));
-				cursor = index + 1;
-				continue;
-			}
-			addTemplateDeclaration(input.slice(cursor));
-			break;
-		}
-		return { declarations, children, residuals };
-	};
-	const parsed = parseBlock(body);
-	return styleProgramFromRules(
-		[
-			{
-				kind: "style",
-				conditions: [],
-				declarations: parsed.declarations,
-				children: parsed.children,
-				order: 0,
-			},
-		],
-		{ source: adapterSource(context, start), residuals: parsed.residuals },
-	);
+	return parseAdapterTemplate(body, context, context.config.adapter, start);
 }
 
 function kebabProperty(property: string): string {
@@ -647,12 +578,12 @@ function parseCalls(
 						preserved.size === 0
 							? initialTag
 							: JsxStyleHost.parse(
-								source,
-								start,
-								context,
-								(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
-								adapterSource(context, start),
-							);
+									source,
+									start,
+									context,
+									(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
+									adapterSource(context, start),
+								);
 					if (tag === undefined) continue;
 					const program = styleProgramFromSourceObject(tag.body, {
 						...resolvedObjectOptions,
@@ -712,17 +643,12 @@ function parseCalls(
 				continue;
 			}
 			if (pattern.form === "template") {
-				const firstTick = source.indexOf("`", start);
+				const firstTick =
+					pattern.kind === "styled"
+						? findStyledTemplateStart(source, start)
+						: source.indexOf("`", start);
 				const lastTick = findTemplateLiteralEnd(source, firstTick);
 				if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
-				if (source.slice(start, firstTick).includes("=>")) {
-					residuals.push({
-						kind: "capability",
-						text: source.slice(start, lastTick + 1),
-						hint: `${pattern.name} function-valued styles require a host-specific lowering`,
-					});
-					continue;
-				}
 				const template = source.slice(start, lastTick + 1);
 				let program = parseTemplateProgram(source.slice(firstTick + 1, lastTick), context, start);
 				program = {
@@ -735,6 +661,10 @@ function parseCalls(
 					},
 				};
 				program = pattern.transform?.(program, context) ?? program;
+				program = {
+					...program,
+					source: { ...program.source, pattern: pattern.name },
+				};
 				matches.push({ start, end: start + template.length, program, sourceText: template });
 				continue;
 			}
@@ -881,13 +811,96 @@ function removeExcludedMatches(source: string, pattern: RegExp): string {
 	return applyEdits(source, edits);
 }
 
-export function removeSourceImports(code: string, modules: readonly string[]): string {
+export function removeSourceImports(
+	code: string,
+	modules: readonly string[],
+	file = "pandwind-adapter.ts",
+): string {
 	let result = code;
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const pattern = new RegExp(
+			`\\bimport\\s+([^;]*?)\\s+from\\s+(["'])${quoted}\\2\\s*;?`,
+			"g",
+		);
+		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+		try {
+			mask = computeExcludedRanges(result, file);
+		} catch {
+			// Keep cleanup best-effort for incomplete source snippets.
+		}
+		const edits: Array<{ start: number; end: number; text: string }> = [];
+		for (const match of result.matchAll(pattern)) {
+			const start = match.index ?? 0;
+			if (mask?.isExcluded(start)) continue;
+			const specifier = match[1]?.trim();
+			if (specifier === undefined || specifier === "") continue;
+			const remainder = result.slice(0, start) + result.slice(start + match[0].length);
+			const declaredNames = new Set(
+				[...remainder.matchAll(/\b(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g)].flatMap(
+					(entry) => (entry[1] === undefined ? [] : [entry[1]]),
+				),
+			);
+			for (const imported of remainder.matchAll(/\bimport\s+([^;]*?)\s+from\s+["'][^"']+["']/g)) {
+				const importedSpecifier = imported[1]?.trim() ?? "";
+				const defaultName = /^[A-Za-z_$][\w$]*/.exec(importedSpecifier)?.[0];
+				if (defaultName !== undefined) declaredNames.add(defaultName);
+				const namespaceName = /^\*\s+as\s+([A-Za-z_$][\w$]*)/.exec(importedSpecifier)?.[1];
+				if (namespaceName !== undefined) declaredNames.add(namespaceName);
+				const importedBlock = /\{([\s\S]*)\}/.exec(importedSpecifier)?.[1];
+				for (const entry of importedBlock?.split(",") ?? []) {
+					const parts = entry.trim().split(/\s+as\s+/);
+					if (parts[0] !== undefined && parts[0] !== "") declaredNames.add(parts[1] ?? parts[0]);
+				}
+			}
+			let remainderMask: ReturnType<typeof computeExcludedRanges> | undefined;
+			try {
+				remainderMask = computeExcludedRanges(remainder, file);
+			} catch {
+				// Keep import cleanup best-effort for incomplete source snippets.
+			}
+			const isReferenced = (name: string): boolean => {
+				if (declaredNames.has(name)) return false;
+				const references = new RegExp(
+					`\\b${name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`,
+					"g",
+				);
+				for (const reference of remainder.matchAll(references)) {
+					if (remainderMask?.isExcluded(reference.index ?? 0) !== true) return true;
+				}
+				return false;
+			};
+			const defaultImport =
+				/^[A-Za-z_$][\w$]*/.exec(specifier)?.[0] ??
+				(specifier.startsWith("{") || specifier.startsWith("*") ? undefined : undefined);
+			const namespace = /^\*\s+as\s+([A-Za-z_$][\w$]*)/.exec(specifier)?.[1];
+			const namedBlock = /\{([\s\S]*)\}/.exec(specifier)?.[1];
+			const named =
+				namedBlock === undefined
+					? []
+					: namedBlock.split(",").flatMap((entry) => {
+						const trimmed = entry.trim();
+						if (trimmed === "") return [];
+						const parts = trimmed.split(/\s+as\s+/);
+						const imported = parts[0]!;
+						const local = parts[1] ?? imported;
+						return isReferenced(local) ? [trimmed] : [];
+					});
+			const keptDefault = defaultImport !== undefined && isReferenced(defaultImport) ? defaultImport : undefined;
+			const keptNamespace = namespace !== undefined && isReferenced(namespace) ? `* as ${namespace}` : undefined;
+			const kept = [keptDefault, keptNamespace, named.length > 0 ? `{ ${named.join(", ")} }` : undefined].filter(
+				(value): value is string => value !== undefined,
+			);
+			edits.push({
+				start,
+				end: start + match[0].length,
+				text: kept.length === 0 ? "" : `import ${kept.join(", ")} from "${module}";`,
+			});
+		}
+		result = applyEdits(result, edits);
 		result = removeExcludedMatches(
 			result,
-			new RegExp(`\\bimport\\s+(?:[^;]*?\\s+from\\s+)?["']${quoted}["']\\s*;?`, "g"),
+			new RegExp(`\\bimport\\s*["']${quoted}["']\\s*;?`, "g"),
 		);
 	}
 	return result;

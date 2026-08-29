@@ -61,6 +61,7 @@ export enum CodemodPluginId {
 
 export enum StyleProgramEmissionHint {
 	GlobalVariables = "global-variables",
+	RawTemplate = "raw-template",
 	RuntimeClass = "runtime-class",
 	RuntimeFunction = "runtime-function",
 	Recipe = "recipe",
@@ -114,6 +115,23 @@ export enum PandaMigrationStageId {
 	ModuleEmission = "module-emission",
 	RewriteApplication = "rewrite-application",
 	ValidationReporting = "validation-reporting",
+}
+
+/** Identity helper for generated host-component selectors.
+ *
+ * Binding names are not globally unique: a docs corpus commonly has a
+ * `Wrapper`, `Button`, or `Link` in many files. File-scoping the generated
+ * selector preserves each component's cascade and its composed descendants.
+ */
+export class CodemodStyleIdentity {
+	static className(file: string, binding: string): string {
+		let hash = 2166136261;
+		for (const character of `${file}:${binding}`) {
+			hash ^= character.charCodeAt(0);
+			hash = Math.imul(hash, 16777619);
+		}
+		return `pw-sc-${(hash >>> 0).toString(36)}-${binding}`;
+	}
 }
 
 /** Runtime ids supplied by third-party plugins remain extensible. */

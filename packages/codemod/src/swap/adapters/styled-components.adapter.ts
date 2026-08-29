@@ -1,18 +1,40 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleProgramEmissionHint } from "../identifiers.ts";
+import type { StyleProgram } from "../semantic-ir.ts";
+
+function markTemplateRoot(kind: "global" | "keyframes") {
+	return (program: StyleProgram): StyleProgram => ({
+		...program,
+		rules: program.rules.map((rule, index) => (index === 0 ? { ...rule, kind } : rule)),
+	});
+}
+
+function markTemplateComposable(program: StyleProgram): StyleProgram {
+	return {
+		...program,
+		emissionHints: [...(program.emissionHints ?? []), StyleProgramEmissionHint.RawTemplate],
+	};
+}
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.StyledComponents,
 	patterns: [
 		{
+			name: "css-template",
+			kind: "style",
+			regex: /\bcss(?:\s*<[^`]*>)?\s*`/g,
+			form: "template",
+			transform: markTemplateComposable,
+		},
+		{
 			name: "styled",
 			kind: "styled",
-			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
+			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\([^`]*\))(?:\s*<[^`]*>)?\s*\(\s*\{/g,
 		},
 		{
 			name: "styled-template",
 			kind: "styled",
-			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
+			regex: /\bstyled(?=\s*(?:\.|\())/g,
 			form: "template",
 		},
 		{
@@ -20,12 +42,14 @@ export default defineCodemodAdapter({
 			kind: "global",
 			regex: /\bcreateGlobalStyle\s*`(?:\\.|[^`])*`/g,
 			form: "template",
+			transform: markTemplateRoot("global"),
 		},
 		{
 			name: "keyframes-template",
 			kind: "keyframes",
 			regex: /\bkeyframes\s*`(?:\\.|[^`])*`/g,
 			form: "template",
+			transform: markTemplateRoot("keyframes"),
 		},
 		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },

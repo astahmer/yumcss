@@ -22,11 +22,16 @@ import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
+import {
+	CodemodAdapterId,
+	CodemodStyleIdentity,
+	StyleProgramEmissionHint,
+} from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
 	componentTagForSubject,
+	componentExpressionForSubject,
 	intrinsicTagForSubject,
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
@@ -48,9 +53,23 @@ function programHasFunctionDynamic(program: StyleProgram): boolean {
 		return (
 			rule.declarations.some(
 				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					/=>|^function\b/.test(declaration.value.expression.trim()),
+			declaration.value.kind === "dynamic" &&
+					/=>|\bfunction\b/.test(declaration.value.expression),
 			) || rule.children.some(containsFunction)
+		);
+	});
+}
+
+function programNeedsRawTemplate(program: StyleProgram): boolean {
+	if (program.source?.template !== undefined) return true;
+	if (program.source?.subjectAttrs !== undefined) return true;
+	return program.rules.some(function hasRawSelector(rule): boolean {
+		return (
+			rule.children.some(
+				(child) =>
+					child.selector !== undefined &&
+					!child.selector.trim().startsWith("&"),
+			) || rule.children.some(hasRawSelector)
 		);
 	});
 }
@@ -204,6 +223,18 @@ export function runAdapterMigration(
 		document,
 		semantic: options.semantic,
 	});
+	if (parsed.matches.length === 0) {
+		return {
+			code: source,
+			changed: false,
+			converted: 0,
+			skipped: parsed.residuals.length === 0 ? 0 : 1,
+			reports: [],
+			validations: [],
+			dependencies: [],
+			residuals: parsed.residuals,
+		};
+	}
 	const mode = options.mode ?? "safe";
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const edits: Array<{ start: number; end: number; text: string }> = [];
@@ -232,7 +263,20 @@ export function runAdapterMigration(
 			mode,
 		});
 		let program = lowering.program;
+		const rawTemplateResidual = program.residuals.some(
+			(residual) => residual.kind === "parse",
+		);
+		if (
+			isPandwindTarget(targetAdapter) &&
+			program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
+		) {
+			program = {
+				...program,
+				residuals: program.residuals.filter((residual) => residual.kind !== "parse"),
+			};
+		}
 		const sourceSubject = program.source?.subject;
+		let wrapComponent = false;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		if (isPandwindTarget(targetAdapter) && program.source?.subject === undefined) {
 			const hasDynamic = programHasDynamic(program);
@@ -262,7 +306,17 @@ export function runAdapterMigration(
 					program.source?.hostOpenTag !== undefined &&
 					program.source.hostStyleAttributes !== undefined &&
 					!programHasFunctionDynamic(program);
-				const dynamicHandled = hostDynamicHandled || dynamicPolicy?.handled === true;
+				const semanticRuleHandled = program.rules.some(
+					(rule) => rule.kind === "global" || rule.kind === "keyframes",
+				);
+				const targetHandlesTemplateFragment =
+					targetAdapter.id === CodemodAdapterId.Pandwind &&
+					program.source?.pattern === "css-template";
+				const dynamicHandled =
+					hostDynamicHandled ||
+					semanticRuleHandled ||
+					targetHandlesTemplateFragment ||
+					dynamicPolicy?.handled === true;
 				const dynamicStandalone = dynamicPolicy?.standalone === true;
 				if (
 					(preview === undefined || preview.residuals.length > 0) &&
@@ -299,6 +353,7 @@ export function runAdapterMigration(
 		if (isPandwindTarget(targetAdapter) && program.source?.subject !== undefined) {
 			const hasDynamic = programHasDynamic(program);
 			const hasFunctionDynamic = programHasFunctionDynamic(program);
+			const needsRawTemplate = programNeedsRawTemplate(program);
 			const binding = source
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
@@ -308,9 +363,38 @@ export function runAdapterMigration(
 				options.semantic?.source?.framework ??
 				(/\.(?:jsx|tsx)$/.test(options.file) ? "react" : undefined);
 			const rewriter =
-				binding !== undefined && tag !== undefined && framework !== undefined
+				binding !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
 					: undefined;
+			const componentPreview =
+				binding !== undefined &&
+				tag !== undefined &&
+				framework !== undefined &&
+				rewriter !== undefined
+					? rewriter.rewrite({
+							source,
+							binding,
+							tag,
+							framework,
+							classExpression: binding,
+						})
+					: undefined;
+			const sourceModuleEvidence = sourceAdapter.sourceModules.some((module) =>
+				source.includes(module),
+			);
+			const canWrapComponent =
+				binding !== undefined &&
+				componentExpressionForSubject(program.source.subject) !== undefined &&
+				framework !== undefined &&
+				rewriter !== undefined &&
+					sourceModuleEvidence &&
+				(needsRawTemplate || tag === undefined || componentPreview?.residuals.length !== 0 ||
+					program.residuals.some((residual) => residual.kind === "parse")) &&
+				(needsRawTemplate ||
+					(program.residuals.every(
+						(residual) => residual.kind === "dynamic" || residual.kind === "parse",
+					) &&
+						lowering.residuals.length === 0));
 			const standaloneExport =
 				binding === undefined &&
 				tag !== undefined &&
@@ -321,19 +405,37 @@ export function runAdapterMigration(
 				hasFunctionDynamic &&
 				binding !== undefined &&
 				tag !== undefined &&
-				(framework === "solid" ||
+				sourceModuleEvidence &&
+					(framework === "solid" ||
 					framework === "vue" ||
 					framework === "react" ||
-					framework === "preact");
-			if (standaloneExport || frameworkWrapper) {
+						framework === "preact");
+			if (canWrapComponent) {
+				program = {
+					...program,
+					residuals: [],
+					...(rawTemplateResidual || needsRawTemplate
+						? {
+							emissionHints: [
+								...(program.emissionHints ?? []),
+								StyleProgramEmissionHint.RawTemplate,
+							],
+						}
+						: {}),
+					source: { ...program.source, subject: undefined },
+				};
+				wrapComponent = true;
+			} else if (standaloneExport || frameworkWrapper) {
 				program = { ...program, source: { ...program.source, subject: undefined } };
 				if (frameworkWrapper)
 					program = {
 						...program,
 						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
 					};
+				if (frameworkWrapper) wrapComponent = true;
 			}
 			if (
+				wrapComponent ||
 				standaloneExport ||
 				binding === undefined ||
 				tag === undefined ||
@@ -343,13 +445,7 @@ export function runAdapterMigration(
 				// Leave the subject in the program so the target capability contract
 				// blocks unsafe class-string conversion.
 			} else {
-				const preview = rewriter.rewrite({
-					source,
-					binding,
-					tag,
-					framework,
-					classExpression: binding,
-				});
+				const preview = componentPreview!;
 				const residualsCanUseHostLowering = program.residuals.every(
 					(residual) => residual.kind === "dynamic",
 				);
@@ -364,11 +460,17 @@ export function runAdapterMigration(
 					};
 					if (!componentRewriteKeys.has(rewriteKey)) {
 						componentRewriteKeys.add(rewriteKey);
+						const needsStableSelector =
+							new RegExp(`styled\\(\\s*${binding}\\s*\\)`).test(source) ||
+							new RegExp(`\\$\\{\\s*${binding}\\s*\\}`).test(source);
 						componentRewrites.push({
 							binding,
 							tag,
 							framework,
 							classExpression: hasDynamic ? `${binding}.class` : binding,
+							...(needsStableSelector
+								? { stableClassName: CodemodStyleIdentity.className(options.file, binding) }
+								: {}),
 							...(hasDynamic ? { styleExpression: `${binding}.style` } : {}),
 							source,
 						});
@@ -429,6 +531,16 @@ export function runAdapterMigration(
 					: { binding: bindingForMatch(source, match.start) }),
 				...(program.source?.framework ? { framework: program.source.framework } : {}),
 				...(sourceSubject ? { subject: sourceSubject } : {}),
+				...(program.source?.subjectAttrs ? { subjectAttrs: program.source.subjectAttrs } : {}),
+				...(bindingForMatch(source, match.start) === undefined
+					? {}
+					: {
+							stableClassName: CodemodStyleIdentity.className(
+								options.file,
+								bindingForMatch(source, match.start)!,
+							),
+						}),
+				...(wrapComponent ? { wrapComponent: true } : {}),
 			},
 		});
 		for (const statement of emitted.imports ?? []) imports.add(statement);
@@ -534,16 +646,30 @@ export function runAdapterMigration(
 		runtimeEdited = rewritten.code;
 		needsCx ||= rewritten.needsCx;
 	}
-	for (const request of componentRewrites) {
-		const rewriter = getHostComponentRewriter(request.framework);
-		if (rewriter === undefined) continue;
-		const rewritten = rewriter.rewrite({ ...request, source: runtimeEdited });
-		if (rewritten.residuals.length > 0) {
-			residuals.push(...rewritten.residuals);
-			continue;
+	let pendingComponentRewrites = componentRewrites;
+	for (const statement of imports) runtimeEdited = ensureImport(runtimeEdited, statement);
+	for (let pass = 0; pass < 3 && pendingComponentRewrites.length > 0; pass++) {
+		const unresolved: HostComponentRewriteRequest[] = [];
+		for (const request of pendingComponentRewrites) {
+			const rewriter = getHostComponentRewriter(request.framework);
+			if (rewriter === undefined) continue;
+			const rewritten = rewriter.rewrite({ ...request, source: runtimeEdited });
+			if (rewritten.residuals.length > 0) {
+				unresolved.push(request);
+				continue;
+			}
+			runtimeEdited = rewritten.code;
+			needsCx ||= rewritten.needsCx;
 		}
-		runtimeEdited = rewritten.code;
-		needsCx ||= rewritten.needsCx;
+		if (unresolved.length === pendingComponentRewrites.length && pass === 2) {
+			for (const request of unresolved) {
+				const rewriter = getHostComponentRewriter(request.framework);
+				if (rewriter === undefined) continue;
+				residuals.push(...rewriter.rewrite({ ...request, source: runtimeEdited }).residuals);
+			}
+			break;
+		}
+		pendingComponentRewrites = unresolved;
 	}
 	for (const request of componentDeclarationRewrites.values()) {
 		const rewriter = getHostComponentRewriter(request.framework);
@@ -594,15 +720,14 @@ export function runAdapterMigration(
 	}
 	// Keep source imports whenever a skipped/residual match still depends on the
 	// source runtime. Removing them would turn a safe residual into broken code.
-	let code =
-		skipped === 0 && residuals.length === 0
-			? removeSourceImports(runtimeEdited, sourceAdapter.sourceModules)
-			: runtimeEdited;
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");
 	}
+	let code = runtimeEdited;
 	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
+	if (skipped === 0 && residuals.length === 0)
+		code = removeSourceImports(code, sourceAdapter.sourceModules, options.file);
 	return {
 		code,
 		changed: code !== source,
