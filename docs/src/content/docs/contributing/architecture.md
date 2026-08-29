@@ -141,11 +141,15 @@ infrastructure in `source-pass-utils.ts`, not ecosystem policy.
 
 The codemod registry is guarded by `AdapterContractSuite`, which probes every
 registered adapter through detection/configuration, parsing, emission, and
-validation. Host-only adapters may intentionally have no removable source
-module. Backend registries use the same contract shape, with enum-backed
-built-in identities and branded third-party identities. These contract suites
-are architectural tests: they do not replace adapter-owned semantic fixtures,
-browser differential tests, or real-repository acceptance corpora.
+validation. The built-in suite also maintains one representative source
+fixture per adapter and requires every fixture to produce a real match before
+emission is tested; this prevents thin adapters from being covered only by an
+empty-input smoke test. Host-only adapters may intentionally have no removable
+source module. Backend registries use the same contract shape, with
+enum-backed built-in identities and branded third-party identities. These
+contract suites are architectural tests: they do not replace adapter-owned
+semantic fixtures, browser differential tests, or real-repository acceptance
+corpora.
 
 Panda's project migration is composed through `PandaMigrationServices`. The
 default service set delegates to the Panda family implementation, while the
