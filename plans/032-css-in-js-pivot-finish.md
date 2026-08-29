@@ -240,7 +240,7 @@ Validated on 2026-08-29 after the interface-first completion pass:
   `PandaMigrationStageFactory`; the pipeline façade only executes stage ports.
 - Every registered codemod adapter has a real parse/emit fixture, and CI derives
   required capabilities from each fixture and rejects unsupported declarations.
-- The complete codemod suite passes 39 files / 308 tests. Workspace-wide tests,
+- The complete codemod suite passes 39 files / 311 tests. Workspace-wide tests,
   coverage thresholds, lint, format, Knip, and typecheck also pass. The
   checked-in real proof matrix covers five pinned documentation repositories;
   the remaining adapters have contract/corpus evidence but are not promoted
