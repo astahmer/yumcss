@@ -18,6 +18,12 @@ import { createDesignCss } from "../src/design/index.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
 
 const css = createCss();
+const responsiveCss = createCss({
+	conditions: { md: "@media (min-width: 768px)" },
+} as never);
+const responsivePreset = {
+	conditions: { md: "@media (min-width: 768px)" },
+} as never;
 const examplePreset = {
 	conditions: {
 		_hover: "&:hover",
@@ -52,6 +58,12 @@ describe("css.vars — encoding", () => {
 		const out = css.vars({ _dark: { _hover: { color: "x" } } });
 		expect(out.class).toBe("pw-dark:hover:color");
 		expect(out.style).toEqual({ "--pw-c-color_dark_hover": "x" });
+	});
+
+	test("responsive values use the same canonical key as the stylesheet", () => {
+		const out = responsiveCss.vars({ paddingLeft: { md: "12" } } as never);
+		expect(out.class).toBe("pw-md:padding-left");
+		expect(out.style).toEqual({ "--pw-c-padding-left_md": "12" });
 	});
 
 	test("finite numbers are serialized for SSR-safe inline styles", () => {
@@ -132,6 +144,12 @@ describe("sheet generation", () => {
 		const cssText = sheet.gen.varRules();
 		expect(cssText).toContain(".dark");
 		expect(cssText).toContain("--pw-c-background-color_dark");
+	});
+
+	test("property-first responsive keys preserve the property in the declaration", () => {
+		const sheet = createStylesheet(responsivePreset);
+		sheet.processVarKey("padding-left__md");
+		expect(sheet.gen.varRules()).toContain("@media (min-width: 768px){.pw-md\\:padding-left{padding-left:");
 	});
 
 	test("rules are deduped across repeated processing", () => {

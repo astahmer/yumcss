@@ -76,6 +76,30 @@ function classExpressionFromEmission(emitted: string): string | undefined {
 	return expression.length === 0 ? undefined : expression;
 }
 
+function selectNonOverlappingMatches<
+	T extends { start: number; end: number; program: StyleProgram },
+>(matches: readonly T[]): readonly T[] {
+	const selected: T[] = [];
+	for (const match of matches.toSorted(
+		(left, right) => left.start - right.start || right.end - left.end,
+	)) {
+		const containing = selected.at(-1);
+		if (containing === undefined || match.start >= containing.end) {
+			selected.push(match);
+			continue;
+		}
+		if (
+			containing.start <= match.start &&
+			match.end <= containing.end &&
+			containing.program.source?.hostOpenTag !== undefined
+		)
+			continue;
+		if (match.start === containing.start && match.end > containing.end)
+			selected[selected.length - 1] = match;
+	}
+	return selected;
+}
+
 export interface AdapterMigrationOptions {
 	readonly from: string;
 	readonly to: string;
@@ -201,7 +225,7 @@ export function runAdapterMigration(
 	const componentRewriteKeys = new Set<string>();
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
 	let skipped = 0;
-	for (const [index, match] of parsed.matches.entries()) {
+	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
 		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).lower({
 			program: match.program,
 			target: targetAdapter.capabilities,
@@ -551,7 +575,10 @@ export function runAdapterMigration(
 		runtimeEdited = rewritten.code;
 		needsCx ||= rewritten.needsCx;
 	}
-	if (needsCx) runtimeEdited = ensureImport(runtimeEdited, 'import { cx } from "pandwind/cx";');
+	if (needsCx) {
+		runtimeEdited = ensureImport(runtimeEdited, 'import { createCx } from "pandwind/cx";');
+		runtimeEdited = ensureImport(runtimeEdited, "const cx = createCx();");
+	}
 	const rewrite = sourceAdapter.migration?.rewrite?.({
 		source,
 		code: runtimeEdited,

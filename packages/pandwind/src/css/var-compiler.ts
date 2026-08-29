@@ -46,13 +46,26 @@ export interface VarCompiler {
 }
 
 class DefaultVarCompiler implements VarCompiler {
+	private readonly conditions: ReadonlySet<string>;
+
+	constructor(conditionNames: Iterable<string> = []) {
+		this.conditions = new Set(conditionNames);
+	}
+
+	private isCondition(part: string): boolean {
+		return part.startsWith("_") || this.conditions.has(part);
+	}
+
 	private splitKey(key: string): { conditions: string[]; prop: string } {
 		const parts = key.split("__").filter((part) => part !== "");
-		const rawProp = parts[parts.length - 1]!;
+		const first = parts[0]!;
+		const last = parts[parts.length - 1]!;
+		const propertyFirst = parts.length > 1 && !this.isCondition(first) && this.isCondition(last);
+		const rawProp = propertyFirst ? first : last;
+		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
 			prop: dashCase(rawProp),
-			conditions: parts
-				.slice(0, -1)
+			conditions: rawConditions
 				.map((part) => (part.startsWith("_") ? part.slice(1) : part))
 				.toSorted(),
 		};
@@ -95,4 +108,6 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 }
 
-export const createVarCompiler = (): VarCompiler => new DefaultVarCompiler();
+export const createVarCompiler = (
+	conditionNames?: Iterable<string>,
+): VarCompiler => new DefaultVarCompiler(conditionNames);

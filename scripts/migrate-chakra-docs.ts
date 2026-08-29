@@ -32,7 +32,7 @@ export interface ChakraDocsLaneReport {
 		file: string;
 		kind: string;
 		text: string;
-		hint: string;
+		hint?: string;
 	}[];
 }
 
@@ -88,6 +88,10 @@ function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): strin
 		'import { createCss } from "pandwind/css";\nconst css = createCss();',
 		imports,
 	);
+	if (generated.includes('import { createCss } from "pandwind/css";')) {
+		generated = generated.replace('import { createCss } from "pandwind/css";', imports);
+		generated = generated.replace("const css = createCss();", "");
+	}
 	generated = generated.replace(
 		'import { pandwindPreset } from "pandwind/preset";',
 		`import { pandwindPreset } from "${relativeModuleImport(file, pandwindSupportRoot, "preset")}";`,
@@ -99,9 +103,41 @@ function bindRuntimeApi(code: string, file: string, lane: ChakraDocsLane): strin
 				'import { createRuntimeDesignCss } from "pandwind/css/runtime";',
 			)
 			.replaceAll("createRuntimeCss(pandwindPreset)", "createRuntimeDesignCss(pandwindPreset)")
+			.replaceAll(
+				"const css = createRuntimeDesignCss(pandwindPreset)",
+				"const dcss = createRuntimeDesignCss(pandwindPreset)",
+			)
 			.replace(/\bcss\.(?:class|vars|props|group)\s*\(/g, (call) => `dcss${call.slice(3)}`);
 	}
-	return generated;
+	if (!file.endsWith(".mdx")) return generated;
+	const frontmatterStart = generated.indexOf("---\n");
+	if (frontmatterStart === -1) return generated;
+	const frontmatterEnd = generated.indexOf("\n---\n", frontmatterStart + 4);
+	if (frontmatterEnd === -1) return generated;
+	const frontmatter = generated.slice(frontmatterStart, frontmatterEnd + 5);
+	const body = generated.slice(frontmatterEnd + 5).replace(/^\n+/, "");
+	return `${frontmatter}\n${body}`;
+}
+
+function bindMdxRuntime(source: string, lane: ChakraDocsLane): string {
+	const binding = lane === ChakraDocsLane.DesignCss ? "dcss" : "css";
+	const ownBinding = new RegExp(`(?:const|let|var)\\s+${binding}\\s*=`).test(source);
+	const withImport = ownBinding
+		? source
+		: source.replace(
+				'import * as runtime from "react/jsx-runtime"',
+				`import * as runtime from "react/jsx-runtime"\nimport { ${binding} } from "${relativeModuleImport(
+					"apps/www/components/mdx-content.tsx",
+					pandwindSupportRoot,
+					binding,
+				)}";`,
+			);
+	return withImport
+		.replace(
+			"const fn = new Function(code)",
+			`const fn = new Function("const ${binding} = arguments[0].${binding};\\n" + code)`,
+		)
+		.replace("return fn({ ...runtime }).default", `return fn({ ...runtime, ${binding} }).default`);
 }
 
 function createLane(id: ChakraDocsLane): LaneAdapter {
@@ -139,15 +175,16 @@ export const pandwindPreset = {
 `;
 }
 
-function runtimeSheet(): string {
+function runtimeSheet(lane: ChakraDocsLane): string {
+	const factory = lane === ChakraDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
 	return `"use client";
 
 import { useRef } from "react";
 import { useServerInsertedHTML } from "next/navigation";
-import { createRuntimeCss } from "pandwind/css/runtime";
+import { ${factory} } from "pandwind/css/runtime";
 import { pandwindPreset } from "./preset";
 
-const runtime = createRuntimeCss(pandwindPreset);
+const runtime = ${factory}(pandwindPreset);
 
 export function PandwindStyleSheet() {
   const emitted = useRef<string | undefined>(undefined);
@@ -159,6 +196,15 @@ export function PandwindStyleSheet() {
   });
   return null;
 }
+`;
+}
+
+function runtimeBinding(binding: "css" | "dcss"): string {
+	const factory = binding === "dcss" ? "createRuntimeDesignCss" : "createRuntimeCss";
+	return `import { ${factory} } from "pandwind/css/runtime";
+import { pandwindPreset } from "./preset";
+
+export const ${binding} = ${factory}(pandwindPreset);
 `;
 }
 
@@ -174,11 +220,29 @@ async function materialize(
 		await cp(join(referenceRoot, entry.name), join(outputRoot, entry.name), {
 			recursive: true,
 			force: true,
+			filter: (source) =>
+				!source.split("/").includes("node_modules") && !source.split("/").includes(".next"),
 		});
 	}
 	await symlink(join(referenceRoot, "node_modules"), join(outputRoot, "node_modules"), "dir").catch(
 		() => undefined,
 	);
+	await mkdir(join(outputRoot, "apps/www/node_modules"), { recursive: true });
+	for (const entry of await readdir(join(referenceRoot, "apps/www/node_modules"), {
+		withFileTypes: true,
+	})) {
+		if (entry.name === "pandwind") continue;
+		await symlink(
+			join(referenceRoot, "apps/www/node_modules", entry.name),
+			join(outputRoot, "apps/www/node_modules", entry.name),
+			entry.isDirectory() ? "dir" : "file",
+		).catch(() => undefined);
+	}
+	await symlink(
+		join(repositoryRoot, "packages/pandwind"),
+		join(outputRoot, "apps/www/node_modules/pandwind"),
+		"dir",
+	).catch(() => undefined);
 	const packageFile = join(outputRoot, "apps/www/package.json");
 	const packageJson = JSON.parse(await readFile(packageFile, "utf8")) as {
 		dependencies?: Record<string, string>;
@@ -199,29 +263,59 @@ async function materialize(
 			),
 		);
 	}
-	for (const [file, code] of files) {
+	const outputFiles = new Map(files);
+	const mdxContentFile = "apps/www/components/mdx-content.tsx";
+	const mdxContent =
+		outputFiles.get(mdxContentFile) ??
+		(await readFile(join(referenceRoot, mdxContentFile), "utf8"));
+	outputFiles.set(mdxContentFile, bindMdxRuntime(mdxContent, lane));
+	for (const [file, code] of outputFiles) {
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
 	}
 	const support = new Map([
 		[`${pandwindSupportRoot}/preset.ts`, runtimePreset()],
-		[`${pandwindSupportRoot}/style-sheet.tsx`, runtimeSheet()],
+		[`${pandwindSupportRoot}/style-sheet.tsx`, runtimeSheet(lane)],
+		[`${pandwindSupportRoot}/css.ts`, runtimeBinding("css")],
+		[`${pandwindSupportRoot}/dcss.ts`, runtimeBinding("dcss")],
 	]);
 	for (const [file, code] of support) {
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
 	}
-	const layoutFile = join(outputRoot, "apps/www/app/layout.tsx");
-	const layout = await readFile(layoutFile, "utf8");
-	if (!layout.includes("PandwindStyleSheet")) {
+	const providerFile = join(outputRoot, "apps/www/app/provider.tsx");
+	const provider = await readFile(providerFile, "utf8");
+	if (!provider.includes("<PandwindStyleSheet")) {
+		const placements = [
+			[
+				"        {props.children}\n        <Toaster />",
+				"        {props.children}\n        <Toaster />\n        <PandwindStyleSheet />",
+			],
+			[
+				"        {props.children}\n      </ColorModeProvider>",
+				"        {props.children}\n        <PandwindStyleSheet />\n      </ColorModeProvider>",
+			],
+			[
+				"        {children}\n      </Provider>",
+				"        {children}\n        <PandwindStyleSheet />\n      </Provider>",
+			],
+		] as const;
+		const placement = placements.find(([needle]) => provider.includes(needle));
+		if (placement === undefined) {
+			throw new Error("Could not place PandwindStyleSheet in the Chakra root provider");
+		}
 		await writeFile(
-			layoutFile,
-			`import { PandwindStyleSheet } from "../pandwind/style-sheet";\n${layout.replace(
-				"        <Provider>",
-				"        <Provider>\n          <PandwindStyleSheet />",
-			)}`,
+			providerFile,
+			(() => {
+				const updated = provider.replace(placement[0], placement[1]);
+				if (provider.includes("import { PandwindStyleSheet }")) return updated;
+				const importLine = 'import { PandwindStyleSheet } from "../pandwind/style-sheet";\n';
+				return updated.startsWith('"use client"')
+					? updated.replace('"use client"\n', `"use client"\n${importLine}`)
+					: `${importLine}${updated}`;
+			})(),
 		);
 	}
 	void lane;
@@ -262,8 +356,16 @@ export class ChakraDocsMigration {
 			sourceBytes += Buffer.byteLength(source);
 			outputBytes += Buffer.byteLength(result.code);
 			transformed.set(file, result.code);
-			for (const residual of result.residuals)
-				residuals.push({ file, kind: residual.kind, text: residual.text, hint: residual.hint });
+			for (const residual of result.residuals) {
+				const entry = { file, kind: residual.kind, text: residual.text } as {
+					file: string;
+					kind: string;
+					text: string;
+					hint?: string;
+				};
+				if (residual.hint !== undefined) entry.hint = residual.hint;
+				residuals.push(entry);
+			}
 		}
 		if (options.outputRoot !== undefined)
 			await materialize(referenceRoot, resolve(options.outputRoot), lane, transformed);
@@ -283,12 +385,16 @@ export class ChakraDocsMigration {
 }
 
 if (process.argv[1]?.endsWith("migrate-chakra-docs.ts")) {
-	const lane = process.argv[2] as ChakraDocsLane | undefined;
+	const args = process.argv.slice(2);
+	const lane = args[0] as ChakraDocsLane | undefined;
+	const outputRoot = args[1] === "--dry-run" ? undefined : args[1];
+	if (args[1] === "--dry-run")
+		console.warn(
+			"--dry-run is implicit when no output root is provided; no files will be written.",
+		);
 	if (lane === undefined || !ChakraDocsMigration.lanes.includes(lane))
 		throw new Error(
 			`usage: tsx scripts/migrate-chakra-docs.ts ${ChakraDocsMigration.lanes.join("|")} [output-root]`,
 		);
-	console.log(
-		JSON.stringify(await ChakraDocsMigration.run(lane, { outputRoot: process.argv[3] }), null, 2),
-	);
+	console.log(JSON.stringify(await ChakraDocsMigration.run(lane, { outputRoot }), null, 2));
 }

@@ -16,6 +16,8 @@ export interface CssBackendOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
 	className?: AnyClassNameStrategy;
+	/** Preset conditions used to canonicalize responsive var paths. */
+	conditions?: Record<string, string | string[]>;
 }
 
 const canonicalStyleKey = (key: string): string =>

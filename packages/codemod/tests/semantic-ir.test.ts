@@ -156,6 +156,29 @@ describe("versioned semantic style-program IR", () => {
 		]);
 	});
 
+	test("recognizes the base branch in property-value conditions", () => {
+		const program = styleProgramFromSourceObject("gap: { base: 12, lg: 20 }", {
+			conditionKinds: { lg: "named" },
+			propertyValueConditions: true,
+		});
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations).toMatchObject([
+			{ property: "gap", value: { kind: "literal", value: 12 }, conditions: [{ name: "base" }] },
+			{ property: "gap", value: { kind: "literal", value: 20 }, conditions: [{ name: "lg" }] },
+	]);
+	});
+
+	test("treats signed numeric literals as static values", () => {
+		const program = styleProgramFromSourceObject("marginTop: -2");
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations[0]).toMatchObject({
+			property: "marginTop",
+			value: { kind: "literal", value: -2 },
+		});
+	});
+
 	test("lifts StyleX property-value conditions at the root of a named style", () => {
 		const program = styleProgramFromSourceObject(
 			"card: { boxShadow: { default: 'none', ':focus-visible': '0 0 0 2px red' } }",

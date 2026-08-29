@@ -77,7 +77,8 @@ function runtimeComponent(
 	return {
 		text: `(props) => { const style = css.vars(${object}); return <${tag} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
 		imports: [
-			'import { cx } from "pandwind/cx";',
+			'import { createCx } from "pandwind/cx";',
+			"const cx = createCx();",
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
 			"const css = createRuntimeCss(pandwindPreset);",
@@ -191,7 +192,7 @@ export default defineCodemodAdapter({
 			const framework =
 				host.framework ??
 				context?.document?.framework ??
-				(/\.(?:jsx|tsx)$/.test(context?.file ?? "") ? "react" : undefined);
+				(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
 			const dynamicHost = hasDynamicValues(program);
 			const programObjectText = programObject(program);
 			const rendered = JsxStyleHost.render(
@@ -211,7 +212,9 @@ export default defineCodemodAdapter({
 					dynamicHost
 						? "const css = createRuntimeCss(pandwindPreset);"
 						: "const css = createCss();",
-					...(rendered.needsCx ? ['import { cx } from "pandwind/cx";'] : []),
+					...(rendered.needsCx
+						? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+						: []),
 				],
 			};
 		}

@@ -67,7 +67,7 @@ describe("mode: tw", () => {
 
 	test("parenthesized arbitrary values remain lossless residuals", () => {
 		const result = tw(`<div className="border-x border-x-(--pattern-fg)" />`);
-		expect(result.code).toContain('borderX: true');
+		expect(result.code).toContain("borderX: true");
 		expect(result.code).toContain('"border-x-(--pattern-fg)"');
 	});
 
@@ -101,7 +101,7 @@ describe("mode: tw", () => {
 		expect(result.code).toContain('p: "4"');
 		// imports for both engines
 		expect(result.code).toContain('import { tw } from "pandwind/tw";');
-		expect(result.code).toContain('import { cx } from "pandwind/cx";');
+		expect(result.code).toContain('import { createCx } from "pandwind/cx";');
 	});
 
 	test("unknown utilities stay verbatim; fully-unknown calls are untouched", () => {
@@ -125,7 +125,7 @@ describe("mode: cx (clsx / tailwind-merge -> cx)", () => {
 		].join("\n");
 		const result = cxMode(source);
 		expect(result.changed).toBe(true);
-		expect(result.code).toContain('import { cx } from "pandwind/cx";');
+		expect(result.code).toContain('import { createCx } from "pandwind/cx";');
 		expect(result.code).not.toContain('from "clsx"');
 		expect(result.code).toContain('cx("p-4", cond && "p-6")');
 	});
@@ -149,7 +149,7 @@ describe("mode: cx (clsx / tailwind-merge -> cx)", () => {
 			"\n",
 		);
 		const result = cxMode(source);
-		expect(result.code).toContain('import { cx } from "pandwind/cx";');
+		expect(result.code).toContain('import { createCx } from "pandwind/cx";');
 		expect(result.code).toContain('cx("p-4")'.replace('\\"', '"'));
 		expect(result.code).not.toContain("cx2(");
 	});

@@ -39,7 +39,7 @@ export const createStylesheet = (
 	policies: StylesheetPolicies = {},
 ) => {
 	const cache = new Map<string, Rule>();
-	const varCompiler = createVarCompiler();
+	const varCompiler = createVarCompiler(Object.keys(preset.conditions));
 	const conditionPolicy = policies.conditions ?? defaultConditionPolicy;
 	const ordering = policies.ordering ?? createStylesheetOrderingPolicy();
 	const serializer = policies.serializer ?? defaultRuleSerializer;
@@ -166,20 +166,21 @@ export const createStylesheet = (
 	 */
 	const varCache = new Map<string, Rule>();
 	const processVarKey = (flatKey: string): void => {
-		const orderedKey = pairs.join(
-			pairs
-				.split(flatKey)
-				.filter((part) => part !== emptyCondition && part !== "")
-				.toSorted(),
-		);
+		const rawParts = pairs.split(flatKey).filter((part) => part !== emptyCondition && part !== "");
+		const first = rawParts[0]!;
+		const last = rawParts[rawParts.length - 1]!;
+		const isCondition = (part: string): boolean => part.startsWith("_") || preset.conditions[part] !== undefined;
+		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
+		const propPart = propertyFirst ? first : last;
+		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
+		const orderedConditions = conditionParts.toSorted();
+		const orderedKey = pairs.join([...orderedConditions, propPart]);
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
-		const rawParts = orderedKey.split("__").filter((part) => part !== "");
-		// Prop = LAST segment; conditions = the rest, stripped + canonically sorted.
-		const prop = dashCase(rawParts[rawParts.length - 1]!);
-		const condParts = rawParts
-			.slice(0, -1)
+		// The canonical key always stores conditions before the property.
+		const prop = dashCase(propPart);
+		const condParts = orderedConditions
 			.map((part) => (part.startsWith("_") ? part.slice(1) : part))
-			.toSorted();
+			;
 		let declaration = `var(--pw-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;

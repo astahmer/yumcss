@@ -30,7 +30,7 @@ export const createDesignCss = <TPreset extends DesignPreset>(
 	preset: TPreset,
 	options: CreateCssOptions = {},
 ): CssFn<DesignStyleObject<TPreset>> => {
-	const engine = createCss(options) as CssFn<StyleObject>;
+	const engine = createCss({ ...options, conditions: preset.conditions }) as CssFn<StyleObject>;
 	type Design = DesignStyleObject<TPreset>;
 
 	const resolve = (style: Design): StyleObject =>

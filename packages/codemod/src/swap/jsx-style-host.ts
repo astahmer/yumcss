@@ -92,9 +92,28 @@ export class JsxStyleHost {
 			`(\\s)${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\\{([\\s\\S]*?)\\})`,
 		);
 		const existing = classPattern.exec(text);
+		const spread = [...text.matchAll(/\{\s*\.\.\.([A-Za-z_$][\w$]*)\s*\}/g)].at(-1);
 		if (existing !== null) {
 			const value = existing[4] ?? JSON.stringify(existing[2] ?? existing[3] ?? "");
-			text = `${text.slice(0, existing.index)}${existing[1]}${attribute}={cx(${classExpression}, ${value})}${text.slice(existing.index + existing[0].length)}`;
+			const spreadClass =
+				spread !== undefined && spread.index > existing.index
+					? `, ${spread[1]}.className`
+					: "";
+			const replacement = `${existing[1]}${attribute}={cx(${classExpression}, ${value}${spreadClass})}`;
+			text = `${text.slice(0, existing.index)}${replacement}${text.slice(existing.index + existing[0].length)}`;
+			if (spread !== undefined && spread.index > existing.index) {
+				const renderedIndex = text.indexOf(replacement);
+				if (renderedIndex !== -1) {
+					text = `${text.slice(0, renderedIndex)}${text.slice(renderedIndex + replacement.length)}`;
+					const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
+					text = `${text.slice(0, insertion)}${replacement}${text.slice(insertion)}`;
+				}
+			}
+			needsCx = true;
+		} else if (spread !== undefined) {
+			const rendered = ` ${attribute}={cx(${classExpression}, ${spread[1]}.className)}`;
+			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
+			text = `${text.slice(0, insertion)}${rendered}${text.slice(insertion)}`;
 			needsCx = true;
 		} else {
 			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;

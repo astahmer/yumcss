@@ -31,7 +31,7 @@ import {
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
-import { JsxStyleHost } from "./jsx-style-host.ts";
+import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -43,6 +43,8 @@ type CallPattern = {
 	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
 	readonly styleProps?: readonly string[];
+	/** Source-specific host props that must remain for component semantics. */
+	readonly preserveHostStyleProps?: (host: JsxStyleHostMatch) => readonly string[];
 	readonly transform?: (program: StyleProgram, context: AdapterParseContext) => StyleProgram;
 };
 
@@ -632,20 +634,37 @@ function parseCalls(
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;
 			if (pattern.form === "jsx-style") {
-				const tag = JsxStyleHost.parse(
+				const initialTag = JsxStyleHost.parse(
 					source,
 					start,
 					context,
 					pattern.styleProps ?? [],
 					adapterSource(context, start),
 				);
-				if (tag !== undefined) {
+				if (initialTag !== undefined) {
+					const preserved = new Set(pattern.preserveHostStyleProps?.(initialTag) ?? []);
+					const tag =
+						preserved.size === 0
+							? initialTag
+							: JsxStyleHost.parse(
+								source,
+								start,
+								context,
+								(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
+								adapterSource(context, start),
+							);
+					if (tag === undefined) continue;
 					const program = styleProgramFromSourceObject(tag.body, {
 						...resolvedObjectOptions,
 						source: tag.source,
 						sourceOffset: start,
 					});
-					matches.push({ start, end: tag.end, program, sourceText: tag.openingTag });
+					matches.push({
+						start,
+						end: tag.end,
+						program,
+						sourceText: tag.openingTag,
+					});
 				}
 				continue;
 			}

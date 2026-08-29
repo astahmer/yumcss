@@ -5,6 +5,5 @@ import { createVarCompiler } from "./var-compiler.ts";
 export { VARS_ATOMS, createVarCompiler } from "./var-compiler.ts";
 export type { VarAtom, VarCompiler, VarsOutput } from "./var-compiler.ts";
 
-const compiler = createVarCompiler();
-
-export const encodeVars = (flat: FlatStyles) => compiler.encode(flat);
+export const encodeVars = (flat: FlatStyles, conditionNames?: Iterable<string>) =>
+	createVarCompiler(conditionNames).encode(flat);

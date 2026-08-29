@@ -292,7 +292,10 @@ function transformStyledComponents(
 	// dropped.
 	let code = applyEdits(source, edits);
 	code = code.replace(/\n?import\s+\w+\s+from\s+["']styled-components["'];?\n/g, "\n");
-	if (needsCx.value) code = ensureImport(code, 'import { cx } from "pandwind/cx";');
+	if (needsCx.value) {
+		code = ensureImport(code, 'import { createCx } from "pandwind/cx";');
+		code = ensureImport(code, "const cx = createCx();");
+	}
 	return code;
 }
 
@@ -423,7 +426,10 @@ function transformStylex(
 	// Values became plain class strings merged by cx — the css class values
 	// themselves flow through the file's EXISTING pandwind css binding
 	// (guaranteed by the hasCssBinding gate above), so no import is added.
-	if (/\bcx\(/.test(working)) working = ensureImport(working, 'import { cx } from "pandwind/cx";');
+	if (/\bcx\(/.test(working)) {
+		working = ensureImport(working, 'import { createCx } from "pandwind/cx";');
+		working = ensureImport(working, "const cx = createCx();");
+	}
 	return working;
 }
 

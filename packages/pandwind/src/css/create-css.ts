@@ -67,7 +67,9 @@ export function createCss(
 	presetOrOptions: CreateCssOptions | TypedPreset = {},
 	options: CreateCssOptions = {},
 ): CssFn<StyleObject> {
-	const backendOptions = isPreset(presetOrOptions) ? options : presetOrOptions;
+	const backendOptions = isPreset(presetOrOptions)
+		? { ...options, conditions: presetOrOptions.conditions }
+		: presetOrOptions;
 
 	// The web backend owns declaration lowering (hash/strategy/atom registry,
 	// plans/021); everything below is the css surface built on top of it.
@@ -140,7 +142,10 @@ export function createCss(
 	// any generated stylesheet (plans/014 §1).
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = flattenStyle(assign(...styles));
-		const { atoms: varAtoms, style: varStyle } = encodeVars(flat);
+		const { atoms: varAtoms, style: varStyle } = encodeVars(
+			flat,
+			backendOptions.conditions && Object.keys(backendOptions.conditions),
+		);
 		const output: VarsOutput = {
 			class: varAtoms.map((atom) => atom.cls).join(" "),
 			style: varStyle,

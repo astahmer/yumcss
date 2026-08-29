@@ -34,6 +34,7 @@ minimal implementation without changing orchestration.
 | Design vocabulary   | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                |
 | Analyze/reporting   | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge      | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
+| Real repository proof | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                 | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                  |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
@@ -121,3 +122,20 @@ constant, import, evaluation, fold, and rewrite policies. Analyzer/reporting
 and design vocabulary use the same port/registry pattern. New policies must
 include a minimal substitution test before they are wired into a composition
 root.
+
+## Real repository migration proof
+
+The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
+claim. The external checkout is pinned by Git commit in `reference-repos.md`,
+while Pandwind owns the lane runner and its JJ history. The runner routes the
+same Chakra source adapter through independent `css-class` and `design-css`
+target lanes. Each lane must produce a buildable Next application with zero
+skipped call sites and zero residuals.
+
+Proof has three layers: the Next production build must generate all 277 routes;
+the route checker must find no failures across the 261 user-facing static HTML
+routes; and the browser check must compare representative geometry, computed
+styles, screenshots, and console errors at the same viewport. CSS accounting
+compares linked stylesheets plus inline SSR styles against the baseline, with
+the Pandwind runtime artifact reported separately. This keeps a migration from
+being called complete merely because the codemod changed every source file.

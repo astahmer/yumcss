@@ -78,7 +78,7 @@ export interface StyleDynamicValue {
 
 export type StyleValue = StyleTokenValue | StyleLiteralValue | StyleDynamicValue;
 
-export type StyleValueTransform = (value: StyleValue, property?: string) => StyleValue;
+type StyleValueTransform = (value: StyleValue, property?: string) => StyleValue;
 
 export interface StyleDeclaration {
 	readonly conditions: readonly StyleCondition[];
@@ -124,7 +124,7 @@ export interface StyleProgramSource {
 	readonly hostAttribute?: string;
 }
 
-export interface StyleProgramCanonicalization {
+interface StyleProgramCanonicalization {
 	/** Conditions that are semantic defaults rather than emitted selectors. */
 	readonly ignoredConditions?: readonly Pick<StyleCondition, "kind" | "name">[];
 	/** Ordering policy for conditional declaration groups. */
@@ -582,6 +582,8 @@ interface SourceNode {
 	name?: string;
 	key?: SourceNode;
 	computed?: boolean;
+	operator?: string;
+	argument?: SourceNode;
 	kind?: string;
 	valueNode?: SourceNode;
 	expression?: SourceNode;
@@ -632,6 +634,15 @@ function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions)
 }
 
 function literalSourceValue(node: SourceNode): StyleValue | null {
+	if (node.type === "UnaryExpression" && (node.operator === "-" || node.operator === "+")) {
+		const argument = node.argument === undefined ? null : literalSourceValue(node.argument);
+		if (argument?.kind === "literal" && typeof argument.value === "number") {
+			return {
+				kind: "literal",
+				value: node.operator === "-" ? -argument.value : argument.value,
+			};
+		}
+	}
 	if (node.type !== "Literal") return null;
 	if (
 		typeof node.value === "string" ||
@@ -708,6 +719,7 @@ function looksLikePropertyValueConditions(
 			const name = sourceKey(property, body, options);
 			return (
 				name === "default" ||
+				name === "base" ||
 				name?.startsWith(":") === true ||
 				name?.startsWith("&") === true ||
 				name?.startsWith("[") === true ||
@@ -918,6 +930,18 @@ export function styleProgramFromSourceObject(
 						]);
 					}
 				}
+				continue;
+			}
+			const referencedObject = options.objectReferences?.[sourceSlice(body, valueNode).trim()];
+			if (referencedObject !== undefined && options.unwrapNestedObjectKeys?.includes(name)) {
+				const referenced = styleProgramFromSourceObject(referencedObject, {
+					...options,
+					objectReferences: undefined,
+					sourceOffset: 0,
+				});
+				declarations.push(...referenced.declarations);
+				specialRules.push(...referenced.rules.filter((rule) => rule.kind !== "style"));
+				residuals.push(...referenced.residuals);
 				continue;
 			}
 			if (looksLikePropertyValueConditions(valueNode, body, options)) {

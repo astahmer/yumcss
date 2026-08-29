@@ -108,7 +108,7 @@ export function createRuntimeCss<
 	sheet: RuntimeSheet;
 } {
 	const runtime = runtimeOptions(preset, options);
-	const css = createCss(runtime.cssOptions) as CssFn<
+	const css = createCss({ ...runtime.cssOptions, conditions: preset.conditions }) as CssFn<
 		TypedStyleObject<TPreset["_config"], TPreset["tokens"], TPreset>
 	>;
 	runtime.registerVars(css as unknown as CssFn<StyleObject>);

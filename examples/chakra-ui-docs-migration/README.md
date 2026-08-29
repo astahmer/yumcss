@@ -25,6 +25,28 @@ residuals and zero skipped call sites. The browser proof compares the baseline
 and materialized lane at the same viewport and records route geometry, browser
 errors, failed responses, and total CSS bytes.
 
+The checked-in proof artifacts are [CSS-class](./reports/css-class.json),
+[design-css](./reports/design-css.json), and [browser parity](./reports/browser-parity.json).
+The current run converted 661 call sites in 91 source files for each lane.
+
+After building both materialized lanes, run the exhaustive static-route check:
+
+```sh
+pnpm exec tsx scripts/verify-chakra-docs.ts \
+  http://127.0.0.1:4340 \
+  http://127.0.0.1:4349 \
+  http://127.0.0.1:4350 \
+  /Users/astahmer/.references/chakra-ui/apps/www/.next/server/app
+```
+
+It enumerates the baseline's statically emitted HTML routes, removes routes
+that the baseline itself serves as non-200 (currently two stale upstream blog
+artifacts), and checks the resulting 261 user-facing routes for HTTP/status
+parity, application-error markers, linked stylesheet bytes, inline SSR styles,
+and Pandwind runtime styles for both lanes. The Next build log is the
+complementary proof for all 277 generated routes, including dynamic and API
+entries.
+
 The reference repository is intentionally not a JJ workspace. Its exact Git
 commit is pinned in the reference index, while every Pandwind lane and its
 evidence are JJ revisions.

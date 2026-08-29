@@ -115,7 +115,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("keeps StyleX ancestor conditions attached to the styled element", () => {
 		const result = runAdapterMigration(
 			'import * as stylex from "@stylexjs/stylex";\n' +
-			"const styles = stylex.create({ code: { paddingBlock: { default: 3, [stylex.when.ancestor(':where(pre)')]: 8 } } });",
+				"const styles = stylex.create({ code: { paddingBlock: { default: 3, [stylex.when.ancestor(':where(pre)')]: 8 } } });",
 			{ from: "stylex", to: "pandwind", file: "mdx.tsx", mode: "safe" },
 		);
 
@@ -155,7 +155,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("__pandwindStandaloneComponent");
 		expect(result.code).toContain("<div {...props}");
 		expect(result.code).toContain("className={cx(__pandwindStandaloneClass, props.className)}");
-		expect(result.code).toContain('import { cx } from "pandwind/cx";');
+		expect(result.code).toContain('import { createCx } from "pandwind/cx";');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
@@ -599,7 +599,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.converted).toBe(1);
 		expect(solid.residuals).toEqual([]);
 		expect(solid.code).toContain("css.vars({ color: ((props) => props.color)(props) })");
-		expect(solid.code).toContain('import { cx } from "pandwind/cx";');
+		expect(solid.code).toContain('import { createCx } from "pandwind/cx";');
 		expect(solid.code).toContain("class={cx(style.class, props.class)}");
 
 		const vue = runAdapterMigration(
@@ -661,6 +661,57 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(merged.code).toContain(
 			'className={cx(css.class({ backgroundColor: "tomato" }), "existing")}',
 		);
+
+		const spread = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'const Card = (props: any) => <Box className="local" bg="tomato" {...props} />;',
+			{ from: "chakra-ui", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(spread.residuals).toEqual([]);
+		expect(spread.code).toContain(
+			'className={cx(css.class({ backgroundColor: "tomato" }), "local", props.className)}',
+		);
+		expect(spread.code.indexOf("props} />")).toBeLessThan(
+			spread.code.indexOf("className={cx(css.class"),
+		);
+
+		const componentSpread = runAdapterMigration(
+			'import { Stack } from "@chakra-ui/react";\n' +
+				'const Notice = (props: any) => <Stack {...props} display="inline-flex" />;\n' +
+				'const App = () => <Notice mt="3" />;',
+			{ from: "chakra-ui", to: "pandwind", file: "Notice.tsx", mode: "safe" },
+		);
+		expect(componentSpread.residuals).toEqual([]);
+		expect(componentSpread.code).toContain(
+			'className={cx(css.class({ display: "inline-flex" }), props.className)}',
+		);
+
+		const separator = runAdapterMigration(
+			'import { HStack, StackSeparator } from "@chakra-ui/react";\n' +
+				"export const App = () => <HStack gap={12} separator={<StackSeparator />} />;",
+			{ from: "chakra-ui", to: "pandwind", file: "Separator.tsx", mode: "safe" },
+		);
+		expect(separator.residuals).toEqual([]);
+		expect(separator.code).toContain("gap={12}");
+		expect(separator.code).not.toContain("className={");
+
+		const nextImage = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'import Image from "next/image";\n' +
+				'export const App = () => <Box><Image fill src="/hero.png" alt="Hero" objectFit="cover" /></Box>;',
+			{ from: "chakra-ui", to: "pandwind", file: "Image.tsx", mode: "safe" },
+		);
+		expect(nextImage.residuals).toEqual([]);
+		expect(nextImage.code).toContain("fill");
+		expect(nextImage.code).not.toContain("className={css.class({ fill: true");
+
+		const palette = runAdapterMigration(
+			'import { VStack, Text } from "@chakra-ui/react";\n' +
+				'export const App = ({ color }) => <VStack colorPalette={color}><Text color="colorPalette.fg">Label</Text></VStack>;',
+			{ from: "chakra-ui", to: "pandwind", file: "Palette.tsx", mode: "safe" },
+		);
+		expect(palette.residuals).toEqual([]);
+		expect(palette.code).toContain('color: "var(--chakra-colors-color-palette-fg)"');
 
 		const mui = runAdapterMigration(
 			'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ m: 2, p: 1, color: "red" }} />;',

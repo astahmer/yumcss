@@ -256,7 +256,13 @@ function transformTw(
 				options.metaDir !== undefined
 					? relativeModuleImport(options.file, options.metaDir, "cx")
 					: "pandwind/cx";
-			code = ensureImport(code, `import { cx } from "${cxSource}";`);
+			code = ensureImport(
+				code,
+				options.metaDir === undefined
+					? 'import { createCx } from "pandwind/cx";'
+					: `import { cx } from "${cxSource}";`,
+			);
+			if (options.metaDir === undefined) code = ensureImport(code, "const cx = createCx();");
 		}
 		return { ...result, code, changed: code !== source };
 	}
@@ -296,7 +302,13 @@ function rewriteClsxImports(
 	);
 
 	if (renamed.length > 0) {
-		code = ensureImport(code, `import { cx } from "${cxImportSource}";`);
+		code = ensureImport(
+			code,
+			cxImportSource === "pandwind/cx"
+				? 'import { createCx } from "pandwind/cx";'
+				: `import { cx } from "${cxImportSource}";`,
+		);
+		if (cxImportSource === "pandwind/cx") code = ensureImport(code, "const cx = createCx();");
 		for (const name of renamed) {
 			if (name !== "cx") code = code.replace(new RegExp(`\\b${name}\\b`, "g"), "cx");
 		}
