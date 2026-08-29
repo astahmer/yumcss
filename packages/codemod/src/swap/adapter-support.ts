@@ -10,6 +10,7 @@ import type { StyleProgramSource } from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 
 /** Shared mechanics used by adapter definitions; no ecosystem policy lives here. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped adapter mechanics
 export class CodemodAdapterSupport {
 	static sourceName(source: string, start: number, fallback: string): string {
 		const prefix = source.slice(Math.max(0, start - 160), start);

@@ -1,10 +1,8 @@
 import {
 	runDifferentialFixture,
 	type DifferentialFixture,
-	type DifferentialRender,
 	type DifferentialResult,
 } from "./differential.ts";
-import { styleProgramToCanonicalCss, type StyleProgram } from "./semantic-ir.ts";
 import { DifferentialProofKind } from "./identifiers.ts";
 
 export const DIFFERENTIAL_CORPUS_RUNNER_SCHEMA = "pandwind.differential-corpus-runner/1" as const;

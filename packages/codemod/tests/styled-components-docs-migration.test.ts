@@ -17,11 +17,11 @@ describe("styled-components docs migration lanes", () => {
 			expect(report.sourceFiles).toBe(54);
 			expect(report.changedFiles).toBe(54);
 			expect(report.convertedCallSites).toBe(285);
-			expect(report.staticCallSites).toBe(77);
-			expect(report.runtimeFallbackCallSites).toBe(64);
-			expect(report.dynamicValueCallSites).toBe(208);
-			expect(report.staticCssCoverageRatio).toBeCloseTo((285 - 64) / 285);
-			expect(report.staticExtractionRatio).toBeCloseTo(77 / 285);
+			expect(report.staticCallSites).toBe(80);
+			expect(report.runtimeFallbackCallSites).toBe(60);
+			expect(report.dynamicValueCallSites).toBe(205);
+			expect(report.staticCssCoverageRatio).toBeCloseTo((285 - 60) / 285);
+			expect(report.staticExtractionRatio).toBeCloseTo(80 / 285);
 			expect(report.skippedCallSites).toBe(0);
 			expect(report.residuals).toEqual([]);
 		},

@@ -33,7 +33,7 @@ import {
 } from "./modules.ts";
 import { BUILTIN_PATTERNS } from "./patterns.ts";
 import { aliasSpecifier, type ProjectUsage } from "./project.ts";
-import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
+import { discoverPandaMigration } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import {
 	convertPandaRecipe,
@@ -41,7 +41,6 @@ import {
 	rewritePandaSource,
 	validatePandaSource,
 } from "./migration-stages.ts";
-import type { PandaTheme } from "./theme.ts";
 import { parsePandaCalls } from "./parse.ts";
 import { PandaFactoryAdapter } from "./factory-adapter.ts";
 import { PandaRecipeSource } from "./recipe-source.ts";
@@ -306,10 +305,7 @@ function unifiedDiff(before: string, after: string, file: string): string {
 }
 
 type SwapIrLike = import("../../ir.ts").SwapIR;
-import type {
-	PandaRecipeCallSite as CallSite,
-	PandaRecipeDefinition as RecipeDef,
-} from "./recipe-source.ts";
+import type { PandaRecipeDefinition as RecipeDef } from "./recipe-source.ts";
 
 export async function runPandaMigration(options: PandaMigrateOptions): Promise<PandaMigrateReport> {
 	const { projectRoot, meta, skipMarker } = options;

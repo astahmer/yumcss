@@ -73,7 +73,7 @@ export class RealMigrationProofSuite {
 					message: "duplicate proof id",
 				});
 			ids.add(proof.id);
-			if (proof.sourceCommit.length !== 40)
+			if (!/^[0-9a-f]{40}$/.test(proof.sourceCommit))
 				failures.push({
 					id: proof.id,
 					dimension: RealMigrationProofDimension.Identity,

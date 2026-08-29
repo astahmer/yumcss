@@ -13,11 +13,7 @@ import type {
 	AdapterParseContext,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
-import {
-	styleProgramFromRules,
-	type StyleProgram,
-	type StyleProgramResidual,
-} from "./semantic-ir.ts";
+import { styleProgramFromRules, type StyleProgramResidual } from "./semantic-ir.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { removeSourceImports } from "./external-adapters.ts";
@@ -30,7 +26,6 @@ import {
 	getHostComponentRewriter,
 	componentTagForSubject,
 	componentExpressionForSubject,
-	intrinsicTagForSubject,
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
 	type HostComponentRewriteRequest,
@@ -151,6 +146,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			source,
 			root: options.root,
 			config,
+			readFile,
 			meta: options.meta,
 			document,
 			semantic: options.semantic,
@@ -283,7 +279,10 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			if (targetPolicy.handlesHostRewrites && program.source?.subject !== undefined) {
 				const hasDynamic = programPolicy.hasDynamic(program);
 				const hasFunctionDynamic = programPolicy.hasFunctionDynamic(program);
-				const needsRawTemplate = programPolicy.needsRawTemplate(program);
+				// A target may consume a parse residual as raw template syntax, but
+				// that does not make the source a static style value. Preserve the
+				// residual as evidence while selecting the target-owned host wrapper.
+				const needsRawTemplate = rawTemplateResidual || programPolicy.needsRawTemplate(program);
 				const binding = source
 					.slice(0, match.start)
 					.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
@@ -342,6 +341,16 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 						framework === BuiltinHostFramework.Vue ||
 						framework === BuiltinHostFramework.React ||
 						framework === BuiltinHostFramework.Preact);
+				const targetRequiresHostWrapper =
+					binding !== undefined &&
+					targetPolicy.requiresHostWrapper?.({
+						source,
+						file: options.file,
+						binding,
+						subject: program.source.subject,
+						program,
+					}) === true;
+				if (targetRequiresHostWrapper) wrapComponent = true;
 				if (canWrapComponent) {
 					program = {
 						...program,
@@ -357,6 +366,11 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 						source: { ...program.source, subject: undefined },
 					};
 					wrapComponent = true;
+				} else if (targetRequiresHostWrapper) {
+					// Keep the original subject in the host context for the target
+					// emitter, but remove it from the style program so the component
+					// capability is satisfied by a target-owned static wrapper.
+					program = { ...program, source: { ...program.source, subject: undefined } };
 				} else if (standaloneExport || frameworkWrapper) {
 					program = { ...program, source: { ...program.source, subject: undefined } };
 					if (frameworkWrapper)

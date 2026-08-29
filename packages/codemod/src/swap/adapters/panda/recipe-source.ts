@@ -21,6 +21,7 @@ export interface PandaRecipeCallSite {
 }
 
 /** Panda recipe-source policy for safely removing executable anatomy helpers. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped Panda recipe policy
 export class PandaRecipeSource {
 	static definitions(file: PandaMigrationFile): PandaRecipeDefinition[] {
 		const excluded = computeExcludedRanges(file.source, file.path);

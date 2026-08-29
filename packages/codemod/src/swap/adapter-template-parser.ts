@@ -1,4 +1,5 @@
 import { matchBlock } from "../source-pass-utils.ts";
+import { dirname, resolve } from "node:path";
 import { parse, type AtRule, type Container, type Declaration, type Rule } from "postcss";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import {
@@ -17,15 +18,46 @@ interface TemplateInterpolation {
 	readonly expression: string;
 }
 
-function resolveNamedCssTemplate(source: string, name: string): string | undefined {
+function resolveNamedCssTemplate(
+	source: string,
+	name: string,
+	context: AdapterParseContext,
+): string | undefined {
 	const declaration = new RegExp(`${name}[ ]*=[ ]*(?:css[ ]*)?\\x60`).exec(source);
-	if (declaration === null) return undefined;
-	const openTick = declaration.index + declaration[0].length - 1;
-	const closeTick = findTemplateLiteralEnd(source, openTick);
-	return closeTick === undefined ? undefined : source.slice(openTick + 1, closeTick);
+	if (declaration !== null) {
+		const openTick = declaration.index + declaration[0].length - 1;
+		const closeTick = findTemplateLiteralEnd(source, openTick);
+		if (closeTick !== undefined) return source.slice(openTick + 1, closeTick);
+	}
+	if (context.readFile === undefined) return undefined;
+	const importMatch = new RegExp(
+		`import\\s*\\{[^}]*\\b${name}\\b[^}]*\\}\\s*from\\s*["']([^"']+)["']`,
+	).exec(source);
+	const specifier = importMatch?.[1];
+	if (specifier === undefined || !specifier.startsWith(".")) return undefined;
+	const sourceFile =
+		context.root === undefined ? resolve(context.file) : resolve(context.root, context.file);
+	const modulePath = resolve(dirname(sourceFile), specifier);
+	const candidates = [
+		modulePath,
+		...([".ts", ".tsx", ".js", ".jsx"] as const).map((extension) => `${modulePath}${extension}`),
+		...([".ts", ".tsx", ".js", ".jsx"] as const).map((extension) =>
+			resolve(modulePath, `index${extension}`),
+		),
+	];
+	const importedSource = candidates
+		.map((file) => context.readFile?.(file))
+		.find((value) => value !== undefined);
+	if (importedSource === undefined) return undefined;
+	return resolveNamedCssTemplate(importedSource, name, {
+		...context,
+		source: importedSource,
+		file: candidates[0]!,
+	});
 }
 
-function expandStyleFragments(body: string, source: string): string {
+function expandStyleFragments(body: string, context: AdapterParseContext): string {
+	const source = context.source;
 	let expanded = body;
 	for (let pass = 0; pass < 4; pass++) {
 		let changed = false;
@@ -40,13 +72,14 @@ function expandStyleFragments(body: string, source: string): string {
 				expression,
 			);
 			const direct = new RegExp("^css\\x60([^]*)\\x60$").exec(expression);
-			const named = /^[A-Za-z_$][\\w$]*$/.test(expression)
-				? resolveNamedCssTemplate(source, expression)
+			const named = /^[A-Za-z_$][\w$]*$/.test(expression)
+				? resolveNamedCssTemplate(source, expression, context)
 				: undefined;
+			const expandedNamed = named === undefined ? undefined : expandStyleFragments(named, context);
 			const replacement =
 				inline?.[1] !== undefined
 					? `@media (max-width: ${expression.startsWith("mobile") ? "62.5" : "40.625"}em) {${inline[1]}}`
-					: (direct?.[1] ?? named);
+					: (direct?.[1] ?? (expandedNamed?.includes("${") ? undefined : expandedNamed));
 			if (replacement === undefined) continue;
 			output += expanded.slice(cursor, index) + replacement;
 			index = block.end - 1;
@@ -151,7 +184,7 @@ export function parseAdapterTemplate(
 	adapter: string,
 	start: number,
 ): StyleProgram {
-	const templateBody = expandStyleFragments(body, context.source);
+	const templateBody = expandStyleFragments(body, context);
 	const extracted = extractInterpolations(templateBody);
 	const residuals: StyleProgramResidual[] = [...extracted.fragmentResiduals];
 	let root;
@@ -210,7 +243,7 @@ export function parseAdapterTemplate(
 					});
 					continue;
 				}
-				const nested = parseContainer(rule, []);
+				const nested = parseContainer(rule, conditions);
 				children.push({
 					kind: "style",
 					selector: rule.selector,
@@ -225,16 +258,25 @@ export function parseAdapterTemplate(
 			const atRule = node as AtRule;
 			const name = atRule.name.toLowerCase();
 			if (name === "media" || name === "container") {
-				const nested = parseContainer(atRule, [
+				const nestedConditions = [
 					...conditions,
 					{ kind: name, name: atRule.params, value: atRule.params },
-				]);
-				declarations.push(...nested.declarations);
+				] as const;
+				const nested = parseContainer(atRule, nestedConditions);
+				if (nested.declarations.length > 0) {
+					children.push({
+						kind: "style",
+						conditions: nestedConditions,
+						declarations: nested.declarations,
+						children: [],
+						order: order++,
+					});
+				}
 				children.push(...nested.children);
 				continue;
 			}
 			if (name === "supports") {
-				const nested = parseContainer(atRule, []);
+				const nested = parseContainer(atRule, conditions);
 				children.push({
 					kind: "supports",
 					name: atRule.params,
@@ -246,7 +288,7 @@ export function parseAdapterTemplate(
 				continue;
 			}
 			if (name === "layer") {
-				const nested = parseContainer(atRule, []);
+				const nested = parseContainer(atRule, conditions);
 				children.push({
 					kind: "layer",
 					layer: atRule.params || undefined,

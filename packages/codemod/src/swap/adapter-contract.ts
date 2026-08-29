@@ -58,6 +58,8 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 
 export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
+	/** Optional filesystem port for resolving imported static style fragments. */
+	readonly readFile?: (file: string) => string | undefined;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
 	readonly document?: SourceScanResult;
@@ -153,6 +155,18 @@ export interface AdapterMigrationHooks {
 export interface AdapterTargetMigrationPolicy {
 	/** Whether this target owns framework host/component rewrites. */
 	readonly handlesHostRewrites: boolean;
+	/**
+	 * Decide whether a converted host binding must remain a component value.
+	 * This is target-owned because only the target knows whether a class string
+	 * can safely replace a framework component expression.
+	 */
+	readonly requiresHostWrapper?: (context: {
+		readonly source: string;
+		readonly file: string;
+		readonly binding: string;
+		readonly subject: string;
+		readonly program: StyleProgram;
+	}) => boolean;
 	/** Whether parse residuals can be represented by the target as raw templates. */
 	handlesRawTemplate(program: StyleProgram): boolean;
 	/** Whether a source template fragment can remain a target runtime expression. */

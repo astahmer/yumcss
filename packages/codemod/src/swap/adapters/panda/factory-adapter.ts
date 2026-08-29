@@ -1,5 +1,4 @@
 import type { PandwindMeta } from "../../../meta.ts";
-import { matchBlock } from "../../../source-pass-utils.ts";
 import { parseObjectLiteral } from "../../parse.ts";
 import { emitPandaStyle, convertPandaStyle } from "./migration-stages.ts";
 import { PANDA_ALIASES, literalToPlain, normalizePandaStyleObject } from "./parse.ts";
@@ -32,6 +31,7 @@ const DOM_ATTRIBUTE =
  * The caller owns source masking and decides whether a non-literal is a
  * residual; this object only owns Panda's syntax and rewrite semantics.
  */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped Panda factory policy
 export class PandaFactoryAdapter {
 	static residuals(element: PandaFactoryElement, theme: PandaTheme) {
 		const styleEntries: Array<[string, unknown]> = [];

@@ -23,6 +23,13 @@ import {
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
+	requiresHostWrapper: ({ source, binding }) => {
+		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		return (
+			new RegExp(`styled\\s*\\(\\s*${escaped}\\s*\\)`).test(source) ||
+			new RegExp(`<${escaped}(?:\\s|/?>)`).test(source)
+		);
+	},
 	handlesRawTemplate: () => true,
 	handlesTemplateFragment: (program) => program.source?.pattern === CodemodPatternId.CssTemplate,
 };
@@ -98,6 +105,28 @@ function isStaticSubjectExpression(expression: string): boolean {
 	);
 }
 
+function composedBaseClassName(
+	subject: string,
+	context: AdapterEmitContext | undefined,
+): string | undefined {
+	const base = componentExpressionForSubject(subject);
+	const source = context?.document?.document.source;
+	const file = context?.file;
+	if (
+		base === undefined ||
+		!/^[A-Za-z_$][\w$]*$/.test(base) ||
+		source === undefined ||
+		file === undefined
+	)
+		return undefined;
+	const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return new RegExp(
+		`(?:export\\s+)?(?:const|let|var)\\s+${escaped}\\s*=\\s*styled(?:\\.|\\s*\\()`,
+	).test(source)
+		? CodemodStyleIdentity.className(file, base)
+		: undefined;
+}
+
 function hasUnsafeTemplateDynamic(template: string, source?: string): boolean {
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
@@ -159,11 +188,45 @@ function cssBlockEnd(source: string, open: number): number | undefined {
 }
 
 function augmentAncestorSelectors(template: string, rootSelector: string): string {
+	const isInsideAtRule = (position: number): boolean => {
+		const atRuleStack: boolean[] = [];
+		let pendingAtRule = false;
+		let quote: string | undefined;
+		for (let index = 0; index < position; index++) {
+			const character = template[index];
+			if (quote !== undefined) {
+				if (character === "\\") index++;
+				else if (character === quote) quote = undefined;
+				continue;
+			}
+			if (character === '"' || character === "'") {
+				quote = character;
+				continue;
+			}
+			if (character === "@") {
+				pendingAtRule = true;
+				continue;
+			}
+			if (character === "{") {
+				atRuleStack.push(pendingAtRule);
+				pendingAtRule = false;
+				continue;
+			}
+			if (character === "}") {
+				atRuleStack.pop();
+				pendingAtRule = false;
+				continue;
+			}
+			if (pendingAtRule && (character === ";" || character === "\n")) pendingAtRule = false;
+		}
+		return atRuleStack.some(Boolean);
+	};
 	const lifted: string[] = [];
 	const selectorPattern = /((?:\$\{[^{}]+\}|[^\n{}])*&(?:\$\{[^{}]+\}|[^\n{}])*)\s*\{/g;
 	for (const match of template.matchAll(selectorPattern)) {
 		const selector = match[1]?.trim();
 		if (selector === undefined || selector.startsWith("@") || selector.includes("@")) continue;
+		if (isInsideAtRule(match.index ?? 0)) continue;
 		// The selector may contain a JavaScript interpolation (`${Label}`). Use
 		// the trailing brace consumed by the full match rather than searching
 		// backwards, which can select the interpolation's opening brace when a
@@ -229,6 +292,8 @@ function runtimeComponent(
 	const framework = host?.framework ?? program.source?.framework;
 	const componentExpression =
 		subject === undefined ? undefined : componentExpressionForSubject(subject);
+	const inheritedClass =
+		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const componentAttrs =
 		host?.subjectAttrs ??
 		(subject === undefined ? undefined : componentAttrsExpressionForSubject(subject));
@@ -261,7 +326,7 @@ function runtimeComponent(
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	if (tag === undefined) {
 		return {
-			text: `(props) => { const style = css.vars(${object}); const Base = ${componentExpression}; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Base {...attrs} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
+			text: `(props) => { const style = css.vars(${object}); const Base = ${componentExpression}; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Base {...attrs} {...props} ${classAttribute}={cx(style.class${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})} style={style.style} />; }`,
 			imports: [
 				'import { createCx } from "pandwind/cx";',
 				"const cx = createCx();",
@@ -272,7 +337,7 @@ function runtimeComponent(
 		};
 	}
 	return {
-		text: `(props) => { const style = css.vars(${object}); const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <${tag} {...attrs} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
+		text: `(props) => { const style = css.vars(${object}); const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <${tag} {...attrs} {...props} ${classAttribute}={cx(style.class${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})} style={style.style} />; }`,
 		imports: [
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
@@ -321,10 +386,16 @@ function staticComponent(
 	const component = tag ?? base;
 	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
 	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
+	const stableClass =
+		host.stableClassName ??
+		CodemodStyleIdentity.className(context?.file ?? "component", host.binding);
+	const inheritedClass =
+		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const style = `css.class(${programObject(program)})`;
 	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
+	const classExpression = `cx(style, ${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`;
 	return {
-		text: `(() => { const style = ${style}; const component = (props) => { const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(style, props.${classAttribute})} />; }; return component; })()`,
+		text: `(() => { const style = ${style}; const component = (props) => { const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={${classExpression}} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
@@ -413,8 +484,10 @@ function hybridComponent(
 	const attrs = host.subjectAttrs ?? componentAttrsExpressionForSubject(subject);
 	if (attrs !== undefined && /=>|\bfunction\b/.test(attrs)) return undefined;
 	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
+	const inheritedClass =
+		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	return {
-		text: `(() => { const staticClass = ${staticClass}; const component = (props) => { const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(staticClass, dynamic.class, props.${classAttribute})} style={{ ...dynamic.style, ...props.style }} />; }; return component; })()`,
+		text: `(() => { const staticClass = ${staticClass}; const component = (props) => { const dynamic = css.vars(${dynamicObject}); const attrs = ${attrsExpression}; return <${component} {...attrs} {...props} ${classAttribute}={cx(staticClass, dynamic.class${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})} style={{ ...dynamic.style, ...props.style }} />; }; return component; })()`,
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
@@ -621,9 +694,11 @@ function runtimeRawComponent(
 	const staticRegistration = dynamic
 		? `css.sheet.register([{ id: ${JSON.stringify(stableClass)}, css: ${staticCssText}, priority: ${priority} }]);`
 		: "";
+	const inheritedClass =
+		subject === undefined ? undefined : composedBaseClassName(subject, context);
 	const classExpression = dynamic
-		? `cx(className, ${JSON.stringify(stableClass)}, props.${classAttribute})`
-		: `cx(${JSON.stringify(stableClass)}, props.${classAttribute})`;
+		? `cx(className, ${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`
+		: `cx(${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`;
 	const render = `const Component = props.as ?? ${defaultComponent}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; const element = <Component {...attrs} {...rest} ${classAttribute}={${classExpression}} />; return element;`;
 	const themeContextAssignment = needsThemeContext
 		? "props = { ...props, theme: props.theme ?? usePandwindTheme() };"
@@ -731,7 +806,11 @@ export default defineCodemodAdapter({
 	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 	emit(program, { programObject, declarationsObject }, context) {
 		if (program.source?.pattern === CodemodPatternId.CssTemplate) {
+			const hasStaticContent = program.rules.some(function hasContent(rule): boolean {
+				return rule.declarations.length > 0 || rule.children.some(hasContent);
+			});
 			if (
+				hasStaticContent &&
 				program.residuals.length === 0 &&
 				!program.rules.some(function containsDynamic(rule): boolean {
 					return (

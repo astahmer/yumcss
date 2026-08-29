@@ -20,12 +20,10 @@ import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	styleProgramToCanonicalCss,
-	type StyleDeclaration,
 	type StyleProgram,
 	type StyleProgramOptions,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
-import { parseAdapterTemplate } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import { CodemodAdapterSupport } from "./adapter-support.ts";
 import { CodemodAdapterParser, CodemodAdapterRenderer } from "./adapter-style-engine.ts";

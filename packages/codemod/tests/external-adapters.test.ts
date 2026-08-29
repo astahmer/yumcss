@@ -86,6 +86,89 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(component.code).toContain("styled.button({");
 	});
 
+	test("preserves nested media conditions in styled-components templates", () => {
+		const result = runAdapterMigration(
+			'import styled, { css } from "styled-components";\n' +
+				"const Card = styled.div`display: block; ${css`color: red;`} @media (max-width: 40em) { display: none; &:hover { color: blue; } }`;",
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(2);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"@media (max-width: 40em)"');
+		expect(result.code).toContain('"&:hover"');
+		expect(result.code).toContain('"@media (max-width: 40em)": { display: "none"');
+	});
+
+	test("inlines named static CSS fragments before target emission", () => {
+		const result = runAdapterMigration(
+			'import styled, { css } from "styled-components";\n' +
+				"const columnMixin = css`\n  width: 50%;\n  max-width: 50%;\n  ${phone(css`width: 100%;`)};\n`;\n" +
+				"const Code = styled.code`\n  ${columnMixin};\n`;",
+			{ from: "styled-components", to: "pandwind", file: "Code.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(3);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(
+			'const Code = (() => { const style = css.class({ width: "50%", maxWidth: "50%"',
+		);
+		expect(result.code).toContain('"@media (max-width: 40.625em)"');
+		expect(result.code).not.toContain("String((typeof (columnMixin)");
+	});
+
+	test("preserves static styled bindings used as JSX components", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\nconst Code = styled.code`width: 50%;`;\nexport const View = () => <Code>example</Code>;',
+			{ from: "styled-components", to: "pandwind", file: "View.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("const Code = (() =>");
+		expect(result.code).toContain('css.class({ width: "50%" })');
+	});
+
+	test("resolves imported static fragments through the parse file port", () => {
+		const result = runAdapterMigration(
+			'import styled, { css } from "styled-components";\n' +
+				'import { monochrome } from "./mixins";\n' +
+				"const Logo = styled.span`\n  ${monochrome};\n`;\n" +
+				"export const App = () => <Logo />;",
+			{
+				from: "styled-components",
+				to: "pandwind",
+				file: "components/Logo.tsx",
+				root: "/project",
+				mode: "safe",
+				readFile: (file) =>
+					file === "/project/components/mixins.ts"
+						? "export const monochrome = css`filter: grayscale(1);`;"
+						: undefined,
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('filter: "grayscale(1)"');
+	});
+
+	test("keeps opaque styled mixins in an explicit host runtime fallback", () => {
+		const result = runAdapterMigration(
+			'import { LiveEditor } from "react-live-runner";\n' +
+				'import styled from "styled-components";\n' +
+				'import { editorMixin } from "./codeMixins";\n' +
+				"const Editor = styled(LiveEditor)`\\n  ${editorMixin};\\n  height: 24rem;\\n  width: 100%;\\n`;",
+			{ from: "styled-components", to: "pandwind", file: "Editor.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("createRuntimeCss");
+		expect(result.code).toContain("height: 24rem");
+		expect(result.code).not.toContain("css.class({  })");
+	});
+
 	test("reports Next-yak runtime interpolations instead of dropping them", () => {
 		const result = runAdapterMigration(
 			'import { styled } from "next-yak";\nconst Card = styled.button`color: ${({ theme }) => theme.color};`;',
@@ -374,8 +457,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('const Card = css.class({ color: "red" })');
-		expect(result.code).toContain('<div data-testid="card" className={Card} />');
+		expect(result.code).toContain(
+			'const Card = (() => { const style = css.class({ color: "red" });',
+		);
+		expect(result.code).toContain('<div {...attrs} {...props} className={cx(style, "');
+		expect(result.code).toContain('component.__pandwindClassName = "');
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
@@ -412,9 +498,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(staticResult.converted).toBe(1);
 		expect(staticResult.residuals).toEqual([]);
 		expect(staticResult.code).toContain(
-			'const Card = css.class({ color: "red", backgroundColor: "blue" })',
+			'const Card = (() => { const style = css.class({ color: "red", backgroundColor: "blue" });',
 		);
-		expect(staticResult.code).toContain("<div className={Card} />");
+		expect(staticResult.code).toContain('<div {...attrs} {...props} className={cx(style, "');
+		expect(staticResult.code).toContain('component.__pandwindClassName = "');
 		expect(staticResult.code).not.toContain("createRuntimeCss");
 
 		const dynamicResult = runAdapterMigration(
@@ -426,6 +513,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(dynamicResult.converted).toBe(1);
 		expect(dynamicResult.residuals).toEqual([]);
 		expect(dynamicResult.code).toContain("createRuntimeCss");
+	});
+
+	test("preserves the static class of a composed styled subject", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Column = styled.th`padding: 8px 16px;`;\n" +
+				"const Heading = styled(Column)`font-weight: 600;`;\n" +
+				"export const App = () => <Heading>Arguments</Heading>;",
+			{ from: "styled-components", to: "pandwind", file: "Table.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(2);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(
+			`cx(style, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Heading"))}, ${JSON.stringify(CodemodStyleIdentity.className("Table.tsx", "Column"))}, props.className)`,
+		);
 	});
 
 	test("uses the default project reader and reports unsupported rule kinds", () => {
@@ -466,8 +569,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("css.vars({ color: theme.foreground })");
-		expect(result.code).toContain('<div data-testid="card" className={Card.class}');
-		expect(result.code).toContain("style={Card.style}");
+		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain('<Card data-testid="card" />');
 	});
 
 	test("lowers styled template theme interpolations when the host is intrinsic", () => {

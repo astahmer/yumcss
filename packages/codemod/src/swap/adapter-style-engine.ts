@@ -87,8 +87,29 @@ function styleRuleNode(rule: StyleProgram["rules"][number]): ObjectNode {
 	for (const declaration of rule.declarations)
 		addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
 	for (const child of rule.children) {
-		const key = child.selector ?? child.name ?? child.kind;
-		root.children.push([key, styleRuleNode(child)]);
+		let target = root;
+		for (const condition of child.conditions.map(conditionKey)) {
+			let conditionNode = target.children.find(([key]) => key === condition)?.[1];
+			if (conditionNode === undefined) {
+				conditionNode = objectNode();
+				target.children.push([condition, conditionNode]);
+			}
+			target = conditionNode;
+		}
+		const childNode = styleRuleNode({ ...child, conditions: [] });
+		if (child.kind === "style" && child.selector === undefined) {
+			target.entries.push(...childNode.entries);
+			target.children.push(...childNode.children);
+			continue;
+		}
+		const key =
+			child.selector ??
+			(child.kind === "supports"
+				? `@supports ${child.name ?? ""}`
+				: child.kind === "layer"
+					? `@layer ${child.layer ?? child.name ?? ""}`
+					: (child.name ?? child.kind));
+		target.children.push([key, childNode]);
 	}
 	return root;
 }

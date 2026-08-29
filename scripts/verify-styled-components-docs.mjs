@@ -96,7 +96,7 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 			const style = document.createElement("style");
 			style.dataset.pandwindFreeze = "";
 			style.textContent =
-				"*,*::before,*::after{animation:none!important;animation-duration:0s!important;animation-delay:0s!important;transition:none!important;}";
+				'*,*::before,*::after{animation:none!important;animation-duration:0s!important;animation-delay:0s!important;transition:none!important;}[aria-label^="Company logos carousel"]{transform:none!important;}';
 			document.documentElement.append(style);
 		};
 		if (document.documentElement) freezeAnimations();
@@ -104,6 +104,9 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 	});
 	await page.goto(new URL(route, baseUrl).href, { waitUntil: "domcontentloaded", timeout: 30000 });
 	await page.waitForLoadState("networkidle", { timeout: 2000 }).catch(() => undefined);
+	await page.evaluate(async () => {
+		await document.fonts?.ready;
+	});
 	await page.evaluate(async () => {
 		await Promise.all(
 			[...document.images].map((image) => {
@@ -125,9 +128,10 @@ const browserShape = async (browser, baseUrl, route, normalizeStyledComponents =
 		await page.evaluate(() => {
 			const bodyStyles = [...document.querySelectorAll("body style[data-styled]")];
 			if (bodyStyles.length === 0) return;
-			// Styled-components can place its runtime style nodes inside structural
-			// elements. Moving the same CSS to head preserves styling while removing
-			// an implementation detail that changes :first-child semantics.
+			// Runtime style nodes are implementation artifacts. Moving their CSS to
+			// head removes their structural effect (for example, on :first-child)
+			// while preserving the reference stylesheet and cascade for comparison
+			// against static output.
 			const normalized = document.createElement("style");
 			normalized.dataset.pandwindBaselineNormalization = "styled-components";
 			normalized.textContent = bodyStyles.map((style) => style.textContent).join("\n");
@@ -377,7 +381,8 @@ const report = {
 	design: { ...design, totalBytes: totalBytes(design) },
 	runtimeTransferDelta: totalBytes(runtime) - totalBytes(baseline),
 	designTransferDelta: totalBytes(design) - totalBytes(baseline),
-	browserNormalization: "styled-components body style nodes moved to head preserving CSS",
+	browserNormalization:
+		"styled-components body style nodes moved to head with CSS preserved before comparison",
 	browserPixelTolerance: {
 		maxChangedPixels: 100,
 		maxChangedPixelRatio: 0.0001,

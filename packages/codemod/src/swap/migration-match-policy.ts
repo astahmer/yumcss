@@ -2,6 +2,7 @@ import type { StyleProgram } from "./semantic-ir.ts";
 import { intrinsicTagForSubject } from "./host-component-rewriter.ts";
 
 /** Syntax-only host matching policy shared by migration orchestration. */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped migration policy
 export class MigrationMatchPolicy {
 	static standaloneTag(source: string, start: number): string | undefined {
 		const subject = source

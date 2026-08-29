@@ -292,6 +292,36 @@ function collectorSafeSource(source: string): string {
 	);
 }
 
+async function readPinnedReleaseFixture(referenceRoot: string): Promise<readonly unknown[]> {
+	const cacheDirectory = join(referenceRoot, ".next/cache/fetch-cache");
+	let files: readonly string[];
+	try {
+		files = await readdir(cacheDirectory);
+	} catch (error) {
+		throw new Error(`pinned reference has no fetch cache at ${cacheDirectory}`, { cause: error });
+	}
+	for (const file of files) {
+		let cached: { data?: { body?: string; url?: string } };
+		try {
+			cached = JSON.parse(await readFile(join(cacheDirectory, file), "utf8")) as typeof cached;
+		} catch {
+			continue;
+		}
+		if (
+			cached.data?.body === undefined ||
+			!cached.data.url?.startsWith(
+				"https://api.github.com/repos/styled-components/styled-components/releases?",
+			)
+		)
+			continue;
+		const payload = JSON.parse(Buffer.from(cached.data.body, "base64").toString("utf8"));
+		if (Array.isArray(payload)) return payload;
+	}
+	throw new Error(
+		`pinned reference fetch cache does not contain a GitHub releases fixture: ${cacheDirectory}`,
+	);
+}
+
 function runtimeModule(lane: StyledComponentsDocsLane): string {
 	const factory =
 		lane === StyledComponentsDocsLane.DesignCss ? "createRuntimeDesignCss" : "createRuntimeCss";
@@ -333,15 +363,19 @@ async function materialize(
 			force: true,
 		});
 	}
-	// The pinned site reads a GitHub endpoint directly during static
-	// generation. Treat a rate-limit/error payload as an empty fixture so the
-	// migration proof is reproducible and does not depend on external API
-	// availability. The reference checkout itself remains untouched.
+	// The pinned site reads a GitHub endpoint directly during static generation.
+	// Reuse the response captured by the pinned reference build so reference and
+	// candidate pages render the same content even when the API rate-limits a
+	// later build. The reference checkout itself remains untouched.
 	const githubApiFile = join(outputRoot, "utils/githubApi.ts");
 	const githubApi = await readFile(githubApiFile, "utf8");
+	const releaseFixture = await readPinnedReleaseFixture(referenceRoot);
+	const releaseFixtureSource = JSON.stringify(releaseFixture)
+		.replaceAll("`", "\\`")
+		.replaceAll("${", "\\${");
 	const stableGithubApi = githubApi.replace(
 		"fetch(`https://api.github.com/repos/styled-components/${repo}/releases?per_page=999`).then(resp => resp.json());",
-		"fetch(`https://api.github.com/repos/styled-components/${repo}/releases?per_page=999`).then(resp => resp.json()).then(payload => (Array.isArray(payload) ? payload : []));",
+		`Promise.resolve(${releaseFixtureSource});`,
 	);
 	if (stableGithubApi !== githubApi) await writeFile(githubApiFile, stableGithubApi);
 	const packageFile = join(outputRoot, "package.json");
