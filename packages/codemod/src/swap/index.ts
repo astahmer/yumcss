@@ -134,7 +134,7 @@ export {
 	CodemodStyleIdentity,
 	externalIdentifier,
 } from "./identifiers.ts";
-export type { ExternalIdentifier } from "./identifiers.ts";
+export type { ExternalIdentifier, StyleValidatorIdentifier } from "./identifiers.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,

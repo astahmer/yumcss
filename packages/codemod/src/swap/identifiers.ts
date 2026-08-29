@@ -94,6 +94,8 @@ export enum StyleValidatorId {
 	Builtin = "pandwind-core-validators",
 }
 
+export type StyleValidatorIdentifier = StyleValidatorId | ExternalIdentifier;
+
 export enum StyleLoweringId {
 	DynamicAndTheme = "dynamic-and-theme",
 	CompositionFlatten = "composition-flatten",
