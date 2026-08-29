@@ -31,8 +31,8 @@ const meta = loadMetaFromSources({
 const WITH_CSS = `import { css } from "./design.ts";\n`;
 const swap = (
 	source: string,
-	to: "css.class" | "design" | "dss" | "tw",
-	from: "auto" | "tw" | "css" | "design" = "auto",
+	to: string,
+	from: string = "auto",
 	file = "test.tsx",
 ) =>
 	runSwap(source, meta, {

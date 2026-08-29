@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -227,8 +227,8 @@ export default defineCodemodAdapter({
 			transform: normalizeStyleXVariables,
 		},
 	],
-	packages: dependency("@stylexjs/stylex", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
+	packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
 		"dynamic-values": "partial",
 		composition: "partial",
 		"font-face": "unsupported",

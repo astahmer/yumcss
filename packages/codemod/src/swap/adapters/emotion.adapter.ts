@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
@@ -26,7 +26,7 @@ export default defineCodemodAdapter({
 			{ name: "@emotion/styled", kind: "peer" },
 		],
 	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Emotion, "exact", {
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Emotion, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",

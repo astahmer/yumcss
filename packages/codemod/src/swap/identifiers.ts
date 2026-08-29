@@ -117,6 +117,19 @@ export enum PandaMigrationStageId {
 	ValidationReporting = "validation-reporting",
 }
 
+export enum PandaMigrationPhase {
+	Discovery = "discovery",
+	Conversion = "conversion",
+	Emission = "emission",
+	Rewrite = "rewrite",
+	Validation = "validation",
+}
+
+export enum PandaRewriteCandidateKind {
+	StyleCall = "style-call",
+	FactoryElement = "factory-element",
+}
+
 /** Identity helper for generated host-component selectors.
  *
  * Binding names are not globally unique: a docs corpus commonly has a

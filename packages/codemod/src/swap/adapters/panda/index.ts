@@ -19,9 +19,15 @@ export {
 export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
+	PandaMigrationPipelineOptions,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./migration-pipeline.ts";
+export { createPandaMigrationServices } from "./pipeline-services.ts";
+export type {
+	PandaMigrationServices,
+	PandaMigrationServiceOverrides,
+} from "./pipeline-services.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
 	discoverPandaFiles,

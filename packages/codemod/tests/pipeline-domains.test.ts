@@ -1,12 +1,14 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import type { PandwindMeta } from "../src/meta.ts";
 import {
 	ADAPTER_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
+	createPandaMigrationPipeline,
+	createPandaMigrationServices,
 	MIGRATION_PIPELINE_SCHEMA,
 	rewritePandaSource,
 	validatePandaSource,
@@ -56,6 +58,31 @@ describe("migration pipeline domains", () => {
 			expect(report.filesScanned).toBe(1);
 			expect(report.notes.some((note) => note.includes("pipeline stages:"))).toBe(true);
 			expect(report.notes.some((note) => note.includes("pipeline artifacts:"))).toBe(true);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+
+	test("allows a Panda stage service to be substituted without changing orchestration", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-pipeline-port-"));
+		try {
+			writeFileSync(join(root, "Page.tsx"), 'export const page = css({ color: "red" });\n');
+			const defaults = createPandaMigrationServices();
+			const discover = vi.fn(defaults.discover);
+			const parseCalls = vi.fn(defaults.parseCalls);
+			const pipeline = createPandaMigrationPipeline({
+				services: { discover, parseCalls },
+			});
+			await pipeline.run({
+				projectRoot: root,
+				patterns: ["Page.tsx"],
+				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
+				write: false,
+				diff: false,
+				skipMarker: "pandwind:port-test",
+			});
+			expect(discover).toHaveBeenCalledOnce();
+			expect(parseCalls).toHaveBeenCalled();
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}

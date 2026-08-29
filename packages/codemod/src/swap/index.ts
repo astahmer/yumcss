@@ -69,6 +69,12 @@ export type {
 	PandaMigrationPipeline,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
+	PandaMigrationPipelineOptions,
+} from "./adapters/panda/index.ts";
+export { createPandaMigrationServices } from "./adapters/panda/index.ts";
+export type {
+	PandaMigrationServices,
+	PandaMigrationServiceOverrides,
 } from "./adapters/panda/index.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
@@ -117,6 +123,8 @@ export {
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
+	PandaMigrationPhase,
+	PandaRewriteCandidateKind,
 	CodemodStyleIdentity,
 	externalIdentifier,
 } from "./identifiers.ts";
@@ -127,7 +135,8 @@ export {
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
-export { runAdapterMigration } from "./adapter-migration.ts";
+export { createStyleMigrationUseCase, runAdapterMigration } from "./adapter-migration.ts";
+export type { StyleMigrationUseCase } from "./adapter-migration.ts";
 export { AdapterContractSuite } from "./adapter-contract-suite.ts";
 export type {
 	AdapterContractFailure,
@@ -139,13 +148,7 @@ export {
 	DEFAULT_MIGRATION_PROGRAM_POLICY,
 } from "./migration-program-policy.ts";
 export type { MigrationProgramPolicy } from "./migration-program-policy.ts";
-export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
-export { AdapterContractSuite } from "./adapter-contract-suite.ts";
-export type {
-	AdapterContractFailure,
-	AdapterContractProbe,
-	AdapterContractReport,
-} from "./adapter-contract-suite.ts";
+export { CodemodAdapterKit, defineCodemodAdapter } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
@@ -178,6 +181,7 @@ export type {
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+export { ADAPTER_CONTRACT_VERSION } from "./adapter-contract.ts";
 export {
 	STYLE_LOWERING_REGISTRY,
 	STYLE_LOWERING_SCHEMA,

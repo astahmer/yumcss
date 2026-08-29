@@ -1,7 +1,6 @@
 import {
-	allRuleCapabilities,
+	CodemodAdapterKit,
 	defineCodemodAdapter,
-	dependency,
 	type AdapterRenderers,
 } from "../external-adapters.ts";
 import { matchBlock } from "../../sources.ts";
@@ -233,10 +232,7 @@ function runtimeComponent(
 	)
 		return undefined;
 	const object = programObject(
-		mapRuntimeProps(
-			program,
-			framework === BuiltinHostFramework.Vue ? "attrs" : "props",
-		),
+		mapRuntimeProps(program, framework === BuiltinHostFramework.Vue ? "attrs" : "props"),
 	);
 	if (framework === BuiltinHostFramework.Vue) {
 		return {
@@ -249,7 +245,12 @@ function runtimeComponent(
 			],
 		};
 	}
-	if (framework !== "solid" && framework !== "react" && framework !== "preact") return undefined;
+	if (
+		framework !== BuiltinHostFramework.Solid &&
+		framework !== BuiltinHostFramework.React &&
+		framework !== BuiltinHostFramework.Preact
+	)
+		return undefined;
 	const classAttribute = framework === BuiltinHostFramework.Solid ? "class" : "className";
 	if (tag === undefined) {
 		return {
@@ -413,7 +414,12 @@ function runtimeRawComponent(
 		template === undefined
 	)
 		return undefined;
-	if (framework !== "react" && framework !== "preact" && framework !== "solid") return undefined;
+	if (
+		framework !== BuiltinHostFramework.React &&
+		framework !== BuiltinHostFramework.Preact &&
+		framework !== BuiltinHostFramework.Solid
+	)
+		return undefined;
 	const stableClass =
 		host.stableClassName ??
 		CodemodStyleIdentity.className(context?.file ?? "component", host.binding);
@@ -564,8 +570,8 @@ export default defineCodemodAdapter({
 		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
 		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
 	],
-	packages: dependency("pandwind", "runtime"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
+	packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
 		"named-conditions": "exact",
 		"framework-semantics": "exact",
 		composition: "exact",

@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { CodemodAdapterId, StyleProgramEmissionHint } from "../identifiers.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 
@@ -54,8 +54,8 @@ export default defineCodemodAdapter({
 		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
-	packages: dependency("styled-components", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
+	packages: CodemodAdapterKit.dependency("styled-components", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		composition: "partial",

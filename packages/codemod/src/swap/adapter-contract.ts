@@ -17,6 +17,7 @@ import type { SourceScanResult } from "pandwind/source";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
+export const ADAPTER_CONTRACT_VERSION = "2" as const;
 
 export type AdapterDependencyKind = "runtime" | "development" | "peer" | "config";
 

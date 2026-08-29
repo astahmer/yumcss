@@ -6,6 +6,7 @@ import { computeExcludedRanges } from "pandwind/source";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	ADAPTER_CONTRACT_VERSION,
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
@@ -97,43 +98,45 @@ export interface CodemodAdapterSpec {
 	): Pick<AdapterEmitResult, "text" | "imports">;
 }
 
-export function dependency(
-	name: string,
-	kind: AdapterDependencies["packages"][number]["kind"],
-): AdapterDependencies {
-	return { packages: [{ name, kind }] };
-}
+export class CodemodAdapterKit {
+	static dependency(
+		name: string,
+		kind: AdapterDependencies["packages"][number]["kind"],
+	): AdapterDependencies {
+		return { packages: [{ name, kind }] };
+	}
 
-export function allRuleCapabilities(
-	adapterId: string,
-	dynamic: "exact" | "partial" | "unsupported",
-	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
-): AdapterCapabilities {
-	return {
-		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: adapterId,
-		capabilities: {
-			declarations: "exact",
-			"rule-level": "exact",
-			"global-rules": "exact",
-			keyframes: "exact",
-			"font-face": "exact",
-			layers: "exact",
-			"supports-rules": "exact",
-			"property-rules": "exact",
-			selectors: "exact",
-			nesting: "exact",
-			ordering: "exact",
-			"token-values": "exact",
-			"dynamic-values": dynamic,
-			"pseudo-conditions": "exact",
-			"selector-conditions": "exact",
-			"media-conditions": "exact",
-			"container-conditions": "exact",
-			"supports-conditions": "exact",
-			...capabilities,
-		},
-	};
+	static allRuleCapabilities(
+		adapterId: string,
+		dynamic: "exact" | "partial" | "unsupported",
+		capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
+	): AdapterCapabilities {
+		return {
+			schema: ADAPTER_CAPABILITIES_SCHEMA,
+			adapter: adapterId,
+			capabilities: {
+				declarations: "exact",
+				"rule-level": "exact",
+				"global-rules": "exact",
+				keyframes: "exact",
+				"font-face": "exact",
+				layers: "exact",
+				"supports-rules": "exact",
+				"property-rules": "exact",
+				selectors: "exact",
+				nesting: "exact",
+				ordering: "exact",
+				"token-values": "exact",
+				"dynamic-values": dynamic,
+				"pseudo-conditions": "exact",
+				"selector-conditions": "exact",
+				"media-conditions": "exact",
+				"container-conditions": "exact",
+				"supports-conditions": "exact",
+				...capabilities,
+			},
+		};
+	}
 }
 
 function configFor(
@@ -772,7 +775,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: spec.id,
-		version: "2",
+		version: ADAPTER_CONTRACT_VERSION,
 		sourceModules: spec.sourceModules,
 		capabilities: spec.capabilities,
 		dependencies: spec.packages,
@@ -902,51 +905,6 @@ export function removeSourceImports(
 		result = removeExcludedMatches(result, new RegExp(`\\bimport\\s*["']${quoted}["']\\s*;?`, "g"));
 	}
 	return result;
-}
-
-export function consolidateImports(statements: Iterable<string>): string[] {
-	const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();
-	const other: string[] = [];
-	for (const statement of statements) {
-		const match = /^import\s+(.+?)\s+from\s+["']([^"']+)["'];?$/.exec(statement.trim());
-		if (match?.[1] === undefined || match[2] === undefined) {
-			other.push(statement);
-			continue;
-		}
-		const group = grouped.get(match[2]) ?? { named: new Set<string>() };
-		const specifier = match[1].trim();
-		if (specifier.startsWith("{")) {
-			for (const name of specifier.slice(1, -1).split(",")) {
-				const trimmed = name.trim();
-				if (trimmed) group.named.add(trimmed);
-			}
-		} else {
-			const [defaultPart, namedPart] = specifier.split(/\s*,\s*\{/);
-			if (defaultPart !== undefined && defaultPart !== "") group.defaultImport = defaultPart.trim();
-			if (namedPart !== undefined) {
-				for (const name of namedPart.replace(/}\s*$/, "").split(",")) {
-					const trimmed = name.trim();
-					if (trimmed) group.named.add(trimmed);
-				}
-			}
-		}
-		grouped.set(match[2], group);
-	}
-	return [
-		...[...grouped].map(([module, group]) => {
-			const named = group.named.size > 0 ? `{ ${[...group.named].toSorted().join(", ")} }` : "";
-			const specifier = [group.defaultImport, named].filter(Boolean).join(", ");
-			return `import ${specifier} from "${module}";`;
-		}),
-		...other,
-	];
-}
-
-export function validationSource(text: string, program: StyleProgram): string {
-	const rule = program.rules[0];
-	return rule?.kind === "keyframes" && rule.name !== undefined
-		? `const ${rule.name} = ${text}`
-		: text;
 }
 
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";

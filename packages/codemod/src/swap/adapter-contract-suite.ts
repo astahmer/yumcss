@@ -1,7 +1,7 @@
 import type { StyleAdapter } from "./adapter-contract.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "./capabilities.ts";
-import { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+import { ADAPTER_CONTRACT_SCHEMA, ADAPTER_CONTRACT_VERSION } from "./adapter-contract.ts";
 
 export interface AdapterContractProbe {
 	readonly file?: string;
@@ -36,7 +36,8 @@ export class AdapterContractSuite {
 
 		if (adapter.schema !== ADAPTER_CONTRACT_SCHEMA)
 			fail("schema", `expected ${ADAPTER_CONTRACT_SCHEMA}, received ${adapter.schema}`);
-		if (adapter.version !== "2") fail("version", `expected v2, received ${adapter.version}`);
+		if (adapter.version !== ADAPTER_CONTRACT_VERSION)
+			fail("version", `expected v${ADAPTER_CONTRACT_VERSION}, received ${adapter.version}`);
 		if (adapter.id.trim() === "") fail("identity", "adapter id must not be empty");
 		// Host-only adapters (for example Chakra, MUI, and Mantine) can own
 		// syntax without owning an import that is safe to remove.

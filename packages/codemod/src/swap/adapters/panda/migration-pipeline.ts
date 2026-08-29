@@ -1,21 +1,21 @@
 import type { PandaMigrateOptions, PandaMigrateReport } from "./panda-migrate.ts";
-import { runPandaMigration } from "./panda-migrate.ts";
-import {
-	discoverPandaMigration,
-	extractPandaMigrationUsage,
-	loadPandaMigrationTheme,
-	scanPandaMigrationSources,
-	type PandaMigrationWorkspace,
-} from "./migration-discovery.ts";
-import { parsePandaCalls, type PandaCall } from "./parse.ts";
-import { scanFactoryElements } from "./panda-migrate.ts";
+import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
+import type { PandaCall } from "./parse.ts";
 import { styleProgramFromSwapIR, type StyleProgram } from "../../semantic-ir.ts";
-import { CodemodAdapterId, PandaMigrationStageId } from "../../identifiers.ts";
+import {
+	CodemodAdapterId,
+	PandaMigrationPhase,
+	PandaMigrationStageId,
+	PandaRewriteCandidateKind,
+} from "../../identifiers.ts";
+import {
+	createPandaMigrationServices,
+	type PandaMigrationServiceOverrides,
+	type PandaMigrationServices,
+} from "./pipeline-services.ts";
 
 /** Scoped Panda migration domain; concrete parsing/emission modules stay replaceable. */
 export const PANDA_MIGRATION_PIPELINE_SCHEMA = "pandwind.panda-migration-pipeline/2" as const;
-
-type PandaMigrationPhase = "discovery" | "conversion" | "emission" | "rewrite" | "validation";
 
 export interface PandaMigrationContext {
 	readonly options: PandaMigrateOptions;
@@ -33,7 +33,7 @@ export interface PandaMigrationArtifacts {
 		file: string;
 		start: number;
 		end: number;
-		kind: "style-call" | "factory-element";
+		kind: PandaRewriteCandidateKind;
 	}[];
 	readonly validationCandidates: readonly string[];
 }
@@ -57,21 +57,29 @@ export interface PandaMigrationPipeline {
 	run(options: PandaMigrateOptions): Promise<PandaMigrateReport>;
 }
 
+export interface PandaMigrationPipelineOptions {
+	readonly stages?: readonly PandaMigrationStage[];
+	readonly services?: PandaMigrationServiceOverrides;
+}
+
 export function createPandaMigrationPipeline(
-	stages: readonly PandaMigrationStage[] = [
+	options: PandaMigrationPipelineOptions = {},
+): PandaMigrationPipeline {
+	const services: PandaMigrationServices = createPandaMigrationServices(options.services);
+	const stages: readonly PandaMigrationStage[] = options.stages ?? [
 		{
 			id: PandaMigrationStageId.ProjectDiscovery,
-			phase: "discovery",
-			async run({ options }) {
-				return { workspace: await discoverPandaMigration(options) };
+			phase: PandaMigrationPhase.Discovery,
+			async run({ options: migrationOptions }) {
+				return { workspace: await services.discover(migrationOptions) };
 			},
 		},
 		{
 			id: PandaMigrationStageId.ThemeConfig,
-			phase: "discovery",
+			phase: PandaMigrationPhase.Discovery,
 			async run({ options, workspace }) {
 				if (workspace === undefined) throw new Error("theme-config requires project discovery");
-				const theme = await loadPandaMigrationTheme(options.projectRoot);
+				const theme = await services.loadTheme(options.projectRoot);
 				return {
 					workspace: { ...workspace, theme },
 					notes: [`theme/config stage loaded ${theme.tokenVars.size} token variable(s)`],
@@ -80,10 +88,10 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.SourceScanning,
-			phase: "discovery",
+			phase: PandaMigrationPhase.Discovery,
 			async run({ workspace }) {
 				if (workspace === undefined) throw new Error("source-scanning requires project discovery");
-				const sources = scanPandaMigrationSources(workspace.files);
+				const sources = services.scanSources(workspace.files);
 				return {
 					workspace: { ...workspace, sources },
 					notes: [`source scanner indexed ${sources.length} document(s)`],
@@ -92,11 +100,11 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.RecipePatternExtraction,
-			phase: "conversion",
+			phase: PandaMigrationPhase.Conversion,
 			async run({ workspace }) {
 				if (workspace === undefined)
 					throw new Error("recipe extraction requires project discovery");
-				const usage = extractPandaMigrationUsage(workspace.files);
+				const usage = services.extractUsage(workspace.files);
 				return {
 					workspace: { ...workspace, usage },
 					notes: [`usage extractor found ${usage.recipes.size} recipe binding(s)`],
@@ -105,14 +113,14 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.SemanticConversion,
-			phase: "conversion",
+			phase: PandaMigrationPhase.Conversion,
 			async run({ workspace }) {
 				if (workspace === undefined)
 					throw new Error("semantic conversion requires project discovery");
 				const calls = workspace.sources.flatMap(({ path, scan }) => {
 					const file = workspace.files.find((candidate) => candidate.path === path);
 					if (file === undefined) return [];
-					return parsePandaCalls(file.source, scan.isExcluded, { theme: workspace.theme });
+					return services.parseCalls(file.source, scan.isExcluded, { theme: workspace.theme });
 				});
 				const programs = calls.flatMap((call) =>
 					call.ir === undefined
@@ -144,7 +152,7 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.ModuleEmission,
-			phase: "emission",
+			phase: PandaMigrationPhase.Emission,
 			async run({ workspace, artifacts }) {
 				if (workspace === undefined) throw new Error("module emission requires project discovery");
 				if (artifacts === undefined)
@@ -163,26 +171,30 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.RewriteApplication,
-			phase: "rewrite",
+			phase: PandaMigrationPhase.Rewrite,
 			async run({ workspace, artifacts }) {
 				if (workspace === undefined) throw new Error("rewrite stage requires project discovery");
 				if (artifacts === undefined) throw new Error("rewrite stage requires module emission");
 				const rewriteCandidates = workspace.sources.flatMap(({ path, scan }) => {
 					const file = workspace.files.find((candidate) => candidate.path === path);
 					if (file === undefined) return [];
-					const calls = parsePandaCalls(file.source, scan.isExcluded, { theme: workspace.theme });
+					const calls = services.parseCalls(file.source, scan.isExcluded, {
+						theme: workspace.theme,
+					});
 					const callCandidates = calls.map((call) => ({
 						file: path,
 						start: call.start,
 						end: call.end,
-						kind: "style-call" as const,
+						kind: PandaRewriteCandidateKind.StyleCall,
 					}));
-					const factories = scanFactoryElements(file.source, scan.isExcluded).map((element) => ({
-						file: path,
-						start: element.start,
-						end: element.openEnd,
-						kind: "factory-element" as const,
-					}));
+					const factories = services
+						.scanFactoryElements(file.source, scan.isExcluded)
+						.map((element) => ({
+							file: path,
+							start: element.start,
+							end: element.openEnd,
+							kind: PandaRewriteCandidateKind.FactoryElement,
+						}));
 					return [...callCandidates, ...factories];
 				});
 				return {
@@ -194,15 +206,15 @@ export function createPandaMigrationPipeline(
 		},
 		{
 			id: PandaMigrationStageId.ValidationReporting,
-			phase: "validation",
+			phase: PandaMigrationPhase.Validation,
 			async run({ options, workspace, completedStages, artifacts }) {
-				const report = await runPandaMigration({ ...options, workspace });
+				const report = await services.run({ ...options, workspace });
 				return {
 					report: {
 						...report,
 						notes: [
 							...report.notes,
-							`pipeline stages: ${[...completedStages, "validation-reporting"].join(" -> ")}`,
+							`pipeline stages: ${[...completedStages, PandaMigrationStageId.ValidationReporting].join(" -> ")}`,
 							...(artifacts === undefined
 								? []
 								: [
@@ -213,8 +225,7 @@ export function createPandaMigrationPipeline(
 				};
 			},
 		},
-	],
-): PandaMigrationPipeline {
+	];
 	return {
 		schema: PANDA_MIGRATION_PIPELINE_SCHEMA,
 		stages,

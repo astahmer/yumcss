@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */
@@ -13,8 +13,8 @@ export default defineCodemodAdapter({
 			form: "template",
 		},
 	],
-	packages: dependency("next-yak", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.NextYak, "partial", {
+	packages: CodemodAdapterKit.dependency("next-yak", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.NextYak, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		composition: "partial",

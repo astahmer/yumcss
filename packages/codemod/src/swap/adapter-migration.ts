@@ -119,17 +119,20 @@ export interface AdapterMigrationResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+/** Application port for one source-file migration. */
+export interface StyleMigrationUseCase {
+	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult;
+}
+
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
 function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
 	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
 }
 
-/** Run one v2 adapter-to-adapter migration over a source file. */
-export function runAdapterMigration(
-	source: string,
-	options: AdapterMigrationOptions,
-): AdapterMigrationResult {
+/** Default application service; all policy enters through ports/options. */
+class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
+	run(source: string, options: AdapterMigrationOptions): AdapterMigrationResult {
 	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
@@ -708,4 +711,18 @@ export function runAdapterMigration(
 		dependencies,
 		residuals,
 	};
+	}
+}
+
+export const createStyleMigrationUseCase = (): StyleMigrationUseCase =>
+	new DefaultStyleMigrationUseCase();
+
+const DEFAULT_STYLE_MIGRATION_USE_CASE = createStyleMigrationUseCase();
+
+/** Run one v2 adapter-to-adapter migration over a source file. */
+export function runAdapterMigration(
+	source: string,
+	options: AdapterMigrationOptions,
+): AdapterMigrationResult {
+	return DEFAULT_STYLE_MIGRATION_USE_CASE.run(source, options);
 }
