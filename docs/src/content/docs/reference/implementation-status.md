@@ -25,7 +25,8 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
   selectors, and provenance;
 - codemod coverage for the first-party and external ecosystems listed in
   [CSS-in-JS adapter migrations](/interop/css-in-js-adapters/), with residuals
-  retained whenever a translation is not proven safe;
+  retained whenever a translation is not proven safe. The adapter contract
+  and fixture matrix is broader than the real-application proof matrix;
 - differential fixtures for canonical CSS, browser state, SSR/hydration,
   streaming, dependency changes, and residual reports;
 - CSS, React Native, and OpenTUI backend contracts, plus renderer-neutral host
@@ -41,9 +42,12 @@ parse/emit fixture and checks that every capability exercised by that fixture
 is declared representable by the adapter.
 
 The evidence is maintained in the codemod corpus report at
-`plans/evidence/real-repository-migrations-v2.json` and in the package tests.
-The corpus proves routing and preserves residuals; it is not a claim that an
-arbitrary framework-specific runtime behavior can be made lossless.
+`plans/evidence/real-repository-migrations-v2.json`, the checked-in
+`plans/evidence/real-browser-ssr-proof-matrix.json`, and the package tests.
+The corpus proves routing and preserves residuals. The proof matrix is the
+stronger claim boundary: only five pinned documentation repositories currently
+have real server-route and browser evidence. It is not a claim that arbitrary
+framework-specific runtime behavior can be made lossless.
 
 ## Plan audit
 
@@ -79,6 +83,10 @@ These are not missing pieces of the pivot boundary:
   dependency graph. That is an evidence boundary, not a claim of “same or
   smaller” output for every arbitrary application. Host builds that make that
   comparison are required for a universal migration claim.
+- Real repository support is promoted only through the proof matrix. A
+  contract fixture proves that an adapter can parse and emit its declared
+  shape; it does not prove browser, server-rendering, hydration, or CSS-size
+  parity for an arbitrary application.
 - Inspector visual polish and experimental cold-path optimizations are useful
   follow-ups, but do not block CSS-in-JS migration correctness.
 
@@ -89,3 +97,26 @@ registered, its source language and host semantics are explicit, its target
 capabilities are checked, and representative fixtures prove canonical output
 or report a precise residual. Do not add a central library-specific branch to
 make a single migration pass.
+
+## Real proof boundary
+
+The checked-in `plans/evidence/real-browser-ssr-proof-matrix.json` is the
+acceptance boundary for real application claims. It currently covers pinned
+documentation repositories for Tailwind, StyleX, Chakra UI, shadcn/ui, and
+styled-components. Those entries record production/server route checks,
+browser equivalence, and CSS accounting. The remaining registered adapters
+have contract fixtures and corpus evidence, but are intentionally not claimed
+to have arbitrary-application browser or SSR parity until they receive their
+own matrix entry.
+
+The styled-components lane is static-first: its current pinned corpus has 80
+fully static call sites, 205 dynamic values lowered without runtime CSS
+injection, and 60 opaque runtime fallbacks. The fallback is an explicit safety
+boundary, not a silent loss of styling; the next improvement is to lower those
+specific semantics, not to make runtime CSS the default.
+
+The latest styled-components proof covers 55 routes (31 HTML routes), with no
+server or browser failures, equivalent browser states in both static lanes, and
+623,777 bytes versus 1,321,407 bytes for the reference. The comparator moves
+reference styled-components style nodes to `head` while preserving their CSS,
+so the result measures rendered CSS behavior rather than injection topology.

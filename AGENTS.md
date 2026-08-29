@@ -101,6 +101,11 @@ which concrete module to import or grow a switch statement in a central runner.
 - Every refactor is split into focused JJ revisions with behavior-preserving
   tests at each boundary. Do not rewrite concurrent workspaces or move their
   heads while another agent owns them.
+- Real-repository support claims require a checked-in proof artifact with a
+  pinned source commit and recorded server/browser outcomes; adapter contract
+  fixtures alone are not real-application proof. Static-first migrations must
+  report fully static sites, dynamic values lowered without runtime CSS, and
+  genuine runtime fallbacks separately.
 
 ## Implementation locality rules
 

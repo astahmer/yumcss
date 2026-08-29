@@ -1,0 +1,19 @@
+{
+	"schema": "pandwind.styled-components-docs-verification/2",
+	"referenceCommit": "c03d2925ab44f447b385d2f463fe971de2e15c7c",
+	"routeCount": 55,
+	"htmlRouteCount": 31,
+	"baselineTotalBytes": 1321407,
+	"runtimeTotalBytes": 623777,
+	"designTotalBytes": 623777,
+	"runtimeTransferDelta": -697630,
+	"designTransferDelta": -697630,
+	"allRuntimeRoutesEquivalent": true,
+	"allDesignRoutesEquivalent": true,
+	"browserNormalization": "styled-components body style nodes moved to head with CSS preserved before comparison",
+	"staticCallSites": 80,
+	"dynamicValueCallSites": 205,
+	"runtimeFallbackCallSites": 60,
+	"staticCssCoverageRatio": 0.7894736842105263,
+	"staticExtractionRatio": 0.2807017543859649
+}

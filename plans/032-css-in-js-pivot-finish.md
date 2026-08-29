@@ -240,10 +240,16 @@ Validated on 2026-08-29 after the interface-first completion pass:
   `PandaMigrationStageFactory`; the pipeline façade only executes stage ports.
 - Every registered codemod adapter has a real parse/emit fixture, and CI derives
   required capabilities from each fixture and rejects unsupported declarations.
-- The complete codemod suite passes 36 files / 293 tests. Workspace-wide tests,
-  coverage thresholds, lint, format, Knip, and release preflight/pack smoke also
-  pass. The focused JJ revisions are `2e2260a3`, `cf214073`, `d8409281`,
-  `f0d38311`, `6ea99b74`, `7438a48`, and the current empty working-copy child.
+- The complete codemod suite passes 39 files / 308 tests. Workspace-wide tests,
+  coverage thresholds, lint, format, Knip, and typecheck also pass. The
+  checked-in real proof matrix covers five pinned documentation repositories;
+  the remaining adapters have contract/corpus evidence but are not promoted
+  to arbitrary browser/SSR claims.
+- The styled-components proof covers 55 routes (31 HTML routes), both static
+  lanes, zero server/browser failures, equivalent browser states, and 623,777
+  bytes versus 1,321,407 bytes for the reference. Its migration report
+  separates 80 fully static call sites, 205 dynamic values lowered without
+  runtime CSS injection, and 60 opaque runtime fallbacks.
 
 ## Decisions log
 

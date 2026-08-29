@@ -34,7 +34,7 @@ minimal implementation without changing orchestration.
 | Design vocabulary       | module adapter registry                                                                                                                        | `design/resolve.ts`                                                                                                                                                                |
 | Analyze/reporting       | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports   | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge          | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                                | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
-| Real repository proof   | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                          | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                   |
+| Real repository proof   | pinned reference materialization, source migration lanes, server/browser checks, route failures, and CSS-size accounting                       | `scripts/migrate-*.ts`, `scripts/verify-*.mjs`, `plans/evidence/real-browser-ssr-proof-matrix.json`                                                                                |
 | Panda project migration | discovery, theme loading, source scanning, usage extraction, semantic parsing, factory scanning, ordered stages, and final validation services | `codemod/swap/adapters/panda/pipeline-services.ts`, `codemod/swap/adapters/panda/migration-stage-factory.ts`, `codemod/swap/adapters/panda/migration-pipeline.ts`                  |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
@@ -149,7 +149,9 @@ This is the minimum per-adapter/per-capability CI contract; adapter-owned
 semantic fixtures, browser differential tests, and real-repository acceptance
 corpora remain additional evidence. Host-only adapters may intentionally have
 no removable source module. Backend registries use the same contract shape,
-with enum-backed built-in identities and branded third-party identities.
+with enum-backed built-in identities and branded third-party identities. A
+registered adapter cannot be promoted to a real-repository claim without a
+matching entry in `real-browser-ssr-proof-matrix.json`.
 
 Validators have their own `ValidatorContractSuite`. It verifies schema,
 identity, lossiness, differences, residuals, and exception behavior for every
@@ -208,26 +210,31 @@ pnpm exec tsx scripts/verify-styled-components-docs.mjs \
 ```
 
 The pinned corpus currently converts 54 source files and 285 call sites with
-zero skipped sites and zero codemod residuals in each lane. A complete site
-claim still requires the disposable app's direct Next production build, the
-full public-route status/SSR matrix, and browser geometry/computed-style
-checks against the unmodified reference. External services used by the
-reference app, such as GitHub's releases API, are treated as fixture inputs;
-rate limits are infrastructure failures, not evidence of a successful
-migration. The latest proof completed both production builds, all 55 public
-routes (31 HTML routes), with zero HTTP/rendering failures, zero browser page
-errors, successful hydration probes, and screenshot-equivalent geometry and
-computed styles for every HTML route in both lanes. The stable browser state is
+zero skipped sites and zero codemod residuals in each lane. The latest proof
+completed both production builds, all 55 public routes (31 HTML routes), with
+zero HTTP/rendering failures, zero browser page errors, successful hydration
+probes, and screenshot-equivalent geometry and computed styles for every HTML
+route in both lanes. The stable browser state is
 `prefers-reduced-motion: reduce`; the reference homepage's requestAnimationFrame
 cube is held at its SSR pose so the comparison is repeatable without masking
 content. Reference styled-components style nodes are moved to `head` in the
-browser comparator with their CSS preserved, preventing invalid style-node
-placement from changing structural pseudo-class behavior. Screenshot parity
-allows at most 100 changed pixels, 0.01% of the viewport, and an 8-channel
-rasterization delta; the prior 682-pixel/186-channel table mismatch therefore
-fails. Measured total transfer was 621,075 bytes for runtime CSS and 621,134
-bytes for design CSS versus 1,318,699 bytes for the baseline (reductions of
-697,624 and 697,565 bytes). The lane also migrates styled-theming's runtime
-theme functions through a generated client-only `ThemeProvider`/context module,
-so theme-dependent padding, margins, colors, and variants remain exact after
-hydration rather than becoming residuals.
+browser comparator with their CSS preserved, removing implementation-owned
+injection topology before comparing static output. Screenshot parity allows at
+most 100 changed pixels, 0.01% of the viewport, and an 8-channel rasterization
+delta. Measured total transfer is 623,777 bytes for both Pandwind lanes versus
+1,321,407 bytes for the baseline, a reduction of 697,630 bytes. The source
+adapter classifies 80 fully static call sites, 205 dynamic-value sites lowered
+without runtime CSS injection, and 60 opaque runtime fallbacks. Thus the lane
+is static-first, but its current evidence does not justify claiming that 99%
+of arbitrary styled-components code is statically extractable. The lane also
+migrates styled-theming's runtime theme functions through a generated
+client-only `ThemeProvider`/context module, so theme-dependent padding, margins,
+colors, and variants remain exact after hydration rather than becoming
+residuals.
+
+The real proof matrix records the acceptance boundary for the other claimed
+documentation migrations: Tailwind, StyleX, Chakra UI, shadcn/ui, and
+styled-components each have pinned source commits, clean production/static
+generation, server-route checks, browser checks, and CSS accounting. The
+remaining external adapters have adapter-level contract/corpus evidence only;
+they are not presented as arbitrary application browser/SSR proofs.

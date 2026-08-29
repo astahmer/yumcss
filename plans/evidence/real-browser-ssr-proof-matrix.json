@@ -1,0 +1,111 @@
+{
+	"schema": "pandwind.real-browser-ssr-proof-matrix/1",
+	"generatedAt": "2026-08-29",
+	"purpose": "Checked-in acceptance boundary for real documentation migrations. Adapter fixtures do not promote an adapter into this matrix.",
+	"claims": [
+		{
+			"id": "tailwindcss-docs",
+			"sourceAdapter": "tailwind",
+			"referenceCommit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+			"report": "examples/tailwindcss-docs-migration/reports/tw.json",
+			"server": { "checked": true, "routes": 338, "failures": 0 },
+			"browser": { "checked": true, "routes": 90, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "generated-css",
+				"baselineBytes": 692588,
+				"migratedBytes": 692588,
+				"notLarger": true
+			}
+		},
+		{
+			"id": "stylex-docs",
+			"sourceAdapter": "stylex",
+			"referenceCommit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
+			"report": "examples/stylex-docs-migration/reports/browser-matrix.json",
+			"server": { "checked": true, "routes": 4, "failures": 0 },
+			"browser": { "checked": true, "routes": 4, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "linked-css",
+				"baselineBytes": 341182,
+				"migratedBytes": 334690,
+				"notLarger": true,
+				"note": "Inline atomic declarations are measured separately by the report; this claim compares linked stylesheet bytes."
+			}
+		},
+		{
+			"id": "chakra-ui-docs",
+			"sourceAdapter": "chakra-ui",
+			"referenceCommit": "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
+			"report": "examples/chakra-ui-docs-migration/reports/css-class.json",
+			"server": { "checked": true, "routes": 261, "failures": 0 },
+			"browser": { "checked": true, "routes": 2, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "css-plus-inline-style",
+				"baselineBytes": 40711034,
+				"migratedBytes": 40588607,
+				"notLarger": true
+			}
+		},
+		{
+			"id": "shadcn-v4-docs",
+			"sourceAdapter": "tailwind",
+			"referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
+			"report": "examples/shadcn-ui-docs-migration/reports/browser-parity-final.json",
+			"server": { "checked": true, "routes": 730, "failures": 0 },
+			"browser": {
+				"checked": true,
+				"routes": 10,
+				"equivalent": true,
+				"errors": 0,
+				"hydrationRoutes": 10
+			},
+			"css": {
+				"metric": "generated-css",
+				"baselineBytes": 2799098,
+				"migratedBytes": 2785102,
+				"notLarger": true,
+				"note": "css and dcss lanes are compile-time extracted; tw preserves the baseline byte count."
+			}
+		},
+		{
+			"id": "styled-components-docs",
+			"sourceAdapter": "styled-components",
+			"referenceCommit": "c03d2925ab44f447b385d2f463fe971de2e15c7c",
+			"report": "plans/evidence/styled-components-docs-proof.json",
+			"server": { "checked": true, "routes": 55, "failures": 0 },
+			"browser": {
+				"checked": true,
+				"routes": 31,
+				"equivalent": true,
+				"errors": 0,
+				"hydrationRoutes": 31
+			},
+			"css": {
+				"metric": "total-css-and-inline-style",
+				"baselineBytes": 1321407,
+				"migratedBytes": 623777,
+				"notLarger": true,
+				"note": "Reference styled-components style nodes are moved to head for comparison; CSS is preserved."
+			}
+		}
+	],
+	"fixtureOnlyAdapters": [
+		"emotion",
+		"vanilla-extract",
+		"stitches",
+		"linaria",
+		"mantine",
+		"mui",
+		"next-yak",
+		"jss",
+		"fela",
+		"goober",
+		"aphrodite",
+		"style9",
+		"treat",
+		"compiled",
+		"solid-styled",
+		"vue-styled",
+		"react-native"
+	]
+}
