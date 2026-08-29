@@ -4,10 +4,9 @@ import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
-	runAdapterMigrationAsync,
+	runAdapterMigration,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
-import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 /** Public migration lanes for the pinned Astryx docsite corpus. */
 export enum AstryxDocsLane {
@@ -48,15 +47,50 @@ export interface AstryxDocsLaneReport {
 
 interface AstryxLaneAdapter {
 	readonly lane: AstryxDocsLane;
-	transform(
-		source: string,
-		context: { file: string; root: string },
-	): Promise<AdapterMigrationResult>;
+	transform(source: string, context: { file: string; root: string }): AdapterMigrationResult;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = createReferenceWorkspace().path("astryx/apps/docsite");
+const defaultReferenceRoot = "/Users/astahmer/.references/astryx/apps/docsite";
 const stylexAdapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.StyleX);
+
+function matchingBrace(source: string, open: number): number | undefined {
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = open; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === quote && source[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") depth++;
+		if (character === "}" && --depth === 0) return index;
+	}
+	return undefined;
+}
+
+/** Project Astryx's custom xstyle host prop onto the neutral JSX style host. */
+function normalizeXstyleHosts(source: string): string {
+	const edits: Array<{ start: number; end: number; text: string }> = [];
+	for (const match of source.matchAll(/\bxstyle\s*=\s*\{/g)) {
+		const start = match.index ?? 0;
+		const open = start + match[0].lastIndexOf("{");
+		const close = matchingBrace(source, open);
+		if (close === undefined) continue;
+		edits.push({
+			start,
+			end: close + 1,
+			text: `{...stylex.props(${source.slice(open + 1, close)})}`,
+		});
+	}
+	return edits
+		.toSorted((left, right) => right.start - left.start)
+		.reduce((output, edit) => output.slice(0, edit.start) + edit.text + output.slice(edit.end), source);
+}
 
 function matchingParen(source: string, open: number): number | undefined {
 	let depth = 0;
@@ -91,7 +125,7 @@ function topLevelColon(entry: string): number {
 			continue;
 		}
 		if ("([{".includes(character)) depth++;
-		else if ("}])".includes(character)) depth--;
+		else if (")]".includes(character)) depth--;
 		else if (character === ":" && depth === 0) return index;
 	}
 	return -1;
@@ -113,7 +147,7 @@ function topLevelEntries(object: string): string[] {
 			continue;
 		}
 		if ("([{".includes(character)) depth++;
-		else if ("}])".includes(character)) depth--;
+		else if (")]".includes(character)) depth--;
 		else if (character === "," && depth === 0) {
 			if (object.slice(start, index).trim() !== "") entries.push(object.slice(start, index).trim());
 			start = index + 1;
@@ -127,9 +161,7 @@ function topLevelEntries(object: string): string[] {
 function wrapDesignRawObjects(source: string): string {
 	let output = source;
 	for (const call of ["css.group", "css.class"]) {
-		for (const match of [
-			...output.matchAll(new RegExp(`\\b${call.replace(".", "\\.")}\\s*\\(`, "g")),
-		].toReversed()) {
+		for (const match of [...output.matchAll(new RegExp(`\\b${call.replace(".", "\\.")}\\s*\\(`, "g"))].toReversed()) {
 			const start = match.index ?? 0;
 			const open = start + match[0].lastIndexOf("(");
 			const close = matchingParen(output, open);
@@ -142,8 +174,7 @@ function wrapDesignRawObjects(source: string): string {
 				const key = entry.slice(0, colon).trim();
 				const value = entry.slice(colon + 1).trim();
 				if (value.startsWith("{ $raw:")) return entry;
-				if (/^(?:async\s+)?(?:function\b|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/.test(value))
-					return entry;
+				if (/^(?:async\s+)?(?:function\b|(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/.test(value)) return entry;
 				return `${key}: { $raw: ${value} }`;
 			});
 			output = output.slice(0, open + 1) + `{ ${entries.join(", ")} }` + output.slice(close);
@@ -158,30 +189,16 @@ function useDesignApi(source: string): string {
 		/import \{ createCss \} from "pandwind\/css";/g,
 		'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
 	);
-	output = output.replace(
-		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
-		"$1createDesignCss(pandwindPreset);",
-	);
+	output = output.replace(/const css = createCss\(\);/g, "const css = createDesignCss(pandwindPreset);");
 	return output;
-}
-
-function useRuntimeApi(source: string): string {
-	return source
-		.replace(
-			/import \{ createCss \} from "pandwind\/css";/g,
-			'import { createRuntimeCss } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";',
-		)
-		.replace(
-			/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
-			"$1createRuntimeCss({ ...pandwindPreset, _config: {} as Record<string, unknown>, strict: false, properties: { $all: true } });",
-		);
 }
 
 function createLaneAdapter(lane: AstryxDocsLane): AstryxLaneAdapter {
 	return {
 		lane,
-		async transform(source, context) {
-			const result = await runAdapterMigrationAsync(source, {
+		transform(source, context) {
+			const normalized = normalizeXstyleHosts(source);
+			const result = runAdapterMigration(normalized, {
 				from: CodemodAdapterId.StyleX,
 				to: CodemodAdapterId.Pandwind,
 				file: context.file,
@@ -189,13 +206,8 @@ function createLaneAdapter(lane: AstryxDocsLane): AstryxLaneAdapter {
 				mode: "safe",
 				semantic: { source: { file: context.file, framework: "react" } },
 			});
-			if (lane === AstryxDocsLane.DesignDss) return { ...result, code: useDesignApi(result.code) };
-			if (
-				lane === AstryxDocsLane.RuntimeCss &&
-				result.residuals.some((residual) => residual.kind === "dynamic-values")
-			)
-				return { ...result, code: useRuntimeApi(result.code) };
-			return result;
+			if (lane !== AstryxDocsLane.DesignDss) return result;
+			return { ...result, code: useDesignApi(result.code) };
 		},
 	};
 }
@@ -214,53 +226,29 @@ async function collectSourceFiles(root: string): Promise<string[]> {
 }
 
 function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string): Promise<void> {
-	return (async () => {
-		await Promise.all([
-			(async () => {
-				const configFile = join(outputRoot, "next.config.mjs");
-				let config = await readFile(configFile, "utf8");
-				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/unplugin.ts"))};\nimport { pandwindPreset } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/preset/preset.ts"))};\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: import.meta.dirname, cssSources: [/pandwind\\/(?:css|design)/] });\n${config}`;
-					config = config.replace(
-						"    return config;",
-						"    config.plugins.push(pandwindCssPlugin);\n    return config;",
-					);
-				}
-				await writeFile(configFile, config);
-			})(),
-			(async () => {
-				const layoutFile = join(outputRoot, "src/app/layout.tsx");
-				let layout = await readFile(layoutFile, "utf8");
-				if (!layout.includes('"pandwind:css"')) {
-					layout = layout.replace(
-						"import './globals.css';",
-						"import './globals.css';\nimport 'pandwind:css';",
-					);
-					layout = layout.replace(
-						'import "./globals.css";',
-						'import "./globals.css";\nimport "pandwind:css";',
-					);
-				}
-				await writeFile(layoutFile, layout);
-			})(),
-			(async () => {
-				await writeFile(
-					join(outputRoot, "src/pandwind-css.d.ts"),
-					'declare module "pandwind:css";\n',
+	return Promise.all([
+		(async () => {
+			const configFile = join(outputRoot, "next.config.mjs");
+			let config = await readFile(configFile, "utf8");
+			if (!config.includes("pandwindWebpackCss")) {
+				config = `import { pandwindWebpackCss } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/unplugin.ts"))};\nimport { pandwindPreset } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/preset/preset.ts"))};\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: import.meta.dirname, cssSources: [/pandwind\\/(?:css|design)/] });\n${config}`;
+				config = config.replace(
+					"    return config;",
+					"    config.plugins.push(pandwindCssPlugin);\n    return config;",
 				);
-			})(),
-			(async () => {
-				const tsconfigFile = join(outputRoot, "tsconfig.json");
-				let tsconfig = await readFile(tsconfigFile, "utf8");
-				if (!tsconfig.includes('"allowImportingTsExtensions"'))
-					tsconfig = tsconfig.replace(
-						'"allowJs": true,',
-						'"allowJs": true,\n    "allowImportingTsExtensions": true,',
-					);
-				await writeFile(tsconfigFile, tsconfig);
-			})(),
-		]);
-	})();
+			}
+			await writeFile(configFile, config);
+		})(),
+		(async () => {
+			const layoutFile = join(outputRoot, "src/app/layout.tsx");
+			let layout = await readFile(layoutFile, "utf8");
+			if (!layout.includes('"pandwind:css"')) {
+				layout = layout.replace("import './globals.css';", "import './globals.css';\nimport 'pandwind:css';");
+				layout = layout.replace('import "./globals.css";', 'import "./globals.css";\nimport "pandwind:css";');
+			}
+			await writeFile(layoutFile, layout);
+		})(),
+	]);
 }
 
 export class AstryxDocsMigration {
@@ -306,21 +294,16 @@ export class AstryxDocsMigration {
 			const file = relative(referenceRoot, absoluteFile);
 			if (stylexAdapter?.detect({ file, source, root: referenceRoot }).matched !== true) continue;
 			sourceBytes += Buffer.byteLength(source);
-			// Each file is transformed in source order for deterministic reports.
-			// oxlint-disable-next-line no-await-in-loop
-			const result = await adapter.transform(source, { file: absoluteFile, root: referenceRoot });
+			const result = adapter.transform(source, { file, root: referenceRoot });
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
 			skippedCallSites += result.skipped;
 			residuals += result.residuals.length;
 			staticCallSites += result.converted;
 			staticCssCallSites += result.code.includes("createRuntimeCss") ? 0 : result.converted;
-			const needsRuntimeFallback =
-				(lane !== AstryxDocsLane.RuntimeCss && result.code.includes("createRuntimeCss")) ||
-				result.residuals.some((residual) => residual.kind === "dynamic-values");
-			if (needsRuntimeFallback) {
+			if (result.code.includes("createRuntimeCss")) {
 				runtimeFallbackFiles++;
-				if (!runtimeFallbackFileNames.includes(file)) runtimeFallbackFileNames.push(file);
+				runtimeFallbackFileNames.push(file);
 			}
 			for (const residual of result.residuals)
 				residualDetails.push({ file, kind: residual.kind, hint: residual.hint });
@@ -344,24 +327,15 @@ export class AstryxDocsMigration {
 			residuals,
 			runtimeFallbackFiles,
 			runtimeFallbackFileNames,
-			staticExtractionRatio:
-				staticCallSites + skippedCallSites === 0
-					? 1
-					: staticCallSites / (staticCallSites + skippedCallSites),
-			staticCssCoverageRatio:
-				staticCssCallSites + skippedCallSites === 0
-					? 1
-					: staticCssCallSites / (staticCssCallSites + skippedCallSites),
+			staticExtractionRatio: staticCallSites === 0 ? 1 : staticCallSites / convertedCallSites,
+			staticCssCoverageRatio: convertedCallSites === 0 ? 1 : staticCssCallSites / convertedCallSites,
 			sourceBytes,
 			outputBytes,
 			outputByteDelta: outputBytes - sourceBytes,
 			residualDetails,
 		};
 		if (outputRoot !== undefined)
-			await writeFile(
-				join(outputRoot, `pandwind-${lane}.json`),
-				`${JSON.stringify(report, null, 2)}\n`,
-			);
+			await writeFile(join(outputRoot, `pandwind-${lane}.json`), `${JSON.stringify(report, null, 2)}\n`);
 		return report;
 	}
 }
@@ -369,9 +343,7 @@ export class AstryxDocsMigration {
 if (import.meta.main) {
 	const lane = process.argv[2] as AstryxDocsLane | undefined;
 	if (lane === undefined)
-		throw new Error(
-			"Usage: tsx scripts/migrate-astryx-docs.ts <runtime-css|static-css|design-dss> [reference-root] [output-root]",
-		);
+		throw new Error("Usage: tsx scripts/migrate-astryx-docs.ts <runtime-css|static-css|design-dss> [reference-root] [output-root]");
 	const report = await AstryxDocsMigration.run(lane, {
 		referenceRoot: process.argv[3],
 		outputRoot: process.argv[4],
