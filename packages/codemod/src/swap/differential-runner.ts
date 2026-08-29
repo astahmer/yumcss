@@ -58,14 +58,13 @@ function withProofHooks(fixture: DifferentialCorpusCase): DifferentialFixture {
 /** Application service for running a complete source/target proof corpus. */
 export class DifferentialCorpusRunner implements DifferentialCorpusRunnerPort {
 	constructor(
-		private readonly runFixture: (fixture: DifferentialFixture) => DifferentialResult =
-			runDifferentialFixture,
+		private readonly runFixture: (
+			fixture: DifferentialFixture,
+		) => DifferentialResult = runDifferentialFixture,
 	) {}
 
 	run(catalog: DifferentialCorpusCatalog): DifferentialCorpusResult {
-		const cases = catalog.cases.map((fixture) =>
-			this.runFixture(withProofHooks(fixture)),
-		);
+		const cases = catalog.cases.map((fixture) => this.runFixture(withProofHooks(fixture)));
 		const passed = cases.filter((result, index) => {
 			const expected = catalog.cases[index]?.expected;
 			return expected === "residual" ? !result.valid : result.valid;

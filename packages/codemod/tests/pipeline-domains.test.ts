@@ -94,7 +94,7 @@ describe("migration pipeline domains", () => {
 		const pipeline = createPandaMigrationPipeline({ stageFactory: factory });
 		expect(factory.create).toHaveBeenCalledOnce();
 		expect(pipeline.stages.map((stage) => stage.id)).toEqual(
-		PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id),
+			PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id),
 		);
 	});
 });

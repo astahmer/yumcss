@@ -284,8 +284,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 					const semanticRuleHandled = program.rules.some(
 						(rule) => rule.kind === "global" || rule.kind === "keyframes",
 					);
-					const targetHandlesTemplateFragment =
-						targetPolicy.handlesTemplateFragment(program);
+					const targetHandlesTemplateFragment = targetPolicy.handlesTemplateFragment(program);
 					const dynamicHandled =
 						hostDynamicHandled ||
 						semanticRuleHandled ||
@@ -545,7 +544,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 				}
 			}
 			if (
-				 targetPolicy.handlesHostRewrites &&
+				targetPolicy.handlesHostRewrites &&
 				program.source?.subject === undefined &&
 				program.source?.framework !== undefined &&
 				program.source?.subject === undefined &&

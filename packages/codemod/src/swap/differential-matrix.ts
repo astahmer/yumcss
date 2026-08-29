@@ -1,4 +1,3 @@
-import type { DifferentialResult } from "./differential.ts";
 import { DifferentialCorpusRunner } from "./differential-runner.ts";
 import type {
 	DifferentialCorpusCase,

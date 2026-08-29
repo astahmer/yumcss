@@ -26,16 +26,14 @@ export interface ValidatorContractReport {
  * through their public contract so an external validator can be substituted
  * without changing differential orchestration.
  */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped contract policy
 export class ValidatorContractSuite {
 	static inspect(
 		validator: StyleValidator,
 		probe: ValidatorContractProbe,
 	): ValidatorContractReport {
 		const failures: ValidatorContractFailure[] = [];
-		const fail = (
-			check: ValidatorContractFailure["check"],
-			message: string,
-		): void => {
+		const fail = (check: ValidatorContractFailure["check"], message: string): void => {
 			failures.push({ validator: validator.id, check, message });
 		};
 
@@ -47,7 +45,11 @@ export class ValidatorContractSuite {
 			if (typeof result.valid !== "boolean") fail("result", "valid must be boolean");
 			if (!Array.isArray(result.differences)) fail("result", "differences must be an array");
 			if (!Array.isArray(result.residuals ?? [])) fail("result", "residuals must be an array");
-			if (result.lossiness !== "lossless" && result.lossiness !== "lossy" && result.lossiness !== "unsupported")
+			if (
+				result.lossiness !== "lossless" &&
+				result.lossiness !== "lossy" &&
+				result.lossiness !== "unsupported"
+			)
 				fail("result", `unknown lossiness: ${result.lossiness}`);
 			if (result.validator !== validator.id)
 				fail("result", `result identity does not match ${validator.id}`);
