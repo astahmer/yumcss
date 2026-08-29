@@ -248,8 +248,8 @@ Validated on 2026-08-29 after the interface-first completion pass:
 - The styled-components proof covers 55 routes (31 HTML routes), both static
   lanes, zero server/browser failures, equivalent browser states, and 623,777
   bytes versus 1,321,407 bytes for the reference. Its migration report
-  separates 80 fully static call sites, 205 dynamic values lowered without
-  runtime CSS injection, and 43 opaque runtime fallbacks.
+  separates 82 fully static call sites, 203 dynamic values lowered without
+  runtime CSS injection, and 44 opaque runtime fallbacks.
 
 ## Decisions log
 

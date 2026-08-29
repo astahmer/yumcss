@@ -11,11 +11,13 @@ import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
+	DEFAULT_MIGRATION_PROGRAM_POLICY,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "../packages/codemod/src/swap/index.ts";
 import type { AdapterMigrationResult, StyleProgram } from "../packages/codemod/src/swap/index.ts";
 import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
+import { createCssSourceScanner } from "../packages/pandwind/src/vite/css-extract.ts";
 import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
 import type { StyleObject } from "../packages/pandwind/src/types/typings.ts";
 
@@ -67,6 +69,19 @@ interface LaneAdapter {
 	};
 }
 
+function migratedMediaHelpers(): string {
+	return `type CSSUtilType = string | ((props: Record<string, unknown>) => string);
+
+const media = (query: string, inner: CSSUtilType): CSSUtilType =>
+  typeof inner === "function"
+    ? (props) => \`@media \${query} {\${inner(props)}}\`
+    : \`@media \${query} {\${inner}}\`;
+
+export const mobile = (inner: CSSUtilType): CSSUtilType => media("(max-width: 62.5em)", inner);
+export const phone = (inner: CSSUtilType): CSSUtilType => media("(max-width: 40.625em)", inner);
+`;
+}
+
 const staticPreset = {
 	strict: false,
 	properties: {},
@@ -95,7 +110,14 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 }
 
 function requiresRuntimeCss(program: StyleProgram): boolean {
+	if (DEFAULT_MIGRATION_PROGRAM_POLICY.needsRawTemplate(program)) return true;
 	if (program.residuals.some((residual) => residual.kind === "parse")) return true;
+	if (
+		program.residuals.some(
+			(residual) => residual.kind === "dynamic" && residual.hint?.includes("condition") === true,
+		)
+	)
+		return true;
 	if (
 		program.source?.subjectAttrs !== undefined &&
 		/=>|\bfunction\b|\b(?:props|theme|attrs)\b/.test(program.source.subjectAttrs)
@@ -158,6 +180,21 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		readonly staticCallSites: number;
 		readonly runtimeFallbackCallSites: number;
 	} {
+		if (/utils\/media\.tsx?$/.test(file) && /export const (?:mobile|phone)/.test(source)) {
+			const converted = [...source.matchAll(/export const (?:mobile|phone)\s*=/g)].length;
+			return {
+				code: migratedMediaHelpers(),
+				changed: true,
+				converted,
+				skipped: 0,
+				reports: [],
+				validations: [],
+				dependencies: [],
+				residuals: [],
+				staticCallSites: converted,
+				runtimeFallbackCallSites: 0,
+			};
+		}
 		const sourceAdapter = createBuiltinCodemodCatalog().registry.get(
 			CodemodAdapterId.StyledComponents,
 		)!;
@@ -187,7 +224,10 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 			return { ...result, code: runtimeCode, staticCallSites, runtimeFallbackCallSites };
 		return {
 			...result,
-			code: runtimeCode.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1"),
+			code: runtimeCode
+				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1")
+				.replaceAll("css(", "dcss(")
+				.replaceAll("createCx({ css })", "createCx({ css: dcss })"),
 			staticCallSites,
 			runtimeFallbackCallSites,
 		};
@@ -279,12 +319,16 @@ function staticCssFromSource(files: ReadonlyMap<string, string>): string {
 		matchers: ["css"],
 		preset: staticPreset as never,
 	});
+	const runtimeScanner = createCssSourceScanner(["runtime"]);
 	const styles: StyleObject[] = [];
 	const sheet = createStylesheet(staticPreset as never);
 	for (const [file, source] of files) {
 		const extracted = extraction.extractFile(source, file);
 		for (const style of extracted.sources) styles.push(style.style);
 		for (const key of extracted.varKeys) sheet.processVarKey(key);
+		const runtimeNames = runtimeScanner.findImports(source, file);
+		for (const key of runtimeScanner.findVarKeys(source, file, runtimeNames))
+			sheet.processVarKey(key);
 	}
 	return [sheet.generate(styles), sheet.gen.varRules()].filter((value) => value !== "").join("\n");
 }

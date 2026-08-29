@@ -223,8 +223,8 @@ injection topology before comparing static output. Screenshot parity allows at
 most 100 changed pixels, 0.01% of the viewport, and an 8-channel rasterization
 delta. Measured total transfer is 623,777 bytes for both Pandwind lanes versus
 1,321,407 bytes for the baseline, a reduction of 697,630 bytes. The source
-adapter classifies 80 fully static call sites, 205 dynamic-value sites lowered
-without runtime CSS injection, and 43 opaque runtime fallbacks. Thus the lane
+adapter classifies 82 fully static call sites, 203 dynamic-value sites lowered
+without runtime CSS injection, and 44 opaque runtime fallbacks. Thus the lane
 is static-first, but its current evidence does not justify claiming that 99%
 of arbitrary styled-components code is statically extractable. The lane also
 migrates styled-theming's runtime theme functions through a generated
