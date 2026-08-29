@@ -23,7 +23,7 @@ import type { StyleSystemRegistry } from "./style-systems.ts";
 import { removeSourceImports } from "./external-adapters.ts";
 import { MigrationText } from "./migration-text.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
-import { CodemodAdapterId, CodemodStyleIdentity, StyleProgramEmissionHint } from "./identifiers.ts";
+import { CodemodStyleIdentity, StyleProgramEmissionHint } from "./identifiers.ts";
 import { BuiltinHostFramework } from "./host-adapters.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
@@ -40,6 +40,7 @@ import {
 	DEFAULT_MIGRATION_PROGRAM_POLICY,
 	type MigrationProgramPolicy,
 } from "./migration-program-policy.ts";
+import type { AdapterTargetMigrationPolicy } from "./adapter-contract.ts";
 
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source
@@ -126,9 +127,11 @@ export interface StyleMigrationUseCase {
 
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
-function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
-	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
-}
+const DEFAULT_TARGET_POLICY: AdapterTargetMigrationPolicy = {
+	handlesHostRewrites: false,
+	handlesRawTemplate: () => false,
+	handlesTemplateFragment: () => false,
+};
 
 /** Default application service; all policy enters through ports/options. */
 class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
@@ -140,6 +143,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 		);
 		const sourceAdapter = route.source;
 		const targetAdapter = route.target;
+		const targetPolicy = targetAdapter.migration?.targetPolicy ?? DEFAULT_TARGET_POLICY;
 		const detection = sourceAdapter.detect({
 			file: options.file,
 			source,
@@ -238,7 +242,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			let program = lowering.program;
 			const rawTemplateResidual = program.residuals.some((residual) => residual.kind === "parse");
 			if (
-				isPandwindTarget(targetAdapter) &&
+				targetPolicy.handlesRawTemplate(program) &&
 				program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
 			) {
 				program = {
@@ -249,7 +253,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			const sourceSubject = program.source?.subject;
 			let wrapComponent = false;
 			let dynamicCarrier: { binding?: string; framework: string } | undefined;
-			if (isPandwindTarget(targetAdapter) && program.source?.subject === undefined) {
+			if (targetPolicy.handlesHostRewrites && program.source?.subject === undefined) {
 				const hasDynamic = programPolicy.hasDynamic(program);
 				if (hasDynamic) {
 					const binding = source
@@ -281,8 +285,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 						(rule) => rule.kind === "global" || rule.kind === "keyframes",
 					);
 					const targetHandlesTemplateFragment =
-						targetAdapter.id === CodemodAdapterId.Pandwind &&
-						program.source?.pattern === "css-template";
+						targetPolicy.handlesTemplateFragment(program);
 					const dynamicHandled =
 						hostDynamicHandled ||
 						semanticRuleHandled ||
@@ -322,7 +325,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 						};
 				}
 			}
-			if (isPandwindTarget(targetAdapter) && program.source?.subject !== undefined) {
+			if (targetPolicy.handlesHostRewrites && program.source?.subject !== undefined) {
 				const hasDynamic = programPolicy.hasDynamic(program);
 				const hasFunctionDynamic = programPolicy.hasFunctionDynamic(program);
 				const needsRawTemplate = programPolicy.needsRawTemplate(program);
@@ -542,7 +545,7 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 				}
 			}
 			if (
-				isPandwindTarget(targetAdapter) &&
+				 targetPolicy.handlesHostRewrites &&
 				program.source?.subject === undefined &&
 				program.source?.framework !== undefined &&
 				program.source?.subject === undefined &&

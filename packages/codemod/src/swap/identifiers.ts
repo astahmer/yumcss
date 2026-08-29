@@ -36,6 +36,7 @@ export enum CodemodAdapterId {
 export type SourcePassId = CodemodAdapterId.StyledComponents | CodemodAdapterId.StyleX;
 
 export enum CodemodPatternId {
+	CssTemplate = "css-template",
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",

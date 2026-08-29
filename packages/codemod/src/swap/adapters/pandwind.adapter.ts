@@ -4,10 +4,11 @@ import {
 	type AdapterRenderers,
 } from "../external-adapters.ts";
 import { matchBlock } from "../../source-pass-utils.ts";
-import type { AdapterEmitContext } from "../adapter-contract.ts";
+import type { AdapterEmitContext, AdapterTargetMigrationPolicy } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
+	CodemodPatternId,
 	CodemodStyleIdentity,
 	StyleProgramCompositionKind,
 	StyleProgramEmissionHint,
@@ -19,6 +20,12 @@ import {
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
+
+const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
+	handlesHostRewrites: true,
+	handlesRawTemplate: () => true,
+	handlesTemplateFragment: (program) => program.source?.pattern === CodemodPatternId.CssTemplate,
+};
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
 	if (value.kind === "dynamic") return value.expression;
@@ -580,8 +587,9 @@ export default defineCodemodAdapter({
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 	configFiles: ["pandwind.config.ts", "package.json"],
+	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 	emit(program, { programObject, declarationsObject }, context) {
-		if (program.source?.pattern === "css-template") {
+		if (program.source?.pattern === CodemodPatternId.CssTemplate) {
 			return {
 				text: `cssTemplate\`${program.source.template ?? ""}\``,
 				imports: [],

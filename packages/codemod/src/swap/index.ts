@@ -184,6 +184,7 @@ export type {
 	AdapterDynamicPreparation,
 	AdapterRewriteContext,
 	AdapterRewriteResult,
+	AdapterTargetMigrationPolicy,
 	AdapterMigrationHooks,
 	StyleAdapter,
 } from "./adapter-contract.ts";

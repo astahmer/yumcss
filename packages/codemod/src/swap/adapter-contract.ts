@@ -146,6 +146,17 @@ export interface AdapterRewriteResult {
 export interface AdapterMigrationHooks {
 	prepareDynamic?(context: AdapterDynamicPreparationContext): AdapterDynamicPreparation;
 	rewrite?(context: AdapterRewriteContext): AdapterRewriteResult;
+	/** Target-owned policy used by the neutral migration runner for host rewrites. */
+	targetPolicy?: AdapterTargetMigrationPolicy;
+}
+
+export interface AdapterTargetMigrationPolicy {
+	/** Whether this target owns framework host/component rewrites. */
+	readonly handlesHostRewrites: boolean;
+	/** Whether parse residuals can be represented by the target as raw templates. */
+	handlesRawTemplate(program: StyleProgram): boolean;
+	/** Whether a source template fragment can remain a target runtime expression. */
+	handlesTemplateFragment(program: StyleProgram): boolean;
 }
 
 export type AdapterLossiness = "lossless" | "lossy" | "unsupported";
