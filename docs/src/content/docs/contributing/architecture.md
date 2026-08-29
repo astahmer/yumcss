@@ -35,7 +35,7 @@ minimal implementation without changing orchestration.
 | Analyze/reporting       | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge          | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
 | Real repository proof   | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                   |
-| Panda project migration | discovery, theme loading, source scanning, usage extraction, semantic parsing, factory scanning, and final validation services               | `codemod/swap/adapters/panda/pipeline-services.ts`, `codemod/swap/adapters/panda/migration-pipeline.ts`                                                                            |
+| Panda project migration | discovery, theme loading, source scanning, usage extraction, semantic parsing, factory scanning, ordered stages, and final validation services | `codemod/swap/adapters/panda/pipeline-services.ts`, `codemod/swap/adapters/panda/migration-stage-factory.ts`, `codemod/swap/adapters/panda/migration-pipeline.ts` |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
@@ -141,23 +141,35 @@ infrastructure in `source-pass-utils.ts`, not ecosystem policy.
 
 The codemod registry is guarded by `AdapterContractSuite`, which probes every
 registered adapter through detection/configuration, parsing, emission, and
-validation. The built-in suite also maintains one representative source
-fixture per adapter and requires every fixture to produce a real match before
-emission is tested; this prevents thin adapters from being covered only by an
-empty-input smoke test. Host-only adapters may intentionally have no removable
-source module. Backend registries use the same contract shape, with
-enum-backed built-in identities and branded third-party identities. These
-contract suites are architectural tests: they do not replace adapter-owned
-semantic fixtures, browser differential tests, or real-repository acceptance
-corpora.
+validation. The built-in suite maintains one representative source fixture per
+adapter and requires every fixture to produce a real match before emission is
+tested. It also derives required capabilities from each parsed fixture and
+fails when the adapter declares one of those exercised semantics unsupported.
+This is the minimum per-adapter/per-capability CI contract; adapter-owned
+semantic fixtures, browser differential tests, and real-repository acceptance
+corpora remain additional evidence. Host-only adapters may intentionally have
+no removable source module. Backend registries use the same contract shape,
+with enum-backed built-in identities and branded third-party identities.
 
-Panda's project migration is composed through `PandaMigrationServices`. The
-default service set delegates to the Panda family implementation, while the
-pipeline only coordinates stage inputs and outputs. Discovery, theme loading,
-language scanning, usage extraction, call parsing, factory scanning, and final
-validation can therefore be replaced independently. The pipeline contract test
-substitutes discovery and parsing services without changing the orchestration;
-this is the minimum proof required before calling a staged decomposition real.
+Validators have their own `ValidatorContractSuite`. It verifies schema,
+identity, lossiness, differences, residuals, and exception behavior for every
+validator in a registry, and it accepts a minimal third-party validator without
+changing the registry or differential runner. `DifferentialCorpusRunner` is
+the application port for executing a complete adapter-pair corpus; the matrix
+module is only its versioned compatibility projection. Its result includes
+canonical CSS, browser states, SSR/hydration, streaming, dependency deltas,
+and residual evidence whenever the fixture supplies those probes.
+
+Panda's project migration is composed through `PandaMigrationServices` and an
+injectable `PandaMigrationStageFactory`. The default service set delegates to
+the Panda family implementation, while the pipeline only coordinates stage
+inputs and outputs. Discovery, theme loading, language scanning, usage
+extraction, call parsing, factory scanning, module planning, rewrite candidate
+collection, and final validation can therefore be replaced independently. The
+pipeline contract test substitutes services and the stage factory without
+changing orchestration; the default stage implementations live in
+`migration-stage-factory.ts`, while Panda conversion primitives remain in the
+separate `migration-stages.ts` module.
 
 ## Real repository migration proof
 

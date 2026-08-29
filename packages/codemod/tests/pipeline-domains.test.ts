@@ -9,6 +9,7 @@ import {
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
 	createPandaMigrationPipeline,
 	createPandaMigrationServices,
+	createPandaMigrationStages,
 	MIGRATION_PIPELINE_SCHEMA,
 	rewritePandaSource,
 	validatePandaSource,
@@ -86,5 +87,14 @@ describe("migration pipeline domains", () => {
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
+	});
+
+	test("allows the complete Panda stage factory to be substituted", () => {
+		const factory = { create: vi.fn(createPandaMigrationStages) };
+		const pipeline = createPandaMigrationPipeline({ stageFactory: factory });
+		expect(factory.create).toHaveBeenCalledOnce();
+		expect(pipeline.stages.map((stage) => stage.id)).toEqual(
+		PANDA_MIGRATION_PIPELINE.stages.map((stage) => stage.id),
+		);
 	});
 });

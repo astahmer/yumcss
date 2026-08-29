@@ -3,6 +3,7 @@ import {
 	AdapterContractSuite,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	requiredAdapterCapabilities,
 } from "../src/swap/index.ts";
 
 const adapterFixtures: Readonly<Record<string, string>> = {
@@ -58,6 +59,14 @@ describe("adapter contract suite", () => {
 			const config = adapter.loadConfig({ file: "fixture.tsx", source });
 			const parsed = adapter.parse(source, { file: "fixture.tsx", source, config });
 			expect(parsed.matches, `${adapter.id} fixture did not produce a match`).not.toHaveLength(0);
+			for (const match of parsed.matches) {
+				for (const requirement of requiredAdapterCapabilities(match.program)) {
+					expect(
+						adapter.capabilities.capabilities[requirement.capability],
+						`${adapter.id} fixture requires ${requirement.capability}`,
+					).not.toBe("unsupported");
+				}
+			}
 		}
 	});
 });
