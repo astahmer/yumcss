@@ -13,7 +13,7 @@ import {
 	type PandaMigrationServices,
 } from "./pipeline-services.ts";
 import {
-	createPandaMigrationStages,
+	DEFAULT_PANDA_MIGRATION_STAGE_FACTORY,
 	type PandaMigrationStageFactory,
 } from "./migration-stage-factory.ts";
 
@@ -24,7 +24,7 @@ export interface PandaMigrationContext {
 	readonly options: PandaMigrateOptions;
 	readonly workspace?: PandaMigrationWorkspace;
 	readonly report?: PandaMigrateReport;
-	readonly completedStages: readonly string[];
+	readonly completedStages: readonly PandaMigrationStageId[];
 	readonly artifacts?: PandaMigrationArtifacts;
 }
 
@@ -49,7 +49,7 @@ export interface PandaMigrationStageResult {
 }
 
 export interface PandaMigrationStage {
-	readonly id: string;
+	readonly id: PandaMigrationStageId;
 	readonly phase: PandaMigrationPhase;
 	run(context: PandaMigrationContext): Promise<PandaMigrationStageResult>;
 }
@@ -72,7 +72,7 @@ export function createPandaMigrationPipeline(
 	const services: PandaMigrationServices = createPandaMigrationServices(options.services);
 	const stages =
 		options.stages ??
-		(options.stageFactory ?? { create: createPandaMigrationStages }).create(services);
+		(options.stageFactory ?? DEFAULT_PANDA_MIGRATION_STAGE_FACTORY).create(services);
 	return {
 		schema: PANDA_MIGRATION_PIPELINE_SCHEMA,
 		stages,
