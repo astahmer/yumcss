@@ -42,7 +42,6 @@ test("css gen simple prop", () => {
 	const css = createCss<typeof preset>({ debug: true });
 
 	const styles = css.raw({
-		// @ts-expect-error
 		border: "1px solid red",
 
 		color: "blue.300",

@@ -28,11 +28,18 @@ export const createConditionsBucket = (
 	...partial,
 });
 
-export const isSelfSelector = (condition: string): boolean => condition.charCodeAt(0) === 38;
+export const isSelfSelector = (condition: string): boolean =>
+	condition.charCodeAt(0) === 38 ||
+	(condition.includes("&") && condition.charCodeAt(condition.length - 1) !== 38);
+const selfSelectorPart = (condition: string): string =>
+	condition.charCodeAt(0) === 38 ? condition.slice(1) : condition;
 const scopedClassName = (className: string, selectors: readonly string[]): string =>
-	selectors.some((selector) => selector.includes(":where(")) && className.startsWith(".")
+	selectors.some((selector) => selector.includes(":where(") && !selector.includes(":where(&)")) &&
+	className.startsWith(".")
 		? `${className}${className}`
 		: className;
+const selfOwnsScope = (selectors: readonly string[]): boolean =>
+	selectors.some((selector) => selector.includes(":where(&)"));
 const isParentSelector = (condition: string): boolean =>
 	condition.charCodeAt(condition.length - 1) === 38;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
@@ -59,7 +66,7 @@ export const parseCondition = (
 ): true | undefined => {
 	if (!selector) return;
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
-	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
+	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selfSelectorPart(selector));
 	else if (isParentSelector(selector)) conditions.parentSelectors.push(selector.slice(0, -1));
 	else if (isAtRule(selector)) conditions.atRules.push(selector);
 	else return true;
@@ -80,15 +87,17 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 					.map((selector) => {
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];
-						if (isSelfSelector(selector)) selfs.push(selector.slice(1));
+						if (isSelfSelector(selector)) selfs.push(selfSelectorPart(selector));
 						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
-						return `${parents.join("")}${scopedClassName(className, selfs)}${selfs.join("")}`;
+						const scope = selfOwnsScope(selfs) ? "" : scopedClassName(className, selfs);
+						return `${parents.join("").replaceAll("&", className)}${scope}${selfs.join("").replaceAll("&", className)}`;
 					})
 					.join(", ");
 			})}{${decls}}`,
 		);
 	}
-	const selectors = `${parentSelectors.join("")}${scopedClassName(className, selfSelectors)}${selfSelectors.join("")}`;
+	const scope = selfOwnsScope(selfSelectors) ? "" : scopedClassName(className, selfSelectors);
+	const selectors = `${parentSelectors.join("").replaceAll("&", className)}${scope}${selfSelectors.join("").replaceAll("&", className)}`;
 	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectors}{${decls}}`);
 };
 
@@ -119,9 +128,9 @@ export function decodeAtomicPath(
 			? knownPropertyIndexes
 			: knownPropertyIndexes.length === 0 && pathParts.some(isSelectorPath)
 				? pathParts
-					.map((part, index) => (/^(?:[A-Za-z_][\w-]*|--[\w-]+)$/.test(part) ? index : -1))
-					.filter((index) => index !== -1)
-			: [];
+						.map((part, index) => (/^(?:[A-Za-z_][\w-]*|--[\w-]+)$/.test(part) ? index : -1))
+						.filter((index) => index !== -1)
+				: [];
 	// Flattened style objects put the property either before or after nested
 	// conditions. Once the property catalog identifies that segment, every
 	// other segment is unambiguously a condition—even when it is an authored

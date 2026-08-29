@@ -281,7 +281,11 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 	 * delivered inline, so nothing enters the generated stylesheet.
 	 */
 	vars: (...styles: Array<TStyles>) => VarsOutput;
-	raw: (...styles: Array<TStyles>) => StyleObject;
+	/**
+	 * Preserve authored CSS values and selectors without applying preset token
+	 * restrictions. This is the explicit escape hatch for raw stylesheet input.
+	 */
+	raw: (...styles: Array<StyleObject | TStyles>) => StyleObject;
 	props: (...styles: Array<PropsInput>) => PropsReturn;
 	group: <
 		TGroup extends Record<

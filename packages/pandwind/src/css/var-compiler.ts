@@ -1,4 +1,4 @@
-import { dashCase } from "./hash.ts";
+import { createHashFn, dashCase } from "./hash.ts";
 import type { FlatStyles } from "../lib/utils.ts";
 
 /**
@@ -77,6 +77,17 @@ export interface VarCompiler {
 	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> };
 }
 
+const selectorHash = createHashFn(false);
+
+export const isVarSelectorPart = (part: string): boolean =>
+	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
+
+/** Stable, CSS-identifier-safe suffix for named and selector conditions. */
+export const varConditionPart = (part: string): string => {
+	if (part.startsWith("_")) return part.slice(1);
+	return /^[A-Za-z_][\w-]*$/.test(part) ? part : `selector-${selectorHash("selector", part)}`;
+};
+
 class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
 
@@ -84,22 +95,18 @@ class DefaultVarCompiler implements VarCompiler {
 		this.conditions = new Set(conditionNames);
 	}
 
-	private isCondition(part: string): boolean {
-		return part.startsWith("_") || this.conditions.has(part);
-	}
-
 	private splitKey(key: string): { conditions: string[]; prop: string } {
 		const parts = key.split("__").filter((part) => part !== "");
 		const first = parts[0]!;
 		const last = parts[parts.length - 1]!;
-		const propertyFirst = parts.length > 1 && !this.isCondition(first) && this.isCondition(last);
+		const propertyFirst =
+			parts.length > 1 &&
+			(this.conditions.has(last) || (!isVarSelectorPart(first) && isVarSelectorPart(last)));
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
 			prop: dashCase(rawProp),
-			conditions: rawConditions
-				.map((part) => (part.startsWith("_") ? part.slice(1) : part))
-				.toSorted(),
+			conditions: rawConditions.map(varConditionPart).toSorted(),
 		};
 	}
 
