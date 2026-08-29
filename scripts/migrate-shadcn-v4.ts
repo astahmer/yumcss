@@ -15,6 +15,9 @@ import { buildPandwindInteropArtifact } from "../packages/pandwind/src/tw/intero
 import { generateUtilityBridge } from "../packages/pandwind/src/tw/bridge.ts";
 import { generateDesignSystem } from "../packages/pandwind/src/tw/generate-types.ts";
 import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
+import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
+import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
+import { pandwindPreset } from "../packages/pandwind/src/preset/index.ts";
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
@@ -170,23 +173,51 @@ function createLane(lane: ShadcnV4MigrationLane): LaneAdapter {
 	};
 }
 
-function runtimeSource(lane: ShadcnV4MigrationLane): string {
+function laneSource(lane: ShadcnV4MigrationLane): string {
 	if (lane === ShadcnV4MigrationLane.Tw)
 		return `import { createCx } from "pandwind/cx";\nimport { __pandwindConfig } from "./tw";\n\nexport const cx = createCx(__pandwindConfig);\n`;
-	const factory =
-		lane === ShadcnV4MigrationLane.Css ? "createRuntimeCss" : "createRuntimeDesignCss";
-	return `import { ${factory} } from "pandwind/css/runtime";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const ${lane} = ${factory}(pandwindPreset);\n`;
+	if (lane === ShadcnV4MigrationLane.Css)
+		return `import { createCss } from "pandwind/css";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const css = createCss(pandwindPreset);\n`;
+	return `import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";\n\nexport const dcss = createDesignCss(pandwindPreset);\n`;
 }
 
-function styleSheetSource(lane: ShadcnV4MigrationLane): string {
-	const binding = lane;
-	return `"use client";\n\nimport { useRef } from "react";\nimport { useServerInsertedHTML } from "next/navigation";\nimport { ${binding} } from "./${binding}";\n\nexport function PandwindStyleSheet() {\n\tconst emitted = useRef<string | undefined>(undefined);\n\tuseServerInsertedHTML(() => {\n\t\tconst value = ${binding}.sheet.css();\n\t\tif (value === emitted.current || value === "") return null;\n\t\temitted.current = value;\n\t\treturn <style data-pandwind-runtime dangerouslySetInnerHTML={{ __html: value }} />;\n\t});\n\treturn null;\n}\n`;
+function staticStylesheetSource(
+	transformed: ReadonlyMap<string, string>,
+	lane: ShadcnV4MigrationLane,
+): string {
+	const matchers = lane === ShadcnV4MigrationLane.Css ? ["css"] : ["dcss"];
+	const service = createCssExtractionService({ matchers, preset: pandwindPreset });
+	const stylesheet = createStylesheet(pandwindPreset);
+	let callSites = 0;
+	let extracted = 0;
+	for (const [file, code] of transformed) {
+		const inspection = service.inspect(code, file);
+		callSites += inspection.cssSources.length;
+		const dynamic = inspection.cssSources.filter((site) => site.dynamicArguments > 0);
+		if (dynamic.length > 0)
+			throw new Error(
+				`${lane} static artifact cannot safely lower dynamic calls in ${file}: ` +
+					`${dynamic.length} call site(s) require the runtime CSS transport`,
+			);
+		const extraction = service.extractFile(code, file);
+		extracted += extraction.sources.length;
+		for (const { style } of extraction.sources) stylesheet.process([style]);
+		for (const key of extraction.varKeys) stylesheet.processVarKey(key);
+	}
+	if (callSites !== extracted)
+		throw new Error(
+			`${lane} static artifact lost ${callSites - extracted} call site(s) during extraction`,
+		);
+	return [stylesheet.gen.tokens(), stylesheet.gen.atomic(), stylesheet.gen.varRules()]
+		.filter(Boolean)
+		.join("\n");
 }
 
 function supportFiles(
 	metadata: GeneratedMetadata,
 	lane: ShadcnV4MigrationLane,
 	sourceCatalog: string,
+	staticCss: string,
 ): Record<string, string> {
 	const files: Record<string, string> = {
 		[`${supportRoot}/types.d.ts`]: metadata.typesDts,
@@ -194,12 +225,12 @@ function supportFiles(
 		[`${supportRoot}/pandwind.interop.json`]: `${JSON.stringify(metadata.interop, null, 2)}\n`,
 	};
 	if (lane === ShadcnV4MigrationLane.Tw) {
-		files[`${supportRoot}/cx.ts`] = runtimeSource(lane);
-		files[sourceCatalogFile] = sourceCatalog;
+		files[`${supportRoot}/cx.ts`] = laneSource(lane);
 	} else {
-		files[`${supportRoot}/${lane}.ts`] = runtimeSource(lane);
-		files[`${supportRoot}/style-sheet.tsx`] = styleSheetSource(lane);
+		files[`${supportRoot}/${lane}.ts`] = laneSource(lane);
+		files[`${supportRoot}/styles.css`] = staticCss;
 	}
+	files[sourceCatalogFile] = sourceCatalog;
 	return files;
 }
 
@@ -210,6 +241,7 @@ async function materialize(
 	metadata: GeneratedMetadata,
 	transformed: ReadonlyMap<string, string>,
 	sourceCatalog: string,
+	staticCss: string,
 ): Promise<void> {
 	await mkdir(outputRoot, { recursive: true });
 	for (const entry of await readdir(referenceRoot, { withFileTypes: true })) {
@@ -226,7 +258,9 @@ async function materialize(
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
 	}
-	for (const [file, code] of Object.entries(supportFiles(metadata, lane, sourceCatalog))) {
+	for (const [file, code] of Object.entries(
+		supportFiles(metadata, lane, sourceCatalog, staticCss),
+	)) {
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
@@ -261,24 +295,14 @@ async function materialize(
 		`@source not "../lib";`,
 	];
 	const sourceDirective = `@source "${relative(`${appRootName}/app`, sourceCatalogFile).replaceAll("\\", "/")}";`;
-	const directives = [...exclusionDirectives];
-	if (lane === ShadcnV4MigrationLane.Tw) directives.push(sourceDirective);
+	const directives = [...exclusionDirectives, sourceDirective];
 	const missingDirectives = directives.filter((directive) => !source.includes(directive));
 	if (missingDirectives.length > 0)
 		await writeFile(stylesheet, `${source}\n${missingDirectives.join("\n")}\n`);
 	if (lane !== ShadcnV4MigrationLane.Tw) {
-		const layoutFile = join(outputRoot, appRootName, "app/layout.tsx");
-		const layout = await readFile(layoutFile, "utf8");
-		const withImport = layout.includes("PandwindStyleSheet")
-			? layout
-			: `import { PandwindStyleSheet } from "../pw/style-sheet";\n${layout}`;
-		await writeFile(
-			layoutFile,
-			withImport.replace(
-				"                  {children}",
-				"                  {children}\n                  <PandwindStyleSheet />",
-			),
-		);
+		const staticImport = `@import "${supportSource}/styles.css";`;
+		const current = await readFile(stylesheet, "utf8");
+		if (!current.includes(staticImport)) await writeFile(stylesheet, `${staticImport}\n${current}`);
 	}
 }
 
@@ -300,6 +324,7 @@ export class ShadcnV4Migration {
 		const metadata = await generatedMetadata(referenceRoot);
 		const adapter = createLane(lane);
 		const transformed = new Map<string, string>();
+		const sourceCatalogParts: string[] = [];
 		const residuals: ShadcnV4MigrationReport["residualSamples"][number][] = [];
 		let sourceFiles = 0;
 		let changedFiles = 0;
@@ -307,13 +332,15 @@ export class ShadcnV4Migration {
 		let residualCount = 0;
 		let sourceBytes = 0;
 		let outputBytes = 0;
-		const sourceCatalog =
-			lane === ShadcnV4MigrationLane.Tw ? await collectSourceCatalog(referenceRoot) : "";
 		for (const absolute of await collectSourceFiles(referenceRoot)) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
 			const result = adapter.transform(source, file, metadata.meta);
-			if (!result.changed && result.unmappedTokens.length === 0) continue;
+			if (!result.changed && result.unmappedTokens.length === 0) {
+				if (lane !== ShadcnV4MigrationLane.Tw) sourceCatalogParts.push(source);
+				continue;
+			}
+			if (lane !== ShadcnV4MigrationLane.Tw) sourceCatalogParts.push(result.code);
 			sourceFiles++;
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
@@ -324,6 +351,12 @@ export class ShadcnV4Migration {
 			outputBytes += Buffer.byteLength(result.code);
 			transformed.set(file, result.code);
 		}
+		const sourceCatalog =
+			lane === ShadcnV4MigrationLane.Tw
+				? await collectSourceCatalog(referenceRoot)
+				: sourceCatalogParts.join("\n");
+		const staticCss =
+			lane === ShadcnV4MigrationLane.Tw ? "" : staticStylesheetSource(transformed, lane);
 		if (options.outputRoot !== undefined)
 			await materialize(
 				referenceRoot,
@@ -332,6 +365,7 @@ export class ShadcnV4Migration {
 				metadata,
 				transformed,
 				sourceCatalog,
+				staticCss,
 			);
 		const report: ShadcnV4MigrationReport = {
 			schema: "pandwind.shadcn-v4-migration/1",

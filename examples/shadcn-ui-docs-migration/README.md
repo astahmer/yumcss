@@ -31,9 +31,10 @@ Each lane is intentionally independent:
 
 - `tw` converts statically bridgeable utilities to typed Tailwind calls and
   keeps the remaining class tokens in the `cx` path.
-- `css` emits the same normalized declarations through the runtime CSS API.
-- `dcss` emits them through the design-language runtime and SSR insertion
-  boundary.
+- `css` emits the same normalized declarations through the static CSS API and
+  a generated stylesheet.
+- `dcss` emits them through the design-language static API and the same
+  generated stylesheet.
 
 The acceptance proof is a clean production build, complete route generation,
 browser console/error checks, route geometry comparison, and stylesheet-size
@@ -45,12 +46,12 @@ comparison passes.
 
 The final proof for commit `683a5a9b370acdb7785a0529434e6a3b8c7e0441` covers
 730 HTTP routes and 10 browser routes. All three lanes have equivalent route
-statuses and pixel-identical screenshots. Aggregate unique external CSS is
-2,751,794 bytes in the baseline and in every lane; the `tw` lane also has the
-same 47,304 bytes of inline CSS. The `css` and `dcss` lanes intentionally add
-runtime SSR style artifacts (205,517 and 206,069 aggregate inline bytes) to
-implement their runtime APIs. Those lanes therefore prove external CSS and
-browser semantics, not zero-cost runtime transport.
+statuses and pixel-identical screenshots. The final proof records 2,751,794
+bytes of baseline external CSS and 47,304 bytes of baseline inline CSS. The
+`css` and `dcss` lanes have 2,737,798 bytes of external CSS and the same
+47,304 bytes of inline CSS, for 2,785,102 total bytes versus 2,790,098 in the
+baseline. The `tw` lane is byte-equal to the baseline. The static lanes do not
+need a runtime style insertion boundary for this corpus.
 
 For the `tw` lane, generated Pandwind metadata is excluded from Tailwind's
 automatic source scan. A generated source catalog preserves the original
