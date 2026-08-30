@@ -5,6 +5,24 @@ import { walk, type OxcNode } from "./tw/literal.ts";
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
+export enum SourceLanguageAdapterId {
+	ReactJsx = "jsx-react",
+	PreactJsx = "jsx-preact",
+	SolidJsx = "jsx-solid",
+	QwikJsx = "jsx-qwik",
+	Mdx = "mdx",
+	EcmaScript = "typescript",
+	Vue = "vue",
+	Svelte = "svelte",
+	Astro = "astro",
+}
+
+export enum SourceRuntimeBoundary {
+	Shared = "shared",
+	Client = "client",
+	Server = "server",
+}
+
 export type SourceLanguage =
 	| "typescript"
 	| "tsx"
@@ -33,6 +51,7 @@ export interface SourceDocument {
 	readonly language?: SourceLanguage;
 	readonly root?: string;
 	readonly framework?: SourceFramework;
+	readonly runtimeBoundary?: SourceRuntimeBoundary;
 }
 
 export interface SourceRange {
@@ -51,6 +70,7 @@ export interface SourceScanResult {
 	readonly excluded: readonly SourceRange[];
 	readonly diagnostics: readonly SourceScanDiagnostic[];
 	readonly framework?: SourceFramework;
+	readonly runtimeBoundary?: SourceRuntimeBoundary;
 	isExcluded(start: number): boolean;
 }
 
@@ -98,6 +118,35 @@ export interface SourceScannerService {
 	isScriptFile(file: string): boolean;
 	scan(document: SourceDocument): SourceScanResult;
 	parse(document: SourceDocument): ParseResult;
+}
+
+export const SOURCE_SCANNER_CONTRACT_SCHEMA = "pandwind.source-scanner-contract/1" as const;
+
+export interface SourceScannerContractFixture {
+	readonly adapter: string;
+	readonly document: SourceDocument;
+	readonly language?: SourceLanguage;
+	readonly framework?: SourceFramework;
+}
+
+export interface SourceScannerContractFailure {
+	readonly adapter: string;
+	readonly phase: "registration" | "detection" | "scan";
+	readonly message: string;
+}
+
+export interface SourceScannerContractResult {
+	readonly schema: typeof SOURCE_SCANNER_CONTRACT_SCHEMA;
+	readonly valid: boolean;
+	readonly checked: readonly string[];
+	readonly failures: readonly SourceScannerContractFailure[];
+}
+
+export interface SourceScannerContractSuite {
+	run(
+		registry: SourceScannerRegistry,
+		fixtures: readonly SourceScannerContractFixture[],
+	): SourceScannerContractResult;
 }
 
 export function sourceLanguageForFile(file: string): SourceLanguage {
@@ -242,6 +291,13 @@ export function computeExcludedRanges(
 function scanDocument(document: SourceDocument): SourceScanResult {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	const diagnostics: SourceScanDiagnostic[] = [];
+	const runtimeBoundary =
+		document.runtimeBoundary ??
+		(/^[\s\S]*['"]use client['"]/.test(document.source)
+			? SourceRuntimeBoundary.Client
+			: /^[\s\S]*['"]use server['"]/.test(document.source)
+				? SourceRuntimeBoundary.Server
+				: SourceRuntimeBoundary.Shared);
 	let excluded: SourceRange[] = [];
 	if (isOxcLanguage(language)) {
 		try {
@@ -267,6 +323,7 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 		language,
 		excluded,
 		diagnostics,
+		runtimeBoundary,
 		isExcluded: (start) => excluded.some((range) => start >= range.start && start < range.end),
 	};
 }
@@ -327,34 +384,34 @@ const makeFrameworkAdapter = (
 
 export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeFrameworkAdapter(
-		"jsx-react",
+		SourceLanguageAdapterId.ReactJsx,
 		"react",
 		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
 	),
 	makeFrameworkAdapter(
-		"jsx-preact",
+		SourceLanguageAdapterId.PreactJsx,
 		"preact",
 		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
 	),
 	makeFrameworkAdapter(
-		"jsx-solid",
+		SourceLanguageAdapterId.SolidJsx,
 		"solid",
 		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["']solid-js(?:\/|["'])/],
 	),
 	makeFrameworkAdapter(
-		"jsx-qwik",
+		SourceLanguageAdapterId.QwikJsx,
 		"qwik",
 		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
 	),
-	makeAdapter("mdx", ["mdx"]),
-	makeAdapter("typescript", ["typescript", "tsx", "javascript", "jsx"]),
-	makeAdapter("vue", ["vue"]),
-	makeAdapter("svelte", ["svelte"]),
-	makeAdapter("astro", ["astro"]),
+	makeAdapter(SourceLanguageAdapterId.Mdx, ["mdx"]),
+	makeAdapter(SourceLanguageAdapterId.EcmaScript, ["typescript", "tsx", "javascript", "jsx"]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Vue, "vue", ["vue"], [/^[\s\S]*$/]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Svelte, "svelte", ["svelte"], [/^[\s\S]*$/]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Astro, "astro", ["astro"], [/^[\s\S]*$/]),
 ];
 
 export function createSourceLanguageClassifier(
@@ -460,3 +517,78 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 			language: document.language ?? SOURCE_SCANNER.languageForFile(document.file),
 		}),
 };
+
+/**
+ * Validate scanner substitutions at the language boundary. Consumers depend
+ * only on `SourceScannerRegistry`; a custom language adapter can therefore
+ * replace a built-in implementation without changing codemod or build code.
+ */
+export function createSourceScannerContractSuite(): SourceScannerContractSuite {
+	return {
+		run(registry, fixtures) {
+			const fixtureById = new Map(fixtures.map((fixture) => [fixture.adapter, fixture]));
+			const checked: string[] = [];
+			const failures: SourceScannerContractFailure[] = [];
+			for (const adapter of registry.adapters) {
+				checked.push(adapter.id);
+				const fixture = fixtureById.get(adapter.id);
+				if (fixture === undefined) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "registration",
+						message: "language adapter has no conformance fixture",
+					});
+					continue;
+				}
+				if (!adapter.detect(fixture.document)) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "detection",
+						message: `adapter did not detect ${fixture.document.file}`,
+					});
+					continue;
+				}
+				try {
+					const result = adapter.scan(fixture.document);
+					if (!adapter.languages.includes(result.language))
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `scan returned unsupported language ${result.language}`,
+						});
+					if (fixture.language !== undefined && result.language !== fixture.language)
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `expected language ${fixture.language}, received ${result.language}`,
+						});
+					if (fixture.framework !== undefined && result.framework !== fixture.framework)
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `expected framework ${fixture.framework}, received ${String(result.framework)}`,
+						});
+				} catch (error) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "scan",
+						message: error instanceof Error ? error.message : "scanner threw a non-error value",
+					});
+				}
+			}
+			for (const fixture of fixtures)
+				if (registry.adapters.every((adapter) => adapter.id !== fixture.adapter))
+					failures.push({
+						adapter: fixture.adapter,
+						phase: "registration",
+						message: "fixture targets an unregistered language adapter",
+					});
+			return {
+				schema: SOURCE_SCANNER_CONTRACT_SCHEMA,
+				valid: failures.length === 0,
+				checked,
+				failures,
+			};
+		},
+	};
+}
