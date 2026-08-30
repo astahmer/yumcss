@@ -47,3 +47,4 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | mantine           | https://github.com/mantinedev/mantine                  | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx`                   |
 | mui               | https://github.com/mui/material-ui                     | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                    |
 | mantine           | https://github.com/mantinedev/mantine                  | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/mantine.dev/src/components/HomePage/HomePage.tsx`                          |
+| emotion-website           | https://github.com/emotion-js/emotion                          | `b882bcba85132554992e4bd49e94c95939bbf810` | `site` Next.js/MDX documentation website for Emotion-to-Pandwind static migration lanes                    |
