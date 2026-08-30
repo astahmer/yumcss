@@ -284,6 +284,42 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
+	test("keeps the static styled lane free of a runtime style carrier", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
+		expect(result.code).not.toContain("css.vars(");
+		expect(result.code).not.toContain("createRuntimeCss");
+	});
+
+	test("isolates runtime fallback to dynamic styled values and retains its dependency", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: (props) => props.color });\n" +
+				'export const App = () => <Card color="red" />;',
+			{ from: "styled-components", to: "pandwind", file: "Card.tsx", mode: "safe" },
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.vars(");
+		expect(result.code).toContain("createRuntimeCss");
+		expect(
+			result.dependencies.some((dependency) =>
+				dependency.packages.some((item) => item.name === "pandwind" && item.kind === "runtime"),
+			),
+		).toBe(true);
+	});
+
 	test("loads package/config evidence and migrates static tagged templates", () => {
 		const adapter = getCodemodAdapter("emotion")!;
 		const config = adapter.loadConfig({
