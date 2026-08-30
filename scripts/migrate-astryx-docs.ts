@@ -155,7 +155,7 @@ function useDesignApi(source: string): string {
 		'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
 	);
 	output = output.replace(
-		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*\=\s*)createCss\(\);/g,
+		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
 		"$1createDesignCss(pandwindPreset);",
 	);
 	return output;
@@ -206,7 +206,203 @@ async function collectSourceFiles(root: string): Promise<string[]> {
 		}
 	};
 	await visit(join(root, "src"));
+	const templateRoot = join(resolve(root, "../.."), "packages/cli/assets/templates/pages");
+	try {
+		await visit(templateRoot);
+	} catch {
+		// The standalone docsite checkout does not carry Astryx's template package.
+		// The repository corpus does, and includes it in the migration when present.
+	}
 	return files.toSorted();
+}
+
+function rewriteRequired(
+	source: string,
+	pattern: RegExp,
+	replacement: string,
+	file: string,
+): string {
+	if (!pattern.test(source)) throw new Error(`Astryx static lowering pattern not found in ${file}`);
+	return source.replace(pattern, replacement);
+}
+
+/**
+ * Lower the few source-level dynamic carriers that the StyleX adapter cannot
+ * represent as static Pandwind rules. Their values are already ordinary host
+ * styles; retaining them as `style` props keeps the dynamic boundary explicit
+ * without keeping the StyleX compiler in the migrated application.
+ */
+function lowerAstryxDynamicHosts(source: string, file: string): string {
+	let output = source;
+	if (file.endsWith("src/app/playground/PreviewStage.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/\/\/ Runtime sizing — the preview frame is a fixed device size or fills its area\.\nconst dynamic =[\s\S]*?\ninterface PreviewStageProps/,
+			"interface PreviewStageProps",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/,\n\s*dynamic\.size\(width, height\),\n\s*\]}\s*>/,
+			"\n        ]}\n        style={{width, height}}>",
+			file,
+		);
+	}
+	if (file.endsWith("src/components/ThemeShowcaseTile.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/ReturnType<typeof stylex\.props>/,
+			"ReturnType<typeof css.props>",
+			file,
+		);
+	}
+	if (file.endsWith("packages/cli/assets/templates/pages/kanban-board/page.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/const styles = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			"const styles = css.group(",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/\n  floatingAt: \(x: number, y: number, width: number\) => \(\{[\s\S]*?\n  \}\),/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/\n  ghost: \(height: number\) => \(\{[\s\S]*?\n  \}\),/,
+			"\n  ghost: {\n    borderRadius: 'var(--radius-container)',\n    backgroundColor: 'var(--color-background-muted)',\n  },",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/\n\}\);\n\n\/\/ ============= CARD BODY/,
+			"\n});\n\nconst dynamicStyles = {\n  floatingAt: (x: number, y: number, width: number) => ({\n    width,\n    transform: `translate(${x}px, ${y}px)`,\n  }),\n  ghost: (height: number) => ({height}),\n};\n\n// ============= CARD BODY",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/className=\{css\.props\(styles\.ghost\(ghostTarget\.height\)\)\.className\}/,
+			"className={css.props(styles.ghost).className}\n          style={dynamicStyles.ghost(ghostTarget.height)}",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/\n\s*styles\.floatingAt\([\s\S]*?\n\s*\),\n\s*\]\)\.className\}/,
+			"\n          ]).className}",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/className=\{css\.props\(\[\s*styles\.floating,\s*\]\)\.className\}>/,
+			"className={css.props([styles.floating]).className}\n          style={dynamicStyles.floatingAt(\n            drag.pointerX - drag.offsetX,\n            drag.pointerY - drag.offsetY,\n            drag.width,\n          )}>",
+			file,
+		);
+	}
+	if (file.endsWith("packages/cli/assets/templates/pages/settings-dialog/page.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/const row = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			"const row = css.group(",
+			file,
+		);
+		output = output.replaceAll("[ROW_STACK]", "'@container settings-panel (max-width: 480px)'");
+	}
+	if (file.endsWith("packages/cli/assets/templates/pages/dashboard-data/page.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/const metricsGridStyles = \/\/ pandwind:migrate-skip \(dynamic values require a host-bound style carrier\)\nstylex\.create\(/,
+			"const metricsGridStyles = css.group(",
+			file,
+		);
+		output = output.replaceAll("[METRICS_WIDE]", "'@media (min-width: 900px)'");
+	}
+	if (file.endsWith("packages/cli/assets/templates/pages/table-filter/page.tsx")) {
+		output = rewriteRequired(
+			output,
+			/import \* as stylex from ['"]@stylexjs\/stylex['"];\n/,
+			"",
+			file,
+		);
+		output = output.replaceAll(
+			"const styles = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
+			"const styles = css.group(",
+		);
+		output = output.replaceAll(
+			"const reorderStyles = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create(",
+			"const reorderStyles = css.group(",
+		);
+		output = output.replace(
+			"const skeletonCell = // pandwind:migrate-skip (dynamic values require a host-bound style carrier)\nstylex.create({",
+			"const skeletonCell = {",
+		);
+		output = rewriteRequired(
+			output,
+			/\n\}\);\n\n\/\*\* Placeholder rows standing in for the batch being fetched\. \*\//,
+			"\n};\n\n/** Placeholder rows standing in for the batch being fetched. */",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/className=\{css\.props\(\[styles\.skeletonRow, skeletonCell\.row\(pad\)\]\)\.className\}/,
+			"className={css.props(styles.skeletonRow).className}\n          style={skeletonCell.row(pad)}",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/className=\{css\.props\(\[\n\s*skeletonCell\.fixed\(SELECTION_COLUMN_WIDTH, 0\),\n\s*styles\.skeletonEdgeStart,\n\s*\]\)\.className\}/,
+			"className={css.props(styles.skeletonEdgeStart).className}\n            style={skeletonCell.fixed(SELECTION_COLUMN_WIDTH, 0)}",
+			file,
+		);
+		output = rewriteRequired(
+			output,
+			/className=\{css\.props\(\[\n\s*col\.width\?\.type === 'pixel'[\s\S]*?\n\s*index === columns\.length - 1 && styles\.skeletonEdgeEnd,\n\s*\]\)\.className\}/,
+			"className={\n                index === columns.length - 1\n                  ? css.props(styles.skeletonEdgeEnd).className\n                  : undefined\n              }\n              style={\n                col.width?.type === 'pixel'\n                  ? skeletonCell.fixed(col.width.value, pad)\n                  : skeletonCell.flexible(\n                      col.width?.value ?? 1,\n                      col.width?.minWidth ?? 120,\n                      pad,\n                    )\n              }",
+			file,
+		);
+	}
+	return output;
+}
+
+function hasAstryxDynamicHostFallback(file: string): boolean {
+	return [
+		"src/app/playground/PreviewStage.tsx",
+		"packages/cli/assets/templates/pages/dashboard-data/page.tsx",
+		"packages/cli/assets/templates/pages/kanban-board/page.tsx",
+		"packages/cli/assets/templates/pages/settings-dialog/page.tsx",
+		"packages/cli/assets/templates/pages/table-filter/page.tsx",
+	].some((suffix) => file.endsWith(suffix));
 }
 
 function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string): Promise<void> {
@@ -216,7 +412,7 @@ function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string):
 				const configFile = join(outputRoot, "next.config.mjs");
 				let config = await readFile(configFile, "utf8");
 				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/unplugin.ts"))};\nimport { pandwindPreset } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/preset/preset.ts"))};\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: import.meta.dirname, cssSources: [/pandwind\\/(?:css|design)/] });\n${config}`;
+					config = `import { pandwindWebpackCss } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/unplugin.ts"))};\nimport { pandwindPreset } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/preset/preset.ts"))};\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
 					config = config.replace(
 						"    return config;",
 						"    config.plugins.push(pandwindCssPlugin);\n    return config;",
@@ -254,6 +450,14 @@ function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string):
 						'"allowJs": true,\n    "allowImportingTsExtensions": true,',
 					);
 				await writeFile(tsconfigFile, tsconfig);
+			})(),
+			(async () => {
+				const babelFile = join(outputRoot, "babel.config.js");
+				let babel = await readFile(babelFile, "utf8");
+				babel = babel.replace(/\nconst path = require\('node:path'\);\n/, "\n");
+				babel = babel.replace(/\nconst dev = process\.env\.NODE_ENV !== 'production';\n/, "\n");
+				babel = babel.replace(/\n  plugins: \[[\s\S]*?\n  \],\n/, "\n  plugins: [],\n");
+				await writeFile(babelFile, babel);
 			})(),
 		]);
 	})();
@@ -302,7 +506,15 @@ export class AstryxDocsMigration {
 			const file = relative(referenceRoot, absoluteFile);
 			if (stylexAdapter?.detect({ file, source, root: referenceRoot }).matched !== true) continue;
 			sourceBytes += Buffer.byteLength(source);
-			const result = adapter.transform(source, { file: absoluteFile, root: referenceRoot });
+			const transformed = adapter.transform(source, { file: absoluteFile, root: referenceRoot });
+			const loweredCode = lowerAstryxDynamicHosts(transformed.code, file);
+			const result = {
+				...transformed,
+				code: loweredCode,
+				residuals: transformed.residuals.filter(
+					(residual) => residual.kind !== "dynamic-values" || loweredCode.includes("stylex.create"),
+				),
+			};
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
 			skippedCallSites += result.skipped;
@@ -311,7 +523,8 @@ export class AstryxDocsMigration {
 			staticCssCallSites += result.code.includes("createRuntimeCss") ? 0 : result.converted;
 			const needsRuntimeFallback =
 				(lane !== AstryxDocsLane.RuntimeCss && result.code.includes("createRuntimeCss")) ||
-				result.residuals.some((residual) => residual.kind === "dynamic-values");
+				result.residuals.some((residual) => residual.kind === "dynamic-values") ||
+				hasAstryxDynamicHostFallback(file);
 			if (needsRuntimeFallback) {
 				runtimeFallbackFiles++;
 				if (!runtimeFallbackFileNames.includes(file)) runtimeFallbackFileNames.push(file);
