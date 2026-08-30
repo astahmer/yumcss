@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import {
 	CodemodAdapterId,
 	createAdapterContractSuite,
@@ -120,6 +121,10 @@ function runOfflineGate(): void {
 }
 
 function runReferenceProof(): void {
+	const output =
+		process.env.PANDWIND_PROOF_OUTPUT ??
+		join(tmpdir(), "pandwind-pivot-proof", "real-repository-migrations-v2.json");
+	const env = { ...process.env, PANDWIND_PROOF_OUTPUT: output };
 	execFileSync("pnpm", ["references:prepare"], { cwd: root, stdio: "inherit" });
 	execFileSync("pnpm", ["exec", "tsx", "scripts/audit-real-repository-pins.ts"], {
 		cwd: root,
@@ -127,8 +132,11 @@ function runReferenceProof(): void {
 	});
 	execFileSync("pnpm", ["exec", "tsx", "scripts/generate-real-repository-report.ts", "--write"], {
 		cwd: root,
+		env,
 		stdio: "inherit",
 	});
+	if (!existsSync(output)) throw new Error(`proof runner did not write ${output}`);
+	console.log(`source-only proof report: ${output}`);
 	console.log(`reference workspace verified: ${createReferenceWorkspace().root}`);
 }
 
