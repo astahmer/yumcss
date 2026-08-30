@@ -95,11 +95,21 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 		const sourceAdapter = route.source;
 		const targetAdapter = route.target;
 		const targetPolicy = targetAdapter.migration?.targetPolicy ?? DEFAULT_TARGET_POLICY;
+		const readFile =
+			options.readFile ??
+			((file: string) => {
+				try {
+					return readFileSync(file, "utf8");
+				} catch {
+					return undefined;
+				}
+			});
 		const detection = sourceAdapter.detect({
 			file: options.file,
 			source,
 			root: options.root,
 			packageJson: options.packageJson,
+			readFile,
 		});
 		if (!detection.matched) {
 			return {
@@ -113,15 +123,6 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 				residuals: [],
 			};
 		}
-		const readFile =
-			options.readFile ??
-			((file: string) => {
-				try {
-					return readFileSync(file, "utf8");
-				} catch {
-					return undefined;
-				}
-			});
 		const config = sourceAdapter.loadConfig({
 			file: options.file,
 			source,
@@ -613,7 +614,6 @@ class DefaultStyleMigrationUseCase implements StyleMigrationUseCase {
 			needsCx ||= rewritten.needsCx;
 		}
 		let pendingComponentRewrites = componentRewrites;
-		for (const statement of imports) runtimeEdited = ensureImport(runtimeEdited, statement);
 		for (let pass = 0; pass < 3 && pendingComponentRewrites.length > 0; pass++) {
 			const unresolved: HostComponentRewriteRequest[] = [];
 			for (const request of pendingComponentRewrites) {

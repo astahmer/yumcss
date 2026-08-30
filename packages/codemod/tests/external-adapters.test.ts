@@ -54,6 +54,86 @@ describe("CSS-in-JS adapter contract v2", () => {
 		}
 	});
 
+	test("detects Emotion automatic JSX css props from project configuration", () => {
+		const emotion = getCodemodAdapter("emotion")!;
+		const detection = emotion.detect({
+			file: "/project/site/components/Container.tsx",
+			root: "/project",
+			source: 'export const Container = () => <div css={{ color: "red" }} />;',
+			readFile: (file) =>
+				file === "/project/site/.babelrc.js"
+					? "module.exports = { presets: [], plugins: [], importSource: '@emotion/react' }"
+					: undefined,
+		});
+		expect(detection).toMatchObject({ matched: true, confidence: 0.95 });
+		expect(detection.evidence).toContain("config:/project/site/.babelrc.js");
+	});
+
+	test("resolves imported static media keys for automatic Emotion css props", () => {
+		const result = runAdapterMigration(
+			'import { mediaQueries } from "../util";\n' +
+				'export const Container = () => <div css={{ margin: "0 auto", [mediaQueries.mdUp]: { maxWidth: 1132 } }} />;',
+			{
+				from: "emotion",
+				to: "pandwind",
+				file: "components/Container.tsx",
+				root: "/project/site",
+				mode: "safe",
+				readFile: (file) => {
+					if (file === "/project/site/.babelrc.js") return "importSource: '@emotion/react'";
+					if (file === "/project/site/util.ts")
+						return 'export const mediaQueries = { mdUp: "@media (min-width: 768px)" };';
+					return undefined;
+				},
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"@media (min-width: 768px)"');
+	});
+
+	test("inlines imported Emotion theme constants through re-export barrels", () => {
+		const result = runAdapterMigration(
+			'import { colors } from "../util";\n' +
+				"export const Card = () => <div css={{ color: colors.pink, border: `1px solid ${colors.grayBorder}` }} />;",
+			{
+				from: "emotion",
+				to: "pandwind",
+				file: "components/Card.tsx",
+				root: "/project/site",
+				mode: "safe",
+				readFile: (file) => {
+					if (file === "/project/site/.babelrc.js") return "importSource: '@emotion/react'";
+					if (file === "/project/site/util.ts") return "export * from './style-constants';";
+					if (file === "/project/site/style-constants.ts")
+						return 'export const colors = { pink: "#D26AC2", grayBorder: "#d2d2d2" };';
+					return undefined;
+				},
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('color: "#D26AC2"');
+		expect(result.code).toContain('border: "1px solid #d2d2d2"');
+	});
+
+	test("removes static Emotion Global host usage after target extraction", () => {
+		const result = runAdapterMigration(
+			'import { Global, css } from "@emotion/react";\n' +
+				'const globalCss = css({ a: { color: "red" } });\n' +
+				"export const GlobalStyles = () => <Global styles={globalCss} />;",
+			{ from: "emotion", to: "pandwind", file: "GlobalStyles.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("<></>");
+		expect(result.code).not.toContain("<Global");
+		expect(result.code).not.toContain("@emotion/react");
+	});
+
 	test("migrates Bamboo object styles with conditions", () => {
 		const result = runAdapterMigration(
 			'import { css } from "styled-system/css";\nconst button = css({ color: "red", "&:hover": { color: "blue" }, "@media (min-width: 40rem)": { color: "green" } });',

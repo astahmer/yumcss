@@ -37,6 +37,8 @@ export interface AdapterDetectionContext {
 	readonly source: string;
 	readonly root?: string;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
+	/** Optional filesystem port for project-aware detection (for example JSX config). */
+	readonly readFile?: (file: string) => string | undefined;
 }
 
 export interface AdapterDetectionResult {

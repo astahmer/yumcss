@@ -6,6 +6,8 @@ import {
 	ADAPTER_CONTRACT_SCHEMA,
 	ADAPTER_CONTRACT_VERSION,
 	type AdapterDependencies,
+	type AdapterDetectionContext,
+	type AdapterDetectionResult,
 	type AdapterEmitContext,
 	type AdapterEmitResult,
 	type AdapterMigrationHooks,
@@ -64,7 +66,7 @@ export type AdapterSourceObjectOptions = Pick<
 >;
 export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
-	| ((source: string) => AdapterSourceObjectOptions);
+	| ((source: string, context: AdapterParseContext) => AdapterSourceObjectOptions);
 
 export interface AdapterRenderers {
 	readonly firstKind: (program: StyleProgram) => StyleProgram["rules"][number]["kind"];
@@ -83,6 +85,8 @@ export interface CodemodAdapterSpec {
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
 	readonly configFiles?: readonly string[];
+	/** Optional adapter-owned detector for project configuration evidence. */
+	readonly detect?: (context: AdapterDetectionContext) => AdapterDetectionResult;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
 	emit(
@@ -144,7 +148,7 @@ function parseCalls(
 	const residuals: StyleProgramResidual[] = [];
 	const resolvedObjectOptions =
 		typeof sourceObjectOptions === "function"
-			? sourceObjectOptions(context.source)
+			? sourceObjectOptions(context.source, context)
 			: sourceObjectOptions;
 	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 	try {
@@ -378,7 +382,8 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		capabilities: spec.capabilities,
 		dependencies: spec.packages,
 		migration: spec.migration,
-		detect: (context) => CodemodAdapterSupport.detect(spec.detectPatterns, context),
+		detect: (context) =>
+			spec.detect?.(context) ?? CodemodAdapterSupport.detect(spec.detectPatterns, context),
 		loadConfig: (context) => CodemodAdapterSupport.config(spec.id, spec.configFiles ?? [], context),
 		parse: (source, context) =>
 			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),
@@ -414,7 +419,7 @@ export function removeSourceImports(
 	let result = code;
 	for (const module of modules) {
 		const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		const pattern = new RegExp(`\\bimport\\s+([^;]*?)\\s+from\\s+(["'])${quoted}\\2\\s*;?`, "g");
+		const pattern = new RegExp(`\\bimport\\s+([^;\\n]*?)\\s+from\\s+(["'])${quoted}\\2\\s*;?`, "g");
 		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 		try {
 			mask = computeExcludedRanges(result, file);
