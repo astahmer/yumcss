@@ -5,7 +5,10 @@ import {
 	createStyleAdapterRegistry,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
-import { createUnoCssAdapter } from "../src/swap/adapters/unocss.adapter.ts";
+import {
+	createUnoCssAdapter,
+	createUnoCssResolverFromCss,
+} from "../src/swap/adapters/unocss.adapter.ts";
 
 describe("Tokenami and UnoCSS semantic adapters", () => {
 	test("normalizes Tokenami encoded properties and conditions", () => {
@@ -96,5 +99,28 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			kind: "unknown-utility",
 			text: "project-shortcut",
 		});
+	});
+
+	test("accepts declarations from a real UnoCSS-generated CSS artifact", () => {
+		const uno = createUnoCssAdapter({
+			resolver: createUnoCssResolverFromCss(
+				".brand{color:rebeccapurple}.hover\\:brand:hover{color:blue}",
+			),
+		});
+		const parsed = uno.parse('<div className="brand hover:brand" />', {
+			file: "App.tsx",
+			source: '<div className="brand hover:brand" />',
+			config: uno.loadConfig({ file: "App.tsx", source: "" }),
+		});
+		expect(parsed.matches[0]?.program.residuals).toEqual([]);
+		expect(parsed.matches[0]?.program.declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property: "color",
+					value: { kind: "literal", value: "rebeccapurple" },
+				}),
+				expect.objectContaining({ property: "color", value: { kind: "literal", value: "blue" } }),
+			]),
+		);
 	});
 });
