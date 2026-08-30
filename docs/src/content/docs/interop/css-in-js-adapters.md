@@ -26,7 +26,8 @@ pandwind-codemod swap \
 The built-in adapter set covers `emotion`, `styled-components`, `chakra-ui`, `mui`, `mantine`,
 `vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
 `aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `solid-styled`,
-`vue-styled`, `bamboo`, `next-yak`, and `pandwind`. Bamboo's object dialect
+`vue-styled`, `bamboo`, `next-yak`, `tokenami`, `unocss`, and `pandwind`.
+Bamboo's object dialect
 and Next-yak's extracted `css`/`styled` template and css-prop lanes share the
 same semantic adapter contract. `--to=css.class` is the pandwind target
 spelling; external targets can be selected directly too:
@@ -69,6 +70,39 @@ the adapter registry. The report is schema `/3` and carries a typed
 canonicalized; it does not imply a full browser, SSR, dependency, or CSS-size
 promotion. `runtime-pending`, `source-mismatch`, and `pipeline-unpaired` are
 explicit non-promoted states with dimension-level reasons.
+
+### Tokenami
+
+Tokenami encodes CSS keys in custom-property names. Its adapter decodes
+properties, pseudo/selector prefixes, media/supports conditions, aliases, and
+`includes` composition into the semantic program. Static `css({...})` calls
+are safe when their values are literal; composition remains explicit until a
+target provides an equivalent mixin or recipe lowering.
+
+```sh
+pandwind-codemod swap --from=tokenami --to=css.class --safe --diff \
+  "src/**/*.{ts,tsx}"
+```
+
+### UnoCSS
+
+UnoCSS is a class/compiler dialect rather than an object-style runtime.
+Literal `class`/`className` attributes are parsed through an injectable
+project resolver. The default resolver intentionally handles only a small
+utility subset; production migrations should load the project's generated
+UnoCSS CSS and presets. Unknown utilities remain residuals instead of being
+guessed.
+
+```ts
+import { createUnoCssResolverFromCss } from "pandwind-codemod/swap";
+
+const resolver = createUnoCssResolverFromCss(generatedUnoCss);
+// Register createUnoCssAdapter({ resolver }) in the explicit plugin registry.
+```
+
+The pinned Tokenami and UnoCSS references are source-static corpus evidence.
+Goober is the first external adapter promoted through the installed browser/
+SSR runner; run `pnpm pivot:proof:installed` to reproduce it.
 
 ## Runtime and host boundary
 

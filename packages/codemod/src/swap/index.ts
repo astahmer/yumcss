@@ -136,6 +136,8 @@ export { runAdapterMigration } from "./adapter-migration.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+export { createTokenamiAdapter } from "./adapters/tokenami.adapter.ts";
+export { createUnoCssAdapter, createUnoCssResolverFromCss } from "./adapters/unocss.adapter.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
 export type { ProjectMigrationCommand, ProjectMigrationContext } from "./project-command.ts";
 export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);

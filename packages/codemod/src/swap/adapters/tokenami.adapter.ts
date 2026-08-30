@@ -151,41 +151,45 @@ const sourceOptions: AdapterSourceObjectOptions = {
 };
 
 /** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.Tokenami,
-	packages: {
-		packages: [
-			{ name: "@tokenami/css", kind: "runtime" },
-			{ name: "@tokenami/config", kind: "peer" },
+export function createTokenamiAdapter() {
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.Tokenami,
+		packages: {
+			packages: [
+				{ name: "@tokenami/css", kind: "runtime" },
+				{ name: "@tokenami/config", kind: "peer" },
+			],
+		},
+		capabilities: allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
+			"token-values": "exact",
+			"named-conditions": "partial",
+			"pseudo-conditions": "exact",
+			"selector-conditions": "exact",
+			composition: "partial",
+			"theme-context": "partial",
+			"runtime-context": "exact",
+			"framework-semantics": "exact",
+		}),
+		detectPatterns: [
+			/@tokenami\/(?:css|config)/,
+			/\bcss\.compose\s*\(/,
+			/['"]--(?:[A-Za-z_$][\w$-]*)(?:_[^'"]+)?['"]\s*:/,
 		],
-	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
-		"token-values": "exact",
-		"named-conditions": "partial",
-		"pseudo-conditions": "exact",
-		"selector-conditions": "exact",
-		composition: "partial",
-		"theme-context": "partial",
-		"runtime-context": "exact",
-		"framework-semantics": "exact",
-	}),
-	detectPatterns: [
-		/@tokenami\/(?:css|config)/,
-		/\bcss\.compose\s*\(/,
-		/['"]--(?:[A-Za-z_$][\w$-]*)(?:_[^'"]+)?['"]\s*:/,
-	],
-	sourceModules: ["@tokenami/css", "@tokenami/config"],
-	configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
-	loadConfig: tokenamiConfig,
-	sourceObjectOptions: sourceOptions,
-	patterns: [
-		{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
-		{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
-	],
-	emit(program, { programObject }) {
-		return {
-			text: `css(${programObject(program)})`,
-			imports: ['import { css } from "@tokenami/css";'],
-		};
-	},
-});
+		sourceModules: ["@tokenami/css", "@tokenami/config"],
+		configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
+		loadConfig: tokenamiConfig,
+		sourceObjectOptions: sourceOptions,
+		patterns: [
+			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
+			{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
+		],
+		emit(program, { programObject }) {
+			return {
+				text: `css(${programObject(program)})`,
+				imports: ['import { css } from "@tokenami/css";'],
+			};
+		},
+	});
+}
+
+export default createTokenamiAdapter();

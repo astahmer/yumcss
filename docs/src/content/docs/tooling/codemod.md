@@ -68,6 +68,13 @@ them. Third-party packages can provide one adapter, a plugin, or an adapter
 collection through the explicit manifest/discovery contract described in [the
 adapter contract](/reference/adapter-contract/).
 
+Tokenami and UnoCSS are also registered source adapters. Tokenami decodes its
+encoded custom-property keys and preserves composition as semantic metadata.
+UnoCSS resolves literal class attributes through an injectable project
+resolver; unknown preset utilities produce residuals rather than unsafe
+guesses. `createUnoCssResolverFromCss` can consume CSS emitted by a real
+UnoCSS generator.
+
 ## Pandwind API swaps
 
 The same pipeline supports `tw`, `css.class`, `design`, `tailwind`, `panda`,
@@ -138,6 +145,9 @@ pnpm references:prepare
 pnpm --filter pandwind-codemod test
 pnpm test:all
 pnpm knip
+
+# Installed browser/SSR promotion for the pinned Goober corpus entry
+pnpm pivot:proof:installed
 ```
 
 The checked-in reports record repository URL, commit, source path, adapter

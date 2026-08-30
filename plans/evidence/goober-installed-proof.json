@@ -1,0 +1,34 @@
+{
+	"schema": "pandwind.installed-adapter-proof/1",
+	"adapter": "goober",
+	"referenceCommit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
+	"sourcePath": "src/__tests__/css.test.js",
+	"install": {
+		"package": "goober",
+		"version": "2.1.19",
+		"checked": true
+	},
+	"migration": {
+		"converted": 1,
+		"skipped": 0,
+		"residuals": 0,
+		"sourceFixtureContainsStyleCall": true,
+		"sourceImportReboundToInstalledPackage": true,
+		"sourceImportRemovedFromTarget": true,
+		"targetCodeContainsPandwind": true
+	},
+	"ssr": {
+		"checked": true,
+		"markupEquivalent": true,
+		"sourceCssBytes": 69,
+		"targetCssBytes": 69,
+		"notLarger": true
+	},
+	"browser": {
+		"checked": true,
+		"states": ["base", "hover"],
+		"equivalent": true,
+		"changedPixels": 0,
+		"errors": []
+	}
+}

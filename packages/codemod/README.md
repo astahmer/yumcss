@@ -53,7 +53,8 @@ mode pass runs. Off by default.
 
 The same v2 adapter registry also contains `emotion`, `vanilla-extract`,
 `stitches`, `linaria`, `jss`, `fela`, `goober`, `aphrodite`, `style9`,
-`treat`, `compiled`, `solid-styled`, and `vue-styled`. Each is a separate
+`treat`, `compiled`, `solid-styled`, `vue-styled`, `tokenami`, and `unocss`.
+Each is a separate
 adapter implementation behind the shared detection/config/parse/emit/
 validation port; adding another source or target does not require changing
 the swap orchestrator.

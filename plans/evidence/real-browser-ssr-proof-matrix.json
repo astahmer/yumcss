@@ -87,6 +87,21 @@
 				"notLarger": true,
 				"note": "Reference styled-components style nodes are moved to head for comparison; CSS is preserved."
 			}
+		},
+		{
+			"id": "goober-installed-fixture",
+			"sourceAdapter": "goober",
+			"referenceCommit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
+			"report": "plans/evidence/goober-installed-proof.json",
+			"server": { "checked": true, "routes": 1, "failures": 0 },
+			"browser": { "checked": true, "routes": 1, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "installed-fixture-ssr-css",
+				"baselineBytes": 69,
+				"migratedBytes": 69,
+				"notLarger": true,
+				"note": "The source CSS is produced by installed Goober 2.1.19; the target uses Pandwind extracted CSS. Base and hover states are pixel-identical."
+			}
 		}
 	],
 	"boundedProofs": [
@@ -123,13 +138,14 @@
 		"next-yak",
 		"jss",
 		"fela",
-		"goober",
 		"aphrodite",
 		"style9",
 		"treat",
 		"compiled",
 		"solid-styled",
 		"vue-styled",
-		"react-native"
+		"react-native",
+		"tokenami",
+		"unocss"
 	]
 }

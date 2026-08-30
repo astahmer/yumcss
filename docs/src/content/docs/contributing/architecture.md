@@ -193,4 +193,8 @@ about what it proves. Its `promotion` object reports canonical CSS,
 browser-state, SSR/hydration, streaming, dependency, and CSS-size dimensions
 separately. Source-static entries are useful adapter evidence, but pending
 dimensions keep them out of full promotion until a repository-specific build
-runner executes them.
+runner executes them. `pnpm pivot:proof:installed` is the reproducible
+installed-adapter runner: it installs the pinned Goober package in a disposable
+project, migrates the corresponding real-repository fixture, compares SSR CSS,
+and exercises base/hover states in Chromium. Its report is promoted only when
+the migration is residual-free, CSS is no larger, and browser pixels match.

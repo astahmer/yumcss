@@ -23,6 +23,7 @@
 		"references:prepare": "tsx scripts/prepare-reference-repositories.ts",
 		"pivot:proof": "tsx scripts/pivot-proof.ts",
 		"pivot:proof:references": "tsx scripts/pivot-proof.ts --prepare",
+		"pivot:proof:installed": "tsx scripts/promote-goober-fixture.ts",
 		"check": "oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
 		"changeset": "changeset",
 		"changeset:version": "changeset version && pnpm install --no-frozen-lockfile",

@@ -1166,8 +1166,8 @@
         ]
       },
       "sourceBytes": 200,
-      "outputBytes": 215,
-      "outputByteDelta": 15,
+      "outputBytes": 278,
+      "outputByteDelta": 78,
       "converted": 1,
       "skipped": 0,
       "residuals": 0,
@@ -1235,7 +1235,7 @@
         "removed": [
           "style9"
         ],
-        "byteDelta": 15
+        "byteDelta": 78
       }
     },
     {

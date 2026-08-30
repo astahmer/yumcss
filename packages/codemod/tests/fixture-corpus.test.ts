@@ -49,4 +49,21 @@ describe("representative CSS-in-JS migration corpus", () => {
 		expect(result.valid).toBe(false);
 		expect(result.residuals.length).toBeGreaterThan(0);
 	});
+
+	test("lowers Style9 group calls into Pandwind group and cx calls", () => {
+		const source = `import style9 from "style9";
+const styles = style9.create({ title: { color: "red" } });
+const layout = style9.create({ center: { display: "flex" } });
+export const view = <h1 className={style9(styles("title"), layout.center)}>Hello</h1>;`;
+		const result = runAdapterMigration(source, {
+			from: "style9",
+			to: "pandwind",
+			file: "View.tsx",
+		});
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.group");
+		expect(result.code).toContain("cx(styles.title, layout.center)");
+		expect(result.code).not.toContain('from "style9"');
+	});
 });
