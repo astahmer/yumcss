@@ -1,0 +1,32 @@
+{
+	"schema": "pandwind.astryx-docs-proof/2",
+	"lane": "runtime-css",
+	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+	"migration": {
+		"sourceFiles": 981,
+		"changedFiles": 85,
+		"convertedCallSites": 79,
+		"skippedCallSites": 7,
+		"residuals": 0,
+		"runtimeFallbackFiles": 5,
+		"staticExtractionRatio": 0.9186046511627907,
+		"staticCssCoverageRatio": 0.9146341463414634,
+		"sourceBytes": 6320580,
+		"outputBytes": 6262196,
+		"outputByteDelta": -58384
+	},
+	"browser": {
+		"comparisons": 24,
+		"allRoutesEquivalent": true,
+		"cssWithinBudget": true,
+		"allAcceptanceCriteriaPassed": true,
+		"maxPixelRatio": 0.005725086984965062,
+		"newErrors": 0,
+		"newFailedResponses": 0,
+		"bodyHeightMismatches": 0,
+		"linkedCssDelta": -6824,
+		"strictCssNotLarger": true,
+		"report": "/tmp/pandwind-astryx-proof/browser-parity-runtime-production-final.json"
+	},
+	"fallbackPolicy": "static-first; runtime CSS remains available for the five explicit host-bound dynamic carriers"
+}

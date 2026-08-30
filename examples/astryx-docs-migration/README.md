@@ -28,19 +28,23 @@ pnpm exec tsx scripts/migrate-astryx-docs.ts static-css \
 
 pnpm exec tsx scripts/migrate-astryx-docs.ts runtime-css \
   /Users/astahmer/.references/astryx/apps/docsite \
-  /private/tmp/pandwind-astryx-runtime-v1/apps/docsite
+  /private/tmp/pandwind-astryx-runtime-final/apps/docsite
 
 pnpm exec tsx scripts/migrate-astryx-docs.ts design-dss \
   /Users/astahmer/.references/astryx/apps/docsite \
-  /private/tmp/pandwind-astryx-design-v1/apps/docsite
+  /private/tmp/pandwind-astryx-design-final/apps/docsite
 ```
 
-Each output is a disposable copy. Build it with the pinned Astryx dependency
-installation:
+The migrated output must have a writable copy of the monorepo `packages/`
+directory because the docs registry executes source templates from
+`packages/cli/assets/templates/pages`. Do not make that directory a symlink to
+the immutable reference checkout. Each output is disposable. Build it with
+the pinned Astryx dependency installation:
 
 ```sh
 cd /private/tmp/pandwind-astryx-repo/apps/docsite
 /Users/astahmer/.references/astryx/node_modules/.bin/next build --webpack
+node /Users/astahmer/dev/pandwind-astryx-migration/scripts/prepare-astryx-production-proof.mjs .
 ```
 
 Start the baseline and candidate on separate ports, then run:
@@ -49,38 +53,55 @@ Start the baseline and candidate on separate ports, then run:
 node scripts/verify-astryx-docs-browser.mjs \
   http://localhost:4321 \
   http://localhost:4322 \
-  /tmp/pandwind-astryx-proof/browser-parity-static-v8.json
+  /tmp/pandwind-astryx-proof/browser-parity-static-production-final.json
 ```
 
 The browser matrix covers 12 representative routes at desktop and mobile
 viewports (24 comparisons per lane), checks status/DOM shape/body geometry,
 console errors, failed requests, and screenshots. Visual equivalence uses the
-repository’s explicit 1% differing-pixel budget; the recorded maximum is
-below that budget for every lane.
+repository’s explicit 1% differing-pixel budget. The verifier also requires
+every migrated route’s linked CSS to be no larger than the baseline and emits
+`allAcceptanceCriteriaPassed` so the size gate cannot be missed in a manual
+review. Run it once for each output port (`4322`, `4500`, and `4600`) to cover
+the static, runtime, and design lanes.
+
+Next 16.3 preview builds with `cacheComponents` currently omit
+`.next/prerender-manifest.json` even though `next start` requires it. The
+disposable proof setup adds an empty manifest with proof-only preview keys
+after a successful build; this is a toolchain workaround, not a source or
+runtime change in the migrated app.
 
 ## Result
 
 All three lanes build successfully and pass all 24 browser comparisons with
-zero new errors, zero failed responses, and equal body heights. The one
-residual is intentionally explicit:
-
-`src/app/playground/PreviewStage.tsx` contains a runtime `dynamic` style
-carrier whose value depends on browser state. Static styles in that file are
-still converted; only that carrier remains on the runtime fallback path.
-
-The strict stylesheet-size condition is not yet green for this corpus:
+zero new errors, zero failed responses, equal DOM shape, and equal body
+heights. The production proof is:
 
 | lane          | static extraction | browser result   | linked CSS delta |
 | ------------- | ----------------: | ---------------- | ---------------: |
-| `static-css`  |            98.57% | 24/24 equivalent |     +1,114 bytes |
-| `runtime-css` |            98.55% | 24/24 equivalent |       +754 bytes |
-| `design-dss`  |            98.57% | 24/24 equivalent |     +1,114 bytes |
+| `static-css`  |            91.86% | 24/24 equivalent |     −3,253 bytes |
+| `runtime-css` |            91.86% | 24/24 equivalent |     −6,824 bytes |
+| `design-dss`  |            91.86% | 24/24 equivalent |     −3,253 bytes |
 
-The extra bytes are the measured cost of combining Pandwind output for
-migrated docsite sources with the unchanged StyleX output emitted by imported
-`@astryxdesign/*` packages. They are not treated as “same or smaller”. A
-future full-repository migration must either migrate those package sources or
-prove a safe cross-adapter atomic-rule reuse strategy before claiming the
-strict size gate for Astryx.
+The browser verifier recorded maximum differing-pixel ratios of 0.573% for
+static CSS, 0.573% for runtime CSS, and 0.893% for design DSS. Every lane had
+zero visual failures, zero shape failures, zero new browser errors, zero
+failed responses, `cssWithinBudget: true`, and
+`allAcceptanceCriteriaPassed: true`.
+
+The migration scans 981 files and converts 79 call sites. Five files retain
+explicit host-bound dynamic style carriers, with their fixed declarations
+still statically extracted:
+
+- `src/app/playground/PreviewStage.tsx` — preview width/height;
+- `../../packages/cli/assets/templates/pages/dashboard-data/page.tsx`;
+- `../../packages/cli/assets/templates/pages/kanban-board/page.tsx`;
+- `../../packages/cli/assets/templates/pages/settings-dialog/page.tsx`;
+- `../../packages/cli/assets/templates/pages/table-filter/page.tsx`.
+
+These are not residual losses: the migration lowers them to ordinary React
+`style` props and reports zero unresolved residuals. The runtime lane keeps
+its runtime API available as an explicit fallback, while the static lane
+removes the legacy StyleX compiler from migrated application/template code.
 
 The lane-specific migration and browser summaries live in `reports/`.
