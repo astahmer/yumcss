@@ -197,6 +197,16 @@ describe("mode: keep (analysis only)", () => {
 });
 
 describe("safety rails", () => {
+	test("does not treat function parameter defaults as JSX attributes", () => {
+		const source = [
+			"const Card = ({ className = 'p-4' }: { className?: string }) => <div className=\"p-6\" />;",
+		].join("\n");
+		const result = tw(source);
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain("className = 'p-4'");
+		expect(result.code).toContain('className={ tw({\n\t\tp: "6",');
+	});
+
 	test("skip marker opts the following line out", () => {
 		const source = [
 			`// pandwind:migrate-skip`,

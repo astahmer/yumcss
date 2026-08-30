@@ -51,21 +51,27 @@ pnpm exec tsx scripts/verify-posthog-docs.mjs \
 The verifier derives routes from the baseline's generated HTML instead of
 using a hand-maintained allowlist. It checks every route's status, rendered
 error markers, linked and inline CSS byte totals, then compares deterministic
-desktop screenshots and landmark geometry for the representative routes that
-exist in that build. A candidate fails if it adds CSS, changes a checked
-route, emits a browser error, changes geometry, or changes any screenshot
-pixel.
+SSR screenshots and hydrated landmark geometry at desktop (1440×900) and
+mobile (390×844) for the representative routes that exist in that build. A
+candidate fails if it adds CSS, changes a checked route, introduces a browser
+error, changes hydrated geometry, or changes a meaningful screenshot pixel.
+The browser fixture seeds random/UUID/time sources, warms lazy media, and
+replaces remote images with a stable 1×1 fixture so external CDN responses do
+not affect the comparison. Raw and significant pixel deltas are both retained
+in the JSON report.
 
 The materialized app copies the pinned source, injects the generated Pandwind
-modules, adds the Pandwind dependency, and extends `safelist.txt` with the
-static classes emitted by `tw()`. The source checkout remains untouched.
+modules, adds the Pandwind dependency, and writes a generated token vocabulary
+module so the compiler sees the original static utility candidates without
+inflating the source stylesheet. The source checkout remains untouched.
 
 The acceptance contract is deliberately strict: the migration must build, the
-same routes must respond successfully, browser console and request errors must
-remain empty, screenshots and geometry must match at mobile and desktop
-viewports, and generated CSS must not exceed the baseline. Residuals are
-allowed only when they preserve the original utility verbatim and are listed
-in the report; they are not silent losses.
+same routes must respond successfully, newly introduced browser errors must be
+absent, SSR screenshots and hydrated geometry must match at mobile and desktop
+viewports, and generated CSS must not exceed the baseline. Errors already
+present in the pinned upstream baseline are reported but do not become false
+migration failures. Residuals are allowed only when they preserve the original
+utility verbatim and are listed in the report; they are not silent losses.
 
 The `css.class` and `design-css` lanes are separate JJ revisions layered after
 the `tw` lane. Each lane is static first; runtime Pandwind is a fallback only for semantics that

@@ -1,0 +1,48 @@
+{
+	"schema": "pandwind.posthog-com-migration-summary/1",
+	"referenceCommit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
+	"routes": 2929,
+	"visualRoutes": ["/", "/docs/", "/blog/", "/pricing/"],
+	"visualViewports": {
+		"desktop": "1440x900",
+		"mobile": "390x844"
+	},
+	"lanes": {
+		"tw": {
+			"sourceFiles": 975,
+			"changedFiles": 961,
+			"convertedCallSites": 11814,
+			"residualCount": 11216,
+			"outputByteDelta": 516878,
+			"mappedTokens": 1663
+		},
+		"css-class": {
+			"sourceFiles": 975,
+			"changedFiles": 395,
+			"convertedCallSites": 1097,
+			"residualCount": 35693,
+			"outputByteDelta": 118511,
+			"mappedTokens": 1663
+		},
+		"design-css": {
+			"sourceFiles": 975,
+			"changedFiles": 395,
+			"convertedCallSites": 1097,
+			"residualCount": 35693,
+			"outputByteDelta": 122533,
+			"mappedTokens": 1663
+		}
+	},
+	"proof": {
+		"allHttpRoutesEquivalent": true,
+		"allVisualRoutesEquivalent": true,
+		"allCssNotLarger": true,
+		"baselineCumulativeCssBytes": 1615754878,
+		"twCumulativeCssBytes": 1615754878,
+		"cssClassCumulativeCssBytes": 1615754878,
+		"designCssCumulativeCssBytes": 1615754878,
+		"browserErrorsIntroduced": 0,
+		"hydrationRuntimeErrorsIntroduced": 0
+	},
+	"report": "browser-parity.json"
+}

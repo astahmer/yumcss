@@ -119,6 +119,13 @@ function isCodePosition(source: string, end: number): boolean {
 	return quote === null && !lineComment && !blockComment;
 }
 
+function isJsxAttributePosition(source: string, index: number): boolean {
+	const openingTag = source.lastIndexOf("<", index);
+	const closingTag = source.lastIndexOf(">", index);
+	if (openingTag <= closingTag) return false;
+	return /^<[A-Za-z][\w.:-]*(?:\s|$)/.test(source.slice(openingTag, index));
+}
+
 function classNameMatches(
 	source: string,
 ): Array<{ full: string; classString: string; start: number }> {
@@ -127,6 +134,7 @@ function classNameMatches(
 	for (const match of source.matchAll(regex)) {
 		const index = match.index ?? 0;
 		if (!isCodePosition(source, index)) continue;
+		if (!isJsxAttributePosition(source, index)) continue;
 		// `el.className = "..."` is a plain DOM property assignment, not a
 		// JSX attribute — the tw()/css() replacements emit `={ ... }`, which
 		// is JSX-expression-container syntax and invalid outside JSX.
@@ -199,6 +207,19 @@ function serializeObject(node: ObjectNode, indent: string): string {
 	return `{\n${inner}\n${indent}}`;
 }
 
+function serializeResidualClassList(value: string): string {
+	// Keep quote-bearing arbitrary values visible to Tailwind as authored
+	// candidates. JSON escaping would expose `\\"` to the scanner and make it
+	// generate a different selector, even though the runtime string is equal.
+	if (
+		(value.includes('"') || value.includes("\\")) &&
+		!value.includes("`") &&
+		!value.includes("${")
+	)
+		return `\`${value}\``;
+	return JSON.stringify(value);
+}
+
 /* ------------------------------------------------------------------ */
 /* Mode: tw                                                            */
 /* ------------------------------------------------------------------ */
@@ -238,7 +259,7 @@ function transformTw(
 			replacement = `className={ tw(${serializeObject(root, "\t")}) }`;
 		} else {
 			const residual = outcome.unmapped.map((u) => u.raw).join(" ");
-			replacement = `className={ cx(tw(${serializeObject(root, "\t")}), ${JSON.stringify(residual)}) }`;
+			replacement = `className={ cx(tw(${serializeObject(root, "\t")}), ${serializeResidualClassList(residual)}) }`;
 			needsCx = true;
 		}
 		result.converted++;
