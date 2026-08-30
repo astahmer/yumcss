@@ -298,4 +298,7 @@ Plan created in JJ workspace `pandwind-pivot-completeness`, based on
 `main` at `77491442`. Phase 1's adapter contract baseline is implemented in
 the `AdapterContractSuite`, which derives its capability view from the
 registry and fails for missing fixtures or exercised unsupported capabilities.
-The full semantic, host, corpus, and release phases remain in progress.
+The implementation is split across `6fd7aa0c` (registry-derived capability
+matrix and all-adapter fixtures) and `8c3376c1` (emission and self-validation
+execution). The documentation update is `8c8ad1b6`. The full semantic, host,
+corpus, and release phases remain in progress.
