@@ -1,267 +1,267 @@
 {
-  "schema": "pandwind.shadcn-v4-migration/1",
-  "lane": "tw",
-  "referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
-  "sourceFiles": 235,
-  "changedFiles": 233,
-  "convertedCallSites": 1940,
-  "residualCount": 1101,
-  "residualSamples": [
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "group/picker",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "data-[accent=bold]:fill-foreground",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "data-[accent=bold]:fill-foreground",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/action-menu.tsx",
-      "token": "animate-none!",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
-      "token": "group/picker",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
-      "token": "bg-(--color)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
-      "token": "group/picker",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
-      "token": "*:[svg]:size-4",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
-      "token": "*:[svg]:text-foreground!",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "group/picker",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "bg-(--color)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "max-h-92",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
-      "token": "-translate-y-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
-      "token": "dark",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
-      "token": "-translate-x-1/2",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
-      "token": "data-[active=true]:bg-accent",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
-      "token": "data-[active=true]:text-accent-foreground",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "[--customizer-width:--spacing(48)]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "[--gap:--spacing(4)]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "md:[--gap:--spacing(6)]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "2xl:[--customizer-width:--spacing(56)]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "gap-(--gap)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "p-(--gap)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "pt-[calc(var(--gap)*0.25)]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "md:flex-row-reverse",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "min-h-[151px]",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
-      "token": "md:w-(--customizer-width)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "dark",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:w-(--customizer-width)",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "group-data-reversed/layout:flex-row-reverse",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "flex-row",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "**:data-[slot=field-separator]:-mx-4",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "**:data-[slot=field-separator]:w-auto",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:gap-3.25",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:flex-col",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "md:**:[button,a]:w-full",
-      "reason": "no typed mapping"
-    },
-    {
-      "file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
-      "token": "-mt-3",
-      "reason": "no typed mapping"
-    }
-  ],
-  "sourceBytes": 832319,
-  "outputBytes": 921694,
-  "outputByteDelta": 89375,
-  "generatedUtilities": 419,
-  "generatedVariants": 108,
-  "generatedBridgeEntries": 772
+	"schema": "pandwind.shadcn-v4-migration/1",
+	"lane": "tw",
+	"referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
+	"sourceFiles": 235,
+	"changedFiles": 233,
+	"convertedCallSites": 1940,
+	"residualCount": 1101,
+	"residualSamples": [
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "group/picker",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "data-[accent=bold]:fill-foreground",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "data-[accent=bold]:fill-foreground",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/action-menu.tsx",
+			"token": "animate-none!",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "group/picker",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "bg-(--color)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "group/picker",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "*:[svg]:size-4",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "*:[svg]:text-foreground!",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "group/picker",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "bg-(--color)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "max-h-92",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/chart-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
+			"token": "dark",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
+			"token": "-translate-x-1/2",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
+			"token": "data-[active=true]:bg-accent",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-devtools.tsx",
+			"token": "data-[active=true]:text-accent-foreground",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "[--customizer-width:--spacing(48)]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "[--gap:--spacing(4)]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "md:[--gap:--spacing(6)]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "2xl:[--customizer-width:--spacing(56)]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "gap-(--gap)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "p-(--gap)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "pt-[calc(var(--gap)*0.25)]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "md:flex-row-reverse",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "min-h-[151px]",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/create-skeleton.tsx",
+			"token": "md:w-(--customizer-width)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "dark",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "md:w-(--customizer-width)",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "group-data-reversed/layout:flex-row-reverse",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "flex-row",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "**:data-[slot=field-separator]:-mx-4",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "**:data-[slot=field-separator]:w-auto",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "md:flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "md:gap-3.25",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "md:flex-col",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "md:**:[button,a]:w-full",
+			"reason": "no typed mapping"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/customizer.tsx",
+			"token": "-mt-3",
+			"reason": "no typed mapping"
+		}
+	],
+	"sourceBytes": 832319,
+	"outputBytes": 921694,
+	"outputByteDelta": 89375,
+	"generatedUtilities": 419,
+	"generatedVariants": 108,
+	"generatedBridgeEntries": 772
 }
