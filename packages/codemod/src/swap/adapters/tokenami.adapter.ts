@@ -125,6 +125,8 @@ async function officialTokenamiConfig(
 	];
 	for (const candidate of candidates) {
 		const path = join(context.root, candidate);
+		// Preserve candidate priority: the first project config wins.
+		// oxlint-disable-next-line no-await-in-loop
 		const module = await loader.importFile<Record<string, unknown>>(path);
 		if (module === undefined) continue;
 		const rawValues = [module.default, ...Object.values(module)]

@@ -398,6 +398,8 @@ export class StylexDocsMigration {
 			if (!source.includes("stylex")) continue;
 			sourceFiles++;
 			const file = relative(root, absoluteFile);
+			// Each file is transformed in source order for deterministic reports.
+			// oxlint-disable-next-line no-await-in-loop
 			const result = await lane.migrate(source, { file, root });
 			if (result.changed) changedFiles++;
 			converted += result.converted;

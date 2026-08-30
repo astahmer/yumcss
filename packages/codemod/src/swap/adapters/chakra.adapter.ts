@@ -407,6 +407,8 @@ async function officialChakraConfig(
 	];
 	for (const candidate of candidates) {
 		const path = join(context.root, candidate);
+		// Preserve candidate priority: the first project theme wins.
+		// oxlint-disable-next-line no-await-in-loop
 		const module = await loader.importFile<Record<string, unknown>>(path);
 		if (module === undefined) continue;
 		const exported = [module.default, ...Object.values(module)];

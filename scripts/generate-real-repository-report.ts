@@ -129,6 +129,8 @@ for (const fixture of fixtures) {
 		if (sourceAdapter === undefined) throw new Error(`missing adapter ${fixture.from}`);
 		const detected = sourceAdapter.detect({ file: fixture.path, source: fixture.source });
 		detection = detected;
+		// Preserve corpus order so the JSON report remains reproducible.
+		// oxlint-disable-next-line no-await-in-loop
 		const result = await runAdapterMigrationAsync(fixture.source, {
 			from: fixture.from,
 			to: fixture.to,

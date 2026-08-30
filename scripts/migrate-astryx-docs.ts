@@ -306,6 +306,8 @@ export class AstryxDocsMigration {
 			const file = relative(referenceRoot, absoluteFile);
 			if (stylexAdapter?.detect({ file, source, root: referenceRoot }).matched !== true) continue;
 			sourceBytes += Buffer.byteLength(source);
+			// Each file is transformed in source order for deterministic reports.
+			// oxlint-disable-next-line no-await-in-loop
 			const result = await adapter.transform(source, { file: absoluteFile, root: referenceRoot });
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;

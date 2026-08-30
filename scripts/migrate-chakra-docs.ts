@@ -348,6 +348,8 @@ export class ChakraDocsMigration {
 		for (const absolute of await collectSourceFiles(referenceRoot)) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
+			// Each file is transformed in source order for deterministic reports.
+			// oxlint-disable-next-line no-await-in-loop
 			const result = await adapter.transform(source, file, referenceRoot);
 			if (!result.changed && result.residuals.length === 0) continue;
 			visitedSourceFiles++;
