@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -249,9 +249,12 @@ const report = {
 	},
 };
 const serialized = JSON.stringify(report, null, 2);
-if (process.argv.includes("--write"))
-	writeFileSync(
-		resolve(import.meta.dirname, "../plans/evidence/real-repository-migrations-v2.json"),
-		`${serialized}\n`,
-	);
+if (process.argv.includes("--write")) {
+	const output =
+		process.env.PANDWIND_PROOF_OUTPUT ??
+		join(tmpdir(), "pandwind-pivot-proof", "real-repository-migrations-v2.json");
+	mkdirSync(dirname(output), { recursive: true });
+	writeFileSync(output, `${serialized}\n`);
+	console.error(`wrote source-only proof report: ${output}`);
+}
 console.log(serialized);
