@@ -191,6 +191,16 @@ export type {
 	AdapterContractResult,
 	AdapterContractSuite,
 } from "./adapter-contract-suite.ts";
+export { ADAPTER_COVERAGE_SCHEMA, createAdapterCoverageGate } from "./coverage-gate.ts";
+export type {
+	AdapterCoverageEntry,
+	AdapterCoverageEvidence,
+	AdapterCoverageEvidenceKind,
+	AdapterCoverageFailure,
+	AdapterCoverageGate,
+	AdapterCoveragePolicy,
+	AdapterCoverageReport,
+} from "./coverage-gate.ts";
 export type {
 	CodemodAdapterSpec,
 	AdapterRenderers,

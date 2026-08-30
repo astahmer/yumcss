@@ -139,7 +139,6 @@ export default defineCodemodAdapter({
 	configFiles: [".emotionrc", "emotion.config.js", "package.json"],
 	sourceObjectOptions: (_source, context) => {
 		const references = importedStaticValues(context, context.source);
-		console.error("EMOTION_DEBUG", context.file, references);
 		return {
 			dynamicReferences: references,
 			computedKeyResolver: (expression) => references[expression],
