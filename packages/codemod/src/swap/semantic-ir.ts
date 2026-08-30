@@ -541,9 +541,9 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		const childrenText = children.map(render).join("");
 		switch (rule.kind) {
 			case "style":
-				return `${selector ?? "&"}{${declarationText}${childrenText}}`;
+				return `${selector ?? "&"}{${declarationText}}${childrenText}`;
 			case "global":
-				return `${selector ?? "*"}{${declarationText}${childrenText}}`;
+				return `${selector ?? "*"}{${declarationText}}${childrenText}`;
 			case "keyframes":
 				return `@keyframes ${rule.name ?? ""}{${declarationText}${childrenText}}`;
 			case "font-face":

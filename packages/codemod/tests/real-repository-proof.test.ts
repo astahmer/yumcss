@@ -54,5 +54,16 @@ describe("real repository proof classification", () => {
 		expect(runtime.eligible).toBe(false);
 		expect(pipeline.status).toBe(RealRepositoryProofStatus.PipelineUnpaired);
 		expect(pipeline.eligible).toBe(false);
+		const mismatch = classifyRealRepositoryProof({
+			pipelineUnpaired: false,
+			runtimeDependent: false,
+			canonicalChecked: true,
+			canonicalEqual: false,
+			residuals: 0,
+			skipped: 0,
+			streamingApplicable: false,
+		});
+		expect(mismatch.status).toBe(RealRepositoryProofStatus.SourceMismatch);
+		expect(mismatch.eligible).toBe(false);
 	});
 });

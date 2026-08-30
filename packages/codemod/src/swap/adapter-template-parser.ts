@@ -132,9 +132,13 @@ export function parseAdapterTemplate(
 					break;
 				}
 				const nested = parseBlock(block.body);
+				const normalizedSelector =
+					selector.startsWith("&") || selector.startsWith(":") || selector.startsWith("[")
+						? selector
+						: `& ${selector}`;
 				children.push({
 					kind: "style",
-					selector,
+					selector: normalizedSelector,
 					conditions: [],
 					declarations: nested.declarations,
 					children: nested.children,

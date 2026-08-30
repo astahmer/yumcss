@@ -1511,8 +1511,8 @@
         ]
       },
       "sourceBytes": 6953,
-      "outputBytes": 7759,
-      "outputByteDelta": 806,
+      "outputBytes": 7765,
+      "outputByteDelta": 812,
       "converted": 7,
       "skipped": 0,
       "residuals": 0,
@@ -1520,19 +1520,18 @@
       "validations": 7,
       "canonicalCss": {
         "checked": true,
-        "equal": false,
-        "sourceBytes": 1477,
-        "targetBytes": 1511,
-        "byteDelta": 34
+        "equal": true,
+        "sourceBytes": 1481,
+        "targetBytes": 1481,
+        "byteDelta": 0
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-mismatch",
+        "status": "source-static",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "failed",
-            "reason": "canonical CSS differs"
+            "status": "passed"
           },
           "browser-states": {
             "status": "pending",
@@ -1555,7 +1554,6 @@
           }
         },
         "reasons": [
-          "canonical CSS differs",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "dependency graphs are not installed by the reference runner",
@@ -1580,7 +1578,7 @@
         "removed": [
           "vue-styled-components"
         ],
-        "byteDelta": 806
+        "byteDelta": 812
       }
     },
     {
@@ -1779,19 +1777,18 @@
       "validations": 3,
       "canonicalCss": {
         "checked": true,
-        "equal": false,
+        "equal": true,
         "sourceBytes": 379,
         "targetBytes": 379,
         "byteDelta": 0
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-mismatch",
+        "status": "source-static",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "failed",
-            "reason": "canonical CSS differs"
+            "status": "passed"
           },
           "browser-states": {
             "status": "pending",
@@ -1815,7 +1812,6 @@
           }
         },
         "reasons": [
-          "canonical CSS differs",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",

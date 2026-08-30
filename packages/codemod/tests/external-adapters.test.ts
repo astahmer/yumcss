@@ -634,6 +634,17 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(parsed.residuals.some((residual) => residual.kind === "parse")).toBe(false);
 	});
 
+	test("normalizes plain nested template selectors as descendants", () => {
+		const adapter = getCodemodAdapter("vue-styled")!;
+		const source = "const Card = styled.div`color: red; h1 { color: white; }`;";
+		const parsed = adapter.parse(source, {
+			file: "Card.vue",
+			source,
+			config: { adapter: "vue-styled", files: [], values: {} },
+		});
+		expect(parsed.matches[0]?.program.rules[0]?.children[0]?.selector).toBe("& h1");
+	});
+
 	test("wraps function-valued Solid and Vue styles with host runtime context", () => {
 		const solid = runAdapterMigration(
 			'import { styled } from "solid-styled-components";\n' +

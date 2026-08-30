@@ -177,8 +177,8 @@ function stitchesRecipeObject(
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Pandwind,
 	patterns: [
-		{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
-		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
+		{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g, objectKind: "selector" },
+		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g, objectKind: "selector" },
 		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
 	],
 	packages: dependency("pandwind", "runtime"),

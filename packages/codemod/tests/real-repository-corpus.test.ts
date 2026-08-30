@@ -118,11 +118,13 @@ describe("pinned real repository corpus", () => {
 		const mismatch = report.reports.find(
 			(item) => item.id === "next-yak-benchmark-realistic-button",
 		);
+		const vue = report.reports.find((item) => item.id === "vue-styled-css-test");
 		expect(panda?.promotion.status).toBe(RealRepositoryProofStatus.PipelineUnpaired);
 		expect(panda?.promotion.eligible).toBe(false);
 		expect(dynamic?.promotion.status).toBe(RealRepositoryProofStatus.RuntimePending);
 		expect(dynamic?.promotion.eligible).toBe(false);
-		expect(mismatch?.promotion.status).toBe(RealRepositoryProofStatus.SourceMismatch);
+		expect(mismatch?.promotion.status).toBe(RealRepositoryProofStatus.SourceStatic);
+		expect(vue?.promotion.status).toBe(RealRepositoryProofStatus.SourceStatic);
 		for (const reference of corpus.references) {
 			const item = report.reports.find((candidate) => candidate.id === reference.id);
 			expect(item?.promotion).toBeDefined();
