@@ -71,6 +71,19 @@ export enum StyleProgramConditionOrder {
 	Depth = "depth",
 }
 
+/** Syntax shape retained for dynamic lowering and host-specific rewrites. */
+export enum StyleDynamicExpressionKind {
+	Identifier = "identifier",
+	Member = "member",
+	Call = "call",
+	Template = "template",
+	Conditional = "conditional",
+	Binary = "binary",
+	Object = "object",
+	Array = "array",
+	Unknown = "unknown",
+}
+
 /** Semantic composition kinds shared by source and target adapters. */
 export enum StyleProgramCompositionKind {
 	Mixin = "mixin",

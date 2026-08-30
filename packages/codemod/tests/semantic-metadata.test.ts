@@ -23,7 +23,12 @@ describe("semantic metadata and validator domains", () => {
 		);
 		expect(dynamic?.value).toMatchObject({
 			kind: "dynamic",
+			expressionKind: "member",
 			dependencies: ["theme.colors.foreground"],
+			staticEvaluation: {
+				attempted: true,
+				status: "unresolved",
+			},
 		});
 		expect(program.themes).toHaveLength(1);
 		expect(requiredAdapterCapabilities(program)).toEqual(
@@ -39,7 +44,7 @@ describe("semantic metadata and validator domains", () => {
 
 	test("runs standalone custom validators with the canonical registry", () => {
 		const program: StyleProgram = {
-			schema: "pandwind.style-program/3",
+			schema: "pandwind.style-program/4",
 			rules: [],
 			declarations: [],
 			residuals: [],
