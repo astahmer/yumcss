@@ -17,7 +17,7 @@ From the repository root:
 ```sh
 pnpm test:all
 pnpm test:coverage
-pnpm typecheck
+pnpm run typecheck
 pnpm lint
 pnpm format
 pnpm knip

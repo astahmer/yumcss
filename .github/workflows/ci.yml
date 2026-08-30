@@ -36,7 +36,7 @@ jobs:
         run: pnpm --filter pandwind test:types
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm run typecheck
 
       - name: Lint (oxlint)
         run: pnpm lint

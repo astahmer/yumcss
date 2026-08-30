@@ -61,7 +61,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: typecheck + tests
         run: |
-          pnpm typecheck
+          pnpm run typecheck
           pnpm test
       - name: publish (provenance via OIDC)
         run: bash scripts/release/publish-all.sh
