@@ -272,6 +272,17 @@ export type {
 	StyleValidatorPlugin,
 	StyleValidatorRegistry,
 } from "./validator-registry.ts";
+export {
+	createValidatorContractSuite,
+	VALIDATOR_CONTRACT_SUITE_SCHEMA,
+} from "./validator-contract-suite.ts";
+export type {
+	ValidatorContractFailure,
+	ValidatorContractFixture,
+	ValidatorContractPhase,
+	ValidatorContractResult,
+	ValidatorContractSuite,
+} from "./validator-contract-suite.ts";
 export type {
 	DifferentialBrowserResult,
 	DifferentialBrowserState,
