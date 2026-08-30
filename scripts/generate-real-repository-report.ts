@@ -241,7 +241,7 @@ for (const fixture of fixtures) {
 const report = {
 	schema: "pandwind.real-repository-report/3",
 	generatedFrom: "scripts/generate-real-repository-report.ts",
-	cloneRoot: referenceRoot,
+	cloneRoot: "${PANDWIND_REFERENCE_ROOT:-~/.references}",
 	sourceFiles: corpus.references.length,
 	reports,
 	bundleImpact: {
