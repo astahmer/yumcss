@@ -259,13 +259,13 @@ erDiagram
 
 ## Acceptance criteria
 
-- [ ] A JJ operation anchor and workspace inventory are recorded before any
+- [x] A JJ operation anchor and workspace inventory are recorded before any
       history mutation.
-- [ ] Every prior workspace merge/consolidation is classified with explicit
+- [x] Every prior workspace merge/consolidation is classified with explicit
       commit IDs and tree/path evidence.
-- [ ] No relevant implementation, test, fixture, proof, documentation, or
+- [x] No relevant implementation, test, fixture, proof, documentation, or
       script was dropped; proven gaps are restored in focused revisions.
-- [ ] `main` contains the retained work exactly once and has no conflicted
+- [x] `main` contains the retained work exactly once and has no conflicted
       commits or unresolved workspace heads.
 - [ ] Every registered adapter implements the versioned contract and passes
       generic conformance tests.
