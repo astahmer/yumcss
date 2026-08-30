@@ -7,7 +7,7 @@ import {
 	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
 	getCodemodAdapter,
-	runAdapterMigration,
+	runAdapterMigrationAsync,
 	runPandaMigration,
 } from "../packages/codemod/src/swap/index.ts";
 import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
@@ -129,7 +129,7 @@ for (const fixture of fixtures) {
 		if (sourceAdapter === undefined) throw new Error(`missing adapter ${fixture.from}`);
 		const detected = sourceAdapter.detect({ file: fixture.path, source: fixture.source });
 		detection = detected;
-		const result = runAdapterMigration(fixture.source, {
+		const result = await runAdapterMigrationAsync(fixture.source, {
 			from: fixture.from,
 			to: fixture.to,
 			file: fixture.path,

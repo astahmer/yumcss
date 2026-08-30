@@ -1,6 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import type { AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import { join } from "node:path";
 import { matchBlock } from "../../sources.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
 
@@ -282,6 +285,154 @@ function valueTransformProperty(property: string): string {
 	return typeof alias === "string" ? alias : property;
 }
 
+function chakraTokenGroup(property: string): string | undefined {
+	if (
+		property === "color" ||
+		property === "backgroundColor" ||
+		property === "borderColor" ||
+		property.endsWith("Color")
+	)
+		return "colors";
+	if (property === "borderRadius") return "radii";
+	if (property === "fontWeight") return "fontWeights";
+	if (property === "fontSize") return "fontSizes";
+	if (property === "lineHeight") return "lineHeights";
+	if (property === "letterSpacing") return "letterSpacings";
+	if (property === "fontFamily") return "fonts";
+	if (property === "boxShadow") return "shadows";
+	if (
+		property === "padding" ||
+		property.startsWith("padding") ||
+		property === "margin" ||
+		property.startsWith("margin") ||
+		property === "gap" ||
+		property.endsWith("Gap")
+	)
+		return "spacing";
+	if (
+		property === "width" ||
+		property === "height" ||
+		property === "minWidth" ||
+		property === "maxWidth" ||
+		property === "minHeight" ||
+		property === "maxHeight"
+	)
+		return "sizes";
+	return undefined;
+}
+
+function hasConfigToken(config: unknown, group: string, token: string): boolean {
+	if (typeof config !== "object" || config === null) return false;
+	const root = config as Record<string, unknown>;
+	const theme = root.theme;
+	if (typeof theme !== "object" || theme === null) return false;
+	for (const collection of ["tokens", "semanticTokens"]) {
+		let current: unknown = (theme as Record<string, unknown>)[collection];
+		for (const segment of [group, ...token.split(".")]) {
+			if (typeof current !== "object" || current === null) {
+				current = undefined;
+				break;
+			}
+			current = (current as Record<string, unknown>)[segment];
+		}
+		if (typeof current === "object" && current !== null && "value" in current) return true;
+	}
+	return false;
+}
+
+function chakraOfficialValue(
+	property: string,
+	value: StyleValue,
+	context: AdapterParseContext,
+): StyleValue {
+	const fallback = chakraValue(property, value);
+	if (value.kind !== "literal" || typeof value.value !== "string") return fallback;
+	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
+	const config = context.config.values.chakraConfig;
+	const group = chakraTokenGroup(property);
+	if (
+		system?.token?.var === undefined ||
+		group === undefined ||
+		!hasConfigToken(config, group, value.value)
+	)
+		return fallback;
+	const resolved = system.token.var(`${group}.${value.value}`);
+	return typeof resolved === "string" ? { kind: "literal", value: resolved } : fallback;
+}
+
+interface ChakraSystemLike {
+	readonly $$chakra?: true;
+	readonly _config?: Record<string, unknown>;
+	readonly token?: {
+		var?(path: string, fallback?: unknown): unknown;
+	};
+}
+
+interface ChakraPackage {
+	readonly defaultConfig?: Record<string, unknown>;
+	readonly createSystem?: (...configs: Record<string, unknown>[]) => ChakraSystemLike;
+	readonly isValidSystem?: (value: unknown) => value is ChakraSystemLike;
+}
+
+function chakraConfigCandidate(value: unknown): Record<string, unknown> | undefined {
+	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
+	const candidate = value as Record<string, unknown>;
+	return candidate.theme !== undefined || candidate.conditions !== undefined
+		? candidate
+		: undefined;
+}
+
+async function officialChakraConfig(
+	context: import("../adapter-contract.ts").AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<import("../adapter-contract.ts").AdapterProjectConfig> {
+	const fallback = {
+		adapter: CodemodAdapterId.ChakraUi,
+		root: context.root,
+		files: [context.file],
+		values: {},
+	};
+	if (context.root === undefined) return fallback;
+	const chakra = await loader.importPackage<ChakraPackage>("@chakra-ui/react", context.root);
+	if (chakra === undefined) return fallback;
+	const candidates = [
+		"src/theme.ts",
+		"src/theme.tsx",
+		"src/theme.js",
+		"src/theme.mjs",
+		"theme.ts",
+		"theme.tsx",
+		"theme.js",
+		"theme.mjs",
+	];
+	for (const candidate of candidates) {
+		const path = join(context.root, candidate);
+		const module = await loader.importFile<Record<string, unknown>>(path);
+		if (module === undefined) continue;
+		const exported = [module.default, ...Object.values(module)];
+		const existingSystem = exported.find((value) => chakra.isValidSystem?.(value) === true) as
+			| ChakraSystemLike
+			| undefined;
+		const config =
+			existingSystem?._config ??
+			exported.map(chakraConfigCandidate).find((value) => value !== undefined);
+		if (config === undefined) continue;
+		const system =
+			existingSystem ??
+			(chakra.createSystem?.(chakra.defaultConfig ?? {}, config) as ChakraSystemLike | undefined);
+		return {
+			...fallback,
+			files: [...fallback.files, path],
+			values: {
+				chakraConfig: config,
+				...(system === undefined ? {} : { chakraSystem: system }),
+				officialConfigPackage: "@chakra-ui/react",
+			},
+		};
+	}
+	return fallback;
+}
+
 function preserveSeparatorGap(host: JsxStyleHostMatch): readonly string[] {
 	if (!host.attributes.some((attribute) => attribute.name === "separator")) return [];
 	return host.styleAttributes
@@ -315,54 +466,61 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 	return references;
 }
 
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.ChakraUi,
-	patterns: [
-		{
-			name: "chakra-style-props",
-			regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
-			form: "jsx-style",
-			styleProps,
-			preserveHostStyleProps: (host) => [
-				...preserveSeparatorGap(host),
-				...preserveNextImageFill(host),
-			],
+export function createChakraAdapter(options: { readonly moduleLoader?: ProjectModuleLoader } = {}) {
+	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.ChakraUi,
+		patterns: [
+			{
+				name: "chakra-style-props",
+				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
+				form: "jsx-style",
+				styleProps,
+				preserveHostStyleProps: (host) => [
+					...preserveSeparatorGap(host),
+					...preserveNextImageFill(host),
+				],
+			},
+		],
+		packages: dependency("@chakra-ui/react", "peer"),
+		capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
+			"theme-context": "partial",
+			"runtime-context": "partial",
+			"framework-semantics": "partial",
+			components: "partial",
+		}),
+		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
+		// Component imports remain in place because the host element still uses Chakra's component.
+		sourceModules: [],
+		configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
+		loadConfigAsync: (context) => officialChakraConfig(context, moduleLoader),
+		sourceObjectOptions: (source, context) => ({
+			propertyAliases,
+			objectReferences: objectReferences(source),
+			unwrapNestedObjectKeys: ["css"],
+			propertyValueConditions: true,
+			conditionKinds: {
+				sm: "named",
+				md: "named",
+				lg: "named",
+				xl: "named",
+				"2xl": "named",
+			},
+			valueTransforms: Object.fromEntries(
+				[...new Set([...styleProps, ...Object.keys(propertyAliases)])].map((property) => [
+					property,
+					(value: StyleValue) =>
+						chakraOfficialValue(valueTransformProperty(property), value, context),
+				]),
+			),
+		}),
+		emit(program, { programObject }) {
+			return {
+				text: `css(${programObject(program)})`,
+				imports: ['import { css } from "@chakra-ui/react";'],
+			};
 		},
-	],
-	packages: dependency("@chakra-ui/react", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
-		"theme-context": "partial",
-		"runtime-context": "partial",
-		"framework-semantics": "partial",
-		components: "partial",
-	}),
-	detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
-	// Component imports remain in place because the host element still uses Chakra's component.
-	sourceModules: [],
-	configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
-	sourceObjectOptions: (source) => ({
-		propertyAliases,
-		objectReferences: objectReferences(source),
-		unwrapNestedObjectKeys: ["css"],
-		propertyValueConditions: true,
-		conditionKinds: {
-			sm: "named",
-			md: "named",
-			lg: "named",
-			xl: "named",
-			"2xl": "named",
-		},
-		valueTransforms: Object.fromEntries(
-			[...new Set([...styleProps, ...Object.keys(propertyAliases)])].map((property) => [
-				property,
-				(value: StyleValue) => chakraValue(valueTransformProperty(property), value),
-			]),
-		),
-	}),
-	emit(program, { programObject }) {
-		return {
-			text: `css(${programObject(program)})`,
-			imports: ['import { css } from "@chakra-ui/react";'],
-		};
-	},
-});
+	});
+}
+
+export default createChakraAdapter();

@@ -2,9 +2,11 @@ import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	createBuiltinCodemodCatalog,
+	createChakraAdapter,
 	getCodemodAdapter,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
+import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
 describe("CSS-in-JS adapter contract v2", () => {
 	test("registers detection, config, parse, emit, dependencies, and validation for every adapter", () => {
@@ -53,6 +55,51 @@ describe("CSS-in-JS adapter contract v2", () => {
 			});
 			expect(config.adapter).toBe(id);
 		}
+	});
+
+	test("loads Chakra's official merged system config through the adapter port", async () => {
+		const system = {
+			$$chakra: true as const,
+			_config: {
+				theme: { tokens: { colors: { brand: { "500": { value: "#123456" } } } } },
+			},
+			token: {
+				var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})`,
+			},
+		};
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@chakra-ui/react"
+					? ({ isValidSystem: (value: unknown) => value === system } as never)
+					: undefined;
+			},
+			async importFile() {
+				return { default: system } as never;
+			},
+		};
+		const adapter = createChakraAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			file: "App.tsx",
+			source: "",
+			root: "/project",
+		});
+		expect(config?.values.chakraConfig).toEqual(system._config);
+		expect(config?.values.officialConfigPackage).toBe("@chakra-ui/react");
+		const source = '<Box color="brand.500" />';
+		const parsed = adapter.parse(source, {
+			file: "App.tsx",
+			source,
+			root: "/project",
+			config: config!,
+		});
+		expect(parsed.matches[0]?.program.declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property: "color",
+					value: { kind: "literal", value: "var(--chakra-colors-brand-500)" },
+				}),
+			]),
+		);
 	});
 
 	test("detects Emotion automatic JSX css props from project configuration", () => {

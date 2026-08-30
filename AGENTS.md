@@ -87,6 +87,14 @@ which concrete module to import or grow a switch statement in a central runner.
   transforms, and framework semantics must travel in the StyleProgram and be
   checked by capability/validator registries; do not encode it only in
   unstructured residual text.
+- Project-aware adapters should delegate configuration interpretation to the
+  ecosystem's official package when one exists. Resolve optional packages from
+  the migrated project's root through an injectable module-loader port, keep
+  that path asynchronous, and retain a deterministic source fallback when the
+  package or config is unavailable. Official-loader failures must become
+  structured diagnostics/residuals; never silently treat an unevaluated
+  custom preset as the complete project configuration. Do not bundle optional
+  ecosystem packages into Pandwind's runtime dependencies.
 - Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.

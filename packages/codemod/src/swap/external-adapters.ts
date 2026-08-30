@@ -95,6 +95,7 @@ export interface CodemodAdapterSpec {
 		fallback: () => AdapterDetectionResult,
 	) => AdapterDetectionResult;
 	readonly loadConfig?: (context: AdapterConfigContext) => AdapterProjectConfig;
+	readonly loadConfigAsync?: (context: AdapterConfigContext) => Promise<AdapterProjectConfig>;
 	readonly parse?: (source: string, context: AdapterParseContext) => AdapterParseResult;
 	readonly postprocessEmit?: (
 		emission: Pick<AdapterEmitResult, "text" | "imports">,
@@ -864,6 +865,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			detectBy(spec.detectPatterns, context),
 		loadConfig: (context) =>
 			spec.loadConfig?.(context) ?? configFor(spec.id, spec.configFiles ?? [], context),
+		...(spec.loadConfigAsync === undefined ? {} : { loadConfigAsync: spec.loadConfigAsync }),
 		parse: (source, context) =>
 			spec.parse?.(source, context) ??
 			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),

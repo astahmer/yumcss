@@ -170,6 +170,8 @@ export interface StyleAdapter {
 	readonly migration?: AdapterMigrationHooks;
 	detect(context: AdapterDetectionContext): AdapterDetectionResult;
 	loadConfig(context: AdapterConfigContext): AdapterProjectConfig;
+	/** Optional async loader for official host packages and evaluated project config. */
+	loadConfigAsync?(context: AdapterConfigContext): Promise<AdapterProjectConfig>;
 	parse(source: string, context: AdapterParseContext): AdapterParseResult;
 	emit(program: StyleProgram, context: AdapterEmitContext): AdapterEmitResult;
 	validate(

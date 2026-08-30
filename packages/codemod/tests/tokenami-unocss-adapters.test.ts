@@ -1,10 +1,15 @@
 import { describe, expect, test } from "vitest";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 	runAdapterMigration,
+	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
+import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import { createTokenamiAdapter } from "../src/swap/adapters/tokenami.adapter.ts";
 import {
 	createUnoCssAdapter,
 	createUnoCssResolverFromCss,
@@ -87,6 +92,46 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).toContain("rebeccapurple");
 	});
 
+	test("project-aware migration consumes the official UnoCSS loader", async () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const uno = createUnoCssAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					if (packageName === "@unocss/config")
+						return {
+							loadConfig: async () => ({
+								config: { rules: [["brand", { color: "rebeccapurple" }]] },
+							}),
+						} as never;
+					if (packageName === "@unocss/core")
+						return {
+							createGenerator: async () => ({
+								generate: async () => ({ css: ".brand{color:rebeccapurple}" }),
+							}),
+						} as never;
+					return undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+		});
+		const registry = createStyleAdapterRegistry([
+			uno,
+			catalog.registry.get(CodemodAdapterId.Pandwind)!,
+		]);
+		const result = await runAdapterMigrationAsync('<div className="brand" />', {
+			from: CodemodAdapterId.UnoCSS,
+			to: CodemodAdapterId.Pandwind,
+			file: "App.tsx",
+			root: "/project",
+			adapterRegistry: registry,
+		});
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("rebeccapurple");
+	});
+
 	test("reports unknown UnoCSS utilities instead of guessing", () => {
 		const adapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.UnoCSS)!;
 		const source = '<div className="project-shortcut" />';
@@ -120,6 +165,102 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 					value: { kind: "literal", value: "rebeccapurple" },
 				}),
 				expect.objectContaining({ property: "color", value: { kind: "literal", value: "blue" } }),
+			]),
+		);
+	});
+
+	test("loads Tokenami aliases through its official config package boundary", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@tokenami/config"
+					? ({
+							createConfig: (value: unknown) => ({
+								...(value as Record<string, unknown>),
+								officialNormalized: true,
+							}),
+						} as never)
+					: undefined;
+			},
+			async importFile() {
+				return { default: { aliases: { brand: ["color"] } } } as never;
+			},
+		};
+		const adapter = createTokenamiAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			file: "App.tsx",
+			source: "",
+			root: "/project",
+		});
+		expect(config?.values.tokenamiAliases).toEqual({ brand: ["color"] });
+		expect(config?.values.tokenamiConfig).toMatchObject({ officialNormalized: true });
+		expect(config?.values.officialConfigPackage).toBe("@tokenami/config");
+	});
+
+	test("uses the installed UnoCSS config and generator for project shortcuts", async () => {
+		const root = mkdtempSync(join(process.cwd(), ".tmp-unocss-official-"));
+		try {
+			writeFileSync(
+				join(root, "uno.config.ts"),
+				"export default { rules: [['brand', { color: 'rebeccapurple' }]] }",
+			);
+			const adapter = createUnoCssAdapter();
+			const source = '<div className="brand" />';
+			const config = await adapter.loadConfigAsync?.({
+				file: "App.tsx",
+				source,
+				root,
+			});
+			expect(config?.values.officialConfigPackages).toEqual(["@unocss/config", "@unocss/core"]);
+			const parsed = adapter.parse(source, {
+				file: "App.tsx",
+				source,
+				root,
+				config: config!,
+			});
+			expect(parsed.matches[0]?.program.residuals).toEqual([]);
+			expect(parsed.matches[0]?.program.declarations).toEqual([
+				expect.objectContaining({
+					property: "color",
+					value: { kind: "literal", value: "rebeccapurple" },
+				}),
+			]);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+
+	test("reports an official UnoCSS loader failure as a configuration residual", async () => {
+		const adapter = createUnoCssAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					if (packageName === "@unocss/config")
+						return {
+							loadConfig: async () => {
+								throw new Error("preset failed to load");
+							},
+						} as never;
+					if (packageName === "@unocss/core")
+						return {
+							createGenerator: async () => ({ generate: async () => ({ css: "" }) }),
+						} as never;
+					return undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+		});
+		const source = '<div className="brand" />';
+		const config = await adapter.loadConfigAsync?.({ file: "App.tsx", source, root: "/project" });
+		const parsed = adapter.parse(source, {
+			file: "App.tsx",
+			source,
+			root: "/project",
+			config: config!,
+		});
+		expect(parsed.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
 			]),
 		);
 	});

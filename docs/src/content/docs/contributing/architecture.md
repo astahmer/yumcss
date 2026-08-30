@@ -21,6 +21,36 @@ The façade is not the architecture by itself. A domain is only decomposed when
 the policy implementation is behind the port and a test can substitute a
 minimal implementation without changing orchestration.
 
+## Official project configuration
+
+Project-aware migration must ask the ecosystem's own packages to interpret
+custom configuration whenever an official loader is available. This preserves
+presets, plugins, merged themes, shortcuts, and generated token semantics that
+cannot be recovered safely by reading source text.
+
+The adapter owns this policy behind its optional asynchronous
+`loadConfigAsync(context)` port. The context supplies the migrated project's
+root, while `ProjectModuleLoader` resolves packages and config modules from
+that root. The migration CLI and other project-aware runners use
+`runAdapterMigrationAsync`; the synchronous entry point remains the
+deterministic fast path for callers that already provide config or do not need
+host evaluation.
+
+| Ecosystem | Official integration              | What it contributes                                                  |
+| --------- | --------------------------------- | -------------------------------------------------------------------- |
+| Panda     | `@pandacss/config`                | resolved config, presets, plugins, merged theme/conditions/patterns  |
+| Tailwind  | `@tailwindcss/node`               | loaded design system and generated utility/token view                |
+| UnoCSS    | `@unocss/config` + `@unocss/core` | project config, presets, rules, shortcuts, and generated utility CSS |
+| Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                   |
+| Tokenami  | `@tokenami/config`                | normalized project config and aliases                                |
+
+These packages are optional integration dependencies, not Pandwind runtime
+dependencies. If they are absent, the adapter uses its documented deterministic
+fallback. If an official loader is present but fails, the adapter records a
+configuration residual so a migration cannot claim that custom semantics were
+fully handled. Loader tests use `ProjectModuleLoader` substitutions, and at
+least one installed-package fixture covers each official integration.
+
 ## Boundaries
 
 | Domain                | Port boundary                                                                                                                                | Default implementation                                                                                                                                                             |

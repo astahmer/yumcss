@@ -15,6 +15,8 @@ import type {
 	StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import { join } from "node:path";
 
 /** Tokenami property aliases that are part of its standard design-system vocabulary. */
 const STANDARD_ALIASES: Readonly<Record<string, string | readonly string[]>> = {
@@ -81,6 +83,68 @@ function tokenamiConfig(context: AdapterConfigContext): AdapterProjectConfig {
 		files: [context.file],
 		values: { tokenamiAliases: readAliases(context) },
 	};
+}
+
+interface TokenamiConfigShape {
+	readonly aliases?: Readonly<Record<string, string | readonly string[]>>;
+	readonly selectors?: Readonly<Record<string, string | readonly string[]>>;
+	readonly responsive?: Readonly<Record<string, string>>;
+}
+
+function configModuleValue(value: unknown): TokenamiConfigShape | undefined {
+	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
+	const candidate = value as Record<string, unknown>;
+	if (
+		candidate.aliases === undefined &&
+		candidate.selectors === undefined &&
+		candidate.responsive === undefined
+	)
+		return undefined;
+	return candidate as TokenamiConfigShape;
+}
+
+async function officialTokenamiConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<AdapterProjectConfig> {
+	const fallback = tokenamiConfig(context);
+	if (context.root === undefined) return fallback;
+	const packageModule = await loader.importPackage<
+		Record<string, unknown> & {
+			createConfig?: (config: TokenamiConfigShape) => unknown;
+		}
+	>("@tokenami/config", context.root);
+	if (packageModule === undefined) return fallback;
+	const candidates = [
+		".tokenami/tokenami.config.ts",
+		".tokenami/tokenami.config.js",
+		".tokenami/tokenami.config.cjs",
+		"tokenami.config.ts",
+		"tokenami.config.js",
+		"tokenami.config.cjs",
+	];
+	for (const candidate of candidates) {
+		const path = join(context.root, candidate);
+		const module = await loader.importFile<Record<string, unknown>>(path);
+		if (module === undefined) continue;
+		const rawValues = [module.default, ...Object.values(module)]
+			.map(configModuleValue)
+			.find((value): value is TokenamiConfigShape => value !== undefined);
+		if (rawValues === undefined) continue;
+		const values = packageModule.createConfig?.(rawValues) ?? rawValues;
+		const normalized = configModuleValue(values) ?? rawValues;
+		return {
+			...fallback,
+			files: [...fallback.files, path],
+			values: {
+				...fallback.values,
+				tokenamiAliases: normalized.aliases ?? STANDARD_ALIASES,
+				tokenamiConfig: normalized,
+				officialConfigPackage: "@tokenami/config",
+			},
+		};
+	}
+	return fallback;
 }
 
 function condition(prefix: string): StyleCondition {
@@ -151,7 +215,10 @@ const sourceOptions: AdapterSourceObjectOptions = {
 };
 
 /** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
-export function createTokenamiAdapter() {
+export function createTokenamiAdapter(
+	options: { readonly moduleLoader?: ProjectModuleLoader } = {},
+) {
+	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Tokenami,
 		packages: {
@@ -178,6 +245,7 @@ export function createTokenamiAdapter() {
 		sourceModules: ["@tokenami/css", "@tokenami/config"],
 		configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
 		loadConfig: tokenamiConfig,
+		loadConfigAsync: (context) => officialTokenamiConfig(context, moduleLoader),
 		sourceObjectOptions: sourceOptions,
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },

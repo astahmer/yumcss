@@ -32,8 +32,13 @@
 		"release:publish": "bash scripts/release/publish-all.sh"
 	},
 	"devDependencies": {
+		"@chakra-ui/react": "3.37.0",
 		"@changesets/changelog-github": "0.5.1",
 		"@changesets/cli": "2.29.7",
+		"@pandacss/config": "1.12.0",
+		"@tokenami/config": "0.0.101",
+		"@unocss/config": "66.8.1",
+		"@unocss/core": "66.8.1",
 		"knip": "^6.32.3",
 		"oxfmt": "0.63.0",
 		"oxlint": "1.78.0",

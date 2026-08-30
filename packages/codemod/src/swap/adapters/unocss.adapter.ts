@@ -15,6 +15,8 @@ import {
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import { isAbsolute, join } from "node:path";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -22,6 +24,7 @@ export interface UnoCssTokenResolver {
 
 export interface UnoCssAdapterOptions {
 	readonly resolver?: UnoCssTokenResolver;
+	readonly moduleLoader?: ProjectModuleLoader;
 }
 
 const unescapeUnoCssSelector = (value: string): string =>
@@ -148,13 +151,96 @@ function config(context: AdapterConfigContext): AdapterProjectConfig {
 	};
 }
 
+type UnoConfigPackage = {
+	loadConfig?: (
+		cwd?: string,
+		configOrPath?: string,
+	) => Promise<{ config?: unknown; sources?: readonly string[] }>;
+};
+
+type UnoCorePackage = {
+	createGenerator?: (config?: unknown) => Promise<{
+		generate(
+			input: readonly string[],
+			options?: { preflights?: boolean; minify?: boolean },
+		): Promise<{
+			css: string;
+		}>;
+	}>;
+};
+
+function staticUnoTokens(source: string): readonly string[] {
+	return [
+		...new Set(
+			[...source.matchAll(/\b(?:className|class)\s*=\s*(["'])([^"']*)\1/g)].flatMap((match) =>
+				(match[2] ?? "").split(/\s+/).filter(Boolean),
+			),
+		),
+	];
+}
+
+async function officialConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<AdapterProjectConfig> {
+	const fallback = config(context);
+	if (context.root === undefined) return fallback;
+	const [configPackage, corePackage] = await Promise.all([
+		loader.importPackage<UnoConfigPackage>("@unocss/config", context.root),
+		loader.importPackage<UnoCorePackage>("@unocss/core", context.root),
+	]);
+	if (configPackage?.loadConfig === undefined || corePackage?.createGenerator === undefined)
+		return fallback;
+	try {
+		const loaded = await configPackage.loadConfig(context.root, context.root);
+		const generator = await corePackage.createGenerator(loaded.config);
+		const generated = await generator.generate(staticUnoTokens(context.source), {
+			preflights: false,
+			minify: true,
+		});
+		return {
+			...fallback,
+			files: [
+				...fallback.files,
+				...(loaded.sources ?? []).map((file) =>
+					isAbsolute(file) ? file : join(context.root!, file),
+				),
+			],
+			values: {
+				...fallback.values,
+				unoConfig: loaded.config,
+				unoResolver: createUnoCssResolverFromCss(generated.css),
+				unoGeneratedCss: generated.css,
+				officialConfigPackages: ["@unocss/config", "@unocss/core"],
+			},
+		};
+	} catch (error) {
+		return {
+			...fallback,
+			values: {
+				...fallback.values,
+				officialConfigError: error instanceof Error ? error.message : String(error),
+			},
+		};
+	}
+}
+
 function parseUnoCss(
 	source: string,
 	context: AdapterParseContext,
 	resolver: UnoCssTokenResolver,
 ): AdapterParseResult {
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
-	const residuals: StyleProgramResidual[] = [];
+	const residuals: StyleProgramResidual[] =
+		typeof context.config.values.officialConfigError === "string"
+			? [
+					{
+						kind: "configuration",
+						text: "UnoCSS project configuration",
+						hint: `official UnoCSS config loading failed: ${context.config.values.officialConfigError}`,
+					},
+				]
+			: [];
 	const excluded = context.document?.isExcluded ?? (() => false);
 	const attribute = /\b(className|class)\s*=\s*(["'])([^"']*)\2/g;
 	for (const match of source.matchAll(attribute)) {
@@ -203,7 +289,10 @@ function parseUnoCss(
 
 /** UnoCSS is class/compiler driven; project presets and shortcuts are resolved through this port. */
 export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAdapter {
-	const resolver = options.resolver ?? { resolve: (token: string) => defaultResolve(token) };
+	const fallbackResolver = options.resolver ?? {
+		resolve: (token: string) => defaultResolve(token),
+	};
+	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.UnoCSS,
@@ -232,7 +321,13 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			};
 		},
 		loadConfig: (context) => config(context),
-		parse: (source, context) => parseUnoCss(source, context, resolver),
+		loadConfigAsync: (context) => officialConfig(context, moduleLoader),
+		parse: (source, context) =>
+			parseUnoCss(
+				source,
+				context,
+				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver,
+			),
 		emit: (program) => ({
 			text: styleProgramToCanonicalCss(program),
 			residuals: [],

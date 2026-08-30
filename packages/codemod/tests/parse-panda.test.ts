@@ -22,6 +22,7 @@ import {
 } from "../src/swap/adapters/panda/index.ts";
 import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/index.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
+import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
 const WEBSITE = `${process.env.HOME}/dev/panda/website`;
 
@@ -458,6 +459,29 @@ describe("loadPandaTheme — fixture config (hermetic)", () => {
 			{ conditions: [], prop: "color", value: "$fg-muted" },
 			{ conditions: ["hover"], prop: "color", value: "$fg-headline" },
 		]);
+	});
+
+	it("prefers Panda's official merged config loader when available", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@pandacss/config"
+					? ({
+							loadConfig: async () => ({
+								config: {
+									theme: {
+										tokens: { colors: { brand: { value: "#123456" } } },
+									},
+								},
+							}),
+						} as never)
+					: undefined;
+			},
+			async importFile() {
+				throw new Error("official loader should win before direct config import");
+			},
+		};
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+		expect(theme.tokenVars.get("brand")).toBe("--colors-brand");
 	});
 });
 

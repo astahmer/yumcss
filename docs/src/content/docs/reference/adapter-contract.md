@@ -22,6 +22,26 @@ Every adapter provides:
   explicit `lossless`, `lossy`, or `unsupported` classification;
 - `capabilities` and `dependencies` — explicit support and installation data.
 
+Adapters that need to evaluate project configuration may additionally expose
+`loadConfigAsync(context)`. It is resolved through the migrated project's root
+and should delegate to the ecosystem's official configuration package. Use the
+async migration entry point for project-aware runs:
+
+```ts
+const result = await runAdapterMigrationAsync(source, {
+	from: "unocss",
+	to: "pandwind",
+	file: "src/App.tsx",
+	root: projectRoot,
+});
+```
+
+The official loader is optional and injectable. Missing packages use the
+adapter's deterministic fallback; an installed loader that cannot evaluate a
+custom configuration produces a structured configuration residual. This keeps
+presets, plugins, merged themes, shortcuts, and generated tokens from being
+silently mistaken for a small handwritten approximation.
+
 The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
 styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,
 Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled, StyleX,

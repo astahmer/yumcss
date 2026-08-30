@@ -3,7 +3,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import {
-	runAdapterMigration,
+	runAdapterMigrationAsync,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
 import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
@@ -33,7 +33,7 @@ export interface StylexDocsLaneReport {
 
 interface StylexDocsMigrationLane {
 	readonly id: StylexDocsLane;
-	migrate(source: string, context: { file: string; root: string }): AdapterMigrationResult;
+	migrate(source: string, context: { file: string; root: string }): Promise<AdapterMigrationResult>;
 }
 
 const execFileAsync = promisify(execFile);
@@ -339,8 +339,8 @@ function rewritePlaygroundTemplates(source: string, lane: StylexDocsLane): strin
 function createLane(id: StylexDocsLane): StylexDocsMigrationLane {
 	return {
 		id,
-		migrate(source, context) {
-			const result = runAdapterMigration(source, {
+		async migrate(source, context) {
+			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.StyleX,
 				to: CodemodAdapterId.Pandwind,
 				file: context.file,
@@ -398,7 +398,7 @@ export class StylexDocsMigration {
 			if (!source.includes("stylex")) continue;
 			sourceFiles++;
 			const file = relative(root, absoluteFile);
-			const result = lane.migrate(source, { file, root });
+			const result = await lane.migrate(source, { file, root });
 			if (result.changed) changedFiles++;
 			converted += result.converted;
 			skipped += result.skipped;

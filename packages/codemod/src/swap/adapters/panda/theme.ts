@@ -20,6 +20,10 @@ import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { matchBlock } from "../../../sources.ts";
 import { parseObjectLiteral, literalToPlain } from "./parse.ts";
+import {
+	NODE_PROJECT_MODULE_LOADER,
+	type ProjectModuleLoader,
+} from "../../project-module-loader.ts";
 
 interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */
@@ -176,9 +180,12 @@ function addDefaultTextStyles(textStyles: Map<string, Record<string, unknown>>):
 type AnyModule = Record<string, unknown>;
 
 interface PandaConfigShape {
-	theme?: { extend?: Record<string, unknown>; tokens?: Record<string, unknown> };
-	conditions?: { extend?: Record<string, unknown> };
-	patterns?: { extend?: Record<string, unknown> };
+	theme?: { extend?: Record<string, unknown>; tokens?: Record<string, unknown> } & Record<
+		string,
+		unknown
+	>;
+	conditions?: { extend?: Record<string, unknown> } & Record<string, unknown>;
+	patterns?: { extend?: Record<string, unknown> } & Record<string, unknown>;
 	default?: PandaConfigShape;
 }
 
@@ -187,11 +194,32 @@ async function importModule(path: string): Promise<AnyModule> {
 }
 
 /** Load semanticTokens/tokens/textStyles from a host panda.config.ts. */
-export async function loadPandaTheme(configPath: string): Promise<PandaTheme> {
+export async function loadPandaTheme(
+	configPath: string,
+	loader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
+): Promise<PandaTheme> {
+	const official = await loadPandaThemeByOfficialPackage(configPath, loader);
+	if (official !== undefined) return official;
 	try {
 		return await loadPandaThemeByImport(configPath);
 	} catch {
 		return loadPandaThemeFromDisk(configPath);
+	}
+}
+
+async function loadPandaThemeByOfficialPackage(
+	configPath: string,
+	loader: ProjectModuleLoader,
+): Promise<PandaTheme | undefined> {
+	const packageModule = await loader.importPackage<{
+		loadConfig?: (options: { cwd: string; file: string }) => Promise<{ config: PandaConfigShape }>;
+	}>("@pandacss/config", dirname(configPath));
+	if (packageModule?.loadConfig === undefined) return undefined;
+	try {
+		const result = await packageModule.loadConfig({ cwd: dirname(configPath), file: configPath });
+		return pandaThemeFromConfig(result.config);
+	} catch {
+		return undefined;
 	}
 }
 
@@ -203,14 +231,20 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	// Panda's theme; otherwise every generated migration silently gets an
 	// empty preset.
 	const unwrapped = config?.default ?? config;
-	const extend = unwrapped?.theme?.extend ?? {};
+	return pandaThemeFromConfig(unwrapped);
+}
+
+function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaTheme {
+	const theme = unwrapped?.theme ?? {};
+	const extend = theme.extend ?? theme;
 	const tokens: Record<string, Record<string, unknown>> = {};
 	collectTokenValues(extend.tokens, tokens);
 	collectTokenValues(extend.semanticTokens, tokens);
 	resolveTokenReferences(tokens);
 	const conditions: Record<string, string | string[]> = {};
-	if (isPlainObject(unwrapped?.conditions?.extend)) {
-		for (const [key, value] of Object.entries(unwrapped.conditions.extend)) {
+	const conditionConfig = unwrapped?.conditions?.extend ?? unwrapped?.conditions;
+	if (isPlainObject(conditionConfig)) {
+		for (const [key, value] of Object.entries(conditionConfig)) {
 			if (typeof value === "string" || Array.isArray(value))
 				conditions[key] = value as string | string[];
 		}
@@ -230,7 +264,7 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	if (isPlainObject(tsSection)) collectTextStyles(tsSection, [], textStyles);
 	addDefaultTextStyles(textStyles);
 	const customPatterns = new Map<string, PandaCustomPattern>();
-	const patternSection = unwrapped?.patterns?.extend;
+	const patternSection = unwrapped?.patterns?.extend ?? unwrapped?.patterns;
 	if (isPlainObject(patternSection)) {
 		for (const [name, raw] of Object.entries(patternSection)) {
 			if (!isPlainObject(raw)) continue;

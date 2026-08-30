@@ -12,6 +12,7 @@ import type {
 	AdapterDependencies,
 	AdapterParseContext,
 	AdapterValidationResult,
+	StyleAdapter,
 } from "./adapter-contract.ts";
 import {
 	styleProgramFromRules,
@@ -131,6 +132,11 @@ export interface AdapterMigrationResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+interface LoadedAdapterConfigs {
+	readonly source: ReturnType<StyleAdapter["loadConfig"]>;
+	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
+}
+
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
 function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
@@ -141,6 +147,56 @@ function isPandwindTarget(adapter: { readonly id: string; readonly system?: stri
 export function runAdapterMigration(
 	source: string,
 	options: AdapterMigrationOptions,
+): AdapterMigrationResult {
+	return runAdapterMigrationInternal(source, options);
+}
+
+/**
+ * Project-aware migration entry point. Official ecosystem packages are
+ * optional: adapters use them when installed in the host project and retain
+ * their deterministic source fallback otherwise.
+ */
+export async function runAdapterMigrationAsync(
+	source: string,
+	options: AdapterMigrationOptions,
+): Promise<AdapterMigrationResult> {
+	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
+	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
+		options.from,
+		options.to,
+	);
+	const readFile =
+		options.readFile ??
+		((file: string) => {
+			try {
+				return readFileSync(file, "utf8");
+			} catch {
+				return undefined;
+			}
+		});
+	const context = {
+		file: options.file,
+		source,
+		root: options.root,
+		packageJson: options.packageJson,
+		readFile,
+	};
+	const detection = route.source.detect(context);
+	if (!detection.matched) return runAdapterMigrationInternal(source, options);
+	const [sourceConfig, targetConfig] = await Promise.all([
+		route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
+		route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
+	]);
+	return runAdapterMigrationInternal(source, options, {
+		source: sourceConfig,
+		target: targetConfig,
+	});
+}
+
+function runAdapterMigrationInternal(
+	source: string,
+	options: AdapterMigrationOptions,
+	loadedConfigs?: LoadedAdapterConfigs,
 ): AdapterMigrationResult {
 	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
@@ -177,20 +233,24 @@ export function runAdapterMigration(
 			residuals: [],
 		};
 	}
-	const config = sourceAdapter.loadConfig({
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile,
-	});
-	const targetConfig = targetAdapter.loadConfig({
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile,
-	});
+	const config =
+		loadedConfigs?.source ??
+		sourceAdapter.loadConfig({
+			file: options.file,
+			source,
+			root: options.root,
+			packageJson: options.packageJson,
+			readFile,
+		});
+	const targetConfig =
+		loadedConfigs?.target ??
+		targetAdapter.loadConfig({
+			file: options.file,
+			source,
+			root: options.root,
+			packageJson: options.packageJson,
+			readFile,
+		});
 	const document = SOURCE_SCANNER_SERVICE.scan({
 		file: options.file,
 		source,
@@ -487,13 +547,7 @@ export function runAdapterMigration(
 			file: options.file,
 			source: emittedForValidation,
 			root: options.root,
-			config: targetAdapter.loadConfig({
-				file: options.file,
-				source: emitted.text,
-				root: options.root,
-				packageJson: options.packageJson,
-				readFile,
-			}),
+			config: targetConfig,
 			readFile,
 			meta: options.meta,
 			document,

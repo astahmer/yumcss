@@ -9,7 +9,7 @@
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readFile, readdir, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigration } from "../packages/codemod/src/swap/index.ts";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "../packages/codemod/src/swap/index.ts";
 import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.ts";
 import { relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
@@ -44,7 +44,7 @@ export interface ChakraDocsMigrationOptions {
 
 interface LaneAdapter {
 	readonly id: ChakraDocsLane;
-	transform(source: string, file: string, root: string): AdapterMigrationResult;
+	transform(source: string, file: string, root: string): Promise<AdapterMigrationResult>;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -144,8 +144,8 @@ function bindMdxRuntime(source: string, lane: ChakraDocsLane): string {
 function createLane(id: ChakraDocsLane): LaneAdapter {
 	return {
 		id,
-		transform(source, file, root) {
-			const result = runAdapterMigration(source, {
+		async transform(source, file, root) {
+			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.ChakraUi,
 				to: CodemodAdapterId.Pandwind,
 				file,
@@ -348,7 +348,7 @@ export class ChakraDocsMigration {
 		for (const absolute of await collectSourceFiles(referenceRoot)) {
 			const source = await readFile(absolute, "utf8");
 			const file = relative(referenceRoot, absolute).replaceAll("\\", "/");
-			const result = adapter.transform(source, file, referenceRoot);
+			const result = await adapter.transform(source, file, referenceRoot);
 			if (!result.changed && result.residuals.length === 0) continue;
 			visitedSourceFiles++;
 			if (result.changed) changedFiles++;

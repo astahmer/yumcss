@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
-	runAdapterMigration,
+	runAdapterMigrationAsync,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
@@ -48,7 +48,10 @@ export interface AstryxDocsLaneReport {
 
 interface AstryxLaneAdapter {
 	readonly lane: AstryxDocsLane;
-	transform(source: string, context: { file: string; root: string }): AdapterMigrationResult;
+	transform(
+		source: string,
+		context: { file: string; root: string },
+	): Promise<AdapterMigrationResult>;
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -177,8 +180,8 @@ function useRuntimeApi(source: string): string {
 function createLaneAdapter(lane: AstryxDocsLane): AstryxLaneAdapter {
 	return {
 		lane,
-		transform(source, context) {
-			const result = runAdapterMigration(source, {
+		async transform(source, context) {
+			const result = await runAdapterMigrationAsync(source, {
 				from: CodemodAdapterId.StyleX,
 				to: CodemodAdapterId.Pandwind,
 				file: context.file,
@@ -303,7 +306,7 @@ export class AstryxDocsMigration {
 			const file = relative(referenceRoot, absoluteFile);
 			if (stylexAdapter?.detect({ file, source, root: referenceRoot }).matched !== true) continue;
 			sourceBytes += Buffer.byteLength(source);
-			const result = adapter.transform(source, { file: absoluteFile, root: referenceRoot });
+			const result = await adapter.transform(source, { file: absoluteFile, root: referenceRoot });
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
 			skippedCallSites += result.skipped;
