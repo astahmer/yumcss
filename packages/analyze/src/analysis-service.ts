@@ -47,11 +47,19 @@ export interface FoldAnalysisDependencies {
 }
 
 class FoldAnalysisService implements FoldAnalysisPort {
+	private readonly analyzer: FileFoldAnalyzerPort;
+	private readonly summary: FoldSummaryPort;
+	private readonly report: FoldReportPort;
+
 	constructor(
-		private readonly analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
-		private readonly summary: FoldSummaryPort = { summarize },
-		private readonly report: FoldReportPort = { format: formatReport },
-	) {}
+		analyzer: FileFoldAnalyzerPort = { analyze: analyzeSource },
+		summary: FoldSummaryPort = { summarize },
+		report: FoldReportPort = { format: formatReport },
+	) {
+		this.analyzer = analyzer;
+		this.summary = summary;
+		this.report = report;
+	}
 
 	analyze(source: string, file: string, options: AnalyzeOptions): FileFoldStats {
 		return this.analyzer.analyze(source, file, options);
@@ -83,17 +91,25 @@ export interface CssBudgetDependencies {
 }
 
 class CssBudgetService implements CssBudgetPort {
+	private readonly evaluator: Pick<CssBudgetEvaluator, "measure">;
+	private readonly renderer: Pick<CssBudgetReportRenderer, "format">;
+	private readonly inspection: CssArtifactInspectionPort;
+
 	constructor(
-		private readonly evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
-		private readonly renderer: Pick<
+		evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
+		renderer: Pick<
 			CssBudgetReportRenderer,
 			"format"
 		> = new CssBudgetReportRenderer(),
-		private readonly inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
+		inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
 			new TailwindCandidateScanner(),
 			new TailwindArtifactCompiler(),
 		),
-	) {}
+	) {
+		this.evaluator = evaluator;
+		this.renderer = renderer;
+		this.inspection = inspection;
+	}
 
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget> {
 		return this.evaluator.measure(options);
