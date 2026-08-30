@@ -81,6 +81,16 @@ test("css group accepts precompiled class strings", () => {
 	expect(css.props(styles.button).className).toBe(styles.button);
 });
 
+test("compiled groups expose the StyleX host interop marker without polluting props", () => {
+	const css = createCss();
+	const styles = css.group({ button: { display: "flex" } });
+	const compiled = styles.button as Record<string, unknown>;
+
+	expect(compiled.$$css).toBe(true);
+	expect(Object.keys(compiled)).not.toContain("$$css");
+	expect(css.props(styles.button).className).toContain(compiled.display);
+});
+
 test("css group function values can be passed directly to props", () => {
 	const css = createCss();
 	const styles = css.group({ item: ((padding: number) => ({ padding })) as any });

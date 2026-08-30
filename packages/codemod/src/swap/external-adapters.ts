@@ -69,7 +69,7 @@ export type AdapterSourceObjectOptions = Pick<
 >;
 export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
-	| ((source: string) => AdapterSourceObjectOptions);
+	| ((source: string, context: AdapterParseContext) => AdapterSourceObjectOptions);
 
 export interface AdapterRenderers {
 	readonly firstKind: (program: StyleProgram) => StyleProgram["rules"][number]["kind"];
@@ -620,7 +620,7 @@ function parseCalls(
 	const residuals: StyleProgramResidual[] = [];
 	const resolvedObjectOptions =
 		typeof sourceObjectOptions === "function"
-			? sourceObjectOptions(context.source)
+			? sourceObjectOptions(context.source, context)
 			: sourceObjectOptions;
 	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 	try {

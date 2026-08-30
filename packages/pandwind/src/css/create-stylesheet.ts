@@ -17,6 +17,7 @@ import {
 	type RuleSerializerPolicy,
 	type StylesheetOrderingPolicy,
 } from "./stylesheet-policies.ts";
+import { normalizeCssValue } from "./value-normalization.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 
@@ -133,15 +134,17 @@ export const createStylesheet = (
 					.filter((part) => part !== emptyCondition)
 					.toSorted(),
 			);
-			const pairId = pairs.concat(orderedKey, style[key]!);
+			const property = key.split("__").at(-1) ?? key;
+			const normalizedValue = normalizeCssValue(property, style[key]! as string | number);
+			const pairId = pairs.concat(orderedKey, normalizedValue);
 			if (cache.has(pairId)) continue;
 
 			const atomic = decoder.decode(preset.conditions, pairId);
-			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
+			const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
 
 			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
-				className: `.${classNameFor(orderedKey, style[key]!)}`,
+				className: `.${classNameFor(orderedKey, normalizedValue)}`,
 			});
 
 			cache.set(pairId, { id: pairId, css, priority: atomic.priority });

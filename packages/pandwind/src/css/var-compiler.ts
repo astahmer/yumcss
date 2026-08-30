@@ -1,5 +1,6 @@
-import { dashCase } from "./hash.ts";
+import { createHashFn, dashCase } from "./hash.ts";
 import type { FlatStyles } from "../lib/utils.ts";
+import { normalizeCssValue } from "./value-normalization.ts";
 
 /**
  * Var-inline compiler for dynamic values.
@@ -24,26 +25,23 @@ export interface VarsOutput {
 	readonly [VARS_ATOMS]?: Array<VarAtom>;
 }
 
-const UNITLESS_PROPERTIES = new Set([
-	"animation-iteration-count", "aspect-ratio", "border-image-outset", "border-image-slice",
-	"border-image-width", "box-flex", "box-flex-group", "box-ordinal-group", "column-count",
-	"columns", "flex", "flex-grow", "flex-shrink", "font-weight", "grid-area", "grid-column",
-	"grid-column-end", "grid-column-start", "grid-row", "grid-row-end", "grid-row-start",
-	"line-clamp", "line-height", "opacity", "order", "orphans", "tab-size", "widows", "z-index",
-	"zoom", "fill-opacity", "flood-opacity", "stop-opacity", "stroke-dasharray", "stroke-dashoffset",
-	"stroke-miterlimit", "stroke-opacity", "stroke-width", "scale",
-]);
-
-const runtimeValue = (property: string, value: string | number): string =>
-	typeof value === "number" && !property.startsWith("--") && !UNITLESS_PROPERTIES.has(property)
-		? `${value}px`
-		: `${value}`;
-
+const runtimeValue = normalizeCssValue;
 export interface VarCompiler {
 	classFor(key: string): string;
 	escapeClass(cls: string): string;
 	encode(flat: FlatStyles): { atoms: Array<VarAtom>; style: Record<string, string> };
 }
+
+const selectorHash = createHashFn(false);
+
+export const isVarSelectorPart = (part: string): boolean =>
+	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
+
+/** Stable, CSS-identifier-safe suffix for named and selector conditions. */
+export const varConditionPart = (part: string): string => {
+	if (part.startsWith("_")) return part.slice(1);
+	return /^[A-Za-z_][\w-]*$/.test(part) ? part : `selector-${selectorHash("selector", part)}`;
+};
 
 class DefaultVarCompiler implements VarCompiler {
 	private readonly conditions: ReadonlySet<string>;
@@ -52,22 +50,18 @@ class DefaultVarCompiler implements VarCompiler {
 		this.conditions = new Set(conditionNames);
 	}
 
-	private isCondition(part: string): boolean {
-		return part.startsWith("_") || this.conditions.has(part);
-	}
-
 	private splitKey(key: string): { conditions: string[]; prop: string } {
 		const parts = key.split("__").filter((part) => part !== "");
 		const first = parts[0]!;
 		const last = parts[parts.length - 1]!;
-		const propertyFirst = parts.length > 1 && !this.isCondition(first) && this.isCondition(last);
+		const propertyFirst =
+			parts.length > 1 &&
+			(this.conditions.has(last) || (!isVarSelectorPart(first) && isVarSelectorPart(last)));
 		const rawProp = propertyFirst ? first : last;
 		const rawConditions = propertyFirst ? parts.slice(1) : parts.slice(0, -1);
 		return {
 			prop: dashCase(rawProp),
-			conditions: rawConditions
-				.map((part) => (part.startsWith("_") ? part.slice(1) : part))
-				.toSorted(),
+			conditions: rawConditions.map(varConditionPart).toSorted(),
 		};
 	}
 
@@ -98,7 +92,8 @@ class DefaultVarCompiler implements VarCompiler {
 		const style: Record<string, string> = {};
 		for (const key of Object.keys(flat).toSorted()) {
 			const raw = flat[key];
-			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "") continue;
+			if (raw === undefined || (typeof raw !== "string" && !Number.isFinite(raw)) || raw === "")
+				continue;
 			const { conditions, prop } = this.splitKey(key);
 			if (!prop) continue;
 			atoms.push({ cls: this.classFor(key), keys: [key] });
@@ -108,6 +103,5 @@ class DefaultVarCompiler implements VarCompiler {
 	}
 }
 
-export const createVarCompiler = (
-	conditionNames?: Iterable<string>,
-): VarCompiler => new DefaultVarCompiler(conditionNames);
+export const createVarCompiler = (conditionNames?: Iterable<string>): VarCompiler =>
+	new DefaultVarCompiler(conditionNames);

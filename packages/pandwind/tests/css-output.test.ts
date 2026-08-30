@@ -103,8 +103,8 @@ test("css gen simple prop", () => {
 		@media (min-width: 640px){.color__sm__yellow{color:yellow}}
 		@media (min-width: 640px){.backgroundColor__sm__red{background-color:red}}
 		._focus___hover__fontSize__xl:focus:hover{font-size:xl}
-		@media (min-width: 768px){._hover__fontSize__md__lg:hover{font-size:lg}}
 		@media (min-width: 640px){._hover__backgroundColor__sm__green:hover{background-color:green}}
+		@media (min-width: 768px){._hover__fontSize__md__lg:hover{font-size:lg}}
 		.\\&\\[data-attr\\=\\'test\\'\\]__color__green[data-attr='test']{color:green}
 		.\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test']:disabled, .\\&\\[data-attr\\=\\'test\\'\\]___disabled__color__purple[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__cyan[data-attr='test']:disabled, .target .\\&\\[data-attr\\=\\'test\\'\\]__\\.target\\ \\&___disabled__color__cyan[data-attr='test'][aria-disabled=true]{color:cyan}
@@ -126,12 +126,26 @@ test("css gen simple prop", () => {
 		@media (min-width: 640px){.\\39 y7qdf{color:yellow}}
 		@media (min-width: 640px){.\\31 u09me2{background-color:red}}
 		.\\31 8j82hb:focus:hover{font-size:xl}
-		@media (min-width: 768px){.\\31 dw8wnh:hover{font-size:lg}}
 		@media (min-width: 640px){.lk2n4:hover{background-color:green}}
+		@media (min-width: 768px){.\\31 dw8wnh:hover{font-size:lg}}
 		.dfl2kn[data-attr='test']{color:green}
 		.\\31 my53z8[data-attr='test']:disabled, .\\31 my53z8[data-attr='test'][aria-disabled=true]{color:purple}
 		.target .\\31 ubbxbh[data-attr='test']:disabled, .target .\\31 ubbxbh[data-attr='test'][aria-disabled=true]{color:cyan}
 		.target .\\31 ujpm8g[data-attr='test']:active, .target .\\31 ujpm8g[data-attr='test'][data-active=true],.target .\\31 ujpm8g[data-attr='test']:disabled, .target .\\31 ujpm8g[data-attr='test'][aria-disabled=true]{color:orange}
 		@media (min-width: 1280px){.target .y9ze62[data-attr='test']:disabled, .target .y9ze62[data-attr='test'][aria-disabled=true]{color:pink}}"
 	`);
+});
+
+test("keeps vendor-prefixed line clamp unitless", () => {
+	const preset = definePreset(
+		{ config: {} as StandardLonghandProperties, tokens: {} },
+		{ strict: true, properties: { $all: true }, conditions: { base: "" } },
+	);
+	const css = createCss<typeof preset>({ debug: true });
+	const output = createStylesheet(preset, { debug: true }).generate([
+		css.raw({ WebkitLineClamp: 2 }),
+	]);
+
+	expect(output).toContain("-webkit-line-clamp:2");
+	expect(output).not.toContain("-webkit-line-clamp:2px");
 });

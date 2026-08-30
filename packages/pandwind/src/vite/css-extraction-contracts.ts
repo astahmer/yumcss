@@ -1,4 +1,5 @@
 import type { OxcNode } from "../tw/literal.ts";
+import type { StyleLiteralScope } from "./style-constants.ts";
 import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
 import type {
 	AnyCssConfig,
@@ -16,7 +17,7 @@ export interface CssSourceProvenance {
 	readonly end: number;
 	readonly line: number;
 	readonly column: number;
-	readonly callKind: "css" | "css.class" | "css.raw" | "pattern";
+	readonly callKind: "css" | "css.class" | "css.raw" | "css.group" | "pattern";
 }
 
 export interface CssCallSite extends CssSourceProvenance {
@@ -78,6 +79,8 @@ export interface CssSourceScanner {
 	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[];
 	findCallSites(code: string, id: string, names: ReadonlySet<string>): readonly CssCallSite[];
 	findVarKeys(code: string, id: string, names: ReadonlySet<string>): readonly string[];
+	/** Proven same-module and imported literal values for static style extraction. */
+	findStyleConstants?(code: string, id: string): StyleLiteralScope;
 }
 
 export interface CssArtifactExtractor {

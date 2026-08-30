@@ -208,6 +208,8 @@ export interface StyleProgramOptions {
 	readonly unwrapNestedObjectKeys?: readonly string[];
 	/** Source systems such as StyleX encode conditional values under a property. */
 	readonly propertyValueConditions?: boolean;
+	/** Optional adapter-owned allow-list for property-value condition keys. */
+	readonly propertyValueConditionNames?: ReadonlySet<string>;
 	/** Adapter-owned variant containers, for example Stitches `variants`. */
 	readonly variantContainerKeys?: readonly string[];
 	/** Source-adapter mappings for computed custom-property keys. */
@@ -764,11 +766,18 @@ function looksLikeCondition(name: string, options: StyleProgramOptions): boolean
 }
 
 function looksLikePropertyValueConditions(
+	name: string,
 	value: SourceNode,
 	body: string,
 	options: StyleProgramOptions,
 ): boolean {
-	if (options.propertyValueConditions !== true || !sourceObject(value)) return false;
+	if (
+		options.propertyValueConditions !== true ||
+		!sourceObject(value) ||
+		(options.propertyValueConditionNames !== undefined &&
+			!options.propertyValueConditionNames.has(name))
+	)
+		return false;
 	const properties = value.properties ?? [];
 	return (
 		properties.length > 0 &&
@@ -1002,7 +1011,7 @@ export function styleProgramFromSourceObject(
 				residuals.push(...referenced.residuals);
 				continue;
 			}
-			if (looksLikePropertyValueConditions(valueNode, body, options)) {
+			if (looksLikePropertyValueConditions(name, valueNode, body, options)) {
 				addConditionalValues(name, valueNode, conditions);
 				continue;
 			}

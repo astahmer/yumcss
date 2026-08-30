@@ -81,7 +81,12 @@ export function createCss(
 		for (const key in style) {
 			css[key] = backend.declare(key, style[key]!);
 		}
-
+		// StyleX-powered host components recognize this marker and can consume
+		// Pandwind's compiled class map through their existing `xstyle` port.
+		// Keep it non-enumerable so Pandwind's own `props()` fast path sees only
+		// declaration classes, while the interop marker remains observable to the
+		// host adapter.
+		Object.defineProperty(css, "$$css", { value: true, enumerable: false });
 		return css;
 	};
 
@@ -252,6 +257,7 @@ interface DynamicReturn {
 interface PropsReturn {
 	style: CssStyle | undefined;
 	className: string | undefined;
+	[key: string]: unknown;
 }
 
 type PropsInput =
