@@ -106,10 +106,11 @@
 			},
 			"css": {
 				"metric": "linked-css",
-				"staticCssDelta": 1114,
-				"runtimeCssDelta": 754,
-				"notLarger": false,
-				"note": "Behavioral proof passes. The app imports unchanged @astryxdesign StyleX packages, so this is not a strict size acceptance claim until the full repository is migrated or atomic reuse is proven."
+				"staticCssDelta": -3253,
+				"runtimeCssDelta": -6824,
+				"designDssDelta": -3253,
+				"notLarger": true,
+				"note": "All three production lanes pass the strict linked-CSS budget. Fixed declarations are compile-time extracted; five host-bound dynamic carriers remain explicit fallbacks with zero unresolved residuals."
 			}
 		}
 	],

@@ -1,34 +1,38 @@
 {
-	"schema": "pandwind.astryx-docs-proof/1",
+	"schema": "pandwind.astryx-docs-proof/2",
 	"lane": "static-css",
 	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
 	"migration": {
-		"sourceFiles": 889,
-		"changedFiles": 76,
-		"convertedCallSites": 69,
-		"skippedCallSites": 1,
-		"residuals": 1,
-		"runtimeFallbackFiles": ["src/app/playground/PreviewStage.tsx"],
-		"staticExtractionRatio": 0.9857142857142858,
-		"staticCssCoverageRatio": 0.9857142857142858,
-		"sourceBytes": 5903804,
-		"outputBytes": 5847288,
-		"outputByteDelta": -56516
+		"sourceFiles": 981,
+		"changedFiles": 85,
+		"convertedCallSites": 79,
+		"skippedCallSites": 7,
+		"residuals": 0,
+		"runtimeFallbackFiles": 5,
+		"staticExtractionRatio": 0.9186046511627907,
+		"staticCssCoverageRatio": 0.9186046511627907,
+		"sourceBytes": 6320580,
+		"outputBytes": 6261316,
+		"outputByteDelta": -59264
 	},
 	"browser": {
 		"comparisons": 24,
 		"allRoutesEquivalent": true,
-		"maxPixelRatio": 0.0058101904116805905,
+		"cssWithinBudget": true,
+		"allAcceptanceCriteriaPassed": true,
+		"maxPixelRatio": 0.005725086984965062,
 		"newErrors": 0,
 		"newFailedResponses": 0,
 		"bodyHeightMismatches": 0,
-		"linkedCssDelta": 1114,
-		"strictCssNotLarger": false,
-		"report": "/tmp/pandwind-astryx-proof/browser-parity-static-v8.json"
+		"linkedCssDelta": -3253,
+		"strictCssNotLarger": true,
+		"report": "/tmp/pandwind-astryx-proof/browser-parity-static-production-final.json"
 	},
-	"residual": {
-		"file": "src/app/playground/PreviewStage.tsx",
-		"kind": "dynamic-values",
-		"hint": "dynamic style binding 'dynamic' has no supported host use"
-	}
+	"dynamicFallbackFiles": [
+		"src/app/playground/PreviewStage.tsx",
+		"../../packages/cli/assets/templates/pages/dashboard-data/page.tsx",
+		"../../packages/cli/assets/templates/pages/kanban-board/page.tsx",
+		"../../packages/cli/assets/templates/pages/settings-dialog/page.tsx",
+		"../../packages/cli/assets/templates/pages/table-filter/page.tsx"
+	]
 }

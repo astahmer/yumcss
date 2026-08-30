@@ -1,30 +1,32 @@
 {
-	"schema": "pandwind.astryx-docs-proof/1",
+	"schema": "pandwind.astryx-docs-proof/2",
 	"lane": "design-dss",
 	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
 	"migration": {
-		"sourceFiles": 889,
-		"changedFiles": 76,
-		"convertedCallSites": 69,
-		"skippedCallSites": 1,
-		"residuals": 1,
-		"runtimeFallbackFiles": ["src/app/playground/PreviewStage.tsx"],
-		"staticExtractionRatio": 0.9857142857142858,
-		"staticCssCoverageRatio": 0.9857142857142858,
-		"sourceBytes": 5903804,
-		"outputBytes": 5856882,
-		"outputByteDelta": -46922
+		"sourceFiles": 981,
+		"changedFiles": 85,
+		"convertedCallSites": 79,
+		"skippedCallSites": 7,
+		"residuals": 0,
+		"runtimeFallbackFiles": 5,
+		"staticExtractionRatio": 0.9186046511627907,
+		"staticCssCoverageRatio": 0.9186046511627907,
+		"sourceBytes": 6320580,
+		"outputBytes": 6271931,
+		"outputByteDelta": -48649
 	},
 	"browser": {
 		"comparisons": 24,
 		"allRoutesEquivalent": true,
+		"cssWithinBudget": true,
+		"allAcceptanceCriteriaPassed": true,
 		"maxPixelRatio": 0.00893182646737149,
 		"newErrors": 0,
 		"newFailedResponses": 0,
 		"bodyHeightMismatches": 0,
-		"linkedCssDelta": 1114,
-		"strictCssNotLarger": false,
-		"report": "/tmp/pandwind-astryx-proof/browser-parity-design-v3.json"
+		"linkedCssDelta": -3253,
+		"strictCssNotLarger": true,
+		"report": "/tmp/pandwind-astryx-proof/browser-parity-design-production-final.json"
 	},
 	"api": "createDesignCss(pandwindPreset)"
 }
