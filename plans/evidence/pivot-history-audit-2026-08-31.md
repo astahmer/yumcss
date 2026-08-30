@@ -20,15 +20,15 @@ parent's history remains reachable through the merge; its content was checked
 against the selected tree and later replacement revisions rather than assumed
 to have been applied automatically.
 
-| Merge commit | Workspace contribution | Conflict | First-parent tree delta | Audit result |
-|--------------|------------------------|----------|-------------------------|--------------|
-| `38fb0efaea0e` | CSS-in-JS overall | no | empty | retained |
-| `25955257bd62` | Effect | no | empty | retained; vendored StyleX source intentionally removed |
-| `d5db4e4dbc18` | Emotion | no | empty | retained; generated/obsolete files classified below |
-| `1137a46b2c1f` | Astryx | no | empty | retained; repeated vendored StyleX cleanup intentional |
-| `b2abc2a58e2b` | codemod | no | empty | retained; inspector code moved to analyze ownership |
-| `b4e8f9ee60d8` | experiment | no | empty | retained |
-| `f04c1901f0ba` | PostHog | no | empty | retained; repeated vendored StyleX cleanup intentional |
+| Merge commit   | Workspace contribution | Conflict | First-parent tree delta | Audit result                                           |
+| -------------- | ---------------------- | -------- | ----------------------- | ------------------------------------------------------ |
+| `38fb0efaea0e` | CSS-in-JS overall      | no       | empty                   | retained                                               |
+| `25955257bd62` | Effect                 | no       | empty                   | retained; vendored StyleX source intentionally removed |
+| `d5db4e4dbc18` | Emotion                | no       | empty                   | retained; generated/obsolete files classified below    |
+| `1137a46b2c1f` | Astryx                 | no       | empty                   | retained; repeated vendored StyleX cleanup intentional |
+| `b2abc2a58e2b` | codemod                | no       | empty                   | retained; inspector code moved to analyze ownership    |
+| `b4e8f9ee60d8` | experiment             | no       | empty                   | retained                                               |
+| `f04c1901f0ba` | PostHog                | no       | empty                   | retained; repeated vendored StyleX cleanup intentional |
 
 ## Workspace-side deletions
 

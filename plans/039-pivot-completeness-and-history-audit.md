@@ -98,15 +98,15 @@ flowchart LR
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Migration representation | Versioned `StyleProgram` plus flat `SwapIR` fast path | Rich semantics are available without making simple migrations expensive. |
-| Extensibility | Versioned ports and explicit registries | A new ecosystem should require one adapter/plugin and conformance tests. |
-| Config loading | Official ecosystem package through an injected loader | Presets, plugins, themes, shortcuts, and generated tokens are not safely recoverable from source text alone. |
-| Dynamic styles | Static extraction first, smallest runtime fallback second | Runtime CSS is a compatibility escape hatch, not the default migration result. |
-| History consolidation | Duplicate/rebase with explicit commit IDs and tree-equality gates | JJ workspace ownership and conflict resolution must not silently drop behavior. |
-| External corpora | Download scripts pinned to repository commit hashes | Reference repositories remain reproducible without vendoring their source. |
-| Validation | Contract, unit, integration, browser, SSR, hydration, and size matrices | CSS equivalence alone does not prove framework or runtime behavior. |
+| Choice                   | Decision                                                                | Rationale                                                                                                    |
+| ------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Migration representation | Versioned `StyleProgram` plus flat `SwapIR` fast path                   | Rich semantics are available without making simple migrations expensive.                                     |
+| Extensibility            | Versioned ports and explicit registries                                 | A new ecosystem should require one adapter/plugin and conformance tests.                                     |
+| Config loading           | Official ecosystem package through an injected loader                   | Presets, plugins, themes, shortcuts, and generated tokens are not safely recoverable from source text alone. |
+| Dynamic styles           | Static extraction first, smallest runtime fallback second               | Runtime CSS is a compatibility escape hatch, not the default migration result.                               |
+| History consolidation    | Duplicate/rebase with explicit commit IDs and tree-equality gates       | JJ workspace ownership and conflict resolution must not silently drop behavior.                              |
+| External corpora         | Download scripts pinned to repository commit hashes                     | Reference repositories remain reproducible without vendoring their source.                                   |
+| Validation               | Contract, unit, integration, browser, SSR, hydration, and size matrices | CSS equivalence alone does not prove framework or runtime behavior.                                          |
 
 ### Architecture
 
@@ -181,13 +181,13 @@ residuals remain usable without requiring side-by-side panes.
 
 ### Common interactions
 
-| Action | Result |
-|--------|--------|
-| Select source adapter | Loads its representative sample and reruns migration. |
-| Select target adapter | Reruns the same route against the selected target contract. |
-| Edit source | Updates output and validation without writing project files. |
-| Inspect residual | Shows the exact semantic gap and suggested next action. |
-| Run repository proof | Materializes the pinned corpus and executes build, browser, SSR, and size gates. |
+| Action                | Result                                                                           |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Select source adapter | Loads its representative sample and reruns migration.                            |
+| Select target adapter | Reruns the same route against the selected target contract.                      |
+| Edit source           | Updates output and validation without writing project files.                     |
+| Inspect residual      | Shows the exact semantic gap and suggested next action.                          |
+| Run repository proof  | Materializes the pinned corpus and executes build, browser, SSR, and size gates. |
 
 ## Data model
 
@@ -283,8 +283,8 @@ erDiagram
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-08-31 | Define completion as a declared, proven support contract rather than literal universal conversion | Arbitrary future plugins and hidden runtime semantics cannot be proven without project evidence. |
-| 2026-08-31 | Audit JJ history before implementing further pivot work | Previous workspace consolidation can silently lose behavior even when the final tree has no conflict markers. |
-| 2026-08-31 | Preserve both `StyleProgram` and flat `SwapIR` | Rich semantics and low-cost common migrations have different performance and complexity requirements. |
+| Date       | Decision                                                                                          | Rationale                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 2026-08-31 | Define completion as a declared, proven support contract rather than literal universal conversion | Arbitrary future plugins and hidden runtime semantics cannot be proven without project evidence.              |
+| 2026-08-31 | Audit JJ history before implementing further pivot work                                           | Previous workspace consolidation can silently lose behavior even when the final tree has no conflict markers. |
+| 2026-08-31 | Preserve both `StyleProgram` and flat `SwapIR`                                                    | Rich semantics and low-cost common migrations have different performance and complexity requirements.         |
