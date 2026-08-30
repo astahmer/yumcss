@@ -30,6 +30,32 @@ Materialize a disposable Gatsby application with:
 pnpm exec tsx scripts/migrate-posthog-docs.ts tw /tmp/pandwind-posthog-docs-tw
 ```
 
+Materialize the untouched baseline with the same pinned checkout:
+
+```sh
+pnpm exec tsx scripts/migrate-posthog-docs.ts baseline /tmp/pandwind-posthog-docs-baseline
+```
+
+After serving the baseline and each built lane, run the exhaustive proof:
+
+```sh
+pnpm exec tsx scripts/verify-posthog-docs.mjs \
+  http://127.0.0.1:4351 \
+  /tmp/pandwind-posthog-docs-baseline/public \
+  http://127.0.0.1:4352 \
+  http://127.0.0.1:4353 \
+  http://127.0.0.1:4354 \
+  examples/posthog-com-migration/reports/browser-parity.json
+```
+
+The verifier derives routes from the baseline's generated HTML instead of
+using a hand-maintained allowlist. It checks every route's status, rendered
+error markers, linked and inline CSS byte totals, then compares deterministic
+desktop screenshots and landmark geometry for the representative routes that
+exist in that build. A candidate fails if it adds CSS, changes a checked
+route, emits a browser error, changes geometry, or changes any screenshot
+pixel.
+
 The materialized app copies the pinned source, injects the generated Pandwind
 modules, adds the Pandwind dependency, and extends `safelist.txt` with the
 static classes emitted by `tw()`. The source checkout remains untouched.
@@ -44,3 +70,8 @@ in the report; they are not silent losses.
 The `css.class` and `design-css` lanes are separate JJ revisions layered after
 the `tw` lane. Each lane is static first; runtime Pandwind is a fallback only for semantics that
 cannot be represented by a static adapter.
+
+The external checkout is deliberately not versioned in JJ. Its exact Git
+commit is pinned in `reference-repos.md`; the migration runner, support
+modules, tests, and proof tooling are the versioned Pandwind artifact. This is
+the same policy used for the other migration corpora.

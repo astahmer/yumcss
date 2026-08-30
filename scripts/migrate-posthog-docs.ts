@@ -126,13 +126,7 @@ async function materialize(
 	mappedTokens: ReadonlySet<string>,
 ): Promise<void> {
 	await rm(outputRoot, { recursive: true, force: true });
-	await cp(referenceRoot, outputRoot, {
-		recursive: true,
-		filter: (source) =>
-			!source.includes("/.git/") &&
-			!source.includes("/node_modules/") &&
-			!source.includes("/.cache/"),
-	});
+	await copyReference(referenceRoot, outputRoot);
 
 	for (const [file, code] of changed) {
 		const target = join(outputRoot, file);
@@ -161,6 +155,17 @@ async function materialize(
 		.toSorted()
 		.filter((token) => !existingSafelist.includes(token));
 	await writeFile(safelist, `${existingSafelist.trimEnd()}\n${additions.join("\n")}\n`);
+}
+
+async function copyReference(referenceRoot: string, outputRoot: string): Promise<void> {
+	await cp(referenceRoot, outputRoot, {
+		recursive: true,
+		filter: (source) =>
+			!source.endsWith("/.git") &&
+			!source.includes("/.git/") &&
+			!source.includes("/node_modules/") &&
+			!source.includes("/.cache/"),
+	});
 }
 
 export class PostHogDocsMigration {
@@ -200,6 +205,16 @@ export class PostHogDocsMigration {
 			sourceFilesCount++;
 			if (result.changed) changedFiles++;
 			convertedCallSites += result.converted;
+			for (const residual of result.unmappedTokens) {
+				const preserved =
+					result.code.includes(residual.token) ||
+					result.code.includes(JSON.stringify(residual.token));
+				if (!preserved) {
+					throw new Error(
+						`migration residual was not preserved: ${residual.file} ${residual.token}`,
+					);
+				}
+			}
 			residuals.push(...result.unmappedTokens);
 			sourceBytes += Buffer.byteLength(source);
 			outputBytes += Buffer.byteLength(result.code);
@@ -231,13 +246,41 @@ export class PostHogDocsMigration {
 			mappedTokens: mappedTokens.size,
 		};
 	}
+
+	/**
+	 * Materialize the untouched checkout used as the browser/CSS baseline.
+	 * Keeping this beside the lane materializer prevents parity runs from
+	 * accidentally comparing a lane with a manually edited or stale baseline.
+	 */
+	static async materializeBaseline(
+		options: Pick<PostHogDocsMigrationOptions, "referenceRoot" | "outputRoot"> = {},
+	): Promise<{ referenceCommit: string; outputRoot: string }> {
+		const referenceRoot = resolve(options.referenceRoot ?? defaultReferenceRoot);
+		const outputRoot = resolve(options.outputRoot ?? join(referenceRoot, ".pandwind-baseline"));
+		const referenceCommit = (
+			await execFileAsync("git", ["-C", referenceRoot, "rev-parse", "HEAD"], { encoding: "utf8" })
+		).stdout.trim();
+		await rm(outputRoot, { recursive: true, force: true });
+		await copyReference(referenceRoot, outputRoot);
+		return { referenceCommit, outputRoot };
+	}
 }
 
 if (process.argv[1]?.endsWith("migrate-posthog-docs.ts")) {
-	const lane = process.argv[2] as PostHogDocsLane | undefined;
+	const lane = process.argv[2] as PostHogDocsLane | "baseline" | undefined;
+	if (lane === "baseline") {
+		console.log(
+			JSON.stringify(
+				await PostHogDocsMigration.materializeBaseline({ outputRoot: process.argv[3] }),
+				null,
+				2,
+			),
+		);
+		process.exit(0);
+	}
 	if (lane === undefined || !PostHogDocsMigration.lanes.includes(lane)) {
 		throw new Error(
-			`usage: tsx scripts/migrate-posthog-docs.ts ${PostHogDocsMigration.lanes.join("|")} [output-root]`,
+			`usage: tsx scripts/migrate-posthog-docs.ts baseline [output-root] | ${PostHogDocsMigration.lanes.join("|")} [output-root]`,
 		);
 	}
 	console.log(
