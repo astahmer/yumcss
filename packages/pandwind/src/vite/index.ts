@@ -104,6 +104,7 @@ function findTwImports(
 	id: string,
 	isTwSource: (source: string) => boolean,
 ): ImportInfo {
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return { localNames: new Set(), sources: [] };
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 	const info: ImportInfo = { localNames: new Set(), sources: [] };
 

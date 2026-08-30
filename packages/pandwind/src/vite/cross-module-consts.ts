@@ -167,6 +167,8 @@ export interface CrossModuleResolver {
 	 * (imports are live for the whole module — no TDZ guard applies).
 	 */
 	importedScope(id: string, program: OxcNode): ConstantScope;
+	/** Compatibility projection for consumers that name the literal payload explicitly. */
+	importedLiteralScope(id: string, program: OxcNode): ConstantScope;
 	/** Drop the cached analysis of one file (HMR invalidation). */
 	invalidate(absPath: string): void;
 }
@@ -232,21 +234,24 @@ export function createCrossModuleConstResolver(
 		return undefined;
 	};
 
-	return {
-		importedScope(id: string, program: OxcNode): ConstantScope {
-			const scope: ConstantScope = new Map();
-			const importerDir = dirname(id);
-			for (const binding of collectImportBindings(program)) {
-				const { localName, source, importedName } = binding;
-				if (bindingIsShadowedOrWritten(program, localName)) continue;
-				const value = resolveValue(source, importerDir, importedName, 0);
-				if (value !== undefined) {
-					const known: KnownConstant = { value, declStart: 0 };
-					scope.set(localName, known);
-				}
+	const importedScope = (id: string, program: OxcNode): ConstantScope => {
+		const scope: ConstantScope = new Map();
+		const importerDir = dirname(id);
+		for (const binding of collectImportBindings(program)) {
+			const { localName, source, importedName } = binding;
+			if (bindingIsShadowedOrWritten(program, localName)) continue;
+			const value = resolveValue(source, importerDir, importedName, 0);
+			if (value !== undefined) {
+				const known: KnownConstant = { value, declStart: 0 };
+				scope.set(localName, known);
 			}
-			return scope;
-		},
+		}
+		return scope;
+	};
+
+	return {
+		importedScope,
+		importedLiteralScope: importedScope,
 		invalidate(absPath: string): void {
 			cache.delete(absPath);
 		},

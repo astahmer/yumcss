@@ -1,8 +1,12 @@
 import { Link, createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { EXAMPLES } from "./lib/examples.ts";
 import { PlaygroundPage } from "./components/PlaygroundPage.tsx";
+import { MigrationLabPage } from "./components/MigrationLabPage.tsx";
 
-const NAV = EXAMPLES.map((example) => ({ path: example.path, label: example.title }));
+const NAV = [
+	{ path: "/migrate", label: "Migration lab" },
+	...EXAMPLES.map((example) => ({ path: example.path, label: example.title })),
+];
 
 function Shell() {
 	return (
@@ -43,14 +47,19 @@ function Shell() {
 
 const rootRoute = createRootRoute({ component: Shell });
 
-export const routeTree = rootRoute.addChildren(
-	EXAMPLES.map((example) =>
+export const routeTree = rootRoute.addChildren([
+	createRoute({
+		getParentRoute: () => rootRoute,
+		path: "/migrate",
+		component: MigrationLabPage,
+	}),
+	...EXAMPLES.map((example) =>
 		createRoute({
 			getParentRoute: () => rootRoute,
 			path: example.path,
 			component: () => <PlaygroundPage def={example} />,
 		}),
 	),
-);
+]);
 
 export const router = createRouter({ routeTree });

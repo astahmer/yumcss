@@ -100,6 +100,8 @@ export interface AdapterEmitContext {
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly subject?: string;
+		readonly subjectAttrs?: string;
+		readonly stableClassName?: string;
 		/** Ask a target to emit a host component instead of a style value. */
 		readonly wrapComponent?: boolean;
 	};
@@ -146,6 +148,14 @@ export interface AdapterRewriteResult {
 export interface AdapterMigrationHooks {
 	prepareDynamic?(context: AdapterDynamicPreparationContext): AdapterDynamicPreparation;
 	rewrite?(context: AdapterRewriteContext): AdapterRewriteResult;
+	targetPolicy?: AdapterTargetMigrationPolicy;
+}
+
+export interface AdapterTargetMigrationPolicy {
+	readonly handlesHostRewrites?: boolean;
+	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;
+	readonly handlesRawTemplate?: (context: { source: string }) => boolean;
+	readonly handlesTemplateFragment?: (program: StyleProgram) => boolean;
 }
 
 export type AdapterLossiness = "lossless" | "lossy" | "unsupported";

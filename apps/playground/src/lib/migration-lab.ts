@@ -25,7 +25,7 @@ export interface MigrationLabResult {
 	readonly residuals: readonly {
 		readonly kind: string;
 		readonly text: string;
-		readonly hint: string;
+		readonly hint?: string;
 	}[];
 	readonly reports: readonly AdapterCapabilityReport[];
 	readonly validations: readonly AdapterValidationResult[];
