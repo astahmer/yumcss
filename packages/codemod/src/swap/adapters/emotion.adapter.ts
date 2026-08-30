@@ -17,6 +17,10 @@ function importedStaticValues(
 	seen = new Set<string>(),
 ): Readonly<Record<string, string>> {
 	const values: Record<string, string> = {};
+	// The browser migration surface has no project filesystem. Keep the
+	// in-memory path deterministic and let the normal expression parser handle
+	// unresolved imports instead of attempting Node path resolution.
+	if (context.root === undefined || context.readFile === undefined) return values;
 	for (const match of text.matchAll(/import\s*\{\s*([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
 		const names =
 			match[1]

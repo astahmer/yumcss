@@ -60,7 +60,11 @@ const card = css({
 const Card = styled.div\`
 	color: red;
 	padding: 1rem;
-\`;`,
+\`;
+
+export function App() {
+	return <Card />;
+}`,
 	[CodemodAdapterId.Emotion]: `import { css } from "@emotion/css";
 
 const card = css({

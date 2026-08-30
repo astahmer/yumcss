@@ -12,6 +12,22 @@ the merged class string, fold verdict (full/partial/runtime) and
 conflict-merge visualization instantly. Per-example routes, URL-hash sharing,
 Monaco + Shiki. Styled with pandwind itself.
 
+## Migration lab
+
+Open `/migrate` in the playground to exercise the same registry-backed
+migration use case used by the codemod. Choose any registered source adapter
+and target adapter, edit the in-memory source document, and inspect the
+rewritten code, target capabilities, canonical validation, dependencies, and
+structured residuals.
+
+The lab deliberately uses the browser entry point
+`pandwind-codemod/swap/browser`: it shares the adapter catalog and semantic
+migration pipeline with the CLI while excluding project filesystem access,
+Tailwind's Node engine, and project-module loading. This makes the playground
+a safe interactive preview, not a second migration implementation. Source
+adapters that need project configuration still report that limitation as a
+residual until a project-aware CLI migration supplies the configuration.
+
 ## `pnpm inspect` — pandwind studio
 
 A local read-only dashboard over the [analyze](#analyze) machinery:

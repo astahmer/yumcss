@@ -170,6 +170,21 @@ function Validation(props: { result: MigrationLabResult }) {
 	);
 }
 
+function Contract(props: { endpoint: MigrationLabEndpoint }) {
+	return (
+		<div className="flex flex-wrap gap-1.5 p-3">
+			{props.endpoint.capabilities.map((capability) => (
+				<span
+					key={capability}
+					className="rounded border border-white/[0.08] bg-white/[0.03] px-1.5 py-0.5 font-mono text-[10.5px] text-zinc-500"
+				>
+					{capability}
+				</span>
+			))}
+		</div>
+	);
+}
+
 function ResultPane(props: {
 	result: ReturnType<typeof MIGRATION_LAB.migrate>;
 	target: MigrationLabEndpoint;
@@ -196,6 +211,9 @@ function ResultPane(props: {
 			</Pane>
 			<Pane label="Canonical validation">
 				<Validation result={props.result} />
+			</Pane>
+			<Pane label={`Target contract · ${props.target.label}`}>
+				<Contract endpoint={props.target} />
 			</Pane>
 		</div>
 	);

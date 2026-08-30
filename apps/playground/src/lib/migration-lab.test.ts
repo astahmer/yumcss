@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { createMigrationLab } from "./migration-lab.ts";
 
 describe("migration lab", () => {
@@ -38,5 +38,13 @@ describe("migration lab", () => {
 			ok: false,
 			message: "unknown source style dialect: not-a-source",
 		});
+	});
+
+	test("keeps every registered sample on the safe migration path", () => {
+		const lab = createMigrationLab();
+		for (const source of lab.sources) {
+			const result = lab.migrate(source.id, CodemodAdapterId.Pandwind, lab.sampleFor(source.id));
+			expect(result.ok, source.id).toBe(true);
+		}
 	});
 });
