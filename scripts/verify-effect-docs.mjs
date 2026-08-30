@@ -177,6 +177,7 @@ const browserSnapshot = async (browser, url, route, options = {}) => {
 			]);
 		await Promise.all([...document.images].map(settle));
 	});
+	await page.evaluate(() => document.fonts?.ready);
 	await new Promise((resolve) => setTimeout(resolve, 100));
 	const snapshot = await page.evaluate(() => {
 		const describe = (selector) => {
@@ -206,7 +207,9 @@ const browserSnapshot = async (browser, url, route, options = {}) => {
 		};
 	});
 	const screenshot =
-		options.javascriptEnabled === false ? null : await page.screenshot({ fullPage: true });
+		options.javascriptEnabled === false
+			? null
+			: await page.screenshot({ animations: "disabled", fullPage: true });
 	await context.close();
 	return {
 		...snapshot,
@@ -215,6 +218,8 @@ const browserSnapshot = async (browser, url, route, options = {}) => {
 		screenshotHash: screenshot ? createHash("sha256").update(screenshot).digest("hex") : null,
 	};
 };
+
+const snapshotReport = ({ screenshot: _screenshot, ...snapshot }) => snapshot;
 
 const compareScreenshots = async (page, baseline, candidate) =>
 	page.evaluate(
@@ -325,11 +330,17 @@ try {
 			: {}),
 	});
 	const comparePage = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-	const visualRoutes = routes
-		.filter((route) =>
-			["/", "/docs/", "/blog/", "/docs/getting-started/installation/", "/docs/v4/"].includes(route),
-		)
-		.slice(0, 5);
+	const visualRoutes = [
+		"/",
+		"/blog/",
+		routes.find((route) => route.startsWith("/docs/v3/")),
+		routes.find((route) => route.startsWith("/docs/v4/")),
+		"/effect-days/",
+		"/community-hub/",
+	].filter(
+		(route, index, selected) =>
+			route !== undefined && routes.includes(route) && selected.indexOf(route) === index,
+	);
 	if (visualRoutes.length === 0) visualRoutes.push(...routes.slice(0, 3));
 	const visual = {};
 	for (const route of visualRoutes) {
@@ -349,12 +360,12 @@ try {
 					snapshots[name].screenshot,
 				);
 			visual[route][viewport.name] = {
-				baseline: snapshots.baseline,
+				baseline: snapshotReport(snapshots.baseline),
 				lanes: Object.fromEntries(
 					["tw", "css", "design"].map((name) => [
 						name,
 						{
-							...snapshots[name],
+							...snapshotReport(snapshots[name]),
 							introducedBrowserErrors: introducedErrors(
 								snapshots.baseline.errors,
 								snapshots[name].errors,
@@ -376,8 +387,10 @@ try {
 				height: 900,
 			});
 		ssr[route] = {
-			baseline: snapshots.baseline,
-			lanes: Object.fromEntries(["tw", "css", "design"].map((name) => [name, snapshots[name]])),
+			baseline: snapshotReport(snapshots.baseline),
+			lanes: Object.fromEntries(
+				["tw", "css", "design"].map((name) => [name, snapshotReport(snapshots[name])]),
+			),
 		};
 	}
 	await browser.close();
