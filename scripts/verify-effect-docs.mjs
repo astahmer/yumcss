@@ -100,20 +100,65 @@ const htmlRoutes = async (root) => {
 const cssStats = async (root) => {
 	let linked = 0;
 	let inline = 0;
+	const files = {};
+	const inlineStyles = [];
+	const inlineStyleFiles = {};
 	const visit = async (directory) => {
 		for (const entry of await readdir(directory, { withFileTypes: true })) {
 			const file = join(directory, entry.name);
 			if (entry.isDirectory()) await visit(file);
-			else if (entry.name.endsWith(".css")) linked += (await readFile(file)).byteLength;
-			else if (entry.name.endsWith(".html")) {
+			else if (entry.name.endsWith(".css")) {
+				const content = await readFile(file);
+				linked += content.byteLength;
+				files[relative(root, file)] = {
+					bytes: content.byteLength,
+					sha256: createHash("sha256").update(content).digest("hex"),
+				};
+			} else if (entry.name.endsWith(".html")) {
 				const html = await readFile(file, "utf8");
-				for (const match of html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g))
-					inline += Buffer.byteLength(match[1]);
+				const chunks = [...html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)].map(
+					(match) => match[1],
+				);
+				for (const chunk of chunks) {
+					inline += Buffer.byteLength(chunk);
+					inlineStyles.push(`${relative(root, file)}\0${chunk}`);
+				}
+				inlineStyleFiles[relative(root, file)] = {
+					bytes: chunks.reduce((total, chunk) => total + Buffer.byteLength(chunk), 0),
+					sha256: createHash("sha256").update(chunks.join("\0")).digest("hex"),
+				};
 			}
 		}
 	};
 	await visit(root);
-	return { linkedCssBytes: linked, inlineStyleBytes: inline, totalCssBytes: linked + inline };
+	return {
+		linkedCssBytes: linked,
+		inlineStyleBytes: inline,
+		totalCssBytes: linked + inline,
+		files,
+		inlineStyleFiles,
+		inlineStylesSha256: createHash("sha256")
+			.update(inlineStyles.toSorted().join("\n"))
+			.digest("hex"),
+	};
+};
+
+const compareCssArtifacts = (baseline, candidate) => {
+	const baselineFiles = baseline.files;
+	const candidateFiles = candidate.files;
+	return {
+		missing: Object.keys(baselineFiles).filter((file) => candidateFiles[file] === undefined),
+		extra: Object.keys(candidateFiles).filter((file) => baselineFiles[file] === undefined),
+		changed: Object.keys(baselineFiles).filter(
+			(file) => candidateFiles[file]?.sha256 !== baselineFiles[file].sha256,
+		),
+		inlineLengthChanged: Object.keys(baseline.inlineStyleFiles).filter(
+			(file) => candidate.inlineStyleFiles[file]?.bytes !== baseline.inlineStyleFiles[file].bytes,
+		),
+		inlineContentChanged: Object.keys(baseline.inlineStyleFiles).filter(
+			(file) => candidate.inlineStyleFiles[file]?.sha256 !== baseline.inlineStyleFiles[file].sha256,
+		),
+	};
 };
 
 const inspectHttp = async (url, routes) => {
@@ -307,17 +352,23 @@ try {
 	const routes = await htmlRoutes(baselineRoot);
 	if (routes.length === 0) throw new Error(`no HTML routes found in ${baselineRoot}`);
 	const servers = { baseline: baselineServer, tw: twServer, css: cssServer, design: designServer };
+	const roots = { baseline: baselineRoot, tw: twRoot, css: cssRoot, design: designRoot };
+	const builtRoutes = {};
+	for (const [name, root] of Object.entries(roots)) builtRoutes[name] = await htmlRoutes(root);
+	const routeDiffs = {};
+	for (const name of ["tw", "css", "design"])
+		routeDiffs[name] = {
+			missing: routes.filter((route) => !builtRoutes[name].includes(route)),
+			extra: builtRoutes[name].filter((route) => !routes.includes(route)),
+		};
 	const http = {};
 	for (const [name, server] of Object.entries(servers))
 		http[name] = await inspectHttp(server.url, routes);
 	const css = {};
-	for (const [name, root] of Object.entries({
-		baseline: baselineRoot,
-		tw: twRoot,
-		css: cssRoot,
-		design: designRoot,
-	}))
-		css[name] = await cssStats(root);
+	for (const [name, root] of Object.entries(roots)) css[name] = await cssStats(root);
+	const cssDiffs = {};
+	for (const name of ["tw", "css", "design"])
+		cssDiffs[name] = compareCssArtifacts(css.baseline, css[name]);
 	const browser = await chromium.launch({
 		headless: true,
 		...(process.env.PW_BROWSER ||
@@ -399,13 +450,21 @@ try {
 		routes,
 		visualRoutes,
 		http,
+		routeDiffs,
 		css,
+		cssDiffs,
 		visual,
 		ssr,
 		pass: ["tw", "css", "design"].every(
 			(name) =>
 				http[name].failures.length === 0 &&
+				routeDiffs[name].missing.length === 0 &&
+				routeDiffs[name].extra.length === 0 &&
 				css[name].totalCssBytes <= css.baseline.totalCssBytes &&
+				cssDiffs[name].missing.length === 0 &&
+				cssDiffs[name].extra.length === 0 &&
+				cssDiffs[name].changed.length === 0 &&
+				cssDiffs[name].inlineLengthChanged.length === 0 &&
 				Object.values(visual).every((route) =>
 					Object.values(route).every(
 						(viewport) =>
@@ -426,12 +485,36 @@ try {
 		await (
 			await import("node:fs/promises")
 		).writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+	const cssSummary = Object.fromEntries(
+		Object.entries(report.css).map(([name, stats]) => [
+			name,
+			{
+				linkedCssBytes: stats.linkedCssBytes,
+				inlineStyleBytes: stats.inlineStyleBytes,
+				totalCssBytes: stats.totalCssBytes,
+			},
+		]),
+	);
+	const cssDiffSummary = Object.fromEntries(
+		Object.entries(report.cssDiffs).map(([name, diff]) => [
+			name,
+			{
+				missing: diff.missing.length,
+				extra: diff.extra.length,
+				changed: diff.changed.length,
+				inlineLengthChanged: diff.inlineLengthChanged.length,
+				inlineContentChanged: diff.inlineContentChanged.length,
+			},
+		]),
+	);
 	console.log(
 		JSON.stringify(
 			{
 				pass: report.pass,
 				routeCount: report.routeCount,
-				css: report.css,
+				css: cssSummary,
+				routeDiffs: report.routeDiffs,
+				cssDiffs: cssDiffSummary,
 				visualRoutes,
 				reportPath,
 			},

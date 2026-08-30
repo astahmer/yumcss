@@ -41,6 +41,7 @@ export interface EffectDocsMigrationReport {
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const defaultReferenceRoot = "/Users/astahmer/.references/effect-ts-website";
+const expectedReferenceCommit = "366419b44eb2bd353cbe3d3e41fa4e8c735e63ee";
 const metadataRoot = resolve(repositoryRoot, "apps/example/src");
 
 async function sourceFiles(root: string): Promise<string[]> {
@@ -191,6 +192,15 @@ function serializeDeclarations(
 	return { body, residual: residual.join(" "), mapped: declarations.length };
 }
 
+function astroLocalStyleClassTokens(source: string): ReadonlySet<string> {
+	const tokens = new Set<string>();
+	for (const match of source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)) {
+		for (const selector of match[1].matchAll(/(?:^|[^\w-])\.([A-Za-z_][\w-]*)/g))
+			tokens.add(selector[1]);
+	}
+	return tokens;
+}
+
 function applyAstroLane(
 	source: string,
 	file: string,
@@ -202,25 +212,37 @@ function applyAstroLane(
 	const unmappedTokens: TransformResult["unmappedTokens"] = [];
 	let converted = 0;
 	let needsCx = false;
+	const localStyleTokens = astroLocalStyleClassTokens(source);
 	for (const match of astroClassMatches(source)) {
 		const outcome = mapClassList(match.classString, meta);
 		const declarations = serializeDeclarations(match.classString, meta);
 		const isTw = lane === EffectDocsLane.Tw;
-		for (const token of isTw
+		const bridgeResiduals = isTw
 			? outcome.unmapped
 			: tokenizeClassList(declarations.residual).map((raw) => ({
 					raw,
 					reason: "not in generated bridge",
-				})))
-			unmappedTokens.push({ file, token: token.raw, reason: token.reason });
+				}));
+		const localResiduals = tokenizeClassList(match.classString).filter((token) =>
+			localStyleTokens.has(token),
+		);
+		const residualTokens = [
+			...new Set([...bridgeResiduals.map((token) => token.raw), ...localResiduals]),
+		];
+		for (const token of residualTokens) {
+			const bridgeResidual = bridgeResiduals.find((candidate) => candidate.raw === token);
+			unmappedTokens.push({
+				file,
+				token,
+				reason: bridgeResidual?.reason ?? "referenced by local Astro style",
+			});
+		}
 		if (isTw && outcome.mapped.length === 0) continue;
 		if (!isTw && declarations.mapped === 0) continue;
 		const root: ObjectNode = { entries: [] };
 		if (isTw) for (const mapped of outcome.mapped) insertMapped(root, mapped);
 		const api = isTw ? "tw" : lane === EffectDocsLane.Css ? "css" : "dcss";
-		const residual = isTw
-			? outcome.unmapped.map((token) => token.raw).join(" ")
-			: declarations.residual;
+		const residual = residualTokens.join(" ");
 		const styles = isTw
 			? serializeObject(root, "\t")
 			: lane === EffectDocsLane.DesignCss
@@ -421,6 +443,10 @@ async function main(): Promise<void> {
 		"rev-parse",
 		"HEAD",
 	]);
+	if (referenceCommit.trim() !== expectedReferenceCommit)
+		throw new Error(
+			`Effect reference drifted: expected ${expectedReferenceCommit}, found ${referenceCommit.trim()}`,
+		);
 	const report: EffectDocsMigrationReport = {
 		lane,
 		referenceCommit: referenceCommit.trim(),
