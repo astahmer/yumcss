@@ -1,13 +1,15 @@
 ---
-title: Codemods — migrate onto pandwind
-description: packages/codemod rewrites raw Tailwind authoring onto the pandwind APIs, driven by your generated metadata.
+title: Codemods — migrate to and from Pandwind
+description: Use the raw-authoring codemod or the adapter-backed swap pipeline to migrate styling systems safely.
 sidebar:
   order: 4
 ---
 
-`packages/codemod` migrates raw Tailwind authoring onto the pandwind APIs. It
-is driven entirely by your project's **generated metadata** (`types.d.ts`,
-`tw.ts`, `bridge.ts`) — never hand-maintained tables.
+`packages/codemod` has two related workflows. The default mode upgrades raw
+Tailwind/class composition onto Pandwind APIs using generated project
+metadata. The `swap` mode routes a source adapter through the semantic IR to a
+target adapter, so migrations are not implemented as one bespoke function for
+each pair.
 
 ```sh
 # analysis only (default): reports what WOULD change
@@ -16,48 +18,130 @@ pnpm codemod "src/**/*.tsx" --to=tw
 # preview exact diffs, then apply
 pnpm codemod "src/**/*.tsx" --to=tw --diff --write
 
-# also migrate away from a source library (repeatable / comma-separated)
-pnpm codemod "src/**/*.tsx" --from=styled-components,stylex,panda --to=css --diff --write
+# migrate away from a source library through the adapter contract
+pnpm codemod swap --from=styled-components --to=css.class \
+  "src/**/*.{ts,tsx}" --diff --write
 ```
 
-## Modes
+Run `--diff` before `--write`. The default is dry-run and safe mode; the
+source remains untouched when the target cannot represent the complete call.
 
-| mode        | what it does                                                                                                                                                                                                                                                                                                                          |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--to=tw`   | static class strings → typed `tw({...})` objects (variants become nesting; overloaded utilities disambiguated via the generated conflict map — `text-gray-900` → `textColor`, `text-lg` → `textSize`). Unmappable tokens (arbitrary values, important modifiers, unknowns) stay verbatim via a wrapping `cx(...)` so nothing is lost. |
-| `--to=cx`   | `clsx` / `classnames` / `classcat` / `tailwind-merge` imports and calls → pandwind `cx`. Collapses the common `const cn = (...a) => twMerge(clsx(a))` wrapper automatically.                                                                                                                                                          |
-| `--to=css`  | bridge-mappable static strings → `css.class({...})` with **exact resolved declarations** from the preset-scoped bridge (requires an existing `css` binding in the file).                                                                                                                                                              |
-| `--to=keep` | analysis only: per-file counts of mappable vs verbatim tokens, zero edits.                                                                                                                                                                                                                                                            |
+## Default metadata-driven modes
 
-## Source libraries (`--from=`)
+The default workflow is driven by the project's generated `types.d.ts`,
+`tw.ts`, and `bridge.ts` rather than hand-maintained mappings.
 
-Detectors that rewrite other styling libraries onto pandwind APIs BEFORE the
-mode pass runs. Off by default.
+| mode        | behavior                                                                                                                          |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `--to=tw`   | static class strings → typed `tw({...})` objects; variants become nesting and overloaded utilities use the generated conflict map |
+| `--to=cx`   | `clsx`, `classnames`, `classcat`, and `tailwind-merge` composition → Pandwind `cx()`                                              |
+| `--to=css`  | bridge-mappable static strings → `css.class({...})` with resolved declarations                                                    |
+| `--to=keep` | analysis only: counts mappable, unmappable, and verbatim tokens                                                                   |
 
-| source              | what it converts                                                                                                                                                                                                                                                                                  | flagged (not converted)                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `styled-components` | `styled.tag\`...\``with only flat literal declarations →`tw({...})`when the bridge maps every declaration to typed keys, else`css.class({...})`. JSX usages are rewritten to the intrinsic tag with `className={Name}`(static classNames merge via`cx`). The styled-components import is removed. | interpolated templates, nested selectors/media queries, `styled(<Component>)` inheritance |
-| `stylex`            | `stylex.create({ name: { literalProps } })` → plain object of `css.class({...})` values; `stylex.props(a, b)` → `cx(a, b)`. The stylex import is removed.                                                                                                                                         | pseudo/`:hover`, media queries, non-literal values                                        |
-| `panda`             | `css({ literalProps })` and base-only `cva({...})` → `css.class({...})` (keys must be known CSS properties).                                                                                                                                                                                      | panda shorthands (`bg`, `p`, ...), `tokens.*` references, spreads, `cva` with variants    |
+Unknown utilities, arbitrary values, important modifiers, and dynamic class
+construction remain verbatim or are wrapped in `cx()` so the codemod never
+silently loses a class.
 
-All three require an existing pandwind `css()` binding in the file (same rule
-as `--to=css`) — the codemod never invents an import for your app's css
-factory.
+## Adapter-backed swaps
 
-## Safety rails
+The built-in registry contains independently owned implementations for these
+source families:
 
-- dry-run by default; `--diff` shows changes; `--write` applies.
-- idempotent — running twice reports 0 changes.
-- opt-out marker per call site:
-  ```ts
-  // pandwind:migrate-skip
-  <div className="p-4" />
-  ```
-- negative utilities and anything outside the generated metadata stay
-  verbatim rather than guessing.
+| source family                                                                                                                                 | target examples                                          | adapter-owned behavior                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `emotion`, `styled-components`, `linaria`, `jss`, `fela`, `goober`, `aphrodite`, `treat`, `compiled`, `style9`, `stitches`, `vanilla-extract` | `css.class`, `design`, external targets where registered | static declarations, templates, rule-level constructs, runtime/config capabilities, and residuals |
+| `panda`, `chakra-ui`, `mui`, `mantine`, `next-yak`, `bamboo`                                                                                  | Pandwind CSS/design targets                              | source config, token/theme semantics, host props, recipes/patterns, and component rewrites        |
+| `stylex`, `solid-styled`, `vue-styled`, `react-native`                                                                                        | compatible Pandwind target lanes                         | host/framework semantics and runtime carriers where static extraction is not safe                 |
 
-## Flags
+```sh
+pnpm codemod swap --from=emotion --to=css.class --safe --diff \
+  "src/**/*.{js,jsx,ts,tsx}"
+pnpm codemod swap --from=stylex --to=css.class --safe --diff \
+  "src/**/*.{js,jsx,ts,tsx}"
+pnpm codemod swap --from=chakra-ui --to=css.class --diff \
+  "src/**/*.{ts,tsx}"
+```
 
-- `--meta=<dir>` — where the codegen outputs live (default `apps/example/src`).
-- `--skip-marker=<text>` — override the opt-out marker.
-- `--report` — print a migration-completeness report after the pass.
+The target adapter creates or consolidates its Pandwind binding as needed.
+Source component imports are preserved when a host rewrite still depends on
+them. Third-party packages can provide one adapter, a plugin, or an adapter
+collection through the explicit manifest/discovery contract described in [the
+adapter contract](/reference/adapter-contract/).
+
+## Pandwind API swaps
+
+The same pipeline supports `tw`, `css.class`, `design`, `tailwind`, `panda`,
+and `stylex` target dialects:
+
+```sh
+pnpm codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
+pnpm codemod swap --from=design --to=tw "src/**/*.tsx" --diff --write
+pnpm codemod swap --from=css --to=tailwind "src/**/*.tsx" --diff --write
+```
+
+Literal declarations use the flat `SwapIR` fast path. Rich rules use the
+versioned semantic `StyleProgram`, preserving conditions, selectors, rule
+ordering, dynamic metadata, and provenance.
+
+Panda project migration is the staged variant of this workflow:
+
+```sh
+pnpm exec pandwind-codemod swap --from=panda --to=css.class \
+  --out=pandwind --diff --report \
+  'src/**/*.{ts,tsx}'
+```
+
+It owns project discovery, config/theme loading, shared scanning, recipe and
+pattern extraction, semantic conversion, module emission, rewrite
+application, and validation. Representable recipes and patterns are emitted
+as target modules; unsupported plugin or runtime behavior remains explicit.
+
+## Token formats
+
+The `tokens` subcommand converts through one normalized token-set IR:
+
+```sh
+pnpm codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
+pnpm codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
+pnpm codemod tokens --from=preset --to=panda src/preset.ts
+```
+
+Supported format adapters are DTCG, Tailwind `@theme`, Panda, Pandwind
+presets, Style Dictionary, Figma Tokens, root CSS variables, and StyleX
+export. Adding a format means implementing one source/target adapter; the
+normalized representation is shared.
+
+## Safety rails and reports
+
+- dry-run by default; `--diff` shows changes and `--write` applies them;
+- safe mode rewrites only calls whose required target capabilities are proven;
+- `--partial` permits capabilities explicitly declared as partial;
+- rewrites are idempotent;
+- `// pandwind:migrate-skip` opts out a call site; and
+- `--report` or `--report=json` exposes converted, skipped, and residual sites.
+
+A residual identifies the source range, semantic kind, target capability, and
+suggested action. Common genuine boundaries are runtime interpolations, theme
+callbacks, imperative JSS rule application, styled subjects that need a
+framework host rewrite, and framework-specific plugin behavior. Fix the
+source, add a lowering/host adapter, or preserve the runtime carrier; do not
+delete the marker just to make a report green.
+
+## Reproducible proof
+
+Run `pnpm references:prepare` to materialize the pinned read-only repositories
+used by the real migration corpus. Then run the relevant adapter fixtures and
+the complete workspace matrix:
+
+```sh
+pnpm references:prepare
+pnpm --filter pandwind-codemod test
+pnpm test:all
+pnpm knip
+```
+
+The checked-in reports record repository URL, commit, source path, adapter
+route, target dependencies, canonical CSS evidence, browser/SSR dimensions,
+CSS-size accounting, and residual status. Source-static evidence is not
+promoted to full browser/SSR support until those dimensions are actually
+executed.

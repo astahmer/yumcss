@@ -8,7 +8,8 @@ sidebar:
 This page is the current source of truth for implementation status. Files under
 `plans/` are execution records: they preserve the decisions, experiments, and
 revision history that produced the implementation, but an old unchecked item
-does not override current code or tests.
+does not override current code or tests. The user-facing translation of
+completed waves is in [Shipped plans and evidence](/reference/shipped-plans/).
 
 ## The pivot is implemented
 

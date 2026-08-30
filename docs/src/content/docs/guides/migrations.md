@@ -77,8 +77,9 @@ css.class({ color: "$blue-500", _hover: { color: "$blue-600" } });
 ```
 
 Run token migration first when Panda tokens are the source of truth. Recipes,
-config plugins, runtime interpolation, and generated component selectors need
-fixture validation; do not replace them with guessed literals.
+patterns, globals, config plugins, runtime interpolation, and generated
+component selectors need fixture validation; representable recipes/patterns
+are emitted as target modules, while unsupported behavior remains a residual.
 
 ## StyleX
 
