@@ -34,6 +34,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"chakra-ui": "import { Box } from '@chakra-ui/react'; <Box bg='tomato' />",
 			mui: "import { Box } from '@mui/material'; <Box sx={{ color: 'red' }} />",
 			mantine: "import { Box } from '@mantine/core'; <Box c='red' />",
+			tokenami: "import { css } from '@tokenami/css'; css({ '--color': 'red' })",
+			unocss: '<div className="flex items-center" />',
 		};
 		for (const adapter of createBuiltinCodemodCatalog().adapters) {
 			const id = adapter.id;

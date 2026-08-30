@@ -67,6 +67,7 @@ export type AdapterSourceObjectOptions = Pick<
 	| "emissionHints"
 	| "canonicalization"
 	| "compositions"
+	| "compositionArrayKeys"
 >;
 export type AdapterSourceObjectOptionsProvider =
 	| AdapterSourceObjectOptions
@@ -93,6 +94,8 @@ export interface CodemodAdapterSpec {
 		context: AdapterDetectionContext,
 		fallback: () => AdapterDetectionResult,
 	) => AdapterDetectionResult;
+	readonly loadConfig?: (context: AdapterConfigContext) => AdapterProjectConfig;
+	readonly parse?: (source: string, context: AdapterParseContext) => AdapterParseResult;
 	readonly postprocessEmit?: (
 		emission: Pick<AdapterEmitResult, "text" | "imports">,
 		context: AdapterEmitContext,
@@ -859,8 +862,10 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		detect: (context) =>
 			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??
 			detectBy(spec.detectPatterns, context),
-		loadConfig: (context) => configFor(spec.id, spec.configFiles ?? [], context),
+		loadConfig: (context) =>
+			spec.loadConfig?.(context) ?? configFor(spec.id, spec.configFiles ?? [], context),
 		parse: (source, context) =>
+			spec.parse?.(source, context) ??
 			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),
 		emit: (program, context) => {
 			const renderers: AdapterRenderers = {

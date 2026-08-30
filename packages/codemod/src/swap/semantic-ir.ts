@@ -227,6 +227,8 @@ export interface StyleProgramOptions {
 	readonly valueTransforms?: Readonly<Record<string, StyleValueTransform>>;
 	/** Adapter-owned array fields that expand into independent semantic rules. */
 	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
+	/** Adapter-owned arrays whose entries are composition references. */
+	readonly compositionArrayKeys?: readonly string[];
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 	/** Additional provenance entries supplied by an adapter. */
@@ -933,6 +935,27 @@ export function styleProgramFromSourceObject(
 			const valueNode = property.value as SourceNode | undefined;
 			if (valueNode === undefined) {
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
+				continue;
+			}
+			if (
+				options.compositionArrayKeys?.includes(name) === true &&
+				valueNode.type === "ArrayExpression"
+			) {
+				for (const element of valueNode.elements ?? []) {
+					const reference = sourceSlice(body, element).trim();
+					if (reference === "") {
+						addDynamicResidual(
+							sourceSlice(body, element),
+							"composition entries require a source reference",
+						);
+						continue;
+					}
+					compositions.push({
+						kind: StyleProgramCompositionKind.Mixin,
+						reference,
+						source: sourceRange(options.source, options.sourceOffset ?? 0, element),
+					});
+				}
 				continue;
 			}
 			const specialKind = options.arrayRuleKinds?.[name];

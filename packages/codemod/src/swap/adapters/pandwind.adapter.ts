@@ -340,18 +340,20 @@ export default defineCodemodAdapter({
 			(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
 				runtimeStandalone ||
 				functionDynamic);
-		return {
-			text: stitchesVariants
-				? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`
-				: named
+		const expression = stitchesVariants
+			? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`
+			: named
+				? `css.group(${programObject(program)})`
+				: functionDynamic
 					? `css.group(${programObject(program)})`
-					: functionDynamic
-						? `css.group(${programObject(program)})`
-						: runtimeStandalone
-							? `css.class(${programObject(program)})`
-							: dynamic
-								? `css.vars(${programObject(program)})`
-								: `css.class(${programObject(program)})`,
+					: runtimeStandalone
+						? `css.class(${programObject(program)})`
+						: dynamic
+							? `css.vars(${programObject(program)})`
+							: `css.class(${programObject(program)})`;
+		const hostAttribute = program.source?.hostAttribute;
+		return {
+			text: hostAttribute === undefined ? expression : `${hostAttribute}={${expression}}`,
 			...(dynamic || stitchesVariants ? { semantic: program } : {}),
 			imports: stitchesVariants
 				? [

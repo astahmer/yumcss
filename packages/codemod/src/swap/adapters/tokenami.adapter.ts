@@ -1,0 +1,191 @@
+import {
+	allRuleCapabilities,
+	defineCodemodAdapter,
+	type AdapterSourceObjectOptions,
+} from "../external-adapters.ts";
+import type {
+	AdapterConfigContext,
+	AdapterProjectConfig,
+	AdapterParseContext,
+} from "../adapter-contract.ts";
+import type {
+	StyleCondition,
+	StyleDeclaration,
+	StyleProgram,
+	StyleProgramResidual,
+} from "../semantic-ir.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
+
+/** Tokenami property aliases that are part of its standard design-system vocabulary. */
+const STANDARD_ALIASES: Readonly<Record<string, string | readonly string[]>> = {
+	p: "padding",
+	px: "paddingInline",
+	py: "paddingBlock",
+	pt: "paddingTop",
+	pr: "paddingRight",
+	pb: "paddingBottom",
+	pl: "paddingLeft",
+	m: "margin",
+	mx: "marginInline",
+	my: "marginBlock",
+	mt: "marginTop",
+	mr: "marginRight",
+	mb: "marginBottom",
+	ml: "marginLeft",
+	bg: "backgroundColor",
+	c: "color",
+	br: "borderRadius",
+	shadow: "boxShadow",
+	font: "font",
+};
+
+function camelCase(property: string): string {
+	return property.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
+}
+
+function readAliases(
+	context: AdapterConfigContext,
+): Readonly<Record<string, string | readonly string[]>> {
+	const aliases: Record<string, string | readonly string[]> = { ...STANDARD_ALIASES };
+	if (context.readFile === undefined || context.root === undefined) return aliases;
+	const candidates = [
+		".tokenami/tokenami.config.ts",
+		".tokenami/tokenami.config.js",
+		".tokenami/tokenami.config.cjs",
+		"tokenami.config.ts",
+		"tokenami.config.js",
+		"tokenami.config.cjs",
+	];
+	for (const candidate of candidates) {
+		const source = context.readFile(`${context.root}/${candidate}`);
+		if (source === undefined) continue;
+		const block = /\baliases\s*:\s*\{([\s\S]*?)\}/.exec(source)?.[1];
+		if (block === undefined) continue;
+		for (const entry of block.matchAll(
+			/([A-Za-z_$][\w$]*)\s*:\s*(?:\[\s*)?((?:['"][^'"]+['"]\s*,?\s*)+)(?:\])?/g,
+		)) {
+			const name = entry[1];
+			const values = entry[2]?.match(/['"]([^'"]+)['"]/g)?.map((value) => value.slice(1, -1)) ?? [];
+			if (name !== undefined && values !== undefined && values.length > 0)
+				aliases[name] = values.length === 1 ? values[0]! : values;
+		}
+		break;
+	}
+	return aliases;
+}
+
+function tokenamiConfig(context: AdapterConfigContext): AdapterProjectConfig {
+	return {
+		adapter: CodemodAdapterId.Tokenami,
+		root: context.root,
+		files: [context.file],
+		values: { tokenamiAliases: readAliases(context) },
+	};
+}
+
+function condition(prefix: string): StyleCondition {
+	const selector = /^\{([\s\S]+)\}$/.exec(prefix)?.[1];
+	if (selector !== undefined)
+		return { kind: "selector", name: selector, value: selector, raw: prefix };
+	if (/^@media(?:\s|$)/.test(prefix)) return { kind: "media", name: prefix, value: prefix };
+	if (/^@supports(?:\s|$)/.test(prefix)) return { kind: "supports", name: prefix, value: prefix };
+	if (
+		/^(?:hover|active|focus|focus-visible|focus-within|disabled|checked|before|after)$/.test(prefix)
+	)
+		return { kind: "pseudo", name: prefix };
+	return { kind: "named", name: prefix };
+}
+
+function decodeProperty(
+	property: string,
+	aliases: Readonly<Record<string, string | readonly string[]>>,
+): { property: string; conditions: readonly StyleCondition[] } {
+	const encoded = property.startsWith("--") ? property.slice(2) : property;
+	const parts = encoded.split("_").filter(Boolean);
+	const alias = parts.pop() ?? encoded;
+	const mapped = aliases[alias] ?? camelCase(alias);
+	return {
+		property: typeof mapped === "string" ? mapped : (mapped[0] ?? camelCase(alias)),
+		conditions: parts.map(condition),
+	};
+}
+
+function normalizeProgram(program: StyleProgram, context: AdapterParseContext): StyleProgram {
+	const aliases = (context.config.values.tokenamiAliases ?? STANDARD_ALIASES) as Readonly<
+		Record<string, string | readonly string[]>
+	>;
+	const normalize = (declaration: StyleDeclaration): StyleDeclaration => {
+		const decoded = decodeProperty(declaration.property, aliases);
+		return {
+			...declaration,
+			property: decoded.property,
+			conditions: [...decoded.conditions, ...declaration.conditions],
+		};
+	};
+	const rules = program.rules.map((rule) => ({
+		...rule,
+		declarations: rule.declarations.map(normalize),
+		children: rule.children.map((child) => ({
+			...child,
+			declarations: child.declarations.map(normalize),
+		})),
+	}));
+	const residuals: StyleProgramResidual[] = [...program.residuals];
+	for (const composition of program.compositions ?? [])
+		residuals.push({
+			kind: "composition",
+			text: composition.reference,
+			hint: "Tokenami includes require target-side composition lowering",
+		});
+	return {
+		...program,
+		rules,
+		declarations: program.declarations.map(normalize),
+		residuals,
+	};
+}
+
+const sourceOptions: AdapterSourceObjectOptions = {
+	variantContainerKeys: ["variants"],
+	compositionArrayKeys: ["includes"],
+};
+
+/** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
+export default defineCodemodAdapter({
+	id: CodemodAdapterId.Tokenami,
+	packages: {
+		packages: [
+			{ name: "@tokenami/css", kind: "runtime" },
+			{ name: "@tokenami/config", kind: "peer" },
+		],
+	},
+	capabilities: allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
+		"token-values": "exact",
+		"named-conditions": "partial",
+		"pseudo-conditions": "exact",
+		"selector-conditions": "exact",
+		composition: "partial",
+		"theme-context": "partial",
+		"runtime-context": "exact",
+		"framework-semantics": "exact",
+	}),
+	detectPatterns: [
+		/@tokenami\/(?:css|config)/,
+		/\bcss\.compose\s*\(/,
+		/['"]--(?:[A-Za-z_$][\w$-]*)(?:_[^'"]+)?['"]\s*:/,
+	],
+	sourceModules: ["@tokenami/css", "@tokenami/config"],
+	configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
+	loadConfig: tokenamiConfig,
+	sourceObjectOptions: sourceOptions,
+	patterns: [
+		{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
+		{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
+	],
+	emit(program, { programObject }) {
+		return {
+			text: `css(${programObject(program)})`,
+			imports: ['import { css } from "@tokenami/css";'],
+		};
+	},
+});

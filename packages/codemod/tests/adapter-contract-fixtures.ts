@@ -116,4 +116,14 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		file: "mantine.tsx",
 		source: "import { Box } from '@mantine/core'; <Box c='red' />",
 	},
+	{
+		adapter: CodemodAdapterId.Tokenami,
+		file: "tokenami.tsx",
+		source: "import { css } from '@tokenami/css'; css({ '--hover_color': 'red' })",
+	},
+	{
+		adapter: CodemodAdapterId.UnoCSS,
+		file: "unocss.tsx",
+		source: '<div className="flex items-center" />',
+	},
 ];

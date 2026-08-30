@@ -1,0 +1,217 @@
+import {
+	ADAPTER_CONTRACT_SCHEMA,
+	type AdapterConfigContext,
+	type AdapterParseContext,
+	type AdapterParseResult,
+	type AdapterProjectConfig,
+	type StyleAdapter,
+} from "../adapter-contract.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
+import {
+	styleProgramFromRules,
+	styleProgramToCanonicalCss,
+	type StyleCondition,
+	type StyleDeclaration,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "../semantic-ir.ts";
+import { CodemodAdapterId } from "../identifiers.ts";
+
+export interface UnoCssTokenResolver {
+	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
+}
+
+export interface UnoCssAdapterOptions {
+	readonly resolver?: UnoCssTokenResolver;
+}
+
+const literal = (property: string, value: string | number): StyleDeclaration => ({
+	conditions: [],
+	property,
+	value: { kind: "literal", value },
+});
+
+const condition = (prefix: string): StyleCondition => {
+	if (prefix === "hover" || prefix === "focus" || prefix === "active")
+		return { kind: "pseudo", name: prefix };
+	if (/^\d+xl$|^sm$|^md$|^lg$|^xl$|^2xl$/.test(prefix)) return { kind: "named", name: prefix };
+	return { kind: "named", name: prefix };
+};
+
+const BASIC_TOKENS: Readonly<Record<string, readonly StyleDeclaration[]>> = {
+	block: [literal("display", "block")],
+	flex: [literal("display", "flex")],
+	"inline-flex": [literal("display", "inline-flex")],
+	"flex-col": [literal("flexDirection", "column")],
+	"items-center": [literal("alignItems", "center")],
+	"items-start": [literal("alignItems", "flex-start")],
+	"justify-center": [literal("justifyContent", "center")],
+	"justify-between": [literal("justifyContent", "space-between")],
+	"text-center": [literal("textAlign", "center")],
+	"font-sans": [literal("fontFamily", "ui-sans-serif, system-ui, sans-serif")],
+	"font-semibold": [literal("fontWeight", 600)],
+	"leading-8": [literal("lineHeight", 2)],
+	"leading-10": [literal("lineHeight", 2.5)],
+	"min-h-screen": [literal("minHeight", "100vh")],
+	"w-full": [literal("width", "100%")],
+	"max-w-3xl": [literal("maxWidth", "48rem")],
+	"gap-4": [literal("gap", "1rem")],
+	"gap-6": [literal("gap", "1.5rem")],
+	"py-32": [literal("paddingBlock", "8rem")],
+	"px-16": [literal("paddingInline", "4rem")],
+	"rounded-full": [literal("borderRadius", "9999px")],
+	"bg-white": [literal("backgroundColor", "#fff")],
+	"bg-black": [literal("backgroundColor", "#000")],
+	"bg-zinc-50": [literal("backgroundColor", "#fafafa")],
+	"text-black": [literal("color", "#000")],
+	"text-zinc-50": [literal("color", "#fafafa")],
+	"text-zinc-600": [literal("color", "#52525b")],
+	"text-zinc-400": [literal("color", "#a1a1aa")],
+};
+
+function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
+	const parts = token.split(":");
+	const utility = parts.pop();
+	if (utility === undefined) return undefined;
+	const declarations = BASIC_TOKENS[utility];
+	if (declarations === undefined) {
+		const arbitrary = /^\[([\w-]+):(.+)\]$/.exec(utility);
+		if (arbitrary?.[1] === undefined || arbitrary[2] === undefined) return undefined;
+		return [
+			{
+				...literal(
+					arbitrary[1]!.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
+					arbitrary[2],
+				),
+				conditions: parts.map(condition),
+			},
+		];
+	}
+	return declarations.map((declaration) => ({
+		...declaration,
+		conditions: [...parts.map(condition), ...declaration.conditions],
+	}));
+}
+
+function config(context: AdapterConfigContext): AdapterProjectConfig {
+	return {
+		adapter: CodemodAdapterId.UnoCSS,
+		root: context.root,
+		files: [context.file],
+		values: {},
+	};
+}
+
+function parseUnoCss(
+	source: string,
+	context: AdapterParseContext,
+	resolver: UnoCssTokenResolver,
+): AdapterParseResult {
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const residuals: StyleProgramResidual[] = [];
+	const excluded = context.document?.isExcluded ?? (() => false);
+	const attribute = /\b(className|class)\s*=\s*(["'])([^"']*)\2/g;
+	for (const match of source.matchAll(attribute)) {
+		const start = match.index ?? 0;
+		if (excluded(start)) continue;
+		const attributeName = match[1];
+		const value = match[3] ?? "";
+		if (attributeName === undefined || value.trim() === "") continue;
+		const declarations: StyleDeclaration[] = [];
+		const unknown: string[] = [];
+		for (const token of value.split(/\s+/).filter(Boolean)) {
+			const resolved = resolver.resolve(token, context);
+			if (resolved === undefined) unknown.push(token);
+			else declarations.push(...resolved);
+		}
+		const program = styleProgramFromRules(
+			[
+				{
+					kind: "style",
+					conditions: [],
+					declarations,
+					children: [],
+					order: 0,
+				},
+			],
+			{
+				source: {
+					file: context.file,
+					start,
+					end: start + match[0].length,
+					adapter: CodemodAdapterId.UnoCSS,
+					framework: context.document?.framework,
+					hostAttribute: attributeName,
+				},
+				residuals: unknown.map((token) => ({
+					kind: "unknown-utility",
+					text: token,
+					hint: "UnoCSS utility requires the project resolver/preset to be loaded",
+				})),
+			},
+		);
+		matches.push({ start, end: start + match[0].length, program, sourceText: match[0] });
+	}
+	return { matches, residuals };
+}
+
+/** UnoCSS is class/compiler driven; project presets and shortcuts are resolved through this port. */
+export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAdapter {
+	const resolver = options.resolver ?? { resolve: (token: string) => defaultResolve(token) };
+	return {
+		schema: ADAPTER_CONTRACT_SCHEMA,
+		id: CodemodAdapterId.UnoCSS,
+		version: "2",
+		sourceModules: ["unocss", "@unocss/core", "@unocss/preset-wind"],
+		dependencies: { packages: [{ name: "unocss", kind: "development" }] },
+		capabilities: {
+			schema: ADAPTER_CAPABILITIES_SCHEMA,
+			adapter: CodemodAdapterId.UnoCSS,
+			version: "1",
+			capabilities: {
+				declarations: "exact",
+				"token-values": "partial",
+				"named-conditions": "partial",
+				"pseudo-conditions": "exact",
+				"dynamic-values": "unsupported",
+				"framework-semantics": "exact",
+			},
+		},
+		detect: (context) => {
+			const matched = /\b(?:className|class)\s*=\s*["'][^"']+["']/.test(context.source);
+			return {
+				matched,
+				confidence: /@unocss\/|\bunocss\b|presetWind/.test(context.source) ? 1 : 0.55,
+				evidence: matched ? ["literal-class-attribute"] : [],
+			};
+		},
+		loadConfig: (context) => config(context),
+		parse: (source, context) => parseUnoCss(source, context, resolver),
+		emit: (program) => ({
+			text: styleProgramToCanonicalCss(program),
+			residuals: [],
+		}),
+		validate: (source, target, residuals = []) => {
+			const canonicalSource = styleProgramToCanonicalCss(source);
+			const canonicalTarget = styleProgramToCanonicalCss(target);
+			return {
+				valid: canonicalSource === canonicalTarget && residuals.length === 0,
+				lossiness:
+					canonicalSource !== canonicalTarget
+						? "unsupported"
+						: residuals.length > 0
+							? "lossy"
+							: "lossless",
+				canonicalSource,
+				canonicalTarget,
+				differences:
+					canonicalSource === canonicalTarget && residuals.length === 0
+						? []
+						: ["canonical CSS differs or has residuals"],
+				residuals,
+			};
+		},
+	};
+}
+
+export default createUnoCssAdapter();

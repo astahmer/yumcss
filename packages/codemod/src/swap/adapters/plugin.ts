@@ -22,6 +22,8 @@ import styledComponents from "./styled-components.adapter.ts";
 import treat from "./treat.adapter.ts";
 import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
+import tokenami from "./tokenami.adapter.ts";
+import unocss from "./unocss.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
 export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlugin(
@@ -49,5 +51,7 @@ export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlug
 		solidStyled,
 		vueStyled,
 		reactNative,
+		tokenami,
+		unocss,
 	],
 );

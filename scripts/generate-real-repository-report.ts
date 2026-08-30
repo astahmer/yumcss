@@ -65,6 +65,8 @@ const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	"chakra-ui": ["@chakra-ui/react"],
 	mui: ["@mui/system", "@mui/material"],
 	mantine: ["@mantine/core"],
+	tokenami: ["@tokenami/css", "@tokenami/config"],
+	unocss: ["unocss", "@unocss/core"],
 };
 
 function dependencyNames(value: readonly { packages: readonly { name: string }[] }[]): string[] {

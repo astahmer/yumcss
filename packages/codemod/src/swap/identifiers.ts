@@ -30,6 +30,8 @@ export enum CodemodAdapterId {
 	VueStyled = "vue-styled",
 	ReactNative = "react-native",
 	Tailwind = "tailwind",
+	Tokenami = "tokenami",
+	UnoCSS = "unocss",
 }
 
 export enum CodemodPatternId {

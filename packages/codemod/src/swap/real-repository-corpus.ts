@@ -348,6 +348,26 @@ export default styled.div({
 				to: CodemodAdapterId.Pandwind,
 				framework: "react",
 			},
+			{
+				id: "tokenami-nextjs-button",
+				repository: "https://github.com/tokenami/tokenami",
+				clone: "tokenami",
+				commit: "29cf3b97ef14b22421734113f37b7b29e73f35e0",
+				path: "examples/nextjs/src/components/button.tsx",
+				from: CodemodAdapterId.Tokenami,
+				to: CodemodAdapterId.Pandwind,
+				framework: "react",
+			},
+			{
+				id: "unocss-nextjs-page",
+				repository: "https://github.com/unocss/unocss",
+				clone: "unocss",
+				commit: "75103d5e12ec9876069daf6b97a7db1d73428829",
+				path: "examples/next/app/page.tsx",
+				from: CodemodAdapterId.UnoCSS,
+				to: CodemodAdapterId.Pandwind,
+				framework: "react",
+			},
 		],
 	};
 }
