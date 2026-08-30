@@ -944,6 +944,16 @@ export const bridge = {
 		"1rem": "leading-4",
 		"2.25rem": "leading-9",
 	},
+	"-webkit-box-orient": { horizontal: "line-clamp-none", vertical: "line-clamp-1" },
+	"-webkit-line-clamp": {
+		"1": "line-clamp-1",
+		"2": "line-clamp-2",
+		"3": "line-clamp-3",
+		"4": "line-clamp-4",
+		"5": "line-clamp-5",
+		"6": "line-clamp-6",
+		unset: "line-clamp-none",
+	},
 	overflow: {
 		auto: "overflow-auto",
 		clip: "overflow-clip",

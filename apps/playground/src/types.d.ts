@@ -252,7 +252,6 @@ type BlockValue =
 	| "px"
 	| "screen"
 	| "svh"
-	| true
 	| (string & {});
 type InlineValue =
 	| "0"
@@ -340,7 +339,6 @@ type InlineValue =
 	| "sm"
 	| "svw"
 	| "table"
-	| true
 	| "xl"
 	| "xs"
 	| (string & {});
@@ -391,12 +389,11 @@ type FlexValue =
 	| "nowrap"
 	| "row"
 	| "row-reverse"
-	| true
 	| "wrap"
 	| "wrap-reverse"
 	| (string & {});
 type AspectValue = "auto" | "square" | "video" | (string & {});
-type MaxWScreenValue = true | (string & {});
+type MaxWScreenValue = string & {};
 type SizeValue =
 	| "0"
 	| "0.5"
@@ -969,79 +966,6 @@ type MaxInlineValue =
 	| "xl"
 	| "xs"
 	| (string & {});
-type MinBlockValue =
-	| "0"
-	| "0.5"
-	| "1"
-	| "1.5"
-	| "1/12"
-	| "1/2"
-	| "1/3"
-	| "1/4"
-	| "1/5"
-	| "1/6"
-	| "10"
-	| "10/12"
-	| "11"
-	| "11/12"
-	| "12"
-	| "14"
-	| "16"
-	| "2"
-	| "2.5"
-	| "2/12"
-	| "2/3"
-	| "2/4"
-	| "2/5"
-	| "2/6"
-	| "20"
-	| "24"
-	| "28"
-	| "3"
-	| "3.5"
-	| "3/12"
-	| "3/4"
-	| "3/5"
-	| "3/6"
-	| "32"
-	| "36"
-	| "4"
-	| "4/12"
-	| "4/5"
-	| "4/6"
-	| "40"
-	| "44"
-	| "48"
-	| "5"
-	| "5/12"
-	| "5/6"
-	| "52"
-	| "56"
-	| "6"
-	| "6/12"
-	| "60"
-	| "64"
-	| "7"
-	| "7/12"
-	| "72"
-	| "8"
-	| "8/12"
-	| "80"
-	| "9"
-	| "9/12"
-	| "96"
-	| "auto"
-	| "dvh"
-	| "fit"
-	| "full"
-	| "lh"
-	| "lvh"
-	| "max"
-	| "min"
-	| "px"
-	| "screen"
-	| "svh"
-	| (string & {});
 type MaxBlockValue =
 	| "0"
 	| "0.5"
@@ -1115,7 +1039,7 @@ type MaxBlockValue =
 	| "screen"
 	| "svh"
 	| (string & {});
-type ShrinkValue = "0" | true | (string & {});
+type ShrinkValue = "0" | (string & {});
 type BasisValue =
 	| "0"
 	| "0.5"
@@ -1432,7 +1356,6 @@ type TransformValue =
 	| "gpu"
 	| "none"
 	| "stroke"
-	| true
 	| "view"
 	| (string & {});
 type ZoomValue =
@@ -2481,621 +2404,617 @@ type RoundedValue =
 	| "xl"
 	| "xs"
 	| (string & {});
-type BorderValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "2"
-			| "4"
-			| "8"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "collapse"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "dashed"
-			| "dotted"
-			| "double"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "hidden"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "none"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "separate"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "solid"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
-type BorderXValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "2"
-			| "4"
-			| "8"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
-type DivideXValue = "0" | "2" | "4" | "8" | "reverse" | true | (string & {});
+type BorderValue = WithOpacityModifiers<
+	| "0"
+	| "2"
+	| "4"
+	| "8"
+	| "amber-100"
+	| "amber-200"
+	| "amber-300"
+	| "amber-400"
+	| "amber-50"
+	| "amber-500"
+	| "amber-600"
+	| "amber-700"
+	| "amber-800"
+	| "amber-900"
+	| "amber-950"
+	| "black"
+	| "blue-100"
+	| "blue-200"
+	| "blue-300"
+	| "blue-400"
+	| "blue-50"
+	| "blue-500"
+	| "blue-600"
+	| "blue-700"
+	| "blue-800"
+	| "blue-900"
+	| "blue-950"
+	| "collapse"
+	| "current"
+	| "cyan-100"
+	| "cyan-200"
+	| "cyan-300"
+	| "cyan-400"
+	| "cyan-50"
+	| "cyan-500"
+	| "cyan-600"
+	| "cyan-700"
+	| "cyan-800"
+	| "cyan-900"
+	| "cyan-950"
+	| "dashed"
+	| "dotted"
+	| "double"
+	| "emerald-100"
+	| "emerald-200"
+	| "emerald-300"
+	| "emerald-400"
+	| "emerald-50"
+	| "emerald-500"
+	| "emerald-600"
+	| "emerald-700"
+	| "emerald-800"
+	| "emerald-900"
+	| "emerald-950"
+	| "error"
+	| "fuchsia-100"
+	| "fuchsia-200"
+	| "fuchsia-300"
+	| "fuchsia-400"
+	| "fuchsia-50"
+	| "fuchsia-500"
+	| "fuchsia-600"
+	| "fuchsia-700"
+	| "fuchsia-800"
+	| "fuchsia-900"
+	| "fuchsia-950"
+	| "gray-100"
+	| "gray-200"
+	| "gray-300"
+	| "gray-400"
+	| "gray-50"
+	| "gray-500"
+	| "gray-600"
+	| "gray-700"
+	| "gray-800"
+	| "gray-900"
+	| "gray-950"
+	| "green-100"
+	| "green-200"
+	| "green-300"
+	| "green-400"
+	| "green-50"
+	| "green-500"
+	| "green-600"
+	| "green-700"
+	| "green-800"
+	| "green-900"
+	| "green-950"
+	| "hidden"
+	| "indigo-100"
+	| "indigo-200"
+	| "indigo-300"
+	| "indigo-400"
+	| "indigo-50"
+	| "indigo-500"
+	| "indigo-600"
+	| "indigo-700"
+	| "indigo-800"
+	| "indigo-900"
+	| "indigo-950"
+	| "inherit"
+	| "lime-100"
+	| "lime-200"
+	| "lime-300"
+	| "lime-400"
+	| "lime-50"
+	| "lime-500"
+	| "lime-600"
+	| "lime-700"
+	| "lime-800"
+	| "lime-900"
+	| "lime-950"
+	| "mauve-100"
+	| "mauve-200"
+	| "mauve-300"
+	| "mauve-400"
+	| "mauve-50"
+	| "mauve-500"
+	| "mauve-600"
+	| "mauve-700"
+	| "mauve-800"
+	| "mauve-900"
+	| "mauve-950"
+	| "mist-100"
+	| "mist-200"
+	| "mist-300"
+	| "mist-400"
+	| "mist-50"
+	| "mist-500"
+	| "mist-600"
+	| "mist-700"
+	| "mist-800"
+	| "mist-900"
+	| "mist-950"
+	| "neutral-100"
+	| "neutral-200"
+	| "neutral-300"
+	| "neutral-400"
+	| "neutral-50"
+	| "neutral-500"
+	| "neutral-600"
+	| "neutral-700"
+	| "neutral-800"
+	| "neutral-900"
+	| "neutral-950"
+	| "none"
+	| "olive-100"
+	| "olive-200"
+	| "olive-300"
+	| "olive-400"
+	| "olive-50"
+	| "olive-500"
+	| "olive-600"
+	| "olive-700"
+	| "olive-800"
+	| "olive-900"
+	| "olive-950"
+	| "orange-100"
+	| "orange-200"
+	| "orange-300"
+	| "orange-400"
+	| "orange-50"
+	| "orange-500"
+	| "orange-600"
+	| "orange-700"
+	| "orange-800"
+	| "orange-900"
+	| "orange-950"
+	| "pink-100"
+	| "pink-200"
+	| "pink-300"
+	| "pink-400"
+	| "pink-50"
+	| "pink-500"
+	| "pink-600"
+	| "pink-700"
+	| "pink-800"
+	| "pink-900"
+	| "pink-950"
+	| "purple-100"
+	| "purple-200"
+	| "purple-300"
+	| "purple-400"
+	| "purple-50"
+	| "purple-500"
+	| "purple-600"
+	| "purple-700"
+	| "purple-800"
+	| "purple-900"
+	| "purple-950"
+	| "red-100"
+	| "red-200"
+	| "red-300"
+	| "red-400"
+	| "red-50"
+	| "red-500"
+	| "red-600"
+	| "red-700"
+	| "red-800"
+	| "red-900"
+	| "red-950"
+	| "rose-100"
+	| "rose-200"
+	| "rose-300"
+	| "rose-400"
+	| "rose-50"
+	| "rose-500"
+	| "rose-600"
+	| "rose-700"
+	| "rose-800"
+	| "rose-900"
+	| "rose-950"
+	| "separate"
+	| "sky-100"
+	| "sky-200"
+	| "sky-300"
+	| "sky-400"
+	| "sky-50"
+	| "sky-500"
+	| "sky-600"
+	| "sky-700"
+	| "sky-800"
+	| "sky-900"
+	| "sky-950"
+	| "slate-100"
+	| "slate-200"
+	| "slate-300"
+	| "slate-400"
+	| "slate-50"
+	| "slate-500"
+	| "slate-600"
+	| "slate-700"
+	| "slate-800"
+	| "slate-900"
+	| "slate-950"
+	| "solid"
+	| "stone-100"
+	| "stone-200"
+	| "stone-300"
+	| "stone-400"
+	| "stone-50"
+	| "stone-500"
+	| "stone-600"
+	| "stone-700"
+	| "stone-800"
+	| "stone-900"
+	| "stone-950"
+	| "success"
+	| "surface"
+	| "taupe-100"
+	| "taupe-200"
+	| "taupe-300"
+	| "taupe-400"
+	| "taupe-50"
+	| "taupe-500"
+	| "taupe-600"
+	| "taupe-700"
+	| "taupe-800"
+	| "taupe-900"
+	| "taupe-950"
+	| "teal-100"
+	| "teal-200"
+	| "teal-300"
+	| "teal-400"
+	| "teal-50"
+	| "teal-500"
+	| "teal-600"
+	| "teal-700"
+	| "teal-800"
+	| "teal-900"
+	| "teal-950"
+	| "transparent"
+	| "violet-100"
+	| "violet-200"
+	| "violet-300"
+	| "violet-400"
+	| "violet-50"
+	| "violet-500"
+	| "violet-600"
+	| "violet-700"
+	| "violet-800"
+	| "violet-900"
+	| "violet-950"
+	| "white"
+	| "yellow-100"
+	| "yellow-200"
+	| "yellow-300"
+	| "yellow-400"
+	| "yellow-50"
+	| "yellow-500"
+	| "yellow-600"
+	| "yellow-700"
+	| "yellow-800"
+	| "yellow-900"
+	| "yellow-950"
+	| "zinc-100"
+	| "zinc-200"
+	| "zinc-300"
+	| "zinc-400"
+	| "zinc-50"
+	| "zinc-500"
+	| "zinc-600"
+	| "zinc-700"
+	| "zinc-800"
+	| "zinc-900"
+	| "zinc-950"
+	| (string & {})
+>;
+type BorderXValue = WithOpacityModifiers<
+	| "0"
+	| "2"
+	| "4"
+	| "8"
+	| "amber-100"
+	| "amber-200"
+	| "amber-300"
+	| "amber-400"
+	| "amber-50"
+	| "amber-500"
+	| "amber-600"
+	| "amber-700"
+	| "amber-800"
+	| "amber-900"
+	| "amber-950"
+	| "black"
+	| "blue-100"
+	| "blue-200"
+	| "blue-300"
+	| "blue-400"
+	| "blue-50"
+	| "blue-500"
+	| "blue-600"
+	| "blue-700"
+	| "blue-800"
+	| "blue-900"
+	| "blue-950"
+	| "current"
+	| "cyan-100"
+	| "cyan-200"
+	| "cyan-300"
+	| "cyan-400"
+	| "cyan-50"
+	| "cyan-500"
+	| "cyan-600"
+	| "cyan-700"
+	| "cyan-800"
+	| "cyan-900"
+	| "cyan-950"
+	| "emerald-100"
+	| "emerald-200"
+	| "emerald-300"
+	| "emerald-400"
+	| "emerald-50"
+	| "emerald-500"
+	| "emerald-600"
+	| "emerald-700"
+	| "emerald-800"
+	| "emerald-900"
+	| "emerald-950"
+	| "error"
+	| "fuchsia-100"
+	| "fuchsia-200"
+	| "fuchsia-300"
+	| "fuchsia-400"
+	| "fuchsia-50"
+	| "fuchsia-500"
+	| "fuchsia-600"
+	| "fuchsia-700"
+	| "fuchsia-800"
+	| "fuchsia-900"
+	| "fuchsia-950"
+	| "gray-100"
+	| "gray-200"
+	| "gray-300"
+	| "gray-400"
+	| "gray-50"
+	| "gray-500"
+	| "gray-600"
+	| "gray-700"
+	| "gray-800"
+	| "gray-900"
+	| "gray-950"
+	| "green-100"
+	| "green-200"
+	| "green-300"
+	| "green-400"
+	| "green-50"
+	| "green-500"
+	| "green-600"
+	| "green-700"
+	| "green-800"
+	| "green-900"
+	| "green-950"
+	| "indigo-100"
+	| "indigo-200"
+	| "indigo-300"
+	| "indigo-400"
+	| "indigo-50"
+	| "indigo-500"
+	| "indigo-600"
+	| "indigo-700"
+	| "indigo-800"
+	| "indigo-900"
+	| "indigo-950"
+	| "inherit"
+	| "lime-100"
+	| "lime-200"
+	| "lime-300"
+	| "lime-400"
+	| "lime-50"
+	| "lime-500"
+	| "lime-600"
+	| "lime-700"
+	| "lime-800"
+	| "lime-900"
+	| "lime-950"
+	| "mauve-100"
+	| "mauve-200"
+	| "mauve-300"
+	| "mauve-400"
+	| "mauve-50"
+	| "mauve-500"
+	| "mauve-600"
+	| "mauve-700"
+	| "mauve-800"
+	| "mauve-900"
+	| "mauve-950"
+	| "mist-100"
+	| "mist-200"
+	| "mist-300"
+	| "mist-400"
+	| "mist-50"
+	| "mist-500"
+	| "mist-600"
+	| "mist-700"
+	| "mist-800"
+	| "mist-900"
+	| "mist-950"
+	| "neutral-100"
+	| "neutral-200"
+	| "neutral-300"
+	| "neutral-400"
+	| "neutral-50"
+	| "neutral-500"
+	| "neutral-600"
+	| "neutral-700"
+	| "neutral-800"
+	| "neutral-900"
+	| "neutral-950"
+	| "olive-100"
+	| "olive-200"
+	| "olive-300"
+	| "olive-400"
+	| "olive-50"
+	| "olive-500"
+	| "olive-600"
+	| "olive-700"
+	| "olive-800"
+	| "olive-900"
+	| "olive-950"
+	| "orange-100"
+	| "orange-200"
+	| "orange-300"
+	| "orange-400"
+	| "orange-50"
+	| "orange-500"
+	| "orange-600"
+	| "orange-700"
+	| "orange-800"
+	| "orange-900"
+	| "orange-950"
+	| "pink-100"
+	| "pink-200"
+	| "pink-300"
+	| "pink-400"
+	| "pink-50"
+	| "pink-500"
+	| "pink-600"
+	| "pink-700"
+	| "pink-800"
+	| "pink-900"
+	| "pink-950"
+	| "purple-100"
+	| "purple-200"
+	| "purple-300"
+	| "purple-400"
+	| "purple-50"
+	| "purple-500"
+	| "purple-600"
+	| "purple-700"
+	| "purple-800"
+	| "purple-900"
+	| "purple-950"
+	| "red-100"
+	| "red-200"
+	| "red-300"
+	| "red-400"
+	| "red-50"
+	| "red-500"
+	| "red-600"
+	| "red-700"
+	| "red-800"
+	| "red-900"
+	| "red-950"
+	| "rose-100"
+	| "rose-200"
+	| "rose-300"
+	| "rose-400"
+	| "rose-50"
+	| "rose-500"
+	| "rose-600"
+	| "rose-700"
+	| "rose-800"
+	| "rose-900"
+	| "rose-950"
+	| "sky-100"
+	| "sky-200"
+	| "sky-300"
+	| "sky-400"
+	| "sky-50"
+	| "sky-500"
+	| "sky-600"
+	| "sky-700"
+	| "sky-800"
+	| "sky-900"
+	| "sky-950"
+	| "slate-100"
+	| "slate-200"
+	| "slate-300"
+	| "slate-400"
+	| "slate-50"
+	| "slate-500"
+	| "slate-600"
+	| "slate-700"
+	| "slate-800"
+	| "slate-900"
+	| "slate-950"
+	| "stone-100"
+	| "stone-200"
+	| "stone-300"
+	| "stone-400"
+	| "stone-50"
+	| "stone-500"
+	| "stone-600"
+	| "stone-700"
+	| "stone-800"
+	| "stone-900"
+	| "stone-950"
+	| "success"
+	| "surface"
+	| "taupe-100"
+	| "taupe-200"
+	| "taupe-300"
+	| "taupe-400"
+	| "taupe-50"
+	| "taupe-500"
+	| "taupe-600"
+	| "taupe-700"
+	| "taupe-800"
+	| "taupe-900"
+	| "taupe-950"
+	| "teal-100"
+	| "teal-200"
+	| "teal-300"
+	| "teal-400"
+	| "teal-50"
+	| "teal-500"
+	| "teal-600"
+	| "teal-700"
+	| "teal-800"
+	| "teal-900"
+	| "teal-950"
+	| "transparent"
+	| "violet-100"
+	| "violet-200"
+	| "violet-300"
+	| "violet-400"
+	| "violet-50"
+	| "violet-500"
+	| "violet-600"
+	| "violet-700"
+	| "violet-800"
+	| "violet-900"
+	| "violet-950"
+	| "white"
+	| "yellow-100"
+	| "yellow-200"
+	| "yellow-300"
+	| "yellow-400"
+	| "yellow-50"
+	| "yellow-500"
+	| "yellow-600"
+	| "yellow-700"
+	| "yellow-800"
+	| "yellow-900"
+	| "yellow-950"
+	| "zinc-100"
+	| "zinc-200"
+	| "zinc-300"
+	| "zinc-400"
+	| "zinc-50"
+	| "zinc-500"
+	| "zinc-600"
+	| "zinc-700"
+	| "zinc-800"
+	| "zinc-900"
+	| "zinc-950"
+	| (string & {})
+>;
+type DivideXValue = "0" | "2" | "4" | "8" | "reverse" | (string & {});
 type BgLinearValue = WithOpacityModifiers<
 	| "0"
 	| "120"
@@ -3119,23 +3038,21 @@ type BgLinearValue = WithOpacityModifiers<
 	| "to-tr"
 	| (string & {})
 >;
-type BgConicValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "120"
-			| "150"
-			| "180"
-			| "210"
-			| "240"
-			| "270"
-			| "30"
-			| "300"
-			| "330"
-			| "60"
-			| "90"
-			| (string & {})
-	  >
-	| true;
+type BgConicValue = WithOpacityModifiers<
+	| "0"
+	| "120"
+	| "150"
+	| "180"
+	| "210"
+	| "240"
+	| "270"
+	| "30"
+	| "300"
+	| "330"
+	| "60"
+	| "90"
+	| (string & {})
+>;
 type BgValue = WithOpacityModifiers<
 	| "amber-100"
 	| "amber-200"
@@ -5507,10 +5424,10 @@ type DecorationValue = WithOpacityModifiers<
 type AnimateValue = "bounce" | "none" | "ping" | "pulse" | "spin" | (string & {});
 type BlurValue = "2xl" | "3xl" | "lg" | "md" | "none" | "sm" | "xl" | "xs" | (string & {});
 type ContrastValue = "0" | "100" | "125" | "150" | "200" | "50" | "75" | (string & {});
-type GrayscaleValue = "0" | "100" | "25" | "50" | "75" | true | (string & {});
+type GrayscaleValue = "0" | "100" | "25" | "50" | "75" | (string & {});
 type HueRotateValue = "0" | "15" | "180" | "30" | "60" | "90" | (string & {});
 type SaturateValue = "0" | "100" | "150" | "200" | "50" | (string & {});
-type SepiaValue = "0" | "100" | "50" | true | (string & {});
+type SepiaValue = "0" | "100" | "50" | (string & {});
 type DropShadowValue = WithOpacityModifiers<
 	| "2xl"
 	| "amber-100"
@@ -5847,7 +5764,6 @@ type TransitionValue =
 	| "opacity"
 	| "shadow"
 	| "transform"
-	| true
 	| (string & {});
 type DelayValue = "100" | "1000" | "150" | "200" | "300" | "500" | "700" | "75" | (string & {});
 type DurationValue =
@@ -5931,316 +5847,314 @@ type LeadingValue =
 	| "tight"
 	| (string & {});
 type TrackingValue = "normal" | "tight" | "tighter" | "wide" | "wider" | "widest" | (string & {});
-type OutlineValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "1"
-			| "2"
-			| "4"
-			| "8"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "dashed"
-			| "dotted"
-			| "double"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "hidden"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "none"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "solid"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
+type OutlineValue = WithOpacityModifiers<
+	| "0"
+	| "1"
+	| "2"
+	| "4"
+	| "8"
+	| "amber-100"
+	| "amber-200"
+	| "amber-300"
+	| "amber-400"
+	| "amber-50"
+	| "amber-500"
+	| "amber-600"
+	| "amber-700"
+	| "amber-800"
+	| "amber-900"
+	| "amber-950"
+	| "black"
+	| "blue-100"
+	| "blue-200"
+	| "blue-300"
+	| "blue-400"
+	| "blue-50"
+	| "blue-500"
+	| "blue-600"
+	| "blue-700"
+	| "blue-800"
+	| "blue-900"
+	| "blue-950"
+	| "current"
+	| "cyan-100"
+	| "cyan-200"
+	| "cyan-300"
+	| "cyan-400"
+	| "cyan-50"
+	| "cyan-500"
+	| "cyan-600"
+	| "cyan-700"
+	| "cyan-800"
+	| "cyan-900"
+	| "cyan-950"
+	| "dashed"
+	| "dotted"
+	| "double"
+	| "emerald-100"
+	| "emerald-200"
+	| "emerald-300"
+	| "emerald-400"
+	| "emerald-50"
+	| "emerald-500"
+	| "emerald-600"
+	| "emerald-700"
+	| "emerald-800"
+	| "emerald-900"
+	| "emerald-950"
+	| "error"
+	| "fuchsia-100"
+	| "fuchsia-200"
+	| "fuchsia-300"
+	| "fuchsia-400"
+	| "fuchsia-50"
+	| "fuchsia-500"
+	| "fuchsia-600"
+	| "fuchsia-700"
+	| "fuchsia-800"
+	| "fuchsia-900"
+	| "fuchsia-950"
+	| "gray-100"
+	| "gray-200"
+	| "gray-300"
+	| "gray-400"
+	| "gray-50"
+	| "gray-500"
+	| "gray-600"
+	| "gray-700"
+	| "gray-800"
+	| "gray-900"
+	| "gray-950"
+	| "green-100"
+	| "green-200"
+	| "green-300"
+	| "green-400"
+	| "green-50"
+	| "green-500"
+	| "green-600"
+	| "green-700"
+	| "green-800"
+	| "green-900"
+	| "green-950"
+	| "hidden"
+	| "indigo-100"
+	| "indigo-200"
+	| "indigo-300"
+	| "indigo-400"
+	| "indigo-50"
+	| "indigo-500"
+	| "indigo-600"
+	| "indigo-700"
+	| "indigo-800"
+	| "indigo-900"
+	| "indigo-950"
+	| "inherit"
+	| "lime-100"
+	| "lime-200"
+	| "lime-300"
+	| "lime-400"
+	| "lime-50"
+	| "lime-500"
+	| "lime-600"
+	| "lime-700"
+	| "lime-800"
+	| "lime-900"
+	| "lime-950"
+	| "mauve-100"
+	| "mauve-200"
+	| "mauve-300"
+	| "mauve-400"
+	| "mauve-50"
+	| "mauve-500"
+	| "mauve-600"
+	| "mauve-700"
+	| "mauve-800"
+	| "mauve-900"
+	| "mauve-950"
+	| "mist-100"
+	| "mist-200"
+	| "mist-300"
+	| "mist-400"
+	| "mist-50"
+	| "mist-500"
+	| "mist-600"
+	| "mist-700"
+	| "mist-800"
+	| "mist-900"
+	| "mist-950"
+	| "neutral-100"
+	| "neutral-200"
+	| "neutral-300"
+	| "neutral-400"
+	| "neutral-50"
+	| "neutral-500"
+	| "neutral-600"
+	| "neutral-700"
+	| "neutral-800"
+	| "neutral-900"
+	| "neutral-950"
+	| "none"
+	| "olive-100"
+	| "olive-200"
+	| "olive-300"
+	| "olive-400"
+	| "olive-50"
+	| "olive-500"
+	| "olive-600"
+	| "olive-700"
+	| "olive-800"
+	| "olive-900"
+	| "olive-950"
+	| "orange-100"
+	| "orange-200"
+	| "orange-300"
+	| "orange-400"
+	| "orange-50"
+	| "orange-500"
+	| "orange-600"
+	| "orange-700"
+	| "orange-800"
+	| "orange-900"
+	| "orange-950"
+	| "pink-100"
+	| "pink-200"
+	| "pink-300"
+	| "pink-400"
+	| "pink-50"
+	| "pink-500"
+	| "pink-600"
+	| "pink-700"
+	| "pink-800"
+	| "pink-900"
+	| "pink-950"
+	| "purple-100"
+	| "purple-200"
+	| "purple-300"
+	| "purple-400"
+	| "purple-50"
+	| "purple-500"
+	| "purple-600"
+	| "purple-700"
+	| "purple-800"
+	| "purple-900"
+	| "purple-950"
+	| "red-100"
+	| "red-200"
+	| "red-300"
+	| "red-400"
+	| "red-50"
+	| "red-500"
+	| "red-600"
+	| "red-700"
+	| "red-800"
+	| "red-900"
+	| "red-950"
+	| "rose-100"
+	| "rose-200"
+	| "rose-300"
+	| "rose-400"
+	| "rose-50"
+	| "rose-500"
+	| "rose-600"
+	| "rose-700"
+	| "rose-800"
+	| "rose-900"
+	| "rose-950"
+	| "sky-100"
+	| "sky-200"
+	| "sky-300"
+	| "sky-400"
+	| "sky-50"
+	| "sky-500"
+	| "sky-600"
+	| "sky-700"
+	| "sky-800"
+	| "sky-900"
+	| "sky-950"
+	| "slate-100"
+	| "slate-200"
+	| "slate-300"
+	| "slate-400"
+	| "slate-50"
+	| "slate-500"
+	| "slate-600"
+	| "slate-700"
+	| "slate-800"
+	| "slate-900"
+	| "slate-950"
+	| "solid"
+	| "stone-100"
+	| "stone-200"
+	| "stone-300"
+	| "stone-400"
+	| "stone-50"
+	| "stone-500"
+	| "stone-600"
+	| "stone-700"
+	| "stone-800"
+	| "stone-900"
+	| "stone-950"
+	| "success"
+	| "surface"
+	| "taupe-100"
+	| "taupe-200"
+	| "taupe-300"
+	| "taupe-400"
+	| "taupe-50"
+	| "taupe-500"
+	| "taupe-600"
+	| "taupe-700"
+	| "taupe-800"
+	| "taupe-900"
+	| "taupe-950"
+	| "teal-100"
+	| "teal-200"
+	| "teal-300"
+	| "teal-400"
+	| "teal-50"
+	| "teal-500"
+	| "teal-600"
+	| "teal-700"
+	| "teal-800"
+	| "teal-900"
+	| "teal-950"
+	| "transparent"
+	| "violet-100"
+	| "violet-200"
+	| "violet-300"
+	| "violet-400"
+	| "violet-50"
+	| "violet-500"
+	| "violet-600"
+	| "violet-700"
+	| "violet-800"
+	| "violet-900"
+	| "violet-950"
+	| "white"
+	| "yellow-100"
+	| "yellow-200"
+	| "yellow-300"
+	| "yellow-400"
+	| "yellow-50"
+	| "yellow-500"
+	| "yellow-600"
+	| "yellow-700"
+	| "yellow-800"
+	| "yellow-900"
+	| "yellow-950"
+	| "zinc-100"
+	| "zinc-200"
+	| "zinc-300"
+	| "zinc-400"
+	| "zinc-50"
+	| "zinc-500"
+	| "zinc-600"
+	| "zinc-700"
+	| "zinc-800"
+	| "zinc-900"
+	| "zinc-950"
+	| (string & {})
+>;
 type OutlineOffsetValue = "0" | "1" | "2" | "4" | "8" | (string & {});
 type UnderlineOffsetValue = "0" | "1" | "2" | "4" | "8" | "auto" | (string & {});
 type TextValue = WithOpacityModifiers<
@@ -6869,315 +6783,313 @@ type TextShadowValue = WithOpacityModifiers<
 	| "zinc-950"
 	| (string & {})
 >;
-type ShadowValue =
-	| WithOpacityModifiers<
-			| "2xl"
-			| "2xs"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "initial"
-			| "inner"
-			| "lg"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "md"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "none"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "sm"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "xl"
-			| "xs"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
+type ShadowValue = WithOpacityModifiers<
+	| "2xl"
+	| "2xs"
+	| "amber-100"
+	| "amber-200"
+	| "amber-300"
+	| "amber-400"
+	| "amber-50"
+	| "amber-500"
+	| "amber-600"
+	| "amber-700"
+	| "amber-800"
+	| "amber-900"
+	| "amber-950"
+	| "black"
+	| "blue-100"
+	| "blue-200"
+	| "blue-300"
+	| "blue-400"
+	| "blue-50"
+	| "blue-500"
+	| "blue-600"
+	| "blue-700"
+	| "blue-800"
+	| "blue-900"
+	| "blue-950"
+	| "current"
+	| "cyan-100"
+	| "cyan-200"
+	| "cyan-300"
+	| "cyan-400"
+	| "cyan-50"
+	| "cyan-500"
+	| "cyan-600"
+	| "cyan-700"
+	| "cyan-800"
+	| "cyan-900"
+	| "cyan-950"
+	| "emerald-100"
+	| "emerald-200"
+	| "emerald-300"
+	| "emerald-400"
+	| "emerald-50"
+	| "emerald-500"
+	| "emerald-600"
+	| "emerald-700"
+	| "emerald-800"
+	| "emerald-900"
+	| "emerald-950"
+	| "error"
+	| "fuchsia-100"
+	| "fuchsia-200"
+	| "fuchsia-300"
+	| "fuchsia-400"
+	| "fuchsia-50"
+	| "fuchsia-500"
+	| "fuchsia-600"
+	| "fuchsia-700"
+	| "fuchsia-800"
+	| "fuchsia-900"
+	| "fuchsia-950"
+	| "gray-100"
+	| "gray-200"
+	| "gray-300"
+	| "gray-400"
+	| "gray-50"
+	| "gray-500"
+	| "gray-600"
+	| "gray-700"
+	| "gray-800"
+	| "gray-900"
+	| "gray-950"
+	| "green-100"
+	| "green-200"
+	| "green-300"
+	| "green-400"
+	| "green-50"
+	| "green-500"
+	| "green-600"
+	| "green-700"
+	| "green-800"
+	| "green-900"
+	| "green-950"
+	| "indigo-100"
+	| "indigo-200"
+	| "indigo-300"
+	| "indigo-400"
+	| "indigo-50"
+	| "indigo-500"
+	| "indigo-600"
+	| "indigo-700"
+	| "indigo-800"
+	| "indigo-900"
+	| "indigo-950"
+	| "inherit"
+	| "initial"
+	| "inner"
+	| "lg"
+	| "lime-100"
+	| "lime-200"
+	| "lime-300"
+	| "lime-400"
+	| "lime-50"
+	| "lime-500"
+	| "lime-600"
+	| "lime-700"
+	| "lime-800"
+	| "lime-900"
+	| "lime-950"
+	| "mauve-100"
+	| "mauve-200"
+	| "mauve-300"
+	| "mauve-400"
+	| "mauve-50"
+	| "mauve-500"
+	| "mauve-600"
+	| "mauve-700"
+	| "mauve-800"
+	| "mauve-900"
+	| "mauve-950"
+	| "md"
+	| "mist-100"
+	| "mist-200"
+	| "mist-300"
+	| "mist-400"
+	| "mist-50"
+	| "mist-500"
+	| "mist-600"
+	| "mist-700"
+	| "mist-800"
+	| "mist-900"
+	| "mist-950"
+	| "neutral-100"
+	| "neutral-200"
+	| "neutral-300"
+	| "neutral-400"
+	| "neutral-50"
+	| "neutral-500"
+	| "neutral-600"
+	| "neutral-700"
+	| "neutral-800"
+	| "neutral-900"
+	| "neutral-950"
+	| "none"
+	| "olive-100"
+	| "olive-200"
+	| "olive-300"
+	| "olive-400"
+	| "olive-50"
+	| "olive-500"
+	| "olive-600"
+	| "olive-700"
+	| "olive-800"
+	| "olive-900"
+	| "olive-950"
+	| "orange-100"
+	| "orange-200"
+	| "orange-300"
+	| "orange-400"
+	| "orange-50"
+	| "orange-500"
+	| "orange-600"
+	| "orange-700"
+	| "orange-800"
+	| "orange-900"
+	| "orange-950"
+	| "pink-100"
+	| "pink-200"
+	| "pink-300"
+	| "pink-400"
+	| "pink-50"
+	| "pink-500"
+	| "pink-600"
+	| "pink-700"
+	| "pink-800"
+	| "pink-900"
+	| "pink-950"
+	| "purple-100"
+	| "purple-200"
+	| "purple-300"
+	| "purple-400"
+	| "purple-50"
+	| "purple-500"
+	| "purple-600"
+	| "purple-700"
+	| "purple-800"
+	| "purple-900"
+	| "purple-950"
+	| "red-100"
+	| "red-200"
+	| "red-300"
+	| "red-400"
+	| "red-50"
+	| "red-500"
+	| "red-600"
+	| "red-700"
+	| "red-800"
+	| "red-900"
+	| "red-950"
+	| "rose-100"
+	| "rose-200"
+	| "rose-300"
+	| "rose-400"
+	| "rose-50"
+	| "rose-500"
+	| "rose-600"
+	| "rose-700"
+	| "rose-800"
+	| "rose-900"
+	| "rose-950"
+	| "sky-100"
+	| "sky-200"
+	| "sky-300"
+	| "sky-400"
+	| "sky-50"
+	| "sky-500"
+	| "sky-600"
+	| "sky-700"
+	| "sky-800"
+	| "sky-900"
+	| "sky-950"
+	| "slate-100"
+	| "slate-200"
+	| "slate-300"
+	| "slate-400"
+	| "slate-50"
+	| "slate-500"
+	| "slate-600"
+	| "slate-700"
+	| "slate-800"
+	| "slate-900"
+	| "slate-950"
+	| "sm"
+	| "stone-100"
+	| "stone-200"
+	| "stone-300"
+	| "stone-400"
+	| "stone-50"
+	| "stone-500"
+	| "stone-600"
+	| "stone-700"
+	| "stone-800"
+	| "stone-900"
+	| "stone-950"
+	| "success"
+	| "surface"
+	| "taupe-100"
+	| "taupe-200"
+	| "taupe-300"
+	| "taupe-400"
+	| "taupe-50"
+	| "taupe-500"
+	| "taupe-600"
+	| "taupe-700"
+	| "taupe-800"
+	| "taupe-900"
+	| "taupe-950"
+	| "teal-100"
+	| "teal-200"
+	| "teal-300"
+	| "teal-400"
+	| "teal-50"
+	| "teal-500"
+	| "teal-600"
+	| "teal-700"
+	| "teal-800"
+	| "teal-900"
+	| "teal-950"
+	| "transparent"
+	| "violet-100"
+	| "violet-200"
+	| "violet-300"
+	| "violet-400"
+	| "violet-50"
+	| "violet-500"
+	| "violet-600"
+	| "violet-700"
+	| "violet-800"
+	| "violet-900"
+	| "violet-950"
+	| "white"
+	| "xl"
+	| "xs"
+	| "yellow-100"
+	| "yellow-200"
+	| "yellow-300"
+	| "yellow-400"
+	| "yellow-50"
+	| "yellow-500"
+	| "yellow-600"
+	| "yellow-700"
+	| "yellow-800"
+	| "yellow-900"
+	| "yellow-950"
+	| "zinc-100"
+	| "zinc-200"
+	| "zinc-300"
+	| "zinc-400"
+	| "zinc-50"
+	| "zinc-500"
+	| "zinc-600"
+	| "zinc-700"
+	| "zinc-800"
+	| "zinc-900"
+	| "zinc-950"
+	| (string & {})
+>;
 type InsetShadowValue = WithOpacityModifiers<
 	| "2xs"
 	| "amber-100"
@@ -7480,616 +7392,310 @@ type InsetShadowValue = WithOpacityModifiers<
 	| "zinc-950"
 	| (string & {})
 >;
-type RingValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "1"
-			| "2"
-			| "4"
-			| "8"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "inset"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
-type InsetRingValue =
-	| WithOpacityModifiers<
-			| "0"
-			| "1"
-			| "2"
-			| "4"
-			| "8"
-			| "amber-100"
-			| "amber-200"
-			| "amber-300"
-			| "amber-400"
-			| "amber-50"
-			| "amber-500"
-			| "amber-600"
-			| "amber-700"
-			| "amber-800"
-			| "amber-900"
-			| "amber-950"
-			| "black"
-			| "blue-100"
-			| "blue-200"
-			| "blue-300"
-			| "blue-400"
-			| "blue-50"
-			| "blue-500"
-			| "blue-600"
-			| "blue-700"
-			| "blue-800"
-			| "blue-900"
-			| "blue-950"
-			| "current"
-			| "cyan-100"
-			| "cyan-200"
-			| "cyan-300"
-			| "cyan-400"
-			| "cyan-50"
-			| "cyan-500"
-			| "cyan-600"
-			| "cyan-700"
-			| "cyan-800"
-			| "cyan-900"
-			| "cyan-950"
-			| "emerald-100"
-			| "emerald-200"
-			| "emerald-300"
-			| "emerald-400"
-			| "emerald-50"
-			| "emerald-500"
-			| "emerald-600"
-			| "emerald-700"
-			| "emerald-800"
-			| "emerald-900"
-			| "emerald-950"
-			| "error"
-			| "fuchsia-100"
-			| "fuchsia-200"
-			| "fuchsia-300"
-			| "fuchsia-400"
-			| "fuchsia-50"
-			| "fuchsia-500"
-			| "fuchsia-600"
-			| "fuchsia-700"
-			| "fuchsia-800"
-			| "fuchsia-900"
-			| "fuchsia-950"
-			| "gray-100"
-			| "gray-200"
-			| "gray-300"
-			| "gray-400"
-			| "gray-50"
-			| "gray-500"
-			| "gray-600"
-			| "gray-700"
-			| "gray-800"
-			| "gray-900"
-			| "gray-950"
-			| "green-100"
-			| "green-200"
-			| "green-300"
-			| "green-400"
-			| "green-50"
-			| "green-500"
-			| "green-600"
-			| "green-700"
-			| "green-800"
-			| "green-900"
-			| "green-950"
-			| "indigo-100"
-			| "indigo-200"
-			| "indigo-300"
-			| "indigo-400"
-			| "indigo-50"
-			| "indigo-500"
-			| "indigo-600"
-			| "indigo-700"
-			| "indigo-800"
-			| "indigo-900"
-			| "indigo-950"
-			| "inherit"
-			| "lime-100"
-			| "lime-200"
-			| "lime-300"
-			| "lime-400"
-			| "lime-50"
-			| "lime-500"
-			| "lime-600"
-			| "lime-700"
-			| "lime-800"
-			| "lime-900"
-			| "lime-950"
-			| "mauve-100"
-			| "mauve-200"
-			| "mauve-300"
-			| "mauve-400"
-			| "mauve-50"
-			| "mauve-500"
-			| "mauve-600"
-			| "mauve-700"
-			| "mauve-800"
-			| "mauve-900"
-			| "mauve-950"
-			| "mist-100"
-			| "mist-200"
-			| "mist-300"
-			| "mist-400"
-			| "mist-50"
-			| "mist-500"
-			| "mist-600"
-			| "mist-700"
-			| "mist-800"
-			| "mist-900"
-			| "mist-950"
-			| "neutral-100"
-			| "neutral-200"
-			| "neutral-300"
-			| "neutral-400"
-			| "neutral-50"
-			| "neutral-500"
-			| "neutral-600"
-			| "neutral-700"
-			| "neutral-800"
-			| "neutral-900"
-			| "neutral-950"
-			| "olive-100"
-			| "olive-200"
-			| "olive-300"
-			| "olive-400"
-			| "olive-50"
-			| "olive-500"
-			| "olive-600"
-			| "olive-700"
-			| "olive-800"
-			| "olive-900"
-			| "olive-950"
-			| "orange-100"
-			| "orange-200"
-			| "orange-300"
-			| "orange-400"
-			| "orange-50"
-			| "orange-500"
-			| "orange-600"
-			| "orange-700"
-			| "orange-800"
-			| "orange-900"
-			| "orange-950"
-			| "pink-100"
-			| "pink-200"
-			| "pink-300"
-			| "pink-400"
-			| "pink-50"
-			| "pink-500"
-			| "pink-600"
-			| "pink-700"
-			| "pink-800"
-			| "pink-900"
-			| "pink-950"
-			| "purple-100"
-			| "purple-200"
-			| "purple-300"
-			| "purple-400"
-			| "purple-50"
-			| "purple-500"
-			| "purple-600"
-			| "purple-700"
-			| "purple-800"
-			| "purple-900"
-			| "purple-950"
-			| "red-100"
-			| "red-200"
-			| "red-300"
-			| "red-400"
-			| "red-50"
-			| "red-500"
-			| "red-600"
-			| "red-700"
-			| "red-800"
-			| "red-900"
-			| "red-950"
-			| "rose-100"
-			| "rose-200"
-			| "rose-300"
-			| "rose-400"
-			| "rose-50"
-			| "rose-500"
-			| "rose-600"
-			| "rose-700"
-			| "rose-800"
-			| "rose-900"
-			| "rose-950"
-			| "sky-100"
-			| "sky-200"
-			| "sky-300"
-			| "sky-400"
-			| "sky-50"
-			| "sky-500"
-			| "sky-600"
-			| "sky-700"
-			| "sky-800"
-			| "sky-900"
-			| "sky-950"
-			| "slate-100"
-			| "slate-200"
-			| "slate-300"
-			| "slate-400"
-			| "slate-50"
-			| "slate-500"
-			| "slate-600"
-			| "slate-700"
-			| "slate-800"
-			| "slate-900"
-			| "slate-950"
-			| "stone-100"
-			| "stone-200"
-			| "stone-300"
-			| "stone-400"
-			| "stone-50"
-			| "stone-500"
-			| "stone-600"
-			| "stone-700"
-			| "stone-800"
-			| "stone-900"
-			| "stone-950"
-			| "success"
-			| "surface"
-			| "taupe-100"
-			| "taupe-200"
-			| "taupe-300"
-			| "taupe-400"
-			| "taupe-50"
-			| "taupe-500"
-			| "taupe-600"
-			| "taupe-700"
-			| "taupe-800"
-			| "taupe-900"
-			| "taupe-950"
-			| "teal-100"
-			| "teal-200"
-			| "teal-300"
-			| "teal-400"
-			| "teal-50"
-			| "teal-500"
-			| "teal-600"
-			| "teal-700"
-			| "teal-800"
-			| "teal-900"
-			| "teal-950"
-			| "transparent"
-			| "violet-100"
-			| "violet-200"
-			| "violet-300"
-			| "violet-400"
-			| "violet-50"
-			| "violet-500"
-			| "violet-600"
-			| "violet-700"
-			| "violet-800"
-			| "violet-900"
-			| "violet-950"
-			| "white"
-			| "yellow-100"
-			| "yellow-200"
-			| "yellow-300"
-			| "yellow-400"
-			| "yellow-50"
-			| "yellow-500"
-			| "yellow-600"
-			| "yellow-700"
-			| "yellow-800"
-			| "yellow-900"
-			| "yellow-950"
-			| "zinc-100"
-			| "zinc-200"
-			| "zinc-300"
-			| "zinc-400"
-			| "zinc-50"
-			| "zinc-500"
-			| "zinc-600"
-			| "zinc-700"
-			| "zinc-800"
-			| "zinc-900"
-			| "zinc-950"
-			| (string & {})
-	  >
-	| true;
-type RingOffsetValue = WithOpacityModifiers<
+type RingValue = WithOpacityModifiers<
+	| "0"
+	| "1"
+	| "2"
+	| "4"
+	| "8"
+	| "amber-100"
+	| "amber-200"
+	| "amber-300"
+	| "amber-400"
+	| "amber-50"
+	| "amber-500"
+	| "amber-600"
+	| "amber-700"
+	| "amber-800"
+	| "amber-900"
+	| "amber-950"
+	| "black"
+	| "blue-100"
+	| "blue-200"
+	| "blue-300"
+	| "blue-400"
+	| "blue-50"
+	| "blue-500"
+	| "blue-600"
+	| "blue-700"
+	| "blue-800"
+	| "blue-900"
+	| "blue-950"
+	| "current"
+	| "cyan-100"
+	| "cyan-200"
+	| "cyan-300"
+	| "cyan-400"
+	| "cyan-50"
+	| "cyan-500"
+	| "cyan-600"
+	| "cyan-700"
+	| "cyan-800"
+	| "cyan-900"
+	| "cyan-950"
+	| "emerald-100"
+	| "emerald-200"
+	| "emerald-300"
+	| "emerald-400"
+	| "emerald-50"
+	| "emerald-500"
+	| "emerald-600"
+	| "emerald-700"
+	| "emerald-800"
+	| "emerald-900"
+	| "emerald-950"
+	| "error"
+	| "fuchsia-100"
+	| "fuchsia-200"
+	| "fuchsia-300"
+	| "fuchsia-400"
+	| "fuchsia-50"
+	| "fuchsia-500"
+	| "fuchsia-600"
+	| "fuchsia-700"
+	| "fuchsia-800"
+	| "fuchsia-900"
+	| "fuchsia-950"
+	| "gray-100"
+	| "gray-200"
+	| "gray-300"
+	| "gray-400"
+	| "gray-50"
+	| "gray-500"
+	| "gray-600"
+	| "gray-700"
+	| "gray-800"
+	| "gray-900"
+	| "gray-950"
+	| "green-100"
+	| "green-200"
+	| "green-300"
+	| "green-400"
+	| "green-50"
+	| "green-500"
+	| "green-600"
+	| "green-700"
+	| "green-800"
+	| "green-900"
+	| "green-950"
+	| "indigo-100"
+	| "indigo-200"
+	| "indigo-300"
+	| "indigo-400"
+	| "indigo-50"
+	| "indigo-500"
+	| "indigo-600"
+	| "indigo-700"
+	| "indigo-800"
+	| "indigo-900"
+	| "indigo-950"
+	| "inherit"
+	| "inset"
+	| "lime-100"
+	| "lime-200"
+	| "lime-300"
+	| "lime-400"
+	| "lime-50"
+	| "lime-500"
+	| "lime-600"
+	| "lime-700"
+	| "lime-800"
+	| "lime-900"
+	| "lime-950"
+	| "mauve-100"
+	| "mauve-200"
+	| "mauve-300"
+	| "mauve-400"
+	| "mauve-50"
+	| "mauve-500"
+	| "mauve-600"
+	| "mauve-700"
+	| "mauve-800"
+	| "mauve-900"
+	| "mauve-950"
+	| "mist-100"
+	| "mist-200"
+	| "mist-300"
+	| "mist-400"
+	| "mist-50"
+	| "mist-500"
+	| "mist-600"
+	| "mist-700"
+	| "mist-800"
+	| "mist-900"
+	| "mist-950"
+	| "neutral-100"
+	| "neutral-200"
+	| "neutral-300"
+	| "neutral-400"
+	| "neutral-50"
+	| "neutral-500"
+	| "neutral-600"
+	| "neutral-700"
+	| "neutral-800"
+	| "neutral-900"
+	| "neutral-950"
+	| "olive-100"
+	| "olive-200"
+	| "olive-300"
+	| "olive-400"
+	| "olive-50"
+	| "olive-500"
+	| "olive-600"
+	| "olive-700"
+	| "olive-800"
+	| "olive-900"
+	| "olive-950"
+	| "orange-100"
+	| "orange-200"
+	| "orange-300"
+	| "orange-400"
+	| "orange-50"
+	| "orange-500"
+	| "orange-600"
+	| "orange-700"
+	| "orange-800"
+	| "orange-900"
+	| "orange-950"
+	| "pink-100"
+	| "pink-200"
+	| "pink-300"
+	| "pink-400"
+	| "pink-50"
+	| "pink-500"
+	| "pink-600"
+	| "pink-700"
+	| "pink-800"
+	| "pink-900"
+	| "pink-950"
+	| "purple-100"
+	| "purple-200"
+	| "purple-300"
+	| "purple-400"
+	| "purple-50"
+	| "purple-500"
+	| "purple-600"
+	| "purple-700"
+	| "purple-800"
+	| "purple-900"
+	| "purple-950"
+	| "red-100"
+	| "red-200"
+	| "red-300"
+	| "red-400"
+	| "red-50"
+	| "red-500"
+	| "red-600"
+	| "red-700"
+	| "red-800"
+	| "red-900"
+	| "red-950"
+	| "rose-100"
+	| "rose-200"
+	| "rose-300"
+	| "rose-400"
+	| "rose-50"
+	| "rose-500"
+	| "rose-600"
+	| "rose-700"
+	| "rose-800"
+	| "rose-900"
+	| "rose-950"
+	| "sky-100"
+	| "sky-200"
+	| "sky-300"
+	| "sky-400"
+	| "sky-50"
+	| "sky-500"
+	| "sky-600"
+	| "sky-700"
+	| "sky-800"
+	| "sky-900"
+	| "sky-950"
+	| "slate-100"
+	| "slate-200"
+	| "slate-300"
+	| "slate-400"
+	| "slate-50"
+	| "slate-500"
+	| "slate-600"
+	| "slate-700"
+	| "slate-800"
+	| "slate-900"
+	| "slate-950"
+	| "stone-100"
+	| "stone-200"
+	| "stone-300"
+	| "stone-400"
+	| "stone-50"
+	| "stone-500"
+	| "stone-600"
+	| "stone-700"
+	| "stone-800"
+	| "stone-900"
+	| "stone-950"
+	| "success"
+	| "surface"
+	| "taupe-100"
+	| "taupe-200"
+	| "taupe-300"
+	| "taupe-400"
+	| "taupe-50"
+	| "taupe-500"
+	| "taupe-600"
+	| "taupe-700"
+	| "taupe-800"
+	| "taupe-900"
+	| "taupe-950"
+	| "teal-100"
+	| "teal-200"
+	| "teal-300"
+	| "teal-400"
+	| "teal-50"
+	| "teal-500"
+	| "teal-600"
+	| "teal-700"
+	| "teal-800"
+	| "teal-900"
+	| "teal-950"
+	| "transparent"
+	| "violet-100"
+	| "violet-200"
+	| "violet-300"
+	| "violet-400"
+	| "violet-50"
+	| "violet-500"
+	| "violet-600"
+	| "violet-700"
+	| "violet-800"
+	| "violet-900"
+	| "violet-950"
+	| "white"
+	| "yellow-100"
+	| "yellow-200"
+	| "yellow-300"
+	| "yellow-400"
+	| "yellow-50"
+	| "yellow-500"
+	| "yellow-600"
+	| "yellow-700"
+	| "yellow-800"
+	| "yellow-900"
+	| "yellow-950"
+	| "zinc-100"
+	| "zinc-200"
+	| "zinc-300"
+	| "zinc-400"
+	| "zinc-50"
+	| "zinc-500"
+	| "zinc-600"
+	| "zinc-700"
+	| "zinc-800"
+	| "zinc-900"
+	| "zinc-950"
+	| (string & {})
+>;
+type InsetRingValue = WithOpacityModifiers<
 	| "0"
 	| "1"
 	| "2"
@@ -8391,7 +7997,7 @@ type RingOffsetValue = WithOpacityModifiers<
 	| "zinc-950"
 	| (string & {})
 >;
-type ContainerValue = WithOpacityModifiers<"normal" | (string & {})> | true;
+type ContainerValue = WithOpacityModifiers<"normal" | (string & {})>;
 type StartValue = "auto" | "full" | "px" | (string & {});
 type PointerEventsValue = "auto" | "none" | (string & {});
 type FloatValue = "end" | "left" | "none" | "right" | "start" | (string & {});
@@ -8408,7 +8014,6 @@ type TableValue =
 	| "header-group"
 	| "row"
 	| "row-group"
-	| true
 	| (string & {});
 type FlowValue = "root" | (string & {});
 type FieldValue = "sizing-content" | "sizing-fixed" | (string & {});
@@ -8417,7 +8022,7 @@ type BackfaceValue = "hidden" | "visible" | (string & {});
 type TouchValue = "auto" | "manipulation" | "none" | "pinch-zoom" | (string & {});
 type TouchPanValue = "down" | "left" | "right" | "up" | "x" | "y" | (string & {});
 type SelectValue = "all" | "auto" | "none" | "text" | (string & {});
-type ResizeValue = "none" | true | "x" | "y" | (string & {});
+type ResizeValue = "none" | "x" | "y" | (string & {});
 type SnapValue =
 	| "align-none"
 	| "always"
@@ -8660,389 +8265,389 @@ type DecorationThicknessValue = "0" | "1" | "2" | "auto" | "from-font" | (string
 type DecorationStyleValue = "dashed" | "dotted" | "double" | "solid" | "wavy" | (string & {});
 
 interface WindUtilities {
-	absolute?: MaxWScreenValue | Array<MaxWScreenValue>;
-	accent?: AccentValue | Array<AccentValue>;
-	align?: AlignValue | Array<AlignValue>;
-	animate?: AnimateValue | Array<AnimateValue>;
-	antialiased?: MaxWScreenValue | Array<MaxWScreenValue>;
-	appearance?: PointerEventsValue | Array<PointerEventsValue>;
-	aspect?: AspectValue | Array<AspectValue>;
-	autoCols?: AutoColsValue | Array<AutoColsValue>;
-	autoRows?: AutoColsValue | Array<AutoColsValue>;
-	backdropBlur?: BlurValue | Array<BlurValue>;
-	backdropBrightness?: ScaleXValue | Array<ScaleXValue>;
-	backdropContrast?: ContrastValue | Array<ContrastValue>;
-	backdropGrayscale?: GrayscaleValue | Array<GrayscaleValue>;
-	backdropHueRotate?: HueRotateValue | Array<HueRotateValue>;
-	backdropInvert?: GrayscaleValue | Array<GrayscaleValue>;
-	backdropOpacity?: BackdropOpacityValue | Array<BackdropOpacityValue>;
-	backdropSaturate?: SaturateValue | Array<SaturateValue>;
-	backdropSepia?: SepiaValue | Array<SepiaValue>;
-	backface?: BackfaceValue | Array<BackfaceValue>;
-	basis?: BasisValue | Array<BasisValue>;
-	bgAttachment?: BgAttachmentValue | Array<BgAttachmentValue>;
-	bg?: BgValue | Array<BgValue>;
-	bgColor?: CaretValue | Array<CaretValue>;
-	bgConic?: BgConicValue | Array<BgConicValue>;
-	bgImage?: BgImageValue | Array<BgImageValue>;
-	bgLinear?: BgLinearValue | Array<BgLinearValue>;
-	bgPosition?: BgPositionValue | Array<BgPositionValue>;
-	bgRadial?: MaxWScreenValue | Array<MaxWScreenValue>;
-	bgRepeat?: BgRepeatValue | Array<BgRepeatValue>;
-	bgSize?: BgSizeValue | Array<BgSizeValue>;
-	block?: BlockValue | Array<BlockValue>;
-	blur?: BlurValue | Array<BlurValue>;
-	borderB?: BorderXValue | Array<BorderXValue>;
-	borderBe?: BorderXValue | Array<BorderXValue>;
-	border?: BorderValue | Array<BorderValue>;
-	borderBs?: BorderXValue | Array<BorderXValue>;
-	borderColor?: CaretValue | Array<CaretValue>;
-	borderE?: BorderXValue | Array<BorderXValue>;
-	borderL?: BorderXValue | Array<BorderXValue>;
-	borderR?: BorderXValue | Array<BorderXValue>;
-	borderS?: BorderXValue | Array<BorderXValue>;
-	borderSpacing?: BorderSpacingValue | Array<BorderSpacingValue>;
-	borderSpacingX?: BorderSpacingValue | Array<BorderSpacingValue>;
-	borderSpacingY?: BorderSpacingValue | Array<BorderSpacingValue>;
-	borderStyle?: BorderStyleValue | Array<BorderStyleValue>;
-	borderT?: BorderXValue | Array<BorderXValue>;
-	borderWidth?: BorderWidthValue | Array<BorderWidthValue>;
-	borderX?: BorderXValue | Array<BorderXValue>;
-	borderY?: BorderXValue | Array<BorderXValue>;
-	bottom?: InsetValue | Array<InsetValue>;
-	"-bottom"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	box?: BoxValue | Array<BoxValue>;
-	boxDecoration?: BoxDecorationValue | Array<BoxDecorationValue>;
-	breakBefore?: BreakBeforeValue | Array<BreakBeforeValue>;
-	break?: BreakValue | Array<BreakValue>;
-	breakInside?: BreakInsideValue | Array<BreakInsideValue>;
-	brightness?: ScaleXValue | Array<ScaleXValue>;
-	capitalize?: MaxWScreenValue | Array<MaxWScreenValue>;
-	caption?: CaptionValue | Array<CaptionValue>;
-	caret?: CaretValue | Array<CaretValue>;
-	clear?: ClearValue | Array<ClearValue>;
-	col?: ColValue | Array<ColValue>;
-	colEnd?: ColStartValue | Array<ColStartValue>;
-	collapse?: MaxWScreenValue | Array<MaxWScreenValue>;
-	colSpan?: ColSpanValue | Array<ColSpanValue>;
-	colStart?: ColStartValue | Array<ColStartValue>;
-	columns?: ColumnsValue | Array<ColumnsValue>;
-	contain?: ContainValue | Array<ContainValue>;
-	"@container"?: ContainerValue | Array<ContainerValue>;
-	container?: MaxWScreenValue | Array<MaxWScreenValue>;
-	content?: ContentValue | Array<ContentValue>;
-	contents?: MaxWScreenValue | Array<MaxWScreenValue>;
-	contrast?: ContrastValue | Array<ContrastValue>;
-	cursor?: CursorValue | Array<CursorValue>;
-	decorationColor?: CaretValue | Array<CaretValue>;
-	decoration?: DecorationValue | Array<DecorationValue>;
-	decorationStyle?: DecorationStyleValue | Array<DecorationStyleValue>;
-	decorationThickness?: DecorationThicknessValue | Array<DecorationThicknessValue>;
-	delay?: DelayValue | Array<DelayValue>;
-	diagonal?: DiagonalValue | Array<DiagonalValue>;
-	divide?: DivideValue | Array<DivideValue>;
-	divideX?: DivideXValue | Array<DivideXValue>;
-	divideY?: DivideXValue | Array<DivideXValue>;
-	dropShadow?: DropShadowValue | Array<DropShadowValue>;
-	duration?: DurationValue | Array<DurationValue>;
-	ease?: EaseValue | Array<EaseValue>;
-	"-end"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	end?: StartValue | Array<StartValue>;
-	field?: FieldValue | Array<FieldValue>;
-	fill?: FillValue | Array<FillValue>;
-	fixed?: MaxWScreenValue | Array<MaxWScreenValue>;
-	flex?: FlexValue | Array<FlexValue>;
-	float?: FloatValue | Array<FloatValue>;
-	flow?: FlowValue | Array<FlowValue>;
-	font?: FontValue | Array<FontValue>;
-	fontStretch?: FontStretchValue | Array<FontStretchValue>;
-	forced?: ForcedValue | Array<ForcedValue>;
-	from?: FromValue | Array<FromValue>;
-	gap?: BorderSpacingValue | Array<BorderSpacingValue>;
-	gapX?: BorderSpacingValue | Array<BorderSpacingValue>;
-	gapY?: BorderSpacingValue | Array<BorderSpacingValue>;
-	grayscale?: GrayscaleValue | Array<GrayscaleValue>;
-	gridCols?: GridColsValue | Array<GridColsValue>;
-	gridFlow?: GridFlowValue | Array<GridFlowValue>;
-	grid?: MaxWScreenValue | Array<MaxWScreenValue>;
-	gridRows?: GridColsValue | Array<GridColsValue>;
-	grow?: ShrinkValue | Array<ShrinkValue>;
-	h?: HValue | Array<HValue>;
-	hidden?: MaxWScreenValue | Array<MaxWScreenValue>;
-	hueRotate?: HueRotateValue | Array<HueRotateValue>;
-	hyphens?: HyphensValue | Array<HyphensValue>;
-	indent?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-indent"?: NegativeMValue | Array<NegativeMValue>;
-	inline?: InlineValue | Array<InlineValue>;
-	insetBe?: InsetValue | Array<InsetValue>;
-	"-insetBe"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	insetBs?: InsetValue | Array<InsetValue>;
-	"-insetBs"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	insetE?: InsetValue | Array<InsetValue>;
-	"-insetE"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	inset?: InsetValue | Array<InsetValue>;
-	"-inset"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	insetRing?: InsetRingValue | Array<InsetRingValue>;
-	insetShadow?: InsetShadowValue | Array<InsetShadowValue>;
-	insetS?: InsetValue | Array<InsetValue>;
-	"-insetS"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	insetX?: InsetValue | Array<InsetValue>;
-	"-insetX"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	insetY?: InsetValue | Array<InsetValue>;
-	"-insetY"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	invert?: GrayscaleValue | Array<GrayscaleValue>;
-	invisible?: MaxWScreenValue | Array<MaxWScreenValue>;
-	isolate?: MaxWScreenValue | Array<MaxWScreenValue>;
-	isolation?: ColValue | Array<ColValue>;
-	italic?: MaxWScreenValue | Array<MaxWScreenValue>;
-	items?: ItemsValue | Array<ItemsValue>;
-	justifyItems?: JustifyItemsValue | Array<JustifyItemsValue>;
-	justify?: JustifyValue | Array<JustifyValue>;
-	justifySelf?: PlaceSelfValue | Array<PlaceSelfValue>;
-	leading?: LeadingValue | Array<LeadingValue>;
-	left?: InsetValue | Array<InsetValue>;
-	"-left"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	lineClamp?: LineClampValue | Array<LineClampValue>;
-	line?: LineValue | Array<LineValue>;
-	lining?: LiningValue | Array<LiningValue>;
-	listImage?: ListImageValue | Array<ListImageValue>;
-	list?: ListValue | Array<ListValue>;
-	lowercase?: MaxWScreenValue | Array<MaxWScreenValue>;
-	maskBFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskBTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskConicFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskConic?: RotateXValue | Array<RotateXValue>;
-	maskConicTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskLFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskLinearFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskLinear?: RotateXValue | Array<RotateXValue>;
-	maskLinearTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskLTo?: MaskXFromValue | Array<MaskXFromValue>;
-	mask?: MaskValue | Array<MaskValue>;
-	maskRadialAt?: OriginValue | Array<OriginValue>;
-	maskRadialFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskRadial?: MaskRadialValue | Array<MaskRadialValue>;
-	maskRadialTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskRFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskRTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskTFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskTTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskXFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskXTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maskYFrom?: MaskXFromValue | Array<MaskXFromValue>;
-	maskYTo?: MaskXFromValue | Array<MaskXFromValue>;
-	maxBlock?: MaxBlockValue | Array<MaxBlockValue>;
-	maxH?: MaxHValue | Array<MaxHValue>;
-	maxInline?: MaxInlineValue | Array<MaxInlineValue>;
-	maxW?: MaxWValue | Array<MaxWValue>;
-	maxWScreen?: MaxWScreenValue | Array<MaxWScreenValue>;
-	mbe?: MValue | Array<MValue>;
-	"-mbe"?: NegativeMValue | Array<NegativeMValue>;
-	mb?: MValue | Array<MValue>;
-	"-mb"?: NegativeMValue | Array<NegativeMValue>;
-	mbs?: MValue | Array<MValue>;
-	"-mbs"?: NegativeMValue | Array<NegativeMValue>;
-	me?: MValue | Array<MValue>;
-	"-me"?: NegativeMValue | Array<NegativeMValue>;
-	minBlock?: MinBlockValue | Array<MinBlockValue>;
-	minH?: HValue | Array<HValue>;
-	minInline?: MinInlineValue | Array<MinInlineValue>;
-	minW?: WValue | Array<WValue>;
-	mixBlend?: MixBlendValue | Array<MixBlendValue>;
-	ml?: MValue | Array<MValue>;
-	"-ml"?: NegativeMValue | Array<NegativeMValue>;
-	m?: MValue | Array<MValue>;
-	"-m"?: NegativeMValue | Array<NegativeMValue>;
-	mr?: MValue | Array<MValue>;
-	"-mr"?: NegativeMValue | Array<NegativeMValue>;
-	ms?: MValue | Array<MValue>;
-	"-ms"?: NegativeMValue | Array<NegativeMValue>;
-	mt?: MValue | Array<MValue>;
-	"-mt"?: NegativeMValue | Array<NegativeMValue>;
-	mx?: MValue | Array<MValue>;
-	"-mx"?: NegativeMValue | Array<NegativeMValue>;
-	my?: MValue | Array<MValue>;
-	"-my"?: NegativeMValue | Array<NegativeMValue>;
-	no?: NoValue | Array<NoValue>;
-	normal?: NormalValue | Array<NormalValue>;
-	not?: NotValue | Array<NotValue>;
-	notSrOnly?: MaxWScreenValue | Array<MaxWScreenValue>;
-	object?: ObjectValue | Array<ObjectValue>;
-	oldstyle?: LiningValue | Array<LiningValue>;
-	opacity?: BackdropOpacityValue | Array<BackdropOpacityValue>;
-	order?: OrderValue | Array<OrderValue>;
-	ordinal?: MaxWScreenValue | Array<MaxWScreenValue>;
-	origin?: OriginValue | Array<OriginValue>;
-	outlineColor?: CaretValue | Array<CaretValue>;
-	outlineOffset?: OutlineOffsetValue | Array<OutlineOffsetValue>;
-	outline?: OutlineValue | Array<OutlineValue>;
-	outlineStyle?: OutlineStyleValue | Array<OutlineStyleValue>;
-	outlineWidth?: OutlineOffsetValue | Array<OutlineOffsetValue>;
-	overflow?: OverflowValue | Array<OverflowValue>;
-	overflowX?: OverflowXValue | Array<OverflowXValue>;
-	overflowY?: OverflowXValue | Array<OverflowXValue>;
-	overline?: MaxWScreenValue | Array<MaxWScreenValue>;
-	overscroll?: OverscrollValue | Array<OverscrollValue>;
-	overscrollX?: OverscrollValue | Array<OverscrollValue>;
-	overscrollY?: OverscrollValue | Array<OverscrollValue>;
-	pb?: BorderSpacingValue | Array<BorderSpacingValue>;
-	pbe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	p?: BorderSpacingValue | Array<BorderSpacingValue>;
-	pbs?: BorderSpacingValue | Array<BorderSpacingValue>;
-	pe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	perspectiveOrigin?: OriginValue | Array<OriginValue>;
-	perspective?: PerspectiveValue | Array<PerspectiveValue>;
-	placeContent?: PlaceContentValue | Array<PlaceContentValue>;
-	placeholder?: CaretValue | Array<CaretValue>;
-	placeItems?: PlaceItemsValue | Array<PlaceItemsValue>;
-	placeSelf?: PlaceSelfValue | Array<PlaceSelfValue>;
-	pl?: BorderSpacingValue | Array<BorderSpacingValue>;
-	pointerEvents?: PointerEventsValue | Array<PointerEventsValue>;
-	pr?: BorderSpacingValue | Array<BorderSpacingValue>;
-	proportional?: LiningValue | Array<LiningValue>;
-	ps?: BorderSpacingValue | Array<BorderSpacingValue>;
-	pt?: BorderSpacingValue | Array<BorderSpacingValue>;
-	px?: BorderSpacingValue | Array<BorderSpacingValue>;
-	py?: BorderSpacingValue | Array<BorderSpacingValue>;
-	relative?: MaxWScreenValue | Array<MaxWScreenValue>;
-	resize?: ResizeValue | Array<ResizeValue>;
-	right?: InsetValue | Array<InsetValue>;
-	"-right"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	ringOffset?: RingOffsetValue | Array<RingOffsetValue>;
-	ring?: RingValue | Array<RingValue>;
-	rotate?: RotateValue | Array<RotateValue>;
-	rotateX?: RotateXValue | Array<RotateXValue>;
-	rotateY?: RotateXValue | Array<RotateXValue>;
-	rotateZ?: RotateXValue | Array<RotateXValue>;
-	roundedBl?: RoundedValue | Array<RoundedValue>;
-	roundedB?: RoundedValue | Array<RoundedValue>;
-	roundedBr?: RoundedValue | Array<RoundedValue>;
-	roundedEe?: RoundedValue | Array<RoundedValue>;
-	roundedE?: RoundedValue | Array<RoundedValue>;
-	roundedEs?: RoundedValue | Array<RoundedValue>;
-	roundedL?: RoundedValue | Array<RoundedValue>;
-	rounded?: RoundedValue | Array<RoundedValue>;
-	roundedR?: RoundedValue | Array<RoundedValue>;
-	roundedSe?: RoundedValue | Array<RoundedValue>;
-	roundedS?: RoundedValue | Array<RoundedValue>;
-	roundedSs?: RoundedValue | Array<RoundedValue>;
-	roundedTl?: RoundedValue | Array<RoundedValue>;
-	roundedT?: RoundedValue | Array<RoundedValue>;
-	roundedTr?: RoundedValue | Array<RoundedValue>;
-	row?: ColValue | Array<ColValue>;
-	rowEnd?: ColStartValue | Array<ColStartValue>;
-	rowSpan?: ColSpanValue | Array<ColSpanValue>;
-	rowStart?: ColStartValue | Array<ColStartValue>;
-	saturate?: SaturateValue | Array<SaturateValue>;
-	scale?: ScaleValue | Array<ScaleValue>;
-	scaleX?: ScaleXValue | Array<ScaleXValue>;
-	scaleY?: ScaleXValue | Array<ScaleXValue>;
-	scaleZ?: ScaleXValue | Array<ScaleXValue>;
-	scheme?: SchemeValue | Array<SchemeValue>;
-	scrollbar?: ScrollbarValue | Array<ScrollbarValue>;
-	scrollbarThumb?: CaretValue | Array<CaretValue>;
-	scrollbarTrack?: CaretValue | Array<CaretValue>;
-	scrollMb?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollMbe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMbe"?: NegativeMValue | Array<NegativeMValue>;
-	"-scrollMb"?: NegativeMValue | Array<NegativeMValue>;
-	scrollM?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollMbs?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMbs"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMe"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMl?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMl"?: NegativeMValue | Array<NegativeMValue>;
-	"-scrollM"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMr?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMr"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMs?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMs"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMt?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMt"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMx?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMx"?: NegativeMValue | Array<NegativeMValue>;
-	scrollMy?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-scrollMy"?: NegativeMValue | Array<NegativeMValue>;
-	scrollPb?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPbe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollP?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPbs?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPe?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPl?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPr?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPs?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPt?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPx?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scrollPy?: BorderSpacingValue | Array<BorderSpacingValue>;
-	scroll?: ScrollValue | Array<ScrollValue>;
-	select?: SelectValue | Array<SelectValue>;
-	self?: SelfValue | Array<SelfValue>;
-	sepia?: SepiaValue | Array<SepiaValue>;
-	shadow?: ShadowValue | Array<ShadowValue>;
-	shrink?: ShrinkValue | Array<ShrinkValue>;
-	size?: SizeValue | Array<SizeValue>;
-	skew?: SkewValue | Array<SkewValue>;
-	skewX?: SkewValue | Array<SkewValue>;
-	skewY?: SkewValue | Array<SkewValue>;
-	slashed?: SlashedValue | Array<SlashedValue>;
-	snap?: SnapValue | Array<SnapValue>;
-	"-spaceX"?: NegativeMValue | Array<NegativeMValue>;
-	spaceX?: SpaceXValue | Array<SpaceXValue>;
-	"-spaceY"?: NegativeMValue | Array<NegativeMValue>;
-	spaceY?: SpaceXValue | Array<SpaceXValue>;
-	srOnly?: MaxWScreenValue | Array<MaxWScreenValue>;
-	stacked?: DiagonalValue | Array<DiagonalValue>;
-	"-start"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	start?: StartValue | Array<StartValue>;
-	static?: MaxWScreenValue | Array<MaxWScreenValue>;
-	sticky?: MaxWScreenValue | Array<MaxWScreenValue>;
-	stroke?: StrokeValue | Array<StrokeValue>;
-	subpixel?: SubpixelValue | Array<SubpixelValue>;
-	table?: TableValue | Array<TableValue>;
-	tab?: TabValue | Array<TabValue>;
-	tabular?: LiningValue | Array<LiningValue>;
-	textAlign?: TextAlignValue | Array<TextAlignValue>;
-	textColor?: CaretValue | Array<CaretValue>;
-	textOverflow?: TextOverflowValue | Array<TextOverflowValue>;
-	textShadow?: TextShadowValue | Array<TextShadowValue>;
-	textSize?: TextSizeValue | Array<TextSizeValue>;
-	text?: TextValue | Array<TextValue>;
-	textWrap?: TextWrapValue | Array<TextWrapValue>;
-	to?: FromValue | Array<FromValue>;
-	top?: InsetValue | Array<InsetValue>;
-	"-top"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	touchPan?: TouchPanValue | Array<TouchPanValue>;
-	touch?: TouchValue | Array<TouchValue>;
-	tracking?: TrackingValue | Array<TrackingValue>;
-	transform?: TransformValue | Array<TransformValue>;
-	transition?: TransitionValue | Array<TransitionValue>;
-	"-translate"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	translate?: TranslateValue | Array<TranslateValue>;
-	"-translateX"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	translateX?: TranslateXValue | Array<TranslateXValue>;
-	"-translateY"?: NegativeInsetValue | Array<NegativeInsetValue>;
-	translateY?: TranslateXValue | Array<TranslateXValue>;
-	translateZ?: BorderSpacingValue | Array<BorderSpacingValue>;
-	"-translateZ"?: NegativeMValue | Array<NegativeMValue>;
-	truncate?: MaxWScreenValue | Array<MaxWScreenValue>;
-	underline?: MaxWScreenValue | Array<MaxWScreenValue>;
-	underlineOffset?: UnderlineOffsetValue | Array<UnderlineOffsetValue>;
-	uppercase?: MaxWScreenValue | Array<MaxWScreenValue>;
-	via?: ViaValue | Array<ViaValue>;
-	visible?: MaxWScreenValue | Array<MaxWScreenValue>;
-	whitespace?: WhitespaceValue | Array<WhitespaceValue>;
-	willChange?: WillChangeValue | Array<WillChangeValue>;
-	wrap?: WrapValue | Array<WrapValue>;
-	w?: WValue | Array<WValue>;
-	zoom?: ZoomValue | Array<ZoomValue>;
-	z?: ZValue | Array<ZValue>;
+	absolute?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	accent?: AccentValue | true | Array<AccentValue | true>;
+	align?: AlignValue | true | Array<AlignValue | true>;
+	animate?: AnimateValue | true | Array<AnimateValue | true>;
+	antialiased?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	appearance?: PointerEventsValue | true | Array<PointerEventsValue | true>;
+	aspect?: AspectValue | true | Array<AspectValue | true>;
+	autoCols?: AutoColsValue | true | Array<AutoColsValue | true>;
+	autoRows?: AutoColsValue | true | Array<AutoColsValue | true>;
+	backdropBlur?: BlurValue | true | Array<BlurValue | true>;
+	backdropBrightness?: ScaleXValue | true | Array<ScaleXValue | true>;
+	backdropContrast?: ContrastValue | true | Array<ContrastValue | true>;
+	backdropGrayscale?: GrayscaleValue | true | Array<GrayscaleValue | true>;
+	backdropHueRotate?: HueRotateValue | true | Array<HueRotateValue | true>;
+	backdropInvert?: GrayscaleValue | true | Array<GrayscaleValue | true>;
+	backdropOpacity?: BackdropOpacityValue | true | Array<BackdropOpacityValue | true>;
+	backdropSaturate?: SaturateValue | true | Array<SaturateValue | true>;
+	backdropSepia?: SepiaValue | true | Array<SepiaValue | true>;
+	backface?: BackfaceValue | true | Array<BackfaceValue | true>;
+	basis?: BasisValue | true | Array<BasisValue | true>;
+	bgAttachment?: BgAttachmentValue | true | Array<BgAttachmentValue | true>;
+	bg?: BgValue | true | Array<BgValue | true>;
+	bgColor?: CaretValue | true | Array<CaretValue | true>;
+	bgConic?: BgConicValue | true | Array<BgConicValue | true>;
+	bgImage?: BgImageValue | true | Array<BgImageValue | true>;
+	bgLinear?: BgLinearValue | true | Array<BgLinearValue | true>;
+	bgPosition?: BgPositionValue | true | Array<BgPositionValue | true>;
+	bgRadial?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	bgRepeat?: BgRepeatValue | true | Array<BgRepeatValue | true>;
+	bgSize?: BgSizeValue | true | Array<BgSizeValue | true>;
+	block?: BlockValue | true | Array<BlockValue | true>;
+	blur?: BlurValue | true | Array<BlurValue | true>;
+	borderB?: BorderXValue | true | Array<BorderXValue | true>;
+	borderBe?: BorderXValue | true | Array<BorderXValue | true>;
+	border?: BorderValue | true | Array<BorderValue | true>;
+	borderBs?: BorderXValue | true | Array<BorderXValue | true>;
+	borderColor?: CaretValue | true | Array<CaretValue | true>;
+	borderE?: BorderXValue | true | Array<BorderXValue | true>;
+	borderL?: BorderXValue | true | Array<BorderXValue | true>;
+	borderR?: BorderXValue | true | Array<BorderXValue | true>;
+	borderS?: BorderXValue | true | Array<BorderXValue | true>;
+	borderSpacing?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	borderSpacingX?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	borderSpacingY?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	borderStyle?: BorderStyleValue | true | Array<BorderStyleValue | true>;
+	borderT?: BorderXValue | true | Array<BorderXValue | true>;
+	borderWidth?: BorderWidthValue | true | Array<BorderWidthValue | true>;
+	borderX?: BorderXValue | true | Array<BorderXValue | true>;
+	borderY?: BorderXValue | true | Array<BorderXValue | true>;
+	bottom?: InsetValue | true | Array<InsetValue | true>;
+	"-bottom"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	box?: BoxValue | true | Array<BoxValue | true>;
+	boxDecoration?: BoxDecorationValue | true | Array<BoxDecorationValue | true>;
+	breakBefore?: BreakBeforeValue | true | Array<BreakBeforeValue | true>;
+	break?: BreakValue | true | Array<BreakValue | true>;
+	breakInside?: BreakInsideValue | true | Array<BreakInsideValue | true>;
+	brightness?: ScaleXValue | true | Array<ScaleXValue | true>;
+	capitalize?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	caption?: CaptionValue | true | Array<CaptionValue | true>;
+	caret?: CaretValue | true | Array<CaretValue | true>;
+	clear?: ClearValue | true | Array<ClearValue | true>;
+	col?: ColValue | true | Array<ColValue | true>;
+	colEnd?: ColStartValue | true | Array<ColStartValue | true>;
+	collapse?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	colSpan?: ColSpanValue | true | Array<ColSpanValue | true>;
+	colStart?: ColStartValue | true | Array<ColStartValue | true>;
+	columns?: ColumnsValue | true | Array<ColumnsValue | true>;
+	contain?: ContainValue | true | Array<ContainValue | true>;
+	"@container"?: ContainerValue | true | Array<ContainerValue | true>;
+	container?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	content?: ContentValue | true | Array<ContentValue | true>;
+	contents?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	contrast?: ContrastValue | true | Array<ContrastValue | true>;
+	cursor?: CursorValue | true | Array<CursorValue | true>;
+	decorationColor?: CaretValue | true | Array<CaretValue | true>;
+	decoration?: DecorationValue | true | Array<DecorationValue | true>;
+	decorationStyle?: DecorationStyleValue | true | Array<DecorationStyleValue | true>;
+	decorationThickness?: DecorationThicknessValue | true | Array<DecorationThicknessValue | true>;
+	delay?: DelayValue | true | Array<DelayValue | true>;
+	diagonal?: DiagonalValue | true | Array<DiagonalValue | true>;
+	divide?: DivideValue | true | Array<DivideValue | true>;
+	divideX?: DivideXValue | true | Array<DivideXValue | true>;
+	divideY?: DivideXValue | true | Array<DivideXValue | true>;
+	dropShadow?: DropShadowValue | true | Array<DropShadowValue | true>;
+	duration?: DurationValue | true | Array<DurationValue | true>;
+	ease?: EaseValue | true | Array<EaseValue | true>;
+	"-end"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	end?: StartValue | true | Array<StartValue | true>;
+	field?: FieldValue | true | Array<FieldValue | true>;
+	fill?: FillValue | true | Array<FillValue | true>;
+	fixed?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	flex?: FlexValue | true | Array<FlexValue | true>;
+	float?: FloatValue | true | Array<FloatValue | true>;
+	flow?: FlowValue | true | Array<FlowValue | true>;
+	font?: FontValue | true | Array<FontValue | true>;
+	fontStretch?: FontStretchValue | true | Array<FontStretchValue | true>;
+	forced?: ForcedValue | true | Array<ForcedValue | true>;
+	from?: FromValue | true | Array<FromValue | true>;
+	gap?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	gapX?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	gapY?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	grayscale?: GrayscaleValue | true | Array<GrayscaleValue | true>;
+	gridCols?: GridColsValue | true | Array<GridColsValue | true>;
+	gridFlow?: GridFlowValue | true | Array<GridFlowValue | true>;
+	grid?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	gridRows?: GridColsValue | true | Array<GridColsValue | true>;
+	grow?: ShrinkValue | true | Array<ShrinkValue | true>;
+	h?: HValue | true | Array<HValue | true>;
+	hidden?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	hueRotate?: HueRotateValue | true | Array<HueRotateValue | true>;
+	hyphens?: HyphensValue | true | Array<HyphensValue | true>;
+	indent?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-indent"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	inline?: InlineValue | true | Array<InlineValue | true>;
+	insetBe?: InsetValue | true | Array<InsetValue | true>;
+	"-insetBe"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	insetBs?: InsetValue | true | Array<InsetValue | true>;
+	"-insetBs"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	insetE?: InsetValue | true | Array<InsetValue | true>;
+	"-insetE"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	inset?: InsetValue | true | Array<InsetValue | true>;
+	"-inset"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	insetRing?: InsetRingValue | true | Array<InsetRingValue | true>;
+	insetShadow?: InsetShadowValue | true | Array<InsetShadowValue | true>;
+	insetS?: InsetValue | true | Array<InsetValue | true>;
+	"-insetS"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	insetX?: InsetValue | true | Array<InsetValue | true>;
+	"-insetX"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	insetY?: InsetValue | true | Array<InsetValue | true>;
+	"-insetY"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	invert?: GrayscaleValue | true | Array<GrayscaleValue | true>;
+	invisible?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	isolate?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	isolation?: ColValue | true | Array<ColValue | true>;
+	italic?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	items?: ItemsValue | true | Array<ItemsValue | true>;
+	justifyItems?: JustifyItemsValue | true | Array<JustifyItemsValue | true>;
+	justify?: JustifyValue | true | Array<JustifyValue | true>;
+	justifySelf?: PlaceSelfValue | true | Array<PlaceSelfValue | true>;
+	leading?: LeadingValue | true | Array<LeadingValue | true>;
+	left?: InsetValue | true | Array<InsetValue | true>;
+	"-left"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	lineClamp?: LineClampValue | true | Array<LineClampValue | true>;
+	line?: LineValue | true | Array<LineValue | true>;
+	lining?: LiningValue | true | Array<LiningValue | true>;
+	listImage?: ListImageValue | true | Array<ListImageValue | true>;
+	list?: ListValue | true | Array<ListValue | true>;
+	lowercase?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	maskBFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskBTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskConicFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskConic?: RotateXValue | true | Array<RotateXValue | true>;
+	maskConicTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskLFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskLinearFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskLinear?: RotateXValue | true | Array<RotateXValue | true>;
+	maskLinearTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskLTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	mask?: MaskValue | true | Array<MaskValue | true>;
+	maskRadialAt?: OriginValue | true | Array<OriginValue | true>;
+	maskRadialFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskRadial?: MaskRadialValue | true | Array<MaskRadialValue | true>;
+	maskRadialTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskRFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskRTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskTFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskTTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskXFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskXTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskYFrom?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maskYTo?: MaskXFromValue | true | Array<MaskXFromValue | true>;
+	maxBlock?: MaxBlockValue | true | Array<MaxBlockValue | true>;
+	maxH?: MaxHValue | true | Array<MaxHValue | true>;
+	maxInline?: MaxInlineValue | true | Array<MaxInlineValue | true>;
+	maxW?: MaxWValue | true | Array<MaxWValue | true>;
+	maxWScreen?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	mbe?: MValue | true | Array<MValue | true>;
+	"-mbe"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	mb?: MValue | true | Array<MValue | true>;
+	"-mb"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	mbs?: MValue | true | Array<MValue | true>;
+	"-mbs"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	me?: MValue | true | Array<MValue | true>;
+	"-me"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	minBlock?: BlockValue | true | Array<BlockValue | true>;
+	minH?: HValue | true | Array<HValue | true>;
+	minInline?: MinInlineValue | true | Array<MinInlineValue | true>;
+	minW?: WValue | true | Array<WValue | true>;
+	mixBlend?: MixBlendValue | true | Array<MixBlendValue | true>;
+	ml?: MValue | true | Array<MValue | true>;
+	"-ml"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	m?: MValue | true | Array<MValue | true>;
+	"-m"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	mr?: MValue | true | Array<MValue | true>;
+	"-mr"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	ms?: MValue | true | Array<MValue | true>;
+	"-ms"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	mt?: MValue | true | Array<MValue | true>;
+	"-mt"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	mx?: MValue | true | Array<MValue | true>;
+	"-mx"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	my?: MValue | true | Array<MValue | true>;
+	"-my"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	no?: NoValue | true | Array<NoValue | true>;
+	normal?: NormalValue | true | Array<NormalValue | true>;
+	not?: NotValue | true | Array<NotValue | true>;
+	notSrOnly?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	object?: ObjectValue | true | Array<ObjectValue | true>;
+	oldstyle?: LiningValue | true | Array<LiningValue | true>;
+	opacity?: BackdropOpacityValue | true | Array<BackdropOpacityValue | true>;
+	order?: OrderValue | true | Array<OrderValue | true>;
+	ordinal?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	origin?: OriginValue | true | Array<OriginValue | true>;
+	outlineColor?: CaretValue | true | Array<CaretValue | true>;
+	outlineOffset?: OutlineOffsetValue | true | Array<OutlineOffsetValue | true>;
+	outline?: OutlineValue | true | Array<OutlineValue | true>;
+	outlineStyle?: OutlineStyleValue | true | Array<OutlineStyleValue | true>;
+	outlineWidth?: OutlineOffsetValue | true | Array<OutlineOffsetValue | true>;
+	overflow?: OverflowValue | true | Array<OverflowValue | true>;
+	overflowX?: OverflowXValue | true | Array<OverflowXValue | true>;
+	overflowY?: OverflowXValue | true | Array<OverflowXValue | true>;
+	overline?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	overscroll?: OverscrollValue | true | Array<OverscrollValue | true>;
+	overscrollX?: OverscrollValue | true | Array<OverscrollValue | true>;
+	overscrollY?: OverscrollValue | true | Array<OverscrollValue | true>;
+	pb?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	pbe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	p?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	pbs?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	pe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	perspectiveOrigin?: OriginValue | true | Array<OriginValue | true>;
+	perspective?: PerspectiveValue | true | Array<PerspectiveValue | true>;
+	placeContent?: PlaceContentValue | true | Array<PlaceContentValue | true>;
+	placeholder?: CaretValue | true | Array<CaretValue | true>;
+	placeItems?: PlaceItemsValue | true | Array<PlaceItemsValue | true>;
+	placeSelf?: PlaceSelfValue | true | Array<PlaceSelfValue | true>;
+	pl?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	pointerEvents?: PointerEventsValue | true | Array<PointerEventsValue | true>;
+	pr?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	proportional?: LiningValue | true | Array<LiningValue | true>;
+	ps?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	pt?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	px?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	py?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	relative?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	resize?: ResizeValue | true | Array<ResizeValue | true>;
+	right?: InsetValue | true | Array<InsetValue | true>;
+	"-right"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	ringOffset?: InsetRingValue | true | Array<InsetRingValue | true>;
+	ring?: RingValue | true | Array<RingValue | true>;
+	rotate?: RotateValue | true | Array<RotateValue | true>;
+	rotateX?: RotateXValue | true | Array<RotateXValue | true>;
+	rotateY?: RotateXValue | true | Array<RotateXValue | true>;
+	rotateZ?: RotateXValue | true | Array<RotateXValue | true>;
+	roundedBl?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedB?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedBr?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedEe?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedE?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedEs?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedL?: RoundedValue | true | Array<RoundedValue | true>;
+	rounded?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedR?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedSe?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedS?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedSs?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedTl?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedT?: RoundedValue | true | Array<RoundedValue | true>;
+	roundedTr?: RoundedValue | true | Array<RoundedValue | true>;
+	row?: ColValue | true | Array<ColValue | true>;
+	rowEnd?: ColStartValue | true | Array<ColStartValue | true>;
+	rowSpan?: ColSpanValue | true | Array<ColSpanValue | true>;
+	rowStart?: ColStartValue | true | Array<ColStartValue | true>;
+	saturate?: SaturateValue | true | Array<SaturateValue | true>;
+	scale?: ScaleValue | true | Array<ScaleValue | true>;
+	scaleX?: ScaleXValue | true | Array<ScaleXValue | true>;
+	scaleY?: ScaleXValue | true | Array<ScaleXValue | true>;
+	scaleZ?: ScaleXValue | true | Array<ScaleXValue | true>;
+	scheme?: SchemeValue | true | Array<SchemeValue | true>;
+	scrollbar?: ScrollbarValue | true | Array<ScrollbarValue | true>;
+	scrollbarThumb?: CaretValue | true | Array<CaretValue | true>;
+	scrollbarTrack?: CaretValue | true | Array<CaretValue | true>;
+	scrollMb?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollMbe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMbe"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	"-scrollMb"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollM?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollMbs?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMbs"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMe"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMl?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMl"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	"-scrollM"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMr?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMr"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMs?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMs"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMt?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMt"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMx?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMx"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollMy?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-scrollMy"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	scrollPb?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPbe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollP?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPbs?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPe?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPl?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPr?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPs?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPt?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPx?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scrollPy?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	scroll?: ScrollValue | true | Array<ScrollValue | true>;
+	select?: SelectValue | true | Array<SelectValue | true>;
+	self?: SelfValue | true | Array<SelfValue | true>;
+	sepia?: SepiaValue | true | Array<SepiaValue | true>;
+	shadow?: ShadowValue | true | Array<ShadowValue | true>;
+	shrink?: ShrinkValue | true | Array<ShrinkValue | true>;
+	size?: SizeValue | true | Array<SizeValue | true>;
+	skew?: SkewValue | true | Array<SkewValue | true>;
+	skewX?: SkewValue | true | Array<SkewValue | true>;
+	skewY?: SkewValue | true | Array<SkewValue | true>;
+	slashed?: SlashedValue | true | Array<SlashedValue | true>;
+	snap?: SnapValue | true | Array<SnapValue | true>;
+	"-spaceX"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	spaceX?: SpaceXValue | true | Array<SpaceXValue | true>;
+	"-spaceY"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	spaceY?: SpaceXValue | true | Array<SpaceXValue | true>;
+	srOnly?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	stacked?: DiagonalValue | true | Array<DiagonalValue | true>;
+	"-start"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	start?: StartValue | true | Array<StartValue | true>;
+	static?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	sticky?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	stroke?: StrokeValue | true | Array<StrokeValue | true>;
+	subpixel?: SubpixelValue | true | Array<SubpixelValue | true>;
+	table?: TableValue | true | Array<TableValue | true>;
+	tab?: TabValue | true | Array<TabValue | true>;
+	tabular?: LiningValue | true | Array<LiningValue | true>;
+	textAlign?: TextAlignValue | true | Array<TextAlignValue | true>;
+	textColor?: CaretValue | true | Array<CaretValue | true>;
+	textOverflow?: TextOverflowValue | true | Array<TextOverflowValue | true>;
+	textShadow?: TextShadowValue | true | Array<TextShadowValue | true>;
+	textSize?: TextSizeValue | true | Array<TextSizeValue | true>;
+	text?: TextValue | true | Array<TextValue | true>;
+	textWrap?: TextWrapValue | true | Array<TextWrapValue | true>;
+	to?: FromValue | true | Array<FromValue | true>;
+	top?: InsetValue | true | Array<InsetValue | true>;
+	"-top"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	touchPan?: TouchPanValue | true | Array<TouchPanValue | true>;
+	touch?: TouchValue | true | Array<TouchValue | true>;
+	tracking?: TrackingValue | true | Array<TrackingValue | true>;
+	transform?: TransformValue | true | Array<TransformValue | true>;
+	transition?: TransitionValue | true | Array<TransitionValue | true>;
+	"-translate"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	translate?: TranslateValue | true | Array<TranslateValue | true>;
+	"-translateX"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	translateX?: TranslateXValue | true | Array<TranslateXValue | true>;
+	"-translateY"?: NegativeInsetValue | true | Array<NegativeInsetValue | true>;
+	translateY?: TranslateXValue | true | Array<TranslateXValue | true>;
+	translateZ?: BorderSpacingValue | true | Array<BorderSpacingValue | true>;
+	"-translateZ"?: NegativeMValue | true | Array<NegativeMValue | true>;
+	truncate?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	underline?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	underlineOffset?: UnderlineOffsetValue | true | Array<UnderlineOffsetValue | true>;
+	uppercase?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	via?: ViaValue | true | Array<ViaValue | true>;
+	visible?: MaxWScreenValue | true | Array<MaxWScreenValue | true>;
+	whitespace?: WhitespaceValue | true | Array<WhitespaceValue | true>;
+	willChange?: WillChangeValue | true | Array<WillChangeValue | true>;
+	wrap?: WrapValue | true | Array<WrapValue | true>;
+	w?: WValue | true | Array<WValue | true>;
+	zoom?: ZoomValue | true | Array<ZoomValue | true>;
+	z?: ZValue | true | Array<ZValue | true>;
 }
 
-export type WindVariants = WindUtilities & {
+export type WindVariants = Omit<WindUtilities, "not" | "placeholder"> & {
 	"*"?: WindVariants;
 	"**"?: WindVariants;
-	not?: WindVariants;
+	not?: WindVariants | WindUtilities["not"];
 	group?: WindVariants;
 	peer?: WindVariants;
 	firstLetter?: WindVariants;
@@ -9050,7 +8655,7 @@ export type WindVariants = WindUtilities & {
 	marker?: WindVariants;
 	selection?: WindVariants;
 	file?: WindVariants;
-	placeholder?: WindVariants;
+	placeholder?: WindVariants | WindUtilities["placeholder"];
 	backdrop?: WindVariants;
 	detailsContent?: WindVariants;
 	before?: WindVariants;
@@ -9128,4 +8733,7 @@ export type WindVariants = WindUtilities & {
 	anyPointerCoarse?: WindVariants;
 	anyPointerFine?: WindVariants;
 	noscript?: WindVariants;
+	[
+		key: `${"" | "group-" | "peer-"}${"data" | "aria"}-[${string}]${"" | `/${string}`}`
+	]: WindVariants;
 };

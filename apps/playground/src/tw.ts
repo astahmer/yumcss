@@ -5936,7 +5936,7 @@ export const __pandwindConfig: TwOptions = {
 		"inset-bs": { "*": ["top"] },
 		"inset-e": { "*": ["right"] },
 		"inset-ring": {
-			"*": ["box-shadow"],
+			"*": ["inset-ring-shadow"],
 			"amber-100": [],
 			"amber-200": [],
 			"amber-300": [],
@@ -7010,7 +7010,7 @@ export const __pandwindConfig: TwOptions = {
 		resize: { "*": ["resize"] },
 		right: { "*": ["right"] },
 		ring: {
-			"*": ["box-shadow"],
+			"*": ["ring-shadow"],
 			"amber-100": [],
 			"amber-200": [],
 			"amber-300": [],
