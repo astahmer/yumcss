@@ -12,6 +12,7 @@ import {
 	StyleBackendId,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
+import { normalizeCssValue } from "../css/value-normalization.ts";
 
 export interface CssBackendOptions {
 	debug?: boolean;
@@ -64,7 +65,8 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 	const declare = (key: string, value: string): string => {
 		const orderedKey = canonicalStyleKey(key);
-		const rawValue = String(value);
+		const property = orderedKey.split("__").at(-1) ?? orderedKey;
+		const rawValue = normalizeCssValue(property, value);
 		// The stylesheet canonicalizes flattened condition paths before it
 		// hashes them. Do the same at declaration time so inverted nesting
 		// (`{ color: { _hover: value } }`) cannot produce an atom with no rule.

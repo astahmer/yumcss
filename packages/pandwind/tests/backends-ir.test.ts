@@ -68,8 +68,8 @@ describe("css backend", () => {
 
 	test("values are stringified on the way in", () => {
 		const backend = createCssBackend();
-		const fromString = backend.declare("line", "4");
-		expect(backend.declare("line", 4 as unknown as string)).toBe(fromString);
+		const fromString = backend.declare("line-height", "4");
+		expect(backend.declare("line-height", 4 as unknown as string)).toBe(fromString);
 	});
 
 	test("sheet-backed strategy classes join the registry", () => {
