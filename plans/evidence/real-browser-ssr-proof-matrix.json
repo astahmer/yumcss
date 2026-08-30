@@ -128,6 +128,30 @@
 			}
 		}
 	],
+	"boundedProofs": [
+		{
+			"id": "astryx-docsite",
+			"sourceAdapter": "stylex",
+			"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+			"report": "examples/astryx-docs-migration/README.md",
+			"lanes": ["static-css", "runtime-css", "design-dss"],
+			"server": { "checked": true, "builds": 3, "failures": 0 },
+			"browser": {
+				"checked": true,
+				"comparisonsPerLane": 24,
+				"equivalent": true,
+				"errors": 0,
+				"bodyHeightMismatches": 0
+			},
+			"css": {
+				"metric": "linked-css",
+				"staticCssDelta": 1114,
+				"runtimeCssDelta": 754,
+				"notLarger": false,
+				"note": "Behavioral proof passes. The app imports unchanged @astryxdesign StyleX packages, so this is not a strict size acceptance claim until the full repository is migrated or atomic reuse is proven."
+			}
+		}
+	],
 	"fixtureOnlyAdapters": [
 		"emotion",
 		"vanilla-extract",
