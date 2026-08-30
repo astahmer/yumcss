@@ -46,18 +46,19 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
  * merely because files happened to be scanned in a different order.
  */
 const responsiveCascadeOrder = (a: { css?: string }, b: { css?: string }): number => {
-	const condition = (
-		value: string | undefined,
-	): { direction: "min" | "max"; width: number } | undefined => {
-		const match = value?.match(/@(media|container)[^{]*\((min|max)-width:\s*([\d.]+)px/);
-		if (match === null || match === undefined) return undefined;
-		return { direction: match[2] as "min" | "max", width: Number(match[3]) };
-	};
 	const left = condition(a.css);
 	const right = condition(b.css);
 	if (left === undefined || right === undefined || left.direction !== right.direction) return 0;
 	return left.direction === "min" ? left.width - right.width : right.width - left.width;
 };
+
+function condition(
+	value: string | undefined,
+): { direction: "min" | "max"; width: number } | undefined {
+	const match = value?.match(/@(media|container)[^{]*\((min|max)-width:\s*([\d.]+)px/);
+	if (match === null || match === undefined) return undefined;
+	return { direction: match[2] as "min" | "max", width: Number(match[3]) };
+}
 
 export const createStylesheetOrderingPolicy = (): StylesheetOrderingPolicy =>
 	new PriorityStylesheetOrderingPolicy();

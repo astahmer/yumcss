@@ -257,7 +257,7 @@ function importedStyleReferences(context: AdapterParseContext): Readonly<Record<
 				if (typeof child !== "string" && typeof child !== "number") continue;
 				references[`${binding}.${key}`] = String(child);
 				references[`${binding}['${key}']`] = String(child);
-				references[`${binding}[\"${key}\"]`] = String(child);
+				references[`${binding}["${key}"]`] = String(child);
 			}
 		}
 		return references;

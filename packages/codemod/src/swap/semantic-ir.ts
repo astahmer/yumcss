@@ -783,16 +783,16 @@ function looksLikePropertyValueConditions(
 		properties.length > 0 &&
 		properties.every((property) => {
 			if (property.type !== "Property" || property.kind !== "init") return false;
-			const name = sourceKey(property, body, options);
+			const propertyName = sourceKey(property, body, options);
 			return (
-				name === "default" ||
-				name === "base" ||
-				name?.startsWith(":") === true ||
-				name?.startsWith("&") === true ||
-				name?.startsWith("[") === true ||
-				name?.startsWith("@") === true ||
-				(name !== null && options.conditionKinds?.[name] !== undefined) ||
-				(name !== null && options.conditionValues?.[name] !== undefined)
+				propertyName === "default" ||
+				propertyName === "base" ||
+				propertyName?.startsWith(":") === true ||
+				propertyName?.startsWith("&") === true ||
+				propertyName?.startsWith("[") === true ||
+				propertyName?.startsWith("@") === true ||
+				(propertyName !== null && options.conditionKinds?.[propertyName] !== undefined) ||
+				(propertyName !== null && options.conditionValues?.[propertyName] !== undefined)
 			);
 		})
 	);
