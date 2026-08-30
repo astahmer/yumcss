@@ -179,6 +179,38 @@ function staticUnoTokens(source: string): readonly string[] {
 	];
 }
 
+function openingTagForAttribute(
+	source: string,
+	attributeStart: number,
+): { start: number; end: number; text: string } | undefined {
+	const start = source.lastIndexOf("<", attributeStart);
+	if (start < 0) return undefined;
+	let quote: string | undefined;
+	let braces = 0;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === quote && source[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") {
+			braces++;
+			continue;
+		}
+		if (character === "}" && braces > 0) {
+			braces--;
+			continue;
+		}
+		if (character === ">" && braces === 0)
+			return { start, end: index + 1, text: source.slice(start, index + 1) };
+	}
+	return undefined;
+}
+
 async function officialConfig(
 	context: AdapterConfigContext,
 	loader: ProjectModuleLoader,
@@ -244,11 +276,13 @@ function parseUnoCss(
 	const excluded = context.document?.isExcluded ?? (() => false);
 	const attribute = /\b(className|class)\s*=\s*(["'])([^"']*)\2/g;
 	for (const match of source.matchAll(attribute)) {
-		const start = match.index ?? 0;
-		if (excluded(start)) continue;
+		const attributeStart = match.index ?? 0;
+		if (excluded(attributeStart)) continue;
 		const attributeName = match[1];
 		const value = match[3] ?? "";
 		if (attributeName === undefined || value.trim() === "") continue;
+		const openingTag = openingTagForAttribute(source, attributeStart);
+		if (openingTag === undefined) continue;
 		const declarations: StyleDeclaration[] = [];
 		const unknown: string[] = [];
 		for (const token of value.split(/\s+/).filter(Boolean)) {
@@ -269,11 +303,13 @@ function parseUnoCss(
 			{
 				source: {
 					file: context.file,
-					start,
-					end: start + match[0].length,
+					start: openingTag.start,
+					end: openingTag.end,
 					adapter: CodemodAdapterId.UnoCSS,
 					framework: context.document?.framework,
 					hostAttribute: attributeName,
+					hostOpenTag: openingTag.text,
+					hostStyleAttributes: [match[0]],
 				},
 				residuals: unknown.map((token) => ({
 					kind: "unknown-utility",
@@ -282,7 +318,12 @@ function parseUnoCss(
 				})),
 			},
 		);
-		matches.push({ start, end: start + match[0].length, program, sourceText: match[0] });
+		matches.push({
+			start: openingTag.start,
+			end: openingTag.end,
+			program,
+			sourceText: openingTag.text,
+		});
 	}
 	return { matches, residuals };
 }

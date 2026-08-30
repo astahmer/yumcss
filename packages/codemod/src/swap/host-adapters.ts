@@ -1,13 +1,14 @@
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
-export type HostFramework = string;
-export type BuiltinHostFramework =
-	| "react"
-	| "preact"
-	| "solid"
-	| "qwik"
-	| "vue"
-	| "svelte"
-	| "astro";
+export enum BuiltinHostFramework {
+	React = "react",
+	Preact = "preact",
+	Solid = "solid",
+	Qwik = "qwik",
+	Vue = "vue",
+	Svelte = "svelte",
+	Astro = "astro",
+}
+export type HostFramework = BuiltinHostFramework | (string & {});
 
 export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
 export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;

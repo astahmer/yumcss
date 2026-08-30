@@ -149,6 +149,12 @@ export function allRuleCapabilities(
 	};
 }
 
+/** Cohesive construction utilities used by concrete adapter modules. */
+export class CodemodAdapterKit {
+	static dependency = dependency;
+	static allRuleCapabilities = allRuleCapabilities;
+}
+
 function configFor(
 	id: string,
 	configFiles: readonly string[],

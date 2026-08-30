@@ -39,7 +39,7 @@ function importedStaticValues(
 			const target = context.readFile?.(targetFile);
 			if (target === undefined) continue;
 			for (const object of target.matchAll(
-				/(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*\{([\s\S]*?)\}/g,
+				/(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*\{([\s\S]*?)\}\s*;/g,
 			)) {
 				const name = object[1];
 				if (name === undefined || object[2] === undefined) continue;
@@ -53,7 +53,7 @@ function importedStaticValues(
 			Object.assign(values, importedStaticValues(context, imported, seen));
 		for (const name of names) {
 			const object = new RegExp(
-				`(?:export\\s+)?(?:const|let|var)\\s+${name}\\s*=\\s*\\{([\\s\\S]*?)\\}`,
+				`(?:export\\s+)?(?:const|let|var)\\s+${name}\\s*=\\s*\\{([\\s\\S]*?)\\}\\s*;`,
 			).exec(imported)?.[1];
 			if (object === undefined) continue;
 			for (const property of object.matchAll(/([A-Za-z_$][\w$]*)\s*:\s*["']([^"']+)["']/g)) {

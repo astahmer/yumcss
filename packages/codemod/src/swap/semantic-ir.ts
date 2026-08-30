@@ -12,10 +12,11 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
 	StyleProgramConditionOrder,
 	StyleProgramCompositionKind,
+	StyleDynamicExpressionKind,
 	type StyleProgramEmissionHint,
 } from "./identifiers.ts";
 
-export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/3" as const;
+export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/4" as const;
 
 export type SemanticConditionKind =
 	| "named"
@@ -63,10 +64,20 @@ export interface StyleLiteralValue {
 
 export type StyleDynamicLowering = "runtime" | "custom-property" | "residual";
 
+export interface StyleStaticEvaluation {
+	readonly attempted: true;
+	readonly status: "unresolved";
+	readonly reason: string;
+}
+
 export interface StyleDynamicValue {
 	readonly kind: "dynamic";
 	/** Source expression or placeholder retained for a target adapter. */
 	readonly expression: string;
+	/** Parsed expression shape used by lowering and framework host adapters. */
+	readonly expressionKind?: StyleDynamicExpressionKind;
+	/** Evidence that compile-time evaluation was attempted and could not resolve it. */
+	readonly staticEvaluation?: StyleStaticEvaluation;
 	readonly fallback?: StyleLiteralValue;
 	/** Exact source range for diagnostics and source-to-source adapters. */
 	readonly source?: StyleProgramSource;
@@ -220,6 +231,8 @@ export interface StyleProgramOptions {
 	readonly valueTransforms?: Readonly<Record<string, StyleValueTransform>>;
 	/** Adapter-owned array fields that expand into independent semantic rules. */
 	readonly arrayRuleKinds?: Readonly<Record<string, StyleRuleKind>>;
+	/** Adapter-owned arrays whose entries are composition references. */
+	readonly compositionArrayKeys?: readonly string[];
 	/** Absolute offset of the supplied source-object body in the source file. */
 	readonly sourceOffset?: number;
 	/** Additional provenance entries supplied by an adapter. */
@@ -239,6 +252,31 @@ export interface StyleRuleInput extends Omit<StyleRule, "children" | "order"> {
 
 function sourceIdentity(source: StyleProgramSource): string {
 	return JSON.stringify(source);
+}
+
+function normalizeDynamicValue(value: StyleValue): StyleValue {
+	if (value.kind !== "dynamic") return value;
+	return {
+		...value,
+		expressionKind: value.expressionKind ?? dynamicExpressionKind(value.expression),
+		staticEvaluation: value.staticEvaluation ?? {
+			attempted: true,
+			status: "unresolved",
+			reason: "expression depends on runtime or unresolved source bindings",
+		},
+	};
+}
+
+function normalizeRule(rule: StyleRuleInput, index: number): StyleRule {
+	return {
+		...rule,
+		declarations: rule.declarations.map((declaration) => ({
+			...declaration,
+			value: normalizeDynamicValue(declaration.value),
+		})),
+		children: (rule.children ?? []).map((child, childIndex) => normalizeRule(child, childIndex)),
+		order: rule.order ?? index,
+	};
 }
 
 function collectSources(
@@ -383,11 +421,7 @@ export function styleProgramFromRules(
 	rules: readonly StyleRuleInput[],
 	options: StyleProgramOptions & { residuals?: readonly StyleProgramResidual[] } = {},
 ): StyleProgram {
-	const normalized = rules.map((rule, index): StyleRule => ({
-		...rule,
-		children: rule.children ?? [],
-		order: rule.order ?? index,
-	}));
+	const normalized = rules.map(normalizeRule);
 	const ordered = orderStyleRules(normalized);
 	return {
 		schema: STYLE_PROGRAM_SCHEMA,
@@ -515,9 +549,9 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		const childrenText = children.map(render).join("");
 		switch (rule.kind) {
 			case "style":
-				return `${selector ?? "&"}{${declarationText}${childrenText}}`;
+				return `${selector ?? "&"}{${declarationText}}${childrenText}`;
 			case "global":
-				return `${selector ?? "*"}{${declarationText}${childrenText}}`;
+				return `${selector ?? "*"}{${declarationText}}${childrenText}`;
 			case "keyframes":
 				return `@keyframes ${rule.name ?? ""}{${declarationText}${childrenText}}`;
 			case "font-face":
@@ -660,6 +694,20 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 	return null;
 }
 
+function dynamicExpressionKind(expression: string): StyleDynamicExpressionKind {
+	const trimmed = expression.trim();
+	if (trimmed.startsWith("`") || trimmed.includes("${")) return StyleDynamicExpressionKind.Template;
+	if (trimmed.startsWith("{") && trimmed.endsWith("}")) return StyleDynamicExpressionKind.Object;
+	if (trimmed.startsWith("[") && trimmed.endsWith("]")) return StyleDynamicExpressionKind.Array;
+	if (/^(?:[A-Za-z_$][\w$]*\.)+[A-Za-z_$][\w$]*$/.test(trimmed))
+		return StyleDynamicExpressionKind.Member;
+	if (/^[A-Za-z_$][\w$]*$/.test(trimmed)) return StyleDynamicExpressionKind.Identifier;
+	if (/^[A-Za-z_$][\w$]*\s*\(/.test(trimmed)) return StyleDynamicExpressionKind.Call;
+	if (trimmed.includes("?") && trimmed.includes(":")) return StyleDynamicExpressionKind.Conditional;
+	if (/[+\-*/%|&<>]=?/.test(trimmed)) return StyleDynamicExpressionKind.Binary;
+	return StyleDynamicExpressionKind.Unknown;
+}
+
 function dynamicSourceValue(
 	node: SourceNode,
 	body: string,
@@ -680,14 +728,24 @@ function dynamicSourceValue(
 				: normalizedExpression;
 		return { kind: "literal", value };
 	}
-	const expression = sourceExpression.replace(/\$\{([A-Za-z_$][\w$]*)\}/g, (match, name: string) =>
-		options.dynamicReferences?.[name] === undefined
-			? match
-			: `\${${JSON.stringify(options.dynamicReferences[name])}}`,
+	const expression = sourceExpression.replace(
+		/\$\{([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\}/g,
+		(match, name: string) =>
+				options.dynamicReferences?.[name] === undefined
+					? match
+					: options.dynamicReferences[name]!,
 	);
+	if (expression.trim().startsWith("`") && expression.trim().endsWith("`") && !expression.includes("${"))
+		return { kind: "literal", value: expression.trim().slice(1, -1) };
 	return {
 		kind: "dynamic",
 		expression,
+		expressionKind: dynamicExpressionKind(expression),
+		staticEvaluation: {
+			attempted: true,
+			status: "unresolved",
+			reason: "expression depends on runtime or unresolved source bindings",
+		},
 		lowering: "residual",
 		source: sourceRange(options.source, options.sourceOffset ?? 0, node),
 		dependencies: [...new Set(expression.match(/[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/g) ?? [])],
@@ -879,6 +937,27 @@ export function styleProgramFromSourceObject(
 			const valueNode = property.value as SourceNode | undefined;
 			if (valueNode === undefined) {
 				addDynamicResidual(sourceSlice(body, property), "missing style value");
+				continue;
+			}
+			if (
+				options.compositionArrayKeys?.includes(name) === true &&
+				valueNode.type === "ArrayExpression"
+			) {
+				for (const element of valueNode.elements ?? []) {
+					const reference = sourceSlice(body, element).trim();
+					if (reference === "") {
+						addDynamicResidual(
+							sourceSlice(body, element),
+							"composition entries require a source reference",
+						);
+						continue;
+					}
+					compositions.push({
+						kind: StyleProgramCompositionKind.Mixin,
+						reference,
+						source: sourceRange(options.source, options.sourceOffset ?? 0, element),
+					});
+				}
 				continue;
 			}
 			const specialKind = options.arrayRuleKinds?.[name];

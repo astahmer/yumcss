@@ -35,6 +35,7 @@ export enum CodemodAdapterId {
 }
 
 export enum CodemodPatternId {
+	CssTemplate = "css-template",
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
@@ -66,6 +67,16 @@ export enum StyleProgramEmissionHint {
 	RuntimeClass = "runtime-class",
 	RuntimeFunction = "runtime-function",
 	Recipe = "recipe",
+	RawTemplate = "raw-template",
+}
+
+/** Stable generated identities for declarations that need a reusable class name. */
+export class CodemodStyleIdentity {
+	static className(file: string, binding: string): string {
+		let hash = 5381;
+		for (const character of `${file}\0${binding}`) hash = (hash * 33) ^ character.charCodeAt(0);
+		return `pw-${(hash >>> 0).toString(36)}`;
+	}
 }
 
 export enum StyleProgramConditionOrder {

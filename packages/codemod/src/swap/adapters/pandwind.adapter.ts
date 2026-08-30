@@ -388,10 +388,7 @@ function runtimeComponent(
 ): { text: string; imports: readonly string[] } | undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
-	const tag =
-		subject?.match(/^styled\.([a-z][\w-]*)/)?.[1] ??
-		subject?.match(/^styled\(\s*["']([a-z][\w-]*)["']\s*\)/)?.[1] ??
-		subject?.match(/^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/)?.[1];
+	const tag = subject === undefined ? undefined : intrinsicTagForSubject(subject);
 	const framework = host?.framework ?? program.source?.framework;
 	const componentExpression =
 		subject === undefined ? undefined : componentExpressionForSubject(subject);
@@ -434,8 +431,14 @@ function runtimeComponent(
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
 	if (tag === undefined) {
+		const forwardedProps =
+			componentAttrs === undefined
+				? "{...props}"
+				: /=>|\bfunction\b/.test(componentAttrs)
+					? `{...(${componentAttrs})(props), ...props}`
+					: `{...(${componentAttrs}), ...props}`;
 		return {
-			text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Base = props.as ?? (${componentExpression}); const { as: _as, ...rest } = props; const attrs = ${componentAttrs === undefined ? "{}" : /=>|\bfunction\b/.test(componentAttrs) ? `(${componentAttrs})(props)` : `(${componentAttrs})`}; return <Base {...attrs} {...rest} ${classAttribute}={${mergedClass}} style={{ ...props.style, ...style.style }} />; }`,
+			text: `(props) => { ${composedCxBinding}const style = css.vars(${object}); const Base = props.as ?? (${componentExpression}); return <Base ${forwardedProps} ${classAttribute}={cx(style.class, props.${classAttribute})} style={{ ...props.style, ...style.style }} />; }`,
 			imports: [
 				'import { createCx } from "pandwind/cx";',
 				"const cx = createCx();",
@@ -955,7 +958,10 @@ export default defineCodemodAdapter({
 		const cssBinding = generatedCssBinding(context?.document?.document.source);
 		const finalize = (emission: { text: string; imports: readonly string[] }) =>
 			renameGeneratedCssBinding(emission, cssBinding);
-		if (program.source?.pattern === CodemodPatternId.CssTemplate) {
+		if (
+			program.source?.pattern === CodemodPatternId.CssTemplate &&
+			program.source.hostOpenTag === undefined
+		) {
 			const hasStaticContent = program.rules.some(function hasContent(rule): boolean {
 				return rule.declarations.length > 0 || rule.children.some(hasContent);
 			});

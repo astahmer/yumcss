@@ -62,6 +62,23 @@ export function componentTagForSubject(subject: string): string | undefined {
 	);
 }
 
+/** Return the authored component expression for a non-intrinsic styled subject. */
+export function componentExpressionForSubject(subject: string): string | undefined {
+	return /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1];
+}
+
+/**
+ * Return a static `.attrs(...)` payload when it is safe to forward it as a
+ * component attribute object. Dynamic attrs remain owned by the host adapter,
+ * which can evaluate them with the correct props/theme context.
+ */
+export function componentAttrsExpressionForSubject(subject: string): string | undefined {
+	const match = /\.attrs\(\s*([\s\S]*)\s*\)$/.exec(subject);
+	if (match === null) return undefined;
+	const expression = match[1]?.trim();
+	return expression === undefined || expression === "" ? undefined : expression;
+}
+
 const excluded = (source: string, file: string, index: number): boolean => {
 	try {
 		return computeExcludedRanges(source, file).isExcluded(index);
@@ -200,7 +217,7 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 	}
 	const classAttribute = request.framework === "solid" ? "class" : "className";
 	const declaration =
-		`const ${request.binding} = (props) => <${request.tag} {...props} ` +
+		`${request.binding} = (props) => <${request.tag} {...props} ` +
 		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
 	return {
 		code:
