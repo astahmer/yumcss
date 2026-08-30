@@ -1,0 +1,267 @@
+{
+	"schema": "pandwind.shadcn-v4-migration/1",
+	"lane": "css",
+	"referenceCommit": "683a5a9b370acdb7785a0529434e6a3b8c7e0441",
+	"sourceFiles": 235,
+	"changedFiles": 82,
+	"convertedCallSites": 151,
+	"residualCount": 4812,
+	"residualSamples": [
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "group/picker",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "pr-3",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "md:pr-0",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-xs",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-muted-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-sm",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "font-medium",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "pointer-events-none",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "right-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "size-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-base",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "select-none",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "md:right-2.5",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "size-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "text-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "fill-muted-foreground/30",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "data-[accent=bold]:fill-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "fill-muted-foreground/30",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "data-[accent=bold]:fill-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "right-8",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/accent-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/action-menu.tsx",
+			"token": "animate-none!",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/action-menu.tsx",
+			"token": "px-2",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "group/picker",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "text-xs",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "text-muted-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "text-sm",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "font-medium",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "text-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "pointer-events-none",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "right-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "size-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "bg-(--color)",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "select-none",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "md:right-2.5",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "right-8",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-color-picker.tsx",
+			"token": "-translate-y-1/2",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "group/picker",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "text-xs",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "text-muted-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "text-sm",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "font-medium",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "text-foreground",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "pointer-events-none",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "right-4",
+			"reason": "not in generated bridge (css mode)"
+		},
+		{
+			"file": "apps/v4/app/(app)/(create)/components/base-picker.tsx",
+			"token": "size-4",
+			"reason": "not in generated bridge (css mode)"
+		}
+	],
+	"sourceBytes": 832319,
+	"outputBytes": 853774,
+	"outputByteDelta": 21455,
+	"generatedUtilities": 419,
+	"generatedVariants": 108,
+	"generatedBridgeEntries": 772
+}
