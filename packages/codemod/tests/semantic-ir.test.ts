@@ -166,7 +166,7 @@ describe("versioned semantic style-program IR", () => {
 		expect(program.declarations).toMatchObject([
 			{ property: "gap", value: { kind: "literal", value: 12 }, conditions: [{ name: "base" }] },
 			{ property: "gap", value: { kind: "literal", value: 20 }, conditions: [{ name: "lg" }] },
-	]);
+		]);
 	});
 
 	test("treats signed numeric literals as static values", () => {

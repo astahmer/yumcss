@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { createRequire } from "node:module";
 import { readFile, readdir } from "node:fs/promises";
-import { extname, join, normalize } from "node:path";
+import { extname, join } from "node:path";
 
 const require = createRequire(new URL("../examples/showcase/package.json", import.meta.url));
 const { chromium } = require("playwright-core");

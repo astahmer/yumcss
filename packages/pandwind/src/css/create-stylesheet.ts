@@ -172,7 +172,8 @@ export const createStylesheet = (
 		const rawParts = pairs.split(flatKey).filter((part) => part !== emptyCondition && part !== "");
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
-		const isCondition = (part: string): boolean => part.startsWith("_") || preset.conditions[part] !== undefined;
+		const isCondition = (part: string): boolean =>
+			part.startsWith("_") || preset.conditions[part] !== undefined;
 		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
@@ -181,9 +182,9 @@ export const createStylesheet = (
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
-		const condParts = orderedConditions
-			.map((part) => (part.startsWith("_") ? part.slice(1) : part))
-			;
+		const condParts = orderedConditions.map((part) =>
+			part.startsWith("_") ? part.slice(1) : part,
+		);
 		let declaration = `var(--pw-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;

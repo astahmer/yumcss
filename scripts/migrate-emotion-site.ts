@@ -474,9 +474,10 @@ if (process.argv[1]?.endsWith("migrate-emotion-site.ts")) {
 	const outputRoot = process.argv[2];
 	console.log(
 		JSON.stringify(
-			await EmotionSiteMigration.run(EmotionSiteMigrationLane.CssClass, {
-				...(outputRoot === undefined ? {} : { outputRoot }),
-			}),
+			await EmotionSiteMigration.run(
+				EmotionSiteMigrationLane.CssClass,
+				outputRoot === undefined ? {} : { outputRoot },
+			),
 			null,
 			2,
 		),

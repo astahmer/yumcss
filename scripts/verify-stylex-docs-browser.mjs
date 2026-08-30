@@ -51,20 +51,23 @@ async function inspect(browser, baseUrl, route) {
 				(total, style) => total + style.textContent.length,
 				0,
 			),
-			playgroundFrameUrls: currentRoute === "/playground"
-				? [...document.querySelectorAll("iframe")].map((frame) => frame.src)
-				: null,
+			playgroundFrameUrls:
+				currentRoute === "/playground"
+					? [...document.querySelectorAll("iframe")].map((frame) => frame.src)
+					: null,
 		};
 	}, route);
 	if (route === "/playground") {
-		const renderedFrames = await Promise.all(page.frames().map(async (frame) => {
-			if (!frame.url().includes("sandpack")) return false;
-			try {
-				return Boolean((await frame.locator("#root").first().textContent())?.length);
-			} catch {
-				return false;
-			}
-		}));
+		const renderedFrames = await Promise.all(
+			page.frames().map(async (frame) => {
+				if (!frame.url().includes("sandpack")) return false;
+				try {
+					return Boolean((await frame.locator("#root").first().textContent())?.length);
+				} catch {
+					return false;
+				}
+			}),
+		);
 		result.playgroundRendered = renderedFrames.some(Boolean);
 	}
 	await page.close();

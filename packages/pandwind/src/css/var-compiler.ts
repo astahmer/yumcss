@@ -34,11 +34,11 @@ export interface VarCompiler {
 
 const selectorHash = createHashFn(false);
 
-export const isVarSelectorPart = (part: string): boolean =>
+const isVarSelectorPart = (part: string): boolean =>
 	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
 
 /** Stable, CSS-identifier-safe suffix for named and selector conditions. */
-export const varConditionPart = (part: string): string => {
+const varConditionPart = (part: string): string => {
 	if (part.startsWith("_")) return part.slice(1);
 	return /^[A-Za-z_][\w-]*$/.test(part) ? part : `selector-${selectorHash("selector", part)}`;
 };

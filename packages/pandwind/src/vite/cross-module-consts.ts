@@ -29,7 +29,7 @@
 import { dirname } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
-import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
+import type { ConstantScope } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import {
 	NodeModulePathResolver,

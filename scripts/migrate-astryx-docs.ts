@@ -156,7 +156,7 @@ function useDesignApi(source: string): string {
 		'import { createDesignCss } from "pandwind/design";\nimport { pandwindPreset } from "pandwind/preset";',
 	);
 	output = output.replace(
-		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*\=\s*)createCss\(\);/g,
+		/((?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*)createCss\(\);/g,
 		"$1createDesignCss(pandwindPreset);",
 	);
 	return output;

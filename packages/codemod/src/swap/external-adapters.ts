@@ -9,6 +9,7 @@ import {
 	type AdapterConfigContext,
 	type AdapterDependencies,
 	type AdapterDetectionContext,
+	type AdapterDetectionResult,
 	type AdapterEmitContext,
 	type AdapterEmitResult,
 	type AdapterMigrationHooks,
@@ -88,6 +89,14 @@ export interface CodemodAdapterSpec {
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
 	readonly configFiles?: readonly string[];
+	readonly detect?: (
+		context: AdapterDetectionContext,
+		fallback: () => AdapterDetectionResult,
+	) => AdapterDetectionResult;
+	readonly postprocessEmit?: (
+		emission: Pick<AdapterEmitResult, "text" | "imports">,
+		context: AdapterEmitContext,
+	) => Pick<AdapterEmitResult, "text" | "imports">;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
 	emit(
@@ -647,12 +656,12 @@ function parseCalls(
 						preserved.size === 0
 							? initialTag
 							: JsxStyleHost.parse(
-								source,
-								start,
-								context,
-								(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
-								adapterSource(context, start),
-							);
+									source,
+									start,
+									context,
+									(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
+									adapterSource(context, start),
+								);
 					if (tag === undefined) continue;
 					const program = styleProgramFromSourceObject(tag.body, {
 						...resolvedObjectOptions,
@@ -847,7 +856,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		capabilities: spec.capabilities,
 		dependencies: spec.packages,
 		migration: spec.migration,
-		detect: (context) => detectBy(spec.detectPatterns, context),
+		detect: (context) =>
+			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??
+			detectBy(spec.detectPatterns, context),
 		loadConfig: (context) => configFor(spec.id, spec.configFiles ?? [], context),
 		parse: (source, context) =>
 			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),
@@ -859,7 +870,8 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				templateCss,
 			};
 			const rendered = spec.emit(program, renderers, context);
-			return { ...rendered, dependencies: spec.packages, residuals: [...program.residuals] };
+			const processed = spec.postprocessEmit?.(rendered, context) ?? rendered;
+			return { ...processed, dependencies: spec.packages, residuals: [...program.residuals] };
 		},
 		validate: validatePrograms,
 	};
