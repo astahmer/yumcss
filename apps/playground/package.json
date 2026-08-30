@@ -17,6 +17,7 @@
 		"@tanstack/react-router": "1.170.32",
 		"oxc-parser": "0.144.0",
 		"pandwind": "workspace:*",
+		"pandwind-codemod": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
 		"shiki": "4.4.3"
