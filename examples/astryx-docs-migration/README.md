@@ -84,7 +84,7 @@ heights. The production proof is:
 | `design-dss`  |            91.86% | 24/24 equivalent |     −3,253 bytes |
 
 The browser verifier recorded maximum differing-pixel ratios of 0.573% for
-static CSS, 0.573% for runtime CSS, and 0.893% for design DSS. Every lane had
+static CSS, 0.893% for runtime CSS, and 0.893% for design DSS. Every lane had
 zero visual failures, zero shape failures, zero new browser errors, zero
 failed responses, `cssWithinBudget: true`, and
 `allAcceptanceCriteriaPassed: true`.
