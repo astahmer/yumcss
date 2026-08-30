@@ -1527,7 +1527,7 @@
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
+        "status": "source-mismatch",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
@@ -1786,7 +1786,7 @@
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-static",
+        "status": "source-mismatch",
         "eligible": false,
         "dimensions": {
           "canonical-css": {

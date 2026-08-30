@@ -129,6 +129,7 @@ export enum RealRepositoryProofDimensionStatus {
 /** Evidence state; source-static is not a claim of browser/SSR promotion. */
 export enum RealRepositoryProofStatus {
 	SourceStatic = "source-static",
+	SourceMismatch = "source-mismatch",
 	RuntimePending = "runtime-pending",
 	PipelineUnpaired = "pipeline-unpaired",
 }

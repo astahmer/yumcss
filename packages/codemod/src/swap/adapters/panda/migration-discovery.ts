@@ -1,8 +1,8 @@
 /** Independently testable Panda migration discovery stage. */
 import { existsSync, readFileSync } from "node:fs";
-import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import { detectAlias, scanProjectUsage, type AliasInfo, type ProjectUsage } from "./project.ts";
 import { emptyPandaTheme, loadPandaTheme, type PandaTheme } from "./theme.ts";
@@ -35,26 +35,9 @@ export function discoverPandaFiles(
 	projectRoot: string,
 	patterns: readonly string[],
 ): PandaMigrationFile[] {
-	const seen = new Set<string>();
-	for (const pattern of patterns) {
-		const candidates = existsSync(resolve(projectRoot, pattern))
-			? [pattern]
-			: globSync(pattern, { cwd: projectRoot });
-		for (const candidate of candidates) {
-			if (typeof candidate !== "string" || !SOURCE_SCANNER_SERVICE.isSupportedFile(candidate))
-				continue;
-			seen.add(resolve(projectRoot, candidate));
-		}
-	}
-	const files: PandaMigrationFile[] = [];
-	for (const path of [...seen].toSorted()) {
-		try {
-			files.push({ path, source: readFileSync(path, "utf8") });
-		} catch {
-			// Discovery is best-effort; unreadable files are reported by omission.
-		}
-	}
-	return files;
+	return createSourceWorkspace()
+		.collect(patterns, projectRoot)
+		.map(({ path, source }) => ({ path, source }));
 }
 
 /** Load only the project theme/config layer; failures intentionally degrade to an empty theme. */

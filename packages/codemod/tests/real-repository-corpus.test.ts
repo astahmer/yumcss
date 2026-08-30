@@ -115,10 +115,14 @@ describe("pinned real repository corpus", () => {
 		const dynamic = report.reports.find(
 			(item) => item.id === "next-yak-css-prop-benchmark-realistic-button",
 		);
+		const mismatch = report.reports.find(
+			(item) => item.id === "next-yak-benchmark-realistic-button",
+		);
 		expect(panda?.promotion.status).toBe(RealRepositoryProofStatus.PipelineUnpaired);
 		expect(panda?.promotion.eligible).toBe(false);
 		expect(dynamic?.promotion.status).toBe(RealRepositoryProofStatus.RuntimePending);
 		expect(dynamic?.promotion.eligible).toBe(false);
+		expect(mismatch?.promotion.status).toBe(RealRepositoryProofStatus.SourceMismatch);
 		for (const reference of corpus.references) {
 			const item = report.reports.find((candidate) => candidate.id === reference.id);
 			expect(item?.promotion).toBeDefined();

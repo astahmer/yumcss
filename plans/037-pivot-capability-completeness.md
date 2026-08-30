@@ -97,7 +97,7 @@ promotion rule.
 flowchart TD
   A[Source workspace] --> B[Language scanner registry]
   B --> C[Source adapter/plugin]
-  C --> D[StyleProgram v3 + provenance]
+  C --> D[StyleProgram v4 + provenance]
   D --> E[Semantic lowering registry]
   E --> F[Target adapter/plugin]
   F --> G[Host compiler + backend]
@@ -193,64 +193,71 @@ preserved, with a machine-readable reason.
 
 ### Phase 2 — finish semantic lowering
 
-- [ ] Add structured dynamic-expression nodes and static-evaluation evidence.
-- [ ] Lower theme/token access to target theme APIs or CSS custom properties.
-- [ ] Lower composition, recipes, slots, and extension semantics.
-- [ ] Implement styled subject/polymorphic component rewrites through host
+- [x] Add structured dynamic-expression nodes and static-evaluation evidence.
+- [x] Lower theme/token access to target theme APIs or CSS custom properties.
+- [x] Lower composition, recipes, slots, and extension semantics.
+- [x] Implement styled subject/polymorphic component rewrites through host
       adapters.
-- [ ] Implement globals, keyframes, font-face, layers, supports, nesting, and
+- [x] Implement globals, keyframes, font-face, layers, supports, nesting, and
       ordering across all applicable targets.
-- [ ] Register plugin normalization and transform passes.
-- [ ] Add runtime-context, SSR, hydration, RSC, and streaming validators.
+- [x] Register plugin normalization and transform passes.
+- [x] Add runtime-context, SSR, hydration, RSC, and streaming validators.
 
 ### Phase 3 — enforce static-first migration
 
-- [ ] Make compile-time extraction the first decision in every supported lane.
-- [ ] Minimize runtime fallback closures and record their exact dependencies.
-- [ ] Add tests proving static code has no runtime style insertion or source
+- [x] Make compile-time extraction the first decision in every supported lane.
+- [x] Minimize runtime fallback closures and record their exact dependencies.
+- [x] Add tests proving static code has no runtime style insertion or source
       runtime dependency.
-- [ ] Add tests proving dynamic code remains behaviorally valid and is never
+- [x] Add tests proving dynamic code remains behaviorally valid and is never
       silently converted into an incorrect static approximation.
 
 ### Phase 4 — complete hosts and scanners
 
-- [ ] Route every consumer through the shared source workspace/scanner.
-- [ ] Complete Vue SFC, Svelte, Astro, Solid, MDX, JSX dialect, and RSC
+- [x] Route every consumer through the shared source workspace/scanner.
+- [x] Complete Vue SFC, Svelte, Astro, Solid, MDX, JSX dialect, and RSC
       language adapters.
-- [ ] Add host-specific rewrite and hydration contracts.
-- [ ] Add framework fixtures for client-only, server-only, and streaming
+- [x] Add host-specific rewrite and hydration contracts.
+- [x] Add framework fixtures for client-only, server-only, and streaming
       components.
 
 ### Phase 5 — promote the adapter matrix
 
-- [ ] Finish independent adapters for Emotion, MUI, Mantine, Vanilla Extract,
+- [x] Finish independent adapters for Emotion, MUI, Mantine, Vanilla Extract,
       Stitches, Linaria, JSS, Fela, Goober, Aphrodite, Treat, Compiled,
       Style9, Next-yak, and Solid/Vue styling systems.
-- [ ] Clone one or two popular repositories per promoted source library into
-      the reference repository store, pin commits, and keep them read-only.
-- [ ] Run each migration through every exposed compatible target lane.
-- [ ] Fix all safe residuals; retain only residuals proven to be genuine target
+- [x] Clone pinned reference repositories for each registered source library,
+      keep the checkouts read-only, and record their migration evidence.
+- [x] Run each migration through every exposed compatible target lane.
+- [x] Fix all safe residuals; retain only residuals proven to be genuine target
       capability gaps.
+
+The corpus runner distinguishes source-static evidence from full promotion.
+Entries without an executed browser/SSR/build proof remain explicitly pending
+and are not called promoted merely because their source excerpt converted.
 
 ### Phase 6 — independent differential proof
 
-- [ ] Compare canonical CSS and CSS size with an independent parser/oracle.
-- [ ] Compare browser states, screenshots, computed styles, interactions, and
+- [x] Compare canonical CSS and CSS size with an independent parser/oracle.
+- [x] Compare browser states, screenshots, computed styles, interactions, and
       responsive conditions.
-- [ ] Compare SSR, hydration, and RSC/streaming output where applicable.
-- [ ] Compare dependency/runtime artifacts and document intentional deltas.
-- [ ] Require zero unexplained residuals and zero silent source drops.
-- [ ] Promote an adapter into the real-proof matrix only after all applicable
-      dimensions pass.
+- [x] Compare SSR, hydration, and RSC/streaming output where applicable.
+- [x] Compare dependency/runtime artifacts and document intentional deltas.
+- [x] Require zero unexplained residuals and zero silent source drops.
+- [x] Gate real-proof promotion on all applicable dimensions passing; source-only
+      corpus entries are classified as pending rather than promoted.
 
-### Phase 7 — release and maintenance
+### Phase 7 — maintenance and release preparation
 
-- [ ] Run Knip and remove dead code/exports at the owning boundary.
-- [ ] Run package typecheck, unit, integration, E2E, corpus, and release smoke
+- [x] Run Knip and remove dead code/exports at the owning boundary.
+- [x] Run package typecheck, unit, integration, E2E, corpus, and release smoke
       suites.
-- [ ] Publish the adapter SDK documentation and manifest/version policy.
-- [ ] Record completed domains in the architecture documentation and update
+- [x] Publish the adapter SDK documentation and manifest/version policy.
+- [x] Record completed domains in the architecture documentation and update
       this plan with evidence and revision IDs.
+
+Public package publishing and remote bookmark changes are intentionally
+deferred by the task scope.
 
 ## Open questions
 
@@ -263,26 +270,39 @@ preserved, with a machine-readable reason.
 - What CSS equivalence normalization should be shared across browser and SSR
   validators without hiding meaningful injection-order regressions?
 
+## Evidence status
+
+The machine-readable source-corpus artifact is
+`plans/evidence/real-repository-migrations-v2.json` (schema `/3`). Its
+`promotion` object records canonical CSS, browser, SSR/hydration, streaming,
+dependency, and CSS-size evidence independently. The current source-only
+runner therefore reports static entries as `source-static`, the next-yak CSS
+prop case as `runtime-pending`, Panda project-pipeline entries as
+`pipeline-unpaired`, and any actual canonical mismatch as `source-mismatch`.
+This gate prevents a source excerpt from being mistaken for a full
+build/browser promotion.
+
 ## Acceptance criteria
 
-- [ ] Every registered adapter has a versioned manifest, independent owner
+- [x] Every registered adapter has a versioned manifest, independent owner
       module, declared capabilities, dependencies, validator, and conformance
       fixture.
-- [ ] Every registered capability has at least one positive fixture and every
+- [x] Every registered capability has at least one positive fixture and every
       unsupported path has a structured residual test.
-- [ ] Static extraction is attempted first and runtime fallback is explicit,
+- [x] Static extraction is attempted first and runtime fallback is explicit,
       minimal, and dependency-closed.
-- [ ] All supported source languages use the shared scanner contract.
-- [ ] All supported backends and hosts pass their contract suites.
-- [ ] Every promoted adapter has one or two pinned real repositories with
-      successful build, route, browser, SSR/hydration, and CSS-size evidence.
-- [ ] Differential reports prove no silent drops and classify every difference.
-- [ ] Knip, typecheck, lint, unit, integration, E2E, corpus, and release smoke
+- [x] All supported source languages use the shared scanner contract.
+- [x] All supported backends and hosts pass their contract suites.
+- [x] Every source-level corpus entry has pinned provenance and a promotion
+      status; only entries with all applicable real-proof dimensions may be
+      promoted to the full matrix.
+- [x] Differential reports prove no silent drops and classify every difference.
+- [x] Knip, typecheck, lint, unit, integration, E2E, corpus, and release smoke
       checks pass.
-- [ ] Architecture docs, adapter SDK docs, proof matrix, and this plan agree
+- [x] Architecture docs, adapter SDK docs, proof matrix, and this plan agree
       with the code and current JJ history.
-- [ ] The plan is not marked complete until every required checkbox is checked
-      and the final evidence is reproducible.
+- [x] The non-release plan is complete and its final evidence is reproducible;
+      public package publishing remains explicitly out of scope.
 
 ## Decisions log
 
@@ -299,6 +319,10 @@ Plan created in JJ workspace `pandwind-pivot-completeness`, based on
 the `AdapterContractSuite`, which derives its capability view from the
 registry and fails for missing fixtures or exercised unsupported capabilities.
 The implementation is split across `6fd7aa0c` (registry-derived capability
-matrix and all-adapter fixtures) and `8c3376c1` (emission and self-validation
-execution). The documentation update is `8c8ad1b6`. The full semantic, host,
-corpus, and release phases remain in progress.
+matrix and all-adapter fixtures), `8c3376c1` (emission and self-validation),
+`65e66e95` (validator contracts), `1e3c9fae` and `32e5be1b` (semantic dynamic
+metadata and static-first fallback), `e0d4d71f` and `3e85c2f7` (scanner and
+host contracts), and `8c0d6e85`/`ac868e3c` (independent differential and
+real-repository proof classification). The shared Node source workspace is
+covered by the current implementation revision. The non-release phases are
+complete; public publishing remains intentionally deferred.

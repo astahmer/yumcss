@@ -28,6 +28,10 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
   retained whenever a translation is not proven safe;
 - differential fixtures for canonical CSS, browser state, SSR/hydration,
   streaming, dependency changes, and residual reports;
+- a typed real-repository promotion report that distinguishes source-static
+  evidence from runtime-pending, source-mismatch, and pipeline-unpaired
+  entries across canonical CSS, browser, SSR/hydration, streaming,
+  dependency, and CSS-size dimensions;
 - CSS, React Native, and OpenTUI backend contracts, plus renderer-neutral host
   seams for React, Preact, Solid, Vue, Svelte, Astro, Qwik, and native markup;
 - release preflight, pack/import smoke tests, generated agent metadata, the
@@ -52,6 +56,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 028          | Deliberately deferred                                                                                          | [Authored CSS](/reference/authored-css/)                                                                                               |
 | 029–033      | Complete for bundler adoption, pivot completion, and interface-first architecture                              | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/)                                          |
 | 035–036      | Complete                                                                                                       | This page and the repository's contributor guidance                                                                                    |
+| 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/) |
 
 ## What remains intentionally bounded
 
@@ -67,6 +72,10 @@ These are not missing pieces of the pivot boundary:
 - A real npm publication still requires an operator, credentials, and a
   release changeset; local `release:check` and `release:smoke` are the proof
   boundary in this workspace.
+- Source-only real-repository entries are not promoted by inference. Their
+  pending browser, SSR/hydration, dependency, and CSS-size dimensions remain
+  visible in the proof artifact until a repository-specific runner executes
+  them.
 - Inspector visual polish and experimental cold-path optimizations are useful
   follow-ups, but do not block CSS-in-JS migration correctness.
 

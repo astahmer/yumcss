@@ -123,7 +123,9 @@ export function classifyRealRepositoryProof(
 		? RealRepositoryProofStatus.PipelineUnpaired
 		: input.runtimeDependent
 			? RealRepositoryProofStatus.RuntimePending
-			: RealRepositoryProofStatus.SourceStatic;
+			: input.canonicalChecked && input.canonicalEqual !== true
+				? RealRepositoryProofStatus.SourceMismatch
+				: RealRepositoryProofStatus.SourceStatic;
 	return {
 		schema: REAL_REPOSITORY_PROOF_SCHEMA,
 		status,

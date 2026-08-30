@@ -30,6 +30,7 @@ minimal implementation without changing orchestration.
 | Runtime CSS           | canonicalizer, ordering, serializer, store, sink                                                                                             | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                                                  |
 | Stylesheet lowering   | condition, ordering, decoder, serializer, and variable compiler policies                                                                     | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                                         |
 | Token formats         | one normalized token set plus format adapters                                                                                                | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                                              |
+| Source documents      | language scanner registry plus Node workspace expansion/read/scan                                                                  | `source-scanner.ts`, `source-workspace.ts`                                                                                                                                       |
 | `cx()` compilation    | constant discovery, expression evaluation, imported merges, fold policy, and code emission                                                   | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                                             |
 | Design vocabulary     | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                |
 | Analyze/reporting     | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
@@ -131,14 +132,47 @@ adapter and fails when a fixture exercises a capability the adapter declares
 unsupported. A minimal injected registry is tested through the same runner,
 so adding an adapter does not require changing migration orchestration.
 
+Semantic lowering is versioned with `StyleProgram /4`. Dynamic declarations
+retain expression kind, source range, dependency names, and explicit
+static-evaluation evidence. The lowering registry handles resolved theme
+bindings, custom-property fallback, composition flattening, plugin transforms,
+runtime context, and framework metadata. A target adapter receives an optional
+semantic observation on `AdapterEmitResult` when an opaque runtime registration
+cannot safely be reparsed; validators compare that observation rather than
+pretending the emitted call is a static class.
+
+Runtime fallback is a deliberate second lane. Static extraction is attempted
+first; only unresolved dynamic expressions retain the smallest target runtime
+dependency closure. Static styled declarations remove the source runtime and
+dynamic declarations use `css.vars`/runtime carriers with structured residual
+and dependency evidence. Contract fixtures assert both directions.
+
+The shared source boundary has two layers: `pandwind/source` owns language and
+framework scanning, runtime boundaries (`shared`, `client`, `server`), and
+parser selection; `pandwind/source/workspace` owns Node filesystem expansion,
+reading, and document materialization. Codemod, analyzer, Panda discovery, and
+build tooling consume these services instead of maintaining separate script
+extension/glob policies. Vue SFC, Svelte, Astro, Solid, MDX, JSX dialects, and
+RSC boundaries are covered by scanner and host contract suites.
+
+Validation is also a composition boundary. Adapter, validator, scanner, host,
+and differential contract suites accept minimal substitute registries. The
+differential runner checks canonical CSS, independent runtime-sheet output,
+browser states, SSR/hydration, streaming chunks, dependencies, and residuals.
+The pinned real-repository report adds a typed promotion object with explicit
+`source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
+states. A pending dimension is never counted as a passing real-repository
+promotion.
+
 ## Real repository migration proof
 
 The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
-claim. The external checkout is pinned by Git commit in `reference-repos.md`,
-while Pandwind owns the lane runner and its JJ history. The runner routes the
-same Chakra source adapter through independent `css-class` and `design-css`
-target lanes. Each lane must produce a buildable Next application with zero
-skipped call sites and zero residuals.
+claim, alongside pinned source references for every registered external
+adapter. External checkouts are pinned by Git commit in `reference-repos.md`,
+while Pandwind owns the lane runners and their JJ history. The runner routes
+the same source adapter through independent target lanes. Each full docs lane
+must produce a buildable Next application with zero skipped call sites and
+zero residuals.
 
 Proof has three layers: the Next production build must generate all 277 routes;
 the route checker must find no failures across the 261 user-facing static HTML
@@ -147,3 +181,11 @@ styles, screenshots, and console errors at the same viewport. CSS accounting
 compares linked stylesheets plus inline SSR styles against the baseline, with
 the Pandwind runtime artifact reported separately. This keeps a migration from
 being called complete merely because the codemod changed every source file.
+
+The source-reference report at
+`plans/evidence/real-repository-migrations-v2.json` is deliberately stricter
+about what it proves. Its `promotion` object reports canonical CSS,
+browser-state, SSR/hydration, streaming, dependency, and CSS-size dimensions
+separately. Source-static entries are useful adapter evidence, but pending
+dimensions keep them out of full promotion until a repository-specific build
+runner executes them.

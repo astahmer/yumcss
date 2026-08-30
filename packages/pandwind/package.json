@@ -51,6 +51,7 @@
 		"./opentui": "./src/opentui.ts",
 		"./backends": "./src/backends/index.ts",
 		"./source": "./src/source-scanner.ts",
+		"./source/workspace": "./src/source-workspace.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

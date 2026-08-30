@@ -64,7 +64,11 @@ The benchmark acceptance corpus is pinned in `reference-repos.md` and
 `css-in-js-bench` Bamboo and Next-yak lanes plus the existing ecosystem
 references. `vanilla`, `tailwind-merge`, and `cnfast` in that benchmark are
 control/utility lanes, not CSS-in-JS source adapters, so they remain outside
-the adapter registry.
+the adapter registry. The report is schema `/3` and carries a typed
+`promotion` object. `source-static` means the source excerpt converted and
+canonicalized; it does not imply a full browser, SSR, dependency, or CSS-size
+promotion. `runtime-pending`, `source-mismatch`, and `pipeline-unpaired` are
+explicit non-promoted states with dimension-level reasons.
 
 ## Runtime and host boundary
 
