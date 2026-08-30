@@ -286,11 +286,11 @@ preserved, with a machine-readable reason.
 
 ## Decisions log
 
-| Date | Decision | Reason |
-| --- | --- | --- |
-| 2026-08-30 | Define “any CSS-in-JS” by declared capabilities and proof, not an unconditional universal promise. | Runtime, framework, and plugin semantics have no guaranteed static equivalent. |
-| 2026-08-30 | Keep the existing small authoring API frozen while expanding compiler, adapter, host, backend, and validation capabilities. | The pivot value is portability and proof, not API surface growth. |
-| 2026-08-30 | Use a fresh JJ workspace based on `main` for this plan and implementation. | The default workspace has unrelated changes and multiple other migration workspaces are active. |
+| Date       | Decision                                                                                                                    | Reason                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 2026-08-30 | Define “any CSS-in-JS” by declared capabilities and proof, not an unconditional universal promise.                          | Runtime, framework, and plugin semantics have no guaranteed static equivalent.                  |
+| 2026-08-30 | Keep the existing small authoring API frozen while expanding compiler, adapter, host, backend, and validation capabilities. | The pivot value is portability and proof, not API surface growth.                               |
+| 2026-08-30 | Use a fresh JJ workspace based on `main` for this plan and implementation.                                                  | The default workspace has unrelated changes and multiple other migration workspaces are active. |
 
 ## Progress
 
