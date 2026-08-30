@@ -1,4 +1,9 @@
-import type { AdapterMatch, AdapterParseResult } from "./adapter-contract.ts";
+import type {
+	AdapterMatch,
+	AdapterParseResult,
+	AdapterProjectConfig,
+	AdapterValidationResult,
+} from "./adapter-contract.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type { AdapterCapabilityReport } from "./capabilities.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
@@ -16,7 +21,9 @@ export type AdapterContractPhase =
 	| "detection"
 	| "configuration"
 	| "parsing"
-	| "capabilities";
+	| "capabilities"
+	| "emission"
+	| "validation";
 
 export interface AdapterContractFailure {
 	readonly adapter: string;
@@ -29,6 +36,8 @@ export interface AdapterContractResult {
 	readonly fixture: boolean;
 	readonly matched: boolean;
 	readonly parsed: number;
+	readonly emitted: number;
+	readonly validated: number;
 	readonly capabilities: readonly AdapterCapabilityReport[];
 	readonly failures: readonly AdapterContractFailure[];
 }
@@ -55,29 +64,51 @@ function contractFailure(
 	return { adapter, phase, message };
 }
 
-function parseFixture(
+interface ParsedFixture {
+	readonly config: AdapterProjectConfig;
+	readonly parsed: AdapterParseResult;
+}
+
+function parseFixtureWithConfig(
 	registry: StyleAdapterRegistry,
 	fixture: AdapterContractFixture,
-): { parsed: AdapterParseResult | undefined; failures: readonly AdapterContractFailure[] } {
+): { parsed: ParsedFixture | undefined; failures: readonly AdapterContractFailure[] } {
 	const adapter = registry.get(fixture.adapter);
 	if (adapter === undefined)
 		return {
 			parsed: undefined,
 			failures: [contractFailure(fixture.adapter, "registration", "adapter is not registered")],
 		};
+	let config: AdapterProjectConfig;
 	try {
-		const config = adapter.loadConfig({
+		config = adapter.loadConfig({
 			file: fixture.file,
 			source: fixture.source,
 			...(fixture.root === undefined ? {} : { root: fixture.root }),
 		});
+	} catch (error) {
 		return {
-			parsed: adapter.parse(fixture.source, {
-				file: fixture.file,
-				source: fixture.source,
-				...(fixture.root === undefined ? {} : { root: fixture.root }),
+			parsed: undefined,
+			failures: [
+				contractFailure(
+					fixture.adapter,
+					"configuration",
+					error instanceof Error ? error.message : String(error),
+				),
+			],
+		};
+	}
+	try {
+		return {
+			parsed: {
 				config,
-			}),
+				parsed: adapter.parse(fixture.source, {
+					file: fixture.file,
+					source: fixture.source,
+					...(fixture.root === undefined ? {} : { root: fixture.root }),
+					config,
+				}),
+			},
 			failures: [],
 		};
 	} catch (error) {
@@ -118,6 +149,8 @@ export function createAdapterContractSuite(): AdapterContractSuite {
 						fixture: false,
 						matched: false,
 						parsed: 0,
+						emitted: 0,
+						validated: 0,
 						capabilities: [],
 						failures: [contractFailure(adapter.id, "registration", "no conformance fixture")],
 					};
@@ -143,9 +176,9 @@ export function createAdapterContractSuite(): AdapterContractSuite {
 				if (!matched)
 					failures.push(contractFailure(adapter.id, "detection", "fixture was not detected"));
 
-				const parsedResult = parseFixture(registry, fixture);
+				const parsedResult = parseFixtureWithConfig(registry, fixture);
 				failures.push(...parsedResult.failures);
-				const matches = parsedResult.parsed?.matches ?? [];
+				const matches = parsedResult.parsed?.parsed.matches ?? [];
 				if ((fixture.requireMatch ?? true) && matches.length === 0)
 					failures.push(
 						contractFailure(adapter.id, "parsing", "fixture produced no semantic match"),
@@ -161,12 +194,68 @@ export function createAdapterContractSuite(): AdapterContractSuite {
 							),
 						);
 				}
+				let emitted = 0;
+				let validated = 0;
+				const adapterConfig = parsedResult.parsed?.config;
+				const sourceAdapter = registry.get(adapter.id);
+				if (sourceAdapter !== undefined && adapterConfig !== undefined) {
+					for (const [index, match] of matches.entries()) {
+						let emittedResult: ReturnType<typeof sourceAdapter.emit>;
+						try {
+							emittedResult = sourceAdapter.emit(match.program, {
+								file: fixture.file,
+								config: adapterConfig,
+								mode: "partial",
+								capability: capabilities[index],
+								index,
+							});
+							emitted++;
+						} catch (error) {
+							failures.push(
+								contractFailure(
+									adapter.id,
+									"emission",
+									error instanceof Error ? error.message : String(error),
+								),
+							);
+							continue;
+						}
+						let validation: AdapterValidationResult;
+						try {
+							validation = sourceAdapter.validate(
+								match.program,
+								match.program,
+								emittedResult.residuals,
+							);
+						} catch (error) {
+							failures.push(
+								contractFailure(
+									adapter.id,
+									"validation",
+									error instanceof Error ? error.message : String(error),
+								),
+							);
+							continue;
+						}
+						if (!validation.valid)
+							failures.push(
+								contractFailure(
+									adapter.id,
+									"validation",
+									validation.differences.join("; ") || "fixture validation failed",
+								),
+							);
+						else validated++;
+					}
+				}
 
 				return {
 					adapter: adapter.id,
 					fixture: true,
 					matched,
 					parsed: matches.length,
+					emitted,
+					validated,
 					capabilities,
 					failures,
 				};
