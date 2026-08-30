@@ -32,32 +32,35 @@ export interface DifferentialMatrixResult {
 }
 
 /** Independent serializer oracle used by matrix hooks, separate from the IR serializer. */
+const runtimeCssValue = (
+	input: StyleProgram["declarations"][number]["value"],
+): string | number | boolean => {
+	if (input.kind === "token") return input.authored;
+	if (input.kind === "dynamic") return input.expression;
+	return input.value;
+};
+
+const runtimeCssCondition = (input: StyleProgram["rules"][number]["conditions"][number]): string =>
+	input.kind === "media" || input.kind === "container" || input.kind === "supports"
+		? `@${input.kind} ${input.value ?? input.name}`
+		: (input.value ?? input.raw ?? input.name);
+
+const runtimeCssRule = (input: StyleProgram["rules"][number]): RuntimeSemanticRule => ({
+	kind: input.kind,
+	name: input.name,
+	selector: input.selector,
+	layer: input.layer,
+	conditions: input.conditions.map(runtimeCssCondition),
+	declarations: input.declarations.map((declaration) => ({
+		property: declaration.property,
+		value: runtimeCssValue(declaration.value),
+	})),
+	children: input.children.map(runtimeCssRule),
+});
+
 const runtimeCss = (program: StyleProgram): string => {
-	const value = (
-		input: StyleProgram["declarations"][number]["value"],
-	): string | number | boolean => {
-		if (input.kind === "token") return input.authored;
-		if (input.kind === "dynamic") return input.expression;
-		return input.value;
-	};
-	const condition = (input: StyleProgram["rules"][number]["conditions"][number]): string =>
-		input.kind === "media" || input.kind === "container" || input.kind === "supports"
-			? `@${input.kind} ${input.value ?? input.name}`
-			: (input.value ?? input.raw ?? input.name);
-	const rule = (input: StyleProgram["rules"][number]): RuntimeSemanticRule => ({
-		kind: input.kind,
-		name: input.name,
-		selector: input.selector,
-		layer: input.layer,
-		conditions: input.conditions.map(condition),
-		declarations: input.declarations.map((declaration) => ({
-			property: declaration.property,
-			value: value(declaration.value),
-		})),
-		children: input.children.map(rule),
-	});
 	const sheet = createRuntimeSheet({ autoMount: false });
-	sheet.registerSemanticRules(program.rules.map(rule));
+	sheet.registerSemanticRules(program.rules.map(runtimeCssRule));
 	return sheet.css();
 };
 
