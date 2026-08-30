@@ -109,6 +109,30 @@ export enum StyleLoweringId {
 	Builtin = "pandwind-core-lowerings",
 }
 
+/** Independent evidence dimensions used by real-repository promotion reports. */
+export enum RealRepositoryProofDimension {
+	CanonicalCss = "canonical-css",
+	BrowserStates = "browser-states",
+	SsrHydration = "ssr-hydration",
+	RscStreaming = "rsc-streaming",
+	Dependencies = "dependencies",
+	CssSize = "css-size",
+}
+
+export enum RealRepositoryProofDimensionStatus {
+	Passed = "passed",
+	Failed = "failed",
+	Pending = "pending",
+	NotApplicable = "not-applicable",
+}
+
+/** Evidence state; source-static is not a claim of browser/SSR promotion. */
+export enum RealRepositoryProofStatus {
+	SourceStatic = "source-static",
+	RuntimePending = "runtime-pending",
+	PipelineUnpaired = "pipeline-unpaired",
+}
+
 export enum MigrationStageId {
 	AdapterMigration = "adapter-migration",
 }

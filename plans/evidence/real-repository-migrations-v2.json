@@ -1,5 +1,5 @@
 {
-  "schema": "pandwind.real-repository-report/2",
+  "schema": "pandwind.real-repository-report/3",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "/Users/astahmer/.references",
   "sourceFiles": 22,
@@ -28,6 +28,46 @@
       "canonicalCss": {
         "checked": false,
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [
@@ -87,6 +127,43 @@
         "targetBytes": 16,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -139,6 +216,43 @@
         "targetBytes": 196,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -186,6 +300,46 @@
       "canonicalCss": {
         "checked": false,
         "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [
@@ -245,6 +399,43 @@
         "targetBytes": 16,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -297,6 +488,43 @@
         "targetBytes": 196,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -347,6 +575,43 @@
         "targetBytes": 410,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -395,6 +660,43 @@
         "sourceBytes": 323,
         "targetBytes": 323,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -445,6 +747,41 @@
         "sourceBytes": 155,
         "targetBytes": 155,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -498,6 +835,41 @@
         "targetBytes": 74,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -548,6 +920,41 @@
         "sourceBytes": 398,
         "targetBytes": 398,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -600,6 +1007,41 @@
         "targetBytes": 8,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -648,6 +1090,43 @@
         "sourceBytes": 1323,
         "targetBytes": 1323,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -699,6 +1178,43 @@
         "targetBytes": 86,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -749,6 +1265,43 @@
         "targetBytes": 208,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -798,6 +1351,43 @@
         "sourceBytes": 210,
         "targetBytes": 210,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -850,6 +1440,41 @@
         "targetBytes": 1018,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -899,6 +1524,43 @@
         "sourceBytes": 1477,
         "targetBytes": 1511,
         "byteDelta": 34
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "failed",
+            "reason": "canonical CSS differs"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "not-applicable"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "canonical CSS differs",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -950,6 +1612,43 @@
         "targetBytes": 289,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -998,6 +1697,43 @@
         "sourceBytes": 1131,
         "targetBytes": 1131,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -1048,6 +1784,45 @@
         "targetBytes": 379,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "failed",
+            "reason": "canonical CSS differs"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "canonical CSS differs",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1094,6 +1869,46 @@
       "canonicalCss": {
         "checked": false,
         "reason": "runtime-dependent semantics require browser/SSR proof before canonical comparison"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "runtime-pending",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "runtime-dependent semantics require browser and SSR proof",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -1145,6 +1960,43 @@
         "targetBytes": 343,
         "byteDelta": 0
       },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
       "manualFixes": [],
       "emittedModules": [],
       "runtimeBundleImpact": {
@@ -1192,6 +2044,43 @@
         "sourceBytes": 96,
         "targetBytes": 96,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],
@@ -1241,6 +2130,43 @@
         "sourceBytes": 288,
         "targetBytes": 288,
         "byteDelta": 0
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "source-static",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "passed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
       },
       "manualFixes": [],
       "emittedModules": [],

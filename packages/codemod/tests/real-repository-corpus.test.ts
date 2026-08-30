@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createBuiltinCodemodCatalog, createRealRepositoryCorpus } from "../src/swap/index.ts";
+import {
+	createBuiltinCodemodCatalog,
+	createRealRepositoryCorpus,
+	RealRepositoryProofStatus,
+} from "../src/swap/index.ts";
 
 const corpus = createRealRepositoryCorpus();
 
@@ -34,7 +38,7 @@ describe("pinned real repository corpus", () => {
 			sourceFiles: number;
 			reports: Array<{ id: string; commit: string; path: string }>;
 		};
-		expect(report.schema).toBe("pandwind.real-repository-report/2");
+		expect(report.schema).toBe("pandwind.real-repository-report/3");
 		expect(report.sourceFiles).toBe(corpus.references.length);
 		expect(
 			new Set(corpus.references.map((reference) => reference.from)).size,
@@ -88,6 +92,37 @@ describe("pinned real repository corpus", () => {
 			expect(item?.skipped).toBeGreaterThanOrEqual(0);
 			expect(item?.residuals).toBeGreaterThanOrEqual(0);
 			expect(item?.runtimeBundleImpact.measured).toBe(false);
+		}
+	});
+
+	test("classifies promotion evidence instead of overstating source-only proof", () => {
+		const report = JSON.parse(
+			readFileSync(
+				resolve(import.meta.dirname, "../../../plans/evidence/real-repository-migrations-v2.json"),
+				"utf8",
+			),
+		) as {
+			reports: Array<{
+				id: string;
+				promotion: {
+					status: RealRepositoryProofStatus;
+					eligible: boolean;
+					dimensions: Record<string, { status: string }>;
+				};
+			}>;
+		};
+		const panda = report.reports.find((item) => item.id === "panda-website");
+		const dynamic = report.reports.find(
+			(item) => item.id === "next-yak-css-prop-benchmark-realistic-button",
+		);
+		expect(panda?.promotion.status).toBe(RealRepositoryProofStatus.PipelineUnpaired);
+		expect(panda?.promotion.eligible).toBe(false);
+		expect(dynamic?.promotion.status).toBe(RealRepositoryProofStatus.RuntimePending);
+		expect(dynamic?.promotion.eligible).toBe(false);
+		for (const reference of corpus.references) {
+			const item = report.reports.find((candidate) => candidate.id === reference.id);
+			expect(item?.promotion).toBeDefined();
+			expect(item?.promotion.dimensions).toBeDefined();
 		}
 	});
 });

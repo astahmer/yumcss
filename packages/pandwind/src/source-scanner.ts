@@ -5,23 +5,27 @@ import { walk, type OxcNode } from "./tw/literal.ts";
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
-export enum SourceLanguageAdapterId {
-	ReactJsx = "jsx-react",
-	PreactJsx = "jsx-preact",
-	SolidJsx = "jsx-solid",
-	QwikJsx = "jsx-qwik",
-	Mdx = "mdx",
-	EcmaScript = "typescript",
-	Vue = "vue",
-	Svelte = "svelte",
-	Astro = "astro",
-}
+export const SourceLanguageAdapterId = {
+	ReactJsx: "jsx-react",
+	PreactJsx: "jsx-preact",
+	SolidJsx: "jsx-solid",
+	QwikJsx: "jsx-qwik",
+	Mdx: "mdx",
+	EcmaScript: "typescript",
+	Vue: "vue",
+	Svelte: "svelte",
+	Astro: "astro",
+} as const;
+export type SourceLanguageAdapterId =
+	(typeof SourceLanguageAdapterId)[keyof typeof SourceLanguageAdapterId];
 
-export enum SourceRuntimeBoundary {
-	Shared = "shared",
-	Client = "client",
-	Server = "server",
-}
+export const SourceRuntimeBoundary = {
+	Shared: "shared",
+	Client: "client",
+	Server: "server",
+} as const;
+export type SourceRuntimeBoundary =
+	(typeof SourceRuntimeBoundary)[keyof typeof SourceRuntimeBoundary];
 
 export type SourceLanguage =
 	| "typescript"

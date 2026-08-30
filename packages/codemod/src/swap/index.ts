@@ -115,6 +115,9 @@ export {
 	StyleProgramEmissionHint,
 	StyleValidatorId,
 	StyleLoweringId,
+	RealRepositoryProofDimension,
+	RealRepositoryProofDimensionStatus,
+	RealRepositoryProofStatus,
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
@@ -297,6 +300,15 @@ export type {
 } from "./differential.ts";
 export { createRealRepositoryCorpus } from "./real-repository-corpus.ts";
 export type { RealRepositoryCorpus, RealRepositoryReference } from "./real-repository-corpus.ts";
+export {
+	REAL_REPOSITORY_PROOF_SCHEMA,
+	classifyRealRepositoryProof,
+} from "./real-repository-proof.ts";
+export type {
+	RealRepositoryProofDimensionEvidence,
+	RealRepositoryProofInput,
+	RealRepositoryPromotionEvidence,
+} from "./real-repository-proof.ts";
 export type {
 	DifferentialMatrixCase,
 	DifferentialMatrixCatalog,

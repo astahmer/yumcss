@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
 import {
+	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
 	getCodemodAdapter,
 	runAdapterMigration,
@@ -177,6 +178,17 @@ for (const fixture of fixtures) {
 			),
 	);
 	const canonicalComparable = adapterValidations.length > 0 && !hasUnresolvedRuntimeSemantics;
+	const promotion = classifyRealRepositoryProof({
+		pipelineUnpaired: fixture.from === CodemodAdapterId.Panda || adapterValidations.length === 0,
+		runtimeDependent: hasUnresolvedRuntimeSemantics,
+		canonicalChecked: canonicalComparable,
+		...(canonicalComparable
+			? { canonicalEqual: adapterValidations.every((validation) => validation.valid) }
+			: {}),
+		residuals,
+		skipped,
+		streamingApplicable: fixture.framework === "react",
+	});
 	reports.push({
 		id: fixture.id,
 		repository: fixture.repository,
@@ -207,6 +219,7 @@ for (const fixture of fixtures) {
 					targetBytes: canonicalTargetBytes,
 					byteDelta: canonicalTargetBytes - canonicalSourceBytes,
 				},
+		promotion,
 		manualFixes,
 		emittedModules,
 		runtimeBundleImpact: {
@@ -223,7 +236,7 @@ for (const fixture of fixtures) {
 }
 
 const report = {
-	schema: "pandwind.real-repository-report/2",
+	schema: "pandwind.real-repository-report/3",
 	generatedFrom: "scripts/generate-real-repository-report.ts",
 	cloneRoot: referenceRoot,
 	sourceFiles: corpus.references.length,
