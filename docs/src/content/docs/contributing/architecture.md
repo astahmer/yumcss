@@ -198,3 +198,8 @@ installed-adapter runner: it installs the pinned Goober package in a disposable
 project, migrates the corresponding real-repository fixture, compares SSR CSS,
 and exercises base/hover states in Chromium. Its report is promoted only when
 the migration is residual-free, CSS is no larger, and browser pixels match.
+
+The promotion matrix intentionally mixes full documentation-site claims with
+smaller installed-adapter claims. A fixture claim proves the adapter contract
+in a real package/runtime, but does not imply that every application using that
+ecosystem has been migrated; site-level claims remain separately identified.
