@@ -167,7 +167,7 @@ css.keyframes({ from: { opacity: 0 } });`,
 			      "kind": "unsupported-construct",
 			      "line": 4,
 			      "message": "Authored keyframes are not extracted yet.",
-			      "suggestion": "Use a static css.class/css.group object for declarations, or keep this rule in authored CSS until build-time support is added.",
+			      "suggestion": "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
 			    },
 			  ],
 			  "cssSources": [
