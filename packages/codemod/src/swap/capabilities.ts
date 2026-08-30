@@ -1,4 +1,5 @@
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
+import type { AdapterDependencies } from "./adapter-contract.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
 export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as const;
@@ -46,6 +47,18 @@ export interface AdapterCapabilities {
 	readonly capabilities: Readonly<Partial<Record<AdapterCapability, AdapterCapabilityLevel>>>;
 }
 
+/** Registry-derived capability metadata used by reports and CI gates. */
+export interface AdapterCapabilityMatrixEntry extends AdapterCapabilities {
+	readonly sourceModules: readonly string[];
+	readonly dependencies: AdapterDependencies;
+}
+
+export interface AdapterCapabilityMatrix {
+	readonly schema: typeof ADAPTER_CAPABILITIES_SCHEMA;
+	readonly entries: readonly AdapterCapabilityMatrixEntry[];
+	get(adapter: string): AdapterCapabilityMatrixEntry | undefined;
+}
+
 export interface ProgramCapabilityRequirement {
 	readonly capability: AdapterCapability;
 	readonly detail: string;
@@ -65,6 +78,26 @@ export interface AdapterCapabilityReport {
 	readonly unsupported: readonly AdapterCapabilityIssue[];
 	readonly blockers: readonly AdapterCapabilityIssue[];
 	readonly convertible: boolean;
+}
+
+/** Build the capability view from registered adapters; no second catalog is allowed. */
+export function createAdapterCapabilityMatrix(
+	adapters: readonly AdapterCapabilityMatrixEntry[],
+): AdapterCapabilityMatrix {
+	const entries = adapters.map((adapter) => ({
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		adapter: adapter.adapter,
+		...(adapter.version === undefined ? {} : { version: adapter.version }),
+		sourceModules: [...adapter.sourceModules],
+		dependencies: adapter.dependencies,
+		capabilities: { ...adapter.capabilities },
+	}));
+	const byId = new Map(entries.map((entry) => [entry.adapter, entry]));
+	return {
+		schema: ADAPTER_CAPABILITIES_SCHEMA,
+		entries,
+		get: (adapter) => byId.get(adapter),
+	};
 }
 
 const conditionCapability = (kind: SemanticConditionKind): AdapterCapability => {

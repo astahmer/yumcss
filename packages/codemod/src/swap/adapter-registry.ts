@@ -12,6 +12,11 @@ import {
 	createStyleSystemRegistry,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
+import {
+	createAdapterCapabilityMatrix,
+	type AdapterCapabilityMatrix,
+	type AdapterCapabilityMatrixEntry,
+} from "./capabilities.ts";
 
 /** Versioned package contract for third-party adapter discovery. */
 export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
@@ -44,6 +49,7 @@ export interface StyleAdapterRegistry {
 	register(adapter: StyleAdapter): StyleAdapterRegistry;
 	registerPlugin(plugin: StyleAdapterPlugin): StyleAdapterRegistry;
 	get(id: string): StyleAdapter | undefined;
+	capabilityMatrix(): AdapterCapabilityMatrix;
 	toStyleSystemRegistry(): StyleSystemRegistry;
 	discover(
 		specifiers: readonly string[],
@@ -124,6 +130,14 @@ export function createStyleAdapterRegistry(
 			return registry;
 		},
 		get: (id) => values.get(id),
+		capabilityMatrix: () =>
+			createAdapterCapabilityMatrix(
+				registry.adapters.map((adapter): AdapterCapabilityMatrixEntry => ({
+					...adapter.capabilities,
+					sourceModules: adapter.sourceModules,
+					dependencies: adapter.dependencies,
+				})),
+			),
 		toStyleSystemRegistry() {
 			return createStyleSystemRegistry(
 				registry.adapters.map((adapter) =>

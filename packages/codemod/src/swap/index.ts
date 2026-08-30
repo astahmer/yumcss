@@ -123,9 +123,11 @@ export type { ExternalIdentifier } from "./identifiers.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
+	createAdapterCapabilityMatrix,
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
+export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
@@ -176,6 +178,15 @@ export type {
 	StyleLoweringResult,
 } from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+export { createAdapterContractSuite } from "./adapter-contract-suite.ts";
+export type {
+	AdapterContractFailure,
+	AdapterContractFixture,
+	AdapterContractPhase,
+	AdapterContractReport,
+	AdapterContractResult,
+	AdapterContractSuite,
+} from "./adapter-contract-suite.ts";
 export type {
 	CodemodAdapterSpec,
 	AdapterRenderers,
