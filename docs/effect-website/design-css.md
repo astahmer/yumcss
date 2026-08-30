@@ -25,4 +25,5 @@ pnpm exec vp run build
 Run the four-way verifier shown in the [`tw` proof](./tw.md). In the verified
 build this lane emitted exactly `2,840,140` CSS bytes, equal to the untouched
 baseline. All 436 generated routes returned successfully; SSR, hydration,
-desktop, and mobile checks passed for the visual smoke routes `/` and `/blog/`.
+desktop, and mobile checks passed for the homepage, blog, v3/v4 docs, Effect
+Days, and community visual smoke routes.

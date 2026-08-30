@@ -28,8 +28,9 @@ The final four-way run used freshly regenerated and freshly built copies:
 - reference: `366419b44eb2bd353cbe3d3e41fa4e8c735e63ee`
 - routes checked over HTTP: 436 per lane
 - CSS bytes: baseline and every lane `2,840,140`
-- visual browser states: desktop and mobile for `/` and `/blog/`
-- SSR: JavaScript-disabled snapshots for both visual routes
+- visual browser states: desktop and mobile for `/`, `/blog/`, one v3 docs
+  page, one v4 docs page, `/effect-days/`, and `/community-hub/`
+- SSR: JavaScript-disabled snapshots for every visual route
 - browser failures: none introduced
 - result: `pass: true`
 
