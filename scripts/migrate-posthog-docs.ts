@@ -23,6 +23,7 @@ const execFileAsync = promisify(execFile);
 export enum PostHogDocsLane {
 	Tw = "tw",
 	CssClass = "css-class",
+	DesignCss = "design-css",
 }
 
 export interface PostHogDocsMigrationOptions {
@@ -79,10 +80,11 @@ function transformLane(
 	if (lane === PostHogDocsLane.Tw) {
 		return transformSource(source, meta, { mode: "tw", file, metaDir: "src/pandwind" });
 	}
-	const binding = "pandwindCss";
+	const binding = lane === PostHogDocsLane.CssClass ? "pandwindCss" : "pandwindDcss";
+	const module = lane === PostHogDocsLane.CssClass ? "css" : "dcss";
 	const prepared = ensureImport(
 		source,
-		`import { css as ${binding} } from "${relativeModuleImport(file, "src/pandwind", "css")}";`,
+		`import { ${module} as ${binding} } from "${relativeModuleImport(file, "src/pandwind", module)}";`,
 	);
 	return transformSource(prepared, meta, { mode: "css", file, cssBinding: binding });
 }
@@ -102,6 +104,10 @@ function supportFiles(lane: PostHogDocsLane): Record<string, string> {
 	if (lane === PostHogDocsLane.CssClass) {
 		base["src/pandwind/css.ts"] =
 			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "pandwind/preset/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
+	}
+	if (lane === PostHogDocsLane.DesignCss) {
+		base["src/pandwind/dcss.ts"] =
+			'import { createDesignCss } from "pandwind/design";\nimport type { CssFn } from "pandwind/css";\nimport { examplePreset } from "pandwind/preset/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const dcss = createDesignCss(examplePreset, { className: twAdapter }) as unknown as CssFn;\n';
 	}
 	return base;
 }
@@ -161,6 +167,7 @@ export class PostHogDocsMigration {
 	static readonly lanes: readonly PostHogDocsLane[] = [
 		PostHogDocsLane.Tw,
 		PostHogDocsLane.CssClass,
+		PostHogDocsLane.DesignCss,
 	];
 
 	static async run(

@@ -11,6 +11,8 @@ static-first Tailwind migration:
 - `tw` converts bridge-proven static utilities to typed `tw({...})` calls;
 - `css-class` converts bridge-complete static utility lists to `css.class(...)`
   through the Tailwind class strategy;
+- `design-css` routes the same declarations through `createDesignCss` and its
+  `$raw`-compatible façade;
 - custom colors, plugins, arbitrary selectors, dynamic `className` values, and
   other utilities without a proven mapping stay in the source class list as
   explicit residuals.
@@ -39,7 +41,6 @@ viewports, and generated CSS must not exceed the baseline. Residuals are
 allowed only when they preserve the original utility verbatim and are listed
 in the report; they are not silent losses.
 
-The `css.class` lane is a separate JJ revision layered after the `tw` lane. A
-design-language lane will follow after both static class lanes have a passing
-Gatsby/browser proof. Each lane is static first; runtime Pandwind is a fallback only for semantics that
+The `css.class` and `design-css` lanes are separate JJ revisions layered after
+the `tw` lane. Each lane is static first; runtime Pandwind is a fallback only for semantics that
 cannot be represented by a static adapter.

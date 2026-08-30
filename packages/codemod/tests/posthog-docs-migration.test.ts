@@ -36,7 +36,25 @@ describe("PostHog website migration corpus", () => {
 		120_000,
 	);
 
+	corpusTest(
+		"routes the same static declarations through the design-css façade",
+		async () => {
+			const report = await PostHogDocsMigration.run(PostHogDocsLane.DesignCss, {
+				referenceRoot,
+			});
+			expect(report.referenceCommit).toBe("8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff");
+			expect(report.changedFiles).toBeGreaterThan(300);
+			expect(report.convertedCallSites).toBeGreaterThan(300);
+			expect(report.residualCount).toBeGreaterThan(0);
+		},
+		120_000,
+	);
+
 	test("lane identities are explicit", () => {
-		expect(PostHogDocsMigration.lanes).toEqual([PostHogDocsLane.Tw, PostHogDocsLane.CssClass]);
+		expect(PostHogDocsMigration.lanes).toEqual([
+			PostHogDocsLane.Tw,
+			PostHogDocsLane.CssClass,
+			PostHogDocsLane.DesignCss,
+		]);
 	});
 });
