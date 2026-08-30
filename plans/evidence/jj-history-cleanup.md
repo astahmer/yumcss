@@ -11,7 +11,11 @@ This record belongs to the history-consolidation operation started on 2026-08-30
 - Main-pointer operation: `f59e61083b6c`
 - Main before cleanup: `63eefbb7a09ef5f7f83e1d066b0994a32961eb25`
 - Candidate consolidated tip before final history edits: `291c3f6f468df41b4c6a13ce473698e37eacd792`
-- Default workspace was intentionally preserved with uncommitted generated-file changes.
+- Default workspace snapshot `a8fc3b459e8be28a49f6a4e29144d15580713ab0` was
+  audited and contained only generated bridges, interop metadata, generated
+  types, and migration reports; none was needed by `main`. The default
+  workspace now has a clean empty `wip` commit directly on `main` at
+  `1a305744c8abe6a429e9234c0e70c756e04a5616`.
 
 The consolidated candidate passes `pnpm test:all`: Pandwind, playground,
 browser, React Native, OpenTUI, showcase, analyzer, codemod, and inspector
