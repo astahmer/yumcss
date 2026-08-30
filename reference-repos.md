@@ -5,20 +5,23 @@
 ## CSS-in-JS migration corpus
 
 These are shallow, blob-filtered read-only clones under
-`/Users/astahmer/.references/<id>`. The report generator verifies each pinned
-HEAD and reads the selected file with `git show` before running the adapter.
+`${PANDWIND_REFERENCE_ROOT:-~/.references}/<id>`. Prepare them reproducibly
+with `pnpm run references:prepare`; every checkout is verified against the
+pinned commit before a migration reads it.
 
 The benchmark harnesses below are additional corpus sources. Their isolated
 lanes are intentionally not treated as product dependencies: we mine their
 source/config/build semantics and run Pandwind adapters against selected files.
 
-| source corpus   | repository                                        | pinned HEAD                                | covered lanes                                                                                                         |
-| --------------- | ------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| css-in-js-bench | https://github.com/jantimon/css-in-js-bench       | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls                     |
-| css-in-js-arena | https://github.com/gajus/css-in-js-arena          | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX                                                                                             |
-| tailwindcss.com | https://github.com/tailwindlabs/tailwindcss.com   | `bd868a314bd05ca78acd047e3da289274dd6ccd7` | Tailwind docs Next.js app; source corpus for `tw`, `css.class`, and design-lane migration proofs                      |
-| shadcn-ui       | https://github.com/shadcn-ui/ui/tree/main/apps/v4 | `683a5a9b370acdb7785a0529434e6a3b8c7e0441` | `apps/v4` Next.js/React 19/Tailwind v4 docs and registry application; source corpus for Pandwind API migration proofs |
-| effect-website  | https://github.com/Effect-TS/website              | `366419b44eb2bd353cbe3d3e41fa4e8c735e63ee` | `apps/web` Astro/Tailwind v4 documentation website; source corpus for static-first Pandwind migration proofs          |
+| source corpus   | repository                                                | pinned HEAD                                | covered lanes                                                                                                                           |
+| --------------- | --------------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| css-in-js-bench | https://github.com/jantimon/css-in-js-bench               | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | Bamboo, Emotion, Goober, Next-yak, Panda, styled-components, StyleX, utility and vanilla controls                                       |
+| css-in-js-arena | https://github.com/gajus/css-in-js-arena                  | `a8f4d041251b8a1f00e351bb67299258a58640fb` | Bamboo CSS, Panda, StyleX                                                                                                               |
+| tailwindcss.com | https://github.com/tailwindlabs/tailwindcss.com           | `bd868a314bd05ca78acd047e3da289274dd6ccd7` | Tailwind docs Next.js app; source corpus for `tw`, `css.class`, and design-lane migration proofs                                        |
+| shadcn-ui       | https://github.com/shadcn-ui/ui/tree/main/apps/v4         | `683a5a9b370acdb7785a0529434e6a3b8c7e0441` | `apps/v4` Next.js/React 19/Tailwind v4 docs and registry application; source corpus for Pandwind API migration proofs                   |
+| effect-website  | https://github.com/Effect-TS/website                      | `366419b44eb2bd353cbe3d3e41fa4e8c735e63ee` | `apps/web` Astro/Tailwind v4 documentation website; source corpus for static-first Pandwind migration proofs                            |
+| posthog-com     | https://github.com/PostHog/posthog.com                    | `8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff` | Gatsby 4/Tailwind 3 website corpus for static-first `tw`, `css.class`, and design-lane migration proofs                                 |
+| astryx          | https://github.com/facebook/astryx/tree/main/apps/docsite | `8359f1a3601766e3a96ae0805e9487ac3dc17754` | `apps/docsite` Next.js/React 19 StyleX documentation site; source corpus for StyleX-to-Pandwind static, utility, and design-lane proofs |
 
 | adapter                   | repository                                                     | pinned HEAD                                | exercised source                                                                                           |
 | ------------------------- | -------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
@@ -30,7 +33,7 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | linaria                   | https://github.com/callstack/linaria                           | `41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb` | `examples/astro-solid/pages/csr.tsx`                                                                       |
 | jss                       | https://github.com/cssinjs/jss                                 | `901882a894c7e802450696ebe2ea633ae63c5977` | `examples/inline/app.js`                                                                                   |
 | fela                      | https://github.com/rofrischmann/fela                           | `6883525fa44c2c47d0d93768eb26f072fee3c439` | `packages/fela-dom/src/dom/__tests__/render-test.js`                                                       |
-| goober                    | https://github.com/cristianbote/goober                         | `e7e6d33e210ed1f886fb4f372fc25ffd22d358d0` | `src/__tests__/css.test.js`                                                                                |
+| goober                    | https://github.com/cristianbote/goober                         | `e7e6d33e210ed1f886fb4f372fc25ffd22d358d0` | `src/__tests__/css.test.js`; installed browser/SSR proof via `pnpm pivot:proof:installed`                  |
 | aphrodite                 | https://github.com/Khan/aphrodite                              | `225f43c5802259a9e042b384a1f4f2e5b48094ea` | `tests/index_test.js`                                                                                      |
 | style9                    | https://github.com/johanholmerin/style9                        | `b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42` | `examples/nextjs/shared/styles.js`                                                                         |
 | treat                     | https://github.com/seek-oss/treat                              | `1cc001170ee6b66b1d960ac4097fb84597163d1c` | `examples/gatsby-plugin-treat-example/src/components/Button.treat.js`                                      |
@@ -43,7 +46,8 @@ source/config/build semantics and run Pandwind adapters against selected files.
 | next-yak                  | https://github.com/jantimon/css-in-js-bench                    | `3dee1bc32e651ace01c5e4d9306c541337d0c1ce` | `techs/next-yak/case/realistic-button/index.tsx` and css-prop lane                                         |
 | chakra-ui                 | https://github.com/chakra-ui/chakra-ui                         | `7aca83e44de50f501d8274a55c331cb8fb06e4fa` | `apps/www` — full docs website corpus for Chakra style-prop to Pandwind API migrations                     |
 | styled-components-website | https://github.com/styled-components/styled-components-website | `c03d2925ab44f447b385d2f463fe971de2e15c7c` | Full Next.js/MDX styled-components documentation website for styled-components-to-Pandwind migration lanes |
-| mui                       | https://github.com/mui/material-ui                             | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                                              |
 | mantine                   | https://github.com/mantinedev/mantine                          | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx`                                             |
-| mui                       | https://github.com/mui/material-ui                             | `fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4` | `docs/data/material/components/box/BoxSx.tsx`                                                              |
-| mantine                   | https://github.com/mantinedev/mantine                          | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/mantine.dev/src/components/HomePage/HomePage.tsx`                                                    |
+| mantine-home              | https://github.com/mantinedev/mantine                          | `8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8` | `apps/mantine.dev/src/components/HomePage/HomePage.tsx`                                                    |
+| emotion-website           | https://github.com/emotion-js/emotion                          | `b882bcba85132554992e4bd49e94c95939bbf810` | `site` Next.js/MDX documentation website for Emotion-to-Pandwind static migration lanes                    |
+| tokenami                  | https://github.com/tokenami/tokenami                           | `29cf3b97ef14b22421734113f37b7b29e73f35e0` | `examples/nextjs` Tokenami semantic CSS/compose source corpus                                              |
+| unocss                    | https://github.com/unocss/unocss                               | `75103d5e12ec9876069daf6b97a7db1d73428829` | `examples/next` UnoCSS preset/class compiler source corpus                                                 |

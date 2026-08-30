@@ -87,6 +87,45 @@
 				"notLarger": true,
 				"note": "Reference styled-components style nodes are moved to head for comparison; CSS is preserved."
 			}
+		},
+		{
+			"id": "goober-installed-fixture",
+			"sourceAdapter": "goober",
+			"referenceCommit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
+			"report": "plans/evidence/goober-installed-proof.json",
+			"server": { "checked": true, "routes": 1, "failures": 0 },
+			"browser": { "checked": true, "routes": 1, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "installed-fixture-ssr-css",
+				"baselineBytes": 69,
+				"migratedBytes": 69,
+				"notLarger": true,
+				"note": "The source CSS is produced by installed Goober 2.1.19; the target uses Pandwind extracted CSS. Base and hover states are pixel-identical."
+			}
+		}
+	],
+	"boundedProofs": [
+		{
+			"id": "astryx-docsite",
+			"sourceAdapter": "stylex",
+			"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+			"report": "examples/astryx-docs-migration/README.md",
+			"lanes": ["static-css", "runtime-css", "design-dss"],
+			"server": { "checked": true, "builds": 3, "failures": 0 },
+			"browser": {
+				"checked": true,
+				"comparisonsPerLane": 24,
+				"equivalent": true,
+				"errors": 0,
+				"bodyHeightMismatches": 0
+			},
+			"css": {
+				"metric": "linked-css",
+				"staticCssDelta": 1114,
+				"runtimeCssDelta": 754,
+				"notLarger": false,
+				"note": "Behavioral proof passes. The app imports unchanged @astryxdesign StyleX packages, so this is not a strict size acceptance claim until the full repository is migrated or atomic reuse is proven."
+			}
 		}
 	],
 	"fixtureOnlyAdapters": [
@@ -99,13 +138,14 @@
 		"next-yak",
 		"jss",
 		"fela",
-		"goober",
 		"aphrodite",
 		"style9",
 		"treat",
 		"compiled",
 		"solid-styled",
 		"vue-styled",
-		"react-native"
+		"react-native",
+		"tokenami",
+		"unocss"
 	]
 }
