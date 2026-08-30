@@ -15,12 +15,14 @@ import { promisify } from "node:util";
 import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
 import { mapClassList } from "../packages/codemod/src/map.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
+import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
 
 const execFileAsync = promisify(execFile);
 
 export enum PostHogDocsLane {
 	Tw = "tw",
+	CssClass = "css-class",
 }
 
 export interface PostHogDocsMigrationOptions {
@@ -69,19 +71,23 @@ function metadata(): PandwindMeta {
 }
 
 function transformLane(
-	_sourceLane: PostHogDocsLane,
+	lane: PostHogDocsLane,
 	source: string,
 	file: string,
 	meta: PandwindMeta,
 ): TransformResult {
-	return transformSource(source, meta, {
-		mode: "tw",
-		file,
-		metaDir: "src/pandwind",
-	});
+	if (lane === PostHogDocsLane.Tw) {
+		return transformSource(source, meta, { mode: "tw", file, metaDir: "src/pandwind" });
+	}
+	const binding = "pandwindCss";
+	const prepared = ensureImport(
+		source,
+		`import { css as ${binding} } from "${relativeModuleImport(file, "src/pandwind", "css")}";`,
+	);
+	return transformSource(prepared, meta, { mode: "css", file, cssBinding: binding });
 }
 
-function supportFiles(): Record<string, string> {
+function supportFiles(lane: PostHogDocsLane): Record<string, string> {
 	const twSource = readFileSyncSafe(join(metadataRoot, "tw.ts"));
 	const typesSource = readFileSyncSafe(join(metadataRoot, "types.d.ts"));
 	const bridgeSource = readFileSyncSafe(join(metadataRoot, "bridge.ts"));
@@ -93,6 +99,10 @@ function supportFiles(): Record<string, string> {
 		"src/pandwind/bridge.ts": bridgeSource,
 	};
 	base["src/pandwind/cx.ts"] = cxSource;
+	if (lane === PostHogDocsLane.CssClass) {
+		base["src/pandwind/css.ts"] =
+			'import { createCss } from "pandwind/css";\nimport { examplePreset } from "pandwind/preset/example-preset";\nimport { twAdapter } from "./bridge";\n\nexport const css = createCss(examplePreset, { className: twAdapter });\n';
+	}
 	return base;
 }
 
@@ -105,6 +115,7 @@ function readFileSyncSafe(path: string): string {
 async function materialize(
 	referenceRoot: string,
 	outputRoot: string,
+	lane: PostHogDocsLane,
 	changed: ReadonlyMap<string, string>,
 	mappedTokens: ReadonlySet<string>,
 ): Promise<void> {
@@ -122,7 +133,7 @@ async function materialize(
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
 	}
-	for (const [file, code] of Object.entries(supportFiles())) {
+	for (const [file, code] of Object.entries(supportFiles(lane))) {
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
@@ -147,7 +158,10 @@ async function materialize(
 }
 
 export class PostHogDocsMigration {
-	static readonly lanes: readonly PostHogDocsLane[] = [PostHogDocsLane.Tw];
+	static readonly lanes: readonly PostHogDocsLane[] = [
+		PostHogDocsLane.Tw,
+		PostHogDocsLane.CssClass,
+	];
 
 	static async run(
 		lane: PostHogDocsLane,
@@ -193,7 +207,7 @@ export class PostHogDocsMigration {
 		}
 
 		if (options.outputRoot !== undefined) {
-			await materialize(referenceRoot, outputRoot, changed, mappedTokens);
+			await materialize(referenceRoot, outputRoot, lane, changed, mappedTokens);
 		}
 
 		return {

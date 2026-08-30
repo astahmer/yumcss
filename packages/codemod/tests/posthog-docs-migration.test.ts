@@ -22,7 +22,21 @@ describe("PostHog website migration corpus", () => {
 		120_000,
 	);
 
+	corpusTest(
+		"converts bridge-complete call sites through the static css.class lane",
+		async () => {
+			const report = await PostHogDocsMigration.run(PostHogDocsLane.CssClass, {
+				referenceRoot,
+			});
+			expect(report.referenceCommit).toBe("8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff");
+			expect(report.changedFiles).toBeGreaterThan(300);
+			expect(report.convertedCallSites).toBeGreaterThan(300);
+			expect(report.residualCount).toBeGreaterThan(0);
+		},
+		120_000,
+	);
+
 	test("lane identities are explicit", () => {
-		expect(PostHogDocsMigration.lanes).toEqual([PostHogDocsLane.Tw]);
+		expect(PostHogDocsMigration.lanes).toEqual([PostHogDocsLane.Tw, PostHogDocsLane.CssClass]);
 	});
 });
