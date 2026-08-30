@@ -68,12 +68,14 @@ Plans 006, 009–013, 017, and 023 completed the operational layer:
 - real dogfood migrations, including Kumo/8bitcn and the pinned website
   corpora; and
 - a reproducible reference-repository workflow that keeps upstream sources
-  outside this repository and checks them out by exact commit.
+  outside this repository and checks them out by exact commit (plan 038 adds
+  the offline coverage gate and the scheduled full-proof composition root).
 
 Reproduce the checked-in corpus setup with:
 
 ```sh
 pnpm references:prepare
+pnpm pivot:proof
 pnpm test:all
 pnpm test:coverage
 pnpm knip

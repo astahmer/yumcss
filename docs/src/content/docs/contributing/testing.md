@@ -21,6 +21,7 @@ pnpm typecheck
 pnpm lint
 pnpm format
 pnpm knip
+pnpm pivot:proof
 ```
 
 `test:all` runs every workspace test serially. Serial execution is deliberate:
@@ -30,6 +31,27 @@ compete for the same ports or terminal state.
 `test:coverage` runs V8 coverage for the three core packages and fails when a
 package falls below its checked-in threshold. Coverage directories are local
 artifacts and are ignored by Git.
+
+### Pivot proof matrix
+
+`pnpm pivot:proof` is the deterministic offline gate for the migration pivot.
+It runs every registered adapter's contract fixture, checks the per-adapter
+coverage dimensions, verifies that non-fixture-only adapters have pinned
+repository corpus entries, and validates every promoted browser/SSR claim.
+
+The full reference run is intentionally separate because it downloads pinned
+public repositories and can take substantially longer:
+
+```sh
+pnpm pivot:proof:references
+```
+
+That command materializes `${PANDWIND_REFERENCE_ROOT:-~/.references}`, verifies
+every checkout at its exact commit, runs the source corpus, and writes the
+generated report to a temporary output path (or to `PANDWIND_PROOF_OUTPUT` if
+set). It never vendors upstream source into Pandwind. CI runs this workflow on
+schedule and through manual dispatch; the offline gate runs with the regular
+suite.
 
 ## What each layer covers
 

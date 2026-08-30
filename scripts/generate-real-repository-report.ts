@@ -1,7 +1,7 @@
 import { dirname, mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
 import {
 	classifyRealRepositoryProof,

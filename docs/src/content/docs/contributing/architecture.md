@@ -159,6 +159,11 @@ Validation is also a composition boundary. Adapter, validator, scanner, host,
 and differential contract suites accept minimal substitute registries. The
 differential runner checks canonical CSS, independent runtime-sheet output,
 browser states, SSR/hydration, streaming chunks, dependencies, and residuals.
+The `AdapterCoverageGate` consumes evidence from those independent runners and
+reports contract, real-repository, browser, and capability coverage per
+adapter. `pnpm pivot:proof` composes that gate with the checked-in promotion
+matrix; the scheduled full-proof workflow supplies the pinned repository
+evidence without importing upstream source into the workspace.
 The pinned real-repository report adds a typed promotion object with explicit
 `source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
 states. A pending dimension is never counted as a passing real-repository
