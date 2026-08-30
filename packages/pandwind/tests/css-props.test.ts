@@ -160,7 +160,7 @@ test("css with dynamic styles", () => {
 		),
 	).toMatchInlineSnapshot(`
     {
-      "className": "display__flex padding__4 borderRadius__2xl fontSize__$fontSize backgroundColor__$bg _hover__backgroundColor__$bgHover",
+      "className": "display__flex padding__4px borderRadius__2xl fontSize__$fontSize backgroundColor__$bg _hover__backgroundColor__$bgHover",
       "style": {
         "--bg": "blue",
         "--fontSize": 10,

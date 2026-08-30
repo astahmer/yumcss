@@ -138,7 +138,9 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 		name: core.name,
 		enforce: "pre" as const,
 		transformInclude(id: string) {
-			return include.some((pattern) => pattern.test(id)) && !exclude.some((pattern) => pattern.test(id));
+			return (
+				include.some((pattern) => pattern.test(id)) && !exclude.some((pattern) => pattern.test(id))
+			);
 		},
 		transform: core.transform,
 		loadInclude(id: string) {

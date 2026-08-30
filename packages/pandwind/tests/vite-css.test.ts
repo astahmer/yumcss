@@ -94,7 +94,12 @@ test("extracts independently static css.group members and numeric expressions", 
 			dynamicStyle: getStyle,
 		});
 	`;
-	const extraction = createCssSourceService().extractFile(code, "src/card.tsx", ["css"], examplePreset);
+	const extraction = createCssSourceService().extractFile(
+		code,
+		"src/card.tsx",
+		["css"],
+		examplePreset,
+	);
 
 	expect(extraction.sources.map(({ style }) => style)).toEqual([
 		{ width: 1000, transform: "scale(1004)" },
@@ -109,7 +114,12 @@ test("preserves StyleX defineVars runtime references during extraction", () => {
 		const tokens = stylex.defineVars({ "--space": "40px" });
 		const styles = css.group({ panel: { padding: tokens["--space"] } });
 	`;
-	const extraction = createCssSourceService().extractFile(code, "src/panel.tsx", ["css"], examplePreset);
+	const extraction = createCssSourceService().extractFile(
+		code,
+		"src/panel.tsx",
+		["css"],
+		examplePreset,
+	);
 
 	expect(extraction.sources.map(({ style }) => style)).toEqual([{ padding: "var(--space)" }]);
 });
@@ -122,7 +132,12 @@ test("collects var carriers from function-valued css.group members", () => {
 			color: (value: string) => ({ color: value }),
 		});
 	`;
-	const extraction = createCssSourceService().extractFile(code, "src/card.tsx", ["css"], examplePreset);
+	const extraction = createCssSourceService().extractFile(
+		code,
+		"src/card.tsx",
+		["css"],
+		examplePreset,
+	);
 
 	expect(extraction.varKeys).toEqual(["color"]);
 });

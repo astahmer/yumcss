@@ -93,9 +93,7 @@ const callKind = (
 	}
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
-	return member === "class" || member === "raw" || member === "group"
-		? `css.${member}`
-		: undefined;
+	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
 };
 
 const isObjectLiteral = (argument: unknown): boolean => {
@@ -123,8 +121,7 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 			}
 			if (
 				specifier.type === "ImportSpecifier" &&
-				(specifier.imported?.name === "createCss" ||
-					specifier.imported?.name === "createDesignCss")
+				(specifier.imported?.name === "createCss" || specifier.imported?.name === "createDesignCss")
 			)
 				createCssNames.add(local);
 		}
@@ -135,12 +132,14 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 	// extractor can collect the resulting class/group calls.
 	walk(program, (node) => {
 		if (node.type !== "VariableDeclaration") return;
-		for (const declaration of (node as {
-			declarations?: Array<{
-				id?: { type?: string; name?: string };
-				init?: { type?: string; callee?: { type?: string; name?: string } };
-			}>;
-		}).declarations ?? []) {
+		for (const declaration of (
+			node as {
+				declarations?: Array<{
+					id?: { type?: string; name?: string };
+					init?: { type?: string; callee?: { type?: string; name?: string } };
+				}>;
+			}
+		).declarations ?? []) {
 			const local = declaration.id?.name;
 			const init = declaration.init;
 			if (
@@ -255,7 +254,7 @@ export class CssSourceScannerService implements CssSourceScanner {
 			if (
 				object?.type !== "Identifier" ||
 				!names.has((object as { name?: string }).name ?? "") ||
-				property?.name !== "vars" && property?.name !== "group"
+				(property?.name !== "vars" && property?.name !== "group")
 			)
 				return;
 			if (property.name === "group") {

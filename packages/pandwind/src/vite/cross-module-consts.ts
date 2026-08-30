@@ -37,10 +37,7 @@ import {
 	type ModulePathResolver,
 	type ModuleSourceReader,
 } from "./module-ports.ts";
-import {
-	collectStyleConstants,
-	type StyleLiteralScope,
-} from "./style-constants.ts";
+import { collectStyleConstants, type StyleLiteralScope } from "./style-constants.ts";
 
 /** Analysis of one module's exported constants and re-export surface. */
 export interface ModuleExportAnalysis {
@@ -87,8 +84,9 @@ export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 			const declarations = (statement as { declaration?: OxcNode | null }).declaration;
 			if (declarations !== null && declarations !== undefined) {
 				if ((declarations as { kind?: string }).kind !== "const") continue;
-				for (const declarator of (declarations as { declarations?: OxcNode[] }).declarations ?? []) {
-					const name = ((declarator as { id?: { name?: string } }).id)?.name;
+				for (const declarator of (declarations as { declarations?: OxcNode[] }).declarations ??
+					[]) {
+					const name = (declarator as { id?: { name?: string } }).id?.name;
 					const value = constants.get(name ?? "");
 					if (typeof name !== "string" || value === undefined || values.has(name)) continue;
 					values.set(name, value);

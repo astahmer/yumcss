@@ -23,7 +23,9 @@ export class NodeModuleSourceReader implements ModuleSourceReader {
 export class NodeModulePathResolver implements ModulePathResolver {
 	private readonly extensions: readonly string[];
 
-	constructor(extensions: readonly string[] = ["", ".ts", ".tsx", ".stylex.ts", ".js", ".jsx", ".stylex.js"]) {
+	constructor(
+		extensions: readonly string[] = ["", ".ts", ".tsx", ".stylex.ts", ".js", ".jsx", ".stylex.js"],
+	) {
 		this.extensions = extensions;
 	}
 
@@ -34,7 +36,11 @@ export class NodeModulePathResolver implements ModulePathResolver {
 			const parts = source.split("/");
 			const packageName = source.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0]!;
 			const subpath = source.slice(packageName.length).replace(/^\//, "");
-			for (let directory = importerDir; directory !== dirname(directory); directory = dirname(directory)) {
+			for (
+				let directory = importerDir;
+				directory !== dirname(directory);
+				directory = dirname(directory)
+			) {
 				const packageRoot = resolve(directory, "node_modules", packageName);
 				bases.push(resolve(packageRoot, subpath));
 				bases.push(resolve(packageRoot, "src", subpath));

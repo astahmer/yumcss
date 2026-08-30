@@ -34,7 +34,7 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
 		return Array.from(values).toSorted((a, b) => {
 			const priority = a.priority - b.priority;
 			if (priority !== 0) return priority;
-				return responsiveCascadeOrder(a as { css?: string }, b as { css?: string });
+			return responsiveCascadeOrder(a as { css?: string }, b as { css?: string });
 		});
 	}
 }
@@ -46,7 +46,9 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
  * merely because files happened to be scanned in a different order.
  */
 const responsiveCascadeOrder = (a: { css?: string }, b: { css?: string }): number => {
-	const condition = (value: string | undefined): { direction: "min" | "max"; width: number } | undefined => {
+	const condition = (
+		value: string | undefined,
+	): { direction: "min" | "max"; width: number } | undefined => {
 		const match = value?.match(/@(media|container)[^{]*\((min|max)-width:\s*([\d.]+)px/);
 		if (match === null || match === undefined) return undefined;
 		return { direction: match[2] as "min" | "max", width: Number(match[3]) };

@@ -44,8 +44,7 @@ function runtimeValue(value: StyleProgram["declarations"][number]["value"]): str
 
 function generatedCssBinding(source: string | undefined): string {
 	const input = source ?? "";
-	if (/\bimport\s+css\s+from\b/.test(input))
-		return "pandwindCss";
+	if (/\bimport\s+css\s+from\b/.test(input)) return "pandwindCss";
 	for (const candidate of ["css", "pandwindCss", "pwCss"]) {
 		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		if (!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(input))
@@ -60,9 +59,7 @@ function renameGeneratedCssBinding(
 ): { text: string; imports: readonly string[] } {
 	if (binding === "css") return emission;
 	const rename = (value: string) =>
-		value
-			.replace(/\bcss(?=\s*[.({,;}])/g, binding)
-			.replace(/\bcss(?=\s*=)/g, binding);
+		value.replace(/\bcss(?=\s*[.({,;}])/g, binding).replace(/\bcss(?=\s*=)/g, binding);
 	return { text: rename(emission.text), imports: emission.imports.map(rename) };
 }
 
@@ -1068,7 +1065,7 @@ export default defineCodemodAdapter({
 			program.source.pattern === CodemodPatternId.StyleXCreate;
 		if ((context?.host?.wrapComponent === true || hasFunctionDynamic) && !stylexDynamicGroup) {
 			const component = runtimeComponent(program, programObject, context);
-				if (component !== undefined) return finalize(component);
+			if (component !== undefined) return finalize(component);
 		}
 		if (program.rules.some((rule) => rule.kind === "font-face")) {
 			const styleProgram = {

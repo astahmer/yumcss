@@ -70,11 +70,11 @@ still converted; only that carrier remains on the runtime fallback path.
 
 The strict stylesheet-size condition is not yet green for this corpus:
 
-| lane | static extraction | browser result | linked CSS delta |
-| --- | ---: | --- | ---: |
-| `static-css` | 98.57% | 24/24 equivalent | +1,114 bytes |
-| `runtime-css` | 98.55% | 24/24 equivalent | +754 bytes |
-| `design-dss` | 98.57% | 24/24 equivalent | +1,114 bytes |
+| lane          | static extraction | browser result   | linked CSS delta |
+| ------------- | ----------------: | ---------------- | ---------------: |
+| `static-css`  |            98.57% | 24/24 equivalent |     +1,114 bytes |
+| `runtime-css` |            98.55% | 24/24 equivalent |       +754 bytes |
+| `design-dss`  |            98.57% | 24/24 equivalent |     +1,114 bytes |
 
 The extra bytes are the measured cost of combining Pandwind output for
 migrated docsite sources with the unchanged StyleX output emitted by imported

@@ -27,10 +27,7 @@ const groupStyles = (
 	const styles: Record<string, unknown>[] = [];
 	for (const property of (argument as { properties?: OxcNode[] }).properties ?? []) {
 		if (property.type !== "Property") continue;
-		const value = evaluateStyleLiteral(
-			(property as { value?: OxcNode }).value,
-			constants,
-		);
+		const value = evaluateStyleLiteral((property as { value?: OxcNode }).value, constants);
 		if (typeof value === "object" && value !== null && !Array.isArray(value))
 			styles.push(value as Record<string, unknown>);
 	}
