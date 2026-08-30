@@ -1,5 +1,5 @@
 /** Independently testable Panda migration discovery stage. */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";

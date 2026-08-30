@@ -99,7 +99,11 @@ const Dial = () => {
     let angle = (Math.atan2(dy, dx) * 180) / Math.PI;
     if (angle < 0) angle += 360;
     if (angle < startAngle) {
-      angle + 360 <= endAngle ? (angle += 360) : (angle = startAngle);
+      if (angle + 360 <= endAngle) {
+        angle += 360;
+      } else {
+        angle = startAngle;
+      }
     }
     if (angle > endAngle) angle = endAngle;
     const newVolume = Math.round(1 + (angle - startAngle) / stepAngle);

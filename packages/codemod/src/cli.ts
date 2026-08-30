@@ -16,7 +16,6 @@
  */
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";

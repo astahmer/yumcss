@@ -18,7 +18,6 @@
  *   eliminated counts (see analyze.test.ts).
  */
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
