@@ -121,14 +121,10 @@ export interface PandwindUnpluginCssOptions extends PandwindCssViteOptions {
 export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssOptions) => {
 	const core = createCssExtractorPluginCore(options.preset, options);
 	const virtualId = options.virtualId ?? "pandwind:css";
-	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
-	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
 	const plugin: {
 		name: string;
 		enforce: "pre";
-		transformInclude: (id: string) => boolean;
 		transform: typeof core.transform;
-		loadInclude: (id: string) => boolean;
 		resolveId: (source: string) => string | null;
 		load: (id: string) => string | null;
 		watchChange: (id: string) => void;
@@ -137,15 +133,7 @@ export const pandwindUnpluginCss = createUnplugin((options: PandwindUnpluginCssO
 	} = {
 		name: core.name,
 		enforce: "pre" as const,
-		transformInclude(id: string) {
-			return (
-				include.some((pattern) => pattern.test(id)) && !exclude.some((pattern) => pattern.test(id))
-			);
-		},
 		transform: core.transform,
-		loadInclude(id: string) {
-			return id.includes(virtualId) || id.includes(encodeURIComponent(`\0${virtualId}.css`));
-		},
 		resolveId(source: string) {
 			return core.resolveId(source);
 		},

@@ -44,7 +44,7 @@ test("findAuthoredCssImports reports explicit web stylesheet imports", () => {
 test("findCssCallSites reports extraction coverage with provenance", () => {
 	const code = `
 		import { css } from "./design";
-		const color = getColor();
+		const color = "$blue-500";
 		const a = css.class({ $text: { color: "$blue-500" } });
 		const b = css({ $text: { color } });
 	`;
@@ -63,83 +63,6 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 		staticArguments: 0,
 		dynamicArguments: 1,
 	});
-});
-
-test("extracts migrated createCss group bindings as static style maps", () => {
-	const code = `
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		const styles = css.group({
-			root: { color: "red" },
-			muted: { opacity: 0.6 },
-		});
-	`;
-	const service = createCssSourceService();
-	const extraction = service.extractFile(code, "src/card.tsx", ["css"], examplePreset);
-
-	expect(extraction.sources).toHaveLength(2);
-	expect(extraction.sources.map(({ style }) => style)).toEqual([
-		{ color: "red" },
-		{ opacity: 0.6 },
-	]);
-});
-
-test("extracts independently static css.group members and numeric expressions", () => {
-	const code = `
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		const WIDTH = 1000;
-		const styles = css.group({
-			staticStyle: { width: WIDTH, transform: \`scale(\${WIDTH + 4})\` },
-			dynamicStyle: getStyle,
-		});
-	`;
-	const extraction = createCssSourceService().extractFile(
-		code,
-		"src/card.tsx",
-		["css"],
-		examplePreset,
-	);
-
-	expect(extraction.sources.map(({ style }) => style)).toEqual([
-		{ width: 1000, transform: "scale(1004)" },
-	]);
-});
-
-test("preserves StyleX defineVars runtime references during extraction", () => {
-	const code = `
-		import * as stylex from "@stylexjs/stylex";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		const tokens = stylex.defineVars({ "--space": "40px" });
-		const styles = css.group({ panel: { padding: tokens["--space"] } });
-	`;
-	const extraction = createCssSourceService().extractFile(
-		code,
-		"src/panel.tsx",
-		["css"],
-		examplePreset,
-	);
-
-	expect(extraction.sources.map(({ style }) => style)).toEqual([{ padding: "var(--space)" }]);
-});
-
-test("collects var carriers from function-valued css.group members", () => {
-	const code = `
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		const dynamic = css.group({
-			color: (value: string) => ({ color: value }),
-		});
-	`;
-	const extraction = createCssSourceService().extractFile(
-		code,
-		"src/card.tsx",
-		["css"],
-		examplePreset,
-	);
-
-	expect(extraction.varKeys).toEqual(["color"]);
 });
 
 test("diagnoseCssSources reports unsupported constructs and missed extraction", () => {
@@ -214,15 +137,6 @@ test("findCssImports collects named, default and aliased css bindings", () => {
 	expect(scan(["css", "design"]).findImports(code, "app.tsx")).toEqual(
 		new Set(["css", "styles", "wind"]),
 	);
-});
-
-test("findCssImports recognizes createDesignCss instances", () => {
-	const code = `
-		import { createDesignCss } from "pandwind/design";
-		const dcss = createDesignCss(preset);
-		dcss.class({ $text: { color: "$blue-500" } });
-	`;
-	expect(scan(["css", "design"]).findImports(code, "app.tsx")).toEqual(new Set(["dcss"]));
 });
 
 test("the CSS scanner ignores stylesheet and virtual module ids", () => {
@@ -324,7 +238,7 @@ test("extractCssStyles resolves design modules in literal calls", () => {
 test("extractCssStyles skips dynamic calls and processes each argument", () => {
 	const code = `
 		import { css } from "./design";
-		const color = getColor();
+		const color = "$blue-500";
 		const a = css({ $frame: { fill: color } });
 		const b = css({ $frame: { w: "20" } }, { $frame: { h: "20" } });
 	`;

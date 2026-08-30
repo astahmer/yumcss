@@ -1,7 +1,5 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
-import { createCrossModuleConstResolver, type CrossModuleResolver } from "./cross-module-consts.ts";
-import { collectStyleConstants, type StyleLiteralScope } from "./style-constants.ts";
 import type {
 	AuthoredCssImport,
 	CssCallSite,
@@ -80,7 +78,7 @@ const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boole
 	return (
 		object?.type === "Identifier" &&
 		names.has((object as { name?: string }).name ?? "") &&
-		(property?.name === "class" || property?.name === "raw" || property?.name === "group")
+		(property?.name === "class" || property?.name === "raw")
 	);
 };
 
@@ -93,7 +91,7 @@ const callKind = (
 	}
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
-	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
+	return member === "class" || member === "raw" ? `css.${member}` : undefined;
 };
 
 const isObjectLiteral = (argument: unknown): boolean => {
@@ -103,7 +101,6 @@ const isObjectLiteral = (argument: unknown): boolean => {
 
 const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]): Set<string> => {
 	const names = new Set<string>();
-	const createCssNames = new Set<string>();
 	walk(program, (node) => {
 		if (node.type !== "ImportDeclaration") return;
 		const declaration = node as ImportNode;
@@ -119,36 +116,6 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 			) {
 				names.add(local);
 			}
-			if (
-				specifier.type === "ImportSpecifier" &&
-				(specifier.imported?.name === "createCss" || specifier.imported?.name === "createDesignCss")
-			)
-				createCssNames.add(local);
-		}
-	});
-	// A migrated source commonly owns its stylesheet binding locally:
-	// `import { createCss } from "pandwind/css"; const css = createCss();`.
-	// Treat that binding exactly like an imported `css` object so the static
-	// extractor can collect the resulting class/group calls.
-	walk(program, (node) => {
-		if (node.type !== "VariableDeclaration") return;
-		for (const declaration of (
-			node as {
-				declarations?: Array<{
-					id?: { type?: string; name?: string };
-					init?: { type?: string; callee?: { type?: string; name?: string } };
-				}>;
-			}
-		).declarations ?? []) {
-			const local = declaration.id?.name;
-			const init = declaration.init;
-			if (
-				typeof local === "string" &&
-				init?.type === "CallExpression" &&
-				init.callee?.type === "Identifier" &&
-				createCssNames.has(init.callee.name ?? "")
-			)
-				names.add(local);
 		}
 	});
 	return names;
@@ -178,14 +145,8 @@ const authoredImports = (code: string, id: string, program: OxcNode): AuthoredCs
 export class CssSourceScannerService implements CssSourceScanner {
 	private readonly matchers: readonly (string | RegExp)[];
 
-	private readonly constants: CrossModuleResolver;
-
-	constructor(
-		matchers: readonly (string | RegExp)[],
-		constants: CrossModuleResolver = createCrossModuleConstResolver(),
-	) {
+	constructor(matchers: readonly (string | RegExp)[]) {
 		this.matchers = matchers;
-		this.constants = constants;
 	}
 
 	matches(source: string): boolean {
@@ -254,21 +215,12 @@ export class CssSourceScannerService implements CssSourceScanner {
 			if (
 				object?.type !== "Identifier" ||
 				!names.has((object as { name?: string }).name ?? "") ||
-				(property?.name !== "vars" && property?.name !== "group")
+				property?.name !== "vars"
 			)
 				return;
-			if (property.name === "group") {
-				collectGroupFunctionKeys(call.arguments[0] as OxcNode | undefined, keys);
-				return;
-			}
 			for (const argument of call.arguments) collectObjectKeys(argument as OxcNode, "", keys);
 		});
 		return [...keys];
-	}
-
-	findStyleConstants(code: string, id: string): StyleLiteralScope {
-		const program = parse(id, code).program as unknown as OxcNode;
-		return collectStyleConstants(program, this.constants.importedLiteralScope(id, program));
 	}
 }
 
@@ -293,29 +245,6 @@ const collectObjectKeys = (
 		const full = prefix === "" ? key : `${prefix}__${key}`;
 		if (property.value?.type === "ObjectExpression") collectObjectKeys(property.value, full, out);
 		else out.add(full);
-	}
-};
-
-const returnedObject = (node: OxcNode | null | undefined): OxcNode | undefined => {
-	if (node?.type === "ObjectExpression") return node;
-	if (node?.type === "ParenthesizedExpression")
-		return returnedObject((node as { expression?: OxcNode }).expression);
-	if (node?.type !== "BlockStatement") return undefined;
-	for (const statement of (node as { body?: OxcNode[] }).body ?? []) {
-		if (statement.type !== "ReturnStatement") continue;
-		const argument = (statement as { argument?: OxcNode | null }).argument;
-		if (argument?.type === "ObjectExpression") return argument;
-	}
-	return undefined;
-};
-
-const collectGroupFunctionKeys = (node: OxcNode | null | undefined, out: Set<string>): void => {
-	if (node?.type !== "ObjectExpression") return;
-	for (const property of (node as { properties?: OxcNode[] }).properties ?? []) {
-		if (property.type !== "Property") continue;
-		const value = (property as { value?: OxcNode }).value;
-		if (value?.type !== "ArrowFunctionExpression" && value?.type !== "FunctionExpression") continue;
-		collectObjectKeys(returnedObject((value as { body?: OxcNode }).body), "", out);
 	}
 };
 
@@ -350,7 +279,7 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 					...position,
 					message: unsupported.get(member)!,
 					suggestion:
-						"Use a static css.class/css.group object for declarations, or keep this rule in authored CSS until build-time support is added.",
+						"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
 				});
 				return;
 			}

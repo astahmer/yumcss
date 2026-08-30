@@ -27,9 +27,10 @@
  *   resolve to nothing: the call is left untouched, nothing ever throws.
  */
 import { dirname } from "node:path";
+import { type Expression } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
-import type { ConstantScope } from "./cx-inline.ts";
+import type { ConstantScope, KnownConstant } from "./cx-inline.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import {
 	NodeModulePathResolver,
@@ -37,14 +38,11 @@ import {
 	type ModulePathResolver,
 	type ModuleSourceReader,
 } from "./module-ports.ts";
-import { collectStyleConstants, type StyleLiteralScope } from "./style-constants.ts";
 
 /** Analysis of one module's exported constants and re-export surface. */
 export interface ModuleExportAnalysis {
 	/** Exported name -> string value (string literals / bare templates). */
 	strings: Map<string, string>;
-	/** Exported values proven to be literal style/token data. */
-	values: Map<string, unknown>;
 	/** Exported name -> re-export origin (`export { A } from "./b"`). */
 	reexports: Map<string, { source: string; orig: string }>;
 	/** `export * from "./b"` sources, resolved last (name carried over). */
@@ -72,8 +70,6 @@ function parseProgram(code: string, id: string): OxcNode {
  */
 export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 	const strings = new Map<string, string>();
-	const values = new Map<string, unknown>();
-	const constants = collectStyleConstants(program);
 	const reexports = new Map<string, { source: string; orig: string }>();
 	const stars: string[] = [];
 
@@ -86,11 +82,12 @@ export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 				if ((declarations as { kind?: string }).kind !== "const") continue;
 				for (const declarator of (declarations as { declarations?: OxcNode[] }).declarations ??
 					[]) {
-					const name = (declarator as { id?: { name?: string } }).id?.name;
-					const value = constants.get(name ?? "");
-					if (typeof name !== "string" || value === undefined || values.has(name)) continue;
-					values.set(name, value);
-					if (typeof value === "string") strings.set(name, value);
+					const id = (declarator as { id?: OxcNode }).id;
+					const name = (id as { name?: string } | undefined)?.name;
+					const init = (declarator as { init?: Expression | null }).init;
+					if (typeof name !== "string" || init === null || init === undefined) continue;
+					const value = staticString(init);
+					if (value !== undefined && !strings.has(name)) strings.set(name, value);
 				}
 				continue;
 			}
@@ -114,7 +111,22 @@ export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 		}
 	}
 
-	return { strings, values, reexports, stars };
+	return { strings, reexports, stars };
+}
+
+/** Static string value of an initializer: string literal or bare template. */
+function staticString(node: Expression): string | undefined {
+	if ((node as { type?: string }).type === "Literal") {
+		const value = (node as { value?: unknown }).value;
+		return typeof value === "string" ? value : undefined;
+	}
+	if ((node as { type?: string }).type === "TemplateLiteral") {
+		const expressions = (node as { expressions?: unknown[] }).expressions ?? [];
+		if (expressions.length > 0) return undefined;
+		const quasis = (node as { quasis?: Array<{ value: { cooked?: string; raw: string } }> }).quasis;
+		return quasis?.[0]?.value.cooked ?? quasis?.[0]?.value.raw;
+	}
+	return undefined;
 }
 
 /** Collect every named import binding in the consumer module. */
@@ -155,8 +167,6 @@ export interface CrossModuleResolver {
 	 * (imports are live for the whole module — no TDZ guard applies).
 	 */
 	importedScope(id: string, program: OxcNode): ConstantScope;
-	/** Resolve literal token/style objects as well as strings. */
-	importedLiteralScope(id: string, program: OxcNode): StyleLiteralScope;
 	/** Drop the cached analysis of one file (HMR invalidation). */
 	invalidate(absPath: string): void;
 }
@@ -198,13 +208,14 @@ export function createCrossModuleConstResolver(
 		importerDir: string,
 		importedName: string,
 		depth: number,
-	): unknown => {
+	): string | undefined => {
+		if (!source.startsWith(".") && !source.startsWith("/")) return undefined;
 		const absPath = pathResolver.resolve(source, importerDir);
 		if (absPath === undefined) return undefined;
 		const mod = analyze(absPath);
 		if (mod === null) return undefined;
 
-		const direct = mod.values.get(importedName);
+		const direct = mod.strings.get(importedName);
 		if (direct !== undefined) return direct;
 
 		// One barrel level deep: a re-export target of the direct import is
@@ -222,22 +233,17 @@ export function createCrossModuleConstResolver(
 	};
 
 	return {
-		importedLiteralScope(id: string, program: OxcNode): StyleLiteralScope {
-			const scope: StyleLiteralScope = new Map();
+		importedScope(id: string, program: OxcNode): ConstantScope {
+			const scope: ConstantScope = new Map();
 			const importerDir = dirname(id);
 			for (const binding of collectImportBindings(program)) {
 				const { localName, source, importedName } = binding;
 				if (bindingIsShadowedOrWritten(program, localName)) continue;
 				const value = resolveValue(source, importerDir, importedName, 0);
-				if (value !== undefined) scope.set(localName, value);
-			}
-			return scope;
-		},
-		importedScope(id: string, program: OxcNode): ConstantScope {
-			const scope: ConstantScope = new Map();
-			for (const [localName, value] of this.importedLiteralScope(id, program)) {
-				if (typeof value !== "string") continue;
-				scope.set(localName, { value, declStart: 0 });
+				if (value !== undefined) {
+					const known: KnownConstant = { value, declStart: 0 };
+					scope.set(localName, known);
+				}
 			}
 			return scope;
 		},
