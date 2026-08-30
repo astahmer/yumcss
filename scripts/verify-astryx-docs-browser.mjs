@@ -58,7 +58,10 @@ async function inspect(browser, baseUrl, route, viewport, lane) {
 		timeout: 30000,
 	});
 	await page.evaluate(() => document.fonts?.ready);
-	await page.waitForTimeout(route === "/playground" ? 5000 : 1000);
+	// Client-loaded examples and the playground's compiled preview must settle
+	// before capture; otherwise a cold dev server is compared against a ready
+	// baseline and produces false visual/residual failures.
+	await page.waitForTimeout(route === "/playground" ? 8000 : 4000);
 	const shape = await page.evaluate(() => {
 		const rect = (selector) => {
 			const element = document.querySelector(selector);
@@ -217,12 +220,13 @@ const comparisons = baseline.map((reference, index) => {
 	};
 });
 const report = {
-	schema: "pandwind.astryx-docs-browser-report/2",
+	schema: "pandwind.astryx-docs-browser-report/3",
 	baselineUrl,
 	migratedUrl,
 	routes,
 	viewports,
 	visualDiffRatioLimit,
+	cssWithinBudget: comparisons.every((comparison) => comparison.migratedCssDelta <= 0),
 	allRoutesEquivalent: comparisons.every(
 		(comparison) =>
 			comparison.statusEqual &&
@@ -231,10 +235,27 @@ const report = {
 			comparison.newErrors.length === 0 &&
 			comparison.newFailedResponses.length === 0,
 	),
+	allAcceptanceCriteriaPassed: comparisons.every(
+		(comparison) =>
+			comparison.statusEqual &&
+			comparison.shapeEqual &&
+			comparison.visualEquivalent &&
+			comparison.newErrors.length === 0 &&
+			comparison.newFailedResponses.length === 0 &&
+			comparison.migratedCssDelta <= 0,
+	),
 	comparisons,
 };
 await mkdir(dirname(reportPath), { recursive: true });
 await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
 process.stdout.write(
-	`${JSON.stringify({ allRoutesEquivalent: report.allRoutesEquivalent, comparisons: comparisons.length }, null, 2)}\n`,
+	`${JSON.stringify(
+		{
+			allRoutesEquivalent: report.allRoutesEquivalent,
+			cssWithinBudget: report.cssWithinBudget,
+			allAcceptanceCriteriaPassed: report.allAcceptanceCriteriaPassed,
+			comparisons: comparisons.length,
+		},
+		null,
+	)}\n`,
 );
