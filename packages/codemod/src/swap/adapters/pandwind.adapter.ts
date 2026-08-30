@@ -51,7 +51,7 @@ function runtimeComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
 	context: AdapterEmitContext | undefined,
-): { text: string; imports: readonly string[] } | undefined {
+): { text: string; semantic: StyleProgram; imports: readonly string[] } | undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
 	const tag =
@@ -64,6 +64,7 @@ function runtimeComponent(
 	if (framework === "vue") {
 		return {
 			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = computed(() => css.vars(${object})); return () => h(${JSON.stringify(tag)}, { ...attrs, class: [style.value.class, attrs.class], style: [style.value.style, attrs.style] }, slots.default?.()); } })`,
+			semantic: program,
 			imports: [
 				'import { computed, defineComponent, h } from "vue";',
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
@@ -76,6 +77,7 @@ function runtimeComponent(
 	const classAttribute = framework === "solid" ? "class" : "className";
 	return {
 		text: `(props) => { const style = css.vars(${object}); return <${tag} {...props} ${classAttribute}={cx(style.class, props.${classAttribute})} style={style.style} />; }`,
+		semantic: program,
 		imports: [
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
@@ -114,6 +116,19 @@ function runtimeFontFaces(program: StyleProgram): string {
 					.join(", ")} ] }`,
 		)
 		.join(", ");
+}
+
+function runtimeGlobalRules(program: StyleProgram): string {
+	const rule = (item: StyleProgram["rules"][number]): string =>
+		`{ kind: "global", selector: ${JSON.stringify(item.selector ?? "*")}, conditions: [${item.conditions
+			.map((condition) => JSON.stringify(condition.value ?? condition.raw ?? condition.name))
+			.join(", ")}], declarations: [${item.declarations
+			.map(
+				(declaration) =>
+					`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
+			)
+			.join(", ")}], children: [${item.children.map(rule).join(", ")}] }`;
+	return `(css.sheet.registerSemanticRules([${program.rules.map(rule).join(", ")}]), "")`;
 }
 
 function runtimeGlobalVars(program: StyleProgram): string {
@@ -239,6 +254,7 @@ export default defineCodemodAdapter({
 			};
 			return {
 				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(program)}]), css.group(${programObject(styleProgram)}))`,
+				semantic: program,
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
 					'import { pandwindPreset } from "pandwind/preset";',
@@ -246,9 +262,20 @@ export default defineCodemodAdapter({
 				],
 			};
 		}
+		if (kind === "global")
+			return {
+				text: runtimeGlobalRules(program),
+				semantic: program,
+				imports: [
+					'import { createRuntimeCss } from "pandwind/css/runtime";',
+					'import { pandwindPreset } from "pandwind/preset";',
+					"const css = createRuntimeCss(pandwindPreset);",
+				],
+			};
 		if (kind === "keyframes")
 			return {
 				text: runtimeKeyframes(program),
+				semantic: program,
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
 					'import { pandwindPreset } from "pandwind/preset";',
@@ -297,6 +324,7 @@ export default defineCodemodAdapter({
 							: dynamic
 								? `css.vars(${programObject(program)})`
 								: `css.class(${programObject(program)})`,
+			...(dynamic || stitchesVariants ? { semantic: program } : {}),
 			imports: stitchesVariants
 				? [
 						'import { createCss } from "pandwind/css";',

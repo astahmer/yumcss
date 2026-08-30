@@ -1,7 +1,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
 import {
 	createRealRepositoryCorpus,
@@ -169,6 +169,14 @@ for (const fixture of fixtures) {
 		(total, validation) => total + Buffer.byteLength(validation.canonicalTarget),
 		0,
 	);
+	const hasUnresolvedRuntimeSemantics = adapterValidations.some(
+		(validation) =>
+			!validation.valid &&
+			/=>|\bfunction\b|\$\{|\bprops\b|\btheme\b/.test(
+				`${validation.canonicalSource}\n${validation.canonicalTarget}`,
+			),
+	);
+	const canonicalComparable = adapterValidations.length > 0 && !hasUnresolvedRuntimeSemantics;
 	reports.push({
 		id: fixture.id,
 		repository: fixture.repository,
@@ -184,19 +192,21 @@ for (const fixture of fixtures) {
 		residuals,
 		residualKinds,
 		validations,
-		canonicalCss:
-			adapterValidations.length === 0
-				? {
-						checked: false,
-						reason: "pipeline migration did not expose an adapter-level canonical CSS pair",
-					}
-				: {
-						checked: true,
-						equal: adapterValidations.every((validation) => validation.valid),
-						sourceBytes: canonicalSourceBytes,
-						targetBytes: canonicalTargetBytes,
-						byteDelta: canonicalTargetBytes - canonicalSourceBytes,
-					},
+		canonicalCss: !canonicalComparable
+			? {
+					checked: false,
+					reason:
+						adapterValidations.length === 0
+							? "pipeline migration did not expose an adapter-level canonical CSS pair"
+							: "runtime-dependent semantics require browser/SSR proof before canonical comparison",
+				}
+			: {
+					checked: true,
+					equal: adapterValidations.every((validation) => validation.valid),
+					sourceBytes: canonicalSourceBytes,
+					targetBytes: canonicalTargetBytes,
+					byteDelta: canonicalTargetBytes - canonicalSourceBytes,
+				},
 		manualFixes,
 		emittedModules,
 		runtimeBundleImpact: {
@@ -212,21 +222,22 @@ for (const fixture of fixtures) {
 	});
 }
 
-console.log(
-	JSON.stringify(
-		{
-			schema: "pandwind.real-repository-report/2",
-			generatedFrom: "scripts/generate-real-repository-report.ts",
-			cloneRoot: referenceRoot,
-			sourceFiles: corpus.references.length,
-			reports,
-			bundleImpact: {
-				measured: false,
-				reason:
-					"reference repositories are cloned without installing their dependency graphs; the runner records source/output bytes and dependency deltas without fabricating bundle numbers",
-			},
-		},
-		null,
-		2,
-	),
-);
+const report = {
+	schema: "pandwind.real-repository-report/2",
+	generatedFrom: "scripts/generate-real-repository-report.ts",
+	cloneRoot: referenceRoot,
+	sourceFiles: corpus.references.length,
+	reports,
+	bundleImpact: {
+		measured: false,
+		reason:
+			"reference repositories are cloned without installing their dependency graphs; the runner records source/output bytes and dependency deltas without fabricating bundle numbers",
+	},
+};
+const serialized = JSON.stringify(report, null, 2);
+if (process.argv.includes("--write"))
+	writeFileSync(
+		resolve(import.meta.dirname, "../plans/evidence/real-repository-migrations-v2.json"),
+		`${serialized}\n`,
+	);
+console.log(serialized);

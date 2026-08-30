@@ -143,6 +143,7 @@ function renderAdapterProgram(
 	mode: AdapterCapabilityMode,
 ): {
 	text: string;
+	semantic?: StyleProgram;
 	residuals: readonly StyleProgramResidual[];
 	dependencies?: AdapterDependencies;
 } {
@@ -247,10 +248,12 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		config: targetConfig,
 		semantic: fixture.semantic,
 	});
-	const targetProgram = mergeParsedPrograms(
-		targetParsed.matches.map((match) => match.program),
-		targetParsed.residuals,
-	);
+	const targetProgram =
+		emitted.semantic ??
+		mergeParsedPrograms(
+			targetParsed.matches.map((match) => match.program),
+			targetParsed.residuals,
+		);
 	const differences: string[] = [];
 	if (targetProgram === undefined)
 		differences.push("target emission is not parseable by its adapter");

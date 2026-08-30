@@ -497,7 +497,8 @@ export function runAdapterMigration(
 			semantic: options.semantic,
 		});
 		const targetProgram =
-			reparsed.matches.length === 0
+			emitted.semantic ??
+			(reparsed.matches.length === 0
 				? program
 				: styleProgramFromRules(
 						reparsed.matches.flatMap((candidate) => candidate.program.rules),
@@ -506,7 +507,7 @@ export function runAdapterMigration(
 							residuals: reparsed.residuals,
 							canonicalization: program.canonicalization,
 						},
-					);
+					));
 		const validation = targetAdapter.validate(program, targetProgram, [
 			...emitted.residuals,
 			...reparsed.residuals,

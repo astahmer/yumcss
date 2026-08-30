@@ -248,6 +248,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('{ kind: "style", selector: "from"');
 	});
 
+	test("preserves global rule semantics through the runtime sheet boundary", () => {
+		const result = runAdapterMigration(
+			'import { globalCss } from "@stitches/react";\n' +
+				"const reset = globalCss({ body: { margin: 0 } });",
+			{ from: "stitches", to: "pandwind", file: "globals.ts", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('kind: "global"');
+		expect(result.code).toContain('selector: "body"');
+		expect(result.code).toContain("createRuntimeCss");
+	});
+
 	test("cleans source imports when the module shares a line with migrated code", () => {
 		const result = runAdapterMigration(
 			`import { css } from "@emotion/css"; const card = css({ color: "red" });`,

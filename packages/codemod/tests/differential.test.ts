@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { runDifferentialFixture, runDifferentialSuite } from "../src/swap/index.ts";
+import {
+	runDifferentialFixture,
+	runDifferentialSuite,
+	type DifferentialRender,
+} from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
 import { createRuntimeSheet } from "pandwind/css/runtime";
 
@@ -144,5 +148,46 @@ describe("CSS-in-JS differential validation", () => {
 		});
 		expect(result.streaming?.valid).toBe(true);
 		expect(result.validation?.valid).toBe(true);
+	});
+
+	test("fails when an independent browser, hydration, or stream observation diverges", () => {
+		const render = (program: StyleProgram): DifferentialRender => ({
+			html: `<div data-style="${runtimeCss(program)}"></div>`,
+			css: runtimeCss(program),
+		});
+		const result = runDifferentialFixture({
+			name: "emotion-independent-observation-mismatch",
+			sourceAdapter: "emotion",
+			targetAdapter: "styled-components",
+			file: "Card.tsx",
+			source: `import { css } from "@emotion/css";\nconst card = css({ color: "red" });`,
+			browserStates: [
+				{
+					name: "computed-color",
+					source: () => "red",
+					target: () => "blue",
+				},
+			],
+			ssr: {
+				source: { render, hydrate: (server) => server },
+				target: {
+					render: (program) => ({ ...render(program), css: `${render(program).css} altered` }),
+					hydrate: (server) => server,
+				},
+			},
+			streaming: {
+				source: { render: () => ["source"] },
+				target: { render: () => ["target"] },
+			},
+		});
+
+		expect(result.valid).toBe(false);
+		expect(result.differences).toEqual(
+			expect.arrayContaining([
+				"browser state differs: computed-color",
+				"SSR or hydration output differs",
+				"RSC streaming output differs",
+			]),
+		);
 	});
 });

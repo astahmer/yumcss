@@ -322,7 +322,7 @@ export default styled.div({
 				id: "chakra-ui-box-sx",
 				repository: "https://github.com/chakra-ui/chakra-ui",
 				clone: "chakra-ui",
-				commit: "c8ef4fb3146ecb82521a878eb6545b4c9598abd6",
+				commit: "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
 				path: "apps/www/components/chakra-mastery-ad.tsx",
 				from: CodemodAdapterId.ChakraUi,
 				to: CodemodAdapterId.Pandwind,
