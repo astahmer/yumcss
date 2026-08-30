@@ -9,7 +9,7 @@ Pandwind authoring lanes:
 - `design-dss`: compile-time `createDesignCss(pandwindPreset)` extraction.
 
 The immutable upstream checkout is managed by the reference-repository
-workflow at `/Users/astahmer/.references/astryx` and is pinned at:
+workflow at `${PANDWIND_REFERENCE_ROOT:-~/.references}/astryx` and is pinned at:
 
 `8359f1a3601766e3a96ae0805e9487ac3dc17754`
 
@@ -22,16 +22,18 @@ and screenshots remain disposable artifacts under `/private/tmp` and `/tmp`.
 Run from the Pandwind repository root:
 
 ```sh
+pnpm run references:prepare
+
 pnpm exec tsx scripts/migrate-astryx-docs.ts static-css \
-  /Users/astahmer/.references/astryx/apps/docsite \
+  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/astryx/apps/docsite" \
   /private/tmp/pandwind-astryx-repo/apps/docsite
 
 pnpm exec tsx scripts/migrate-astryx-docs.ts runtime-css \
-  /Users/astahmer/.references/astryx/apps/docsite \
+  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/astryx/apps/docsite" \
   /private/tmp/pandwind-astryx-runtime-v1/apps/docsite
 
 pnpm exec tsx scripts/migrate-astryx-docs.ts design-dss \
-  /Users/astahmer/.references/astryx/apps/docsite \
+  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/astryx/apps/docsite" \
   /private/tmp/pandwind-astryx-design-v1/apps/docsite
 ```
 
@@ -40,7 +42,7 @@ installation:
 
 ```sh
 cd /private/tmp/pandwind-astryx-repo/apps/docsite
-/Users/astahmer/.references/astryx/node_modules/.bin/next build --webpack
+"${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/astryx/node_modules/.bin/next" build --webpack
 ```
 
 Start the baseline and candidate on separate ports, then run:

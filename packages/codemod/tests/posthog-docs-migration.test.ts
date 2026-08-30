@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { PostHogDocsLane, PostHogDocsMigration } from "../../../scripts/migrate-posthog-docs.ts";
+import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 
-const referenceRoot = "/Users/astahmer/.references/posthog-com";
+const referenceRoot = createReferenceWorkspace().path("posthog-com");
 
 describe("PostHog website migration corpus", () => {
 	const corpusTest = existsSync(referenceRoot) ? test : test.skip;

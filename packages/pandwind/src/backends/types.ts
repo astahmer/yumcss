@@ -44,6 +44,13 @@
 /** Flattened, condition-nested, token-resolved style object — see module docs. */
 export type FlatStyleIR = Record<string, string>;
 
+export enum StyleBackendId {
+	Css = "css",
+	Object = "object",
+	ReactNative = "react-native",
+	OpenTui = "opentui",
+}
+
 export const STYLE_BACKEND_SCHEMA = "pandwind.style-backend/1" as const;
 
 export type BackendCapabilityLevel = "unsupported" | "partial" | "exact";

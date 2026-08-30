@@ -36,7 +36,7 @@ pnpm exec tsx scripts/verify-chakra-docs.ts \
   http://127.0.0.1:4340 \
   http://127.0.0.1:4349 \
   http://127.0.0.1:4350 \
-  /Users/astahmer/.references/chakra-ui/apps/www/.next/server/app
+  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/chakra-ui/apps/www/.next/server/app"
 ```
 
 It enumerates the baseline's statically emitted HTML routes, removes routes

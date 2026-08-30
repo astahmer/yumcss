@@ -12,6 +12,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { CodemodAdapterId, runAdapterMigration } from "../packages/codemod/src/swap/index.ts";
 import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.ts";
 import { relativeModuleImport } from "../packages/codemod/src/shared.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum ChakraDocsLane {
 	CssClass = "css-class",
@@ -47,7 +48,7 @@ interface LaneAdapter {
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = "/Users/astahmer/.references/chakra-ui";
+const defaultReferenceRoot = createReferenceWorkspace().path("chakra-ui");
 const pandwindSupportRoot = "apps/www/pandwind";
 
 async function collectSourceFiles(root: string): Promise<string[]> {

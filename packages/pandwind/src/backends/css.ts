@@ -9,9 +9,9 @@ import {
 	STYLE_BACKEND_SCHEMA,
 	type BackendCapabilityContract,
 	type StyleBackend,
+	StyleBackendId,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
-import type { StyleBackendId } from "./types.ts";
 import { normalizeCssValue } from "../css/value-normalization.ts";
 
 export interface CssBackendOptions {
@@ -92,7 +92,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 export const CSS_BACKEND: StyleBackendFactory<CssBackendOptions, string> = {
 	schema: STYLE_BACKEND_SCHEMA,
-	id: "css" as StyleBackendId,
+	id: StyleBackendId.Css,
 	capabilities: CSS_BACKEND_CAPABILITIES,
 	create: createCssBackend,
 };

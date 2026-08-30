@@ -11,8 +11,9 @@ import {
 	runPandaMigration,
 } from "../packages/codemod/src/swap/index.ts";
 import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
-const referenceRoot = "/Users/astahmer/.references";
+const referenceRoot = createReferenceWorkspace().root;
 const corpus = createRealRepositoryCorpus();
 
 function readPinnedReference(reference: (typeof corpus.references)[number]): string {

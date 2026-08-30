@@ -7,6 +7,7 @@ import {
 	runAdapterMigration,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 /** Public migration lanes for the pinned Astryx docsite corpus. */
 export enum AstryxDocsLane {
@@ -51,7 +52,7 @@ interface AstryxLaneAdapter {
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = "/Users/astahmer/.references/astryx/apps/docsite";
+const defaultReferenceRoot = createReferenceWorkspace().path("astryx/apps/docsite");
 const stylexAdapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.StyleX);
 
 function matchingParen(source: string, open: number): number | undefined {

@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { ShadcnV4Migration, ShadcnV4MigrationLane } from "../../../scripts/migrate-shadcn-v4.ts";
+import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 
-const referenceRoot = "/Users/astahmer/.references/shadcn-ui";
+const referenceRoot = createReferenceWorkspace().path("shadcn-ui");
 
 describe("shadcn/ui v4 migration corpus", () => {
 	const corpusTest = existsSync(referenceRoot) ? test : test.skip;

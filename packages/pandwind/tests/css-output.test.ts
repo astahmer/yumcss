@@ -143,7 +143,7 @@ test("keeps vendor-prefixed line clamp unitless", () => {
 	);
 	const css = createCss<typeof preset>({ debug: true });
 	const output = createStylesheet(preset, { debug: true }).generate([
-		css.raw({ WebkitLineClamp: 2 }),
+		css.raw({ WebkitLineClamp: 2 } as Parameters<typeof css.raw>[0]),
 	]);
 
 	expect(output).toContain("-webkit-line-clamp:2");

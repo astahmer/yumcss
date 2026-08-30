@@ -40,4 +40,5 @@ export type {
 	FlatStyleIR,
 	StyleBackend,
 } from "./types.ts";
+export { StyleBackendId } from "./types.ts";
 export { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";

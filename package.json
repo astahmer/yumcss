@@ -20,6 +20,7 @@
 		"format:fix": "oxfmt",
 		"knip": "knip --reporter compact",
 		"knip:production": "knip --production --reporter compact",
+		"references:prepare": "tsx scripts/prepare-reference-repositories.ts",
 		"check": "oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
 		"changeset": "changeset",
 		"changeset:version": "changeset version && pnpm install --no-frozen-lockfile",

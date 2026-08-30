@@ -1,5 +1,5 @@
 import { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";
-import { STYLE_BACKEND_SCHEMA, type StyleBackend } from "./types.ts";
+import { STYLE_BACKEND_SCHEMA, type StyleBackend, type StyleBackendId } from "./types.ts";
 import type { BackendCapabilityContract } from "./types.ts";
 
 export { STYLE_BACKEND_SCHEMA } from "./types.ts";
@@ -58,7 +58,7 @@ export function createStyleBackendRegistry(
 	return registry;
 }
 
-export type BuiltinBackendId = "css" | "object" | "react-native" | "opentui";
+export type BuiltinBackendId = StyleBackendId;
 
 /** Built-ins are composed here; individual adapters do not know the registry. */
 export const STYLE_BACKEND_FACTORIES: readonly StyleBackendFactory[] =

@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { ChakraDocsLane, ChakraDocsMigration } from "../../../scripts/migrate-chakra-docs.ts";
+import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 
-const referenceRoot = "/Users/astahmer/.references/chakra-ui";
+const referenceRoot = createReferenceWorkspace().path("chakra-ui");
 
 describe("Chakra docs migration corpus", () => {
 	const corpusTest = existsSync(referenceRoot) ? test : test.skip;

@@ -5,8 +5,9 @@
 ## CSS-in-JS migration corpus
 
 These are shallow, blob-filtered read-only clones under
-`/Users/astahmer/.references/<id>`. The report generator verifies each pinned
-HEAD and reads the selected file with `git show` before running the adapter.
+`${PANDWIND_REFERENCE_ROOT:-~/.references}/<id>`. Prepare them reproducibly
+with `pnpm run references:prepare`; every checkout is verified against the
+pinned commit before a migration reads it.
 
 The benchmark harnesses below are additional corpus sources. Their isolated
 lanes are intentionally not treated as product dependencies: we mine their

@@ -17,6 +17,7 @@ import { mapClassList } from "../packages/codemod/src/map.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);
 
@@ -46,7 +47,7 @@ export interface PostHogDocsMigrationReport {
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = "/Users/astahmer/.references/posthog-com";
+const defaultReferenceRoot = createReferenceWorkspace().path("posthog-com");
 const metadataRoot = resolve(repositoryRoot, "apps/example/src");
 
 async function sourceFiles(root: string): Promise<string[]> {

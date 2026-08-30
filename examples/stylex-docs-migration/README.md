@@ -1,8 +1,10 @@
 # StyleX docs migration corpus
 
-This fixture is a pinned copy of the StyleX documentation app at commit
-`5f7acaa4b332e2cf8352e95e5bc83efd70904fd4`. The original checkout lives in
-the read-only reference clone recorded in `/Users/astahmer/dev/pandwind/reference-repos.md`.
+This fixture is a reproducible migration of the StyleX documentation app at
+commit `5f7acaa4b332e2cf8352e95e5bc83efd70904fd4`. The upstream checkout is
+downloaded by `pnpm run references:prepare` into
+`${PANDWIND_REFERENCE_ROOT:-~/.references}/stylex`; Pandwind versions only
+the migration runner and proof reports.
 
 The migration is deliberately expressed as lanes over the same
 `StylexDocsMigration` interface:
@@ -19,6 +21,8 @@ The migration is deliberately expressed as lanes over the same
 Run one lane and print its proof report:
 
 ```sh
+pnpm run references:prepare
+
 pnpm exec tsx scripts/migrate-stylex-docs.ts runtime-css
 pnpm exec tsx scripts/migrate-stylex-docs.ts atomic-css
 pnpm exec tsx scripts/migrate-stylex-docs.ts design-dss

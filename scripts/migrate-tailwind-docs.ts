@@ -22,8 +22,10 @@ import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/
 import { mapClassList } from "../packages/codemod/src/map.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);
+const referenceWorkspace = createReferenceWorkspace();
 
 export enum TailwindDocsLane {
 	Tw = "tw",
@@ -269,7 +271,7 @@ export class TailwindDocsMigration {
 		options: TailwindDocsMigrationOptions = {},
 	): Promise<TailwindDocsLaneReport> {
 		const referenceRoot = resolve(
-			options.referenceRoot ?? "/Users/astahmer/.references/tailwindcss.com",
+			options.referenceRoot ?? referenceWorkspace.path("tailwindcss.com"),
 		);
 		const referenceCommit = (
 			await execFileAsync("git", ["-C", referenceRoot, "rev-parse", "HEAD"], { encoding: "utf8" })

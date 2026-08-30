@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { TailwindDocsLane, TailwindDocsMigration } from "../../../scripts/migrate-tailwind-docs.ts";
+import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 
-const referenceRoot = "/Users/astahmer/.references/tailwindcss.com";
+const referenceRoot = createReferenceWorkspace().path("tailwindcss.com");
 
 describe("Tailwind docs migration corpus", () => {
 	const corpusTest = existsSync(referenceRoot) ? test : test.skip;

@@ -1,8 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { StylexDocsMigration } from "../../../scripts/migrate-stylex-docs.ts";
 import { StylexDocsLane } from "../../../scripts/migrate-stylex-docs.ts";
+import { createReferenceWorkspace } from "../../../scripts/reference-workspace.ts";
 
-const root = new URL("../../../examples/stylex-docs-migration/source/", import.meta.url).pathname;
+const root = createReferenceWorkspace().path("stylex/packages/docs");
 
 describe("StyleX docs migration lanes", () => {
 	test("runtime-css lane emits the Pandwind group API", async () => {

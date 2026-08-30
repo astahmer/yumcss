@@ -7,6 +7,7 @@ import {
 	type StyleBackend,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
+import { StyleBackendId } from "./types.ts";
 
 /** A target style object: camelCase props, target-native values. */
 export type TargetStyle = Record<string, unknown>;
@@ -125,7 +126,7 @@ export function createObjectBackend(options: ObjectBackendOptions): ObjectBacken
 
 export const OBJECT_BACKEND: StyleBackendFactory<ObjectBackendOptions, TargetStyle> = {
 	schema: STYLE_BACKEND_SCHEMA,
-	id: "object",
+	id: StyleBackendId.Object,
 	capabilities: OBJECT_BACKEND_CAPABILITIES,
 	create: (options) => {
 		if (options === undefined) throw new Error("pandwind/object: options.name is required");

@@ -7,6 +7,7 @@ import {
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
 import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum StylexDocsLane {
 	RuntimeCss = "runtime-css",
@@ -446,7 +447,7 @@ export class StylexDocsMigration {
 
 if (import.meta.main) {
 	const lane = process.argv[2] as StylexDocsLane | undefined;
-	const root = process.argv[3] ?? "examples/stylex-docs-migration/source";
+	const root = process.argv[3] ?? createReferenceWorkspace().path("stylex/packages/docs");
 	const outputRoot = process.argv[4];
 	if (lane === undefined)
 		throw new Error(

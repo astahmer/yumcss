@@ -16,6 +16,7 @@ import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.
 import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
 import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
 import type { StyleObject } from "../packages/pandwind/src/types/typings.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum EmotionSiteMigrationLane {
 	CssClass = "css-class",
@@ -49,7 +50,7 @@ export interface EmotionSiteMigrationReport {
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = "/Users/astahmer/.references/emotion-clean";
+const defaultReferenceRoot = createReferenceWorkspace().path("emotion-clean");
 const staticPreset = {
 	strict: false,
 	properties: {},

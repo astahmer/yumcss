@@ -1,8 +1,9 @@
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { createRealRepositoryCorpus } from "../packages/codemod/src/swap/index.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
-const cloneRoot = "/Users/astahmer/.references";
+const cloneRoot = createReferenceWorkspace().root;
 const references = createRealRepositoryCorpus().references;
 const seen = new Set<string>();
 
