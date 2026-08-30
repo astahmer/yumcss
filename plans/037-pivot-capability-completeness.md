@@ -297,8 +297,8 @@ build/browser promotion.
       status; only entries with all applicable real-proof dimensions may be
       promoted to the full matrix.
 - [x] Differential reports prove no silent drops and classify every difference.
-- [x] Knip, typecheck, lint, unit, integration, E2E, corpus, and release smoke
-      checks pass.
+- [x] Knip, typecheck, changed-source lint, unit, integration, E2E, corpus, and
+      release smoke checks pass.
 - [x] Architecture docs, adapter SDK docs, proof matrix, and this plan agree
       with the code and current JJ history.
 - [x] The non-release plan is complete and its final evidence is reproducible;
@@ -322,7 +322,12 @@ The implementation is split across `6fd7aa0c` (registry-derived capability
 matrix and all-adapter fixtures), `8c3376c1` (emission and self-validation),
 `65e66e95` (validator contracts), `1e3c9fae` and `32e5be1b` (semantic dynamic
 metadata and static-first fallback), `e0d4d71f` and `3e85c2f7` (scanner and
-host contracts), and `8c0d6e85`/`ac868e3c` (independent differential and
-real-repository proof classification). The shared Node source workspace is
-covered by the current implementation revision. The non-release phases are
+host contracts), `8c0d6e85`/`ac868e3c` (independent differential and
+real-repository proof classification), `0587116c` (nested selector semantic
+lowering), `50eef1d8` (lint cleanup), and `f38604f3` (differential serializer
+policy isolation). The shared Node source workspace is covered by the current
+implementation revision. The final evidence artifact contains 25 reports
+covering 22 source-static references, two pipeline-unpaired references, and
+one runtime-pending reference; all have zero residuals, and all 20 pinned
+reference clones match their expected commits. The non-release phases are
 complete; public publishing remains intentionally deferred.
