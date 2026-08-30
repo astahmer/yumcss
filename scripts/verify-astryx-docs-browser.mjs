@@ -1,16 +1,18 @@
-import { createRequire } from "node:module";
 import { mkdir, writeFile } from "node:fs/promises";
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
-const require = createRequire("/Users/astahmer/.references/astryx/package.json");
-const { chromium } = require("playwright-core");
-const { PNG } = require("pngjs");
-const pixelmatchModule = require("pixelmatch");
+const { chromium } = await import("playwright-core");
+const { PNG } = await import("pngjs");
+const pixelmatchModule = await import("pixelmatch");
 const pixelmatch = pixelmatchModule.default ?? pixelmatchModule;
 
 const baselineUrl = process.argv[2] ?? "http://127.0.0.1:4321";
 const migratedUrl = process.argv[3] ?? "http://127.0.0.1:4322";
 const reportPath = process.argv[4] ?? "/tmp/pandwind-astryx-proof/browser-parity.json";
-const artifactRoot = reportPath.endsWith(".json") ? reportPath.slice(0, -5) : `${reportPath}-artifacts`;
+const artifactRoot = reportPath.endsWith(".json")
+	? reportPath.slice(0, -5)
+	: `${reportPath}-artifacts`;
 const visualDiffRatioLimit = 0.01;
 const routes = [
 	"/",
@@ -36,7 +38,9 @@ function comparableShape(value) {
 }
 
 async function inspect(browser, baseUrl, route, viewport, lane) {
-	const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+	const page = await browser.newPage({
+		viewport: { width: viewport.width, height: viewport.height },
+	});
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	const errors = [];
 	const failedResponses = [];
@@ -118,8 +122,8 @@ async function inspect(browser, baseUrl, route, viewport, lane) {
 }
 
 function compareScreenshots(baseline, migrated) {
-	const left = PNG.sync.read(require("node:fs").readFileSync(baseline.screenshotPath));
-	const right = PNG.sync.read(require("node:fs").readFileSync(migrated.screenshotPath));
+	const left = PNG.sync.read(readFileSync(baseline.screenshotPath));
+	const right = PNG.sync.read(readFileSync(migrated.screenshotPath));
 	const width = Math.max(left.width, right.width);
 	const height = Math.max(left.height, right.height);
 	const leftPadded = new PNG({ width, height });
@@ -145,18 +149,26 @@ function compareScreenshots(baseline, migrated) {
 
 function canonicalIssue(item, origins) {
 	if (typeof item === "string")
-		return origins.reduce((value, origin) => value.replaceAll(origin, "<server>"), item).split("\n", 1)[0];
+		return origins
+			.reduce((value, origin) => value.replaceAll(origin, "<server>"), item)
+			.split("\n", 1)[0];
 	if (Array.isArray(item))
-		return [item[0], origins.reduce((value, origin) => value.replace(origin, "<server>"), String(item[1]))];
+		return [
+			item[0],
+			origins.reduce((value, origin) => value.replace(origin, "<server>"), String(item[1])),
+		];
 	return item;
 }
 
 function newItems(baseline, migrated, origins) {
-	const baselineItems = new Set(baseline.map((item) => JSON.stringify(canonicalIssue(item, origins))));
-	return migrated.filter((item) => !baselineItems.has(JSON.stringify(canonicalIssue(item, origins))));
+	const baselineItems = new Set(
+		baseline.map((item) => JSON.stringify(canonicalIssue(item, origins))),
+	);
+	return migrated.filter(
+		(item) => !baselineItems.has(JSON.stringify(canonicalIssue(item, origins))),
+	);
 }
 
-const { writeFileSync } = require("node:fs");
 const browser = await chromium.launch();
 const baseline = [];
 const migrated = [];
@@ -173,12 +185,28 @@ const comparisons = baseline.map((reference, index) => {
 	const screenshot = compareScreenshots(reference, candidate);
 	const issueOrigins = [baselineUrl, migratedUrl];
 	const newErrors = newItems(reference.errors, candidate.errors, issueOrigins);
-	const newFailedResponses = newItems(reference.failedResponses, candidate.failedResponses, issueOrigins);
+	const newFailedResponses = newItems(
+		reference.failedResponses,
+		candidate.failedResponses,
+		issueOrigins,
+	);
 	return {
 		route: reference.route,
 		viewport: reference.viewport,
 		statusEqual: reference.status === candidate.status && candidate.status < 400,
-		shapeEqual: comparableShape({ ...reference.shape, stylesheetLinks: undefined, linkedCssBytes: undefined, inlineCssBytes: undefined }) === comparableShape({ ...candidate.shape, stylesheetLinks: undefined, linkedCssBytes: undefined, inlineCssBytes: undefined }),
+		shapeEqual:
+			comparableShape({
+				...reference.shape,
+				stylesheetLinks: undefined,
+				linkedCssBytes: undefined,
+				inlineCssBytes: undefined,
+			}) ===
+			comparableShape({
+				...candidate.shape,
+				stylesheetLinks: undefined,
+				linkedCssBytes: undefined,
+				inlineCssBytes: undefined,
+			}),
 		screenshot,
 		visualEquivalent: screenshot.pixelRatio <= visualDiffRatioLimit,
 		baseline: reference,
@@ -205,6 +233,8 @@ const report = {
 	),
 	comparisons,
 };
-await mkdir(require("node:path").dirname(reportPath), { recursive: true });
+await mkdir(dirname(reportPath), { recursive: true });
 await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-process.stdout.write(`${JSON.stringify({ allRoutesEquivalent: report.allRoutesEquivalent, comparisons: comparisons.length }, null, 2)}\n`);
+process.stdout.write(
+	`${JSON.stringify({ allRoutesEquivalent: report.allRoutesEquivalent, comparisons: comparisons.length }, null, 2)}\n`,
+);

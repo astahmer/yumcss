@@ -1,30 +1,30 @@
 {
-  "schema": "pandwind.astryx-docs-proof/1",
-  "lane": "design-dss",
-  "referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
-  "migration": {
-    "sourceFiles": 889,
-    "changedFiles": 76,
-    "convertedCallSites": 69,
-    "skippedCallSites": 1,
-    "residuals": 1,
-    "runtimeFallbackFiles": ["src/app/playground/PreviewStage.tsx"],
-    "staticExtractionRatio": 0.9857142857142858,
-    "staticCssCoverageRatio": 0.9857142857142858,
-    "sourceBytes": 5903804,
-    "outputBytes": 5856882,
-    "outputByteDelta": -46922
-  },
-  "browser": {
-    "comparisons": 24,
-    "allRoutesEquivalent": true,
-    "maxPixelRatio": 0.00893182646737149,
-    "newErrors": 0,
-    "newFailedResponses": 0,
-    "bodyHeightMismatches": 0,
-    "linkedCssDelta": 1114,
-    "strictCssNotLarger": false,
-    "report": "/tmp/pandwind-astryx-proof/browser-parity-design-v3.json"
-  },
-  "api": "createDesignCss(pandwindPreset)"
+	"schema": "pandwind.astryx-docs-proof/1",
+	"lane": "design-dss",
+	"referenceCommit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+	"migration": {
+		"sourceFiles": 889,
+		"changedFiles": 76,
+		"convertedCallSites": 69,
+		"skippedCallSites": 1,
+		"residuals": 1,
+		"runtimeFallbackFiles": ["src/app/playground/PreviewStage.tsx"],
+		"staticExtractionRatio": 0.9857142857142858,
+		"staticCssCoverageRatio": 0.9857142857142858,
+		"sourceBytes": 5903804,
+		"outputBytes": 5856882,
+		"outputByteDelta": -46922
+	},
+	"browser": {
+		"comparisons": 24,
+		"allRoutesEquivalent": true,
+		"maxPixelRatio": 0.00893182646737149,
+		"newErrors": 0,
+		"newFailedResponses": 0,
+		"bodyHeightMismatches": 0,
+		"linkedCssDelta": 1114,
+		"strictCssNotLarger": false,
+		"report": "/tmp/pandwind-astryx-proof/browser-parity-design-v3.json"
+	},
+	"api": "createDesignCss(pandwindPreset)"
 }
