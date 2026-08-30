@@ -18,8 +18,7 @@
  *   eliminated counts (see analyze.test.ts).
  */
 import { readFileSync } from "node:fs";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace, SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
@@ -437,6 +436,6 @@ export function loadTwConfig(twPath: string): TwConfig {
 /** Collect unique .ts/.tsx files matching globs under root (no node_modules). */
 export function collectFiles(patterns: Array<string>, root: string): Array<string> {
 	return createSourceWorkspace()
-		.files(patterns, root)
-		.filter((file) => !file.includes("node_modules") && SOURCE_SCANNER_SERVICE.isScriptFile(file));
+		.files({ root, patterns })
+		.filter((file) => SOURCE_SCANNER_SERVICE.isScriptFile(file));
 }

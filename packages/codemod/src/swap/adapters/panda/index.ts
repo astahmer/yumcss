@@ -3,14 +3,9 @@
  * Panda's parser, project model, staged migration, and module emitters stay
  * owned by this adapter family.
  */
-export {
-	runPandaMigration,
-	inferCommonRoot,
-	scanFactoryElements,
-	factoryEdits,
-	stripSpreadElements,
-} from "./panda-migrate.ts";
+export { runPandaMigration, inferCommonRoot } from "./panda-migrate.ts";
 export type { PandaMigrateOptions, PandaMigrateReport } from "./panda-migrate.ts";
+export { PandaFactoryAdapter } from "./factory-adapter.ts";
 export {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
@@ -19,9 +14,21 @@ export {
 export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
+	PandaMigrationPipelineOptions,
+	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
 } from "./migration-pipeline.ts";
+export {
+	DEFAULT_PANDA_MIGRATION_STAGE_FACTORY,
+	createPandaMigrationStages,
+} from "./migration-stage-factory.ts";
+export type { PandaMigrationStageFactory } from "./migration-stage-factory.ts";
+export { createPandaMigrationServices } from "./pipeline-services.ts";
+export type {
+	PandaMigrationServices,
+	PandaMigrationServiceOverrides,
+} from "./pipeline-services.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
 	discoverPandaFiles,

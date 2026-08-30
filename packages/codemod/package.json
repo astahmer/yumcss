@@ -41,7 +41,8 @@
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
-		"pandwind": "workspace:*"
+		"pandwind": "workspace:*",
+		"postcss": "8.5.26"
 	},
 	"devDependencies": {
 		"@types/node": "26.2.0",

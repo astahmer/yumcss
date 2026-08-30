@@ -1,62 +1,87 @@
 import { describe, expect, test } from "vitest";
 import {
+	AdapterContractSuite,
+	AdapterCoverageSuite,
 	CodemodAdapterId,
-	createAdapterContractSuite,
 	createBuiltinCodemodCatalog,
-	createStyleAdapterRegistry,
-	type AdapterContractFixture,
+	requiredAdapterCapabilities,
 } from "../src/swap/index.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
 
-const fixture = (adapter: string, source: string): AdapterContractFixture => ({
-	adapter,
-	file: `${adapter}.tsx`,
-	source,
-});
+const adapterFixtures: Readonly<Record<string, string>> = {
+	[CodemodAdapterId.Pandwind]: `css.class({ color: "red" });`,
+	[CodemodAdapterId.Bamboo]: `css({ color: "red" });`,
+	[CodemodAdapterId.ChakraUi]: `<Box color="red" />`,
+	[CodemodAdapterId.Emotion]: `css({ color: "red" });`,
+	[CodemodAdapterId.StyledComponents]: `styled.div({ color: "red" });`,
+	[CodemodAdapterId.VanillaExtract]: `style({ color: "red" });`,
+	[CodemodAdapterId.Stitches]: `css({ color: "red" });`,
+	[CodemodAdapterId.Linaria]: "css`color: red;`",
+	[CodemodAdapterId.Mantine]: `<Box sx={{ color: "red" }} />`,
+	[CodemodAdapterId.Mui]: `<Box sx={{ color: "red" }} />`,
+	[CodemodAdapterId.NextYak]: "css`color: red;`",
+	[CodemodAdapterId.Jss]: `createStyleSheet({ button: { color: "red" } });`,
+	[CodemodAdapterId.StyleX]: `stylex.create({ button: { color: "red" } });`,
+	[CodemodAdapterId.Fela]: `renderer.renderRule({ color: "red" });`,
+	[CodemodAdapterId.Goober]: `css({ color: "red" });`,
+	[CodemodAdapterId.Aphrodite]: `StyleSheet.create({ button: { color: "red" } });`,
+	[CodemodAdapterId.Style9]: `style9.create({ button: { color: "red" } });`,
+	[CodemodAdapterId.Treat]: `style({ color: "red" });`,
+	[CodemodAdapterId.Compiled]: `css({ color: "red" });`,
+	[CodemodAdapterId.SolidStyled]: "styled.div`color: red;`",
+	[CodemodAdapterId.VueStyled]: "styled.div`color: red;`",
+	[CodemodAdapterId.ReactNative]: `StyleSheet.create({ button: { color: "red" } });`,
+};
 
 describe("adapter contract suite", () => {
-	test("derives the capability matrix from registered adapters", () => {
+	test("all registered adapters satisfy the shared lifecycle contract", () => {
+		const reports = AdapterContractSuite.inspectRegistry(createBuiltinCodemodCatalog().registry);
+		for (const report of reports) AdapterContractSuite.assert(report);
+		expect(reports.every((report) => report.valid)).toBe(true);
+	});
+
+	test("a minimal third-party adapter uses the same conformance boundary", () => {
+		const adapter = createBuiltinCodemodCatalog().registry.get("emotion");
+		expect(adapter).toBeDefined();
+		const report = AdapterContractSuite.inspect(adapter!);
+		expect(report).toMatchObject({ valid: true, adapter: "emotion" });
+	});
+
+	test("every built-in adapter has a real parse and emit fixture", () => {
 		const registry = createBuiltinCodemodCatalog().registry;
-		const matrix = registry.capabilityMatrix();
-		expect(matrix.entries).toHaveLength(registry.adapters.length);
-		expect(matrix.get(CodemodAdapterId.Emotion)).toMatchObject({
-			adapter: CodemodAdapterId.Emotion,
-			sourceModules: expect.arrayContaining(["@emotion/react"]),
-			dependencies: { packages: expect.any(Array) },
-			capabilities: expect.any(Object),
-		});
+		for (const adapter of registry.adapters) {
+			const source = adapterFixtures[adapter.id];
+			expect(source, `${adapter.id} fixture is missing`).toBeDefined();
+			if (source === undefined) throw new Error(`${adapter.id} fixture is missing`);
+			const report = AdapterContractSuite.inspect(adapter, {
+				file: "fixture.tsx",
+				source,
+			});
+			AdapterContractSuite.assert(report);
+			const config = adapter.loadConfig({ file: "fixture.tsx", source });
+			const parsed = adapter.parse(source, { file: "fixture.tsx", source, config });
+			expect(parsed.matches, `${adapter.id} fixture did not produce a match`).not.toHaveLength(0);
+			for (const match of parsed.matches) {
+				for (const requirement of requiredAdapterCapabilities(match.program)) {
+					expect(
+						adapter.capabilities.capabilities[requirement.capability],
+						`${adapter.id} fixture requires ${requirement.capability}`,
+					).not.toBe("unsupported");
+				}
+			}
+		}
 	});
 
-	test("accepts a minimal substitute registry without changing orchestration", () => {
-		const catalog = createBuiltinCodemodCatalog();
-		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;
-		const registry = createStyleAdapterRegistry([emotion]);
-		const report = createAdapterContractSuite().run(registry, [
-			fixture(
-				CodemodAdapterId.Emotion,
-				'import { css } from "@emotion/css"; css({ color: "red" });',
-			),
-		]);
-		expect(report.failed).toBe(0);
-		expect(report.passed).toBe(1);
-		expect(report.adapters[0]).toMatchObject({ fixture: true, matched: true, parsed: 1 });
-	});
-
-	test("requires every built-in adapter to pass a representative parse contract", () => {
+	test("the registry cannot add an adapter without capability coverage", () => {
 		const registry = createBuiltinCodemodCatalog().registry;
-		const report = createAdapterContractSuite().run(registry, adapterContractFixtures);
-		expect(report.failed, JSON.stringify(report.failures, null, 2)).toBe(0);
-		expect(report.passed).toBe(registry.adapters.length);
-	});
-
-	test("fails explicitly when a registered adapter has no fixture", () => {
-		const catalog = createBuiltinCodemodCatalog();
-		const registry = createStyleAdapterRegistry([catalog.registry.get(CodemodAdapterId.Emotion)!]);
-		const report = createAdapterContractSuite().run(registry, []);
-		expect(report.failed).toBe(1);
-		expect(report.failures[0]).toMatchObject({
-			adapter: CodemodAdapterId.Emotion,
-			phase: "registration",
-		});
+		const probes = new Map(
+			Object.entries(adapterFixtures).map(([adapter, source]) => [
+				adapter,
+				{ file: "fixture.tsx", source },
+			]),
+		);
+		const reports = AdapterCoverageSuite.inspectRegistry(registry, probes);
+		for (const report of reports) AdapterCoverageSuite.assert(report);
+		expect(reports.every((report) => report.matches > 0)).toBe(true);
+		expect(reports.every((report) => report.exercisedCapabilities.length > 0)).toBe(true);
 	});
 });

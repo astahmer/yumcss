@@ -3,6 +3,7 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import {
+	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	type AdapterMigrationResult,
 } from "../packages/codemod/src/swap/index.ts";
@@ -35,6 +36,8 @@ interface StylexDocsMigrationLane {
 	readonly id: StylexDocsLane;
 	migrate(source: string, context: { file: string; root: string }): AdapterMigrationResult;
 }
+
+const stylexSourceAdapter = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.StyleX);
 
 const execFileAsync = promisify(execFile);
 
@@ -230,7 +233,7 @@ function objectEntrySeparator(entry: string): number {
 
 function rewriteNamedGroups(source: string, mode: StylexDocsMode): string {
 	let output = source;
-	const calls = [...source.matchAll(/\bcss\.group\s*\(/g)].reverse();
+	const calls = [...source.matchAll(/\bcss\.group\s*\(/g)].toReversed();
 	for (const call of calls) {
 		const start = call.index ?? 0;
 		const open = start + call[0].lastIndexOf("(");
@@ -393,11 +396,11 @@ export class StylexDocsMigration {
 		let outputBytes = 0;
 		const runtimeFiles: string[] = [];
 		const staticGroupCalls: string[] = [];
-		for (const absoluteFile of files.sort()) {
+		for (const absoluteFile of files.toSorted()) {
 			const source = await readFile(absoluteFile, "utf8");
-			if (!source.includes("stylex")) continue;
-			sourceFiles++;
 			const file = relative(root, absoluteFile);
+			if (stylexSourceAdapter?.detect({ file, source, root }).matched !== true) continue;
+			sourceFiles++;
 			const result = lane.migrate(source, { file, root });
 			if (result.changed) changedFiles++;
 			converted += result.converted;

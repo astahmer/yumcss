@@ -284,7 +284,6 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		// @ts-expect-error TODO
 		const styles = css.raw({ color: "sky-600/50" });
 
 		expect(css(styles as never)).toMatchInlineSnapshot(`

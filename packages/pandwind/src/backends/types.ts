@@ -55,6 +55,13 @@ export type StyleBackendId = (typeof StyleBackendId)[keyof typeof StyleBackendId
 
 export const STYLE_BACKEND_SCHEMA = "pandwind.style-backend/1" as const;
 
+/** Built-in backend identities are enum-backed; plugins use branded ids. */
+export type StyleBackendId =
+	| import("./backend-identifiers.ts").BuiltinBackendId
+	| (string & { readonly __pandwindBackendId: unique symbol });
+
+export const externalBackendId = (value: string): StyleBackendId => value as StyleBackendId;
+
 export type BackendCapabilityLevel = "unsupported" | "partial" | "exact";
 export type BackendLossiness = "lossless" | "lossy" | "unsupported";
 export type BackendArtifactKind = "stylesheet" | "style-object" | (string & {});

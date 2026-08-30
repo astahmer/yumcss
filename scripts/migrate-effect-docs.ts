@@ -17,7 +17,6 @@ import { transformSource, type TransformResult } from "../packages/codemod/src/m
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { tokenizeClassList } from "../packages/codemod/src/tokens.ts";
 import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
-import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);
 
@@ -41,7 +40,7 @@ export interface EffectDocsMigrationReport {
 }
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = createReferenceWorkspace().path("effect-ts-website");
+const defaultReferenceRoot = "/Users/astahmer/.references/effect-ts-website";
 const expectedReferenceCommit = "366419b44eb2bd353cbe3d3e41fa4e8c735e63ee";
 const metadataRoot = resolve(repositoryRoot, "apps/example/src");
 

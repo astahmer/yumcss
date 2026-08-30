@@ -1,9 +1,15 @@
-import { computeExcludedRanges } from "../sources.ts";
+import { computeExcludedRanges } from "../source-pass-utils.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
-import { HOST_FRAMEWORK_REGISTRY, getHostFrameworkAdapter } from "./host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	HOST_FRAMEWORK_REGISTRY,
+	getHostFrameworkAdapter,
+} from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
+
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export interface HostComponentRewriteRequest {
 	readonly source: string;
@@ -13,6 +19,8 @@ export interface HostComponentRewriteRequest {
 	readonly classExpression: string;
 	/** Optional inline style carrier for runtime-valued component declarations. */
 	readonly styleExpression?: string;
+	/** Stable selector class shared with composed styled-component selectors. */
+	readonly stableClassName?: string;
 }
 
 export interface HostComponentRewriteResult {
@@ -49,17 +57,77 @@ export interface HostDynamicCarrierRewriteResult {
 }
 
 export function intrinsicTagForSubject(subject: string): string | undefined {
-	const member = /^styled\.([A-Za-z_$][\w$]*)$/.exec(subject)?.[1];
+	const member = /^styled\.([A-Za-z_$][\w$]*)(?=\.|<|$)/.exec(subject)?.[1];
 	if (member !== undefined && /^[a-z][\w-]*$/.test(member)) return member;
-	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)$/.exec(subject)?.[1];
+	const call = /^styled\(\s*["']([a-z][\w-]*)["']\s*\)/.exec(subject)?.[1];
 	return call;
 }
 
 /** Component expression used by `styled(Component)` subjects. */
 export function componentTagForSubject(subject: string): string | undefined {
 	return (
-		intrinsicTagForSubject(subject) ?? /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)$/.exec(subject)?.[1]
+		intrinsicTagForSubject(subject) ?? /^styled\(\s*([A-Za-z_$][\w$]*)\s*\)/.exec(subject)?.[1]
 	);
+}
+
+/** Return the base component expression from a styled-components subject. */
+export function componentExpressionForSubject(subject: string): string | undefined {
+	const member = /^styled\.([A-Za-z_$][\w$]*)/.exec(subject)?.[1];
+	if (member !== undefined) return member;
+	const open = subject.indexOf("(", "styled".length);
+	if (open === -1) return undefined;
+	const delimiters: string[] = [];
+	let quote: string | undefined;
+	for (let index = open; index < subject.length; index++) {
+		const character = subject[index]!;
+		if (quote !== undefined) {
+			if (character === quote && subject[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "(" || character === "{" || character === "[") {
+			delimiters.push(character);
+			continue;
+		}
+		if (character === ")" || character === "}" || character === "]") {
+			const expected = character === ")" ? "(" : character === "}" ? "{" : "[";
+			if (delimiters.at(-1) !== expected) return undefined;
+			delimiters.pop();
+			if (delimiters.length === 0) return subject.slice(open + 1, index).trim();
+		}
+	}
+	return undefined;
+}
+
+/** Return the authored `.attrs(...)` expression attached to a styled subject. */
+export function componentAttrsExpressionForSubject(subject: string): string | undefined {
+	const marker = ".attrs";
+	const markerStart = subject.indexOf(marker);
+	if (markerStart === -1) return undefined;
+	const open = subject.indexOf("(", markerStart + marker.length);
+	if (open === -1) return undefined;
+	let depth = 0;
+	let quote: string | undefined;
+	for (let index = open; index < subject.length; index++) {
+		const character = subject[index]!;
+		if (quote !== undefined) {
+			if (character === quote && subject[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === "'" || character === '"' || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "(") depth++;
+		if (character === ")") {
+			depth--;
+			if (depth === 0) return subject.slice(open + 1, index).trim();
+		}
+	}
+	return undefined;
 }
 
 const excluded = (source: string, file: string, index: number): boolean => {
@@ -120,7 +188,8 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
 		const start = match.start;
-		if (excluded(request.source, "pandwind-component.tsx", start)) continue;
+		const generatedSource = request.source.includes("pandwind/css");
+		if (excluded(request.source, "pandwind-component.tsx", start) && !generatedSource) continue;
 		const text = match.text;
 		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });
@@ -138,22 +207,37 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 			needsCx = true;
 			attrs = attrs.replace(
 				dynamicClass[0],
-				`className={cx(${classExpression}, ${dynamicClass[1]})}`,
+				`className={cx(${classExpression}, ${dynamicClass[1]}${request.stableClassName === undefined ? "" : `, ${JSON.stringify(request.stableClassName)}`})}`,
 			);
 		} else if (staticClass !== null) {
 			needsCx = true;
 			attrs = attrs.replace(
 				staticClass[0],
-				`className={cx(${classExpression}, ${JSON.stringify(staticClass[1]!.trim())})}`,
+				`className={cx(${classExpression}, ${JSON.stringify(staticClass[1]!.trim())}${request.stableClassName === undefined ? "" : `, ${JSON.stringify(request.stableClassName)}`})}`,
 			);
 		} else if (/\bclassName\s*=/.test(attrs)) {
 			continue;
 		} else {
-			attrs += ` className={${classExpression}}`;
+			attrs +=
+				request.stableClassName === undefined
+					? ` className={${classExpression}}`
+					: ` className={cx(${classExpression}, ${JSON.stringify(request.stableClassName)})}`;
+			if (request.stableClassName !== undefined) needsCx = true;
 		}
 		if (styleExpression !== undefined) {
-			if (/\bstyle\s*=/.test(attrs)) continue;
-			attrs += ` style={${styleExpression}}`;
+			const objectStyle = /\bstyle\s*=\s*\{\{([\s\S]*?)\}\}/.exec(attrs);
+			const expressionStyle = /\bstyle\s*=\s*\{([^{}]*)\}/.exec(attrs);
+			if (objectStyle !== null)
+				attrs = attrs.replace(
+					objectStyle[0],
+					`style={{ ...${styleExpression}, ${objectStyle[1]!.trim()} }}`,
+				);
+			else if (expressionStyle !== null)
+				attrs = attrs.replace(
+					expressionStyle[0],
+					`style={{ ...${styleExpression}, ...${expressionStyle[1]!.trim()} }}`,
+				);
+			else if (!/\bstyle\s*=/.test(attrs)) attrs += ` style={${styleExpression}}`;
 		}
 		edits.push({
 			start,
@@ -182,9 +266,11 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 }
 
 function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
-	const assignment = `${request.binding} = ${request.classExpression};`;
-	const start = request.source.indexOf(assignment);
-	if (start === -1) {
+	const declarationPattern = new RegExp(
+		`((?:export\\s+)?(?:const|let|var)\\s+${escapeRegExp(request.binding)}\\s*=\\s*)${escapeRegExp(request.classExpression)}\\s*;`,
+	);
+	const declarationMatch = declarationPattern.exec(request.source);
+	if (declarationMatch === null) {
 		return {
 			code: request.source,
 			changed: false,
@@ -198,15 +284,15 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			],
 		};
 	}
-	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const classAttribute = request.framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const declaration =
-		`const ${request.binding} = (props) => <${request.tag} {...props} ` +
+		`${declarationMatch[1]}(props) => <${request.tag} {...props} ` +
 		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
 	return {
 		code:
-			request.source.slice(0, start) +
+			request.source.slice(0, declarationMatch.index) +
 			declaration +
-			request.source.slice(start + assignment.length),
+			request.source.slice(declarationMatch.index + declarationMatch[0].length),
 		changed: true,
 		needsCx: true,
 		residuals: [],
@@ -231,7 +317,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 			.slice(1 + binding.length, -1)
 			.replace(/\/\s*$/, "")
 			.trimEnd();
-		if (request.framework === "vue") {
+		if (request.framework === BuiltinHostFramework.Vue) {
 			const dynamic = /:class\s*=\s*"([^"]*)"/.exec(attrs);
 			const staticClass = /\bclass\s*=\s*"([^"]*)"/.exec(attrs);
 			if (dynamic !== null)
@@ -313,7 +399,7 @@ function rewriteStandaloneJsx(
 	}
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
-	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const classAttribute = request.framework === BuiltinHostFramework.Solid ? "class" : "className";
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = (props) => <${request.tag} {...props} ` +
@@ -338,7 +424,7 @@ export function rewriteDynamicCarrier(
 	let found = false;
 	let needsCx = false;
 	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
-	const vue = framework === "vue";
+	const vue = framework === BuiltinHostFramework.Vue;
 	const pattern = jsx
 		? /\b(className|class)\s*=\s*\{([^{}]*)\}/g
 		: vue
@@ -395,7 +481,7 @@ export function rewriteDynamicExpressionCarrier(
 ): HostDynamicCarrierRewriteResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
-	const vue = framework === "vue";
+	const vue = framework === BuiltinHostFramework.Vue;
 	const attributes = jsx
 		? [`className={${expression}}`, `class={${expression}}`]
 		: vue

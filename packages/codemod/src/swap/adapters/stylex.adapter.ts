@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -11,11 +11,6 @@ const runtimeImports = [
 	'import { createRuntimeCss } from "pandwind/css/runtime";',
 	'import { pandwindPreset } from "pandwind/preset";',
 	"const css = createRuntimeCss(pandwindPreset);",
-] as const;
-
-const staticImports = [
-	'import { createCss } from "pandwind/css";',
-	"const css = createCss();",
 ] as const;
 
 function stylexWhenCondition(expression: string): string | undefined {
@@ -44,16 +39,12 @@ function sourceObjectOptions(source: string) {
 			),
 		].map((match) => [match[1], match[3]]),
 	);
-	const computedKeys = Object.fromEntries([
-		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
+	const computedKeys = Object.fromEntries(
+		[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
 			`${match[1]}.${match[2]}`,
 			`--${match[2]}`,
 		]),
-		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\[(['"])(--[^'"]+)\2\]/g)].map((match) => [
-			match[0],
-			match[3],
-		]),
-	]);
+	);
 	return {
 		conditionValues,
 		computedKeys,
@@ -69,7 +60,6 @@ function sourceObjectOptions(source: string) {
 }
 
 const STYLEX_UNITLESS_PROPERTIES = new Set([
-	"WebkitLineClamp",
 	"animationIterationCount",
 	"aspectRatio",
 	"borderImageOutset",
@@ -237,8 +227,8 @@ export default defineCodemodAdapter({
 			transform: normalizeStyleXVariables,
 		},
 	],
-	packages: dependency("@stylexjs/stylex", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
+	packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
 		"named-conditions": "exact",
 		"dynamic-values": "partial",
 		composition: "partial",
@@ -266,7 +256,6 @@ export default defineCodemodAdapter({
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 			let rewritten = code;
-			const cssBinding = /\bimport\s+css\s+from\b/.test(rewritten) ? "pandwindCss" : "css";
 			// StyleX permits runtime-generated selector keys such as
 			// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
 			// self-selector dialect needs the explicit `&` prefix.
@@ -294,42 +283,13 @@ export default defineCodemodAdapter({
 						`\\bstylex\\.props\\((\\s*${escaped}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]]+\\]))`,
 						"g",
 					),
-					`${cssBinding}.props($1`,
+					"css.props($1",
 				);
 			}
-			rewritten = rewritten.replaceAll("stylex.props(", `${cssBinding}.props(`);
-			const propsSpread = new RegExp(
-				`(\\{\\s*\\.\\.\\.${cssBinding}\\.props\\([^{}]+\\)\\s*\\})\\s+className\\s*=\\s*\\{([^{}]+)\\}`,
-				"g",
-			);
-			rewritten = rewritten.replace(
-				propsSpread,
-				(_match, spread: string, existing: string) =>
-					`${spread} className={[${spread.slice(4, -1)}.className, ${existing}].filter(Boolean).join(" ")}`,
-			);
-			rewritten = rewritten.replace(/\bxstyle\s*=\s*\{([^{}]+)\}/g, (match, expression: string) => {
-				if (/\[|=>|\bfunction\b/.test(expression)) return match;
-				return `className={${cssBinding}.props(${expression.trim()}).className}`;
-			});
-			rewritten = rewritten.replace(
-				/className=\{([^{}]+)\}\s+className=\{([^{}]+)\}/g,
-				(_match, first: string, second: string) =>
-					`className={[${first}, ${second}].filter(Boolean).join(" ")}`,
-			);
+			rewritten = rewritten.replaceAll("stylex.props(", "css.props(");
 			return {
 				code: rewritten,
-				imports:
-					rewritten === code
-						? []
-						: /\bcreateCss\b/.test(rewritten)
-							? []
-							: staticImports.map((statement) =>
-									cssBinding === "css"
-										? statement
-										: statement
-												.replace(/\bcreateCss\b(?=\s*\})/, `createCss as ${cssBinding}`)
-												.replace(/\bconst css\b/, `const ${cssBinding}`),
-								),
+				imports: rewritten === code ? [] : runtimeImports,
 				residuals: [],
 			};
 		},

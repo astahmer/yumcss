@@ -225,6 +225,32 @@ lowering can be targeted. The checked-in report is therefore acceptance
 evidence for the pivot, not a claim that unrelated source-language semantics
 are magically lossless.
 
+## Latest architecture completion evidence
+
+Validated on 2026-08-29 after the interface-first completion pass:
+
+- `ValidatorContractSuite` now validates every registered validator and accepts
+  a branded third-party validator at the same registry boundary.
+- `DifferentialCorpusRunner` owns matrix execution through an injectable port;
+  the versioned matrix module is only a compatibility projection.
+- Target-specific host/raw-template policy is selected through the target
+  adapter contract; neutral migration orchestration contains no Pandwind
+  identity branch.
+- Panda's eight default migration stages are constructed by an injectable
+  `PandaMigrationStageFactory`; the pipeline façade only executes stage ports.
+- Every registered codemod adapter has a real parse/emit fixture, and CI derives
+  required capabilities from each fixture and rejects unsupported declarations.
+- The complete codemod suite passes 39 files / 311 tests. Workspace-wide tests,
+  coverage thresholds, lint, format, Knip, and typecheck also pass. The
+  checked-in real proof matrix covers five pinned documentation repositories;
+  the remaining adapters have contract/corpus evidence but are not promoted
+  to arbitrary browser/SSR claims.
+- The styled-components proof covers 55 routes (31 HTML routes), both static
+  lanes, zero server/browser failures, equivalent browser states, and 546,103
+  bytes versus 1,321,407 bytes for the reference. Its migration report
+  separates 82 fully static call sites, 203 dynamic values lowered without
+  runtime CSS injection, and 42 opaque runtime fallbacks.
+
 ## Decisions log
 
 - 2026-08-27 — Keep `SwapIR` as the cheap path; use StyleProgram only when

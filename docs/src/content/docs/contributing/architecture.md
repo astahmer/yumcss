@@ -23,19 +23,19 @@ minimal implementation without changing orchestration.
 
 ## Boundaries
 
-| Domain                | Port boundary                                                                                                                                | Default implementation                                                                                                                                                             |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Vite CSS extraction   | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports                                                                   | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                                                                                                                          |
-| Tailwind codegen      | theme loader, design-system loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer                 | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts`, `tw/generate-types.ts` |
-| Runtime CSS           | canonicalizer, ordering, serializer, store, sink                                                                                             | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                                                  |
-| Stylesheet lowering   | condition, ordering, decoder, serializer, and variable compiler policies                                                                     | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                                         |
-| Token formats         | one normalized token set plus format adapters                                                                                                | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                                              |
-| Source documents      | language scanner registry plus Node workspace expansion/read/scan                                                                            | `source-scanner.ts`, `source-workspace.ts`                                                                                                                                         |
-| `cx()` compilation    | constant discovery, expression evaluation, imported merges, fold policy, and code emission                                                   | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                                             |
-| Design vocabulary     | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                |
-| Analyze/reporting     | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
-| Utility bridge        | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
-| Real repository proof | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                   |
+| Domain                  | Port boundary                                                                                                                                  | Default implementation                                                                                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vite CSS extraction     | scanner, classifier, extractor, provenance, diagnostic, and rewriter ports                                                                     | `vite/css-extract.ts`, `vite/css-extraction-contracts.ts`                                                                                                                          |
+| Tailwind codegen        | theme loader, design-system loader, utility catalog, conflict analyzer, variant probe, type emitter, runtime emitter, writer                   | `tw/codegen-theme-input.ts`, `tw/codegen-catalog.ts`, `tw/codegen-conflicts.ts`, `tw/codegen-variants.ts`, `tw/codegen-emitter.ts`, `tw/codegen-writer.ts`, `tw/generate-types.ts` |
+| Runtime CSS             | canonicalizer, ordering, serializer, store, sink                                                                                               | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                                                  |
+| Stylesheet lowering     | condition, ordering, decoder, serializer, and variable compiler policies                                                                       | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                                         |
+| Token formats           | one normalized token set plus format adapters                                                                                                  | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                                              |
+| `cx()` compilation      | constant discovery, expression evaluation, imported merges, fold policy, and code emission                                                     | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                                             |
+| Design vocabulary       | module adapter registry                                                                                                                        | `design/resolve.ts`                                                                                                                                                                |
+| Analyze/reporting       | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports   | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
+| Utility bridge          | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                                | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
+| Real repository proof   | pinned reference materialization, source migration lanes, server/browser checks, route failures, and CSS-size accounting                       | `scripts/migrate-*.ts`, `scripts/verify-*.mjs`, `plans/evidence/real-browser-ssr-proof-matrix.json`                                                                                |
+| Panda project migration | discovery, theme loading, source scanning, usage extraction, semantic parsing, factory scanning, ordered stages, and final validation services | `codemod/swap/adapters/panda/pipeline-services.ts`, `codemod/swap/adapters/panda/migration-stage-factory.ts`, `codemod/swap/adapters/panda/migration-pipeline.ts`                  |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
@@ -124,60 +124,63 @@ and design vocabulary use the same port/registry pattern. New policies must
 include a minimal substitution test before they are wired into a composition
 root.
 
-The codemod registry exposes a derived `capabilityMatrix()` view containing
-each adapter's contract version, source modules, dependencies, and declared
-capabilities. `createAdapterContractSuite()` is the reusable conformance
-runner: it requires a representative parse fixture for every registered
-adapter and fails when a fixture exercises a capability the adapter declares
-unsupported. A minimal injected registry is tested through the same runner,
-so adding an adapter does not require changing migration orchestration.
+Source discovery has one filesystem port as well. `SourceWorkspace` resolves
+paths and reads documents without interpreting their language; `SourceScanner`
+selects a registered language adapter and owns parsing/exclusion ranges.
+Codemod, Vite, analyzer, Panda discovery, and Tailwind collection use these
+boundaries instead of maintaining independent recursive walks or extension
+tables. A scanner plugin can add a language without changing those consumers.
 
-Semantic lowering is versioned with `StyleProgram /4`. Dynamic declarations
-retain expression kind, source range, dependency names, and explicit
-static-evaluation evidence. The lowering registry handles resolved theme
-bindings, custom-property fallback, composition flattening, plugin transforms,
-runtime context, and framework metadata. A target adapter receives an optional
-semantic observation on `AdapterEmitResult` when an opaque runtime registration
-cannot safely be reparsed; validators compare that observation rather than
-pretending the emitted call is a static class.
+The flat CLI's optional `--from` source passes use the same locality rule:
+`sources.ts` is only a composition root and registry, while the
+styled-components and StyleX passes live in their own adapter modules. The
+`SourcePassRegistry` accepts injected adapters, so a test or future CLI can
+replace the built-ins without changing migration orchestration. Shared block
+matching, source masking, edit application, and marker insertion are
+infrastructure in `source-pass-utils.ts`, not ecosystem policy.
 
-Runtime fallback is a deliberate second lane. Static extraction is attempted
-first; only unresolved dynamic expressions retain the smallest target runtime
-dependency closure. Static styled declarations remove the source runtime and
-dynamic declarations use `css.vars`/runtime carriers with structured residual
-and dependency evidence. Contract fixtures assert both directions.
+The codemod registry is guarded by `AdapterContractSuite`, which probes every
+registered adapter through detection/configuration, parsing, emission, and
+validation. The built-in suite maintains one representative source fixture per
+adapter and requires every fixture to produce a real match before emission is
+tested. It also derives required capabilities from each parsed fixture and
+fails when the adapter declares one of those exercised semantics unsupported.
+This is the minimum per-adapter/per-capability CI contract; adapter-owned
+semantic fixtures, browser differential tests, and real-repository acceptance
+corpora remain additional evidence. Host-only adapters may intentionally have
+no removable source module. Backend registries use the same contract shape,
+with enum-backed built-in identities and branded third-party identities. A
+registered adapter cannot be promoted to a real-repository claim without a
+matching entry in `real-browser-ssr-proof-matrix.json`.
 
-The shared source boundary has two layers: `pandwind/source` owns language and
-framework scanning, runtime boundaries (`shared`, `client`, `server`), and
-parser selection; `pandwind/source/workspace` owns Node filesystem expansion,
-reading, and document materialization. Codemod, analyzer, Panda discovery, and
-build tooling consume these services instead of maintaining separate script
-extension/glob policies. Vue SFC, Svelte, Astro, Solid, MDX, JSX dialects, and
-RSC boundaries are covered by scanner and host contract suites.
+Validators have their own `ValidatorContractSuite`. It verifies schema,
+identity, lossiness, differences, residuals, and exception behavior for every
+validator in a registry, and it accepts a minimal third-party validator without
+changing the registry or differential runner. `DifferentialCorpusRunner` is
+the application port for executing a complete adapter-pair corpus; the matrix
+module is only its versioned compatibility projection. Its result includes
+canonical CSS, browser states, SSR/hydration, streaming, dependency deltas,
+and residual evidence whenever the fixture supplies those probes.
 
-Validation is also a composition boundary. Adapter, validator, scanner, host,
-and differential contract suites accept minimal substitute registries. The
-differential runner checks canonical CSS, independent runtime-sheet output,
-browser states, SSR/hydration, streaming chunks, dependencies, and residuals.
-The `AdapterCoverageGate` consumes evidence from those independent runners and
-reports contract, real-repository, browser, and capability coverage per
-adapter. `pnpm pivot:proof` composes that gate with the checked-in promotion
-matrix; the scheduled full-proof workflow supplies the pinned repository
-evidence without importing upstream source into the workspace.
-The pinned real-repository report adds a typed promotion object with explicit
-`source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
-states. A pending dimension is never counted as a passing real-repository
-promotion.
+Panda's project migration is composed through `PandaMigrationServices` and an
+injectable `PandaMigrationStageFactory`. The default service set delegates to
+the Panda family implementation, while the pipeline only coordinates stage
+inputs and outputs. Discovery, theme loading, language scanning, usage
+extraction, call parsing, factory scanning, module planning, rewrite candidate
+collection, and final validation can therefore be replaced independently. The
+pipeline contract test substitutes services and the stage factory without
+changing orchestration; the default stage implementations live in
+`migration-stage-factory.ts`, while Panda conversion primitives remain in the
+separate `migration-stages.ts` module.
 
 ## Real repository migration proof
 
 The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
-claim, alongside pinned source references for every registered external
-adapter. External checkouts are pinned by Git commit in `reference-repos.md`,
-while Pandwind owns the lane runners and their JJ history. The runner routes
-the same source adapter through independent target lanes. Each full docs lane
-must produce a buildable Next application with zero skipped call sites and
-zero residuals.
+claim. The external checkout is pinned by Git commit in `reference-repos.md`,
+while Pandwind owns the lane runner and its JJ history. The runner routes the
+same Chakra source adapter through independent `css-class` and `design-css`
+target lanes. Each lane must produce a buildable Next application with zero
+skipped call sites and zero residuals.
 
 Proof has three layers: the Next production build must generate all 277 routes;
 the route checker must find no failures across the 261 user-facing static HTML
@@ -187,19 +190,51 @@ compares linked stylesheets plus inline SSR styles against the baseline, with
 the Pandwind runtime artifact reported separately. This keeps a migration from
 being called complete merely because the codemod changed every source file.
 
-The source-reference report at
-`plans/evidence/real-repository-migrations-v2.json` is deliberately stricter
-about what it proves. Its `promotion` object reports canonical CSS,
-browser-state, SSR/hydration, streaming, dependency, and CSS-size dimensions
-separately. Source-static entries are useful adapter evidence, but pending
-dimensions keep them out of full promotion until a repository-specific build
-runner executes them. `pnpm pivot:proof:installed` is the reproducible
-installed-adapter runner: it installs the pinned Goober package in a disposable
-project, migrates the corresponding real-repository fixture, compares SSR CSS,
-and exercises base/hover states in Chromium. Its report is promoted only when
-the migration is residual-free, CSS is no larger, and browser pixels match.
+The styled-components documentation site is a second acceptance corpus. Its
+reference checkout is pinned in `reference-repos.md` and is never edited. The
+`StyledComponentsDocsMigration` façade registers two target lanes,
+`runtime-css` and `design-css`; both use the same source adapter and differ
+only in the Pandwind target factory. The lane adapter owns styled-components
+template/object parsing, subjects, `.attrs`, globals, keyframes, and framework
+rewrites; the runner owns only source-file discovery, materialization, and
+evidence accounting.
 
-The promotion matrix intentionally mixes full documentation-site claims with
-smaller installed-adapter claims. A fixture claim proves the adapter contract
-in a real package/runtime, but does not imply that every application using that
-ecosystem has been migrated; site-level claims remain separately identified.
+The reproducible command is:
+
+```sh
+pnpm exec tsx scripts/migrate-styled-components-docs.ts runtime-css /tmp/pandwind-styled-runtime
+pnpm exec tsx scripts/migrate-styled-components-docs.ts design-css /tmp/pandwind-styled-design
+pnpm exec tsx scripts/verify-styled-components-docs.mjs \
+  http://localhost:3100 http://localhost:3263 http://localhost:3264 \
+  /tmp/styled-baseline /tmp/styled-components-docs-verification.json
+```
+
+The pinned corpus currently converts 54 source files and 285 call sites with
+zero skipped sites and zero codemod residuals in each lane. The latest proof
+completed both production builds, all 55 public routes (31 HTML routes), with
+zero HTTP/rendering failures, zero browser page errors, successful hydration
+probes, and screenshot-equivalent geometry and computed styles for every HTML
+route in both lanes. The stable browser state is
+`prefers-reduced-motion: reduce`; the reference homepage's requestAnimationFrame
+cube is held at its SSR pose so the comparison is repeatable without masking
+content. Reference styled-components style nodes are moved to `head` in the
+browser comparator with their CSS preserved, removing implementation-owned
+injection topology before comparing static output. Screenshot parity allows at
+most 100 changed pixels, 0.01% of the viewport, and an 8-channel rasterization
+delta. Measured total transfer is 546,103 bytes for both Pandwind lanes versus
+1,321,407 bytes for the baseline, a reduction of 775,304 bytes. The source
+adapter classifies 82 fully static call sites, 203 dynamic-value sites lowered
+without runtime CSS injection, and 42 opaque runtime fallbacks. Thus the lane
+is static-first, but its current evidence does not justify claiming that 99%
+of arbitrary styled-components code is statically extractable. The lane also
+migrates styled-theming's runtime theme functions through a generated
+client-only `ThemeProvider`/context module, so theme-dependent padding, margins,
+colors, and variants remain exact after hydration rather than becoming
+residuals.
+
+The real proof matrix records the acceptance boundary for the other claimed
+documentation migrations: Tailwind, StyleX, Chakra UI, shadcn/ui, and
+styled-components each have pinned source commits, clean production/static
+generation, server-route checks, browser checks, and CSS accounting. The
+remaining external adapters have adapter-level contract/corpus evidence only;
+they are not presented as arbitrary application browser/SSR proofs.

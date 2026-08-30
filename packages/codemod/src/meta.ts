@@ -46,6 +46,8 @@ export interface PandwindMeta {
 	conflicts: Map<string, Record<string, string[]>>;
 	/** Inverted bridge: utility class -> { property, resolvedValue }. */
 	bridgeInverse: Map<string, { property: string; value: string }>;
+	/** Complete bridge: utility class -> every resolved declaration it emits. */
+	bridgeDeclarations: Map<string, Array<{ property: string; value: string }>>;
 	/** Project-owned token graph used by design and token-reference adapters. */
 	tokens: AnyTokens | undefined;
 	/** Versioned generated artifact used when available; useful for diagnostics. */
@@ -133,20 +135,33 @@ function parseConflicts(twTs: string): Map<string, Record<string, string[]>> {
 	return conflicts;
 }
 
-function parseBridge(bridgeTs: string): Map<string, { property: string; value: string }> {
-	const inverse = new Map<string, { property: string; value: string }>();
+function parseBridgeDeclarations(
+	bridgeTs: string,
+): Map<string, Array<{ property: string; value: string }>> {
+	const declarations = new Map<string, Array<{ property: string; value: string }>>();
 	const propRegex = /"([^"]+)"\s*:\s*\{([^{}]*)\}/g;
 	const utilRegex = /"([^"]+)"\s*:\s*"([^"]+)"/g;
 	for (const propMatch of bridgeTs.matchAll(propRegex)) {
 		const property = propMatch[1]!;
 		for (const utilMatch of propMatch[2]!.matchAll(utilRegex)) {
 			const utilityClass = utilMatch[2]!;
-			if (!inverse.has(utilityClass)) {
-				inverse.set(utilityClass, { property, value: utilMatch[1]! });
-			}
+			const list = declarations.get(utilityClass) ?? [];
+			list.push({ property, value: utilMatch[1]! });
+			declarations.set(utilityClass, list);
 		}
 	}
-	return inverse;
+	return declarations;
+}
+
+function firstDeclarations(
+	declarations: Map<string, Array<{ property: string; value: string }>>,
+): Map<string, { property: string; value: string }> {
+	return new Map(
+		[...declarations].flatMap(([utilityClass, values]) => {
+			const first = values[0];
+			return first === undefined ? [] : [[utilityClass, first]];
+		}),
+	);
 }
 
 export interface LoadMetaOptions {
@@ -172,16 +187,18 @@ function readInterop(path: string | undefined): PandwindInteropArtifact | undefi
 	}
 }
 
-function bridgeInverseFromArtifact(
+function bridgeDeclarationsFromArtifact(
 	bridge: PandwindInteropArtifact["bridge"],
-): Map<string, { property: string; value: string }> {
-	const inverse = new Map<string, { property: string; value: string }>();
+): Map<string, Array<{ property: string; value: string }>> {
+	const declarations = new Map<string, Array<{ property: string; value: string }>>();
 	for (const [property, values] of Object.entries(bridge)) {
 		for (const [value, utilityClass] of Object.entries(values)) {
-			if (!inverse.has(utilityClass)) inverse.set(utilityClass, { property, value });
+			const list = declarations.get(utilityClass) ?? [];
+			list.push({ property, value });
+			declarations.set(utilityClass, list);
 		}
 	}
-	return inverse;
+	return declarations;
 }
 
 export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
@@ -210,6 +227,13 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 		keysByBase.set(info.base, list);
 	}
 
+	const bridgeDeclarations =
+		options.bridgePath !== undefined
+			? parseBridgeDeclarations(readFileSync(options.bridgePath, "utf8"))
+			: interop === undefined
+				? new Map()
+				: bridgeDeclarationsFromArtifact(interop.bridge);
+
 	return {
 		keys,
 		keysByBase,
@@ -235,12 +259,8 @@ export function loadMetaFromSources(options: LoadMetaOptions): PandwindMeta {
 			interop === undefined
 				? parseConflicts(twTs!)
 				: new Map(Object.entries(interop.tw.conflicts ?? {})),
-		bridgeInverse:
-			options.bridgePath !== undefined
-				? parseBridge(readFileSync(options.bridgePath, "utf8"))
-				: interop === undefined
-					? new Map()
-					: bridgeInverseFromArtifact(interop.bridge),
+		bridgeInverse: firstDeclarations(bridgeDeclarations),
+		bridgeDeclarations,
 		tokens: options.tokens,
 		interop,
 	};

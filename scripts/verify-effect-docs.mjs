@@ -20,7 +20,7 @@ if ([baselineRoot, twRoot, cssRoot, designRoot].some((value) => value === undefi
 	);
 
 const require = createRequire(new URL(`${baselineRoot}/package.json`, "file://"));
-const { chromium } = require("playwright-core");
+const { chromium } = require("playwright");
 const deterministicImage = Buffer.from(
 	"R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==",
 	"base64",

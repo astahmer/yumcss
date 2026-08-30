@@ -1,5 +1,5 @@
 import type { PandwindMeta } from "../meta.ts";
-import { computeExcludedRanges } from "../sources.ts";
+import { computeExcludedRanges } from "../source-pass-utils.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
 import { type EmitterContext, type EmitterResult } from "./emit.ts";
 import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";

@@ -7,7 +7,7 @@ import type {
 	StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
-import { ADAPTER_CONTRACT_SCHEMA } from "../adapter-contract.ts";
+import { ADAPTER_CONTRACT_SCHEMA, ADAPTER_CONTRACT_VERSION } from "../adapter-contract.ts";
 import {
 	styleProgramFromSourceObject,
 	styleProgramToCanonicalCss,
@@ -300,7 +300,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: options.id,
-		version: "2",
+		version: ADAPTER_CONTRACT_VERSION,
 		sourceModules: options.modules,
 		capabilities: capabilities(options.id),
 		dependencies: options.packages,

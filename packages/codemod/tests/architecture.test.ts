@@ -56,6 +56,19 @@ describe("codemod architecture boundaries", () => {
 		expect(existsSync(resolve(swapRoot, "adapters/panda/index.ts"))).toBe(true);
 	});
 
+	test("keeps legacy source-pass policy inside owned adapters", () => {
+		const sourcePassRoot = resolve(swapRoot, "../source-adapters");
+		const composition = readFileSync(resolve(swapRoot, "../sources.ts"), "utf8");
+		expect(composition).not.toContain("function transformStyledComponents");
+		expect(composition).not.toContain("function transformStylex");
+		expect(readFileSync(resolve(sourcePassRoot, "styled-components.adapter.ts"), "utf8")).toContain(
+			"styledComponentsSourceAdapter",
+		);
+		expect(readFileSync(resolve(sourcePassRoot, "stylex.adapter.ts"), "utf8")).toContain(
+			"stylexSourceAdapter",
+		);
+	});
+
 	test("keeps project migration behavior out of the CLI", () => {
 		const cli = readFileSync(resolve(swapRoot, "../cli.ts"), "utf8");
 		expect(cli).not.toContain("runPandaMigration");

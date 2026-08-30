@@ -13,10 +13,11 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { existsSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
-import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
+import { createSourceWorkspace } from "pandwind/source";
+import { computeExcludedRanges, matchBlock } from "../../../source-pass-utils.ts";
 import { ensureImport } from "../../../shared.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import {
@@ -32,23 +33,17 @@ import {
 } from "./modules.ts";
 import { BUILTIN_PATTERNS } from "./patterns.ts";
 import { aliasSpecifier, type ProjectUsage } from "./project.ts";
-import { parseObjectLiteral } from "../../parse.ts";
-import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
+import { discoverPandaMigration } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import {
 	convertPandaRecipe,
-	convertPandaStyle,
 	emitPandaStyle,
 	rewritePandaSource,
 	validatePandaSource,
 } from "./migration-stages.ts";
-import type { PandaTheme } from "./theme.ts";
-import {
-	literalToPlain,
-	PANDA_ALIASES,
-	normalizePandaStyleObject,
-	parsePandaCalls,
-} from "./parse.ts";
+import { parsePandaCalls } from "./parse.ts";
+import { PandaFactoryAdapter } from "./factory-adapter.ts";
+import { PandaRecipeSource } from "./recipe-source.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
@@ -79,12 +74,6 @@ export interface PandaMigrateReport {
 	patternModules: Array<string>;
 	residualsByKind: Record<string, number>;
 	notes: Array<string>;
-}
-
-type FileEntry = PandaMigrationFile;
-
-function resolve(root: string, p: string): string {
-	return p.startsWith("/") ? p : `${root}/${p}`;
 }
 
 /** Longest common directory of all collected files (project-root guess). */
@@ -316,439 +305,7 @@ function unifiedDiff(before: string, after: string, file: string): string {
 }
 
 type SwapIrLike = import("../../ir.ts").SwapIR;
-
-/* ------------------------------------------------------------------ */
-/* variant (cva/sva/defineRecipe) definitions                          */
-/* ------------------------------------------------------------------ */
-
-interface RecipeDef {
-	name: string;
-	kind: "cva" | "sva";
-	file: FileEntry;
-	start: number;
-	end: number;
-	body: string;
-}
-
-/** Parse `const X = cva|defineRecipe|sva|defineSlotRecipe({...})` spans. */
-function parseRecipeDefs(file: FileEntry): Array<RecipeDef> {
-	const excluded = computeExcludedRanges(file.source, file.path);
-	const defs: Array<RecipeDef> = [];
-	for (const m of file.source.matchAll(
-		/(?:const|let|var)\s+([\w$]+)\s*=\s*(?:(cva|defineRecipe)|(sva|defineSlotRecipe))\s*\(\s*\{/g,
-	)) {
-		if (excluded.isExcluded(m.index ?? -1)) continue;
-		const open = (m.index ?? 0) + m[0].length - 1;
-		const block = matchBlock(file.source, open);
-		if (block === null) continue;
-		let end = block.end;
-		while (/\s/.test(file.source[end] ?? "")) end++;
-		if (file.source[end] === ")") {
-			end++;
-			if (file.source[end] === ";") end++;
-		}
-		defs.push({
-			name: m[1]!,
-			kind: (m[3] !== undefined ? "sva" : "cva") as "cva" | "sva",
-			file,
-			start: m.index ?? 0,
-			end,
-			body: block.body,
-		});
-	}
-	return defs;
-}
-
-/**
- * Remove `...helper({...})` / `...ident` spread elements from an object
- * literal body so recipe definitions using anatomy helpers (`parts(...)`)
- * still parse as data. Returns null when nothing was stripped.
- */
-export function stripSpreadElements(body: string): string | null {
-	let out = body;
-	let stripped = false;
-	for (;;) {
-		const call = /\.\.\.\s*[\w$]+\s*\(/.exec(out);
-		if (call !== null) {
-			const open = (call.index ?? 0) + call[0].length - 1;
-			// balance parens
-			let depth = 0;
-			let j = open;
-			for (; j < out.length; j++) {
-				if (out[j] === "(") depth++;
-				else if (out[j] === ")") {
-					depth--;
-					if (depth === 0) break;
-				}
-			}
-			if (depth !== 0) return null;
-			let end = j + 1;
-			if (out[end] === ",") end++;
-			out = out.slice(0, call.index ?? 0) + out.slice(end);
-			stripped = true;
-			continue;
-		}
-		const ident = /\.\.\.\s*[\w$]+\s*(?=[,}])/.exec(out);
-		if (ident !== null) {
-			let end = (ident.index ?? 0) + ident[0].length;
-			if (out[end] === ",") end++;
-			out = out.slice(0, ident.index ?? 0) + out.slice(end);
-			stripped = true;
-			continue;
-		}
-		// `key: helper({...})` call values (anatomy helpers etc.) -> {}
-		const callValue = /([\w$]+|["'][^"']*["'])\s*:\s*[\w$]+\s*\(/.exec(out);
-		if (callValue !== null) {
-			const openParen = (callValue.index ?? 0) + callValue[0].length - 1;
-			let depth = 0;
-			let j = openParen;
-			for (; j < out.length; j++) {
-				if (out[j] === "(") depth++;
-				else if (out[j] === ")") {
-					depth--;
-					if (depth === 0) break;
-				}
-			}
-			if (depth !== 0) return null;
-			out = out.slice(0, callValue.index ?? 0) + `${callValue[1]}: {}` + out.slice(j + 1);
-			stripped = true;
-			continue;
-		}
-		break;
-	}
-	return stripped ? out : null;
-}
-
-interface CallSite {
-	file: FileEntry;
-	start: number;
-	end: number;
-	argsLiteral: boolean;
-	props?: Record<string, string>;
-}
-
-/** Call sites of a definition's binding, excluding its own declaration. */
-function findCallSites(
-	files: Array<FileEntry>,
-	def: RecipeDef,
-	exportNames: ReadonlyMap<string, string>,
-): Array<CallSite> {
-	const names = [def.name];
-	const cls = exportNames.get(def.name);
-	if (cls !== undefined && cls !== def.name) names.push(cls);
-	const sites: Array<CallSite> = [];
-	for (const f of files) {
-		for (const name of names) {
-			const re = new RegExp(`(?<![\\w.$])${name}\\s*\\(`, "g");
-			for (const m of f.source.matchAll(re)) {
-				const start = m.index ?? 0;
-				if (f.path === def.file.path && start >= def.start && start < def.end) continue;
-				const openParen = start + m[0].length - 1;
-				let depth = 0;
-				let j = openParen;
-				for (; j < f.source.length; j++) {
-					if (f.source[j] === "(") depth++;
-					else if (f.source[j] === ")") {
-						depth--;
-						if (depth === 0) break;
-					}
-				}
-				const argsRaw = f.source.slice(openParen + 1, j).trim();
-				const stripped = argsRaw.startsWith("{")
-					? argsRaw.slice(1, argsRaw.endsWith("}") ? -1 : undefined)
-					: null;
-				const parsedArgs = stripped === null ? null : parseObjectLiteral(stripped);
-				const emptyArgs = argsRaw === "{}";
-				sites.push({
-					file: f,
-					start,
-					end: j + 1,
-					argsLiteral: argsRaw === "" || emptyArgs || parsedArgs !== null,
-					props: emptyArgs
-						? {}
-						: parsedArgs === null
-							? undefined
-							: (literalToPlain(parsedArgs) as Record<string, string>),
-				});
-			}
-		}
-	}
-	return sites;
-}
-
-/* ------------------------------------------------------------------ */
-/* <panda.x> JSX scanning + rewriting                                  */
-/* ------------------------------------------------------------------ */
-
-/** Props that stay DOM attributes (never become declarations). */
-const DOM_ATTR_RE =
-	/^(key|ref|children|as|href|src|alt|title|target|rel|role|type|id|lang|dir|hidden|tabIndex|download|loading|method|action|placeholder|for|aria-[\w-]+|data-[\w-]+|on[A-Z][\w]*)$/;
-
-interface FactoryAttr {
-	name: string;
-	nameStart: number;
-	attrEnd: number;
-	/** Raw value text: quotes included for string literals, braces excluded. */
-	valueText: string | null;
-	/** Quoted JSX string attribute ("…"/'…') — always a literal string. */
-	quoted: boolean;
-	literal: boolean;
-}
-
-interface FactoryElement {
-	start: number;
-	openEnd: number;
-	selfClosing: boolean;
-	tag: string;
-	attrs: Array<FactoryAttr>;
-}
-
-/** Scan `<panda.tag …>` opening tags (oxc-masked; spread props bail out). */
-export function scanFactoryElements(
-	source: string,
-	isExcluded: (start: number) => boolean,
-): Array<FactoryElement> {
-	const out: Array<FactoryElement> = [];
-	for (const m of source.matchAll(/<panda\.([A-Za-z][\w]*)/g)) {
-		const start = m.index ?? 0;
-		if (isExcluded(start)) continue;
-		let i = start + m[0].length;
-		const attrs: Array<FactoryAttr> = [];
-		let selfClosing = false;
-		let ok = true;
-		const limit = source.length;
-		while (i < limit) {
-			while (i < limit && /\s/.test(source[i] ?? "")) i++;
-			const ch = source[i];
-			if (ch === "/" && source[i + 1] === ">") {
-				selfClosing = true;
-				i += 2;
-				break;
-			}
-			if (ch === ">") {
-				i += 1;
-				break;
-			}
-			if (source.startsWith("{...", i)) {
-				// spread props — record as non-literal so the element gets flagged,
-				// never silently dropped
-				let depth = 0;
-				let j = i;
-				for (; j < limit; j++) {
-					if (source[j] === "{") depth++;
-					else if (source[j] === "}") {
-						depth--;
-						if (depth === 0) break;
-					}
-				}
-				if (depth !== 0) {
-					ok = false;
-					break;
-				}
-				attrs.push({
-					name: "...spread",
-					nameStart: i,
-					attrEnd: j + 1,
-					valueText: null,
-					quoted: false,
-					literal: false,
-				});
-				i = j + 1;
-				continue;
-			}
-			const nameMatch = /^([\w$-]+)/.exec(source.slice(i));
-			if (nameMatch === null) {
-				ok = false;
-				break;
-			}
-			const attrName = nameMatch[1]!;
-			const nameStart = i;
-			i += attrName.length;
-			if (source[i] === "=" && source[i + 1] === "{") {
-				i += 2;
-				let depth = 1;
-				let j = i;
-				while (j < limit && depth > 0) {
-					const c = source[j];
-					if (c === "{") depth++;
-					else if (c === "}") depth--;
-					j++;
-				}
-				if (depth !== 0) {
-					ok = false;
-					break;
-				}
-				const inner = source.slice(i, j - 1);
-				const objBody = stripOuterBraces(inner.trim());
-				const lit =
-					(objBody !== null && parseObjectLiteral(objBody) !== null) ||
-					/^"[^"]*"$|^'[^']*'$|^-?\d+(\.\d+)?$|^true$|^false$/.test(inner.trim());
-				attrs.push({
-					name: attrName,
-					nameStart,
-					attrEnd: j,
-					valueText: inner.trim(),
-					quoted: false,
-					literal: lit,
-				});
-				i = j;
-				continue;
-			}
-			if (source[i] === "=" && (source[i + 1] === '"' || source[i + 1] === "'")) {
-				const quote = source[i + 1]!;
-				const close = source.indexOf(quote, i + 2);
-				if (close === -1) {
-					ok = false;
-					break;
-				}
-				attrs.push({
-					name: attrName,
-					nameStart,
-					attrEnd: close + 1,
-					valueText: source.slice(i + 2, close),
-					quoted: true,
-					literal: true,
-				});
-				i = close + 1;
-				continue;
-			}
-			if (source[i] === "=") {
-				ok = false; // identifier/binding value
-				break;
-			}
-			// bare boolean prop
-			attrs.push({
-				name: attrName,
-				nameStart,
-				attrEnd: i,
-				valueText: null,
-				quoted: false,
-				literal: true,
-			});
-		}
-		if (!ok || i > limit) continue;
-		out.push({ start, openEnd: i, selfClosing, tag: m[1]!, attrs });
-	}
-	return out;
-}
-
-function renderStyleValue(v: unknown): string {
-	if (Array.isArray(v)) return `[${v.map(renderStyleValue).join(", ")}]`;
-	if (typeof v === "object" && v !== null) {
-		return `{ ${Object.entries(v)
-			.map(([k, val]) => `${JSON.stringify(k)}: ${renderStyleValue(val)}`)
-			.join(", ")} }`;
-	}
-	return JSON.stringify(v);
-}
-
-/** `{ … }` -> `…` when the text is one braced object; else null. */
-function stripOuterBraces(text: string): string | null {
-	const t = text.trim();
-	if (!(t.startsWith("{") && t.endsWith("}"))) return null;
-	let depth = 0;
-	for (let k = 0; k < t.length; k++) {
-		if (t[k] === "{") depth++;
-		else if (t[k] === "}") {
-			depth--;
-			if (depth === 0 && k !== t.length - 1) return null;
-		}
-	}
-	return depth === 0 ? t.slice(1, -1) : null;
-}
-
-/** Bare-expression scalars only (quotes already handled upstream). */
-function styleScalarOf(raw: string): string | number | boolean | null {
-	const t = raw.trim();
-	if (/^-?\d+(\.\d+)?$/.test(t)) return Number(t);
-	if (t === "true" || t === "false") return t === "true";
-	return null;
-}
-
-/**
- * Replacement edits for one convertible factory element; null when any
- * style prop is non-literal (caller flags instead of half-converting).
- */
-export function factoryEdits(
-	el: FactoryElement,
-	source: string,
-	meta: PandwindMeta,
-	theme: PandaTheme,
-): Array<{ start: number; end: number; text: string }> | null {
-	const kept: Array<string> = [];
-	const styleEntries: Array<[string, unknown]> = [];
-	let existingClassExpr: string | null = null;
-	for (const attr of el.attrs) {
-		if (attr.name === "className" && attr.valueText !== null) {
-			existingClassExpr = attr.quoted ? JSON.stringify(attr.valueText) : attr.valueText;
-			continue;
-		}
-		if (DOM_ATTR_RE.test(attr.name)) {
-			kept.push(
-				attr.valueText === null
-					? attr.name
-					: /^[\w$]+$/.test(attr.valueText)
-						? `${attr.name}={${attr.valueText}}`
-						: `${attr.name}=${JSON.stringify(attr.valueText)}`,
-			);
-			continue;
-		}
-		if (attr.valueText === null) {
-			styleEntries.push([attr.name, true]);
-			continue;
-		}
-		if (attr.quoted) {
-			styleEntries.push([attr.name, attr.valueText]);
-			continue;
-		}
-		const objText = stripOuterBraces(attr.valueText);
-		const parsedObj = objText === null ? null : parseObjectLiteral(objText);
-		if (objText !== null && parsedObj !== null) {
-			styleEntries.push([attr.name, literalToPlain(parsedObj)]);
-			continue;
-		}
-		const v = styleScalarOf(attr.valueText);
-		if (v === null) return null;
-		styleEntries.push([attr.name, v]);
-	}
-	if (!/^[A-Za-z][\w]*$/.test(el.tag)) return null;
-
-	const styleObj: Record<string, unknown> = {};
-	for (const [k, v] of styleEntries) styleObj[PANDA_ALIASES.get(k) ?? k] = v;
-	const ir = convertPandaStyle(styleObj, theme);
-	const text = irToText(ir, meta);
-	if (text === "") return null;
-
-	const normalizedStyle = normalizePandaStyleObject(Object.fromEntries(styleEntries));
-	const classCallArgs = [
-		`{ ${Object.entries(normalizedStyle)
-			.map(([k, v]) => `${JSON.stringify(k)}: ${renderStyleValue(v)}`)
-			.join(", ")} }`,
-	];
-	const classExpr = existingClassExpr
-		? `cx(css.class(${classCallArgs}), ${existingClassExpr})`
-		: `css.class(${classCallArgs})`;
-
-	const edits: Array<{ start: number; end: number; text: string }> = [];
-	// strip every non-DOM attribute span inside the opening tag
-	for (const attr of el.attrs) {
-		if (DOM_ATTR_RE.test(attr.name)) continue;
-		let end = attr.attrEnd;
-		while (/\s/.test(source[end] ?? "")) end++;
-		edits.push({ start: attr.nameStart, end, text: "" });
-	}
-	// <panda.x -> <x
-	edits.push({ start: el.start, end: el.start + "<panda.".length, text: "<" });
-	// inject className just before `>` / `/>`
-	const injectAt = el.selfClosing ? el.openEnd - 2 : el.openEnd - 1;
-	edits.push({ start: injectAt, end: injectAt, text: ` className={${classExpr}}` });
-	void kept;
-	return edits;
-}
-
-/* ------------------------------------------------------------------ */
-/* main orchestration                                                  */
-/* ------------------------------------------------------------------ */
+import type { PandaRecipeDefinition as RecipeDef } from "./recipe-source.ts";
 
 export async function runPandaMigration(options: PandaMigrateOptions): Promise<PandaMigrateReport> {
 	const { projectRoot, meta, skipMarker } = options;
@@ -781,9 +338,10 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	/* ---- variant definitions: recipe libs first, then inline cva/sva ---- */
 	const libPaths = new Set(
-		globSync(`{**/*.recipe.ts,**/*.recipe.tsx}`, { cwd: projectRoot }).map((p) =>
-			resolve(projectRoot, p),
-		),
+		createSourceWorkspace().files({
+			root: projectRoot,
+			patterns: ["**/*.recipe.ts", "**/*.recipe.tsx"],
+		}),
 	);
 	const seenDefs = new Set<string>();
 	const libDefs: Array<RecipeDef> = [];
@@ -791,7 +349,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	for (const file of files) {
 		if (file.path.includes(`/${outDirName}/`)) continue;
 		if (/\b(cva|defineRecipe|sva|defineSlotRecipe)\s*\(\s*\{/.test(file.source)) {
-			for (const def of parseRecipeDefs(file)) {
+			for (const def of PandaRecipeSource.definitions(file)) {
 				const key = `${file.path}#${def.start}`;
 				if (seenDefs.has(key)) continue;
 				seenDefs.add(key);
@@ -836,7 +394,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		def: RecipeDef,
 	): NonNullable<ReturnType<typeof convertPandaRecipe>> | null => {
 		let bodyText = def.body;
-		const strippedBody = stripSpreadElements(bodyText);
+		const strippedBody = PandaRecipeSource.stripSpreadElements(bodyText);
 		if (strippedBody !== null) {
 			bodyText = strippedBody;
 			report.notes.push(
@@ -908,7 +466,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		// Inline declarations are file-local in Panda apps. Restrict lookup to
 		// their defining file so unrelated `const styles = cva(...)` bindings
 		// do not collide and accidentally become one shared module.
-		const sites = findCallSites([def.file], def, recipeExportNames);
+		const sites = PandaRecipeSource.callSites([def.file], def, recipeExportNames);
 		const usedAsFactoryRecipe = new RegExp(`panda\\s*\\([^,]+,\\s*${def.name}\\b`).test(
 			def.file.source,
 		);
@@ -1155,8 +713,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		}
 
 		// <panda.x …>
-		for (const el of scanFactoryElements(file.source, masked)) {
-			const elEdits = factoryEdits(el, file.source, meta, theme);
+		for (const el of PandaFactoryAdapter.scan(file.source, masked)) {
+			const elEdits = PandaFactoryAdapter.edits(el, file.source, meta, theme);
 			if (elEdits === null) {
 				report.factoryElementsFlagged++;
 				countResidual(report, "dynamic");
@@ -1165,18 +723,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			}
 			edits.push(...elEdits);
 			report.factoryElementsConverted++;
-			const factoryIr = convertPandaStyle(
-				Object.fromEntries(
-					el.attrs
-						.filter((attr) => !DOM_ATTR_RE.test(attr.name) && attr.valueText !== null)
-						.map((attr) => [
-							PANDA_ALIASES.get(attr.name) ?? attr.name,
-							attr.quoted ? attr.valueText : (styleScalarOf(attr.valueText!) ?? attr.valueText),
-						]),
-				),
-				theme,
-			);
-			for (const residual of factoryIr.residuals) countResidual(report, residual.kind);
+			for (const residual of PandaFactoryAdapter.residuals(el, theme))
+				countResidual(report, residual.kind);
 			// rename the matching </panda.x> closer too (nesting-aware)
 			{
 				const tag = el.tag;

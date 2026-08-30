@@ -2,17 +2,20 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_BACKEND_SCHEMA,
 	STYLE_BACKENDS,
+	BackendContractSuite,
+	BuiltinBackendId,
 	createStyleBackendRegistry,
+	externalBackendId,
 	type StyleBackendFactory,
 } from "../src/backends/index.ts";
 
 describe("style backend registry", () => {
 	test("exposes all built-in lowering lanes through one factory contract", () => {
 		expect(STYLE_BACKENDS.factories.map((factory) => factory.id)).toEqual([
-			"css",
-			"object",
-			"react-native",
-			"opentui",
+			BuiltinBackendId.Css,
+			BuiltinBackendId.Object,
+			BuiltinBackendId.ReactNative,
+			BuiltinBackendId.OpenTui,
 		]);
 		expect(STYLE_BACKENDS.create("css").name).toBe("css");
 		expect(STYLE_BACKENDS.create("react-native").name).toBe("react-native");
@@ -22,7 +25,7 @@ describe("style backend registry", () => {
 	test("allows a new target without changing callers", () => {
 		const fake: StyleBackendFactory = {
 			schema: STYLE_BACKEND_SCHEMA,
-			id: "test-target",
+			id: externalBackendId("test-target"),
 			capabilities: STYLE_BACKENDS.factories[0]!.capabilities,
 			create: () => ({ name: "test-target", declare: (key, value) => `${key}:${value}` }),
 		};
@@ -34,5 +37,10 @@ describe("style backend registry", () => {
 		const plugin = STYLE_BACKENDS.factories[0]!;
 		const registry = createStyleBackendRegistry().registerPlugin(plugin);
 		expect(registry.plugins.map((entry) => entry.id)).toEqual([plugin.id]);
+	});
+
+	test("applies one contract suite to every registered backend", () => {
+		for (const factory of STYLE_BACKENDS.factories)
+			BackendContractSuite.assert(BackendContractSuite.inspect(factory));
 	});
 });

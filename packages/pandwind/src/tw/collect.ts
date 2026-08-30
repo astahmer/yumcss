@@ -22,17 +22,14 @@
  * All paths are resolved relative to the current working directory.
  */
 
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { createSourceWorkspace, SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { evalLiteral, isTwCall, walk } from "./literal.ts";
 
 export function walkDir(dir: string, files: string[] = []): string[] {
-	for (const entry of readdirSync(dir, { withFileTypes: true })) {
-		const path = join(dir, entry.name);
-		if (entry.isDirectory()) walkDir(path, files);
-		else if (SOURCE_SCANNER_SERVICE.isSupportedFile(entry.name)) files.push(path);
-	}
+	for (const file of createSourceWorkspace().files({ root: dir, patterns: ["**/*"] }))
+		if (SOURCE_SCANNER_SERVICE.isSupportedFile(file)) files.push(file);
 	return files;
 }
 

@@ -4,7 +4,8 @@ import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
 import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
-import { getPropertyPriority } from "./property-priorities.ts";
+import { getPropertyPriority, isKnownCssProperty } from "./property-priorities.ts";
+import { isVarSelectorPart, varConditionPart } from "./var-compiler.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
 import { isSelfSelector } from "./stylesheet-lowering.ts";
 import {
@@ -17,7 +18,6 @@ import {
 	type RuleSerializerPolicy,
 	type StylesheetOrderingPolicy,
 } from "./stylesheet-policies.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
 
@@ -134,17 +134,15 @@ export const createStylesheet = (
 					.filter((part) => part !== emptyCondition)
 					.toSorted(),
 			);
-			const property = key.split("__").at(-1) ?? key;
-			const normalizedValue = normalizeCssValue(property, style[key]! as string | number);
-			const pairId = pairs.concat(orderedKey, normalizedValue);
+			const pairId = pairs.concat(orderedKey, style[key]!);
 			if (cache.has(pairId)) continue;
 
 			const atomic = decoder.decode(preset.conditions, pairId);
-			const value = resolveTokenValue(tokenMaps, atomic.prop!, normalizedValue);
+			const value = resolveTokenValue(tokenMaps, atomic.prop!, atomic.value!);
 
 			const css = serializer.serialize([dashCase(atomic.prop!), value].join(":"), {
 				...atomic.conditions,
-				className: `.${classNameFor(orderedKey, normalizedValue)}`,
+				className: `.${classNameFor(orderedKey, style[key]!)}`,
 			});
 
 			cache.set(pairId, { id: pairId, css, priority: atomic.priority });
@@ -170,21 +168,28 @@ export const createStylesheet = (
 	const varCache = new Map<string, Rule>();
 	const processVarKey = (flatKey: string): void => {
 		const rawParts = pairs.split(flatKey).filter((part) => part !== emptyCondition && part !== "");
+		if (rawParts.length === 0) return;
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
-		const isCondition = (part: string): boolean =>
-			part.startsWith("_") || preset.conditions[part] !== undefined;
-		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
+		const propertyFirst =
+			rawParts.length > 1 &&
+			(isKnownCssProperty(first) || (!isKnownCssProperty(last) && isVarSelectorPart(last)));
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
+		// Var-inline carriers only have a meaningful stylesheet representation
+		// for named/pseudo conditions. Arbitrary at-rules and nested selectors
+		// need their owning adapter's fallback; encoding them as property names
+		// would generate invalid selectors or declarations.
+		if (!/^(?:[A-Za-z_][\w-]*|--[\w-]+)$/.test(propPart)) return;
 		const orderedConditions = conditionParts.toSorted();
 		const orderedKey = pairs.join([...orderedConditions, propPart]);
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
 		const prop = dashCase(propPart);
-		const condParts = orderedConditions.map((part) =>
-			part.startsWith("_") ? part.slice(1) : part,
-		);
+		// Keep selector order for the emitted rule, but sort the encoded carrier
+		// identities exactly like `css.vars` does so the inline property and its
+		// toggle rule always address the same custom property.
+		const condParts = conditionParts.map(varConditionPart).toSorted();
 		let declaration = `var(--pw-c-${prop})`;
 		for (let i = 1; i <= condParts.length; i++) {
 			declaration = `var(--pw-c-${prop}_${condParts.slice(0, i).join("_")}, ${declaration})`;

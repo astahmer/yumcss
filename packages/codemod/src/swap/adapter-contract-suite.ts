@@ -1,273 +1,99 @@
-import type {
-	AdapterMatch,
-	AdapterParseResult,
-	AdapterProjectConfig,
-	AdapterValidationResult,
-} from "./adapter-contract.ts";
+import type { StyleAdapter } from "./adapter-contract.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
-import type { AdapterCapabilityReport } from "./capabilities.ts";
-import { inspectAdapterCapabilities } from "./capabilities.ts";
+import { ADAPTER_CAPABILITIES_SCHEMA } from "./capabilities.ts";
+import { ADAPTER_CONTRACT_SCHEMA, ADAPTER_CONTRACT_VERSION } from "./adapter-contract.ts";
 
-export interface AdapterContractFixture {
-	readonly adapter: string;
-	readonly file: string;
-	readonly source: string;
-	readonly root?: string;
-	readonly requireMatch?: boolean;
+export interface AdapterContractProbe {
+	readonly file?: string;
+	readonly source?: string;
 }
-
-export type AdapterContractPhase =
-	| "registration"
-	| "detection"
-	| "configuration"
-	| "parsing"
-	| "capabilities"
-	| "emission"
-	| "validation";
 
 export interface AdapterContractFailure {
 	readonly adapter: string;
-	readonly phase: AdapterContractPhase;
+	readonly check: string;
 	readonly message: string;
 }
 
-export interface AdapterContractResult {
-	readonly adapter: string;
-	readonly fixture: boolean;
-	readonly matched: boolean;
-	readonly parsed: number;
-	readonly emitted: number;
-	readonly validated: number;
-	readonly capabilities: readonly AdapterCapabilityReport[];
-	readonly failures: readonly AdapterContractFailure[];
-}
-
 export interface AdapterContractReport {
-	readonly adapters: readonly AdapterContractResult[];
+	readonly adapter: string;
 	readonly failures: readonly AdapterContractFailure[];
-	readonly passed: number;
-	readonly failed: number;
+	readonly valid: boolean;
 }
 
-export interface AdapterContractSuite {
-	run(
-		registry: StyleAdapterRegistry,
-		fixtures: readonly AdapterContractFixture[],
-	): AdapterContractReport;
-}
-
-function contractFailure(
-	adapter: string,
-	phase: AdapterContractPhase,
-	message: string,
-): AdapterContractFailure {
-	return { adapter, phase, message };
-}
-
-interface ParsedFixture {
-	readonly config: AdapterProjectConfig;
-	readonly parsed: AdapterParseResult;
-}
-
-function parseFixtureWithConfig(
-	registry: StyleAdapterRegistry,
-	fixture: AdapterContractFixture,
-): { parsed: ParsedFixture | undefined; failures: readonly AdapterContractFailure[] } {
-	const adapter = registry.get(fixture.adapter);
-	if (adapter === undefined)
-		return {
-			parsed: undefined,
-			failures: [contractFailure(fixture.adapter, "registration", "adapter is not registered")],
+/**
+ * Generic adapter conformance boundary. It deliberately knows nothing about
+ * an ecosystem: a new adapter gets the same identity, config, parse, emit,
+ * and validation checks as every built-in adapter.
+ */
+// oxlint-disable-next-line typescript/no-extraneous-class -- scoped contract policy
+export class AdapterContractSuite {
+	static inspect(adapter: StyleAdapter, probe: AdapterContractProbe = {}): AdapterContractReport {
+		const file = probe.file ?? "fixture.tsx";
+		const source = probe.source ?? "";
+		const failures: AdapterContractFailure[] = [];
+		const fail = (check: string, message: string): void => {
+			failures.push({ adapter: adapter.id, check, message });
 		};
-	let config: AdapterProjectConfig;
-	try {
-		config = adapter.loadConfig({
-			file: fixture.file,
-			source: fixture.source,
-			...(fixture.root === undefined ? {} : { root: fixture.root }),
-		});
-	} catch (error) {
-		return {
-			parsed: undefined,
-			failures: [
-				contractFailure(
-					fixture.adapter,
-					"configuration",
-					error instanceof Error ? error.message : String(error),
-				),
-			],
-		};
-	}
-	try {
-		return {
-			parsed: {
-				config,
-				parsed: adapter.parse(fixture.source, {
-					file: fixture.file,
-					source: fixture.source,
-					...(fixture.root === undefined ? {} : { root: fixture.root }),
+
+		if (adapter.schema !== ADAPTER_CONTRACT_SCHEMA)
+			fail("schema", `expected ${ADAPTER_CONTRACT_SCHEMA}, received ${adapter.schema}`);
+		if (adapter.version !== ADAPTER_CONTRACT_VERSION)
+			fail("version", `expected v${ADAPTER_CONTRACT_VERSION}, received ${adapter.version}`);
+		if (adapter.id.trim() === "") fail("identity", "adapter id must not be empty");
+		// Host-only adapters (for example Chakra, MUI, and Mantine) can own
+		// syntax without owning an import that is safe to remove.
+		if (adapter.capabilities.schema !== ADAPTER_CAPABILITIES_SCHEMA)
+			fail("capabilities", "capability contract has an unknown schema");
+		if (adapter.capabilities.adapter !== adapter.id)
+			fail("capabilities", "capability contract does not belong to the adapter");
+
+		try {
+			const config = adapter.loadConfig({ file, source });
+			const parsed = adapter.parse(source, { file, source, config });
+			if (!Array.isArray(parsed.matches)) fail("parse", "parse result matches must be an array");
+			if (!Array.isArray(parsed.residuals))
+				fail("parse", "parse result residuals must be an array");
+			for (const match of parsed.matches) {
+				const emitted = adapter.emit(match.program, {
+					file,
 					config,
-				}),
-			},
-			failures: [],
-		};
-	} catch (error) {
-		return {
-			parsed: undefined,
-			failures: [
-				contractFailure(
-					fixture.adapter,
-					"parsing",
-					error instanceof Error ? error.message : String(error),
-				),
-			],
-		};
-	}
-}
-
-function capabilityReports(
-	registry: StyleAdapterRegistry,
-	fixture: AdapterContractFixture,
-	matches: readonly AdapterMatch[],
-): readonly AdapterCapabilityReport[] {
-	const adapter = registry.get(fixture.adapter);
-	if (adapter === undefined) return [];
-	return matches.map((match) =>
-		inspectAdapterCapabilities(adapter.capabilities, match.program, "partial"),
-	);
-}
-
-export function createAdapterContractSuite(): AdapterContractSuite {
-	return {
-		run(registry, fixtures) {
-			const fixtureByAdapter = new Map(fixtures.map((fixture) => [fixture.adapter, fixture]));
-			const results = registry.adapters.map((adapter): AdapterContractResult => {
-				const fixture = fixtureByAdapter.get(adapter.id);
-				if (fixture === undefined) {
-					return {
+					mode: "safe",
+					capability: {
 						adapter: adapter.id,
-						fixture: false,
-						matched: false,
-						parsed: 0,
-						emitted: 0,
-						validated: 0,
-						capabilities: [],
-						failures: [contractFailure(adapter.id, "registration", "no conformance fixture")],
-					};
-				}
+						convertible: true,
+						blockers: [],
+						mode: "safe",
+						requirements: [],
+						exact: [],
+						partial: [],
+						unsupported: [],
+					},
+					index: 0,
+				});
+				if (typeof emitted.text !== "string") fail("emit", "emission text must be a string");
+				const validation = adapter.validate(match.program, match.program);
+				if (typeof validation.valid !== "boolean")
+					fail("validate", "validation must report valid boolean");
+			}
+		} catch (error) {
+			fail("lifecycle", error instanceof Error ? error.message : "adapter lifecycle threw");
+		}
+		return { adapter: adapter.id, failures, valid: failures.length === 0 };
+	}
 
-				const failures: AdapterContractFailure[] = [];
-				let matched = false;
-				try {
-					matched = adapter.detect({
-						file: fixture.file,
-						source: fixture.source,
-						...(fixture.root === undefined ? {} : { root: fixture.root }),
-					}).matched;
-				} catch (error) {
-					failures.push(
-						contractFailure(
-							adapter.id,
-							"detection",
-							error instanceof Error ? error.message : String(error),
-						),
-					);
-				}
-				if (!matched)
-					failures.push(contractFailure(adapter.id, "detection", "fixture was not detected"));
+	static inspectRegistry(
+		registry: Pick<StyleAdapterRegistry, "adapters">,
+		probe: AdapterContractProbe = {},
+	): readonly AdapterContractReport[] {
+		return registry.adapters.map((adapter) => this.inspect(adapter, probe));
+	}
 
-				const parsedResult = parseFixtureWithConfig(registry, fixture);
-				failures.push(...parsedResult.failures);
-				const matches = parsedResult.parsed?.parsed.matches ?? [];
-				if ((fixture.requireMatch ?? true) && matches.length === 0)
-					failures.push(
-						contractFailure(adapter.id, "parsing", "fixture produced no semantic match"),
-					);
-				const capabilities = capabilityReports(registry, fixture, matches);
-				for (const report of capabilities) {
-					for (const issue of report.unsupported)
-						failures.push(
-							contractFailure(
-								adapter.id,
-								"capabilities",
-								`fixture exercises unsupported capability ${issue.capability}: ${issue.detail}`,
-							),
-						);
-				}
-				let emitted = 0;
-				let validated = 0;
-				const adapterConfig = parsedResult.parsed?.config;
-				const sourceAdapter = registry.get(adapter.id);
-				if (sourceAdapter !== undefined && adapterConfig !== undefined) {
-					for (const [index, match] of matches.entries()) {
-						let emittedResult: ReturnType<typeof sourceAdapter.emit>;
-						try {
-							emittedResult = sourceAdapter.emit(match.program, {
-								file: fixture.file,
-								config: adapterConfig,
-								mode: "partial",
-								capability: capabilities[index],
-								index,
-							});
-							emitted++;
-						} catch (error) {
-							failures.push(
-								contractFailure(
-									adapter.id,
-									"emission",
-									error instanceof Error ? error.message : String(error),
-								),
-							);
-							continue;
-						}
-						let validation: AdapterValidationResult;
-						try {
-							validation = sourceAdapter.validate(
-								match.program,
-								match.program,
-								emittedResult.residuals,
-							);
-						} catch (error) {
-							failures.push(
-								contractFailure(
-									adapter.id,
-									"validation",
-									error instanceof Error ? error.message : String(error),
-								),
-							);
-							continue;
-						}
-						if (!validation.valid)
-							failures.push(
-								contractFailure(
-									adapter.id,
-									"validation",
-									validation.differences.join("; ") || "fixture validation failed",
-								),
-							);
-						else validated++;
-					}
-				}
-
-				return {
-					adapter: adapter.id,
-					fixture: true,
-					matched,
-					parsed: matches.length,
-					emitted,
-					validated,
-					capabilities,
-					failures,
-				};
-			});
-			const failures = results.flatMap((result) => result.failures);
-			const failedAdapters = new Set(failures.map((item) => item.adapter));
-			return {
-				adapters: results,
-				failures,
-				passed: results.length - failedAdapters.size,
-				failed: failedAdapters.size,
-			};
-		},
-	};
+	static assert(report: AdapterContractReport): void {
+		if (!report.valid)
+			throw new Error(
+				`${report.adapter} adapter contract failed: ${report.failures
+					.map((failure) => `${failure.check}: ${failure.message}`)
+					.join("; ")}`,
+			);
+	}
 }

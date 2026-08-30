@@ -16,7 +16,7 @@
  */
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace, SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
@@ -80,11 +80,36 @@ function parseArgs(argv: string[]): CliArgs {
 	return args;
 }
 
-const sourceWorkspace = createSourceWorkspace();
+function expandPatterns(patterns: string[], baseDir: string): string[] {
+	const files = new Set<string>();
+	const workspace = createSourceWorkspace();
+	for (const pattern of patterns) {
+		const absolute = resolve(baseDir, pattern);
+		let stat;
+		try {
+			stat = statSync(absolute);
+		} catch {
+			// Not a literal path — treat as a glob.
+		}
+		if (stat?.isDirectory()) {
+			addDirectory(files, absolute);
+			continue;
+		}
+		if (stat?.isFile()) {
+			files.add(absolute);
+			continue;
+		}
+		for (const file of workspace.files({ root: baseDir, patterns: [pattern] })) files.add(file);
+	}
+	return [...files].toSorted();
+}
 
-const expandPatterns = (patterns: readonly string[], baseDir: string): string[] => [
-	...sourceWorkspace.files(patterns, baseDir),
-];
+function addDirectory(files: Set<string>, directory: string): void {
+	const workspace = createSourceWorkspace();
+	for (const entry of workspace.files({ root: directory, patterns: ["**/*"] })) {
+		if (SOURCE_SCANNER_SERVICE.isScriptFile(entry)) files.add(entry);
+	}
+}
 
 /**
  * Real unified diff: trims the common prefix/suffix, then LCS-aligns the

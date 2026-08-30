@@ -1,6 +1,5 @@
 import { createHashFn, dashCase } from "./hash.ts";
 import type { FlatStyles } from "../lib/utils.ts";
-import { normalizeCssValue } from "./value-normalization.ts";
 
 /**
  * Var-inline compiler for dynamic values.
@@ -25,7 +24,53 @@ export interface VarsOutput {
 	readonly [VARS_ATOMS]?: Array<VarAtom>;
 }
 
-const runtimeValue = normalizeCssValue;
+const UNITLESS_PROPERTIES = new Set([
+	"animation-iteration-count",
+	"aspect-ratio",
+	"border-image-outset",
+	"border-image-slice",
+	"border-image-width",
+	"box-flex",
+	"box-flex-group",
+	"box-ordinal-group",
+	"column-count",
+	"columns",
+	"flex",
+	"flex-grow",
+	"flex-shrink",
+	"font-weight",
+	"grid-area",
+	"grid-column",
+	"grid-column-end",
+	"grid-column-start",
+	"grid-row",
+	"grid-row-end",
+	"grid-row-start",
+	"line-clamp",
+	"line-height",
+	"opacity",
+	"order",
+	"orphans",
+	"tab-size",
+	"widows",
+	"z-index",
+	"zoom",
+	"fill-opacity",
+	"flood-opacity",
+	"stop-opacity",
+	"stroke-dasharray",
+	"stroke-dashoffset",
+	"stroke-miterlimit",
+	"stroke-opacity",
+	"stroke-width",
+	"scale",
+]);
+
+const runtimeValue = (property: string, value: string | number): string =>
+	typeof value === "number" && !property.startsWith("--") && !UNITLESS_PROPERTIES.has(property)
+		? `${value}px`
+		: `${value}`;
+
 export interface VarCompiler {
 	classFor(key: string): string;
 	escapeClass(cls: string): string;
@@ -34,11 +79,11 @@ export interface VarCompiler {
 
 const selectorHash = createHashFn(false);
 
-const isVarSelectorPart = (part: string): boolean =>
+export const isVarSelectorPart = (part: string): boolean =>
 	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
 
 /** Stable, CSS-identifier-safe suffix for named and selector conditions. */
-const varConditionPart = (part: string): string => {
+export const varConditionPart = (part: string): string => {
 	if (part.startsWith("_")) return part.slice(1);
 	return /^[A-Za-z_][\w-]*$/.test(part) ? part : `selector-${selectorHash("selector", part)}`;
 };

@@ -1,0 +1,9 @@
+# Generated acceptance-corpus material and reports are validated by their own
+# migration/browser checks, not by the host repository formatter.
+examples/stylex-docs-migration/source/
+examples/stylex-docs-migration/reports/
+
+# Generated design-system artifacts are owned by codegen and may be rewritten
+# by the example/playground workflows.
+apps/example/src/pandwind.interop.json
+apps/playground/src/pandwind.interop.json

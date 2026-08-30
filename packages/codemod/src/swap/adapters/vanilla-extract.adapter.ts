@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { CodemodAdapterId, StyleProgramEmissionHint } from "../identifiers.ts";
 
 const runtimeFallbackVar =
@@ -12,12 +12,16 @@ export default defineCodemodAdapter({
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "fontFace", kind: "font-face", regex: /\bfontFace\s*\(\s*\{/g },
 	],
-	packages: dependency("@vanilla-extract/css", "runtime"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.VanillaExtract, "unsupported", {
-		layers: "unsupported",
-		"supports-rules": "unsupported",
-		"property-rules": "unsupported",
-	}),
+	packages: CodemodAdapterKit.dependency("@vanilla-extract/css", "runtime"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(
+		CodemodAdapterId.VanillaExtract,
+		"unsupported",
+		{
+			layers: "unsupported",
+			"supports-rules": "unsupported",
+			"property-rules": "unsupported",
+		},
+	),
 	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 	sourceModules: ["@vanilla-extract/css"],
 	configFiles: ["package.json"],

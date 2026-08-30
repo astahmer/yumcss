@@ -9,10 +9,9 @@ import {
 	STYLE_BACKEND_SCHEMA,
 	type BackendCapabilityContract,
 	type StyleBackend,
-	StyleBackendId,
 } from "./types.ts";
 import type { StyleBackendFactory } from "./registry.ts";
-import { normalizeCssValue } from "../css/value-normalization.ts";
+import type { StyleBackendId } from "./types.ts";
 
 export interface CssBackendOptions {
 	debug?: boolean;
@@ -64,12 +63,11 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 	const atoms: AtomRegistry = new Map();
 
 	const declare = (key: string, value: string): string => {
-		const orderedKey = canonicalStyleKey(key);
-		const property = orderedKey.split("__").at(-1) ?? orderedKey;
-		const rawValue = normalizeCssValue(property, value);
+		const rawValue = String(value);
 		// The stylesheet canonicalizes flattened condition paths before it
 		// hashes them. Do the same at declaration time so inverted nesting
 		// (`{ color: { _hover: value } }`) cannot produce an atom with no rule.
+		const orderedKey = canonicalStyleKey(key);
 		if (strategy !== undefined) {
 			const custom = strategy.toClassName(orderedKey, rawValue);
 			if (custom !== null) {
@@ -92,7 +90,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 export const CSS_BACKEND: StyleBackendFactory<CssBackendOptions, string> = {
 	schema: STYLE_BACKEND_SCHEMA,
-	id: StyleBackendId.Css,
+	id: "css" as StyleBackendId,
 	capabilities: CSS_BACKEND_CAPABILITIES,
 	create: createCssBackend,
 };

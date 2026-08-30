@@ -12,6 +12,7 @@ import { parse } from "postcss";
 import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
+import { varConditionPart } from "../src/css/var-compiler.ts";
 import { VARS_ATOMS } from "../src/css/vars.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
@@ -84,6 +85,19 @@ describe("css.vars — encoding", () => {
 		} as never);
 		expect(out.class).toBe("");
 		expect(out.style).toEqual({});
+	});
+
+	test("arbitrary at-rules and nested selectors use safe carrier identities", () => {
+		const out = css.vars({
+			"@container content (max-width: 700px)": { color: "red" },
+			"& + &": { borderTop: "1px solid red" },
+		} as never);
+		expect(out.class).toMatch(/pw-selector-[a-z0-9]+:border-top/);
+		expect(out.class).toMatch(/pw-selector-[a-z0-9]+:color/);
+		expect(Object.keys(out.style)).toEqual([
+			expect.stringMatching(/^--pw-c-border-top_selector-[a-z0-9]+$/),
+			expect.stringMatching(/^--pw-c-color_selector-[a-z0-9]+$/),
+		]);
 	});
 
 	test("carrier metadata is embedded for cx recognition", () => {
@@ -159,6 +173,34 @@ describe("sheet generation", () => {
 		sheet.processVarKey("color");
 		sheet.processVarKey("color");
 		expect(sheet.gen.varRules().match(/\.pw-color\b/g)).toHaveLength(1);
+	});
+
+	test("selector and at-rule paths generate valid carrier CSS", () => {
+		const sheet = createStylesheet(examplePreset as never);
+		sheet.processVarKey("& + &__border-top");
+		sheet.processVarKey("@container content (max-width: 700px)__color");
+		const cssText = sheet.gen.varRules();
+		expect(cssText).toContain("border-top: var(--pw-c-border-top_selector-");
+		expect(cssText).toContain("@container content (max-width: 700px)");
+		expect(cssText).not.toContain("pw-&");
+	});
+
+	test("self-referencing carriers substitute generated selectors for ampersands", () => {
+		const sheet = createStylesheet(examplePreset as never);
+		sheet.processVarKey("&&__margin-bottom");
+		const cssText = sheet.gen.varRules();
+		expect(cssText).not.toContain(":scope");
+		expect(cssText).toMatch(/^\.pw-selector-[^ ]+\.pw-selector-/);
+	});
+
+	test("nested carrier custom properties use the same canonical order as css.vars", () => {
+		const sheet = createStylesheet(examplePreset as never);
+		sheet.processVarKey("& + *__> h3__margin-top");
+		const cssText = sheet.gen.varRules();
+		const first = varConditionPart("& + *");
+		const second = varConditionPart("> h3");
+		const sorted = [first, second].toSorted();
+		expect(cssText).toContain(`--pw-c-margin-top_${sorted.join("_")}`);
 	});
 });
 
