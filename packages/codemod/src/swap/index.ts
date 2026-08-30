@@ -10,7 +10,7 @@
 import type { PandwindMeta } from "../meta.ts";
 import type { TransformOptions, TransformResult } from "../migrate.ts";
 import { applyEdits } from "../migrate.ts";
-import { insertSkipMarker, matchBlock } from "../source-pass-utils.ts";
+import { insertSkipMarker, matchBlock } from "../sources.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
@@ -67,20 +67,8 @@ export {
 export type {
 	PandaMigrationContext,
 	PandaMigrationPipeline,
-	PandaMigrationStage,
 	PandaMigrationStageResult,
 	PandaMigrationArtifacts,
-	PandaMigrationPipelineOptions,
-} from "./adapters/panda/index.ts";
-export {
-	DEFAULT_PANDA_MIGRATION_STAGE_FACTORY,
-	createPandaMigrationStages,
-} from "./adapters/panda/index.ts";
-export type { PandaMigrationStageFactory } from "./adapters/panda/index.ts";
-export { createPandaMigrationServices } from "./adapters/panda/index.ts";
-export type {
-	PandaMigrationServices,
-	PandaMigrationServiceOverrides,
 } from "./adapters/panda/index.ts";
 export {
 	PANDA_DISCOVERY_SCHEMA,
@@ -122,65 +110,34 @@ export {
 	SwapSourceId,
 	SwapTargetId,
 	StyleProgramCompositionKind,
+	StyleDynamicExpressionKind,
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
 	StyleValidatorId,
-	DifferentialProofKind,
 	StyleLoweringId,
+	RealRepositoryProofDimension,
+	RealRepositoryProofDimensionStatus,
+	RealRepositoryProofStatus,
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
-	PandaMigrationPhase,
-	PandaRewriteCandidateKind,
-	CodemodStyleIdentity,
 	externalIdentifier,
 } from "./identifiers.ts";
-export type { ExternalIdentifier, StyleValidatorIdentifier } from "./identifiers.ts";
+export type { ExternalIdentifier } from "./identifiers.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
+	createAdapterCapabilityMatrix,
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,
 } from "./capabilities.ts";
-export { createStyleMigrationUseCase, runAdapterMigration } from "./adapter-migration.ts";
-export type { StyleMigrationUseCase } from "./adapter-migration.ts";
-export { AdapterContractSuite } from "./adapter-contract-suite.ts";
-export { AdapterCoverageSuite } from "./adapter-coverage-suite.ts";
-export type {
-	AdapterCoverageFailure,
-	AdapterCoverageProbe,
-	AdapterCoverageReport,
-} from "./adapter-coverage-suite.ts";
-export type {
-	AdapterContractFailure,
-	AdapterContractProbe,
-	AdapterContractReport,
-} from "./adapter-contract-suite.ts";
-export { ValidatorContractSuite } from "./validator-contract-suite.ts";
-export type {
-	ValidatorContractFailure,
-	ValidatorContractProbe,
-	ValidatorContractReport,
-} from "./validator-contract-suite.ts";
-export { DifferentialCorpusContractSuite } from "./differential-contract-suite.ts";
-export type {
-	DifferentialContractFailure,
-	DifferentialContractReport,
-} from "./differential-contract-suite.ts";
-export { RealMigrationProofDimension, RealMigrationProofSuite } from "./real-proof-suite.ts";
-export type {
-	RealMigrationProof,
-	RealMigrationProofFailure,
-	RealMigrationProofReport,
-} from "./real-proof-suite.ts";
-export {
-	createMigrationProgramPolicy,
-	DEFAULT_MIGRATION_PROGRAM_POLICY,
-} from "./migration-program-policy.ts";
-export type { MigrationProgramPolicy } from "./migration-program-policy.ts";
-export { CodemodAdapterKit, defineCodemodAdapter } from "./external-adapters.ts";
+export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
+export { runAdapterMigration } from "./adapter-migration.ts";
+export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+export { createTokenamiAdapter } from "./adapters/tokenami.adapter.ts";
+export { createUnoCssAdapter, createUnoCssResolverFromCss } from "./adapters/unocss.adapter.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
 export type { ProjectMigrationCommand, ProjectMigrationContext } from "./project-command.ts";
 export const getCodemodAdapter = (id: string) => builtinAdapterCatalog.registry.get(id);
@@ -207,12 +164,10 @@ export type {
 	AdapterDynamicPreparation,
 	AdapterRewriteContext,
 	AdapterRewriteResult,
-	AdapterTargetMigrationPolicy,
 	AdapterMigrationHooks,
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
-export { ADAPTER_CONTRACT_VERSION } from "./adapter-contract.ts";
 export {
 	STYLE_LOWERING_REGISTRY,
 	STYLE_LOWERING_SCHEMA,
@@ -229,6 +184,25 @@ export type {
 	StyleLoweringResult,
 } from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+export { createAdapterContractSuite } from "./adapter-contract-suite.ts";
+export type {
+	AdapterContractFailure,
+	AdapterContractFixture,
+	AdapterContractPhase,
+	AdapterContractReport,
+	AdapterContractResult,
+	AdapterContractSuite,
+} from "./adapter-contract-suite.ts";
+export { ADAPTER_COVERAGE_SCHEMA, createAdapterCoverageGate } from "./coverage-gate.ts";
+export type {
+	AdapterCoverageEntry,
+	AdapterCoverageEvidence,
+	AdapterCoverageEvidenceKind,
+	AdapterCoverageFailure,
+	AdapterCoverageGate,
+	AdapterCoveragePolicy,
+	AdapterCoverageReport,
+} from "./coverage-gate.ts";
 export type {
 	CodemodAdapterSpec,
 	AdapterRenderers,
@@ -299,16 +273,6 @@ export type {
 	SwapTargetAdapter,
 } from "./swap-registry.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
-export {
-	DIFFERENTIAL_CORPUS_RUNNER_SCHEMA,
-	DifferentialCorpusRunner,
-} from "./differential-runner.ts";
-export type {
-	DifferentialCorpusCase,
-	DifferentialCorpusCatalog,
-	DifferentialCorpusResult,
-	DifferentialCorpusRunnerPort,
-} from "./differential-runner.ts";
 export { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "./differential-matrix.ts";
 export {
 	VALIDATOR_SCHEMA,
@@ -324,6 +288,17 @@ export type {
 	StyleValidatorPlugin,
 	StyleValidatorRegistry,
 } from "./validator-registry.ts";
+export {
+	createValidatorContractSuite,
+	VALIDATOR_CONTRACT_SUITE_SCHEMA,
+} from "./validator-contract-suite.ts";
+export type {
+	ValidatorContractFailure,
+	ValidatorContractFixture,
+	ValidatorContractPhase,
+	ValidatorContractResult,
+	ValidatorContractSuite,
+} from "./validator-contract-suite.ts";
 export type {
 	DifferentialBrowserResult,
 	DifferentialBrowserState,
@@ -337,6 +312,15 @@ export type {
 } from "./differential.ts";
 export { createRealRepositoryCorpus } from "./real-repository-corpus.ts";
 export type { RealRepositoryCorpus, RealRepositoryReference } from "./real-repository-corpus.ts";
+export {
+	REAL_REPOSITORY_PROOF_SCHEMA,
+	classifyRealRepositoryProof,
+} from "./real-repository-proof.ts";
+export type {
+	RealRepositoryProofDimensionEvidence,
+	RealRepositoryProofInput,
+	RealRepositoryPromotionEvidence,
+} from "./real-repository-proof.ts";
 export type {
 	DifferentialMatrixCase,
 	DifferentialMatrixCatalog,
@@ -351,18 +335,24 @@ export type {
 	StyleRecipeVariant,
 } from "./recipe-ir.ts";
 export {
-	BuiltinHostFramework,
 	detectHostFramework,
 	getHostFrameworkAdapter,
 	HOST_FRAMEWORK_ADAPTERS,
 	HOST_FRAMEWORK_REGISTRY,
 	HOST_FRAMEWORK_PLUGINS,
 	HOST_FRAMEWORK_PLUGIN_SCHEMA,
+	HOST_FRAMEWORK_CONTRACT_SCHEMA,
 	createHostFrameworkRegistry,
+	createHostFrameworkContractSuite,
 } from "./host-adapters.ts";
 export type {
+	BuiltinHostFramework,
 	HostFramework,
 	HostFrameworkAdapter,
+	HostFrameworkContractFixture,
+	HostFrameworkContractFailure,
+	HostFrameworkContractResult,
+	HostFrameworkContractSuite,
 	HostFrameworkPlugin,
 	HostFrameworkRegistry,
 } from "./host-adapters.ts";
@@ -396,6 +386,7 @@ export type {
 	StyleConditionOperator,
 	StyleDeclaration,
 	StyleDynamicValue,
+	StyleStaticEvaluation,
 	StyleDynamicLowering,
 	StyleLiteralValue,
 	StyleProgram,

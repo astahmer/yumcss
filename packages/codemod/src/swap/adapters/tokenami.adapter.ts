@@ -1,5 +1,5 @@
 import {
-	CodemodAdapterKit,
+	allRuleCapabilities,
 	defineCodemodAdapter,
 	type AdapterSourceObjectOptions,
 } from "../external-adapters.ts";
@@ -160,7 +160,7 @@ export function createTokenamiAdapter() {
 				{ name: "@tokenami/config", kind: "peer" },
 			],
 		},
-		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
+		capabilities: allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
 			"token-values": "exact",
 			"named-conditions": "partial",
 			"pseudo-conditions": "exact",

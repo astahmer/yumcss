@@ -1,14 +1,13 @@
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
-export enum BuiltinHostFramework {
-	React = "react",
-	Preact = "preact",
-	Solid = "solid",
-	Qwik = "qwik",
-	Vue = "vue",
-	Svelte = "svelte",
-	Astro = "astro",
-}
-export type HostFramework = BuiltinHostFramework | (string & {});
+export type HostFramework = string;
+export type BuiltinHostFramework =
+	| "react"
+	| "preact"
+	| "solid"
+	| "qwik"
+	| "vue"
+	| "svelte"
+	| "astro";
 
 export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
 export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;
@@ -134,7 +133,7 @@ export function createHostFrameworkRegistry(
 
 const builtin = {
 	react: makeAdapter(
-		BuiltinHostFramework.React,
+		"react",
 		[".jsx", ".tsx"],
 		"className",
 		true,
@@ -146,7 +145,7 @@ const builtin = {
 				!/from\s+["'](?:preact|solid-js)["']|\bcreateSignal\s*\(/.test(source)),
 	),
 	preact: makeAdapter(
-		BuiltinHostFramework.Preact,
+		"preact",
 		[".jsx", ".tsx"],
 		"className",
 		true,
@@ -155,7 +154,7 @@ const builtin = {
 		(_file, source) => /from\s+["']preact(?:\/jsx-runtime)?["']/.test(source),
 	),
 	solid: makeAdapter(
-		BuiltinHostFramework.Solid,
+		"solid",
 		[".jsx", ".tsx"],
 		"class",
 		true,
@@ -164,7 +163,7 @@ const builtin = {
 		(_file, source) => /from\s+["']solid-js["']|\bcreateSignal\s*\(/.test(source),
 	),
 	qwik: makeAdapter(
-		BuiltinHostFramework.Qwik,
+		"qwik",
 		[".jsx", ".tsx"],
 		"class",
 		true,
@@ -173,7 +172,7 @@ const builtin = {
 		(_file, source) => /from\s+["']@builder\.io\/qwik(?:\/|["'])/.test(source),
 	),
 	vue: makeAdapter(
-		BuiltinHostFramework.Vue,
+		"vue",
 		[".vue"],
 		"class",
 		true,
@@ -182,7 +181,7 @@ const builtin = {
 		(file, source) => file.endsWith(".vue") || /from\s+["']vue["']/.test(source),
 	),
 	svelte: makeAdapter(
-		BuiltinHostFramework.Svelte,
+		"svelte",
 		[".svelte"],
 		"class",
 		true,
@@ -190,14 +189,8 @@ const builtin = {
 		["svelte"],
 		(file, source) => file.endsWith(".svelte") || /from\s+["']svelte["']/.test(source),
 	),
-	astro: makeAdapter(
-		BuiltinHostFramework.Astro,
-		[".astro"],
-		"class",
-		true,
-		true,
-		["astro"],
-		(file) => file.endsWith(".astro"),
+	astro: makeAdapter("astro", [".astro"], "class", true, true, ["astro"], (file) =>
+		file.endsWith(".astro"),
 	),
 } satisfies Record<BuiltinHostFramework, HostFrameworkAdapter>;
 

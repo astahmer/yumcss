@@ -1,4 +1,4 @@
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 /** Bamboo CSS uses the Panda-compatible styled-system object dialect. */
@@ -7,12 +7,12 @@ export default defineCodemodAdapter({
 	patterns: [{ name: "css", regex: /\bcss\s*\(\s*\{/g }],
 	packages: {
 		packages: [
-			CodemodAdapterKit.dependency("@bamboocss/dev", "development").packages[0]!,
-			CodemodAdapterKit.dependency("@bamboocss/vite", "development").packages[0]!,
+			dependency("@bamboocss/dev", "development").packages[0]!,
+			dependency("@bamboocss/vite", "development").packages[0]!,
 		],
 		files: ["bamboo.config.ts"],
 	},
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Bamboo, "partial", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Bamboo, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "unsupported",
 		composition: "partial",

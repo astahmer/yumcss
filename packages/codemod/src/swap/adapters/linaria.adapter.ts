@@ -1,4 +1,4 @@
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
@@ -14,11 +14,11 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			CodemodAdapterKit.dependency("@linaria/core", "peer").packages[0]!,
-			CodemodAdapterKit.dependency("@linaria/react", "peer").packages[0]!,
+			dependency("@linaria/core", "peer").packages[0]!,
+			dependency("@linaria/react", "peer").packages[0]!,
 		],
 	},
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
 		"dynamic-values": "partial",
 		components: "exact",
 		"font-face": "unsupported",

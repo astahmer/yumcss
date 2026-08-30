@@ -60,14 +60,6 @@ function pickKey(meta: PandwindMeta, prefix: string, props: string[]): { key: st
 	return best === null ? null : { key: best.key };
 }
 
-function hasDeclaredValue(meta: PandwindMeta, prefix: string, value: string): boolean {
-	return (meta.keysByBase.get(prefix) ?? []).some((info) =>
-		info.valueType === undefined
-			? false
-			: (meta.valueLiterals.get(info.valueType)?.has(value) ?? false),
-	);
-}
-
 /** Map one raw class token onto a typed tw() entry — or explain why not. */
 export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
 	const parsed: ParsedToken | null = parseToken(raw, meta);
@@ -87,18 +79,6 @@ export function mapToken(raw: string, meta: PandwindMeta): MappedToken | null {
 	// typed values cannot express it without changing the emitted class, so
 	// they intentionally stay verbatim strings at the call site.
 	if (parsed.negative) return null;
-
-	// A wildcard conflict entry also represents arbitrary values. Do not use it
-	// to turn an unknown project-owned class such as `theme-taupe` into a
-	// typed utility: that would remove the original selector and silently
-	// change the theme. Exact generated values remain eligible.
-	if (
-		value !== "" &&
-		perValue[value] === undefined &&
-		perValue["*"] !== undefined &&
-		!hasDeclaredValue(meta, prefix, value)
-	)
-		return null;
 
 	let props = perValue[value] ?? perValue["*"];
 	if (props === undefined) return null;

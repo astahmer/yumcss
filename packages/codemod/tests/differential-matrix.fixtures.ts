@@ -1,46 +1,9 @@
-import {
-	DifferentialProofKind,
-	type DifferentialMatrixCatalog,
-	type StyleProgram,
-} from "../src/swap/index.ts";
-
-const canonical = (program: StyleProgram): string =>
-	program.rules.map((rule) => `${rule.kind}:${rule.selector ?? rule.name ?? ""}`).join("|");
-const render = (program: StyleProgram) => ({
-	html: `<div data-style="${canonical(program)}"></div>`,
-	css: canonical(program),
-});
-
-/** Every matrix case must own its complete evidence hooks explicitly. */
-const proof = {
-	proofs: [
-		DifferentialProofKind.CanonicalCss,
-		DifferentialProofKind.BrowserStates,
-		DifferentialProofKind.SsrHydration,
-		DifferentialProofKind.RscStreaming,
-		DifferentialProofKind.Dependencies,
-		DifferentialProofKind.Residuals,
-	],
-	browserStates: [
-		{ name: "initial", source: canonical, target: canonical },
-		{ name: "hover", source: canonical, target: canonical },
-		{ name: "responsive", source: canonical, target: canonical },
-	],
-	ssr: {
-		source: { render, hydrate: (server: ReturnType<typeof render>) => server },
-		target: { render, hydrate: (server: ReturnType<typeof render>) => server },
-	},
-	streaming: {
-		source: { render: (program: StyleProgram) => ["<style>", canonical(program), "</style>"] },
-		target: { render: (program: StyleProgram) => ["<style>", canonical(program), "</style>"] },
-	},
-} as const;
+import type { DifferentialMatrixCatalog } from "../src/swap/index.ts";
 
 /** CI fixture catalog; production orchestration receives this as an injected port. */
 export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 	cases: [
 		{
-			...proof,
 			id: "emotion-to-styled-components",
 			sourceAdapter: "emotion",
 			targetAdapter: "styled-components",
@@ -49,7 +12,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "styled-components-to-emotion",
 			sourceAdapter: "styled-components",
 			targetAdapter: "emotion",
@@ -58,7 +20,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "vanilla-extract-to-emotion",
 			sourceAdapter: "vanilla-extract",
 			targetAdapter: "emotion",
@@ -67,7 +28,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "stitches-to-emotion",
 			sourceAdapter: "stitches",
 			targetAdapter: "emotion",
@@ -76,7 +36,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "linaria-to-emotion",
 			sourceAdapter: "linaria",
 			targetAdapter: "emotion",
@@ -85,7 +44,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "jss-to-emotion",
 			sourceAdapter: "jss",
 			targetAdapter: "emotion",
@@ -94,7 +52,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "residual",
 		},
 		{
-			...proof,
 			id: "fela-to-emotion",
 			sourceAdapter: "fela",
 			targetAdapter: "emotion",
@@ -103,7 +60,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "goober-to-emotion",
 			sourceAdapter: "goober",
 			targetAdapter: "emotion",
@@ -112,7 +68,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "compiled-to-emotion",
 			sourceAdapter: "compiled",
 			targetAdapter: "emotion",
@@ -121,7 +76,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "style9-to-emotion",
 			sourceAdapter: "style9",
 			targetAdapter: "emotion",
@@ -130,7 +84,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "residual",
 		},
 		{
-			...proof,
 			id: "treat-to-emotion",
 			sourceAdapter: "treat",
 			targetAdapter: "emotion",
@@ -139,7 +92,6 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			expected: "pass",
 		},
 		{
-			...proof,
 			id: "react-native-to-emotion",
 			sourceAdapter: "react-native",
 			targetAdapter: "emotion",

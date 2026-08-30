@@ -20,7 +20,7 @@ import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 import { flattenStyle } from "pandwind/lib/utils";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import type { AnyTokens } from "pandwind/types/typings";
-import { matchBlock } from "../source-pass-utils.ts";
+import { matchBlock } from "../sources.ts";
 import type { SwapIR } from "./ir.ts";
 import { resolvedAuthoredToken } from "./tokens.ts";
 

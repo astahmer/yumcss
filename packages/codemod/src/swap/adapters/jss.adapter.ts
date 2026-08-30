@@ -1,6 +1,6 @@
 import { applyEdits } from "../../migrate.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
@@ -45,11 +45,11 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			CodemodAdapterKit.dependency("jss", "runtime").packages[0]!,
-			CodemodAdapterKit.dependency("react-jss", "peer").packages[0]!,
+			dependency("jss", "runtime").packages[0]!,
+			dependency("react-jss", "peer").packages[0]!,
 		],
 	},
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
+	capabilities: allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
 		"named-conditions": "exact",
 		"dynamic-values": "partial",
 		"rule-level": "partial",

@@ -6,7 +6,6 @@ import {
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
 	StyleProgramCompositionKind,
-	externalIdentifier,
 } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/index.ts";
 
@@ -54,9 +53,9 @@ describe("semantic metadata and validator domains", () => {
 			...STYLE_VALIDATORS.validators,
 			{
 				schema: "pandwind.style-validator/1",
-				id: externalIdentifier("fixture-name"),
+				id: "fixture-name",
 				validate: ({ fixture }) => ({
-					validator: externalIdentifier("fixture-name"),
+					validator: "fixture-name",
 					valid: fixture === "fixture",
 					lossiness: "lossless",
 					differences: fixture === "fixture" ? [] : ["fixture name mismatch"],

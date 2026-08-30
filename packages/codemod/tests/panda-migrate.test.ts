@@ -9,8 +9,12 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { examplePreset } from "pandwind/preset";
-import { runPandaMigration, PandaFactoryAdapter } from "../src/swap/adapters/panda/index.ts";
-import { PandaRecipeSource } from "../src/swap/adapters/panda/recipe-source.ts";
+import {
+	runPandaMigration,
+	scanFactoryElements,
+	factoryEdits,
+	stripSpreadElements,
+} from "../src/swap/adapters/panda/index.ts";
 import {
 	foldRecipeCall,
 	renderJsxIndex,
@@ -76,10 +80,10 @@ function makeProject(): string {
 	return dir;
 }
 
-describe("PandaRecipeSource", () => {
+describe("stripSpreadElements", () => {
 	it("removes anatomy spreads and call values while keeping other entries", () => {
 		const body = "{ base: parts({ root: { top: 0 } }), color: 'red', ...rest }";
-		const stripped = PandaRecipeSource.stripSpreadElements(body);
+		const stripped = stripSpreadElements(body);
 		expect(stripped).not.toBeNull();
 		expect(stripped).toContain("base: {}");
 		expect(stripped).toContain("color: 'red'");
@@ -90,7 +94,7 @@ describe("PandaRecipeSource", () => {
 describe("factory elements", () => {
 	it("scans literal props and flags spreads", () => {
 		const src = `<panda.div px="4">x</panda.div>;\n<panda.span {...props} />`;
-		const els = PandaFactoryAdapter.scan(src, () => false);
+		const els = scanFactoryElements(src, () => false);
 		expect(els).toHaveLength(2);
 		expect(els[0]?.attrs[0]?.name).toBe("px");
 		expect(els[1]?.attrs[0]?.literal).toBe(false);
@@ -98,13 +102,13 @@ describe("factory elements", () => {
 
 	it("builds edits for opening tag, props, and matching closer", () => {
 		const src = `<panda.div px="4" className="foo" onClick={go}>x</panda.div>`;
-		const el = PandaFactoryAdapter.scan(src, () => false)[0]!;
+		const el = scanFactoryElements(src, () => false)[0]!;
 		const loadedMeta = loadMetaFromSources({
 			typesDtsPath: "../../apps/example/src/types.d.ts",
 			twTsPath: "../../apps/example/src/tw.ts",
 			tokens: examplePreset.tokens,
 		});
-		const edits = PandaFactoryAdapter.edits(el, src, loadedMeta, {
+		const edits = factoryEdits(el, src, loadedMeta, {
 			tokens: {},
 			conditions: {},
 			tokenVars: new Map(),

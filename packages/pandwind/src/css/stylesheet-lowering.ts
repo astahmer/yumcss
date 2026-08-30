@@ -1,7 +1,7 @@
 import parser from "postcss-selector-parser";
 import { pairs } from "../lib/utils.ts";
 import type { AnyConditions } from "../types/typings.ts";
-import { getPropertyPriority, isKnownCssProperty } from "./property-priorities.ts";
+import { getPropertyPriority } from "./property-priorities.ts";
 
 export interface ParsedConditions {
 	readonly className: string;
@@ -28,18 +28,11 @@ export const createConditionsBucket = (
 	...partial,
 });
 
-export const isSelfSelector = (condition: string): boolean =>
-	condition.charCodeAt(0) === 38 ||
-	(condition.includes("&") && condition.charCodeAt(condition.length - 1) !== 38);
-const selfSelectorPart = (condition: string): string =>
-	condition.charCodeAt(0) === 38 ? condition.slice(1) : condition;
+export const isSelfSelector = (condition: string): boolean => condition.charCodeAt(0) === 38;
 const scopedClassName = (className: string, selectors: readonly string[]): string =>
-	selectors.some((selector) => selector.includes(":where(") && !selector.includes(":where(&)")) &&
-	className.startsWith(".")
+	selectors.some((selector) => selector.includes(":where(")) && className.startsWith(".")
 		? `${className}${className}`
 		: className;
-const selfOwnsScope = (selectors: readonly string[]): boolean =>
-	selectors.some((selector) => selector.includes(":where(&)"));
 const isParentSelector = (condition: string): boolean =>
 	condition.charCodeAt(condition.length - 1) === 38;
 const isAtRule = (condition: string): boolean => condition.charCodeAt(0) === 64;
@@ -52,8 +45,6 @@ const isSelectorList = (selector: string): boolean => {
 	}
 	return false;
 };
-const isSelectorPath = (part: string): boolean =>
-	part.startsWith("@") || /[&>+~:[\],.#*\s]/.test(part);
 
 export const parseCondition = (
 	selector: string,
@@ -66,7 +57,7 @@ export const parseCondition = (
 ): true | undefined => {
 	if (!selector) return;
 	if (isSelectorList(selector)) conditions.selectorLists.push(selector);
-	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selfSelectorPart(selector));
+	else if (isSelfSelector(selector)) conditions.selfSelectors.push(selector.slice(1));
 	else if (isParentSelector(selector)) conditions.parentSelectors.push(selector.slice(0, -1));
 	else if (isAtRule(selector)) conditions.atRules.push(selector);
 	else return true;
@@ -87,17 +78,15 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 					.map((selector) => {
 						const selfs = [...selfSelectors];
 						const parents = [...parentSelectors];
-						if (isSelfSelector(selector)) selfs.push(selfSelectorPart(selector));
+						if (isSelfSelector(selector)) selfs.push(selector.slice(1));
 						else if (isParentSelector(selector)) parents.push(selector.slice(0, -1));
-						const scope = selfOwnsScope(selfs) ? "" : scopedClassName(className, selfs);
-						return `${parents.join("").replaceAll("&", className)}${scope}${selfs.join("").replaceAll("&", className)}`;
+						return `${parents.join("")}${scopedClassName(className, selfs)}${selfs.join("")}`;
 					})
 					.join(", ");
 			})}{${decls}}`,
 		);
 	}
-	const scope = selfOwnsScope(selfSelectors) ? "" : scopedClassName(className, selfSelectors);
-	const selectors = `${parentSelectors.join("").replaceAll("&", className)}${scope}${selfSelectors.join("").replaceAll("&", className)}`;
+	const selectors = `${parentSelectors.join("")}${scopedClassName(className, selfSelectors)}${selfSelectors.join("")}`;
 	return atRules.reduce((acc, atRule) => `${atRule}{${acc}}`, `${selectors}{${decls}}`);
 };
 
@@ -119,50 +108,6 @@ export function decodeAtomicPath(
 		return { prop: prop!, value: value!, priority: getPropertyPriority(prop!), conditions };
 	}
 	const value = parts.at(-1)!;
-	const pathParts = parts.slice(0, -1);
-	const knownPropertyIndexes = pathParts
-		.map((part, index) => (isKnownCssProperty(part) ? index : -1))
-		.filter((index) => index !== -1);
-	const propertyIndexes =
-		knownPropertyIndexes.length === 1
-			? knownPropertyIndexes
-			: knownPropertyIndexes.length === 0 && pathParts.some(isSelectorPath)
-				? pathParts
-						.map((part, index) => (/^(?:[A-Za-z_][\w-]*|--[\w-]+)$/.test(part) ? index : -1))
-						.filter((index) => index !== -1)
-				: [];
-	// Flattened style objects put the property either before or after nested
-	// conditions. Once the property catalog identifies that segment, every
-	// other segment is unambiguously a condition—even when it is an authored
-	// selector such as `+ h2` or an arbitrary at-rule.
-	if (propertyIndexes.length === 1) {
-		const propertyIndex = propertyIndexes[0]!;
-		const prop = pathParts[propertyIndex]!;
-		const conditionPaths = pathParts.filter((_part, index) => index !== propertyIndex);
-		for (const path of conditionPaths) {
-			const resolved = presetConditions[path] ?? path;
-			const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
-			for (const selector of resolvedList) {
-				const normalized = normalizeArbitrarySelector(selector);
-				const invalid = parseCondition(normalized, conditions);
-				if (invalid !== undefined)
-					throw new Error(`Unknown condition '${selector}' used in path '${atomicPath}'`);
-			}
-		}
-		const priorities = conditionPaths.flatMap((path) => {
-			const resolved = presetConditions[path] ?? path;
-			const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
-			return resolvedList.map((part) =>
-				getPropertyPriority(isSelfSelector(part) ? part.slice(1) : part),
-			);
-		});
-		return {
-			prop,
-			value,
-			priority: getPropertyPriority(prop) + priorities.reduce((sum, priority) => sum + priority, 0),
-			conditions,
-		};
-	}
 	let prop: string | undefined;
 	const conds = parts.slice(0, -1).reduce((acc, part) => {
 		const resolved = presetConditions[part] ?? part;
@@ -186,17 +131,3 @@ export function decodeAtomicPath(
 		conditions,
 	};
 }
-
-/** Make CSS-in-JS selector shorthand explicit before the selector policy parses it. */
-const normalizeArbitrarySelector = (selector: string): string => {
-	if (isAtRule(selector)) return selector;
-	if (isSelectorList(selector)) {
-		const selectors: string[] = [];
-		parser((nodes) => {
-			selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
-		}).processSync(selector);
-		return selectors.map(normalizeArbitrarySelector).join(", ");
-	}
-	if (isSelfSelector(selector) || isParentSelector(selector)) return selector;
-	return `& ${selector}`;
-};

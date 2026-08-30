@@ -1,43 +1,33 @@
-import { describe, expect, test } from "vitest";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, test } from "vitest";
 import { createSourceWorkspace } from "../src/source-workspace.ts";
 
-describe("source workspace port", () => {
-	test("keeps filesystem selection independent from language policy", () => {
-		const workspace = createSourceWorkspace({
-			glob: (pattern) =>
-				pattern === "**/*" ? ["src/Card.vue", "src/Card.tsx", "node_modules/pkg/index.ts"] : [],
-			isFile: (file) => !file.includes("node_modules"),
-			readFile: (file) => `source for ${file}`,
-		});
+const roots: string[] = [];
 
-		expect(workspace.files({ root: "/project", patterns: ["**/*"] })).toEqual([
-			"/project/src/Card.tsx",
-			"/project/src/Card.vue",
-		]);
-		expect(workspace.documents({ root: "/project", patterns: ["**/*"] })).toEqual([
-			{
-				file: "/project/src/Card.tsx",
-				root: "/project",
-				source: "source for /project/src/Card.tsx",
-			},
-			{
-				file: "/project/src/Card.vue",
-				root: "/project",
-				source: "source for /project/src/Card.vue",
-			},
-		]);
-	});
+afterEach(() => {
+	for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
 
-	test("allows a caller to supply its own file provider", () => {
-		const workspace = createSourceWorkspace({
-			glob: () => ["virtual.tsx"],
-			isFile: () => true,
-			readFile: () => "export const value = 1",
-		});
+describe("source workspace", () => {
+	test("expands and scans supported source documents through one service", () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-source-workspace-"));
+		roots.push(root);
+		mkdirSync(join(root, "nested"));
+		writeFileSync(
+			join(root, "Card.tsx"),
+			'import { createElement } from "react"; export const Card = () => createElement("div");',
+		);
+		writeFileSync(join(root, "nested", "Card.vue"), "<template><div /></template>");
+		writeFileSync(join(root, "README.md"), "not a source document");
 
-		expect(workspace.read("/virtual.tsx")).toEqual({
-			file: "/virtual.tsx",
-			source: "export const value = 1",
-		});
+		const workspace = createSourceWorkspace();
+		const files = workspace.files(["**/*"], root);
+		const documents = workspace.collect(["**/*"], root);
+
+		expect(workspace.schema).toBe("pandwind.source-workspace/1");
+		expect(files).toEqual([join(root, "Card.tsx"), join(root, "nested", "Card.vue")]);
+		expect(documents.map((document) => document.scan.framework)).toEqual(["react", "vue"]);
 	});
 });

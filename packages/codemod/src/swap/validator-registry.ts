@@ -8,7 +8,7 @@ import type {
 	AdapterLossiness,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
-import { StyleValidatorId, type StyleValidatorIdentifier } from "./identifiers.ts";
+import { StyleValidatorId } from "./identifiers.ts";
 
 export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
 export const VALIDATOR_PLUGIN_SCHEMA = "pandwind.style-validator-plugin/1" as const;
@@ -46,13 +46,13 @@ export interface StyleValidationEvidence {
 
 export interface StyleValidator {
 	readonly schema: typeof VALIDATOR_SCHEMA;
-	readonly id: StyleValidatorIdentifier;
+	readonly id: string;
 	validate(context: StyleValidationContext): StyleValidationEvidence;
 }
 
 export interface StyleValidatorPlugin {
 	readonly schema: typeof VALIDATOR_PLUGIN_SCHEMA;
-	readonly id: StyleValidatorIdentifier;
+	readonly id: string;
 	readonly validators: readonly StyleValidator[];
 }
 

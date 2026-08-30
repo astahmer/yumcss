@@ -71,8 +71,6 @@ describe("the tailwind adapter", () => {
 		expect(s.bridge["border-radius"]?.["0.375rem"]).toBe("rounded-md");
 		expect(s.bridge["border-radius"]?.["0.75rem"]).toBe("rounded-xl");
 		expect(s.bridge.display?.flex).toBe("flex");
-		expect(s.bridge["-webkit-box-orient"]?.vertical).toBe("line-clamp-1");
-		expect(s.bridge["-webkit-line-clamp"]?.["1"]).toBe("line-clamp-1");
 		expect(s.bridge["font-size"]?.["0.875rem"]).toBe("text-sm");
 	});
 

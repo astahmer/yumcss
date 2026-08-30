@@ -28,7 +28,7 @@ describe("Tailwind docs migration corpus", () => {
 				}
 			}
 		},
-		60_000,
+		30_000,
 	);
 
 	test("lane identities are stable and exhaustive", () => {

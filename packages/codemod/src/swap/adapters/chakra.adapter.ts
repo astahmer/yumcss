@@ -1,7 +1,7 @@
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
-import { matchBlock } from "../../source-pass-utils.ts";
+import { matchBlock } from "../../sources.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
 
 const styleProps = [
@@ -329,8 +329,8 @@ export default defineCodemodAdapter({
 			],
 		},
 	],
-	packages: CodemodAdapterKit.dependency("@chakra-ui/react", "peer"),
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
+	packages: dependency("@chakra-ui/react", "peer"),
+	capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		"framework-semantics": "partial",

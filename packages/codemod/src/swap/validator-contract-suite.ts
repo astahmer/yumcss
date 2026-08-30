@@ -1,77 +1,118 @@
-import {
-	VALIDATOR_SCHEMA,
-	type StyleValidationContext,
-	type StyleValidator,
-	type StyleValidatorRegistry,
+import type {
+	StyleValidator,
+	StyleValidatorRegistry,
+	StyleValidationContext,
 } from "./validator-registry.ts";
 
-export interface ValidatorContractProbe {
+export const VALIDATOR_CONTRACT_SUITE_SCHEMA = "pandwind.validator-contract-suite/1" as const;
+
+export type ValidatorContractPhase = "registration" | "execution" | "result";
+
+export interface ValidatorContractFixture {
+	readonly validator: string;
 	readonly context: StyleValidationContext;
+	readonly expectedValid?: boolean;
 }
 
 export interface ValidatorContractFailure {
 	readonly validator: string;
-	readonly check: "schema" | "identity" | "result";
+	readonly phase: ValidatorContractPhase;
 	readonly message: string;
 }
 
-export interface ValidatorContractReport {
-	readonly validator: string;
-	readonly failures: readonly ValidatorContractFailure[];
+export interface ValidatorContractResult {
+	readonly schema: typeof VALIDATOR_CONTRACT_SUITE_SCHEMA;
 	readonly valid: boolean;
+	readonly checked: readonly string[];
+	readonly failures: readonly ValidatorContractFailure[];
+}
+
+export interface ValidatorContractSuite {
+	run(
+		registry: StyleValidatorRegistry,
+		fixtures: readonly ValidatorContractFixture[],
+	): ValidatorContractResult;
+}
+
+function failure(
+	validator: string,
+	phase: ValidatorContractPhase,
+	message: string,
+): ValidatorContractFailure {
+	return { validator, phase, message };
+}
+
+function validateResult(validator: StyleValidator, result: unknown): string | undefined {
+	if (result === null || typeof result !== "object")
+		return "validator returned a non-object result";
+	const evidence = result as { validator?: unknown; valid?: unknown; differences?: unknown };
+	if (evidence.validator !== validator.id)
+		return `validator result identity ${String(evidence.validator)} does not match ${validator.id}`;
+	if (typeof evidence.valid !== "boolean")
+		return "validator result did not declare valid as a boolean";
+	if (!Array.isArray(evidence.differences))
+		return "validator result did not declare differences as an array";
+	return undefined;
 }
 
 /**
- * Generic validator conformance boundary. Validators are deliberately probed
- * through their public contract so an external validator can be substituted
- * without changing differential orchestration.
+ * Execute validators through their public registry contract. The suite is
+ * intentionally independent of any concrete validator implementation: a
+ * third-party validator only needs one fixture and a well-formed evidence
+ * result to participate in the same gate.
  */
-// oxlint-disable-next-line typescript/no-extraneous-class -- scoped contract policy
-export class ValidatorContractSuite {
-	static inspect(
-		validator: StyleValidator,
-		probe: ValidatorContractProbe,
-	): ValidatorContractReport {
-		const failures: ValidatorContractFailure[] = [];
-		const fail = (check: ValidatorContractFailure["check"], message: string): void => {
-			failures.push({ validator: validator.id, check, message });
-		};
-
-		if (validator.schema !== VALIDATOR_SCHEMA)
-			fail("schema", `expected ${VALIDATOR_SCHEMA}, received ${validator.schema}`);
-		if (validator.id.trim() === "") fail("identity", "validator id must not be empty");
-		try {
-			const result = validator.validate(probe.context);
-			if (typeof result.valid !== "boolean") fail("result", "valid must be boolean");
-			if (!Array.isArray(result.differences)) fail("result", "differences must be an array");
-			if (!Array.isArray(result.residuals ?? [])) fail("result", "residuals must be an array");
-			if (
-				result.lossiness !== "lossless" &&
-				result.lossiness !== "lossy" &&
-				result.lossiness !== "unsupported"
-			)
-				fail("result", `unknown lossiness: ${result.lossiness}`);
-			if (result.validator !== validator.id)
-				fail("result", `result identity does not match ${validator.id}`);
-		} catch (error) {
-			fail("result", error instanceof Error ? error.message : "validator threw");
-		}
-		return { validator: validator.id, failures, valid: failures.length === 0 };
-	}
-
-	static inspectRegistry(
-		registry: Pick<StyleValidatorRegistry, "validators">,
-		probe: ValidatorContractProbe,
-	): readonly ValidatorContractReport[] {
-		return registry.validators.map((validator) => this.inspect(validator, probe));
-	}
-
-	static assert(report: ValidatorContractReport): void {
-		if (!report.valid)
-			throw new Error(
-				`${report.validator} validator contract failed: ${report.failures
-					.map((failure) => `${failure.check}: ${failure.message}`)
-					.join("; ")}`,
-			);
-	}
+export function createValidatorContractSuite(): ValidatorContractSuite {
+	return {
+		run(registry, fixtures) {
+			const fixtureById = new Map(fixtures.map((fixture) => [fixture.validator, fixture]));
+			const failures: ValidatorContractFailure[] = [];
+			const checked: string[] = [];
+			for (const validator of registry.validators) {
+				checked.push(validator.id);
+				const fixture = fixtureById.get(validator.id);
+				if (fixture === undefined) {
+					failures.push(
+						failure(validator.id, "registration", "validator has no conformance fixture"),
+					);
+					continue;
+				}
+				try {
+					const result = validator.validate(fixture.context);
+					const malformed = validateResult(validator, result);
+					if (malformed !== undefined) {
+						failures.push(failure(validator.id, "result", malformed));
+						continue;
+					}
+					if (fixture.expectedValid !== undefined && result.valid !== fixture.expectedValid)
+						failures.push(
+							failure(
+								validator.id,
+								"result",
+								`expected valid=${fixture.expectedValid}, received valid=${result.valid}`,
+							),
+						);
+				} catch (error) {
+					failures.push(
+						failure(
+							validator.id,
+							"execution",
+							error instanceof Error ? error.message : "validator threw a non-error value",
+						),
+					);
+				}
+			}
+			for (const fixture of fixtures) {
+				if (registry.validators.every((validator) => validator.id !== fixture.validator))
+					failures.push(
+						failure(fixture.validator, "registration", "fixture targets an unregistered validator"),
+					);
+			}
+			return {
+				schema: VALIDATOR_CONTRACT_SUITE_SCHEMA,
+				valid: failures.length === 0,
+				checked,
+				failures,
+			};
+		},
+	};
 }

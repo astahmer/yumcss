@@ -2,7 +2,6 @@ import { foldStackElements } from "pandwind/vite/stack-fold";
 import { stackClasses, type StackProps } from "pandwind/stack";
 import {
 	HOST_FRAMEWORK_REGISTRY,
-	BuiltinHostFramework,
 	type HostFramework,
 	type HostFrameworkAdapter,
 } from "./host-adapters.ts";
@@ -63,10 +62,7 @@ function foldNativeStackMarkup(
 		)
 			return whole;
 		const className = stackClasses(props);
-		const classAttribute =
-			framework === BuiltinHostFramework.React || framework === BuiltinHostFramework.Preact
-				? "className"
-				: "class";
+		const classAttribute = framework === "react" || framework === "preact" ? "className" : "class";
 		const existing = /\bclass(?:Name)?\s*=\s*(["'])([^"']*)\1/.exec(rest)?.[2];
 		rest = rest.replace(/\bclass(?:Name)?\s*=\s*(["'])[^"']*\1/, "").trim();
 		const classValue = existing === undefined ? className : `${existing} ${className}`;
@@ -97,7 +93,7 @@ export function createHostCompilerPlugin(framework: HostFramework): HostCompiler
 			return host.detect(file, source);
 		},
 		transform(source, context) {
-			if (framework === BuiltinHostFramework.React || framework === BuiltinHostFramework.Preact) {
+			if (framework === "react" || framework === "preact") {
 				const folded = foldStackElements(source, context.file);
 				return { code: folded.code, changed: folded.code !== source, diagnostics: [], framework };
 			}

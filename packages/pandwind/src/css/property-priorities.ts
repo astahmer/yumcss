@@ -18,44 +18,6 @@ const shorthandsOfLonghands = new Set<string>();
 // Shorthand properties that override other shorthand properties:
 const shorthandsOfShorthands = new Set<string>();
 
-// SVG presentation properties are valid CSS declarations but do not affect
-// cascade conflict ordering in the HTML property catalog below. They still
-// need to be recognized when a nested selector path is decoded, for example
-// `svg: { path: { fill: "currentColor" } }`.
-const svgProperties = new Set([
-	"alignment-baseline",
-	"baseline-shift",
-	"color-interpolation",
-	"color-interpolation-filters",
-	"color-profile",
-	"color-rendering",
-	"dominant-baseline",
-	"fill",
-	"fill-opacity",
-	"fill-rule",
-	"flood-color",
-	"flood-opacity",
-	"lighting-color",
-	"marker-end",
-	"marker-mid",
-	"marker-start",
-	"paint-order",
-	"shape-rendering",
-	"stop-color",
-	"stop-opacity",
-	"stroke",
-	"stroke-dasharray",
-	"stroke-dashoffset",
-	"stroke-linecap",
-	"stroke-linejoin",
-	"stroke-miterlimit",
-	"stroke-opacity",
-	"stroke-width",
-	"text-anchor",
-	"vector-effect",
-	"writing-mode",
-]);
-
 // Using MDN data as a source of truth to populate the above sets
 // by group in alphabetical order:
 
@@ -802,22 +764,4 @@ export function getPropertyPriority(key: string): number {
 		return 1000;
 	}
 	return 3000;
-}
-
-/**
- * Identifies the property segment in a flattened style path. This is kept
- * beside the priority catalog so selector-bearing paths can distinguish
- * `& + &__borderTop` from a property-first path without maintaining a second
- * CSS property list in the var compiler and stylesheet decoder.
- */
-export function isKnownCssProperty(key: string): boolean {
-	const property = key.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
-	return (
-		property.startsWith("--") ||
-		longHandPhysical.has(property) ||
-		longHandLogical.has(property) ||
-		shorthandsOfLonghands.has(property) ||
-		shorthandsOfShorthands.has(property) ||
-		svgProperties.has(property)
-	);
 }

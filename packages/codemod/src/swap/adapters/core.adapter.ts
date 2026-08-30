@@ -1,5 +1,5 @@
 import type { PandwindMeta } from "../../meta.ts";
-import { matchBlock } from "../../source-pass-utils.ts";
+import { matchBlock } from "../../sources.ts";
 import { SWAP_EMITTERS, type Emitter } from "../emit.ts";
 import { OUTBOUND_EMITTERS } from "./outbound/plugin.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";

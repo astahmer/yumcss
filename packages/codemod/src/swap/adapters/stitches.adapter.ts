@@ -1,4 +1,4 @@
-import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import { CodemodAdapterId, StyleProgramCompositionKind } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
@@ -8,8 +8,8 @@ export default defineCodemodAdapter({
 		{ name: "globalCss", kind: "global", regex: /\bglobalCss\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],
-	packages: CodemodAdapterKit.dependency("@stitches/react", "peer"),
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Stitches, "exact", {
+	packages: dependency("@stitches/react", "peer"),
+	capabilities: allRuleCapabilities(CodemodAdapterId.Stitches, "exact", {
 		"font-face": "unsupported",
 		layers: "unsupported",
 		"supports-rules": "unsupported",

@@ -1,44 +1,53 @@
 import { parseSync, type ParseResult } from "oxc-parser";
 import { walk, type OxcNode } from "./tw/literal.ts";
-export { createSourceWorkspace, SOURCE_WORKSPACE_SCHEMA } from "./source-workspace.ts";
-export type {
-	SourceWorkspace,
-	SourceWorkspaceDependencies,
-	SourceWorkspaceQuery,
-} from "./source-workspace.ts";
 
 /** Versioned, package-level source analysis protocol shared by every lane. */
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
 export const SOURCE_SCANNER_PLUGIN_SCHEMA = "pandwind.source-scanner-plugin/1" as const;
 
-/** Runtime-compatible typed identities; enum syntax cannot load in Vite's strip-only Node path. */
-export const SourceLanguageId = {
-	TypeScript: "typescript",
-	Tsx: "tsx",
-	JavaScript: "javascript",
-	Jsx: "jsx",
+export const SourceLanguageAdapterId = {
+	ReactJsx: "jsx-react",
+	PreactJsx: "jsx-preact",
+	SolidJsx: "jsx-solid",
+	QwikJsx: "jsx-qwik",
+	Mdx: "mdx",
+	EcmaScript: "typescript",
 	Vue: "vue",
 	Svelte: "svelte",
 	Astro: "astro",
-	Mdx: "mdx",
-	Unknown: "unknown",
 } as const;
-export type SourceLanguageId = (typeof SourceLanguageId)[keyof typeof SourceLanguageId];
+export type SourceLanguageAdapterId =
+	(typeof SourceLanguageAdapterId)[keyof typeof SourceLanguageAdapterId];
 
-export const SourceFrameworkId = {
-	React: "react",
-	Preact: "preact",
-	Solid: "solid",
-	Qwik: "qwik",
-	Vue: "vue",
-	Svelte: "svelte",
-	Astro: "astro",
-	Mdx: "mdx",
+export const SourceRuntimeBoundary = {
+	Shared: "shared",
+	Client: "client",
+	Server: "server",
 } as const;
-export type SourceFrameworkId = (typeof SourceFrameworkId)[keyof typeof SourceFrameworkId];
+export type SourceRuntimeBoundary =
+	(typeof SourceRuntimeBoundary)[keyof typeof SourceRuntimeBoundary];
 
-export type SourceLanguage = SourceLanguageId | (string & {});
-export type SourceFramework = SourceFrameworkId | (string & {});
+export type SourceLanguage =
+	| "typescript"
+	| "tsx"
+	| "javascript"
+	| "jsx"
+	| "vue"
+	| "svelte"
+	| "astro"
+	| "mdx"
+	| (string & {});
+
+export type SourceFramework =
+	| "react"
+	| "preact"
+	| "solid"
+	| "qwik"
+	| "vue"
+	| "svelte"
+	| "astro"
+	| "mdx"
+	| (string & {});
 
 export interface SourceDocument {
 	readonly file: string;
@@ -46,6 +55,7 @@ export interface SourceDocument {
 	readonly language?: SourceLanguage;
 	readonly root?: string;
 	readonly framework?: SourceFramework;
+	readonly runtimeBoundary?: SourceRuntimeBoundary;
 }
 
 export interface SourceRange {
@@ -64,6 +74,7 @@ export interface SourceScanResult {
 	readonly excluded: readonly SourceRange[];
 	readonly diagnostics: readonly SourceScanDiagnostic[];
 	readonly framework?: SourceFramework;
+	readonly runtimeBoundary?: SourceRuntimeBoundary;
 	isExcluded(start: number): boolean;
 }
 
@@ -113,41 +124,33 @@ export interface SourceScannerService {
 	parse(document: SourceDocument): ParseResult;
 }
 
-export interface SourceScannerContractReport {
-	readonly scanner: string;
-	readonly failures: readonly string[];
-	readonly valid: boolean;
+export const SOURCE_SCANNER_CONTRACT_SCHEMA = "pandwind.source-scanner-contract/1" as const;
+
+export interface SourceScannerContractFixture {
+	readonly adapter: string;
+	readonly document: SourceDocument;
+	readonly language?: SourceLanguage;
+	readonly framework?: SourceFramework;
 }
 
-/** Generic registry contract for built-in and plugin-provided language adapters. */
-// oxlint-disable-next-line typescript/no-extraneous-class -- scoped scanner contract policy
-export class SourceScannerContractSuite {
-	static inspect(
-		registry: Pick<SourceScannerRegistry, "adapters">,
-	): readonly SourceScannerContractReport[] {
-		return registry.adapters.map((adapter) => {
-			const failures: string[] = [];
-			if (adapter.schema !== SOURCE_SCANNER_SCHEMA) failures.push("invalid scanner schema");
-			if (adapter.id.trim() === "") failures.push("scanner id is empty");
-			if (adapter.languages.length === 0) failures.push("scanner has no language");
-			try {
-				const language = adapter.languages[0];
-				const result = adapter.scan({
-					file: "contract" + (extensionForLanguage(language!) ?? ".txt"),
-					source: "",
-				});
-				if (result.language !== language) failures.push("scanner returned an unexpected language");
-			} catch (error) {
-				failures.push(error instanceof Error ? error.message : "scanner lifecycle threw");
-			}
-			return { scanner: adapter.id, failures, valid: failures.length === 0 };
-		});
-	}
+export interface SourceScannerContractFailure {
+	readonly adapter: string;
+	readonly phase: "registration" | "detection" | "scan";
+	readonly message: string;
+}
 
-	static assert(report: SourceScannerContractReport): void {
-		if (!report.valid)
-			throw new Error(`${report.scanner} scanner contract failed: ${report.failures.join("; ")}`);
-	}
+export interface SourceScannerContractResult {
+	readonly schema: typeof SOURCE_SCANNER_CONTRACT_SCHEMA;
+	readonly valid: boolean;
+	readonly checked: readonly string[];
+	readonly failures: readonly SourceScannerContractFailure[];
+}
+
+export interface SourceScannerContractSuite {
+	run(
+		registry: SourceScannerRegistry,
+		fixtures: readonly SourceScannerContractFixture[],
+	): SourceScannerContractResult;
 }
 
 export function sourceLanguageForFile(file: string): SourceLanguage {
@@ -163,10 +166,10 @@ export function isScriptSourceFile(file: string): boolean {
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
-	language === SourceLanguageId.TypeScript ||
-	language === SourceLanguageId.Tsx ||
-	language === SourceLanguageId.JavaScript ||
-	language === SourceLanguageId.Jsx;
+	language === "typescript" ||
+	language === "tsx" ||
+	language === "javascript" ||
+	language === "jsx";
 
 function lexicalExcludedRanges(source: string): SourceRange[] {
 	const ranges: SourceRange[] = [];
@@ -213,7 +216,7 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 		throw new Error(`source language ${language} does not expose an oxc program`);
 	return parseSync(document.file, document.source, {
 		sourceType: "module",
-		lang: language === SourceLanguageId.Tsx || language === SourceLanguageId.Jsx ? "tsx" : "ts",
+		lang: language === "tsx" || language === "jsx" ? "tsx" : "ts",
 	});
 }
 
@@ -267,8 +270,7 @@ export function computeExcludedRanges(
 			}
 			return;
 		}
-		if (n.type === "Literal" || n.type === "TemplateLiteral" || n.type === "JSXText")
-			excluded.push([n.start, n.end]);
+		if (n.type === "Literal" || n.type === "TemplateLiteral") excluded.push([n.start, n.end]);
 	});
 	const filtered = excluded
 		.filter(([start, end]) => !supportedStyleQuasis.some(([qs, qe]) => start >= qs && end <= qe))
@@ -293,6 +295,13 @@ export function computeExcludedRanges(
 function scanDocument(document: SourceDocument): SourceScanResult {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	const diagnostics: SourceScanDiagnostic[] = [];
+	const runtimeBoundary =
+		document.runtimeBoundary ??
+		(/^[\s\S]*['"]use client['"]/.test(document.source)
+			? SourceRuntimeBoundary.Client
+			: /^[\s\S]*['"]use server['"]/.test(document.source)
+				? SourceRuntimeBoundary.Server
+				: SourceRuntimeBoundary.Shared);
 	let excluded: SourceRange[] = [];
 	if (isOxcLanguage(language)) {
 		try {
@@ -305,11 +314,11 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 				message: error instanceof Error ? error.message : "unable to parse source",
 			});
 		}
-	} else if (language === SourceLanguageId.Unknown) {
+	} else if (language === "unknown") {
 		diagnostics.push({ kind: "language", message: `no registered language for ${document.file}` });
 	} else {
 		excluded =
-			language === SourceLanguageId.Mdx
+			language === "mdx"
 				? mdxExcludedRanges(document.source)
 				: lexicalExcludedRanges(document.source);
 	}
@@ -318,20 +327,21 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 		language,
 		excluded,
 		diagnostics,
+		runtimeBoundary,
 		isExcluded: (start) => excluded.some((range) => start >= range.start && start < range.end),
 	};
 }
 
 const extensionForLanguage = (language: SourceLanguage): string | undefined =>
 	({
-		[SourceLanguageId.TypeScript]: ".ts",
-		[SourceLanguageId.Tsx]: ".tsx",
-		[SourceLanguageId.JavaScript]: ".js",
-		[SourceLanguageId.Jsx]: ".jsx",
-		[SourceLanguageId.Vue]: ".vue",
-		[SourceLanguageId.Svelte]: ".svelte",
-		[SourceLanguageId.Astro]: ".astro",
-		[SourceLanguageId.Mdx]: ".mdx",
+		typescript: ".ts",
+		tsx: ".tsx",
+		javascript: ".js",
+		jsx: ".jsx",
+		vue: ".vue",
+		svelte: ".svelte",
+		astro: ".astro",
+		mdx: ".mdx",
 	})[language as keyof Record<string, string>];
 
 const languageForAdapterExtension = (
@@ -378,59 +388,34 @@ const makeFrameworkAdapter = (
 
 export const SOURCE_LANGUAGE_ADAPTERS: readonly SourceLanguageAdapter[] = [
 	makeFrameworkAdapter(
-		"jsx-react",
-		SourceFrameworkId.React,
-		[
-			SourceLanguageId.TypeScript,
-			SourceLanguageId.Tsx,
-			SourceLanguageId.JavaScript,
-			SourceLanguageId.Jsx,
-		],
+		SourceLanguageAdapterId.ReactJsx,
+		"react",
+		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["'](?:react|react-dom|@emotion\/react|styled-components)["']/],
 	),
 	makeFrameworkAdapter(
-		"jsx-preact",
-		SourceFrameworkId.Preact,
-		[
-			SourceLanguageId.TypeScript,
-			SourceLanguageId.Tsx,
-			SourceLanguageId.JavaScript,
-			SourceLanguageId.Jsx,
-		],
+		SourceLanguageAdapterId.PreactJsx,
+		"preact",
+		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["'](?:preact|@preact\/)[^"']*["']/],
 	),
 	makeFrameworkAdapter(
-		"jsx-solid",
-		SourceFrameworkId.Solid,
-		[
-			SourceLanguageId.TypeScript,
-			SourceLanguageId.Tsx,
-			SourceLanguageId.JavaScript,
-			SourceLanguageId.Jsx,
-		],
+		SourceLanguageAdapterId.SolidJsx,
+		"solid",
+		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["']solid-js(?:\/|["'])/],
 	),
 	makeFrameworkAdapter(
-		"jsx-qwik",
-		SourceFrameworkId.Qwik,
-		[
-			SourceLanguageId.TypeScript,
-			SourceLanguageId.Tsx,
-			SourceLanguageId.JavaScript,
-			SourceLanguageId.Jsx,
-		],
+		SourceLanguageAdapterId.QwikJsx,
+		"qwik",
+		["typescript", "tsx", "javascript", "jsx"],
 		[/from\s+["']@builder\.io\/qwik(?:\/|["'])/],
 	),
-	makeAdapter(SourceLanguageId.Mdx, [SourceLanguageId.Mdx]),
-	makeAdapter(SourceLanguageId.TypeScript, [
-		SourceLanguageId.TypeScript,
-		SourceLanguageId.Tsx,
-		SourceLanguageId.JavaScript,
-		SourceLanguageId.Jsx,
-	]),
-	makeAdapter(SourceLanguageId.Vue, [SourceLanguageId.Vue]),
-	makeAdapter(SourceLanguageId.Svelte, [SourceLanguageId.Svelte]),
-	makeAdapter(SourceLanguageId.Astro, [SourceLanguageId.Astro]),
+	makeAdapter(SourceLanguageAdapterId.Mdx, ["mdx"]),
+	makeAdapter(SourceLanguageAdapterId.EcmaScript, ["typescript", "tsx", "javascript", "jsx"]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Vue, "vue", ["vue"], [/^[\s\S]*$/]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Svelte, "svelte", ["svelte"], [/^[\s\S]*$/]),
+	makeFrameworkAdapter(SourceLanguageAdapterId.Astro, "astro", ["astro"], [/^[\s\S]*$/]),
 ];
 
 export function createSourceLanguageClassifier(
@@ -448,10 +433,10 @@ export function createSourceLanguageClassifier(
 	return {
 		languageForFile(file) {
 			const extension = `.${file.split(".").pop()?.toLowerCase() ?? ""}`;
-			return languagesByExtension.get(extension) ?? SourceLanguageId.Unknown;
+			return languagesByExtension.get(extension) ?? "unknown";
 		},
 		isSupportedFile(file) {
-			return this.languageForFile(file) !== SourceLanguageId.Unknown;
+			return this.languageForFile(file) !== "unknown";
 		},
 		isScriptFile(file) {
 			return isOxcLanguage(this.languageForFile(file));
@@ -536,3 +521,78 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 			language: document.language ?? SOURCE_SCANNER.languageForFile(document.file),
 		}),
 };
+
+/**
+ * Validate scanner substitutions at the language boundary. Consumers depend
+ * only on `SourceScannerRegistry`; a custom language adapter can therefore
+ * replace a built-in implementation without changing codemod or build code.
+ */
+export function createSourceScannerContractSuite(): SourceScannerContractSuite {
+	return {
+		run(registry, fixtures) {
+			const fixtureById = new Map(fixtures.map((fixture) => [fixture.adapter, fixture]));
+			const checked: string[] = [];
+			const failures: SourceScannerContractFailure[] = [];
+			for (const adapter of registry.adapters) {
+				checked.push(adapter.id);
+				const fixture = fixtureById.get(adapter.id);
+				if (fixture === undefined) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "registration",
+						message: "language adapter has no conformance fixture",
+					});
+					continue;
+				}
+				if (!adapter.detect(fixture.document)) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "detection",
+						message: `adapter did not detect ${fixture.document.file}`,
+					});
+					continue;
+				}
+				try {
+					const result = adapter.scan(fixture.document);
+					if (!adapter.languages.includes(result.language))
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `scan returned unsupported language ${result.language}`,
+						});
+					if (fixture.language !== undefined && result.language !== fixture.language)
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `expected language ${fixture.language}, received ${result.language}`,
+						});
+					if (fixture.framework !== undefined && result.framework !== fixture.framework)
+						failures.push({
+							adapter: adapter.id,
+							phase: "scan",
+							message: `expected framework ${fixture.framework}, received ${String(result.framework)}`,
+						});
+				} catch (error) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "scan",
+						message: error instanceof Error ? error.message : "scanner threw a non-error value",
+					});
+				}
+			}
+			for (const fixture of fixtures)
+				if (registry.adapters.every((adapter) => adapter.id !== fixture.adapter))
+					failures.push({
+						adapter: fixture.adapter,
+						phase: "registration",
+						message: "fixture targets an unregistered language adapter",
+					});
+			return {
+				schema: SOURCE_SCANNER_CONTRACT_SCHEMA,
+				valid: failures.length === 0,
+				checked,
+				failures,
+			};
+		},
+	};
+}

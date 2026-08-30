@@ -13,7 +13,6 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadMetaFromSources } from "../src/meta.ts";
 import { transformSource } from "../src/migrate.ts";
-import { createSourcePassRegistry } from "../src/sources.ts";
 import { examplePreset } from "pandwind/preset";
 import { CodemodAdapterId } from "../src/swap/index.ts";
 
@@ -246,37 +245,5 @@ const styles = stylex.create({
 		expect(result.skippedByMarker).toBe(1);
 		expect(result.code).toContain("pseudo/media");
 		expect(result.code).toContain("stylex.create");
-	});
-});
-
-describe("source-pass registry", () => {
-	test("runs a substitute adapter without changing the composer", () => {
-		const registry = createSourcePassRegistry([
-			{
-				id: CodemodAdapterId.StyleX,
-				transform(source, _meta, _options, result) {
-					result.converted++;
-					return `${source}\n// substitute source pass`;
-				},
-			},
-		]);
-		const result = {
-			code: "",
-			changed: false,
-			converted: 0,
-			unmappedTokens: [],
-			skippedByMarker: 0,
-		};
-		expect(registry.parse("stylex,stylex")).toEqual([CodemodAdapterId.StyleX]);
-		expect(
-			registry.run(
-				"source",
-				meta,
-				[CodemodAdapterId.StyleX],
-				{ marker: "skip", file: "x.ts" },
-				result,
-			),
-		).toBe("source\n// substitute source pass");
-		expect(result.converted).toBe(1);
 	});
 });

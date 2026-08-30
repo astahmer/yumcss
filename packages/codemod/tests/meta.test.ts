@@ -50,9 +50,6 @@ describe("project-aware migration metadata", () => {
 				property: "background-color",
 				value: "#3182ce",
 			});
-			expect(meta.bridgeDeclarations.get("bg-blue-500")).toEqual([
-				{ property: "background-color", value: "#3182ce" },
-			]);
 		} finally {
 			rmSync(dir, { recursive: true, force: true });
 		}

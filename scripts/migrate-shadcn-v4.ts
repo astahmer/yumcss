@@ -21,10 +21,11 @@ import { pandwindPreset } from "../packages/pandwind/src/preset/index.ts";
 import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
 import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
 import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
+import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = resolve(import.meta.dirname, "..");
-const defaultReferenceRoot = "/Users/astahmer/.references/shadcn-ui";
+const defaultReferenceRoot = createReferenceWorkspace().path("shadcn-ui");
 const appRootName = "apps/v4";
 // Keep generated support beside the app so package-local resolution works.
 // The materializer excludes metadata from Tailwind's automatic source scan;

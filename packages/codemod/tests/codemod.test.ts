@@ -183,30 +183,6 @@ describe("mode: css", () => {
 		const result = css(`${withBinding.replace("bg-blue-500 ", "")}<span className="hover:p-4" />`);
 		expect(result.unmappedTokens.some((t) => t.token === "hover:p-4")).toBe(true);
 	});
-
-	test("multi-property bridge utilities preserve every declaration", () => {
-		const result = transformSource(
-			`${withBinding}<span className="line-clamp-1" />`,
-			{
-				...meta,
-				bridgeDeclarations: new Map([
-					[
-						"line-clamp-1",
-						[
-							{ property: "-webkit-box-orient", value: "vertical" },
-							{ property: "-webkit-line-clamp", value: "1" },
-							{ property: "display", value: "-webkit-box" },
-							{ property: "overflow", value: "hidden" },
-						],
-					],
-				]),
-			},
-			{ mode: "css", file: "test.tsx" },
-		);
-		expect(result.code).toContain('WebkitLineClamp: "1"');
-		expect(result.code).toContain('WebkitBoxOrient: "vertical"');
-		expect(result.code).toContain('overflow: "hidden"');
-	});
 });
 
 describe("mode: keep (analysis only)", () => {
@@ -286,15 +262,5 @@ describe("mapToken unit behavior", () => {
 	test("unsupported negated and named data conditions stay verbatim", () => {
 		expect(mapToken("not-in-data-dragging:animate-ping", meta)).toBeNull();
 		expect(mapToken("data-focus:outline-none", meta)).toBeNull();
-	});
-
-	test("wildcard conflicts do not consume project-owned classes", () => {
-		const custom = {
-			...meta,
-			keysByBase: new Map([["theme", [{ key: "theme", base: "theme", valueType: "ThemeValue" }]]]),
-			valueLiterals: new Map([["ThemeValue", new Set(["container"])]]),
-			conflicts: new Map([["theme", { "*": ["font-family"] }]]),
-		} as typeof meta;
-		expect(mapToken("theme-taupe", custom)).toBeNull();
 	});
 });

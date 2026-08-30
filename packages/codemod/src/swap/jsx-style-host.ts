@@ -1,6 +1,5 @@
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import type { StyleProgramSource } from "./semantic-ir.ts";
-import { BuiltinHostFramework } from "./host-adapters.ts";
 
 export interface JsxStyleAttribute {
 	readonly name: string;
@@ -87,10 +86,7 @@ export class JsxStyleHost {
 				text = `${text.slice(0, index - whitespace)}${text.slice(index + raw.length)}`;
 			}
 		}
-		const attribute =
-			framework === BuiltinHostFramework.React || framework === BuiltinHostFramework.Preact
-				? "className"
-				: "class";
+		const attribute = framework === "react" || framework === "preact" ? "className" : "class";
 		let needsCx = false;
 		const classPattern = new RegExp(
 			`(\\s)${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\\{([\\s\\S]*?)\\})`,

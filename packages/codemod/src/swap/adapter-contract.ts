@@ -17,7 +17,6 @@ import type { SourceScanResult } from "pandwind/source";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
-export const ADAPTER_CONTRACT_VERSION = "2" as const;
 
 export type AdapterDependencyKind = "runtime" | "development" | "peer" | "config";
 
@@ -60,8 +59,6 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 
 export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
-	/** Optional filesystem port for resolving imported static style fragments. */
-	readonly readFile?: (file: string) => string | undefined;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
 	readonly document?: SourceScanResult;
@@ -103,9 +100,6 @@ export interface AdapterEmitContext {
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly subject?: string;
-		readonly subjectAttrs?: string;
-		/** Deterministic file-scoped class used by runtime component wrappers. */
-		readonly stableClassName?: string;
 		/** Ask a target to emit a host component instead of a style value. */
 		readonly wrapComponent?: boolean;
 	};
@@ -152,29 +146,6 @@ export interface AdapterRewriteResult {
 export interface AdapterMigrationHooks {
 	prepareDynamic?(context: AdapterDynamicPreparationContext): AdapterDynamicPreparation;
 	rewrite?(context: AdapterRewriteContext): AdapterRewriteResult;
-	/** Target-owned policy used by the neutral migration runner for host rewrites. */
-	targetPolicy?: AdapterTargetMigrationPolicy;
-}
-
-export interface AdapterTargetMigrationPolicy {
-	/** Whether this target owns framework host/component rewrites. */
-	readonly handlesHostRewrites: boolean;
-	/**
-	 * Decide whether a converted host binding must remain a component value.
-	 * This is target-owned because only the target knows whether a class string
-	 * can safely replace a framework component expression.
-	 */
-	readonly requiresHostWrapper?: (context: {
-		readonly source: string;
-		readonly file: string;
-		readonly binding: string;
-		readonly subject: string;
-		readonly program: StyleProgram;
-	}) => boolean;
-	/** Whether parse residuals can be represented by the target as raw templates. */
-	handlesRawTemplate(program: StyleProgram): boolean;
-	/** Whether a source template fragment can remain a target runtime expression. */
-	handlesTemplateFragment(program: StyleProgram): boolean;
 }
 
 export type AdapterLossiness = "lossless" | "lossy" | "unsupported";

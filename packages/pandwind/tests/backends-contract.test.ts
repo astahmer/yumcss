@@ -3,7 +3,6 @@ import {
 	STYLE_BACKENDS,
 	STYLE_BACKEND_SCHEMA,
 	createStyleBackendRegistry,
-	externalBackendId,
 	type StyleBackendFactory,
 } from "../src/backends/index.ts";
 
@@ -29,7 +28,7 @@ describe("style backend contract matrix", () => {
 	test("third-party backends can register without changing the built-in root", () => {
 		const fake: StyleBackendFactory = {
 			schema: STYLE_BACKEND_SCHEMA,
-			id: externalBackendId("contract-target"),
+			id: "contract-target",
 			capabilities: STYLE_BACKENDS.factories[0]!.capabilities,
 			create: () => ({ name: "contract-target", declare: (key, value) => `${key}:${value}` }),
 		};

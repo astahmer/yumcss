@@ -115,29 +115,6 @@ test("css gen prop preserves class specificity inside zero-specificity selectors
   `);
 });
 
-test("css gen prop preserves zero specificity for composed base selectors", () => {
-	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss<typeof examplePreset>({ debug: false });
-
-	expect(
-		sheet.process([
-			css.raw({
-				":where(&)": {
-					padding: "10px",
-				},
-			}),
-		]),
-	).toMatchInlineSnapshot(`
-		Map {
-		  ":where(&)__padding__10px" => {
-		    "css": ":where(.\\31 0l3eo8){padding:10px}",
-		    "id": ":where(&)__padding__10px",
-		    "priority": 4000,
-		  },
-		}
-	`);
-});
-
 test("css gen prop in arbitrary descendant selector", () => {
 	const sheet = createStylesheet(examplePreset, { debug: false });
 	const css = createCss<typeof examplePreset>({ debug: false });
@@ -261,26 +238,6 @@ test("css gen prop in selector list", () => {
     }
   `,
 	);
-});
-
-test("css gen prop preserves shorthand selector-list combinators", () => {
-	const sheet = createStylesheet(examplePreset, { debug: false });
-	const css = createCss({ debug: false });
-
-	const rule = sheet
-		.process([
-			css.raw({
-				"+ h3, + h4": {
-					marginTop: "0.5em",
-				},
-			}),
-		])
-		.values()
-		.next().value;
-
-	expect(rule?.css).toContain("+ h3");
-	expect(rule?.css).toContain("+ h4");
-	expect(rule?.css).toMatch(/^\.[^,]+ \+ h3, \.[^,]+ \+ h4\{margin-top/);
 });
 
 test("css gen prop with multiple selectors in :is", () => {

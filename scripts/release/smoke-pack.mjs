@@ -88,6 +88,7 @@ async function main() {
 		// only ever executed directly (`pnpm tw:bridge`) — excluded.
 		const SWEEP_ALLOWLIST = /tw\/generate-bridge\.ts$/;
 		// Sequential imports by design: deterministic error ordering.
+		// oxlint-disable eslint/no-await-in-loop
 		const broken = [];
 		const walkModules = async (dir) => {
 			for (const dirEntry of readdirSync(dir, { withFileTypes: true })) {
