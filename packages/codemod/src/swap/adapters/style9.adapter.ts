@@ -16,10 +16,6 @@ const style9 = makeExtraAdapter({
 			for (const binding of convertedBindings) {
 				const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 				rewritten = rewritten.replace(
-					new RegExp(`\\b${escaped}\\s*\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)`, "g"),
-					"$&",
-				);
-				rewritten = rewritten.replace(
 					new RegExp(`\\b${escaped}\\s*\\(\\s*(['\"])([A-Za-z_$][\\w$]*)\\1\\s*\\)`, "g"),
 					(_match, _quote: string, name: string) => `${binding}.${name}`,
 				);
