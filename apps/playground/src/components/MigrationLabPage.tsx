@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
-import { CodemodAdapterId } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { EditorPane } from "./EditorPane.tsx";
 import { GhostButton, Kbd, Pane } from "./ui.tsx";
 import {

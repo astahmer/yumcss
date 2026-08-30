@@ -27,6 +27,7 @@
 	"exports": {
 		".": "./src/cli.ts",
 		"./swap": "./src/swap/index.ts",
+		"./swap/browser": "./src/swap/browser.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

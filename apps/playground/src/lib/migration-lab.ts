@@ -6,7 +6,7 @@ import {
 	type AdapterDependencies,
 	type AdapterValidationResult,
 	type StyleAdapter,
-} from "pandwind-codemod/swap";
+} from "pandwind-codemod/swap/browser";
 
 export interface MigrationLabEndpoint {
 	readonly id: string;
