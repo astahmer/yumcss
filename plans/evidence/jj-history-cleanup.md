@@ -4,6 +4,7 @@ This record belongs to the history-consolidation operation started on 2026-08-30
 
 - Recovery operation: `6d5ce0aafbde70713874a73c8ff475002bf5949ddea09d54e7d1f322750257ba1087c0dc40fe661b02c937f011b3349f405dc01b12ffa16d347b7b6b4c5a3903`
 - Pre-prune operation: `338a4ff501e2`
+- Pre-final-prune operation: `ff92f1f6b161d6714564980283c353777d7b242e5ecbaaf42a6af2c24011bd8aac65d106adf283a9739b0cca2eac8590e2f4a3c115b6ed39939b7552345f3182`
 - Main-pointer operation: `f59e61083b6c`
 - Main before cleanup: `63eefbb7a09ef5f7f83e1d066b0994a32961eb25`
 - Candidate consolidated tip before final history edits: `291c3f6f468df41b4c6a13ce473698e37eacd792`
