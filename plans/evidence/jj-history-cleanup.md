@@ -1,0 +1,13 @@
+# JJ history cleanup recovery point
+
+This record belongs to the history-consolidation operation started on 2026-08-30.
+
+- Recovery operation: `6d5ce0aafbde70713874a73c8ff475002bf5949ddea09d54e7d1f322750257ba1087c0dc40fe661b02c937f011b3349f405dc01b12ffa16d347b7b6b4c5a3903`
+- Main before cleanup: `63eefbb7a09ef5f7f83e1d066b0994a32961eb25`
+- Candidate consolidated tip: `31dd876dfd4ffc21c673cac7125b68f8841c100b`
+- Default workspace was intentionally preserved with uncommitted generated-file changes.
+
+The operation-log id is the rollback anchor. Before pruning a revision or
+workspace, its tree and logical changes must be proven represented by the
+candidate main ancestry. This document is committed only after those checks
+pass; it is evidence, not a replacement for the JJ operation log.
