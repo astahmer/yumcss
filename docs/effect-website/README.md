@@ -21,6 +21,11 @@ explicit `@source not inline("shadow blur")` guard because generated semantic
 object keys would otherwise be mistaken for authored utilities by Tailwind;
 this keeps the compiler vocabulary equivalent to the baseline.
 
+Astro component-local selectors are also preserved as residuals when a
+rewritten class is referenced by the same file's `<style>` block. This prevents
+Astro's scoped-CSS tree shaking from removing a rule that remains semantically
+required after the class rewrite.
+
 ## Verified result
 
 The final four-way run used freshly regenerated and freshly built copies:
@@ -28,6 +33,8 @@ The final four-way run used freshly regenerated and freshly built copies:
 - reference: `366419b44eb2bd353cbe3d3e41fa4e8c735e63ee`
 - routes checked over HTTP: 436 per lane
 - CSS bytes: baseline and every lane `2,840,140`
+- linked CSS files: exact SHA-256 match for every file in every lane
+- inline CSS: equal byte length for every generated route in every lane
 - visual browser states: desktop and mobile for `/`, `/blog/`, one v3 docs
   page, one v4 docs page, `/effect-days/`, and `/community-hub/`
 - SSR: JavaScript-disabled snapshots for every visual route
@@ -52,6 +59,7 @@ node scripts/verify-effect-docs.mjs \
   /tmp/pandwind-effect-parity.json
 ```
 
-The committed verifier is the source of truth for route, CSS, SSR, browser,
-hydration, and screenshot gates; `/tmp/pandwind-effect-parity.json` is a
-regenerable local artifact and is not committed.
+The committed verifier is the source of truth for the pinned source revision,
+exact route-set, per-file linked CSS hashes, per-route inline CSS lengths, SSR,
+browser, hydration, and screenshot gates; `/tmp/pandwind-effect-parity.json`
+is a regenerable local artifact and is not committed.
