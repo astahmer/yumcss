@@ -139,6 +139,25 @@ interface LoadedAdapterConfigs {
 
 const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
 
+function configurationFailure(source: string, detail: string): AdapterMigrationResult {
+	return {
+		code: source,
+		changed: false,
+		converted: 0,
+		skipped: 1,
+		reports: [],
+		validations: [],
+		dependencies: [],
+		residuals: [
+			{
+				kind: "configuration",
+				text: "official project configuration",
+				hint: `official adapter configuration loading failed: ${detail}`,
+			},
+		],
+	};
+}
+
 function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
 	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
 }
@@ -183,10 +202,16 @@ export async function runAdapterMigrationAsync(
 	};
 	const detection = route.source.detect(context);
 	if (!detection.matched) return runAdapterMigrationInternal(source, options);
-	const [sourceConfig, targetConfig] = await Promise.all([
-		route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
-		route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
-	]);
+	let sourceConfig: LoadedAdapterConfigs["source"];
+	let targetConfig: LoadedAdapterConfigs["target"];
+	try {
+		[sourceConfig, targetConfig] = await Promise.all([
+			route.source.loadConfigAsync?.(context) ?? route.source.loadConfig(context),
+			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
+		]);
+	} catch (error) {
+		return configurationFailure(source, error instanceof Error ? error.message : String(error));
+	}
 	return runAdapterMigrationInternal(source, options, {
 		source: sourceConfig,
 		target: targetConfig,
