@@ -317,12 +317,18 @@ export {
 	HOST_FRAMEWORK_REGISTRY,
 	HOST_FRAMEWORK_PLUGINS,
 	HOST_FRAMEWORK_PLUGIN_SCHEMA,
+	HOST_FRAMEWORK_CONTRACT_SCHEMA,
 	createHostFrameworkRegistry,
+	createHostFrameworkContractSuite,
 } from "./host-adapters.ts";
 export type {
 	BuiltinHostFramework,
 	HostFramework,
 	HostFrameworkAdapter,
+	HostFrameworkContractFixture,
+	HostFrameworkContractFailure,
+	HostFrameworkContractResult,
+	HostFrameworkContractSuite,
 	HostFrameworkPlugin,
 	HostFrameworkRegistry,
 } from "./host-adapters.ts";

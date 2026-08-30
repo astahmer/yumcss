@@ -1,8 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
 	detectHostFramework,
+	createHostFrameworkContractSuite,
 	createHostFrameworkRegistry,
 	getHostFrameworkAdapter,
+	HOST_FRAMEWORK_REGISTRY,
 	resolveStyleRecipe,
 	STYLE_PROGRAM_SCHEMA,
 	STYLE_RECIPE_SCHEMA,
@@ -27,6 +29,25 @@ const style = (property: string, value: string): StyleProgram => ({
 });
 
 describe("recipe and host-framework pivot semantics", () => {
+	test("proves every built-in host can detect and bind generated styles", () => {
+		const fixtures = [
+			{ adapter: "react", file: "App.tsx", source: 'import React from "react";' },
+			{ adapter: "preact", file: "App.tsx", source: 'import { h } from "preact";' },
+			{ adapter: "solid", file: "App.tsx", source: 'import { createSignal } from "solid-js";' },
+			{
+				adapter: "qwik",
+				file: "App.tsx",
+				source: 'import { component$ } from "@builder.io/qwik";',
+			},
+			{ adapter: "vue", file: "App.vue", source: "<template><div /></template>" },
+			{ adapter: "svelte", file: "App.svelte", source: "<div />" },
+			{ adapter: "astro", file: "App.astro", source: "<div />" },
+		];
+		const result = createHostFrameworkContractSuite().run(HOST_FRAMEWORK_REGISTRY, fixtures);
+		expect(result.valid).toBe(true);
+		expect(result.failures).toEqual([]);
+	});
+
 	test("resolves recipe defaults and compound variants into slot programs", () => {
 		const recipe: StyleRecipeProgram = {
 			schema: STYLE_RECIPE_SCHEMA,

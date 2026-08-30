@@ -10,6 +10,7 @@ export type BuiltinHostFramework =
 	| "astro";
 
 export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
+export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;
 
 export interface HostFrameworkAdapter {
 	readonly id: HostFramework;
@@ -71,6 +72,32 @@ export interface HostFrameworkRegistry {
 	registerPlugin(plugin: HostFrameworkPlugin): HostFrameworkRegistry;
 	get(id: string): HostFrameworkAdapter | undefined;
 	detect(file: string, source: string): HostFrameworkAdapter | undefined;
+}
+
+export interface HostFrameworkContractFixture {
+	readonly adapter: HostFramework;
+	readonly file: string;
+	readonly source: string;
+}
+
+export interface HostFrameworkContractFailure {
+	readonly adapter: HostFramework;
+	readonly phase: "registration" | "detection" | "binding";
+	readonly message: string;
+}
+
+export interface HostFrameworkContractResult {
+	readonly schema: typeof HOST_FRAMEWORK_CONTRACT_SCHEMA;
+	readonly valid: boolean;
+	readonly checked: readonly HostFramework[];
+	readonly failures: readonly HostFrameworkContractFailure[];
+}
+
+export interface HostFrameworkContractSuite {
+	run(
+		registry: HostFrameworkRegistry,
+		fixtures: readonly HostFrameworkContractFixture[],
+	): HostFrameworkContractResult;
 }
 
 export function createHostFrameworkRegistry(
@@ -195,4 +222,60 @@ export function detectHostFramework(
 	file: string,
 ): HostFrameworkAdapter | undefined {
 	return HOST_FRAMEWORK_REGISTRY.detect(file, source);
+}
+
+/** Prove host adapters can be substituted without host-specific orchestration. */
+export function createHostFrameworkContractSuite(): HostFrameworkContractSuite {
+	return {
+		run(registry, fixtures) {
+			const fixtureById = new Map(fixtures.map((fixture) => [fixture.adapter, fixture]));
+			const checked: HostFramework[] = [];
+			const failures: HostFrameworkContractFailure[] = [];
+			for (const adapter of registry.adapters) {
+				checked.push(adapter.id);
+				const fixture = fixtureById.get(adapter.id);
+				if (fixture === undefined) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "registration",
+						message: "host adapter has no conformance fixture",
+					});
+					continue;
+				}
+				if (!adapter.detect(fixture.file, fixture.source)) {
+					failures.push({
+						adapter: adapter.id,
+						phase: "detection",
+						message: `host adapter did not detect ${fixture.file}`,
+					});
+					continue;
+				}
+				const binding = adapter.classBinding("generated");
+				const merged = adapter.mergeClass("existing", "generated");
+				if (
+					!binding.includes("generated") ||
+					!merged.includes("existing") ||
+					!merged.includes("generated")
+				)
+					failures.push({
+						adapter: adapter.id,
+						phase: "binding",
+						message: "host adapter did not preserve generated and existing class values",
+					});
+			}
+			for (const fixture of fixtures)
+				if (registry.adapters.every((adapter) => adapter.id !== fixture.adapter))
+					failures.push({
+						adapter: fixture.adapter,
+						phase: "registration",
+						message: "fixture targets an unregistered host adapter",
+					});
+			return {
+				schema: HOST_FRAMEWORK_CONTRACT_SCHEMA,
+				valid: failures.length === 0,
+				checked,
+				failures,
+			};
+		},
+	};
 }
