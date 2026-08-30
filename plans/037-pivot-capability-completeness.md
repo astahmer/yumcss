@@ -182,13 +182,13 @@ preserved, with a machine-readable reason.
 
 ### Phase 1 — establish the contract baseline
 
-- [ ] Audit the current IR, adapter, host, backend, scanner, lowering, and
+- [x] Audit the current IR, adapter, host, backend, scanner, lowering, and
       validator contracts against this plan.
-- [ ] Generate a single capability matrix from registered adapters instead of
+- [x] Generate a single capability matrix from registered adapters instead of
       maintaining disconnected static catalogs.
-- [ ] Add conformance tests proving minimal substitute implementations work at
+- [x] Add conformance tests proving minimal substitute implementations work at
       every registry boundary.
-- [ ] Make adapter and capability coverage gates fail for missing meaningful
+- [x] Make adapter and capability coverage gates fail for missing meaningful
       tests.
 
 ### Phase 2 — finish semantic lowering
@@ -295,5 +295,7 @@ preserved, with a machine-readable reason.
 ## Progress
 
 Plan created in JJ workspace `pandwind-pivot-completeness`, based on
-`main` at `77491442`. Implementation begins with Phase 1 after this plan is
-recorded as its own focused revision.
+`main` at `77491442`. Phase 1's adapter contract baseline is implemented in
+the `AdapterContractSuite`, which derives its capability view from the
+registry and fails for missing fixtures or exercised unsupported capabilities.
+The full semantic, host, corpus, and release phases remain in progress.
