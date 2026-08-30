@@ -12,7 +12,6 @@ import {
 	styleProgramToCanonicalCss,
 	type StyleCondition,
 	type StyleDeclaration,
-	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
@@ -25,24 +24,26 @@ export interface UnoCssAdapterOptions {
 	readonly resolver?: UnoCssTokenResolver;
 }
 
+const unescapeUnoCssSelector = (value: string): string =>
+	value
+		.replace(/\\([0-9a-f]{1,6})\\s?/gi, (_match, code: string) =>
+			String.fromCodePoint(Number.parseInt(code, 16)),
+		)
+		.replace(/\\([\s\S])/g, "$1");
+
+const cssPropertyToStyleProperty = (value: string): string =>
+	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
+
 /** Build a resolver from CSS emitted by the real UnoCSS generator. */
 export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 	const entries = new Map<string, readonly StyleDeclaration[]>();
-	const unescape = (value: string): string =>
-		value
-			.replace(/\\([0-9a-f]{1,6})\\s?/gi, (_match, code: string) =>
-				String.fromCodePoint(Number.parseInt(code, 16)),
-			)
-			.replace(/\\([\s\S])/g, "$1");
-	const property = (value: string): string =>
-		value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 	for (const rule of css.matchAll(/([^{}]+)\{([^{}]+)\}/g)) {
 		const selector = rule[1];
 		const body = rule[2];
 		if (selector === undefined || body === undefined) continue;
 		const classMatch = /\.([A-Za-z0-9_-]+(?:\\:[A-Za-z0-9_-]+)*)/.exec(selector);
 		if (classMatch?.[1] === undefined) continue;
-		const token = unescape(classMatch[1]);
+		const token = unescapeUnoCssSelector(classMatch[1]);
 		const prefixes = token.split(":");
 		const utility = prefixes.pop();
 		if (utility === undefined) continue;
@@ -50,7 +51,7 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 		for (const declaration of body.split(";")) {
 			const colon = declaration.indexOf(":");
 			if (colon <= 0) continue;
-			const name = property(declaration.slice(0, colon).trim());
+			const name = cssPropertyToStyleProperty(declaration.slice(0, colon).trim());
 			const value = declaration.slice(colon + 1).trim();
 			if (name !== "" && value !== "") declarations.push(literal(name, value));
 		}
