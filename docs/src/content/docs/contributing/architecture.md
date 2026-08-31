@@ -93,12 +93,19 @@ pair-specific `XToY` implementation.
 
 Host projection is negotiated per use site, not inferred from the presence of
 an adapter. A target policy declares the representation for a bound host
-(`class` or `component`) and may declare a different representation for a
-standalone exported component. The runner selects that policy only when the
-source has a real host use; otherwise a target-native component expression can
-be preserved. This distinction prevents a class-string API from being called
-as a component and prevents a component factory from being assigned to
-`className`.
+(`class`, `component`, or a target style prop) and may declare a different
+representation for a standalone exported component. The runner selects that
+policy only when the source has a real host use; otherwise a target-native
+component expression can be preserved. This distinction prevents a
+class-string API from being called as a component, prevents a component
+factory from being assigned to `className`, and lets a target such as MUI
+rewrite `className={card}` to its host-owned `sx={card}` prop.
+
+The target policy owns the final host rewrite. It receives the normalized
+program, emitted expression, framework, binding, and selected representation;
+the shared runner only applies the returned edit and records its residuals.
+This keeps target-specific prop names and host syntax out of migration
+orchestration.
 
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component

@@ -120,6 +120,13 @@ valid Solid or Vue output. Those cross-framework migrations need a host
 adapter that rewrites bindings, attributes, and lifecycle semantics, so safe
 mode reports `framework-semantics` until that adapter exists.
 
+MUI also demonstrates a host-prop projection in the other direction. A
+Pandwind class binding used as `className={card}` becomes an object binding
+plus `sx={card}`. An inline expression becomes an object-valued `sx` prop.
+There is deliberately no standalone MUI `sx()` function, so an unused
+standalone Pandwind class binding remains source-preserving with a
+`host-framework` residual rather than becoming invalid target code.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening

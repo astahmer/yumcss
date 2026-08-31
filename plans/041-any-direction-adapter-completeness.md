@@ -42,6 +42,13 @@ blocked by an explicit framework residual. This is the required shape for
 future non-class targets; adding a target means implementing its projection
 and host-framework contract, not adding a central adapter branch.
 
+MUI also demonstrates a target-owned style-prop projection. A Pandwind class
+binding used by a React host is emitted as an object and rewritten from
+`className={binding}` to `sx={binding}`. The target policy owns that rewrite;
+the runner only negotiates the typed representation and applies the returned
+edit. Bare unused bindings remain explicit residuals because MUI has no
+standalone `sx()` API.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still

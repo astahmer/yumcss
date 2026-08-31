@@ -181,6 +181,7 @@ export interface AdapterTargetMigrationPolicy {
 	readonly resolveHostRepresentation?: (context: {
 		readonly program: StyleProgram;
 		readonly hasHostContext: boolean;
+		readonly framework?: string;
 	}) => StyleHostRepresentationKind | undefined;
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;

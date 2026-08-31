@@ -195,6 +195,8 @@ export type {
 	AdapterLossiness,
 	AdapterDynamicPreparationContext,
 	AdapterDynamicPreparation,
+	AdapterHostRewriteContext,
+	AdapterHostRewriteResult,
 	AdapterRewriteContext,
 	AdapterRewriteResult,
 	AdapterMigrationHooks,
@@ -239,6 +241,7 @@ export type {
 } from "./coverage-gate.ts";
 export type {
 	CodemodAdapterSpec,
+	CodemodAdapterEmission,
 	AdapterRenderers,
 	AdapterSourceObjectOptions,
 	AdapterSourceObjectOptionsProvider,

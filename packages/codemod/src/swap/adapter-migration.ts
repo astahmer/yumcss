@@ -81,6 +81,28 @@ function bindingForMatch(source: string, start: number): string | undefined {
 	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
 }
 
+function frameworkForHost(
+	file: string,
+	document: { readonly framework?: string },
+	semantic: AdapterParseContext["semantic"],
+	program: StyleProgram,
+): string | undefined {
+	return (
+		program.source?.framework ??
+		document.framework ??
+		semantic?.source?.framework ??
+		(/\.(?:jsx|tsx)$/.test(file)
+			? BuiltinHostFramework.React
+			: file.endsWith(".vue")
+				? BuiltinHostFramework.Vue
+				: file.endsWith(".svelte")
+					? BuiltinHostFramework.Svelte
+					: file.endsWith(".astro")
+						? BuiltinHostFramework.Astro
+						: undefined)
+	);
+}
+
 function hasHostBindingUse(source: string, binding: string | undefined): boolean {
 	if (binding === undefined) return false;
 	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -424,8 +446,13 @@ function runAdapterMigrationInternal(
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(source, bindingBeforeMatch) ||
 			hasInlineHostUse(source, match.start);
+		const hostFramework = frameworkForHost(options.file, document, options.semantic, program);
 		hostRepresentation =
-			targetPolicy?.resolveHostRepresentation?.({ program, hasHostContext }) ?? hostRepresentation;
+			targetPolicy?.resolveHostRepresentation?.({
+				program,
+				hasHostContext,
+				...(hostFramework === undefined ? {} : { framework: hostFramework }),
+			}) ?? hostRepresentation;
 		if (
 			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&
@@ -435,10 +462,7 @@ function runAdapterMigrationInternal(
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
 				const binding = bindingBeforeMatch;
-				const framework =
-					document.framework ??
-					options.semantic?.source?.framework ??
-					(/\.(?:jsx|tsx)$/.test(options.file) ? "react" : undefined);
+				const framework = hostFramework;
 				const preview =
 					binding !== undefined && framework !== undefined
 						? rewriteDynamicCarrier(source, binding, framework, options.file)
@@ -513,10 +537,7 @@ function runAdapterMigrationInternal(
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
 			const tag = componentTagForSubject(program.source.subject);
-			const framework =
-				document.framework ??
-				options.semantic?.source?.framework ??
-				(/\.(?:jsx|tsx)$/.test(options.file) ? "react" : undefined);
+			const framework = hostFramework;
 			const rewriter =
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
@@ -705,7 +726,7 @@ function runAdapterMigrationInternal(
 				...(bindingForMatch(source, match.start) === undefined
 					? {}
 					: { binding: bindingForMatch(source, match.start) }),
-				...(program.source?.framework ? { framework: program.source.framework } : {}),
+				...(hostFramework === undefined ? {} : { framework: hostFramework }),
 				...(sourceSubject ? { subject: sourceSubject } : {}),
 				...(emittedHostRepresentation === undefined
 					? {}
@@ -729,7 +750,7 @@ function runAdapterMigrationInternal(
 				...(bindingForMatch(source, match.start) === undefined
 					? {}
 					: { binding: bindingForMatch(source, match.start) }),
-				...(program.source?.framework === undefined ? {} : { framework: program.source.framework }),
+				...(hostFramework === undefined ? {} : { framework: hostFramework }),
 			});
 		}
 		const reparsed = targetAdapter.parse(emittedForValidation, {

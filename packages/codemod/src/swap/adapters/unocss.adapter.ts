@@ -12,6 +12,7 @@ import {
 	styleProgramToCanonicalCss,
 	type StyleCondition,
 	type StyleDeclaration,
+	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
@@ -162,6 +163,76 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 		...declaration,
 		conditions: [...parts.map(condition), ...declaration.conditions],
 	}));
+}
+
+function unoProperty(property: string): string {
+	return property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
+}
+
+function unoValue(value: string | number | boolean): string {
+	return String(value)
+		.replaceAll("\\", "\\\\")
+		.replaceAll(" ", "_")
+		.replaceAll("[", "\\[")
+		.replaceAll("]", "\\]");
+}
+
+function unoCondition(condition: StyleCondition): string {
+	if (condition.kind === "pseudo") return `${condition.name}:`;
+	if (condition.kind === "selector") {
+		const selector = condition.value ?? condition.name;
+		return `[&${selector.startsWith("&") ? selector.slice(1) : selector}]:`;
+	}
+	return `${condition.name}:`;
+}
+
+function unoToken(declaration: StyleDeclaration): string | undefined {
+	if (declaration.value.kind !== "literal") return undefined;
+	const property = `[${unoProperty(declaration.property)}:${unoValue(declaration.value.value)}]`;
+	return `${declaration.conditions.map(unoCondition).join("")}${property}`;
+}
+
+function emitUnoClassTokens(program: StyleProgram): {
+	readonly text: string;
+	readonly residuals: readonly StyleProgramResidual[];
+} {
+	const residuals: StyleProgramResidual[] = [];
+	const rules = program.rules.filter((rule) => rule.kind === "style");
+	const declarations =
+		rules.length > 0 ? rules.flatMap((rule) => rule.declarations) : program.declarations;
+	const tokens: string[] = [];
+	for (const declaration of declarations) {
+		const token = unoToken(declaration);
+		if (token === undefined) {
+			residuals.push({
+				kind: "dynamic",
+				text: declaration.property,
+				hint: "UnoCSS arbitrary utility projection requires a literal declaration",
+			});
+			continue;
+		}
+		tokens.push(token);
+	}
+	return { text: JSON.stringify([...new Set(tokens)].join(" ")), residuals };
+}
+
+function emitUnoNamedMap(program: StyleProgram): {
+	readonly text: string;
+	readonly residuals: readonly StyleProgramResidual[];
+} {
+	const entries: string[] = [];
+	const residuals: StyleProgramResidual[] = [];
+	for (const rule of program.rules.filter((candidate) => candidate.kind === "style")) {
+		if (rule.name === undefined) continue;
+		const emitted = emitUnoClassTokens({
+			...program,
+			rules: [rule],
+			declarations: rule.declarations,
+		});
+		entries.push(`${JSON.stringify(rule.name)}: ${emitted.text}`);
+		residuals.push(...emitted.residuals);
+	}
+	return { text: `{ ${entries.join(", ")} }`, residuals };
 }
 
 function config(context: AdapterConfigContext): AdapterProjectConfig {
@@ -371,6 +442,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			capabilities: {
 				declarations: "exact",
 				"token-values": "partial",
+				"named-rules": "exact",
 				"named-conditions": "partial",
 				"pseudo-conditions": "exact",
 				"dynamic-values": "unsupported",
@@ -397,10 +469,12 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				context,
 				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver,
 			),
-		emit: (program) => ({
-			text: styleProgramToCanonicalCss(program),
-			residuals: [],
-		}),
+		emit: (program) => {
+			const namedRules = program.rules.some(
+				(rule) => rule.kind === "style" && rule.name !== undefined,
+			);
+			return namedRules ? emitUnoNamedMap(program) : emitUnoClassTokens(program);
+		},
 		validate: (source, target, residuals = []) => {
 			const canonicalSource = styleProgramToCanonicalCss(source);
 			const canonicalTarget = styleProgramToCanonicalCss(target);

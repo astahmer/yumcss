@@ -507,6 +507,28 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "pandwind/css"');
 	});
 
+	test("does not project a Solid host onto MUI's React-only sx contract", () => {
+		const result = runAdapterMigration(
+			'import { createSignal } from "solid-js";\n' +
+				'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box class={card} />;",
+			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("framework-semantics: solid"),
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('from "pandwind/css"');
+	});
+
 	test.each(["stitches", "styled-components"] as const)(
 		"keeps component-valued target %s out of className projections",
 		(target) => {
@@ -801,6 +823,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		expect(emitted.text).toContain("keyframes(");
 		expect(emitted.residuals).toEqual([]);
+	});
+
+	test("lowers named JSS rules into a static UnoCSS lookup map", () => {
+		const result = runAdapterMigration(
+			'import { createUseStyles } from "react-jss";\n' +
+				'const styles = createUseStyles({ button: { color: "red", padding: "1rem" } });',
+			{ from: "jss", to: "unocss", file: "styles.ts", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"button": "[color:red] [padding:1rem]"');
+		expect(result.code).not.toContain("react-jss");
 	});
 
 	test("lifts global and font-face APIs into rule-level nodes", () => {

@@ -116,6 +116,20 @@ export default defineCodemodAdapter({
 	emit(program, { programObject }, context) {
 		const subject = program.source?.subject;
 		if (subject !== undefined) {
+			if (
+				context?.host?.framework !== undefined &&
+				context.host.framework !== BuiltinHostFramework.React
+			)
+				return {
+					text: programObject(program),
+					residuals: [
+						{
+							kind: "host-framework",
+							text: subject,
+							hint: `MUI styled projection requires ${BuiltinHostFramework.React}`,
+						},
+					],
+				};
 			const tag = intrinsicTagForSubject(subject);
 			const base = componentExpressionForSubject(subject);
 			const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
@@ -144,10 +158,13 @@ export default defineCodemodAdapter({
 		targetPolicy: {
 			handlesHostRewrites: true,
 			hostRepresentation: StyleHostRepresentationKind.Component,
-			resolveHostRepresentation: ({ program }) =>
+			resolveHostRepresentation: ({ program, framework }) =>
+				(framework === undefined || framework === BuiltinHostFramework.React) &&
 				program.source?.subject === undefined
 					? StyleHostRepresentationKind.StyleProp
-					: StyleHostRepresentationKind.Component,
+					: framework === undefined || framework === BuiltinHostFramework.React
+						? StyleHostRepresentationKind.Component
+						: undefined,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
