@@ -163,6 +163,14 @@ contracts, so the host adapter owns the syntax and import placement. Runtime
 CSS is used only when the declaration contains a genuinely dynamic
 interpolation that cannot be statically evaluated.
 
+The same rule applies when the target is an external class-oriented adapter:
+the target emits its native class carrier first, and the host port wraps it
+back into an intrinsic component if the styled subject has no local use. It
+must never leave a class string assigned to a component binding. Target-owned
+normalization also runs before validation; for example, StyleX converts a
+numeric `padding: 16` into its equivalent `padding: 16px` while preserving
+unitless numeric properties.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening

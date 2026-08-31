@@ -81,6 +81,17 @@ static `css.class(...)` carrier inside a JSX wrapper, while Vue emits a
 closes the common no-use declaration gap without introducing runtime CSS for
 static input; dynamic interpolations still use the validated runtime fallback.
 
+Class-oriented targets now also receive a shared declaration projection when a
+static styled subject has no local JSX/template use. The target emits its
+native class carrier, then the host port wraps that carrier back into an
+intrinsic component. This prevents a valid CSS comparison from hiding an
+invalid `const Card = "class-name"` result.
+
+StyleX owns a target lowering for numeric CSS dimensions. Values such as
+`padding: 16` are normalized to the target's equivalent `16px` before
+differential validation, while unitless properties remain numeric. This is a
+semantic normalization, not a validator relaxation.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still
