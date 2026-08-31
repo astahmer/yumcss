@@ -13,7 +13,6 @@
  *    `<x className={…}>`, styled-system import specifiers -> emitted
  *    modules; anything non-literal keeps a skip marker (never half-converted).
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
 import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
@@ -36,6 +35,7 @@ import { parseObjectLiteral } from "../../parse.ts";
 import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
 import {
 	convertPandaRecipe,
 	convertPandaStyle,
@@ -64,6 +64,8 @@ export interface PandaMigrateOptions {
 	force?: boolean;
 	/** @internal pipeline-provided discovery result; avoids a second scan. */
 	workspace?: PandaMigrationWorkspace;
+	/** @internal injectable host-file effects for config integration and emission. */
+	fileSystem?: PandaProjectFileSystem;
 }
 
 export interface PandaMigrateReport {
@@ -119,13 +121,15 @@ function integrateNextApp(
 	outDir: string,
 	write: boolean,
 	notes: string[],
+	fileSystem: PandaProjectFileSystem,
 ): void {
 	const configPath = ["next.config.mjs", "next.config.js", "next.config.ts"]
 		.map((name) => join(projectRoot, name))
-		.find((path) => existsSync(path));
+		.find((path) => fileSystem.exists(path));
 	if (configPath === undefined) return;
 
-	const config = readFileSync(configPath, "utf8");
+	const config = fileSystem.read(configPath);
+	if (config === undefined) return;
 	const presetPath = `./${relative(dirname(configPath), join(outDir, "preset.ts")).replaceAll("\\", "/")}`;
 	const pluginImport = `import { pandwindWebpackCss } from "pandwind/unplugin";`;
 	const presetImport = `import { preset } from "${presetPath}";`;
@@ -169,7 +173,7 @@ function integrateNextApp(
 	}
 	if (nextConfig !== config) {
 		notes.push(`registered pandwindWebpackCss in ${relative(projectRoot, configPath)}`);
-		if (write) writeFileSync(configPath, nextConfig);
+		if (write) fileSystem.write(configPath, nextConfig);
 	}
 
 	const layouts = [
@@ -177,9 +181,10 @@ function integrateNextApp(
 		join(projectRoot, "app", "layout.ts"),
 		join(projectRoot, "src", "app", "layout.tsx"),
 		join(projectRoot, "src", "app", "layout.ts"),
-	].filter((path) => existsSync(path));
+	].filter((path) => fileSystem.exists(path));
 	for (const layoutPath of layouts) {
-		const layout = readFileSync(layoutPath, "utf8");
+		const layout = fileSystem.read(layoutPath);
+		if (layout === undefined) continue;
 		// Webpack treats `scheme:` imports as URI schemes before resolver
 		// plugins run. A bare virtual id reaches unplugin on both Next and Vite.
 		const virtualImport = 'import "pandwind-css.css";';
@@ -189,17 +194,23 @@ function integrateNextApp(
 		);
 		if (nextLayout === layout) continue;
 		notes.push(`imported pandwind-css in ${relative(projectRoot, layoutPath)}`);
-		if (write) writeFileSync(layoutPath, nextLayout);
+		if (write) fileSystem.write(layoutPath, nextLayout);
 	}
 }
 
 /** Stop package lifecycle scripts from recreating Panda's obsolete output. */
-function removePandaCodegenScripts(projectRoot: string, write: boolean, notes: string[]): void {
+function removePandaCodegenScripts(
+	projectRoot: string,
+	write: boolean,
+	notes: string[],
+	fileSystem: PandaProjectFileSystem,
+): void {
 	const packagePath = join(projectRoot, "package.json");
-	if (!existsSync(packagePath)) return;
+	const packageSource = fileSystem.read(packagePath);
+	if (packageSource === undefined) return;
 	let packageJson: { scripts?: Record<string, string> };
 	try {
-		packageJson = JSON.parse(readFileSync(packagePath, "utf8")) as {
+		packageJson = JSON.parse(packageSource) as {
 			scripts?: Record<string, string>;
 		};
 	} catch {
@@ -221,7 +232,7 @@ function removePandaCodegenScripts(projectRoot: string, write: boolean, notes: s
 	}
 	if (!changed) return;
 	notes.push("removed Panda codegen lifecycle scripts from package.json");
-	if (write) writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
+	if (write) fileSystem.write(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`);
 }
 
 /** Keep generated imports after a file's directive prologue (`"use client"`). */
@@ -772,6 +783,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 	const workspace = options.workspace ?? (await discoverPandaMigration(options));
 	const sourceWorkspace = createSourceWorkspace();
+	const fileSystem = options.fileSystem ?? createPandaProjectFileSystem();
 	const files = workspace.files;
 	report.filesScanned = files.length;
 	if (files.length === 0) return report;
@@ -810,7 +822,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	const recipeModuleNames = new Map<string, string>();
 	const emittedRecipeDefs: Array<RecipeDef> = [];
 	const queueEmission = (path: string, content: string): void => {
-		if (existsSync(path) && options.force !== true) {
+		if (fileSystem.exists(path) && options.force !== true) {
 			report.notes.push(
 				`preserved existing generated module ${relative(projectRoot, path)} (use --force to regenerate)`,
 			);
@@ -1073,8 +1085,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 	}
 	if (options.write) {
 		for (const e of emitted) {
-			mkdirSync(dirname(e.path), { recursive: true });
-			writeFileSync(e.path, e.content);
+			fileSystem.write(e.path, e.content);
 		}
 	}
 
@@ -1237,14 +1248,14 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		}
 		report.filesChanged++;
 		if (options.diff) console.log(unifiedDiff(file.source, next, relative(projectRoot, file.path)));
-		if (options.write) writeFileSync(file.path, next);
+		if (options.write) fileSystem.write(file.path, next);
 	}
 
 	// The generated preset is inert until the host bundler loads the virtual
 	// stylesheet. Next/Webpack is common enough to wire automatically, while
 	// keeping the integration local to projects that actually have Next config.
-	integrateNextApp(projectRoot, outDir, options.write, report.notes);
-	removePandaCodegenScripts(projectRoot, options.write, report.notes);
+	integrateNextApp(projectRoot, outDir, options.write, report.notes, fileSystem);
+	removePandaCodegenScripts(projectRoot, options.write, report.notes, fileSystem);
 
 	return report;
 }

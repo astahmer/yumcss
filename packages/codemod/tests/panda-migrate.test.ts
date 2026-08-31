@@ -23,6 +23,7 @@ import {
 import { expandBuiltinPattern } from "../src/swap/adapters/panda/index.ts";
 import { detectAlias } from "../src/swap/adapters/panda/index.ts";
 import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/index.ts";
+import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { parseSwapArgs } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
@@ -212,6 +213,37 @@ describe("supporting migration primitives", () => {
 });
 
 describe("runPandaMigration", () => {
+	it("uses the injected project-file port for host integration and emission", async () => {
+		const dir = makeProject();
+		writeFileSync(join(dir, "src", "page.tsx"), "export const Page = () => <div />;\n");
+		const files = new Map<string, string>([
+			[join(dir, "next.config.mjs"), "export default { webpack(config) { return config; } };\n"],
+			[join(dir, "package.json"), JSON.stringify({ scripts: { prepare: "panda codegen" } })],
+		]);
+		const writes = new Map<string, string>();
+		const projectFiles: PandaProjectFileSystem = {
+			read: (path) => files.get(path),
+			exists: (path) => files.has(path),
+			write: (path, content) => writes.set(path, content),
+			ensureDirectory: () => undefined,
+		};
+
+		await runPandaMigration({
+			projectRoot: dir,
+			patterns: ["src/**/*.tsx"],
+			meta,
+			outDirName: "pandwind",
+			write: true,
+			diff: false,
+			skipMarker: "pandwind:migrate-skip",
+			fileSystem: projectFiles,
+		});
+
+		expect(writes.get(join(dir, "next.config.mjs"))).toContain("pandwindWebpackCss");
+		expect(writes.get(join(dir, "package.json"))).not.toContain("panda codegen");
+		expect([...writes.keys()].some((path) => path.endsWith("/preset.ts"))).toBe(true);
+	});
+
 	it("migrates a small project end-to-end", async () => {
 		const dir = makeProject();
 		writeFileSync(
