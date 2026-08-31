@@ -38,7 +38,8 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"test:e2e": "vitest run tests/adapter-cli-e2e.test.ts"
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",

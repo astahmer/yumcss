@@ -23,6 +23,7 @@ pnpm format
 pnpm knip
 pnpm pivot:proof
 pnpm test:e2e:playground
+pnpm --filter pandwind-codemod test:e2e
 ```
 
 `test:all` runs every workspace test serially. Serial execution is deliberate:
@@ -113,10 +114,22 @@ representative Pandwind program emits to every registered target. It also
 asserts explicit evidence for dynamic values and composes the real
 Chakra-to-Tailwind and Tailwind-dialect-to-Chakra routes. This is deliberately
 separate from the adapter contract fixture: the contract checks one adapter's
-ports, while the matrix checks route composition. Its Cartesian pass invokes
-all 576 registered source-to-target routes and requires either a conversion or
-structured residual evidence for every route; a skipped route may never be
+ports, while the matrix checks route composition. The complete Cartesian gate
+in `packages/codemod/tests/adapter-matrix-contract.test.ts` invokes every
+registered source/target pair in safe and partial modes for happy, edge, and
+malformed fixtures: 24 × 24 × 2 × 3 = 3,456 route cases. Every case requires
+conversion or structured residual evidence; a skipped route may never be
 silent.
+
+The binary-level matrix in
+`packages/codemod/tests/adapter-cli-e2e.test.ts` spawns the real CLI for every
+registered adapter in both `adapter → Pandwind` and `Pandwind → adapter`
+directions, writes a temporary source file, parses the JSON report, and checks
+that source-preserving skips carry typed residual markers. Run it alone with:
+
+```sh
+pnpm --filter pandwind-codemod test:e2e
+```
 
 ### End-to-end tests
 
