@@ -586,9 +586,9 @@ function runAdapterMigrationInternal(
 					? getHostComponentRewriter(framework)
 					: undefined;
 			const hasTargetComponentUsage = targetComponentPreview?.residuals.length === 0;
-			const hasHostUsage =
-				hasTargetComponentUsage ||
-				(binding !== undefined &&
+		const hasHostUsage =
+			hasTargetComponentUsage ||
+			(binding !== undefined &&
 					tag !== undefined &&
 					framework !== undefined &&
 					rewriter !== undefined &&
@@ -600,7 +600,18 @@ function runAdapterMigrationInternal(
 						framework,
 						classExpression: binding,
 					}).changed);
-			const standaloneExport =
+		if (
+			!hasHostUsage &&
+			program.source?.subject !== undefined &&
+			targetPolicy?.standaloneHostRepresentation !== undefined &&
+			targetAdapter.capabilities.capabilities.components !== "unsupported"
+		) {
+			// A target may preserve an unused styled subject as its own component
+			// factory even when its host-bound representation is a class. Select the
+			// standalone contract before deciding whether a class wrapper is needed.
+			hostRepresentation = targetPolicy.standaloneHostRepresentation;
+		}
+		const standaloneExport =
 				binding === undefined &&
 				tag !== undefined &&
 				framework !== undefined &&
@@ -712,11 +723,25 @@ function runAdapterMigrationInternal(
 				} else if (
 					preview.residuals.length > 0 &&
 					getHostComponentRewriter(framework)?.rewriteDeclaration !== undefined &&
-					new RegExp(`styled\\(\\s*${binding}\\s*\\)`).test(source)
+					program.source?.subject !== undefined
 				) {
+					// A styled subject with no local JSX use still has component
+					// semantics. Lower the style to the target's class carrier and
+					// schedule the shared host declaration rewrite; assigning a class
+					// expression directly to `Card` would silently change its public
+					// value from a component to a string.
 					emittedHostRepresentation = hostRepresentation;
 					targetHostProjection = hostRepresentation === StyleHostRepresentationKind.Class;
-					program = { ...program, source: { ...program.source, subject: undefined } };
+					program = {
+						...program,
+						source: {
+							...program.source,
+							subject: undefined,
+							...(targetPolicy?.handlesFrameworkSemantics === true
+								? { framework: undefined }
+								: {}),
+						},
+					};
 					pendingComponentDeclarationRewrites.set(index, {
 						binding,
 						tag,

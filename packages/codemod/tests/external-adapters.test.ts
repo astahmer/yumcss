@@ -671,6 +671,31 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test.each([
+		["aphrodite", "StyleSheet.create", 'import { StyleSheet, css } from "aphrodite";'],
+		["chakra-ui", "css", 'import { css } from "@chakra-ui/react";'],
+		["mantine", "style", 'import { style } from "@mantine/core";'],
+		["goober", "css", 'import { css } from "goober";'],
+		["vanilla-extract", "style", 'import { style } from "@vanilla-extract/css";'],
+	] as const)(
+		"wraps an unused styled subject when the target only exposes a class carrier (%s)",
+		(target, carrier, targetImport) => {
+			const result = runAdapterMigration(
+				'import styled from "styled-components";\n' +
+					'const Card = styled.div({ color: "red" });',
+				{ from: "styled-components", to: target, file: "Card.tsx", mode: "safe" },
+			);
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain(carrier);
+			expect(result.code).toContain(targetImport);
+			expect(result.code).toContain("const Card = (props) => <div");
+			expect(result.code).toContain("props.className");
+			expect(result.code).not.toContain("styled-components");
+		},
+	);
+
 	test("emits Style9's class carrier for a static Pandwind React host", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\n' +
