@@ -42,3 +42,11 @@ export type {
 } from "./types.ts";
 export { StyleBackendId } from "./types.ts";
 export { BUILTIN_STYLE_BACKEND_PLUGINS } from "./plugin.ts";
+export { STYLE_BACKEND_CONTRACT_SCHEMA, createStyleBackendContractSuite } from "./contract.ts";
+export type {
+	StyleBackendContractFailure,
+	StyleBackendContractFixture,
+	StyleBackendContractPhase,
+	StyleBackendContractResult,
+	StyleBackendContractSuite,
+} from "./contract.ts";
