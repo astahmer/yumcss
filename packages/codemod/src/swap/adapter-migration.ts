@@ -324,6 +324,22 @@ function runAdapterMigrationInternal(
 	);
 	const sourceAdapter = route.source;
 	const targetAdapter = route.target;
+	// Migrating a dialect to itself is an identity operation. Do not make the
+	// source re-enter target capability negotiation: that can turn a valid
+	// source construct into a false mismatch merely because the adapter marks
+	// its cross-framework component contract as partial.
+	if (sourceAdapter.id === targetAdapter.id)
+		return {
+			code: source,
+			changed: false,
+			converted: 0,
+			skipped: 0,
+			reports: [],
+			validations: [],
+			dependencies: [],
+			residuals: [],
+			loweringPlans: [],
+		};
 	const readFile = options.readFile;
 	const detection = sourceAdapter.detect({
 		file: options.file,
@@ -471,12 +487,30 @@ function runAdapterMigrationInternal(
 			hasHostBindingUse(source, bindingBeforeMatch) ||
 			hasInlineHostUse(source, match.start);
 		const hostFramework = frameworkForHost(options.file, document, options.semantic, program);
+		const resolvedHostRepresentation = targetPolicy?.resolveHostRepresentation;
 		hostRepresentation =
-			targetPolicy?.resolveHostRepresentation?.({
-				program,
-				hasHostContext,
-				...(hostFramework === undefined ? {} : { framework: hostFramework }),
-			}) ?? hostRepresentation;
+			resolvedHostRepresentation === undefined
+				? hostRepresentation
+				: resolvedHostRepresentation({
+						program,
+						hasHostContext,
+						...(hostFramework === undefined ? {} : { framework: hostFramework }),
+					});
+		if (
+			targetPolicy?.handlesHostRewrites === true &&
+			resolvedHostRepresentation !== undefined &&
+			hostRepresentation === undefined &&
+			(hasHostContext || program.source?.subject !== undefined)
+		) {
+			loweringResiduals = [
+				...loweringResiduals,
+				{
+					kind: "host-framework",
+					text: program.source?.subject ?? match.sourceText,
+					hint: `${targetAdapter.id} has no host representation for ${hostFramework ?? "the detected framework"}`,
+				},
+			];
+		}
 		if (
 			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&

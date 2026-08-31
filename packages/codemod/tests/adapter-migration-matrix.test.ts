@@ -98,6 +98,12 @@ describe("bidirectional registered adapter matrix", () => {
 				fixture.file,
 				sourceSemantic(adapterId),
 			);
+			if (adapterId === pandwind) {
+				expect(result.code).toBe(fixture.source);
+				expect(result.changed).toBe(false);
+				expect(result.skipped).toBe(0);
+				return;
+			}
 			expect(
 				result.residuals,
 				`${adapterId} -> ${pandwind}: ${JSON.stringify(result.residuals)}`,
@@ -118,6 +124,11 @@ describe("bidirectional registered adapter matrix", () => {
 				targetId,
 				"Card.tsx",
 			);
+			if (targetId === pandwind) {
+				expect(result.changed).toBe(false);
+				expect(result.skipped).toBe(0);
+				return;
+			}
 			if (targetId === CodemodAdapterId.Mui) {
 				expect(result.converted, `${targetId} was converted`).toBe(0);
 				expect(result.skipped, `${targetId} was skipped`).toBe(1);
@@ -151,6 +162,12 @@ describe("bidirectional registered adapter matrix", () => {
 				targetId,
 				"DynamicCard.tsx",
 			);
+			if (targetId === pandwind) {
+				expect(result.code).toContain("theme.foreground");
+				expect(result.changed).toBe(false);
+				expect(result.residuals).toEqual([]);
+				return;
+			}
 			const evidence = result.residuals.length + result.skipped;
 			if (evidence > 0) {
 				expect(result.residuals.length).toBeGreaterThan(0);
@@ -181,6 +198,14 @@ describe("bidirectional registered adapter matrix", () => {
 					result.skipped +
 					result.validations.flatMap((validation) => validation.residuals).length;
 				const converted = result.converted > 0;
+				if (sourceAdapter.id === targetAdapter.id) {
+					expect(result.code).toBe(fixture.source);
+					expect(result.changed).toBe(false);
+					expect(result.skipped).toBe(0);
+					expect(result.residuals).toEqual([]);
+					outcomes.push(`${sourceAdapter.id}->${targetAdapter.id}`);
+					continue;
+				}
 				expect(
 					result.loweringPlans.length,
 					`${sourceAdapter.id} -> ${targetAdapter.id} did not expose a lowering decision`,

@@ -51,6 +51,13 @@ function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFai
 	const failures: AdapterMatrixFailure[] = [];
 	const route = { sourceAdapter, targetAdapter, mode, scenario };
 	const evidence = result.converted > 0 || result.residuals.length > 0 || result.skipped > 0;
+	if (
+		sourceAdapter === targetAdapter &&
+		!result.changed &&
+		!result.skipped &&
+		result.residuals.length === 0
+	)
+		return failures;
 	if (!evidence)
 		failures.push({ ...route, reason: "route produced neither conversion nor residual evidence" });
 	if (result.loweringPlans.length === 0 && result.converted > 0)

@@ -408,6 +408,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(keyframes.code).toContain("keyframes({");
 	});
 
+	test("treats same-adapter migration as an identity operation", () => {
+		const source =
+			'import { styled } from "solid-styled-components";\n' +
+			"const Card = styled.div`color: red;`;";
+		const result = runAdapterMigration(source, {
+			from: "solid-styled",
+			to: "solid-styled",
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(result.code).toBe(source);
+		expect(result.changed).toBe(false);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+	});
+
 	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
 		const result = runAdapterMigration(
 			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
@@ -594,7 +611,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('from "pandwind/css"');
 	});
 
-	test.each(["stitches", "styled-components"] as const)(
+	test.each(["stitches"] as const)(
 		"keeps component-valued target %s out of className projections",
 		(target) => {
 			const result = runAdapterMigration(
@@ -773,6 +790,28 @@ describe("CSS-in-JS adapter contract v2", () => {
 		).toBe(true);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).toContain('from "pandwind/css"');
+	});
+
+	test("does not emit a React DOM style carrier for a React Native target", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "react-native", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "host-framework",
+					hint: expect.stringContaining("no host representation"),
+				}),
+			]),
+		);
+		expect(result.code).toContain('from "styled-components"');
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).not.toContain("StyleSheet.create");
 	});
 
 	test("lowers a static styled intrinsic into a Style9 class host", () => {
@@ -1082,7 +1121,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(parsed.matches[0]?.sourceText).toContain(`css({ color: "red" })`);
 	});
 
-	test("keeps vanilla-extract dynamic values as explicit residuals in safe mode", () => {
+	test("keeps vanilla-extract dynamic values unchanged for an identity migration", () => {
 		const source = `import { style } from "@vanilla-extract/css";\nconst card = style({ color: theme.foreground });`;
 		const result = runAdapterMigration(source, {
 			from: "vanilla-extract",
@@ -1090,12 +1129,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 			file: "Card.css.ts",
 		});
 
+		expect(result.code).toBe(source);
+		expect(result.changed).toBe(false);
 		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals[0]?.kind).toBe("capability");
-		expect(result.residuals[0]?.hint).toContain("dynamic-values");
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain("lowering-residual");
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
 	});
 
 	test("lowers JSS named rules and imperative application into Pandwind classes", () => {
@@ -1199,6 +1237,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 					`globalCss({ body: { margin: 0 }, button: { color: "red" } });`,
 				{ from: "stitches", to: target, file: "global.ts", mode: "safe" },
 			);
+			if (target === "stitches") {
+				expect(result.changed).toBe(false);
+				expect(result.code).toContain("globalCss");
+				continue;
+			}
 			expect(result.converted).toBe(1);
 			expect(result.skipped).toBe(0);
 			expect(result.residuals).toEqual([]);
