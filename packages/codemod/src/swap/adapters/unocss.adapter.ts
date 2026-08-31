@@ -134,11 +134,14 @@ const BASIC_TOKENS: Readonly<Record<string, readonly StyleDeclaration[]>> = {
 	"rounded-full": [literal("borderRadius", "9999px")],
 	"bg-white": [literal("backgroundColor", "#fff")],
 	"bg-black": [literal("backgroundColor", "#000")],
+	"bg-red-500": [literal("backgroundColor", "#ef4444")],
 	"bg-zinc-50": [literal("backgroundColor", "#fafafa")],
 	"text-black": [literal("color", "#000")],
+	"text-red-500": [literal("color", "#ef4444")],
 	"text-zinc-50": [literal("color", "#fafafa")],
 	"text-zinc-600": [literal("color", "#52525b")],
 	"text-zinc-400": [literal("color", "#a1a1aa")],
+	"p-4": [literal("padding", "1rem")],
 };
 
 function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {

@@ -179,8 +179,8 @@ const Card = styled.div\`
 	[CodemodAdapterId.Tokenami]: `import { css } from "@tokenami/css";
 
 const card = css({
-	--color: "red",
-	--padding: "1rem",
+	"--color": "red",
+	"--padding": "1rem",
 });`,
 	[CodemodAdapterId.UnoCSS]: `<div class="text-red-500 p-4" />`,
 	[CodemodAdapterId.ReactNative]: `import { StyleSheet } from "react-native";

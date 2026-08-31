@@ -56,6 +56,17 @@ describe("migration lab", () => {
 		}
 	});
 
+	test("does not report residuals for the built-in Tokenami and UnoCSS samples", () => {
+		const lab = createMigrationLab();
+		for (const id of [CodemodAdapterId.Tokenami, CodemodAdapterId.UnoCSS]) {
+			const result = lab.migrate(id, CodemodAdapterId.Pandwind, lab.sampleFor(id));
+			expect(result.ok, id).toBe(true);
+			if (!result.ok) continue;
+			expect(result.skipped, id).toBe(0);
+			expect(result.residuals, id).toEqual([]);
+		}
+	});
+
 	test("exposes explicit evidence for every source-to-target route", () => {
 		const lab = createMigrationLab();
 		for (const source of lab.sources) {
