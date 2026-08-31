@@ -147,6 +147,14 @@ continue to feed an existing React `className`. This target emission is
 adapter-owned, so the central route runner remains independent of Style9's
 callable wrapper.
 
+React Native is a style-prop target rather than a DOM class target. A static
+Pandwind binding used by a file importing `react-native` becomes
+`StyleSheet.create({ style: {...} }).style`, and the host use is rewritten from
+`className={card}` to `style={card}`. The projection is deliberately rejected
+for ordinary React or template hosts until a compatible host adapter is
+selected; the HIR is preserved, but it cannot make a DOM class attribute valid
+React Native code by itself.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening

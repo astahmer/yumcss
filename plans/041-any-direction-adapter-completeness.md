@@ -67,6 +67,13 @@ contract: `style9(style9.create({ style: {...} }).style)`. Static React host
 routes therefore preserve `className` without making the orchestrator aware
 of Style9 syntax.
 
+React Native now demonstrates a target-owned style-prop projection. For a
+static class binding in a file importing `react-native`, the target emits
+`StyleSheet.create({ style: {...} }).style` and rewrites the host use from
+`className={binding}` to `style={binding}`. Host detection is source-aware and
+specific React Native detection takes precedence over generic JSX metadata;
+ordinary React files therefore cannot receive the native rewrite accidentally.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still

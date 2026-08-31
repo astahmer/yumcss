@@ -139,6 +139,15 @@ A Style9 target uses the same class port with its own callable contract:
 need to know that Style9 wraps a named style object before producing a class;
 the Style9 adapter owns that target emission and its React host declaration.
 
+React Native uses a different target-owned representation. Static styles bound
+to a React Native host are emitted through
+`StyleSheet.create({ style: {...} }).style`, and the host adapter rewrites the
+binding from `className={card}` to `style={card}`. The runner must detect the
+`react-native` import before applying that rewrite; a normal React JSX file is
+not silently treated as React Native. This illustrates the general rule:
+semantic IR preserves the style meaning, while the target and host ports own
+the valid carrier and attribute syntax.
+
 `StyleProgram.sourceMap` is the provenance projection for a semantic program:
 it aggregates the program, rule, theme/composition, and dynamic-value source
 locations without forcing legacy `SwapIR` callers to pay for rich nodes.
