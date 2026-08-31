@@ -211,7 +211,18 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 	});
 	const loweredProgram = lowering.program;
 	const report = inspectAdapterCapabilities(capability, loweredProgram, mode);
-	if (!report.convertible) {
+	const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
+	const effectiveReport =
+		resolvedCapabilities.size === 0
+			? report
+			: {
+					...report,
+					blockers: report.blockers.filter((issue) => !resolvedCapabilities.has(issue.capability)),
+					convertible: report.blockers.every(
+						(issue) => resolvedCapabilities.has(issue.capability) === true,
+					),
+				};
+	if (!effectiveReport.convertible) {
 		return {
 			fixture: fixture.name,
 			sourceProgram,
@@ -224,7 +235,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 				...report.blockers.map((issue) => ({ kind: "capability", text: issue.detail })),
 				...lowering.residuals,
 			],
-			capability: report,
+			capability: effectiveReport,
 			browser: [],
 			dependencies,
 			dependencyChanges: dependencyChanges(sourceAdapter.dependencies, targetAdapter.dependencies),

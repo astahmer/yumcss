@@ -9,6 +9,7 @@ const style9 = makeExtraAdapter({
 	call: /\bstyle9\.create\s*\(\s*\{/g,
 	prefix: "style9.create(",
 	namedObjects: true,
+	sourceObjectOptions: { namedRuleObjects: true },
 	migration: {
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };

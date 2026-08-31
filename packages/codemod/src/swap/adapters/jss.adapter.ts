@@ -51,6 +51,7 @@ export default defineCodemodAdapter({
 	},
 	capabilities: allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
 		"named-conditions": "exact",
+		"named-rules": "exact",
 		"dynamic-values": "partial",
 		"rule-level": "partial",
 		"global-rules": "unsupported",
@@ -63,6 +64,7 @@ export default defineCodemodAdapter({
 	detectPatterns: [/from\s+["'](?:jss|react-jss)["']/, /\bcreate(?:UseStyles|StyleSheet)\s*\(/],
 	sourceModules: ["jss", "react-jss"],
 	configFiles: ["jss.config.js", "package.json"],
+	sourceObjectOptions: { namedRuleObjects: true },
 	migration: { rewrite: rewriteImperativeApplications },
 	emit(program, { programObject }) {
 		const subject = program.source?.subject ?? "createUseStyles";

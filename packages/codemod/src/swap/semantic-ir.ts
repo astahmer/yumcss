@@ -206,6 +206,8 @@ export interface StyleProgramOptions {
 	readonly conditionRaw?: Readonly<Record<string, string>>;
 	/** Treat every nested object as a semantic condition of this kind. */
 	readonly nestedObjectKind?: SemanticConditionKind;
+	/** Treat named object members as independent style rules, not conditions. */
+	readonly namedRuleObjects?: boolean;
 	/** Keep a source system's default named group instead of flattening it. */
 	readonly preserveDefaultGroup?: boolean;
 	/** Adapter-owned object containers whose contents are the actual style object. */
@@ -856,6 +858,19 @@ function looksLikeCondition(name: string, options: StyleProgramOptions): boolean
 	);
 }
 
+function looksLikeNamedRuleKey(name: string, options: StyleProgramOptions): boolean {
+	return (
+		options.namedRuleObjects === true &&
+		name !== "base" &&
+		options.conditionKinds?.[name] === undefined &&
+		options.conditionValues?.[name] === undefined &&
+		!name.startsWith("_") &&
+		!name.startsWith("&") &&
+		!name.startsWith(":") &&
+		!name.startsWith("@")
+	);
+}
+
 function looksLikePropertyValueConditions(
 	name: string,
 	value: SourceNode,
@@ -1125,6 +1140,23 @@ export function styleProgramFromSourceObject(
 			}
 			if (looksLikePropertyValueConditions(name, valueNode, body, options)) {
 				addConditionalValues(name, valueNode, conditions);
+				continue;
+			}
+			if (sourceObject(valueNode) && looksLikeNamedRuleKey(name, options)) {
+				const declarationStart = declarations.length;
+				const specialRuleStart = specialRules.length;
+				walk(valueNode, conditions);
+				const ruleDeclarations = declarations.splice(declarationStart);
+				const nestedRules = specialRules.splice(specialRuleStart);
+				specialRules.push({
+					kind: "style",
+					name,
+					conditions: [],
+					declarations: ruleDeclarations,
+					children: nestedRules,
+					order: specialRules.length + 1,
+					source: sourceRange(options.source, options.sourceOffset ?? 0, valueNode),
+				});
 				continue;
 			}
 			if (

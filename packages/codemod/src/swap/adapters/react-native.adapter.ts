@@ -9,6 +9,7 @@ const reactNative = makeExtraAdapter({
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
 	namedObjects: true,
+	sourceObjectOptions: { namedRuleObjects: true },
 });
 
 export default reactNative;

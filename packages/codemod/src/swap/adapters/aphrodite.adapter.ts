@@ -9,7 +9,10 @@ const aphrodite = makeExtraAdapter({
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
 	namedObjects: true,
-	sourceObjectOptions: { arrayRuleKinds: { fontFamily: "font-face" } },
+	sourceObjectOptions: {
+		namedRuleObjects: true,
+		arrayRuleKinds: { fontFamily: "font-face" },
+	},
 });
 
 export default aphrodite;

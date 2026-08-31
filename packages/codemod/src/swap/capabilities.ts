@@ -10,6 +10,7 @@ export type AdapterCapability =
 	| "custom-properties"
 	| "dynamic-values"
 	| "named-conditions"
+	| "named-rules"
 	| "pseudo-conditions"
 	| "selector-conditions"
 	| "media-conditions"
@@ -155,6 +156,10 @@ export function requiredAdapterCapabilities(
 	if (program.declarations.length > 0) add("declarations", "style declarations");
 	if (program.source?.subject !== undefined)
 		add("components", `component subject: ${program.source.subject}`);
+	for (const rule of program.rules) {
+		if (rule.name !== undefined && rule.kind === "style")
+			add("named-rules", `named style rule: ${rule.name}`);
+	}
 	const needsRuleLevel = program.rules.some(
 		(rule) =>
 			rule.kind !== "style" ||

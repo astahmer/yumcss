@@ -55,6 +55,7 @@ export type AdapterSourceObjectOptions = Pick<
 	| "conditionValues"
 	| "conditionRaw"
 	| "nestedObjectKind"
+	| "namedRuleObjects"
 	| "propertyValueConditions"
 	| "unwrapNestedObjectKeys"
 	| "variantContainerKeys"
@@ -357,10 +358,12 @@ function programObject(program: StyleProgram): string {
 	}
 	const root = objectNode();
 	for (const rule of program.rules) {
-		if (rule.kind === "style") {
+		if (rule.kind === "style" && rule.name === undefined) {
 			for (const declaration of rule.declarations) {
 				addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
 			}
+		} else if (rule.kind === "style" && rule.name !== undefined) {
+			root.entries.push([rule.name, ruleObject(rule)]);
 		} else {
 			root.entries.push([rule.selector ?? rule.name ?? rule.kind, ruleObject(rule)]);
 		}

@@ -32,14 +32,14 @@ export interface ExtraAdapterOptions {
 	readonly namedObjects?: boolean;
 	readonly sourceObjectOptions?: Pick<
 		StyleProgramOptions,
-		"nestedObjectKind" | "arrayRuleKinds" | "emissionHints"
+		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
 	>;
 	readonly migration?: AdapterMigrationHooks;
 	/** Target-side host port for adapters whose style call returns a class string. */
 	readonly targetPolicy?: AdapterTargetMigrationPolicy;
 }
 
-const capabilities = (id: string): AdapterCapabilities => ({
+const capabilities = (id: string, namedRules: boolean): AdapterCapabilities => ({
 	schema: ADAPTER_CAPABILITIES_SCHEMA,
 	adapter: id,
 	version: "1",
@@ -47,6 +47,7 @@ const capabilities = (id: string): AdapterCapabilities => ({
 		declarations: "exact",
 		"rule-level": "partial",
 		"named-conditions": "exact",
+		...(namedRules ? { "named-rules": "exact" as const } : {}),
 		"pseudo-conditions": "exact",
 		"selector-conditions": "exact",
 		"media-conditions": "exact",
@@ -96,8 +97,26 @@ const objectText = (program: StyleProgram): string => {
 		node.children.set(key, child);
 		add(child, declaration, index + 1);
 	};
-	const declarations = program.rules[0]?.declarations ?? program.declarations;
-	for (const declaration of declarations) add(root, declaration, 0);
+	const addRule = (node: ObjectNode, rule: StyleProgram["rules"][number]): void => {
+		for (const declaration of rule.declarations) add(node, declaration, 0);
+		for (const child of rule.children) {
+			const key = child.name ?? child.selector ?? child.kind;
+			const nested = node.children.get(key) ?? { values: [], children: new Map() };
+			node.children.set(key, nested);
+			addRule(nested, child);
+		}
+	};
+	if (program.rules.some((rule) => rule.name !== undefined)) {
+		for (const rule of program.rules) {
+			if (rule.name === undefined) continue;
+			const named = { values: [], children: new Map() };
+			addRule(named, rule);
+			root.children.set(rule.name, named);
+		}
+	} else {
+		const declarations = program.rules[0]?.declarations ?? program.declarations;
+		for (const declaration of declarations) add(root, declaration, 0);
+	}
 	return renderObjectNode(root);
 };
 
@@ -336,7 +355,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		id: options.id,
 		version: "2",
 		sourceModules: options.modules,
-		capabilities: capabilities(options.id),
+		capabilities: capabilities(options.id, options.namedObjects === true),
 		dependencies: options.packages,
 		migration:
 			options.migration === undefined && options.targetPolicy === undefined

@@ -98,6 +98,14 @@ Recipe and component semantics live in the separate versioned recipe IR and
 host adapter contracts; they are not represented as unstructured residual
 strings.
 
+Named style maps are represented as named `style` rules and negotiated through
+the separate `named-rules` capability. They are not encoded as CSS `named`
+conditions: a JSS/StyleX/Aphrodite map such as `{ button: {...} }` has a
+different runtime contract from a responsive or variant condition. Targets
+that cannot emit a named class map receive an explicit `named-rules` residual;
+they must not flatten the map into one class and silently break `styles.button`
+lookups.
+
 ## Locality and exports
 
 Concrete ecosystem policy belongs in its adapter module. CLI files only parse
@@ -177,7 +185,12 @@ bindings, custom-property fallback, composition flattening, plugin transforms,
 runtime context, and framework metadata. Its `plan()` result records the
 selected representation (`static`, target-native, custom-property,
 runtime-carrier, or residual) and the representations the target contract can
-negotiate. Source and target adapters may contribute scoped lowering ports;
+negotiate. A migration result also retains one lowering plan per parsed source
+match, so diagnostics, IDE tooling, and proof runners can inspect why a route
+selected a representation instead of inferring it from generated text. A
+target-native plan may explicitly resolve a partial capability only for the
+semantic node it validated; partial support is never treated as a blanket
+promise for the whole target. Source and target adapters may contribute scoped lowering ports;
 the migration runner composes them without an ecosystem switch. A target
 adapter receives an optional semantic observation on `AdapterEmitResult` when
 an opaque runtime registration cannot safely be reparsed; validators compare

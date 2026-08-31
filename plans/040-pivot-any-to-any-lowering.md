@@ -178,7 +178,17 @@ The first wave is implemented and tested in focused JJ revisions:
 - the semantic parser folds literal arithmetic, conditionals, and template
   interpolations before target negotiation;
 - the existing Cartesian route test remains green and the flat `SwapIR` path
-  remains unchanged.
+  remains unchanged;
+- migration results expose one representation plan per parsed match, and the
+  bidirectional matrix now includes dynamic, malformed, and framework-shaped
+  edge cases for every registered adapter in both directions;
+- partial target-native dynamic support is accepted only when the lowering
+  planner explicitly resolves the corresponding capability and the emitted
+  result passes the target validator.
+- named style maps are represented as named rule nodes with a dedicated
+  `named-rules` capability, so targets without a class-map representation
+  report the real semantic limitation instead of mislabeling it as a CSS
+  condition mismatch.
 
 The remaining checkboxes are intentionally still open until each capability
 family has a concrete lowering and differential proof rather than only a

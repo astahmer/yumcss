@@ -914,7 +914,10 @@ function runtimeRawComponent(
 }
 
 function runtimeFontFaces(program: StyleProgram): string {
-	return program.rules
+	const rules = program.rules.flatMap(function collect(rule): StyleProgram["rules"] {
+		return [rule, ...rule.children.flatMap(collect)];
+	});
+	return rules
 		.filter((rule) => rule.kind === "font-face")
 		.map(
 			(rule) =>
@@ -981,6 +984,7 @@ export default defineCodemodAdapter({
 	packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
 		"named-conditions": "exact",
+		"named-rules": "exact",
 		"framework-semantics": "exact",
 		composition: "exact",
 		recipes: "exact",
@@ -1121,10 +1125,19 @@ export default defineCodemodAdapter({
 			const component = runtimeComponent(program, programObject, context);
 			if (component !== undefined) return finalize(component);
 		}
-		if (program.rules.some((rule) => rule.kind === "font-face")) {
+		const hasFontFaces = program.rules.some(function containsFontFace(
+			rule: StyleProgram["rules"][number],
+		): boolean {
+			return rule.kind === "font-face" || rule.children.some(containsFontFace);
+		});
+		if (hasFontFaces) {
+			const withoutFontFaces = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+			...rule,
+			children: rule.children.filter((child) => child.kind !== "font-face").map(withoutFontFaces),
+		});
 			const styleProgram = {
 				...program,
-				rules: program.rules.filter((rule) => rule.kind !== "font-face"),
+				rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),
 			};
 			return finalize({
 				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(program)}]), css.group(${programObject(styleProgram)}))`,
@@ -1144,9 +1157,11 @@ export default defineCodemodAdapter({
 					"const css = createRuntimeCss(pandwindPreset);",
 				],
 			});
-		const named = program.declarations.some((declaration) =>
-			declaration.conditions.some((condition) => condition.kind === "named"),
-		);
+		const named =
+			program.rules.some((rule) => rule.name !== undefined) ||
+			program.declarations.some((declaration) =>
+				declaration.conditions.some((condition) => condition.kind === "named"),
+			);
 		const dynamic = program.rules.some(function containsDynamic(rule): boolean {
 			return (
 				rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
