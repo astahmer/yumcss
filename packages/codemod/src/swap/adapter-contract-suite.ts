@@ -1,4 +1,5 @@
 import type {
+	AdapterParseContext,
 	AdapterMatch,
 	AdapterParseResult,
 	AdapterProjectConfig,
@@ -14,6 +15,8 @@ export interface AdapterContractFixture {
 	readonly source: string;
 	readonly root?: string;
 	readonly requireMatch?: boolean;
+	/** Optional host metadata needed to exercise framework-aware adapters. */
+	readonly semantic?: AdapterParseContext["semantic"];
 }
 
 export type AdapterContractPhase =
@@ -107,6 +110,7 @@ function parseFixtureWithConfig(
 					source: fixture.source,
 					...(fixture.root === undefined ? {} : { root: fixture.root }),
 					config,
+					semantic: fixture.semantic,
 				}),
 			},
 			failures: [],

@@ -127,6 +127,14 @@ export {
 	externalIdentifier,
 } from "./identifiers.ts";
 export { MigrationDiagnostics } from "./migration-diagnostics.ts";
+export { ADAPTER_MATRIX_SCHEMA, createBidirectionalAdapterMatrix } from "./adapter-matrix.ts";
+export type {
+	AdapterMatrixCase,
+	AdapterMatrixFailure,
+	AdapterMatrixFixture,
+	AdapterMatrixReport,
+	BidirectionalAdapterMatrix,
+} from "./adapter-matrix.ts";
 export type {
 	MigrationResidualLike,
 	MigrationSkipDiagnosticInput,

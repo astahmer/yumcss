@@ -288,6 +288,7 @@ function sourceObjectOptions(
 	]);
 	return {
 		conditionValues,
+		namedRuleObjects: true,
 		computedKeys,
 		computedKeyResolver: stylexWhenCondition,
 		propertyValueConditions: true,
@@ -751,6 +752,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
 			"named-conditions": "exact",
+			"named-rules": "exact",
 			"dynamic-values": "partial",
 			composition: "partial",
 			"font-face": "unsupported",

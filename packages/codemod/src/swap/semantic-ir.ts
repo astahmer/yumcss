@@ -855,6 +855,7 @@ function looksLikeCondition(name: string, options: StyleProgramOptions): boolean
 		name.startsWith("&") ||
 		name.startsWith(":") ||
 		name.startsWith("@") ||
+		PSEUDO_CONDITIONS.has(name.replace(/^:/, "")) ||
 		options.conditionKinds?.[name] !== undefined ||
 		options.conditionValues?.[name] !== undefined
 	);
@@ -869,7 +870,8 @@ function looksLikeNamedRuleKey(name: string, options: StyleProgramOptions): bool
 		!name.startsWith("_") &&
 		!name.startsWith("&") &&
 		!name.startsWith(":") &&
-		!name.startsWith("@")
+		!name.startsWith("@") &&
+		!PSEUDO_CONDITIONS.has(name.replace(/^:/, ""))
 	);
 }
 

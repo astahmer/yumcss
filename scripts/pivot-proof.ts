@@ -6,6 +6,7 @@ import {
 	CodemodAdapterId,
 	createAdapterContractSuite,
 	createAdapterCoverageGate,
+	createBidirectionalAdapterMatrix,
 	createBuiltinCodemodCatalog,
 	createRealRepositoryCorpus,
 	RealRepositoryProofDimension,
@@ -62,6 +63,30 @@ function parseFixtureEvidence(
 	};
 }
 
+function matrixFixtures(): readonly {
+	sourceAdapter: string;
+	file: string;
+	source: string;
+	semantic?: AdapterContractFixture["semantic"];
+}[] {
+	return adapterContractFixtures.map((fixture) => ({
+		sourceAdapter: fixture.adapter,
+		file: fixture.file,
+		source: fixture.source,
+		semantic:
+			fixture.adapter === CodemodAdapterId.StyledComponents ||
+			fixture.adapter === CodemodAdapterId.ChakraUi ||
+			fixture.adapter === CodemodAdapterId.Mui ||
+			fixture.adapter === CodemodAdapterId.Mantine
+				? { source: { framework: "react" } }
+				: fixture.adapter === CodemodAdapterId.SolidStyled
+					? { source: { framework: "solid" } }
+					: fixture.adapter === CodemodAdapterId.VueStyled
+						? { source: { framework: "vue" } }
+						: undefined,
+	}));
+}
+
 function readCheckedInProofMatrix(): ProofMatrix {
 	const matrix = JSON.parse(readFileSync(proofMatrixPath, "utf8")) as ProofMatrix;
 	if (matrix.schema !== "pandwind.real-browser-ssr-proof-matrix/1")
@@ -100,6 +125,13 @@ function runOfflineGate(): void {
 	const contract = createAdapterContractSuite().run(catalog.registry, adapterContractFixtures);
 	if (contract.failed > 0)
 		throw new Error(`adapter contract gate failed:\n${JSON.stringify(contract.failures, null, 2)}`);
+	const routeMatrix = createBidirectionalAdapterMatrix(catalog.registry, {
+		readFile: () => undefined,
+	}).run(matrixFixtures());
+	if (routeMatrix.failed > 0)
+		throw new Error(
+			`bidirectional route matrix failed:\n${JSON.stringify(routeMatrix.failures, null, 2)}`,
+		);
 
 	const evidence: AdapterCoverageEvidence[] = adapterContractFixtures.map((fixture) =>
 		parseFixtureEvidence(catalog.registry, fixture),
@@ -153,6 +185,11 @@ function runOfflineGate(): void {
 				contractFixtures: adapterContractFixtures.length,
 				realRepositoryFixtures: references.length,
 				proofClaims: matrix.claims.length,
+				routeMatrix: {
+					cases: routeMatrix.cases.length,
+					passed: routeMatrix.passed,
+					failed: routeMatrix.failed,
+				},
 				fixtureOnlyAdapters: [...fixtureOnlyAdapters],
 				capabilities: coverage.capabilityTotals,
 				proof: coverage.proofTotals,

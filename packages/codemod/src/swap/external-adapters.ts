@@ -663,17 +663,64 @@ const templateValue = (value: StyleProgram["declarations"][number]["value"]): st
 };
 
 function templateCss(program: StyleProgram): string {
+	const conditionSelector = (
+		condition: StyleProgram["rules"][number]["conditions"][number],
+	): string => {
+		if (
+			condition.kind === "media" ||
+			condition.kind === "container" ||
+			condition.kind === "supports"
+		)
+			return `@${condition.kind} ${condition.value ?? condition.name}`;
+		if (condition.kind === "pseudo")
+			return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
+		const value = condition.value ?? condition.raw ?? condition.name;
+		return value.includes("&") ? value : `&${value}`;
+	};
+	const wrap = (
+		body: string,
+		conditions: readonly StyleProgram["rules"][number]["conditions"][number][],
+	): string =>
+		conditions.reduceRight(
+			(current, condition) => `${conditionSelector(condition)} { ${current} }`,
+			body,
+		);
 	const renderRule = (rule: StyleProgram["rules"][number]): string => {
-		const declarations = rule.declarations
-			.filter((declaration) => declaration.conditions.length === 0)
-			.map(
-				(declaration) =>
-					`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+		const grouped = new Map<
+			string,
+			{ conditions: StyleProgram["rules"][number]["conditions"]; declarations: StyleDeclaration[] }
+		>();
+		for (const declaration of rule.declarations) {
+			const key = JSON.stringify(declaration.conditions);
+			const group = grouped.get(key) ?? { conditions: declaration.conditions, declarations: [] };
+			group.declarations.push(declaration);
+			grouped.set(key, group);
+		}
+		const declarations =
+			grouped
+				.get("[]")
+				?.declarations.map(
+					(declaration) =>
+						`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+				)
+				.join(" ") ?? "";
+		const conditioned = [...grouped.values()]
+			.filter((group) => group.conditions.length > 0)
+			.map((group) =>
+				wrap(
+					group.declarations
+						.map(
+							(declaration) =>
+								`${kebabProperty(declaration.property)}: ${templateValue(declaration.value)};`,
+						)
+						.join(" "),
+					group.conditions,
+				),
 			)
 			.join(" ");
 		const nested = rule.children.map(renderRule).join(" ");
 		if (rule.kind !== "style") return `${declarations}${nested}`;
-		const base = declarations === "" ? nested : `${declarations}${nested}`;
+		const base = `${declarations}${conditioned}${nested}`;
 		return base;
 	};
 	return program.rules.map(renderRule).join(" ");
