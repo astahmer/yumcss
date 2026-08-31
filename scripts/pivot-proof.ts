@@ -16,6 +16,7 @@ import {
 	type AdapterContractFixture,
 } from "../packages/codemod/src/swap/index.ts";
 import { adapterContractFixtures } from "../packages/codemod/tests/adapter-contract-fixtures.ts";
+import { completeAdapterMatrixFixtures } from "../packages/codemod/tests/adapter-matrix-fixtures.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const root = resolve(import.meta.dirname, "..");
@@ -63,30 +64,6 @@ function parseFixtureEvidence(
 	};
 }
 
-function matrixFixtures(): readonly {
-	sourceAdapter: string;
-	file: string;
-	source: string;
-	semantic?: AdapterContractFixture["semantic"];
-}[] {
-	return adapterContractFixtures.map((fixture) => ({
-		sourceAdapter: fixture.adapter,
-		file: fixture.file,
-		source: fixture.source,
-		semantic:
-			fixture.adapter === CodemodAdapterId.StyledComponents ||
-			fixture.adapter === CodemodAdapterId.ChakraUi ||
-			fixture.adapter === CodemodAdapterId.Mui ||
-			fixture.adapter === CodemodAdapterId.Mantine
-				? { source: { framework: "react" } }
-				: fixture.adapter === CodemodAdapterId.SolidStyled
-					? { source: { framework: "solid" } }
-					: fixture.adapter === CodemodAdapterId.VueStyled
-						? { source: { framework: "vue" } }
-						: undefined,
-	}));
-}
-
 function readCheckedInProofMatrix(): ProofMatrix {
 	const matrix = JSON.parse(readFileSync(proofMatrixPath, "utf8")) as ProofMatrix;
 	if (matrix.schema !== "pandwind.real-browser-ssr-proof-matrix/1")
@@ -127,7 +104,7 @@ function runOfflineGate(): void {
 		throw new Error(`adapter contract gate failed:\n${JSON.stringify(contract.failures, null, 2)}`);
 	const routeMatrix = createBidirectionalAdapterMatrix(catalog.registry, {
 		readFile: () => undefined,
-	}).run(matrixFixtures());
+	}).run(completeAdapterMatrixFixtures);
 	if (routeMatrix.failed > 0)
 		throw new Error(
 			`bidirectional route matrix failed:\n${JSON.stringify(routeMatrix.failures, null, 2)}`,
