@@ -103,6 +103,64 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 	});
 
+	test("treats Panda's generated object dialect as a bidirectional adapter", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const source =
+			'import { css } from "styled-system/css";\n' +
+			'const card = css({ color: "red", _hover: { color: "blue" } });';
+		const toPandwind = runAdapterMigration(source, {
+			from: "panda",
+			to: "pandwind",
+			file: "Card.tsx",
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+		expect(toPandwind.converted).toBe(1);
+		expect(toPandwind.skipped).toBe(0);
+		expect(toPandwind.residuals).toEqual([]);
+		expect(toPandwind.code).toContain("css.class");
+		expect(toPandwind.code).toContain("&:hover");
+
+		const toPanda = runAdapterMigration(toPandwind.code, {
+			from: "pandwind",
+			to: "panda",
+			file: "Card.tsx",
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+		expect(toPanda.converted).toBe(1);
+		expect(toPanda.skipped).toBe(0);
+		expect(toPanda.residuals).toEqual([]);
+		expect(toPanda.code).toContain('import { css } from "styled-system/css";');
+		expect(toPanda.code).toContain("css({");
+	});
+
+	test("reports unsupported Panda stylesheet rules by semantic kind", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const result = runAdapterMigration(
+			'import { global } from "@emotion/react";\nglobal({ body: { color: "red" } })',
+			{
+				from: "emotion",
+				to: "panda",
+				file: "Global.tsx",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			},
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("global-rules"),
+				}),
+			]),
+		);
+		expect(result.code).toContain('global({ body: { color: "red" } })');
+		expect(result.code).not.toContain("adapter capability mismatch");
+	});
+
 	test("detects Emotion automatic JSX css props from project configuration", () => {
 		const emotion = getCodemodAdapter("emotion")!;
 		const detection = emotion.detect({
