@@ -15,7 +15,6 @@
  * stay symbolic so dark-mode switching survives migration (pass 1 lifts the
  * tokens themselves into a pandwind preset).
  */
-import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { matchBlock } from "../../../sources.ts";
@@ -24,6 +23,9 @@ import {
 	NODE_PROJECT_MODULE_LOADER,
 	type ProjectModuleLoader,
 } from "../../project-module-loader.ts";
+import { createSourceWorkspace } from "pandwind/source/workspace";
+
+const sourceWorkspace = createSourceWorkspace();
 
 interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */
@@ -290,7 +292,8 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
  */
 function loadPandaThemeFromDisk(configPath: string): PandaTheme {
 	const dir = dirname(configPath);
-	const configSource = readFileSync(configPath, "utf8");
+	const configSource = sourceWorkspace.read([configPath])[0]?.source;
+	if (configSource === undefined) return emptyPandaTheme;
 	const extra: Array<string> = [];
 	// follow local `import { x } from './y'` references used by the sections
 	for (const m of configSource.matchAll(/import\s+\{([^}]*)\}\s+from\s+["']\.\/([^"']+)["']/g)) {
@@ -300,11 +303,8 @@ function loadPandaThemeFromDisk(configPath: string): PandaTheme {
 			.filter(Boolean);
 		void names;
 		const candidate = join(dir, `${m[2]}.ts`);
-		try {
-			extra.push(readFileSync(candidate, "utf8"));
-		} catch {
-			// optional file — skip
-		}
+		const source = sourceWorkspace.read([candidate])[0]?.source;
+		if (source !== undefined) extra.push(source);
 	}
 	return loadPandaThemeFromSource(configSource, extra);
 }

@@ -17,9 +17,9 @@
  * runtime. Calls with dynamic arguments keep working through the runtime and
  * can still be covered by the `tw:scan` safelist.
  */
-import { readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { createSourceWorkspace } from "../source-workspace.ts";
 import { walk } from "../tw/literal.ts";
 import { findCxImports, inlineCxCalls } from "./cx-inline.ts";
 import { createCrossModuleConstResolver } from "./cross-module-consts.ts";
@@ -190,6 +190,7 @@ const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnr
 
 export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
+	const sourceWorkspace = createSourceWorkspace();
 
 	const cssFold = options.css
 		? {
@@ -219,7 +220,8 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		if (resolved === null || resolved === undefined) return undefined;
 		const cached = configCache.get(resolved.id);
 		if (cached !== undefined) return cached;
-		const sourceCode = readFileSync(resolved.id, "utf8");
+		const sourceCode = sourceWorkspace.read([resolved.id])[0]?.source;
+		if (sourceCode === undefined) return undefined;
 		const config = extractTwConfig(sourceCode);
 		if (config !== undefined) configCache.set(resolved.id, config);
 		return config;

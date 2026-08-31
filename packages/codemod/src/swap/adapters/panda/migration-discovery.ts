@@ -1,5 +1,4 @@
 /** Independently testable Panda migration discovery stage. */
-import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
@@ -42,9 +41,13 @@ export function discoverPandaFiles(
 
 /** Load only the project theme/config layer; failures intentionally degrade to an empty theme. */
 export async function loadPandaMigrationTheme(projectRoot: string): Promise<PandaTheme> {
-	const candidate = ["panda.config.ts", "panda.config.mjs", "panda.config.js"]
-		.map((name) => resolve(projectRoot, name))
-		.find((path) => existsSync(path));
+	const candidate = createSourceWorkspace()
+		.read(
+			["panda.config.ts", "panda.config.mjs", "panda.config.js"].map((name) =>
+				resolve(projectRoot, name),
+			),
+		)
+		.at(0)?.path;
 	if (candidate === undefined) return emptyPandaTheme;
 	try {
 		return await loadPandaTheme(candidate);

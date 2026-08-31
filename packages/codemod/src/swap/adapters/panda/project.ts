@@ -12,9 +12,11 @@
  *   shadcn components.json and tsconfig paths — so emitted code is imported
  *   the way the host app already imports things.
  */
-import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CodemodAdapterId } from "../../identifiers.ts";
+import { createSourceWorkspace } from "pandwind/source/workspace";
+
+const sourceWorkspace = createSourceWorkspace();
 
 /* ------------------------------------------------------------------ */
 /* alias resolution                                                    */
@@ -30,9 +32,10 @@ export interface AliasInfo {
 }
 
 function readJson(path: string): Record<string, unknown> | null {
-	if (!existsSync(path)) return null;
+	const source = sourceWorkspace.read([path])[0]?.source;
+	if (source === undefined) return null;
 	try {
-		return JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
+		return JSON.parse(source) as Record<string, unknown>;
 	} catch {
 		return null;
 	}
@@ -78,8 +81,8 @@ function fromPackageImports(root: string): AliasInfo | null {
 function fromConfigText(root: string, files: Array<string>, label: string): AliasInfo | null {
 	for (const file of files) {
 		const path = join(root, file);
-		if (!existsSync(path)) continue;
-		const text = readFileSync(path, "utf8");
+		const text = sourceWorkspace.read([path])[0]?.source;
+		if (text === undefined) continue;
 		const match =
 			/['"](@[^'"]*)\/\*['"]\s*:\s*['"]([^'"]+)['"]/.exec(text) ??
 			/['"]([\w.-]+)\/\*['"]\s*:\s*['"]([^'"]+)['"]/.exec(text);

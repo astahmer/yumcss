@@ -22,17 +22,14 @@
  * All paths are resolved relative to the current working directory.
  */
 
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
 import { evalLiteral, isTwCall, walk } from "./literal.ts";
 
 export function walkDir(dir: string, files: string[] = []): string[] {
-	for (const entry of readdirSync(dir, { withFileTypes: true })) {
-		const path = join(dir, entry.name);
-		if (entry.isDirectory()) walkDir(path, files);
-		else if (SOURCE_SCANNER_SERVICE.isSupportedFile(entry.name)) files.push(path);
-	}
+	files.push(...createSourceWorkspace().files(["**/*"], dir));
 	return files;
 }
 
@@ -43,15 +40,21 @@ export function walkDir(dir: string, files: string[] = []): string[] {
  * @param twEntry absolute path to the app's generated `tw.ts` — its exported
  *   `tw` is the exact instance the app uses, so variant metadata matches.
  */
-export async function collectTwClasses(files: string[], twEntry: string): Promise<string[]> {
+export async function collectTwClasses(
+	files: readonly string[],
+	twEntry: string,
+	workspace: SourceWorkspace = createSourceWorkspace(),
+): Promise<string[]> {
 	const { tw } = (await import(twEntry)) as { tw: (styles: unknown) => string };
 	const classes = new Set<string>();
 
-	for (const file of files) {
-		const source = readFileSync(file, "utf8");
-		const language = SOURCE_SCANNER_SERVICE.languageForFile(file);
-		if (!["typescript", "tsx", "javascript", "jsx"].includes(language)) continue;
-		const result = SOURCE_SCANNER_SERVICE.parse({ file, source, language });
+	for (const { path: file, source, scan } of workspace.read(files)) {
+		if (!SOURCE_SCANNER_SERVICE.isScriptFile(file)) continue;
+		const result = SOURCE_SCANNER_SERVICE.parse({
+			file,
+			source,
+			language: scan.language,
+		});
 
 		walk(result.program, (node) => {
 			if (!isTwCall(node)) return;
