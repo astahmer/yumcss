@@ -13,6 +13,9 @@ const pandwindSource =
 	'import { createCss } from "pandwind/css";\n' +
 	"const css = createCss();\n" +
 	'export const card = css.class({ color: "red", padding: "1rem" });\n';
+const pandwindFixture = adapterContractFixtures.find(
+	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,
+);
 
 function runCli(
 	directory: string,
@@ -66,6 +69,12 @@ describe("CLI adapter migration e2e matrix", () => {
 			try {
 				const { report, source } = runCli(directory, sourceAdapter, CodemodAdapterId.Pandwind);
 				const result = report.files[0]!;
+				if (sourceAdapter === CodemodAdapterId.Pandwind) {
+					expect(result.converted).toBe(0);
+					expect(result.skipped).toBe(0);
+					expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+					return;
+				}
 				expect(result.converted + result.skipped).toBeGreaterThan(0);
 				if (result.skipped > 0) {
 					expect(result.residuals).toBeGreaterThan(0);
@@ -87,6 +96,12 @@ describe("CLI adapter migration e2e matrix", () => {
 			try {
 				const { report, source } = runCli(directory, CodemodAdapterId.Pandwind, targetAdapter);
 				const result = report.files[0]!;
+				if (targetAdapter === CodemodAdapterId.Pandwind) {
+					expect(result.converted).toBe(0);
+					expect(result.skipped).toBe(0);
+					expect(source).toBe(pandwindFixture?.source ?? pandwindSource);
+					return;
+				}
 				expect(result.converted + result.skipped).toBeGreaterThan(0);
 				if (result.skipped > 0) {
 					expect(result.residuals).toBeGreaterThan(0);
@@ -118,6 +133,12 @@ describe("CLI adapter migration e2e matrix", () => {
 					fixture.file,
 				);
 				const result = report.files[0]!;
+				if (sourceAdapter === CodemodAdapterId.Pandwind) {
+					expect(result.converted).toBe(0);
+					expect(result.skipped).toBe(0);
+					expect(source).toBe(fixture.source);
+					return;
+				}
 				expect(result.converted + result.skipped).toBeGreaterThan(0);
 				if (result.skipped > 0) {
 					expect(result.residuals).toBeGreaterThan(0);
@@ -148,6 +169,12 @@ describe("CLI adapter migration e2e matrix", () => {
 					fixture.file,
 				);
 				const result = report.files[0]!;
+				if (targetAdapter === CodemodAdapterId.Pandwind) {
+					expect(result.converted).toBe(0);
+					expect(result.skipped).toBe(0);
+					expect(source).toBe(fixture.source);
+					return;
+				}
 				expect(result.converted + result.skipped).toBeGreaterThan(0);
 				if (result.skipped > 0) {
 					expect(result.residuals).toBeGreaterThan(0);
