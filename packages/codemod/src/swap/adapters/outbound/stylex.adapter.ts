@@ -49,7 +49,7 @@ const emitStylex: Emitter = (ir, _meta, context) => {
 	};
 };
 
-export default {
+export const stylexOutboundAdapter = {
 	id: CodemodAdapterId.StyleX,
 	emit: emitStylex,
 	capabilities: {

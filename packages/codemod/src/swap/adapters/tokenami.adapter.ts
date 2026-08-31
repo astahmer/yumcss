@@ -271,5 +271,3 @@ export function createTokenamiAdapter(
 		},
 	});
 }
-
-export default createTokenamiAdapter();

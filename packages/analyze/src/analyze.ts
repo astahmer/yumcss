@@ -18,7 +18,7 @@
  *   eliminated counts (see analyze.test.ts).
  */
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace, type SourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
@@ -29,12 +29,6 @@ import {
 	type ArbitraryValueSite,
 	type CssResidualCollector,
 	type MissingCssSite,
-} from "./css-residual-collector.ts";
-
-export type {
-	ArbitraryValueSite,
-	CssResidualCollector,
-	MissingCssSite,
 } from "./css-residual-collector.ts";
 
 export { formatReport, summarize } from "./analysis-report.ts";
@@ -440,21 +434,9 @@ export function loadTwConfig(twPath: string): TwConfig {
 	return config;
 }
 
-/** Collect unique .ts/.tsx files matching globs under root (no node_modules). */
+/** Collect unique TypeScript files through the shared source workspace. */
 export function collectFiles(patterns: Array<string>, root: string): Array<string> {
 	return [...createSourceWorkspace().files(patterns, root)].filter((file) =>
 		SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
 	);
-}
-
-/** Read source files through the shared document workspace, preserving scan metadata. */
-export function collectSourceFiles(
-	patterns: readonly string[],
-	root: string,
-	workspace: SourceWorkspace = createSourceWorkspace(),
-): readonly { file: string; content: string }[] {
-	return workspace
-		.collect(patterns, root)
-		.filter(({ scan }) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(scan.document.file))
-		.map(({ path: file, source: content }) => ({ file, content }));
 }

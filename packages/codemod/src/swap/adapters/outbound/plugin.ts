@@ -1,12 +1,12 @@
 import panda from "./panda.adapter.ts";
-import stylex from "./stylex.adapter.ts";
+import { stylexOutboundAdapter } from "./stylex.adapter.ts";
 import tailwind from "./tailwind.adapter.ts";
 import type { SwapOutboundAdapter } from "../../outbound.ts";
 
 export const OUTBOUND_ADAPTERS = [
 	tailwind,
 	panda,
-	stylex,
+	stylexOutboundAdapter,
 ] as const satisfies readonly SwapOutboundAdapter[];
 export const OUTBOUND_EMITTERS = Object.fromEntries(
 	OUTBOUND_ADAPTERS.map((adapter) => [adapter.id, adapter.emit]),

@@ -423,5 +423,3 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 		},
 	};
 }
-
-export default createUnoCssAdapter();

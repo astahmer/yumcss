@@ -854,5 +854,3 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		},
 	});
 }
-
-export default createStyleXAdapter();

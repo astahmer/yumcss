@@ -3,7 +3,7 @@
  */
 import { describe, expect, test } from "vitest";
 import { createCssBudgetService } from "../src/analysis-service.ts";
-import type { CssBudget } from "../src/css-budget.ts";
+import type { CssBudget } from "../src/css-budget-contracts.ts";
 
 const formatCssBudget = (value: CssBudget): string => createCssBudgetService().format(value);
 

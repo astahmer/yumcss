@@ -533,5 +533,3 @@ export function createChakraAdapter(
 		},
 	});
 }
-
-export default createChakraAdapter();

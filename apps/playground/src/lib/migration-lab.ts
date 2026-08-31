@@ -32,7 +32,7 @@ export interface MigrationLabResult {
 	readonly dependencies: readonly AdapterDependencies[];
 }
 
-export interface MigrationLabError {
+interface MigrationLabError {
 	readonly ok: false;
 	readonly message: string;
 }
