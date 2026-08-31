@@ -30,6 +30,8 @@ export interface ExtraAdapterOptions {
 	readonly functionCall?: RegExp;
 	readonly prefix: string;
 	readonly suffix?: string;
+	/** Target imports required when this adapter is used as an emitter. */
+	readonly targetImports?: readonly string[];
 	readonly namedObjects?: boolean;
 	readonly sourceObjectOptions?: Pick<
 		StyleProgramOptions,
@@ -414,12 +416,14 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 				});
 				return {
 					text: `{ ${entries.join(", ")} }`,
+					...(options.targetImports === undefined ? {} : { imports: options.targetImports }),
 					residuals: [...program.residuals],
 					dependencies: options.packages,
 				};
 			}
 			return {
 				text: `${options.prefix}${objectText(program)}${options.suffix ?? ")"}`,
+				...(options.targetImports === undefined ? {} : { imports: options.targetImports }),
 				residuals: [...program.residuals],
 				dependencies: options.packages,
 			};

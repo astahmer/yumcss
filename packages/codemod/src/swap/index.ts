@@ -133,6 +133,7 @@ export type {
 	AdapterMatrixCase,
 	AdapterMatrixFailure,
 	AdapterMatrixFixture,
+	AdapterMatrixScenario,
 	AdapterMatrixReport,
 	BidirectionalAdapterMatrix,
 } from "./adapter-matrix.ts";

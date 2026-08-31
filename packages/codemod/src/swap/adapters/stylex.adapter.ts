@@ -11,12 +11,6 @@ import {
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
 
-const runtimeImports = [
-	'import { createRuntimeCss } from "pandwind/css/runtime";',
-	'import { pandwindPreset } from "pandwind/preset";',
-	"const css = createRuntimeCss(pandwindPreset);",
-] as const;
-
 function generatedCssBinding(source: string): string {
 	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+pandwindCss\b/.test(source))
 		return "pandwindCss";
@@ -679,44 +673,6 @@ function evaluateNumericExpression(expression: string): number | undefined {
 	return index === tokens.length ? value : undefined;
 }
 
-function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
-	if (value.kind === "dynamic") return value.expression;
-	if (value.kind === "token") return JSON.stringify(value.authored);
-	return JSON.stringify(value.value);
-}
-
-function keyframesText(program: StyleProgram): string {
-	const rule = program.rules[0]!;
-	const name = `pw-kf-${(rule.name ?? "animation").replace(/[^A-Za-z0-9_-]/g, "-")}`;
-	const children = rule.children.map(
-		(child) =>
-			`{ kind: "style", selector: ${JSON.stringify(child.selector ?? "from")}, declarations: [${child.declarations
-				.map(
-					(declaration) =>
-						`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
-				)
-				.join(", ")}] }`,
-	);
-	return `(css.sheet.registerSemanticRules([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
-}
-
-function varsText(program: StyleProgram): string {
-	const declarations = program.rules.flatMap((rule) => rule.declarations);
-	const registration = declarations
-		.map(
-			(declaration) =>
-				`{ property: ${JSON.stringify(declaration.property)}, value: ${runtimeValue(declaration.value)} }`,
-		)
-		.join(", ");
-	const references = declarations
-		.map(
-			(declaration) =>
-				`${JSON.stringify(declaration.property)}: ${JSON.stringify(`var(${declaration.property})`)}`,
-		)
-		.join(", ");
-	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${registration}] }]), { ${references} })`;
-}
-
 function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	const root = program.rules[0];
 	return {
@@ -839,19 +795,25 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		emit(program, { programObject }) {
 			if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
 				return {
-					text: keyframesText(program),
-					imports: runtimeImports,
+					text: `stylex.keyframes(${programObject(program)})`,
+					imports: ['import * as stylex from "@stylexjs/stylex";'],
 				};
 			}
 			if (program.source?.pattern === CodemodPatternId.StyleXDefineVars) {
 				return {
-					text: varsText(program),
-					imports: runtimeImports,
+					text: `stylex.defineVars(${programObject(program)})`,
+					imports: ['import * as stylex from "@stylexjs/stylex";'],
 				};
 			}
+			const named = program.rules.some((rule) => rule.name !== undefined);
 			return {
-				text: `css.group(${programObject(program)})`,
-				imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+				// StyleX's target value is a compiled style object, not a class
+				// string. Named programs keep their map; an unnamed program gets a
+				// stable local `style` key so it can be consumed by stylex.props.
+				text: named
+					? `stylex.create(${programObject(program)})`
+					: `stylex.create({ style: ${programObject(program)} }).style`,
+				imports: ['import * as stylex from "@stylexjs/stylex";'],
 			};
 		},
 	});

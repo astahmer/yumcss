@@ -8,10 +8,12 @@ const solidStyled = makeExtraAdapter({
 	detect: [
 		/from\s+["']solid-styled-components["']/g,
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`/g,
+		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
 	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
 	form: "template",
 	prefix: "styled.div(",
+	targetImports: ['import { styled } from "solid-styled-components";'],
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });

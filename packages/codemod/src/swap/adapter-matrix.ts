@@ -5,10 +5,13 @@ import { runAdapterMigration, type AdapterMigrationResult } from "./adapter-migr
 /** Versioned contract for the complete registered source/target route matrix. */
 export const ADAPTER_MATRIX_SCHEMA = "pandwind.adapter-matrix/1" as const;
 
+export type AdapterMatrixScenario = "happy" | "edge" | "malformed";
+
 export interface AdapterMatrixFixture {
 	readonly sourceAdapter: string;
 	readonly file: string;
 	readonly source: string;
+	readonly scenario?: AdapterMatrixScenario;
 	readonly semantic?: AdapterParseContext["semantic"];
 }
 
@@ -16,6 +19,7 @@ export interface AdapterMatrixCase {
 	readonly sourceAdapter: string;
 	readonly targetAdapter: string;
 	readonly mode: "safe" | "partial";
+	readonly scenario: AdapterMatrixScenario;
 	readonly result: AdapterMigrationResult;
 }
 
@@ -23,6 +27,7 @@ export interface AdapterMatrixFailure {
 	readonly sourceAdapter: string;
 	readonly targetAdapter: string;
 	readonly mode: "safe" | "partial";
+	readonly scenario: AdapterMatrixScenario;
 	readonly reason: string;
 }
 
@@ -42,9 +47,9 @@ const typedMarker =
 	/(capability-blocked|parse-residual|lowering-residual|host-rewrite-required|configuration-residual)/;
 
 function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFailure[] {
-	const { sourceAdapter, targetAdapter, mode, result } = caseResult;
+	const { sourceAdapter, targetAdapter, mode, scenario, result } = caseResult;
 	const failures: AdapterMatrixFailure[] = [];
-	const route = { sourceAdapter, targetAdapter, mode };
+	const route = { sourceAdapter, targetAdapter, mode, scenario };
 	const evidence = result.converted > 0 || result.residuals.length > 0 || result.skipped > 0;
 	if (!evidence)
 		failures.push({ ...route, reason: "route produced neither conversion nor residual evidence" });
@@ -81,42 +86,52 @@ export function createBidirectionalAdapterMatrix(
 ): BidirectionalAdapterMatrix {
 	return {
 		run(fixtures) {
-			const fixtureByAdapter = new Map(fixtures.map((fixture) => [fixture.sourceAdapter, fixture]));
+			const fixturesByAdapter = new Map<string, AdapterMatrixFixture[]>();
+			for (const fixture of fixtures) {
+				const adapterFixtures = fixturesByAdapter.get(fixture.sourceAdapter) ?? [];
+				adapterFixtures.push(fixture);
+				fixturesByAdapter.set(fixture.sourceAdapter, adapterFixtures);
+			}
 			const cases: AdapterMatrixCase[] = [];
 			const failures: AdapterMatrixFailure[] = [];
 			for (const source of registry.adapters) {
-				const fixture = fixtureByAdapter.get(source.id);
-				if (fixture === undefined) {
+				const adapterFixtures = fixturesByAdapter.get(source.id) ?? [];
+				if (adapterFixtures.length === 0) {
 					for (const target of registry.adapters)
 						for (const mode of ["safe", "partial"] as const)
 							failures.push({
 								sourceAdapter: source.id,
 								targetAdapter: target.id,
 								mode,
+								scenario: "happy",
 								reason: "registered source has no matrix fixture",
 							});
 					continue;
 				}
-				for (const target of registry.adapters) {
-					for (const mode of ["safe", "partial"] as const) {
-						const result = runAdapterMigration(fixture.source, {
-							from: source.id,
-							to: target.id,
-							file: fixture.file,
-							mode,
-							root: options.root,
-							semantic: fixture.semantic,
-							readFile: options.readFile,
-							adapterRegistry: registry,
-						});
-						const caseResult = {
-							sourceAdapter: source.id,
-							targetAdapter: target.id,
-							mode,
-							result,
-						};
-						cases.push(caseResult);
-						failures.push(...routeFailures(caseResult));
+				for (const fixture of adapterFixtures) {
+					const scenario = fixture.scenario ?? "happy";
+					for (const target of registry.adapters) {
+						for (const mode of ["safe", "partial"] as const) {
+							const result = runAdapterMigration(fixture.source, {
+								from: source.id,
+								to: target.id,
+								file: fixture.file,
+								mode,
+								root: options.root,
+								semantic: fixture.semantic,
+								readFile: options.readFile,
+								adapterRegistry: registry,
+							});
+							const caseResult = {
+								sourceAdapter: source.id,
+								targetAdapter: target.id,
+								mode,
+								scenario,
+								result,
+							};
+							cases.push(caseResult);
+							failures.push(...routeFailures(caseResult));
+						}
 					}
 				}
 			}

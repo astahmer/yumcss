@@ -8,6 +8,7 @@ const style9 = makeExtraAdapter({
 	detect: [/from\s+["']style9["']/g, /\bstyle9\.create\s*\(\s*\{/g],
 	call: /\bstyle9\.create\s*\(\s*\{/g,
 	prefix: "style9.create(",
+	targetImports: ['import style9 from "style9";'],
 	namedObjects: true,
 	sourceObjectOptions: { namedRuleObjects: true },
 	migration: {

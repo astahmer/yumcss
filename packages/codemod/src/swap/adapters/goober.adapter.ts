@@ -8,6 +8,7 @@ const goober = makeExtraAdapter({
 	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],
 	call: /\bcss\s*\(\s*\{/g,
 	prefix: "css(",
+	targetImports: ['import { css } from "goober";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });

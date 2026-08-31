@@ -8,6 +8,7 @@ const reactNative = makeExtraAdapter({
 	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
+	targetImports: ['import { StyleSheet } from "react-native";'],
 	namedObjects: true,
 	sourceObjectOptions: { namedRuleObjects: true },
 });

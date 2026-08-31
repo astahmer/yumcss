@@ -11,6 +11,7 @@ const compiled = makeExtraAdapter({
 	],
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
+	targetImports: ['import { css } from "@compiled/react";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });

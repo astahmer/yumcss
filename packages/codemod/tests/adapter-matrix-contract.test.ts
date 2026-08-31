@@ -2,37 +2,36 @@ import { describe, expect, test } from "vitest";
 import {
 	createBidirectionalAdapterMatrix,
 	createBuiltinCodemodCatalog,
-	CodemodAdapterId,
 } from "../src/swap/index.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
+import { completeAdapterMatrixFixtures } from "./adapter-matrix-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 
-const fixtures = adapterContractFixtures.map((fixture) => ({
-	sourceAdapter: fixture.adapter,
-	file: fixture.file,
-	source: fixture.source,
-	semantic:
-		fixture.adapter === CodemodAdapterId.StyledComponents ||
-		fixture.adapter === CodemodAdapterId.ChakraUi ||
-		fixture.adapter === CodemodAdapterId.Mui ||
-		fixture.adapter === CodemodAdapterId.Mantine
-			? { source: { framework: "react" } }
-			: fixture.adapter === CodemodAdapterId.SolidStyled
-				? { source: { framework: "solid" } }
-				: fixture.adapter === CodemodAdapterId.VueStyled
-					? { source: { framework: "vue" } }
-					: undefined,
-}));
-
 describe("bidirectional adapter matrix contract", () => {
-	test("runs every registered route in safe and partial modes", () => {
+	test("runs every registered route and scenario in safe and partial modes", () => {
 		const report = createBidirectionalAdapterMatrix(catalog.registry, {
 			readFile: () => undefined,
-		}).run(fixtures);
+		}).run(completeAdapterMatrixFixtures);
 
-		expect(report.cases).toHaveLength(catalog.adapters.length ** 2 * 2);
+		expect(report.cases).toHaveLength(catalog.adapters.length ** 2 * 2 * 3);
 		expect(report.failures, JSON.stringify(report.failures, null, 2)).toEqual([]);
 		expect(report.passed).toBe(report.cases.length);
+		expect(new Set(report.cases.map((item) => item.scenario))).toEqual(
+			new Set(["happy", "edge", "malformed"]),
+		);
+		for (const source of catalog.adapters)
+			for (const target of catalog.adapters)
+				for (const mode of ["safe", "partial"] as const)
+					expect(
+						report.cases
+							.filter(
+								(item) =>
+									item.sourceAdapter === source.id &&
+									item.targetAdapter === target.id &&
+									item.mode === mode,
+							)
+							.map((item) => item.scenario),
+						`${source.id} -> ${target.id} (${mode}) missing scenario coverage`,
+					).toEqual(["happy", "edge", "malformed"]);
 	});
 });

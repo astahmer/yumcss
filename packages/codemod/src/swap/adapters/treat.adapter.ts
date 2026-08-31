@@ -12,6 +12,7 @@ const treat = makeExtraAdapter({
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
 	call: /\bstyle\s*\(\s*\{/g,
 	prefix: "style(",
+	targetImports: ['import { style } from "@/styles.treat";'],
 	migration: {
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:

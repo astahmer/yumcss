@@ -8,6 +8,7 @@ const aphrodite = makeExtraAdapter({
 	detect: [/from\s+["']aphrodite["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
+	targetImports: ['import { StyleSheet } from "aphrodite";'],
 	namedObjects: true,
 	sourceObjectOptions: {
 		namedRuleObjects: true,
