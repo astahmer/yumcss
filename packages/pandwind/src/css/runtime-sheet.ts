@@ -72,9 +72,11 @@ export function createRuntimeSheet(
 	};
 	const registerSemanticRules = (rules: readonly RuntimeSemanticRule[]): void => {
 		register(
-			rules.map((rule, index) =>
-				canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index }),
-			),
+			rules
+				.filter((rule) => (rule.declarations?.length ?? 0) > 0 || (rule.children?.length ?? 0) > 0)
+				.map((rule, index) =>
+					canonicalizer.canonicalize({ ...rule, priority: rule.priority ?? index }),
+				),
 		);
 	};
 

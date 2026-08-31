@@ -20,7 +20,7 @@ describe("representative CSS-in-JS migration corpus", () => {
 		expect(result.code).toContain("@emotion/css");
 	});
 
-	test("keeps JSS and Style9 in the independently registered adapter set", () => {
+	test("lowers JSS and Style9 named maps through the class-map target", () => {
 		const jss = fixture("jss-card.tsx");
 		const style9 = fixture("style9-card.ts");
 		const jssResult = runAdapterMigration(jss.source, {
@@ -33,9 +33,12 @@ describe("representative CSS-in-JS migration corpus", () => {
 			to: "emotion",
 			file: style9.file,
 		});
-		expect(jssResult.skipped).toBe(1);
-		expect(style9Result.skipped).toBe(1);
-		expect(jssResult.residuals.length + style9Result.residuals.length).toBeGreaterThan(0);
+		expect(jssResult.skipped).toBe(0);
+		expect(style9Result.skipped).toBe(0);
+		expect(jssResult.residuals).toEqual([]);
+		expect(style9Result.residuals).toEqual([]);
+		expect(jssResult.code).toContain('"card": css(');
+		expect(style9Result.code).toContain('"card": css(');
 	});
 
 	test("records residuals instead of silently accepting a dynamic corpus case", () => {

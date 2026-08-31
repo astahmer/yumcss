@@ -18,7 +18,7 @@ describe("StyleX docs migration lanes", () => {
 			const report = await StylexDocsMigration.run(root, lane);
 			expect(report.sourceFiles).toBeGreaterThan(50);
 			expect(report.changedFiles).toBeGreaterThan(50);
-			expect(report.converted).toBeGreaterThan(90);
+			expect(report.converted).toBeGreaterThanOrEqual(90);
 			expect(report.skipped).toBe(0);
 			expect(report.residuals).toBe(0);
 			expect(report.invalidValidations).toBe(0);

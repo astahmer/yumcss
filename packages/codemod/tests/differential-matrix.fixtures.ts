@@ -49,7 +49,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			targetAdapter: "emotion",
 			file: "Card.tsx",
 			source: `import { createUseStyles } from "react-jss";\nconst useStyles = createUseStyles({ card: { color: "red", padding: 2 } });`,
-			expected: "residual",
+			expected: "pass",
 		},
 		{
 			id: "fela-to-emotion",
@@ -81,7 +81,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			targetAdapter: "emotion",
 			file: "Card.tsx",
 			source: `import style9 from "style9";\nconst styles = style9.create({ card: { color: "red", padding: 2 } });`,
-			expected: "residual",
+			expected: "pass",
 		},
 		{
 			id: "treat-to-emotion",
@@ -97,7 +97,7 @@ export const differentialMatrixFixtures: DifferentialMatrixCatalog = {
 			targetAdapter: "emotion",
 			file: "Card.tsx",
 			source: `import { StyleSheet } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 2 } });`,
-			expected: "residual",
+			expected: "pass",
 		},
 	],
 };
