@@ -180,6 +180,14 @@ default representation. The runner preserves the source with a typed
 no-ops, so partial cross-framework component capability metadata cannot create
 a false skip on a route that does not need conversion.
 
+Framework provenance is not itself a target obligation for a hostless style
+carrier. The capability planner now requires `framework-semantics` only for a
+component subject or host-bound style attributes. Runtime-capable adapters own
+their dynamic-value promotion in their adapter module; Goober and Fela now
+declare and test exact scalar-dynamic carriers. The shared extra-adapter
+baseline remains partial so an adapter cannot claim runtime preservation merely
+because its generic object renderer happens to echo an expression.
+
 The target policy also carries an explicit `requiresHostContext` contract and
 an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop
 before target emission, while a real host prop can still receive the projected

@@ -110,6 +110,26 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("css.class({ color: theme.foreground })");
 	});
 
+	test.each([
+		[CodemodAdapterId.Emotion, "theme.foreground"],
+		[CodemodAdapterId.StyledComponents, "theme.foreground"],
+		[CodemodAdapterId.Stitches, "theme.foreground"],
+		[CodemodAdapterId.Goober, "theme.foreground"],
+		[CodemodAdapterId.Fela, "theme.foreground"],
+	] as const)("preserves a hostless dynamic carrier for %s", (target, expression) => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				`const card = css.class({ color: ${expression} });`,
+			CodemodAdapterId.Pandwind,
+			target,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(expression);
+	});
+
 	test("preserves a React Native named style map through MUI's portable target", () => {
 		const result = migrate(
 			'import { StyleSheet } from "react-native";\n' +

@@ -37,6 +37,13 @@ capability and still resolve it through a target-owned host or lowering port.
 Tooling should display the outcome and residual detail, not collapse the
 decision into a generic capability mismatch.
 
+Framework metadata is only a capability requirement when the program carries
+host or component semantics. Standalone style carriers retain framework
+provenance in the IR but do not need a framework-specific target rewrite. Each
+runtime-capable adapter must opt into exact dynamic support in its own adapter
+module and prove that its emitted carrier preserves the authored expression;
+the generic adapter runtime remains conservative by default.
+
 ## Official project configuration
 
 Project-aware migration must ask the ecosystem's own packages to interpret
