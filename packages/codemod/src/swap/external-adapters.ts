@@ -422,12 +422,27 @@ function parseGlobalProgram(
 	body: string,
 	context: AdapterParseContext,
 	start: number,
+	selector?: string,
 ): StyleProgram {
 	const base = styleProgramFromSourceObject(body, {
 		source: adapterSource(context, start),
 		nestedObjectKind: "selector",
 		sourceOffset: start + 1,
 	});
+	if (selector !== undefined)
+		return styleProgramFromRules(
+			[
+				{
+					kind: "global",
+					selector,
+					conditions: [],
+					declarations: base.declarations,
+					children: [],
+					order: 0,
+				},
+			],
+			{ source: adapterSource(context, start), residuals: base.residuals },
+		);
 	const groups = new Map<string, StyleDeclaration[]>();
 	for (const declaration of base.declarations) {
 		const selector = declaration.conditions[0]?.name ?? "*";
@@ -861,7 +876,8 @@ function parseCalls(
 					resolvedObjectOptions,
 				);
 			} else if (pattern.kind === "global") {
-				program = parseGlobalProgram(block.body, context, start);
+				const selector = source.slice(start, open).match(/\(\s*(["'])([^"']+)\1\s*,\s*$/)?.[2];
+				program = parseGlobalProgram(block.body, context, start, selector);
 			} else {
 				const base = styleProgramFromSourceObject(block.body, {
 					source: {

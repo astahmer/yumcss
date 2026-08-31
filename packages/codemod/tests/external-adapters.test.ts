@@ -766,6 +766,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		}
 	});
 
+	test("retains Vanilla Extract globalStyle selectors during target validation", () => {
+		const result = runAdapterMigration(
+			'import { globalCss } from "@stitches/react";\n' +
+				'globalCss({ body: { margin: 0 }, button: { color: "red" } });',
+			{ from: "stitches", to: "vanilla-extract", file: "global.ts", mode: "safe" },
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('globalStyle("body"');
+		expect(result.code).toContain('globalStyle("button"');
+	});
+
 	test("matches complete tagged templates with nested expressions and preserves nested rules", () => {
 		const adapter = getCodemodAdapter("solid-styled")!;
 		const source =

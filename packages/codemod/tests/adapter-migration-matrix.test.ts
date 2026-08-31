@@ -8,6 +8,7 @@ import {
 	runAdapterMigration,
 	runSwap,
 } from "../src/swap/index.ts";
+import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
 import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
@@ -54,9 +55,7 @@ function fixtureFor(adapter: string) {
 	return fixture;
 }
 
-function sourceSemantic(
-	adapter: string,
-): { readonly source: { readonly framework: "react" | "solid" | "vue" } } | undefined {
+function sourceSemantic(adapter: string): AdapterParseContext["semantic"] | undefined {
 	if (adapter === CodemodAdapterId.StyledComponents) return { source: { framework: "react" } };
 	if (adapter === CodemodAdapterId.SolidStyled) return { source: { framework: "solid" } };
 	if (adapter === CodemodAdapterId.VueStyled) return { source: { framework: "vue" } };
@@ -173,11 +172,22 @@ describe("bidirectional registered adapter matrix", () => {
 					converted || residualEvidence > 0,
 					`${sourceAdapter.id} -> ${targetAdapter.id} produced no conversion or residual evidence`,
 				).toBe(true);
+				if (converted && result.residuals.length === 0)
+					expect(
+						result.validations.every((validation) => validation.valid),
+						`${sourceAdapter.id} -> ${targetAdapter.id} emitted an invalid semantic result`,
+					).toBe(true);
 				if (result.skipped > 0)
 					expect(
 						result.residuals.length,
 						`${sourceAdapter.id} -> ${targetAdapter.id} skipped without residuals`,
 					).toBeGreaterThan(0);
+				if (result.code.includes("pandwind:migrate-skip")) {
+					expect(result.code).toMatch(
+						/(capability-blocked|parse-residual|lowering-residual|host-rewrite-required|configuration-residual)/,
+					);
+					expect(result.code).not.toContain("adapter capability mismatch");
+				}
 				outcomes.push(`${sourceAdapter.id}->${targetAdapter.id}`);
 			}
 		}
@@ -186,6 +196,32 @@ describe("bidirectional registered adapter matrix", () => {
 });
 
 describe("composed cross-ecosystem routes", () => {
+	const classTargets = [
+		CodemodAdapterId.Compiled,
+		CodemodAdapterId.Fela,
+		CodemodAdapterId.Goober,
+		CodemodAdapterId.Linaria,
+		CodemodAdapterId.Tokenami,
+		CodemodAdapterId.Treat,
+		CodemodAdapterId.VanillaExtract,
+	] as const;
+
+	test.each(classTargets)("rewrites a styled subject to a static class in %s", (targetId) => {
+		const result = migrateTo(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			CodemodAdapterId.StyledComponents,
+			targetId,
+			"Card.tsx",
+			{ source: { framework: "react" } },
+		);
+
+		expect(result.residuals, `${CodemodAdapterId.StyledComponents} -> ${targetId}`).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain("<div className={Card} />");
+	});
+
 	test("rewrites a styled subject into a static class target", () => {
 		const result = migrateTo(
 			'import styled from "styled-components";\n' +
@@ -201,6 +237,32 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("const Card = style({");
 		expect(result.code).toContain("<div className={Card} />");
+	});
+
+	test("folds a resolved theme interpolation before class-target emission", () => {
+		const result = migrateTo(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.colors.foreground });\n" +
+				"export const App = () => <Card />;",
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.VanillaExtract,
+			"Card.tsx",
+			{
+				source: { framework: "react" },
+				themes: [
+					{
+						path: "colors.foreground",
+						authored: "theme.colors.foreground",
+						resolved: "red",
+					},
+				],
+			},
+		);
+
+		expect(result.residuals).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain('color: "red"');
+		expect(result.code).not.toContain("theme.colors.foreground");
 	});
 
 	const appDir = resolve(import.meta.dirname, "../../../apps/example/src");

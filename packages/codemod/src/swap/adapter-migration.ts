@@ -597,6 +597,58 @@ function runAdapterMigrationInternal(
 				...(sourceSubject ? { subject: sourceSubject } : {}),
 			},
 		});
+		const emittedForValidation = validationSource(emitted.text, program);
+		const reparsed = targetAdapter.parse(emittedForValidation, {
+			file: options.file,
+			source: emittedForValidation,
+			root: options.root,
+			config: targetConfig,
+			readFile,
+			meta: options.meta,
+			document,
+			semantic: options.semantic,
+		});
+		const targetProgram =
+			emitted.semantic ??
+			(reparsed.matches.length === 0
+				? program
+				: styleProgramFromRules(
+						reparsed.matches.flatMap((candidate) => candidate.program.rules),
+						{
+							source: program.source,
+							residuals: reparsed.residuals,
+							canonicalization: program.canonicalization,
+						},
+					));
+		const validation = targetAdapter.validate(program, targetProgram, [
+			...emitted.residuals,
+			...reparsed.residuals,
+		]);
+		validations.push(validation);
+		if (!validation.valid && mode === "safe") {
+			skipped++;
+			residuals.push({
+				kind: "validation",
+				text: emitted.text,
+				hint: validation.differences.join("; "),
+			});
+			edits.push({
+				start: match.start,
+				end: match.start,
+				text:
+					MigrationDiagnostics.skipMarker({
+						marker,
+						loweringResiduals: [
+							{
+								kind: "validation",
+								text: emitted.text,
+								hint: validation.differences.join("; "),
+							},
+						],
+					}) + "\n",
+			});
+			continue;
+		}
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
@@ -646,34 +698,6 @@ function runAdapterMigrationInternal(
 		}
 		const emittedBinding = bindingForMatch(source, match.start);
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
-		const emittedForValidation = validationSource(emitted.text, program);
-		const reparsed = targetAdapter.parse(emittedForValidation, {
-			file: options.file,
-			source: emittedForValidation,
-			root: options.root,
-			config: targetConfig,
-			readFile,
-			meta: options.meta,
-			document,
-			semantic: options.semantic,
-		});
-		const targetProgram =
-			emitted.semantic ??
-			(reparsed.matches.length === 0
-				? program
-				: styleProgramFromRules(
-						reparsed.matches.flatMap((candidate) => candidate.program.rules),
-						{
-							source: program.source,
-							residuals: reparsed.residuals,
-							canonicalization: program.canonicalization,
-						},
-					));
-		const validation = targetAdapter.validate(program, targetProgram, [
-			...emitted.residuals,
-			...reparsed.residuals,
-		]);
-		validations.push(validation);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 	}
 	const edited = applyEdits(source, edits);
