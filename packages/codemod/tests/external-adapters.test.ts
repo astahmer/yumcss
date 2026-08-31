@@ -786,6 +786,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('padding: "16px"');
 	});
 
+	test.each(["mui", "tokenami"] as const)(
+		"normalizes Mantine spacing aliases before cross-adapter validation (%s)",
+		(target) => {
+			const result = runAdapterMigration(
+				'import { Box } from "@mantine/core";\n' +
+					'export function Card() { return <Box c="red" p="md" />; }',
+				{ from: "mantine", to: target, file: "Card.tsx", mode: "safe" },
+			);
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.validations[0]?.valid).toBe(true);
+			expect(result.code).toContain("padding");
+		},
+	);
+
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

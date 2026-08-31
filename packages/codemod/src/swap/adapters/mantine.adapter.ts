@@ -58,6 +58,8 @@ const styleProps = [
 ] as const;
 
 const propertyAliases = {
+	m: "margin",
+	p: "padding",
 	c: "color",
 	bg: "backgroundColor",
 	bd: "border",
