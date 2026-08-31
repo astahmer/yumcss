@@ -178,6 +178,8 @@ export interface StyleProgramResidual {
 	readonly kind: SwapResidualKind | string;
 	readonly text: string;
 	readonly hint?: string;
+	/** The target explicitly retained this residual in a semantic carrier. */
+	readonly preserved?: boolean;
 }
 
 export interface StyleProgram {
