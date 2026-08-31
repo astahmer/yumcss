@@ -7,6 +7,7 @@ import {
 	createStyleAdapterRegistry,
 } from "../src/swap/index.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
+import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 
@@ -48,5 +49,49 @@ describe("registered adapter conformance", () => {
 			{ adapter: CodemodAdapterId.Emotion, detected: true, configured: true, parsed: 3 },
 		]);
 		expect(report.routes.cases).toHaveLength(2 * 3);
+	});
+
+	test("exercises every adapter-owned migration policy hook directly", () => {
+		for (const adapter of catalog.adapters) {
+			const fixture = adapterContractFixtures.find((item) => item.adapter === adapter.id);
+			expect(fixture, `${adapter.id} has no direct hook fixture`).toBeDefined();
+			if (fixture === undefined) continue;
+			const config = adapter.loadConfig({ file: fixture.file, source: fixture.source });
+			const parsed = adapter.parse(fixture.source, {
+				file: fixture.file,
+				source: fixture.source,
+				config,
+				...(fixture.semantic === undefined ? {} : { semantic: fixture.semantic }),
+			});
+			const program = parsed.matches[0]?.program;
+			expect(program, `${adapter.id} direct fixture did not parse`).toBeDefined();
+			if (program === undefined) continue;
+			const policy = adapter.migration?.targetPolicy;
+			for (const targetId of [CodemodAdapterId.Pandwind, adapter.id]) {
+				const dynamic = adapter.migration?.prepareDynamic?.({
+					source: fixture.source,
+					file: fixture.file,
+					targetId,
+					program,
+					binding: "card",
+					framework: "react",
+				});
+				if (dynamic !== undefined) expect(dynamic.handled).toBeTypeOf("boolean");
+			}
+			if (policy?.resolveHostRepresentation !== undefined)
+				policy.resolveHostRepresentation({
+					program,
+					hasHostContext: true,
+					framework: "react",
+				});
+			if (policy?.requiresHostWrapper !== undefined)
+				expect(policy.requiresHostWrapper({ source: fixture.source, binding: "card" })).toBeTypeOf(
+					"boolean",
+				);
+			if (policy?.handlesRawTemplate !== undefined)
+				expect(policy.handlesRawTemplate({ source: fixture.source })).toBeTypeOf("boolean");
+			if (policy?.handlesTemplateFragment !== undefined)
+				expect(policy.handlesTemplateFragment(program)).toBeTypeOf("boolean");
+		}
 	});
 });

@@ -132,6 +132,15 @@ that source-preserving skips carry typed residual markers. Run it alone with:
 pnpm --filter pandwind-codemod test:e2e
 ```
 
+`packages/codemod/tests/adapter-cli-full-matrix.test.ts` adds the production
+CLI smoke gate for every ordered happy route: 26 × 26 = 676 source/target
+pairs. It runs as part of `test:e2e` (and is kept out of V8 coverage because it
+launches the CLI once per route). The direct conformance suite also invokes
+each adapter-owned dynamic and host-policy hook, so coverage cannot be
+provided only by the shared adapter runtime. `test:coverage` enforces at least
+50% lines and 30% branches for every registered adapter file in addition to
+the package-wide thresholds.
+
 ### End-to-end tests
 
 The recursive test command includes:

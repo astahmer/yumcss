@@ -38,8 +38,8 @@
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
-		"test:e2e": "vitest run tests/adapter-cli-e2e.test.ts"
+		"test:coverage": "vitest run --coverage && tsx scripts/check-adapter-coverage.ts",
+		"test:e2e": "PANDWIND_CLI_MATRIX_E2E=1 vitest run tests/adapter-cli-e2e.test.ts tests/adapter-cli-full-matrix.test.ts"
 	},
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
