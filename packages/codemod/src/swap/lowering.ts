@@ -1,4 +1,8 @@
-import type { AdapterCapabilities, AdapterCapabilityMode } from "./capabilities.ts";
+import type {
+	AdapterCapabilities,
+	AdapterCapability,
+	AdapterCapabilityMode,
+} from "./capabilities.ts";
 import type {
 	StyleDeclaration,
 	StyleProgram,
@@ -24,6 +28,8 @@ export interface StyleLoweringResult {
 	readonly applied: readonly string[];
 	/** Residual kinds this strategy proved it replaced with a safe representation. */
 	readonly resolvedResidualKinds?: readonly string[];
+	/** Capability blockers this strategy replaced with a validated representation. */
+	readonly resolvedCapabilities?: readonly AdapterCapability[];
 }
 
 export interface StyleLoweringPlan extends StyleLoweringResult {
@@ -103,6 +109,7 @@ const dynamicAndThemes: StyleLowering = {
 	apply: ({ program, target }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let changed = false;
+		let resolvedDynamicCapability = false;
 		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
 			const value = declaration.value;
 			if (value.kind !== "dynamic") return declaration;
@@ -111,7 +118,12 @@ const dynamicAndThemes: StyleLowering = {
 				changed = true;
 				return { ...declaration, value: { kind: "literal", value: resolved.value } };
 			}
-			if (level(target, "dynamic-values") !== "unsupported") return declaration;
+			if (level(target, "dynamic-values") !== "unsupported") {
+				const themeExpression = /^(?:theme|tokens)\./.test(value.expression.trim());
+				if (!themeExpression || level(target, "theme-context") !== "unsupported")
+					resolvedDynamicCapability = true;
+				return declaration;
+			}
 			if (level(target, "custom-properties") !== "unsupported") {
 				changed = true;
 				const variable = dynamicVariableName(value.expression);
@@ -150,6 +162,7 @@ const dynamicAndThemes: StyleLowering = {
 				: program,
 			residuals,
 			applied: changed ? [StyleLoweringId.DynamicAndTheme] : [],
+			...(resolvedDynamicCapability ? { resolvedCapabilities: ["dynamic-values"] } : {}),
 		};
 	},
 };
@@ -317,6 +330,7 @@ export function createStyleLoweringRegistry(
 			let program = context.program;
 			const residuals: StyleProgramResidual[] = [];
 			const applied: string[] = [];
+			const resolvedCapabilities = new Set<AdapterCapability>();
 			for (const lowering of registry.lowerings) {
 				const result = lowering.apply({ ...context, program });
 				if (result.resolvedResidualKinds !== undefined) {
@@ -327,8 +341,17 @@ export function createStyleLoweringRegistry(
 				program = result.program;
 				residuals.push(...result.residuals);
 				applied.push(...result.applied);
+				for (const capability of result.resolvedCapabilities ?? [])
+					resolvedCapabilities.add(capability);
 			}
-			return { program, residuals, applied };
+			return {
+				program,
+				residuals,
+				applied,
+				...(resolvedCapabilities.size === 0
+					? {}
+					: { resolvedCapabilities: [...resolvedCapabilities] }),
+			};
 		},
 		plan(context) {
 			const result = registry.lower(context);

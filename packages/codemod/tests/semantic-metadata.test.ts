@@ -131,6 +131,26 @@ describe("semantic metadata and validator domains", () => {
 		);
 	});
 
+	test("accepts a target-native dynamic carrier when the target declares partial support", () => {
+		const program = styleProgramFromSourceObject("color: props.color", {});
+		const plan = STYLE_LOWERING_REGISTRY.plan({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "runtime-target",
+				capabilities: {
+					declarations: "exact",
+					"dynamic-values": "partial",
+				},
+			},
+			mode: "safe",
+		});
+
+		expect(plan.representation).toBe(StyleRepresentationKind.TargetNative);
+		expect(plan.resolvedCapabilities).toContain("dynamic-values");
+		expect(plan.residuals).toEqual([]);
+	});
+
 	test("classifies the selected representation after lowering", () => {
 		const program = styleProgramFromSourceObject("color: props.color", {});
 		const plan = STYLE_LOWERING_REGISTRY.plan({

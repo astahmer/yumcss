@@ -558,19 +558,30 @@ function runAdapterMigrationInternal(
 			}
 		}
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
-		reports.push(report);
+		const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
+		const effectiveReport =
+			resolvedCapabilities.size === 0
+				? report
+				: {
+						...report,
+						blockers: report.blockers.filter((issue) => !resolvedCapabilities.has(issue.capability)),
+						convertible: report.blockers.every(
+							(issue) => resolvedCapabilities.has(issue.capability) === true,
+						),
+					};
+		reports.push(effectiveReport);
 		const hasSemanticResiduals = program.residuals.length > 0 || lowering.residuals.length > 0;
-		if (!report.convertible || (mode === "safe" && hasSemanticResiduals)) {
+		if (!effectiveReport.convertible || (mode === "safe" && hasSemanticResiduals)) {
 			skipped++;
 			residuals.push(
 				...program.residuals,
-				...(report.blockers.length === 0
+				...(effectiveReport.blockers.length === 0
 					? []
 					: [
 							{
 								kind: "capability",
 								text: match.sourceText,
-								hint: report.blockers
+								hint: effectiveReport.blockers
 									.map((issue) => `${issue.capability}: ${issue.detail}`)
 									.join("; "),
 							},
@@ -596,7 +607,7 @@ function runAdapterMigrationInternal(
 			file: options.file,
 			config: targetConfig,
 			mode,
-			capability: report,
+			capability: effectiveReport,
 			index,
 			document,
 			meta: options.meta,
