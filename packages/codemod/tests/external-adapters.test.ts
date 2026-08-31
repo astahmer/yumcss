@@ -562,6 +562,38 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test("emits a JSS class carrier for a static Pandwind React host", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box className={card} />;",
+			{ from: "pandwind", to: "jss", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import jss from "jss";');
+		expect(result.code).toContain(
+			'jss.createStyleSheet({ style: { color: "red" } }).attach().classes.style',
+		);
+		expect(result.code).toContain("<Box className={card} />");
+	});
+
+	test("lowers a static styled intrinsic into a JSS class host", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "jss", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("jss.createStyleSheet");
+		expect(result.code).toContain("<div className={Card} />");
+		expect(result.code).not.toContain("styled-components");
+	});
+
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

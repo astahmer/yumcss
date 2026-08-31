@@ -1,7 +1,8 @@
 import { applyEdits } from "../../migrate.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
 	if (context.targetId !== CodemodAdapterId.Pandwind || !context.complete) {
@@ -65,8 +66,28 @@ export default defineCodemodAdapter({
 	sourceModules: ["jss", "react-jss"],
 	configFiles: ["jss.config.js", "package.json"],
 	sourceObjectOptions: { namedRuleObjects: true },
-	migration: { rewrite: rewriteImperativeApplications },
-	emit(program, { programObject }) {
+	migration: {
+		rewrite: rewriteImperativeApplications,
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostFrameworks: [BuiltinHostFramework.React],
+			hostRepresentation: StyleHostRepresentationKind.Class,
+			resolveHostRepresentation: ({ framework }) =>
+				framework === undefined || framework === BuiltinHostFramework.React
+					? StyleHostRepresentationKind.Class
+					: undefined,
+		},
+	},
+	emit(program, { programObject }, context) {
+		if (context?.host?.representation === StyleHostRepresentationKind.Class) {
+			const named = program.rules.some((rule) => rule.name !== undefined);
+			const sheet = `jss.createStyleSheet(${named ? programObject(program) : `{ style: ${programObject(program)} }`}).attach().classes`;
+			return {
+				text: named ? sheet : `${sheet}.style`,
+				imports: ['import jss from "jss";'],
+			};
+		}
 		const subject = program.source?.subject ?? "createUseStyles";
 		return {
 			text: `${subject}(${programObject(program)})`,
