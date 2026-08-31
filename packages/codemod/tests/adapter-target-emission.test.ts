@@ -31,6 +31,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain('import * as stylex from "@stylexjs/stylex";');
 		expect(result.code).toContain('stylex.create({ style: { color: "red" } }).style');
 		expect(result.code).not.toContain("createCss");
+		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
 	test("projects an intrinsic React host through MUI Box instead of a DOM sx prop", () => {
@@ -48,6 +49,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain('<Box component="div" sx={card}>content</Box>');
 		expect(result.code).toContain('import { Box } from "@mui/material";');
 		expect(result.code).not.toContain("<div sx={card}");
+		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
 	test("does not guess sx support for an unknown custom component", () => {
@@ -66,6 +68,7 @@ describe("target adapter emission contract", () => {
 		);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).not.toContain("sx={card}");
+		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
 	});
 
 	test.each([

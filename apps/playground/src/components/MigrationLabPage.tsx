@@ -170,6 +170,28 @@ function Validation(props: { result: MigrationLabResult }) {
 	);
 }
 
+function Outcomes(props: { result: MigrationLabResult }) {
+	if (props.result.outcomes.length === 0)
+		return <p className="px-3 py-2 text-[12px] text-zinc-600">No matched style program.</p>;
+	return (
+		<div className="divide-y divide-white/[0.05]">
+			{props.result.outcomes.map((outcome) => (
+				<div key={`${outcome.sourceStart}:${outcome.sourceText}`} className="px-3 py-2.5">
+					<div className="flex items-baseline gap-2">
+						<span className="rounded border border-sky-500/20 bg-sky-500/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-sky-300">
+							{outcome.outcome}
+						</span>
+						<span className="font-mono text-[10px] text-zinc-600">{outcome.representation}</span>
+					</div>
+					{outcome.detail === undefined ? null : (
+						<p className="mt-1 text-[12px] leading-5 text-zinc-600">{outcome.detail}</p>
+					)}
+				</div>
+			))}
+		</div>
+	);
+}
+
 function CapabilityReport(props: { result: MigrationLabResult }) {
 	const blockers = props.result.reports.flatMap((report) =>
 		report.blockers.map((issue) => ({ adapter: report.adapter, ...issue })),
@@ -236,6 +258,9 @@ function ResultPane(props: {
 			<Summary result={props.result} />
 			<Pane label="Target capability decision">
 				<CapabilityReport result={props.result} />
+			</Pane>
+			<Pane label="Negotiated outcome">
+				<Outcomes result={props.result} />
 			</Pane>
 			<Pane label="Residual report">
 				<Residuals result={props.result} />

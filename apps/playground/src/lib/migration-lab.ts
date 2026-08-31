@@ -4,6 +4,7 @@ import {
 	runAdapterMigration,
 	type AdapterCapabilityReport,
 	type AdapterDependencies,
+	type AdapterMigrationOutcome,
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "pandwind-codemod/swap/browser";
@@ -30,6 +31,7 @@ export interface MigrationLabResult {
 	readonly reports: readonly AdapterCapabilityReport[];
 	readonly validations: readonly AdapterValidationResult[];
 	readonly dependencies: readonly AdapterDependencies[];
+	readonly outcomes: readonly AdapterMigrationOutcome[];
 }
 
 interface MigrationLabError {

@@ -7,7 +7,8 @@
  */
 export { createBrowserCodemodCatalog as createBuiltinCodemodCatalog } from "./browser-adapter-catalog.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
-export { CodemodAdapterId } from "./identifiers.ts";
+export type { AdapterMigrationOutcome } from "./adapter-migration.ts";
+export { CodemodAdapterId, StyleMigrationOutcome } from "./identifiers.ts";
 export type { AdapterCapabilityReport } from "./capabilities.ts";
 export type {
 	AdapterDependencies,

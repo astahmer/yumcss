@@ -38,7 +38,11 @@ import {
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
 import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";
-import { StyleHostRepresentationKind } from "./identifiers.ts";
+import {
+	StyleHostRepresentationKind,
+	StyleMigrationOutcome,
+	StyleRepresentationKind,
+} from "./identifiers.ts";
 
 function programHasDynamic(program: StyleProgram): boolean {
 	return program.rules.some(function containsDynamic(rule): boolean {
@@ -190,6 +194,16 @@ export interface AdapterMigrationResult {
 	readonly residuals: readonly StyleProgramResidual[];
 	/** One inspectable representation decision for each parsed source match. */
 	readonly loweringPlans: readonly StyleLoweringPlan[];
+	/** One final, validated outcome for each parsed source match. */
+	readonly outcomes: readonly AdapterMigrationOutcome[];
+}
+
+export interface AdapterMigrationOutcome {
+	readonly sourceStart: number;
+	readonly sourceText: string;
+	readonly outcome: StyleMigrationOutcome;
+	readonly representation: StyleRepresentationKind;
+	readonly detail?: string;
 }
 
 interface LoadedAdapterConfigs {
@@ -237,6 +251,15 @@ function configurationFailure(
 			},
 		],
 		loweringPlans: [],
+		outcomes: [
+			{
+				sourceStart: 0,
+				sourceText: source,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: StyleRepresentationKind.Residual,
+				detail: "official project configuration could not be loaded",
+			},
+		],
 	};
 }
 
@@ -339,6 +362,7 @@ function runAdapterMigrationInternal(
 			dependencies: [],
 			residuals: [],
 			loweringPlans: [],
+			outcomes: [],
 		};
 	const readFile = options.readFile;
 	const detection = sourceAdapter.detect({
@@ -359,6 +383,7 @@ function runAdapterMigrationInternal(
 			dependencies: [],
 			residuals: [],
 			loweringPlans: [],
+			outcomes: [],
 		};
 	}
 	const config =
@@ -398,6 +423,15 @@ function runAdapterMigrationInternal(
 			dependencies: [],
 			residuals: configurationResiduals,
 			loweringPlans: [],
+			outcomes: [
+				{
+					sourceStart: 0,
+					sourceText: source,
+					outcome: StyleMigrationOutcome.Residual,
+					representation: StyleRepresentationKind.Residual,
+					detail: "official project configuration could not be loaded",
+				},
+			],
 		};
 	}
 	const document = SOURCE_SCANNER_SERVICE.scan({
@@ -429,6 +463,7 @@ function runAdapterMigrationInternal(
 	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const loweringPlans: StyleLoweringPlan[] = [];
+	const outcomes: AdapterMigrationOutcome[] = [];
 	const convertedBindings = new Set<string>();
 	const componentRewrites: HostComponentRewriteRequest[] = [];
 	const pendingComponentDeclarationRewrites = new Map<
@@ -463,6 +498,13 @@ function runAdapterMigrationInternal(
 	);
 	if (unpreservedParseResiduals.length > 0) {
 		skipped++;
+		outcomes.push({
+			sourceStart: 0,
+			sourceText: source,
+			outcome: StyleMigrationOutcome.Residual,
+			representation: StyleRepresentationKind.Residual,
+			detail: "source parser produced an unpreserved residual",
+		});
 		edits.push({
 			start: 0,
 			end: 0,
@@ -576,6 +618,13 @@ function runAdapterMigrationInternal(
 					!dynamicStandalone
 				) {
 					skipped++;
+					outcomes.push({
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome: StyleMigrationOutcome.Residual,
+						representation: lowering.representation,
+						detail: "dynamic value has no validated host carrier",
+					});
 					residuals.push({
 						kind: "dynamic-values",
 						text: match.sourceText,
@@ -831,6 +880,16 @@ function runAdapterMigrationInternal(
 		);
 		if (!effectiveReport.convertible || unpreservedSemanticResiduals.length > 0) {
 			skipped++;
+			outcomes.push({
+				sourceStart: match.start,
+				sourceText: match.sourceText,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: lowering.representation,
+				detail:
+					effectiveReport.blockers.length > 0
+						? "target capability has no validated representation"
+						: "semantic residual remains after lowering",
+			});
 			residuals.push(
 				...program.residuals,
 				...(effectiveReport.blockers.length === 0
@@ -856,7 +915,7 @@ function runAdapterMigrationInternal(
 						targetAdapter: targetAdapter.id,
 						parseResiduals: program.residuals,
 						loweringResiduals,
-						blockers: report.blockers,
+						blockers: effectiveReport.blockers,
 						availableRepresentations: lowering.availableRepresentations,
 					}) + "\n",
 			});
@@ -889,6 +948,13 @@ function runAdapterMigrationInternal(
 				hint: "target adapter produced no representable output",
 			} as const;
 			skipped++;
+			outcomes.push({
+				sourceStart: match.start,
+				sourceText: match.sourceText,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: lowering.representation,
+				detail: emptyEmission.hint,
+			});
 			residuals.push(emptyEmission, ...emitted.residuals);
 			edits.push({
 				start: match.start,
@@ -974,6 +1040,13 @@ function runAdapterMigrationInternal(
 		validations.push(validation);
 		if (!validation.valid) {
 			skipped++;
+			outcomes.push({
+				sourceStart: match.start,
+				sourceText: match.sourceText,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: lowering.representation,
+				detail: validation.differences.join("; "),
+			});
 			residuals.push({
 				kind: "validation",
 				text: emitted.text,
@@ -1050,6 +1123,18 @@ function runAdapterMigrationInternal(
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 		converted++;
+		const successfulRepresentation = lowering.representation;
+		outcomes.push({
+			sourceStart: match.start,
+			sourceText: match.sourceText,
+			outcome:
+				programHasDynamic(program) || dynamicCarrier !== undefined
+					? StyleMigrationOutcome.HostRuntime
+					: successfulRepresentation === StyleRepresentationKind.Static
+						? StyleMigrationOutcome.Static
+						: StyleMigrationOutcome.TargetNative,
+			representation: successfulRepresentation,
+		});
 	}
 	const edited = applyEdits(source, edits);
 	let runtimeEdited = edited;
@@ -1183,5 +1268,6 @@ function runAdapterMigrationInternal(
 		dependencies,
 		residuals,
 		loweringPlans,
+		outcomes,
 	};
 }

@@ -116,6 +116,7 @@ export {
 	StyleValidatorId,
 	StyleLoweringId,
 	StyleRepresentationKind,
+	StyleMigrationOutcome,
 	StyleNamedRuleStrategy,
 	MigrationSkipReason,
 	RealRepositoryProofDimension,
@@ -174,6 +175,7 @@ export {
 } from "./capabilities.ts";
 export type { AdapterCapabilityMatrix, AdapterCapabilityMatrixEntry } from "./capabilities.ts";
 export { runAdapterMigration, runAdapterMigrationAsync } from "./adapter-migration.ts";
+export type { AdapterMigrationOutcome } from "./adapter-migration.ts";
 export { defineCodemodAdapter, dependency, allRuleCapabilities } from "./external-adapters.ts";
 export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
