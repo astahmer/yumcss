@@ -181,11 +181,16 @@ export default defineCodemodAdapter({
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
+			requiresHostContext: true,
+			hostContextRequiredHint:
+				"MUI sx styles require a host component prop; no standalone sx() API exists",
 			hostRepresentation: StyleHostRepresentationKind.Component,
-			resolveHostRepresentation: ({ program, framework }) =>
+			resolveHostRepresentation: ({ program, hasHostContext, framework }) =>
 				(framework === undefined || framework === BuiltinHostFramework.React) &&
 				program.source?.subject === undefined
-					? StyleHostRepresentationKind.StyleProp
+					? hasHostContext
+						? StyleHostRepresentationKind.StyleProp
+						: undefined
 					: framework === undefined || framework === BuiltinHostFramework.React
 						? StyleHostRepresentationKind.Component
 						: undefined,

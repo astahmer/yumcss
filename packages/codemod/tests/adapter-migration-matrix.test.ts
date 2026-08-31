@@ -241,7 +241,6 @@ describe("composed cross-ecosystem routes", () => {
 	test.each([
 		CodemodAdapterId.ChakraUi,
 		CodemodAdapterId.Mantine,
-		CodemodAdapterId.Mui,
 		CodemodAdapterId.Stitches,
 		CodemodAdapterId.StyledComponents,
 		CodemodAdapterId.Style9,

@@ -194,6 +194,10 @@ export interface AdapterMigrationHooks {
 
 export interface AdapterTargetMigrationPolicy {
 	readonly handlesHostRewrites?: boolean;
+	/** Target cannot represent a standalone style value without a host use. */
+	readonly requiresHostContext?: boolean;
+	/** Target-owned explanation for a missing required host use. */
+	readonly hostContextRequiredHint?: string;
 	/** Whether host-bound components become a class carrier or a target component wrapper. */
 	readonly hostRepresentation?: StyleHostRepresentationKind;
 	/** Select a target representation from the normalized program and host use. */

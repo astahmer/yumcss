@@ -497,17 +497,21 @@ function runAdapterMigrationInternal(
 						...(hostFramework === undefined ? {} : { framework: hostFramework }),
 					});
 		if (
-			targetPolicy?.handlesHostRewrites === true &&
+			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&
 			resolvedHostRepresentation !== undefined &&
 			hostRepresentation === undefined &&
-			(hasHostContext || program.source?.subject !== undefined)
+			(targetPolicy.requiresHostContext === true
+				? program.source?.subject === undefined
+				: hasHostContext || program.source?.subject !== undefined)
 		) {
 			loweringResiduals = [
 				...loweringResiduals,
 				{
 					kind: "host-framework",
 					text: program.source?.subject ?? match.sourceText,
-					hint: `${targetAdapter.id} has no host representation for ${hostFramework ?? "the detected framework"}`,
+					hint:
+						targetPolicy.hostContextRequiredHint ??
+						`${targetAdapter.id} has no host representation for ${hostFramework ?? "the detected framework"}`,
 				},
 			];
 		}

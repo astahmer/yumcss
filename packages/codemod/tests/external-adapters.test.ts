@@ -571,6 +571,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("host-framework");
 		expect(result.code).toContain('from "pandwind/css"');
 		expect(result.code).not.toContain("sx({");
+		expect(result.validations).toEqual([]);
 	});
 
 	test("projects a Pandwind class binding onto MUI's sx host prop", () => {
