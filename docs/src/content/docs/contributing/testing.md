@@ -22,11 +22,16 @@ pnpm lint
 pnpm format
 pnpm knip
 pnpm pivot:proof
+pnpm test:e2e:playground
 ```
 
 `test:all` runs every workspace test serially. Serial execution is deliberate:
 browser servers, generated artifacts, PTYs, and native fixtures should not
 compete for the same ports or terminal state.
+
+`test:e2e:playground` generates the Playwright-BDD specs from the `.feature`
+files, starts the playground, and checks the migration lab plus editor typing
+experience in Chromium.
 
 `test:coverage` runs V8 coverage for the three core packages and fails when a
 package falls below its checked-in threshold. Coverage directories are local
@@ -103,9 +108,9 @@ Current measured package baselines are:
 
 | Package            | Statements | Branches | Functions |  Lines |
 | ------------------ | ---------: | -------: | --------: | -----: |
-| `pandwind`         |     86.83% |   74.59% |    85.60% | 89.28% |
-| `pandwind-codemod` |     76.82% |   64.51% |    86.17% | 79.90% |
-| `pandwind-analyze` |     74.07% |   61.79% |    75.89% | 75.18% |
+| `pandwind`         |     87.38% |   75.59% |    87.22% | 89.79% |
+| `pandwind-codemod` |     76.08% |   63.85% |    85.32% | 79.18% |
+| `pandwind-analyze` |     74.13% |   60.70% |    74.87% | 75.18% |
 
 These are regression floors, not a claim that every branch is equally
 valuable. CLI process entrypoints, source-language edge adapters, generated
