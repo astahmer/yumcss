@@ -95,6 +95,14 @@ bindings use MUI's portable-artifact fallback because MUI has no standalone
 `sx()` API; dynamic bare bindings remain explicit residuals until a host
 carrier is available.
 
+The lowering plan's `availableRepresentations` is now program-aware: static is
+listed only when no dynamic or residual semantics remain, custom-property is
+listed only when the lowered program actually carries a dynamic variable, and
+function-valued programs do not claim scalar dynamic carriers. This keeps a
+diagnostic from advertising a representation that the current program cannot
+use. Tailwind also accepts static named maps and UnoCSS parses bracketed
+conditional arbitrary utilities without splitting inside their brackets.
+
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and
 rewrites `<Card />` to `<div {...stylex.props(Card)} />`; StyleX is never
