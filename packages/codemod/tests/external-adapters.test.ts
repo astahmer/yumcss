@@ -472,7 +472,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	});
 
 	test("reports bare Pandwind style bindings because MUI sx is host-owned", () => {
-	const result = runAdapterMigration(
+		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
 			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
 		);
@@ -487,6 +487,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			]),
 		);
 		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("host-framework");
 		expect(result.code).toContain('from "pandwind/css"');
 		expect(result.code).not.toContain("sx({");
 	});

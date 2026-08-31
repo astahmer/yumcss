@@ -15,7 +15,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 
@@ -443,10 +443,11 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				declarations: "exact",
 				"token-values": "partial",
 				"named-rules": "exact",
+				components: "unsupported",
+				"framework-semantics": "exact",
 				"named-conditions": "partial",
 				"pseudo-conditions": "exact",
 				"dynamic-values": "unsupported",
-				"framework-semantics": "exact",
 			},
 		},
 		detect: (context) => {
@@ -474,6 +475,14 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
 			return namedRules ? emitUnoNamedMap(program) : emitUnoClassTokens(program);
+		},
+		migration: {
+			targetPolicy: {
+				handlesHostRewrites: true,
+				handlesFrameworkSemantics: true,
+				hostRepresentation: StyleHostRepresentationKind.Class,
+				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+			},
 		},
 		validate: (source, target, residuals = []) => {
 			const canonicalSource = styleProgramToCanonicalCss(source);

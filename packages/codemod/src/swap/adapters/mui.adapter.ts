@@ -85,6 +85,22 @@ function muiTransforms(
 	);
 }
 
+function renderMuiSxHost(
+	openingTag: string,
+	styleAttributes: readonly string[],
+	styleObject: string,
+): string {
+	let tag = openingTag;
+	for (const raw of styleAttributes) {
+		const index = tag.indexOf(raw);
+		if (index === -1) continue;
+		const whitespace = index > 0 && /[ \t]/.test(tag[index - 1]!) ? 1 : 0;
+		tag = `${tag.slice(0, index - whitespace)}${tag.slice(index + raw.length)}`;
+	}
+	const insertion = tag.endsWith("/>") ? tag.length - 2 : tag.length - 1;
+	return `${tag.slice(0, insertion)} sx={${styleObject}}${tag.slice(insertion)}`;
+}
+
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Mui,
 	patterns: [
@@ -138,11 +154,19 @@ export default defineCodemodAdapter({
 				imports: ['import { styled } from "@mui/system";'],
 			};
 		}
-		if (
-			context?.host?.representation === StyleHostRepresentationKind.StyleProp ||
-			program.source?.hostOpenTag !== undefined
-		)
-			return { text: programObject(program) };
+		if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
+			const styleObject = programObject(program);
+			if (program.source?.hostOpenTag !== undefined)
+				return {
+					text: renderMuiSxHost(
+						program.source.hostOpenTag,
+						program.source.hostStyleAttributes ?? [],
+						styleObject,
+					),
+				};
+			return { text: styleObject };
+		}
+		if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
 		return {
 			text: programObject(program),
 			residuals: [

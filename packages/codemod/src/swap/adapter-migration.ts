@@ -741,7 +741,8 @@ function runAdapterMigrationInternal(
 		if (
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
 			emittedHostRepresentation !== undefined &&
-			program.source?.subject === undefined
+			program.source?.subject === undefined &&
+			program.source?.hostOpenTag === undefined
 		) {
 			targetHostRewrites.push({
 				program,
@@ -793,7 +794,10 @@ function runAdapterMigrationInternal(
 				text:
 					MigrationDiagnostics.skipMarker({
 						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
 						loweringResiduals: [
+							...emitted.residuals,
 							{
 								kind: "validation",
 								text: emitted.text,
