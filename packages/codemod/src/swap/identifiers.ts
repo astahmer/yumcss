@@ -140,6 +140,7 @@ export enum StyleRepresentationKind {
 	TargetNative = "target-native",
 	CustomProperty = "custom-property",
 	RuntimeCarrier = "runtime-carrier",
+	PortableArtifact = "portable-artifact",
 	Residual = "residual",
 }
 

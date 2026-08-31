@@ -61,7 +61,8 @@ describe("adapter route round-trip contract", () => {
 					reverse.converted > 0 ||
 					reverse.skipped > 0 ||
 					reverse.residuals.length > 0 ||
-					reverse.code !== forward.code;
+					reverse.code !== forward.code ||
+					forward.outcomes.some((outcome) => outcome.outcome === "portable-artifact");
 				if (!actionable) failures.push(`${source.id} -> ${target.id}`);
 			}
 		}

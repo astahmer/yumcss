@@ -1,11 +1,12 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
 import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
+	StyleRepresentationKind,
 } from "../identifiers.ts";
 import {
 	componentExpressionForSubject,
@@ -174,6 +175,18 @@ function isKnownMuiComponent(source: string, tag: string): boolean {
 	).test(source);
 }
 
+function isStaticRules(rules: readonly StyleRule[]): boolean {
+	return rules.every(
+		(rule) =>
+			rule.declarations.every((declaration) => declaration.value.kind !== "dynamic") &&
+			isStaticRules(rule.children),
+	);
+}
+
+function isStaticProgram(program: StyleProgram): boolean {
+	return program.residuals.length === 0 && isStaticRules(program.rules);
+}
+
 function rewriteMuiIntrinsicHost(
 	code: string,
 	expression: string,
@@ -270,6 +283,14 @@ export default defineCodemodAdapter({
 				};
 			return { text: styleObject };
 		}
+		if (
+			context?.host?.representation === StyleHostRepresentationKind.Class &&
+			context.host.representationKind === StyleRepresentationKind.PortableArtifact
+		)
+			return {
+				text: `css.class(${programObject(program)})`,
+				imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+			};
 		if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
 		return {
 			text: programObject(program),
@@ -293,18 +314,25 @@ export default defineCodemodAdapter({
 				(framework === undefined || framework === BuiltinHostFramework.React) &&
 				program.source?.subject === undefined
 					? (() => {
-							if (!hasHostContext) return undefined;
+							if (!hasHostContext)
+								return isStaticProgram(program) ? StyleHostRepresentationKind.Class : undefined;
 							const host = findHostUse(source ?? "", binding);
 							const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
 							if (tag === undefined) return undefined;
 							return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
 								? StyleHostRepresentationKind.StyleProp
-								: undefined;
+								: isStaticProgram(program)
+									? StyleHostRepresentationKind.Class
+									: undefined;
 						})()
 					: framework === undefined || framework === BuiltinHostFramework.React
 						? StyleHostRepresentationKind.Component
 						: undefined,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			resolveRepresentation: ({ program, hostRepresentation }) =>
+				hostRepresentation === StyleHostRepresentationKind.Class && isStaticProgram(program)
+					? StyleRepresentationKind.PortableArtifact
+					: undefined,
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {

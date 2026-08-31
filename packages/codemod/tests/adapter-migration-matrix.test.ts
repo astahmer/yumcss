@@ -130,13 +130,14 @@ describe("bidirectional registered adapter matrix", () => {
 				return;
 			}
 			if (targetId === CodemodAdapterId.Mui) {
-				expect(result.converted, `${targetId} was converted`).toBe(0);
-				expect(result.skipped, `${targetId} was skipped`).toBe(1);
-				expect(result.residuals).toEqual(
+				expect(result.converted, `${targetId} was not converted`).toBeGreaterThan(0);
+				expect(result.skipped, `${targetId} was skipped`).toBe(0);
+				expect(result.residuals).toEqual([]);
+				expect(result.outcomes).toEqual(
 					expect.arrayContaining([
 						expect.objectContaining({
-							kind: "host-framework",
-							hint: expect.stringContaining("no standalone sx() API"),
+							outcome: "portable-artifact",
+							representation: "portable-artifact",
 						}),
 					]),
 				);

@@ -540,6 +540,7 @@ function runAdapterMigrationInternal(
 		let targetHostProjection = false;
 		let targetComponentProjection = false;
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
+		let targetRepresentationKind = lowering.representation;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		const bindingBeforeMatch = bindingForMatch(source, match.start);
 		const hasHostContext =
@@ -558,6 +559,19 @@ function runAdapterMigrationInternal(
 						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 						source,
 					});
+		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
+			program,
+			hasHostContext,
+			...(hostFramework === undefined ? {} : { framework: hostFramework }),
+			...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
+			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
+		});
+		if (resolvedRepresentation !== undefined) targetRepresentationKind = resolvedRepresentation;
+		if (
+			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
+			hostRepresentation !== undefined
+		)
+			emittedHostRepresentation = hostRepresentation;
 		if (
 			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&
 			resolvedHostRepresentation !== undefined &&
@@ -622,7 +636,7 @@ function runAdapterMigrationInternal(
 						sourceStart: match.start,
 						sourceText: match.sourceText,
 						outcome: StyleMigrationOutcome.Residual,
-						representation: lowering.representation,
+						representation: targetRepresentationKind,
 						detail: "dynamic value has no validated host carrier",
 					});
 					residuals.push({
@@ -884,7 +898,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: lowering.representation,
+				representation: targetRepresentationKind,
 				detail:
 					effectiveReport.blockers.length > 0
 						? "target capability has no validated representation"
@@ -939,6 +953,9 @@ function runAdapterMigrationInternal(
 				...(emittedHostRepresentation === undefined
 					? {}
 					: { representation: emittedHostRepresentation }),
+				...(targetRepresentationKind === lowering.representation
+					? {}
+					: { representationKind: targetRepresentationKind }),
 			},
 		});
 		if (emitted.text.trim() === "") {
@@ -952,7 +969,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: lowering.representation,
+				representation: targetRepresentationKind,
 				detail: emptyEmission.hint,
 			});
 			residuals.push(emptyEmission, ...emitted.residuals);
@@ -1044,7 +1061,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: lowering.representation,
+				representation: targetRepresentationKind,
 				detail: validation.differences.join("; "),
 			});
 			residuals.push({
@@ -1123,16 +1140,18 @@ function runAdapterMigrationInternal(
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 		converted++;
-		const successfulRepresentation = lowering.representation;
+		const successfulRepresentation = targetRepresentationKind;
 		outcomes.push({
 			sourceStart: match.start,
 			sourceText: match.sourceText,
 			outcome:
-				programHasDynamic(program) || dynamicCarrier !== undefined
-					? StyleMigrationOutcome.HostRuntime
-					: successfulRepresentation === StyleRepresentationKind.Static
-						? StyleMigrationOutcome.Static
-						: StyleMigrationOutcome.TargetNative,
+				successfulRepresentation === StyleRepresentationKind.PortableArtifact
+					? StyleMigrationOutcome.PortableArtifact
+					: programHasDynamic(program) || dynamicCarrier !== undefined
+						? StyleMigrationOutcome.HostRuntime
+						: successfulRepresentation === StyleRepresentationKind.Static
+							? StyleMigrationOutcome.Static
+							: StyleMigrationOutcome.TargetNative,
 			representation: successfulRepresentation,
 		});
 	}

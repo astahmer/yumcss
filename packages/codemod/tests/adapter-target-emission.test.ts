@@ -52,7 +52,7 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
-	test("does not guess sx support for an unknown custom component", () => {
+	test("uses a portable static artifact for an unknown custom component", () => {
 		const result = migrate(
 			'import { createCss } from "pandwind/css";\n' +
 				"const css = createCss();\n" +
@@ -62,13 +62,51 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
-		);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).not.toContain("sx={card}");
-		expect(result.outcomes).toMatchObject([{ outcome: "residual", representation: "static" }]);
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain("css.class");
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
+		]);
+	});
+
+	test("uses a portable static artifact for a standalone MUI style value", () => {
+		const result = migrate(
+			'import { createCss } from "pandwind/css";\n' +
+				"const css = createCss();\n" +
+				'const card = css.class({ color: "red" });',
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Mui,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain("css.class");
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
+		]);
+	});
+
+	test("does not use the portable artifact for a dynamic MUI style value", () => {
+		const result = migrate(
+			'import { createCss } from "pandwind/css";\n' +
+				"const css = createCss();\n" +
+				"const card = css.class({ color: theme.foreground });",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Mui,
+		);
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("css.class({ color: theme.foreground })");
 	});
 
 	test.each([
