@@ -24,7 +24,7 @@ export interface UnoCssTokenResolver {
 
 export interface UnoCssAdapterOptions {
 	readonly resolver?: UnoCssTokenResolver;
-	readonly moduleLoader?: ProjectModuleLoader;
+	readonly moduleLoader?: ProjectModuleLoader | null;
 }
 
 const unescapeUnoCssSelector = (value: string): string =>

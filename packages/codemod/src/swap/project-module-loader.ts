@@ -19,9 +19,9 @@ function isMissingModule(error: unknown): boolean {
 export class NodeProjectModuleLoader implements ProjectModuleLoader {
 	async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
 		try {
-			const { createRequire } = await import("node:module");
-			const { join } = await import("node:path");
-			const { pathToFileURL } = await import("node:url");
+			const { createRequire } = await import(/* @vite-ignore */ "node:module");
+			const { join } = await import(/* @vite-ignore */ "node:path");
+			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 			const importer = createRequire(join(root, "package.json"));
 			const resolved = importer.resolve(packageName);
 			return (await import(pathToFileURL(resolved).href)) as T;
@@ -33,7 +33,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 
 	async importFile<T>(file: string): Promise<T | undefined> {
 		try {
-			const { pathToFileURL } = await import("node:url");
+			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 			return (await import(pathToFileURL(file).href)) as T;
 		} catch (error) {
 			if (isMissingModule(error)) return undefined;

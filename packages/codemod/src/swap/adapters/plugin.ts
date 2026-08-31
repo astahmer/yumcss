@@ -1,9 +1,9 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
 import { CodemodPluginId } from "../identifiers.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
+import type { StyleXImportedReferenceResolver } from "./stylex.adapter.ts";
 import aphrodite from "./aphrodite.adapter.ts";
 import bamboo from "./bamboo.adapter.ts";
-import chakra from "./chakra.adapter.ts";
 import { createChakraAdapter } from "./chakra.adapter.ts";
 import compiled from "./compiled.adapter.ts";
 import emotion from "./emotion.adapter.ts";
@@ -19,18 +19,21 @@ import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
 import stitches from "./stitches.adapter.ts";
 import style9 from "./style9.adapter.ts";
-import stylex from "./stylex.adapter.ts";
+import { createStyleXAdapter } from "./stylex.adapter.ts";
 import styledComponents from "./styled-components.adapter.ts";
 import treat from "./treat.adapter.ts";
 import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
-import tokenami from "./tokenami.adapter.ts";
 import { createTokenamiAdapter } from "./tokenami.adapter.ts";
-import unocss from "./unocss.adapter.ts";
 import { createUnoCssAdapter } from "./unocss.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
-export function createBuiltinAdapterPlugin(moduleLoader?: ProjectModuleLoader): StyleAdapterPlugin {
+
+export function createBuiltinAdapterPlugin(
+	moduleLoader?: ProjectModuleLoader,
+	stylexResolver?: StyleXImportedReferenceResolver,
+): StyleAdapterPlugin {
+	const stylex = createStyleXAdapter({ crossModuleResolver: stylexResolver });
 	return createStyleAdapterPlugin(CodemodPluginId.BuiltinAdapters, [
 		pandwind,
 		bamboo,

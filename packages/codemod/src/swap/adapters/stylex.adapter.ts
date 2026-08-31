@@ -1,7 +1,6 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
-import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { applyEdits, computeExcludedRanges, matchBlock } from "../../source-pass-utils.ts";
 import type { OxcNode } from "pandwind/tw/literal";
@@ -238,7 +237,15 @@ function stylexConditionValues(source: string): Readonly<Record<string, string>>
 	);
 }
 
-function importedStyleReferences(context: AdapterParseContext): Readonly<Record<string, string>> {
+export interface StyleXImportedReferenceResolver {
+	importedLiteralScope(file: string, program: OxcNode): ReadonlyMap<string, unknown>;
+}
+
+function importedStyleReferences(
+	context: AdapterParseContext,
+	resolver: StyleXImportedReferenceResolver | undefined,
+): Readonly<Record<string, string>> {
+	if (resolver === undefined) return {};
 	if (!context.file.startsWith("/") && context.root === undefined) return {};
 	try {
 		const parsed = SOURCE_SCANNER_SERVICE.parse({
@@ -246,10 +253,7 @@ function importedStyleReferences(context: AdapterParseContext): Readonly<Record<
 			source: context.source,
 			language: SOURCE_SCANNER_SERVICE.languageForFile(context.file),
 		});
-		const scope = createCrossModuleConstResolver().importedLiteralScope(
-			context.file,
-			parsed.program as unknown as OxcNode,
-		);
+		const scope = resolver.importedLiteralScope(context.file, parsed.program as unknown as OxcNode);
 		const references: Record<string, string> = {};
 		for (const [binding, value] of scope) {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) continue;
@@ -266,7 +270,11 @@ function importedStyleReferences(context: AdapterParseContext): Readonly<Record<
 	}
 }
 
-function sourceObjectOptions(source: string, context: AdapterParseContext) {
+function sourceObjectOptions(
+	source: string,
+	context: AdapterParseContext,
+	resolver: StyleXImportedReferenceResolver | undefined,
+) {
 	const conditionValues = stylexConditionValues(source);
 	const computedKeys = Object.fromEntries([
 		...[...source.matchAll(/\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\b/g)].map((match) => [
@@ -290,8 +298,12 @@ function sourceObjectOptions(source: string, context: AdapterParseContext) {
 			conditionalOrder: StyleProgramConditionOrder.Depth,
 		},
 		valueTransforms: { "*": stylexNumericValue },
-		dynamicReferences: importedStyleReferences(context),
+		dynamicReferences: importedStyleReferences(context, resolver),
 	};
+}
+
+export interface StyleXAdapterOptions {
+	readonly crossModuleResolver?: StyleXImportedReferenceResolver;
 }
 
 const STYLEX_UNITLESS_PROPERTIES = new Set([
@@ -716,126 +728,131 @@ function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	};
 }
 
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.StyleX,
-	patterns: [
-		{
-			name: CodemodPatternId.StyleXCreate,
-			regex: /\bstylex\.create\s*\(\s*\{/g,
-			objectKind: "named",
-		},
-		{
-			name: CodemodPatternId.StyleXKeyframes,
-			regex: /\bstylex\.keyframes\s*\(\s*\{/g,
-			kind: "keyframes",
-		},
-		{
-			name: CodemodPatternId.StyleXDefineVars,
-			regex: /\bstylex\.defineVars\s*\(\s*\{/g,
-			transform: normalizeStyleXVariables,
-		},
-	],
-	packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
-		"named-conditions": "exact",
-		"dynamic-values": "partial",
-		composition: "partial",
-		"font-face": "unsupported",
-		layers: "unsupported",
-		"supports-rules": "unsupported",
-		"property-rules": "unsupported",
-	}),
-	detectPatterns: [/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
-	sourceModules: ["@stylexjs/stylex"],
-	configFiles: ["package.json"],
-	sourceObjectOptions,
-	migration: {
-		prepareDynamic: ({ source, targetId, binding }) => ({
-			handled:
-				targetId === CodemodAdapterId.Pandwind &&
-				binding !== undefined &&
-				(new RegExp(
-					`\\bstylex\\.props\\([\\s\\S]*?\\b${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*(?:\\.|\\[)`,
-				).test(source) ||
-					new RegExp(
-						`\\bexport\\s+(?:const|let|var)\\s+${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*=`,
-					).test(source)),
+export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.StyleX,
+		patterns: [
+			{
+				name: CodemodPatternId.StyleXCreate,
+				regex: /\bstylex\.create\s*\(\s*\{/g,
+				objectKind: "named",
+			},
+			{
+				name: CodemodPatternId.StyleXKeyframes,
+				regex: /\bstylex\.keyframes\s*\(\s*\{/g,
+				kind: "keyframes",
+			},
+			{
+				name: CodemodPatternId.StyleXDefineVars,
+				regex: /\bstylex\.defineVars\s*\(\s*\{/g,
+				transform: normalizeStyleXVariables,
+			},
+		],
+		packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
+		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {
+			"named-conditions": "exact",
+			"dynamic-values": "partial",
+			composition: "partial",
+			"font-face": "unsupported",
+			layers: "unsupported",
+			"supports-rules": "unsupported",
+			"property-rules": "unsupported",
 		}),
-		rewrite: ({ source, code, targetId, convertedBindings }) => {
-			// A file may contain both statically extractable groups and a small
-			// runtime-only carrier. Rewrite the static consumers even when the
-			// file remains partial; leaving `stylex.props(staticGroup)` in place
-			// would type-check against the wrong compiled-style contract and would
-			// make the static portion depend on the old runtime.
-			if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
-			let rewritten = code;
-			const cssBinding = generatedCssBinding(source);
-			// StyleX permits runtime-generated selector keys such as
-			// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
-			// self-selector dialect needs the explicit `&` prefix.
-			rewritten = rewritten.replace(
-				/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=(?:[:.]|\u005b))/g,
-				"$1$2&",
-			);
-			rewritten = rewritten.replaceAll("stylex.defineConsts(", "(");
-			rewritten = rewritten.replaceAll("stylex.types.angle(", "(");
-			rewritten = rewritten.replace(
-				/import\s*\{\s*type\s+StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
-				"type StyleXStyles = any;",
-			);
-			rewritten = rewritten.replace(
-				/import\s+type\s*,?\s*\{\s*StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
-				"type StyleXStyles = any;",
-			);
-			rewritten = rewritten.replaceAll("stylex.StyleXStyles", "Record<string, string> | string");
-			rewritten = rewritten.replace(
-				/(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*stylex\.defineMarker\(\)/g,
-				(_match, declaration: string, binding: string) =>
-					`${declaration} ${binding} = ${JSON.stringify(`pw-marker-${binding}`)}`,
-			);
-			rewritten = rewritten.replaceAll("stylex.defaultMarker()", '"pw-default-marker"');
-			for (const binding of convertedBindings) {
-				const escaped = binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+		detectPatterns: [/@stylexjs\/stylex/, /\bstylex\.create\s*\(/],
+		sourceModules: ["@stylexjs/stylex"],
+		configFiles: ["package.json"],
+		sourceObjectOptions: (source, context) =>
+			sourceObjectOptions(source, context, options.crossModuleResolver),
+		migration: {
+			prepareDynamic: ({ source, targetId, binding }) => ({
+				handled:
+					targetId === CodemodAdapterId.Pandwind &&
+					binding !== undefined &&
+					(new RegExp(
+						`\\bstylex\\.props\\([\\s\\S]*?\\b${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*(?:\\.|\\[)`,
+					).test(source) ||
+						new RegExp(
+							`\\bexport\\s+(?:const|let|var)\\s+${binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*=`,
+						).test(source)),
+			}),
+			rewrite: ({ source, code, targetId, convertedBindings }) => {
+				// A file may contain both statically extractable groups and a small
+				// runtime-only carrier. Rewrite the static consumers even when the
+				// file remains partial; leaving `stylex.props(staticGroup)` in place
+				// would type-check against the wrong compiled-style contract and would
+				// make the static portion depend on the old runtime.
+				if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
+				let rewritten = code;
+				const cssBinding = generatedCssBinding(source);
+				// StyleX permits runtime-generated selector keys such as
+				// `Object.fromEntries([`:nth-child(...)`, value])`; Pandwind's
+				// self-selector dialect needs the explicit `&` prefix.
 				rewritten = rewritten.replace(
-					new RegExp(
-						`\\bstylex\\.props\\((\\s*${escaped}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]]+\\]))`,
-						"g",
-					),
-					`${cssBinding}.props($1`,
+					/(Object\.fromEntries\(\s*\[[\s\S]*?)([`"'])(?=(?:[:.]|\u005b))/g,
+					"$1$2&",
 				);
+				rewritten = rewritten.replaceAll("stylex.defineConsts(", "(");
+				rewritten = rewritten.replaceAll("stylex.types.angle(", "(");
+				rewritten = rewritten.replace(
+					/import\s*\{\s*type\s+StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
+					"type StyleXStyles = any;",
+				);
+				rewritten = rewritten.replace(
+					/import\s+type\s*,?\s*\{\s*StyleXStyles\s*\}\s*from\s*['"]@stylexjs\/stylex['"];?/g,
+					"type StyleXStyles = any;",
+				);
+				rewritten = rewritten.replaceAll("stylex.StyleXStyles", "Record<string, string> | string");
+				rewritten = rewritten.replace(
+					/(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*stylex\.defineMarker\(\)/g,
+					(_match, declaration: string, binding: string) =>
+						`${declaration} ${binding} = ${JSON.stringify(`pw-marker-${binding}`)}`,
+				);
+				rewritten = rewritten.replaceAll("stylex.defaultMarker()", '"pw-default-marker"');
+				for (const binding of convertedBindings) {
+					const escaped = binding.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+					rewritten = rewritten.replace(
+						new RegExp(
+							`\\bstylex\\.props\\((\\s*${escaped}(?:\\s*\\.[A-Za-z_$][\\w$]*|\\s*\\[[^\\]]+\\]))`,
+							"g",
+						),
+						`${cssBinding}.props($1`,
+					);
+				}
+				rewritten = rewritten.replaceAll("stylex.props(", `${cssBinding}.props(`);
+				rewritten = moveStyleAfterPropsSpread(rewritten, cssBinding);
+				rewritten = mergeClassNameAfterPropsSpread(rewritten, cssBinding);
+				// Astryx's host components pass `xstyle` through StyleX's runtime
+				// `stylex.props` implementation. A compiled Pandwind group is static,
+				// but that host port does not know how to consume its class map. Move
+				// static carriers to the universal React className port at the adapter
+				// boundary; leave dynamic carriers on xstyle for their residual path.
+				rewritten = rewriteStaticXstyleHosts(rewritten, cssBinding);
+				return {
+					code: rewritten,
+					imports: rewritten === code ? [] : staticImports(cssBinding),
+					residuals: [],
+				};
+			},
+		},
+		emit(program, { programObject }) {
+			if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
+				return {
+					text: keyframesText(program),
+					imports: runtimeImports,
+				};
 			}
-			rewritten = rewritten.replaceAll("stylex.props(", `${cssBinding}.props(`);
-			rewritten = moveStyleAfterPropsSpread(rewritten, cssBinding);
-			rewritten = mergeClassNameAfterPropsSpread(rewritten, cssBinding);
-			// Astryx's host components pass `xstyle` through StyleX's runtime
-			// `stylex.props` implementation. A compiled Pandwind group is static,
-			// but that host port does not know how to consume its class map. Move
-			// static carriers to the universal React className port at the adapter
-			// boundary; leave dynamic carriers on xstyle for their residual path.
-			rewritten = rewriteStaticXstyleHosts(rewritten, cssBinding);
+			if (program.source?.pattern === CodemodPatternId.StyleXDefineVars) {
+				return {
+					text: varsText(program),
+					imports: runtimeImports,
+				};
+			}
 			return {
-				code: rewritten,
-				imports: rewritten === code ? [] : staticImports(cssBinding),
-				residuals: [],
+				text: `css.group(${programObject(program)})`,
+				imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 			};
 		},
-	},
-	emit(program, { programObject }) {
-		if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
-			return {
-				text: keyframesText(program),
-				imports: runtimeImports,
-			};
-		}
-		if (program.source?.pattern === CodemodPatternId.StyleXDefineVars) {
-			return {
-				text: varsText(program),
-				imports: runtimeImports,
-			};
-		}
-		return {
-			text: `css.group(${programObject(program)})`,
-			imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
-		};
-	},
-});
+	});
+}
+
+export default createStyleXAdapter();

@@ -21,7 +21,7 @@ import {
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
-import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
@@ -136,7 +136,12 @@ interface LoadedAdapterConfigs {
 	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
 }
 
-const defaultAdapterRegistry = createBuiltinCodemodCatalog().registry;
+const defaultAdapterRegistry = createBrowserCodemodCatalog().registry;
+
+async function resolveNodeAdapterRegistry(): Promise<StyleAdapterRegistry> {
+	const { createBuiltinCodemodCatalog } = await import(/* @vite-ignore */ "./adapter-catalog.ts");
+	return createBuiltinCodemodCatalog().registry;
+}
 
 function configurationFailure(source: string, detail: string): AdapterMigrationResult {
 	return {
@@ -178,7 +183,7 @@ export async function runAdapterMigrationAsync(
 	source: string,
 	options: AdapterMigrationOptions,
 ): Promise<AdapterMigrationResult> {
-	const adapterRegistry = options.adapterRegistry ?? defaultAdapterRegistry;
+	const adapterRegistry = options.adapterRegistry ?? (await resolveNodeAdapterRegistry());
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
 		options.to,
@@ -192,7 +197,8 @@ export async function runAdapterMigrationAsync(
 		readFile,
 	};
 	const detection = route.source.detect(context);
-	if (!detection.matched) return runAdapterMigrationInternal(source, options);
+	if (!detection.matched)
+		return runAdapterMigrationInternal(source, { ...options, adapterRegistry });
 	let sourceConfig: LoadedAdapterConfigs["source"];
 	let targetConfig: LoadedAdapterConfigs["target"];
 	try {
@@ -203,10 +209,14 @@ export async function runAdapterMigrationAsync(
 	} catch (error) {
 		return configurationFailure(source, error instanceof Error ? error.message : String(error));
 	}
-	return runAdapterMigrationInternal(source, options, {
-		source: sourceConfig,
-		target: targetConfig,
-	});
+	return runAdapterMigrationInternal(
+		source,
+		{ ...options, adapterRegistry },
+		{
+			source: sourceConfig,
+			target: targetConfig,
+		},
+	);
 }
 
 function runAdapterMigrationInternal(
