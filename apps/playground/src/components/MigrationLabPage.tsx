@@ -170,6 +170,33 @@ function Validation(props: { result: MigrationLabResult }) {
 	);
 }
 
+function CapabilityReport(props: { result: MigrationLabResult }) {
+	const blockers = props.result.reports.flatMap((report) =>
+		report.blockers.map((issue) => ({ adapter: report.adapter, ...issue })),
+	);
+	if (blockers.length === 0)
+		return (
+			<p className="px-3 py-2 text-[12px] text-emerald-300/80">
+				The target contract accepts the semantic program or a registered lowering.
+			</p>
+		);
+	return (
+		<div className="divide-y divide-white/[0.05]">
+			{blockers.map((blocker, index) => (
+				<div key={`${blocker.adapter}:${blocker.capability}:${index}`} className="px-3 py-2.5">
+					<div className="flex items-baseline gap-2">
+						<span className="rounded border border-amber-500/20 bg-amber-500/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-amber-300">
+							{blocker.capability}
+						</span>
+						<span className="font-mono text-[10px] text-zinc-600">{blocker.level}</span>
+					</div>
+					<p className="mt-1 text-[12px] leading-5 text-zinc-600">{blocker.detail}</p>
+				</div>
+			))}
+		</div>
+	);
+}
+
 function Contract(props: { endpoint: MigrationLabEndpoint }) {
 	return (
 		<div className="flex flex-wrap gap-1.5 p-3">
@@ -206,6 +233,9 @@ function ResultPane(props: {
 				<CodeBlock code={props.result.code} />
 			</Pane>
 			<Summary result={props.result} />
+			<Pane label="Target capability decision">
+				<CapabilityReport result={props.result} />
+			</Pane>
 			<Pane label="Residual report">
 				<Residuals result={props.result} />
 			</Pane>
