@@ -8,6 +8,8 @@ import {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
 	MIGRATION_PIPELINE_SCHEMA,
+	CodemodAdapterId,
+	getProjectMigrationCommand,
 	rewritePandaSource,
 	validatePandaSource,
 } from "../src/swap/index.ts";
@@ -56,6 +58,27 @@ describe("migration pipeline domains", () => {
 			expect(report.filesScanned).toBe(1);
 			expect(report.notes.some((note) => note.includes("pipeline stages:"))).toBe(true);
 			expect(report.notes.some((note) => note.includes("pipeline artifacts:"))).toBe(true);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+
+	test("routes the Panda project command through the project migration port", async () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-command-"));
+		try {
+			const file = join(root, "Page.tsx");
+			writeFileSync(file, 'export const page = css({ color: "red" });\n');
+			const command = getProjectMigrationCommand(CodemodAdapterId.Panda);
+			expect(command?.id).toBe(CodemodAdapterId.Panda);
+			await command?.run({
+				patterns: ["Page.tsx"],
+				filePaths: [file],
+				meta: { bridgeInverse: new Map() } as unknown as PandwindMeta,
+				diff: false,
+				report: true,
+				write: false,
+				skipMarker: "pandwind:command-test",
+			});
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}

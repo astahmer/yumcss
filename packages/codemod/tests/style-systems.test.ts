@@ -1,4 +1,7 @@
 import { describe, expect, test } from "vitest";
+import { resolve } from "node:path";
+import { examplePreset } from "pandwind/preset";
+import { loadMetaFromSources } from "../src/meta.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	createBuiltinCodemodCatalog,
@@ -34,6 +37,14 @@ const stub = (id: string) => ({
 		differences: [],
 		residuals: [],
 	}),
+});
+
+const exampleRoot = resolve(import.meta.dirname, "../../../apps/example/src");
+const exampleMeta = loadMetaFromSources({
+	typesDtsPath: resolve(exampleRoot, "types.d.ts"),
+	twTsPath: resolve(exampleRoot, "tw.ts"),
+	bridgePath: resolve(exampleRoot, "bridge.ts"),
+	tokens: examplePreset.tokens,
 });
 
 describe("style system and dialect registry", () => {
@@ -84,5 +95,51 @@ describe("style system and dialect registry", () => {
 				{ system: "pandwind", dialect: "dss" },
 			).target.id,
 		).toBe("pandwind:dss");
+	});
+
+	test("executes the nested Pandwind dialect ports independently", () => {
+		const css = PANDWIND_STYLE_SYSTEM.dialects.find((dialect) => dialect.dialect === "css")!;
+		const tw = PANDWIND_STYLE_SYSTEM.dialects.find((dialect) => dialect.dialect === "tw")!;
+		const dss = PANDWIND_STYLE_SYSTEM.dialects.find((dialect) => dialect.dialect === "dss")!;
+		const cssSource = 'css.class({ color: "red" })';
+		const cssConfig = css.loadConfig({ file: "Card.tsx", source: cssSource });
+		const parsedCss = css.parse(cssSource, {
+			file: "Card.tsx",
+			source: cssSource,
+			config: cssConfig,
+			meta: exampleMeta,
+		});
+		expect(parsedCss.matches).toHaveLength(1);
+		expect(css.validate(parsedCss.matches[0]!.program, parsedCss.matches[0]!.program).valid).toBe(
+			true,
+		);
+
+		const twSource = 'tw({ bgColor: "blue-500" })';
+		const twConfig = tw.loadConfig({ file: "Card.tsx", source: twSource });
+		const parsedTw = tw.parse(twSource, {
+			file: "Card.tsx",
+			source: twSource,
+			config: twConfig,
+			meta: exampleMeta,
+		});
+		expect(parsedTw.matches).toHaveLength(1);
+		const emittedTw = tw.emit(parsedTw.matches[0]!.program, {
+			file: "Card.tsx",
+			config: twConfig,
+			mode: "partial",
+			index: 0,
+			meta: exampleMeta,
+		});
+		expect(emittedTw.text).toContain("tw({");
+
+		const dssSource = 'dss({ $frame: { fill: "$blue-500" } })';
+		const dssConfig = dss.loadConfig({ file: "Card.tsx", source: dssSource });
+		const parsedDss = dss.parse(dssSource, {
+			file: "Card.tsx",
+			source: dssSource,
+			config: dssConfig,
+			meta: exampleMeta,
+		});
+		expect(parsedDss.matches).toHaveLength(1);
 	});
 });
