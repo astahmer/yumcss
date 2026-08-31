@@ -7,8 +7,8 @@ Pandwind has the essential pivot substrate: a versioned semantic
 adapters, shared scanning, official configuration-loader ports, host adapters,
 lowering plugins, and differential proof tooling.
 
-The remaining weakness was previously visible in the frequent
-`pandwind:migrate-skip (adapter capability mismatch)` marker. The semantic IR
+The remaining weakness was previously visible in the frequent generic
+capability-mismatch skip marker. The semantic IR
 could describe more than the lowering registry and target contracts could
 prove, and one generic marker hid whether the problem was parsing, lowering, or
 target representation. The current diagnostics now classify those outcomes;

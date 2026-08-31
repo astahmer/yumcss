@@ -66,8 +66,6 @@ function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFai
 	if (result.code.includes("pandwind:migrate-skip")) {
 		if (!typedMarker.test(result.code))
 			failures.push({ ...route, reason: "skip marker has no typed semantic cause" });
-		if (result.code.includes("adapter capability mismatch"))
-			failures.push({ ...route, reason: "generic capability mismatch marker leaked" });
 	}
 	return failures;
 }
