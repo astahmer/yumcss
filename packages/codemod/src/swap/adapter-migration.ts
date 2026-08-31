@@ -482,8 +482,6 @@ function runAdapterMigrationInternal(
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly representation: StyleHostRepresentationKind;
-		readonly representationKind: StyleRepresentationKind;
-		readonly residuals: readonly StyleProgramResidual[];
 	}> = [];
 	const targetComponentRewrites: Array<{
 		readonly program: StyleProgram;
@@ -520,12 +518,13 @@ function runAdapterMigrationInternal(
 		});
 	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		let lowering = loweringRegistry.plan({
+		const lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,
 			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
+		loweringPlans.push(lowering);
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
@@ -541,7 +540,6 @@ function runAdapterMigrationInternal(
 		let targetHostProjection = false;
 		let targetComponentProjection = false;
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
-		let targetRepresentationKind = lowering.representation;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		const bindingBeforeMatch = bindingForMatch(source, match.start);
 		const hasHostContext =
@@ -560,51 +558,6 @@ function runAdapterMigrationInternal(
 						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 						source,
 					});
-		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
-			program,
-			hasHostContext,
-			...(hostFramework === undefined ? {} : { framework: hostFramework }),
-			...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
-			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
-			source,
-		});
-		const representationNegotiated = resolvedRepresentation !== undefined;
-		if (resolvedRepresentation !== undefined) targetRepresentationKind = resolvedRepresentation;
-		const representationCapabilities =
-			targetPolicy?.capabilitiesForRepresentation?.({
-				program,
-				representation: targetRepresentationKind,
-			}) ?? [];
-		const preservedResidualKinds = new Set(
-			representationNegotiated
-				? (targetPolicy?.preservesResidualKindsForRepresentation?.({
-						program,
-						representation: targetRepresentationKind,
-					}) ?? [])
-				: [],
-		);
-		const carrierResiduals = loweringResiduals;
-		if (preservedResidualKinds.size > 0)
-			loweringResiduals = loweringResiduals.filter(
-				(residual) => !preservedResidualKinds.has(residual.kind),
-			);
-		if (!lowering.availableRepresentations.includes(targetRepresentationKind))
-			lowering = {
-				...lowering,
-				availableRepresentations: [...lowering.availableRepresentations, targetRepresentationKind],
-			};
-		loweringPlans.push(lowering);
-		if (
-			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
-			hostRepresentation !== undefined
-		)
-			emittedHostRepresentation = hostRepresentation;
-		if (
-			targetRepresentationKind === StyleRepresentationKind.CustomProperty &&
-			hostRepresentation !== undefined &&
-			hasHostContext
-		)
-			emittedHostRepresentation = hostRepresentation;
 		if (
 			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&
 			resolvedHostRepresentation !== undefined &&
@@ -669,7 +622,7 @@ function runAdapterMigrationInternal(
 						sourceStart: match.start,
 						sourceText: match.sourceText,
 						outcome: StyleMigrationOutcome.Residual,
-						representation: targetRepresentationKind,
+						representation: lowering.representation,
 						detail: "dynamic value has no validated host carrier",
 					});
 					residuals.push({
@@ -903,10 +856,7 @@ function runAdapterMigrationInternal(
 			}
 		}
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
-		const resolvedCapabilities = new Set([
-			...(lowering.resolvedCapabilities ?? []),
-			...representationCapabilities,
-		]);
+		const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
 		if (targetComponentProjection) {
 			resolvedCapabilities.add("components");
 			if (targetPolicy?.handlesFrameworkSemantics === true)
@@ -934,7 +884,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: targetRepresentationKind,
+				representation: lowering.representation,
 				detail:
 					effectiveReport.blockers.length > 0
 						? "target capability has no validated representation"
@@ -989,9 +939,6 @@ function runAdapterMigrationInternal(
 				...(emittedHostRepresentation === undefined
 					? {}
 					: { representation: emittedHostRepresentation }),
-				...(targetRepresentationKind === lowering.representation
-					? {}
-					: { representationKind: targetRepresentationKind }),
 			},
 		});
 		if (emitted.text.trim() === "") {
@@ -1005,7 +952,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: targetRepresentationKind,
+				representation: lowering.representation,
 				detail: emptyEmission.hint,
 			});
 			residuals.push(emptyEmission, ...emitted.residuals);
@@ -1058,8 +1005,6 @@ function runAdapterMigrationInternal(
 				program,
 				emittedExpression: emitted.text,
 				representation: emittedHostRepresentation,
-				representationKind: targetRepresentationKind,
-				residuals: carrierResiduals,
 				...(bindingForMatch(source, match.start) === undefined
 					? {}
 					: { binding: bindingForMatch(source, match.start) }),
@@ -1099,7 +1044,7 @@ function runAdapterMigrationInternal(
 				sourceStart: match.start,
 				sourceText: match.sourceText,
 				outcome: StyleMigrationOutcome.Residual,
-				representation: targetRepresentationKind,
+				representation: lowering.representation,
 				detail: validation.differences.join("; "),
 			});
 			residuals.push({
@@ -1178,18 +1123,16 @@ function runAdapterMigrationInternal(
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 		converted++;
-		const successfulRepresentation = targetRepresentationKind;
+		const successfulRepresentation = lowering.representation;
 		outcomes.push({
 			sourceStart: match.start,
 			sourceText: match.sourceText,
 			outcome:
-				successfulRepresentation === StyleRepresentationKind.PortableArtifact
-					? StyleMigrationOutcome.PortableArtifact
-					: programHasDynamic(program) || dynamicCarrier !== undefined
-						? StyleMigrationOutcome.HostRuntime
-						: successfulRepresentation === StyleRepresentationKind.Static
-							? StyleMigrationOutcome.Static
-							: StyleMigrationOutcome.TargetNative,
+				programHasDynamic(program) || dynamicCarrier !== undefined
+					? StyleMigrationOutcome.HostRuntime
+					: successfulRepresentation === StyleRepresentationKind.Static
+						? StyleMigrationOutcome.Static
+						: StyleMigrationOutcome.TargetNative,
 			representation: successfulRepresentation,
 		});
 	}
