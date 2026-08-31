@@ -101,6 +101,109 @@ function renderMuiSxHost(
 	return `${tag.slice(0, insertion)} sx={${styleObject}}${tag.slice(insertion)}`;
 }
 
+function findTagEnd(source: string, start: number): number | undefined {
+	let quote: string | undefined;
+	let braces = 0;
+	for (let index = start; index < source.length; index++) {
+		const character = source[index]!;
+		if (quote !== undefined) {
+			if (character === quote && source[index - 1] !== "\\") quote = undefined;
+			continue;
+		}
+		if (character === '"' || character === "'" || character === "`") {
+			quote = character;
+			continue;
+		}
+		if (character === "{") {
+			braces++;
+			continue;
+		}
+		if (character === "}" && braces > 0) {
+			braces--;
+			continue;
+		}
+		if (character === ">" && braces === 0) return index;
+	}
+	return undefined;
+}
+
+interface HostUse {
+	readonly start: number;
+	readonly end: number;
+	readonly openingEnd: number;
+	readonly tag: string;
+	readonly opening: string;
+	readonly attribute: string;
+}
+
+function findHostUse(source: string, binding: string | undefined): HostUse | undefined {
+	if (binding === undefined) return undefined;
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const attribute = new RegExp(`\\b(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
+	for (const match of source.matchAll(/<[A-Za-z][\w:.-]*/g)) {
+		const start = match.index ?? 0;
+		const openingEnd = findTagEnd(source, start);
+		if (openingEnd === undefined) continue;
+		const opening = source.slice(start, openingEnd + 1);
+		const attributeMatch = attribute.exec(opening);
+		if (attributeMatch === null) continue;
+		const tag = /^<([A-Za-z][\w:.-]*)/.exec(opening)?.[1];
+		if (tag === undefined) continue;
+		return {
+			start,
+			end: openingEnd + 1,
+			openingEnd,
+			tag,
+			opening,
+			attribute: attributeMatch[0],
+		};
+	}
+	return undefined;
+}
+
+function tagForOpening(opening: string | undefined): string | undefined {
+	return opening === undefined ? undefined : /^<([A-Za-z][\w:.-]*)/.exec(opening)?.[1];
+}
+
+function isKnownMuiComponent(source: string, tag: string): boolean {
+	if (tag === "Box") return true;
+	const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return new RegExp(
+		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+[\"']@mui\\/(?:material|system)[\"']`,
+	).test(source);
+}
+
+function rewriteMuiIntrinsicHost(
+	code: string,
+	expression: string,
+	host: HostUse,
+): { code: string; imports: readonly string[]; residuals: readonly never[] } {
+	const opening = host.opening;
+	const selfClosing = /\/\s*>$/.test(opening);
+	const attributes = opening
+		.slice(1 + host.tag.length, -1)
+		.replace(/\/\s*$/, "")
+		.replace(host.attribute, "")
+		.trim();
+	const suffix = attributes === "" ? "" : ` ${attributes}`;
+	const replacement = `<Box component=${JSON.stringify(host.tag)}${suffix} sx={${expression}}${selfClosing ? " /" : ""}>`;
+	let rewritten = `${code.slice(0, host.start)}${replacement}${code.slice(host.end)}`;
+	if (!selfClosing) {
+		const closing = new RegExp(`<\\/\\s*${host.tag}\\s*>`).exec(
+			rewritten.slice(host.start + replacement.length),
+		);
+		if (closing !== null) {
+			const closingStart = host.start + replacement.length + closing.index;
+			rewritten = `${rewritten.slice(0, closingStart)}</Box>${rewritten.slice(closingStart + closing[0].length)}`;
+		}
+	}
+	return {
+		code: rewritten,
+		imports: ['import { Box } from "@mui/material";'],
+		residuals: [],
+	};
+}
+
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Mui,
 	patterns: [
@@ -185,12 +288,18 @@ export default defineCodemodAdapter({
 			hostContextRequiredHint:
 				"MUI sx styles require a host component prop; no standalone sx() API exists",
 			hostRepresentation: StyleHostRepresentationKind.Component,
-			resolveHostRepresentation: ({ program, hasHostContext, framework }) =>
+			resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
 				(framework === undefined || framework === BuiltinHostFramework.React) &&
 				program.source?.subject === undefined
-					? hasHostContext
-						? StyleHostRepresentationKind.StyleProp
-						: undefined
+					? (() => {
+							if (!hasHostContext) return undefined;
+							const host = findHostUse(source ?? "", binding);
+							const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
+							if (tag === undefined) return undefined;
+							return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
+								? StyleHostRepresentationKind.StyleProp
+								: undefined;
+						})()
 					: framework === undefined || framework === BuiltinHostFramework.React
 						? StyleHostRepresentationKind.Component
 						: undefined,
@@ -212,9 +321,8 @@ export default defineCodemodAdapter({
 						],
 					};
 				const expression = binding === undefined ? emittedExpression : binding;
-				const escaped = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-				const pattern = new RegExp(`(\\b)(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
-				if (!pattern.test(code))
+				const host = findHostUse(code, binding);
+				if (host === undefined)
 					return {
 						code,
 						residuals: [
@@ -225,6 +333,21 @@ export default defineCodemodAdapter({
 							},
 						],
 					};
+				if (host.tag[0] === host.tag[0]?.toLowerCase())
+					return rewriteMuiIntrinsicHost(code, expression, host);
+				if (!isKnownMuiComponent(code, host.tag))
+					return {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: host.tag,
+								hint: "MUI sx projection requires an intrinsic Box wrapper or a known MUI component",
+							},
+						],
+					};
+				const escaped = expression.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+				const pattern = new RegExp(`(\\b)(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
 				return {
 					code: code.replace(pattern, `$1sx={${expression}}`),
 					residuals: [],

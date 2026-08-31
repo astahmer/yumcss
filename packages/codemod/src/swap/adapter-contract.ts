@@ -205,6 +205,10 @@ export interface AdapterTargetMigrationPolicy {
 		readonly program: StyleProgram;
 		readonly hasHostContext: boolean;
 		readonly framework?: string;
+		/** Source text used by the target adapter to validate host ownership. */
+		readonly source?: string;
+		/** Source binding whose host use is being projected. */
+		readonly binding?: string;
 	}) => StyleHostRepresentationKind | undefined;
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;

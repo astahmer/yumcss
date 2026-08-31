@@ -513,6 +513,8 @@ function runAdapterMigrationInternal(
 						program,
 						hasHostContext,
 						...(hostFramework === undefined ? {} : { framework: hostFramework }),
+						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
+						source,
 					});
 		if (
 			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&

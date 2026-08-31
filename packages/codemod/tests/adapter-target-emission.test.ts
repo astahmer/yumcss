@@ -33,6 +33,41 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("createCss");
 	});
 
+	test("projects an intrinsic React host through MUI Box instead of a DOM sx prop", () => {
+		const result = migrate(
+			'import { createCss } from "pandwind/css";\n' +
+				"const css = createCss();\n" +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <div className={card}>content</div>;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Mui,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('<Box component="div" sx={card}>content</Box>');
+		expect(result.code).toContain('import { Box } from "@mui/material";');
+		expect(result.code).not.toContain("<div sx={card}");
+	});
+
+	test("does not guess sx support for an unknown custom component", () => {
+		const result = migrate(
+			'import { createCss } from "pandwind/css";\n' +
+				"const css = createCss();\n" +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <CustomCard className={card} />;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Mui,
+		);
+
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toContain("className={card}");
+		expect(result.code).not.toContain("sx={card}");
+	});
+
 	test.each([
 		[CodemodAdapterId.Goober, 'import { css } from "goober";'],
 		[CodemodAdapterId.Aphrodite, 'import { StyleSheet } from "aphrodite";'],
