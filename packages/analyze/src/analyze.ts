@@ -17,7 +17,6 @@
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
-import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace, type SourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";

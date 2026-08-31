@@ -8,7 +8,12 @@
 	"plugins": ["typescript", "unicorn", "import"],
 	"rules": {
 		"typescript/no-non-null-assertion": "off",
+		"typescript/no-extraneous-class": "off",
+		"eslint/no-await-in-loop": "off",
+		"eslint/no-shadow": "off",
 		"unicorn/no-array-for-each": "off",
+		"unicorn/consistent-function-scoping": "off",
+		"unicorn/prefer-add-event-listener": "off",
 		"eslint/no-underscore-dangle": "off",
 		"import/no-unassigned-import": "off",
 		"pandwind-extraction/no-spreads": "warn",

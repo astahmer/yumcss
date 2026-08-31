@@ -113,28 +113,20 @@ async function browserProof(
 	for (const state of states) {
 		// Each state must be rendered from a fresh document so browser state and
 		// style-node order cannot leak between baseline and migrated captures.
-		// oxlint-disable-next-line no-await-in-loop
 		await page.setContent(proofHtml(baselineCss, baselineClass));
 		if (state === "hover") {
-			// oxlint-disable-next-line no-await-in-loop
 			await page.hover("div");
 		}
-		// oxlint-disable-next-line no-await-in-loop
 		const baseline = await page.screenshot();
-		// oxlint-disable-next-line no-await-in-loop
 		const baselineComputed = await page.$eval("div", (element) => {
 			const computed = getComputedStyle(element);
 			return { color: computed.color, padding: computed.padding };
 		});
-		// oxlint-disable-next-line no-await-in-loop
 		await page.setContent(proofHtml(targetCss, targetClass));
 		if (state === "hover") {
-			// oxlint-disable-next-line no-await-in-loop
 			await page.hover("div");
 		}
-		// oxlint-disable-next-line no-await-in-loop
 		const target = await page.screenshot();
-		// oxlint-disable-next-line no-await-in-loop
 		const targetComputed = await page.$eval("div", (element) => {
 			const computed = getComputedStyle(element);
 			return { color: computed.color, padding: computed.padding };

@@ -222,7 +222,6 @@ export function createPandaMigrationPipeline(
 			let context: PandaMigrationContext = { options, completedStages: [] };
 			for (const stage of stages) {
 				// Stages are sequential by contract: each stage consumes prior context.
-				// oxlint-disable-next-line no-await-in-loop
 				const result = await stage.run(context);
 				context = {
 					...context,

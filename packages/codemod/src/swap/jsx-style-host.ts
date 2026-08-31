@@ -23,7 +23,6 @@ export interface JsxStyleHostRenderResult {
 }
 
 /** Shared host syntax port for adapters that express styles as JSX attributes. */
-// oxlint-disable-next-line typescript/no-extraneous-class -- one scoped static host utility is the adapter port.
 export class JsxStyleHost {
 	static parse(
 		source: string,

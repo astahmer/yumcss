@@ -6,7 +6,6 @@
 // (later wins), and identical literals dedup to one shared class.
 
 // Sequential awaits are the point of an ordered e2e scenario.
-// oxlint-disable eslint/no-await-in-loop
 import { createRequire } from "node:module";
 import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";

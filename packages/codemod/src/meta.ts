@@ -251,7 +251,6 @@ type ModuleExports = Record<string, unknown>;
 /** Load project tokens from the preset import emitted into bridge.ts. */
 // Project module candidates are intentionally tried in order because only one
 // can resolve under the project's module loader.
-// oxlint-disable eslint/no-await-in-loop
 async function loadTokensFromBridge(bridgePath: string): Promise<AnyTokens | undefined> {
 	const source = readFileSync(bridgePath, "utf8");
 	const binding = /\bpreset\s*:\s*([A-Za-z_$][\w$]*)/.exec(source)?.[1];
@@ -284,7 +283,6 @@ async function importProjectModule(fromFile: string, specifier: string): Promise
 	}
 	throw lastError;
 }
-// oxlint-enable eslint/no-await-in-loop
 
 /** Async project-aware loader used by the CLI. */
 export async function loadMetaFromSourcesAsync(options: LoadMetaOptions): Promise<PandwindMeta> {

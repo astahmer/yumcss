@@ -1,4 +1,8 @@
-import generatedWindTypes from "../types.d.ts?raw";
+const generatedWindTypes = String(
+	import.meta.glob("../types.d.ts", { eager: true, import: "default", query: "?raw" })[
+		"../types.d.ts"
+	] ?? "",
+);
 
 /**
  * Monaco's TypeScript worker is separate from the Vite/TypeScript compiler.

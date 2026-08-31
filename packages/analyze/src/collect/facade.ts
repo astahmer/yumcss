@@ -23,7 +23,6 @@ import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";
 
 /** Scoped collection domain façade; policies remain owned by their ports. */
-// oxlint-disable-next-line typescript/no-extraneous-class -- static domain façade is the public collection boundary.
 export class CollectionToolkit {
 	static readonly gather = gather;
 	static readonly analyzeStyleUsage = analyzeStyleUsage;

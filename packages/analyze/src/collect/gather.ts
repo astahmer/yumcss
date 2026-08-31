@@ -3,9 +3,10 @@
  * entry points (runCli / createCssBudgetService / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
-import { globSync, readFileSync } from "node:fs";
+import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadTwConfig } from "../analyze.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";

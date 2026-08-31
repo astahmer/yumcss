@@ -219,7 +219,6 @@ async function coverageSection() {
 		// Sequential by design: each measurement loads a separate module graph
 		// (two full compiler instances) — interleaving them doubles peak memory.
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			results.push({ label: tree.label, ...(await measureTree(tree.dir)) });
 		} catch (error) {
 			warn(`coverage for ${tree.label} unavailable: ${error?.message ?? error}`);

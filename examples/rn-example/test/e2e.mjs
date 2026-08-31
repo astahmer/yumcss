@@ -27,7 +27,6 @@ for (const base of [
 if (!chromium) throw new Error("playwright-core not resolvable");
 
 // Sequential awaits are the point of an ordered e2e scenario.
-// oxlint-disable eslint/no-await-in-loop
 
 const PORT = 4611;
 const BASE_URL = `http://localhost:${PORT}/`;

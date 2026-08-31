@@ -251,7 +251,6 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			// Sequential short-circuit: stop at the first source that resolves
 			// to a generated tw module. Promise.all would load them needlessly.
 			for (const source of imports.sources) {
-				// oxlint-disable-next-line no-await-in-loop
 				config = await loadConfig(resolver, id, source);
 				if (config !== undefined) break;
 			}

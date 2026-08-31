@@ -105,7 +105,6 @@ for (const fixture of fixtures) {
 			const file = join(root, "Page.tsx");
 			writeFileSync(file, fixture.source);
 			// The temporary project must be isolated before its migration runs.
-			// oxlint-disable-next-line no-await-in-loop
 			const report = await runPandaMigration({
 				projectRoot: root,
 				patterns: ["Page.tsx"],
@@ -130,7 +129,6 @@ for (const fixture of fixtures) {
 		const detected = sourceAdapter.detect({ file: fixture.path, source: fixture.source });
 		detection = detected;
 		// Preserve corpus order so the JSON report remains reproducible.
-		// oxlint-disable-next-line no-await-in-loop
 		const result = await runAdapterMigrationAsync(fixture.source, {
 			from: fixture.from,
 			to: fixture.to,
