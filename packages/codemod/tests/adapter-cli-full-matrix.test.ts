@@ -14,6 +14,7 @@ interface CliFileResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
+	readonly source: string;
 }
 
 function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly CliFileResult[] {
@@ -48,14 +49,17 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 			{ cwd: codemodRoot, encoding: "utf8" },
 		);
 		const report = JSON.parse(output) as {
-			readonly files: readonly {
-				readonly file: string;
-				readonly converted: number;
-				readonly skipped: number;
-				readonly residuals: number;
-			}[];
+				readonly files: readonly {
+					readonly file: string;
+					readonly converted: number;
+					readonly skipped: number;
+					readonly residuals: number;
+				}[];
 		};
-		return report.files;
+		return report.files.map((result, index) => ({
+			...result,
+			source: readFileSync(files[index]!, "utf8"),
+		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
 	}
@@ -89,11 +93,13 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 						result.converted > 0 || result.skipped > 0 || result.residuals > 0,
 						`${source.id} -> ${target.id} produced no conversion or residual evidence`,
 					).toBe(true);
-					if (result.skipped > 0)
+					if (result.skipped > 0) {
 						expect(
 							result.residuals,
 							`${source.id} -> ${target.id} skipped without residual evidence`,
 						).toBeGreaterThan(0);
+						expect(result.source).toContain("pandwind:migrate-skip");
+					}
 				}
 			}
 	}, 600_000);
