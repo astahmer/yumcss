@@ -91,6 +91,15 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+The flat path is fail-closed as well. A target emitter may return text and a
+residual, but the runner only applies that replacement when the residual is
+explicitly marked as preserved by a target carrier such as `$raw` or a runtime
+escape hatch. Ordinary unknown utilities, dynamic values, and unrepresentable
+declarations keep their original call and receive a typed skip marker. This
+prevents a plausible-looking empty or partial target object from hiding a
+semantic loss while still allowing intentional escape hatches to remain useful
+and reportable.
+
 Host projection is negotiated per use site, not inferred from the presence of
 an adapter. A target policy declares the representation for a bound host
 (`class`, `component`, or a target style prop) and may declare a different

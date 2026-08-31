@@ -120,6 +120,11 @@ matrix:
   route cases as the test suite.
 - Every skipped route must preserve its source and carry a typed residual;
   the obsolete generic `adapter capability mismatch` marker is rejected.
+- The flat `SwapIR` matrix also covers every legacy source-to-target route,
+  including unknown utilities and malformed calls. The runner is fail-closed
+  when an emitter reports a residual alongside non-empty output; only a
+  residual explicitly marked as preserved by a target carrier (for example
+  `$raw`) may accompany an applied replacement.
 
 This slice proves route orchestration and no-silent-loss behavior. It does not
 turn fixture evidence into a browser/SSR promotion claim; those dimensions

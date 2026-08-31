@@ -612,9 +612,8 @@ export function runSwap(
 		if (result.imports !== undefined && result.imports.length > 0) imports.push(...result.imports);
 		if (result.text === "") {
 			// Nothing representable — document why, keep the original.
-			const hints = (ir.residuals.length > 0 ? ir.residuals : result.residuals)
-				.map((r) => r.hint ?? r.kind)
-				.join("; ");
+			const emissionResiduals = [...ir.residuals, ...result.residuals];
+			const hints = emissionResiduals.map((r) => r.hint ?? r.kind).join("; ");
 			code = insertSkipMarker(
 				code,
 				match.start,
@@ -624,9 +623,33 @@ export function runSwap(
 			skippedByMarker++;
 			continue;
 		}
+		// A non-empty emission is not proof of a lossless conversion. Emitters
+		// may have a useful partial rendering while still reporting semantics
+		// they cannot represent. The pivot contract is fail-closed unless the
+		// emitter explicitly marks a residual as preserved by a target carrier.
+		const emissionResiduals = [...ir.residuals, ...result.residuals];
+		const blockingResiduals = emissionResiduals.filter((residual) => residual.preserved !== true);
+		if (blockingResiduals.length > 0) {
+			const hints = blockingResiduals.map((residual) => residual.hint ?? residual.kind).join("; ");
+			code = insertSkipMarker(
+				code,
+				match.start,
+				`${MigrationSkipReason.LoweringResidual}: ${hints || "unrepresentable semantics"}`,
+				marker,
+			);
+			skippedByMarker++;
+			for (const residual of emissionResiduals) {
+				residualsOut.push({
+					file,
+					token: residual.text,
+					reason: residual.hint ?? residual.kind,
+				});
+			}
+			continue;
+		}
 		edits.push({ start: match.start, end: match.end, text: result.text });
 		converted++;
-		for (const residual of [...ir.residuals, ...result.residuals]) {
+		for (const residual of emissionResiduals) {
 			residualsOut.push({
 				file,
 				token: residual.text,

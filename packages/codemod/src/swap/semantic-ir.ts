@@ -400,6 +400,7 @@ export function styleProgramFromSwapIR(
 			kind: residual.kind,
 			text: residual.text,
 			hint: residual.hint,
+			preserved: residual.preserved,
 		})),
 		sourceMap: collectSources(
 			rules,
@@ -1226,6 +1227,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 		kind: isResidualKind(residual.kind) ? residual.kind : "unrepresentable",
 		text: residual.text,
 		hint: residual.hint,
+		preserved: residual.preserved,
 	}));
 	const entries = [] as SwapIR["entries"];
 	const rules = program.rules.length > 0 ? program.rules : [];

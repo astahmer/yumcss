@@ -36,6 +36,12 @@ export interface SwapResidual {
 	text: string;
 	/** Human hint for --report and the skip-marker comment. */
 	hint?: string;
+	/**
+	 * The target kept this semantic in an explicit escape hatch or runtime
+	 * carrier. Preserved residuals remain reportable, but do not invalidate the
+	 * replacement; every other residual is fail-closed by the swap runner.
+	 */
+	preserved?: boolean;
 }
 
 export interface SwapIR {

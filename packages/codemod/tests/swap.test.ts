@@ -154,8 +154,11 @@ describe("swap design vocabulary", () => {
 			`${WITH_CSS}const card = css.class({ backgroundColor: "#3182ce", boxShadow: "0 1px 2px black" });`,
 			"design",
 		);
+		expect(result.converted).toBe(1);
+		expect(result.skippedByMarker).toBe(0);
 		expect(result.code).toContain("$raw: {");
 		expect(result.code).toContain("boxShadow");
+		expect(result.unmappedTokens[0]?.reason).toContain("placed in $raw");
 	});
 
 	test("flex pairing becomes $layout.flow", () => {

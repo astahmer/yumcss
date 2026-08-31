@@ -523,6 +523,7 @@ function emitDesignVocabWithCallee(
 						kind: "unknown-value",
 						text: `${entry.prop}: ${String(entry.value)}`,
 						hint: "display/flex-direction outside the designer vocabulary",
+						preserved: true,
 					});
 				}
 				continue;
@@ -533,6 +534,7 @@ function emitDesignVocabWithCallee(
 					kind: "unknown-value",
 					text: `${entry.prop}: ${String(entry.value)}`,
 					hint: "outside the designer vocabulary — placed in $raw",
+					preserved: true,
 				});
 			}
 		}
