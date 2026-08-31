@@ -152,6 +152,25 @@ export interface AdapterHostRewriteResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
+export interface AdapterComponentRewriteContext {
+	readonly source: string;
+	readonly code: string;
+	readonly file: string;
+	readonly targetId: string;
+	readonly program: StyleProgram;
+	readonly binding: string;
+	readonly tag: string;
+	readonly framework: string;
+	readonly emittedExpression: string;
+	readonly representation: StyleHostRepresentationKind;
+}
+
+export interface AdapterComponentRewriteResult {
+	readonly code: string;
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+}
+
 export interface AdapterRewriteContext {
 	readonly source: string;
 	readonly code: string;
@@ -191,6 +210,10 @@ export interface AdapterTargetMigrationPolicy {
 	readonly hostFrameworks?: readonly string[];
 	/** Target-owned rewrite for representations attached to a host prop. */
 	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
+	/** Target-owned rewrite for styled subjects that become intrinsic hosts. */
+	readonly rewriteComponent?: (
+		context: AdapterComponentRewriteContext,
+	) => AdapterComponentRewriteResult;
 	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;
 	readonly handlesRawTemplate?: (context: { source: string }) => boolean;
 	readonly handlesTemplateFragment?: (program: StyleProgram) => boolean;

@@ -728,11 +728,13 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Component,
-				resolveHostRepresentation: ({ program, framework }) => {
+				resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
 					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;
 					return program.source?.subject === undefined
 						? StyleHostRepresentationKind.StyleProp
-						: StyleHostRepresentationKind.Component;
+						: hasHostContext
+							? StyleHostRepresentationKind.StyleProp
+							: StyleHostRepresentationKind.Component;
 				},
 				rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
 					if (representation !== StyleHostRepresentationKind.StyleProp)
@@ -766,6 +768,42 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 						code: code.replace(pattern, `$1{...stylex.props(${expression})}`),
 						residuals: [],
 					};
+				},
+				rewriteComponent: ({ code, binding, tag, framework, representation }) => {
+					if (representation !== StyleHostRepresentationKind.StyleProp)
+						return { code, residuals: [] };
+					if (framework !== BuiltinHostFramework.React)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: binding,
+									hint: `StyleX component projection requires ${BuiltinHostFramework.React}`,
+								},
+							],
+						};
+					const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+					const selfClosing = new RegExp(`<${escapedBinding}\\b([^<>]*?)/\\s*>`, "g");
+					let found = false;
+					const rewritten = code.replace(selfClosing, (_match, rawAttrs: string) => {
+						found = true;
+						const attrs = String(rawAttrs).trimEnd();
+						if (/\b(?:className|style)\s*=/.test(attrs)) return _match;
+						return `<${tag}${attrs} {...stylex.props(${binding})} />`;
+					});
+					if (!found || rewritten === code)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: binding,
+									hint: "StyleX component projection requires a simple self-closing host use",
+								},
+							],
+						};
+					return { code: rewritten, residuals: [] };
 				},
 			},
 			prepareDynamic: ({ source, targetId, binding }) => ({

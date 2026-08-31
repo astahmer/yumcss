@@ -195,6 +195,8 @@ export type {
 	AdapterLossiness,
 	AdapterDynamicPreparationContext,
 	AdapterDynamicPreparation,
+	AdapterComponentRewriteContext,
+	AdapterComponentRewriteResult,
 	AdapterHostRewriteContext,
 	AdapterHostRewriteResult,
 	AdapterRewriteContext,

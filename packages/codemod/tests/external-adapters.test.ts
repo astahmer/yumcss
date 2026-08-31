@@ -547,6 +547,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 		},
 	);
 
+	test("projects an intrinsic styled subject into a StyleX host", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "stylex", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('const Card = stylex.create({ style: { color: "red" } }).style');
+		expect(result.code).toContain("<div {...stylex.props(Card)} />");
+		expect(result.code).not.toContain("styled-components");
+	});
+
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

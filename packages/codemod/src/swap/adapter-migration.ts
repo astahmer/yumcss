@@ -417,6 +417,14 @@ function runAdapterMigrationInternal(
 		readonly framework?: string;
 		readonly representation: StyleHostRepresentationKind;
 	}> = [];
+	const targetComponentRewrites: Array<{
+		readonly program: StyleProgram;
+		readonly binding: string;
+		readonly tag: string;
+		readonly framework: string;
+		readonly emittedExpression: string;
+		readonly representation: StyleHostRepresentationKind;
+	}> = [];
 	let skipped = 0;
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
 		const lowering = loweringRegistry.plan({
@@ -439,6 +447,7 @@ function runAdapterMigrationInternal(
 			program = { ...program, source: { ...program.source, framework: undefined } };
 		}
 		let targetHostProjection = false;
+		let targetComponentProjection = false;
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
 		const bindingBeforeMatch = bindingForMatch(source, match.start);
@@ -538,23 +547,44 @@ function runAdapterMigrationInternal(
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
 			const tag = componentTagForSubject(program.source.subject);
 			const framework = hostFramework;
+			const targetComponentRewriter = targetPolicy?.rewriteComponent;
+			const targetComponentPreview =
+				binding !== undefined &&
+				tag !== undefined &&
+				framework !== undefined &&
+				targetComponentRewriter !== undefined
+					? targetComponentRewriter({
+							source,
+							code: source,
+							file: options.file,
+							targetId: targetAdapter.id,
+							program,
+							binding,
+							tag,
+							framework,
+							emittedExpression: binding,
+							representation: hostRepresentation ?? StyleHostRepresentationKind.Component,
+						})
+					: undefined;
 			const rewriter =
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
 					: undefined;
+			const hasTargetComponentUsage = targetComponentPreview?.residuals.length === 0;
 			const hasHostUsage =
-				binding !== undefined &&
-				tag !== undefined &&
-				framework !== undefined &&
-				rewriter !== undefined &&
-				rewriter.rewrite({
-					source,
-					file: options.file,
-					binding,
-					tag,
-					framework,
-					classExpression: binding,
-				}).changed;
+				hasTargetComponentUsage ||
+				(binding !== undefined &&
+					tag !== undefined &&
+					framework !== undefined &&
+					rewriter !== undefined &&
+					rewriter.rewrite({
+						source,
+						file: options.file,
+						binding,
+						tag,
+						framework,
+						classExpression: binding,
+					}).changed);
 			const standaloneExport =
 				binding === undefined &&
 				tag !== undefined &&
@@ -593,7 +623,28 @@ function runAdapterMigrationInternal(
 						),
 					};
 			}
+			const residualsCanUseHostLowering = program.residuals.every(
+				(residual) =>
+					residual.kind === "dynamic" ||
+					(residual.kind === "function-dynamic" && hasFunctionDynamic),
+			);
 			if (
+				hasTargetComponentUsage &&
+				!hasDynamic &&
+				!hasFunctionDynamic &&
+				residualsCanUseHostLowering
+			) {
+				emittedHostRepresentation = hostRepresentation;
+				targetComponentProjection = true;
+				program = {
+					...program,
+					source: {
+						...program.source,
+						subject: undefined,
+						...(targetPolicy?.handlesFrameworkSemantics === true ? { framework: undefined } : {}),
+					},
+				};
+			} else if (
 				standaloneExport ||
 				hostRepresentation === StyleHostRepresentationKind.Component ||
 				binding === undefined ||
@@ -612,11 +663,6 @@ function runAdapterMigrationInternal(
 					framework,
 					classExpression: binding,
 				});
-				const residualsCanUseHostLowering = program.residuals.every(
-					(residual) =>
-						residual.kind === "dynamic" ||
-						(residual.kind === "function-dynamic" && hasFunctionDynamic),
-				);
 				const rewriteKey = `${binding}:${tag}:${framework}`;
 				if (preview.residuals.length === 0 && residualsCanUseHostLowering && !hasFunctionDynamic) {
 					program = {
@@ -666,6 +712,11 @@ function runAdapterMigrationInternal(
 		}
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
 		const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
+		if (targetComponentProjection) {
+			resolvedCapabilities.add("components");
+			if (targetPolicy?.handlesFrameworkSemantics === true)
+				resolvedCapabilities.add("framework-semantics");
+		}
 		const effectiveReport =
 			resolvedCapabilities.size === 0
 				? report
@@ -733,6 +784,25 @@ function runAdapterMigrationInternal(
 					: { representation: emittedHostRepresentation }),
 			},
 		});
+		if (
+			targetComponentProjection &&
+			program.source?.subject === undefined &&
+			bindingBeforeMatch !== undefined &&
+			program.source?.framework === undefined &&
+			sourceSubject !== undefined
+		) {
+			const tag = componentTagForSubject(sourceSubject);
+			const framework = hostFramework;
+			if (tag !== undefined && framework !== undefined && hostRepresentation !== undefined)
+				targetComponentRewrites.push({
+					program,
+					binding: bindingBeforeMatch,
+					tag,
+					framework,
+					emittedExpression: emitted.text,
+					representation: hostRepresentation,
+				});
+		}
 		// Preserve target-owned residuals in the public report as well as in
 		// validation. A failed validation is an aggregate consequence; it must
 		// not hide the precise semantic reason emitted by the target adapter.
@@ -740,6 +810,7 @@ function runAdapterMigrationInternal(
 		const emittedForValidation = validationSource(emitted.text, program);
 		if (
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
+			!targetComponentProjection &&
 			emittedHostRepresentation !== undefined &&
 			program.source?.subject === undefined &&
 			program.source?.hostOpenTag === undefined
@@ -864,6 +935,19 @@ function runAdapterMigrationInternal(
 	let needsCx = false;
 	for (const request of targetHostRewrites) {
 		const rewrite = targetAdapter.migration?.targetPolicy?.rewriteHost?.({
+			source,
+			code: runtimeEdited,
+			file: options.file,
+			targetId: targetAdapter.id,
+			...request,
+		});
+		if (rewrite === undefined) continue;
+		runtimeEdited = rewrite.code;
+		for (const statement of rewrite.imports ?? []) imports.add(statement);
+		residuals.push(...rewrite.residuals);
+	}
+	for (const request of targetComponentRewrites) {
+		const rewrite = targetAdapter.migration?.targetPolicy?.rewriteComponent?.({
 			source,
 			code: runtimeEdited,
 			file: options.file,
