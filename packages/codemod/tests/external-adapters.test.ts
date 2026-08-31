@@ -776,8 +776,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
-					kind: "capability",
-					hint: expect.stringContaining("framework-semantics: solid"),
+					kind: "host-framework",
+					hint: expect.stringContaining("MUI sx styles require a host component prop"),
 				}),
 			]),
 		);
@@ -961,7 +961,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(
 			result.residuals.some(
-				(residual) => residual.hint?.includes("framework-semantics: react") ?? false,
+				(residual) => residual.hint?.includes("react-native has no host representation for react") ?? false,
 			),
 		).toBe(true);
 		expect(result.code).toContain("className={card}");
@@ -1213,8 +1213,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
-					kind: "capability",
-					hint: expect.stringContaining("framework-semantics: solid"),
+					kind: "host-framework",
+					hint: expect.stringContaining("stylex has no host representation for solid"),
 				}),
 			]),
 		);
