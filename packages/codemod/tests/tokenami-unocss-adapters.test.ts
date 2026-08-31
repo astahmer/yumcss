@@ -57,6 +57,20 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		expect(result.code).not.toContain("@tokenami/css");
 	});
 
+	test("round-trips pseudo arbitrary utilities between Tokenami and UnoCSS", () => {
+		const source =
+			"import { css } from '@tokenami/css'; const button = css({ '--hover_color': 'red' });";
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.Tokenami,
+			to: CodemodAdapterId.UnoCSS,
+			file: "button.tsx",
+		});
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"hover:[color:red]"');
+	});
+
 	test("uses a project resolver for UnoCSS utilities and preserves host syntax", () => {
 		const uno = createUnoCssAdapter({
 			resolver: {

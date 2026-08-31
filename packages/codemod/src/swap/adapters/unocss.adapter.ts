@@ -145,6 +145,23 @@ const BASIC_TOKENS: Readonly<Record<string, readonly StyleDeclaration[]>> = {
 	"p-4": [literal("padding", "1rem")],
 };
 
+function splitUtilityToken(token: string): string[] {
+	const parts: string[] = [];
+	let start = 0;
+	let brackets = 0;
+	for (let index = 0; index < token.length; index++) {
+		const character = token[index]!;
+		if (character === "[") brackets++;
+		else if (character === "]" && brackets > 0) brackets--;
+		else if (character === ":" && brackets === 0) {
+			parts.push(token.slice(start, index));
+			start = index + 1;
+		}
+	}
+	parts.push(token.slice(start));
+	return parts;
+}
+
 function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
 	const arbitrary = /^\[([\w-]+):(.+)\]$/.exec(token);
 	if (arbitrary?.[1] !== undefined && arbitrary[2] !== undefined)
@@ -154,7 +171,7 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 				arbitrary[2],
 			),
 		];
-	const parts = token.split(":");
+	const parts = splitUtilityToken(token);
 	const utility = parts.pop();
 	if (utility === undefined) return undefined;
 	const declarations = BASIC_TOKENS[utility];
