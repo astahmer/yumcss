@@ -118,6 +118,7 @@ export {
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
 	RealRepositoryProofStatus,
+	DifferentialProofMode,
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
@@ -276,7 +277,11 @@ export type {
 	SwapTargetAdapter,
 } from "./swap-registry.ts";
 export { runDifferentialFixture, runDifferentialSuite } from "./differential.ts";
-export { DIFFERENTIAL_MATRIX_SCHEMA, runDifferentialMatrix } from "./differential-matrix.ts";
+export {
+	DIFFERENTIAL_MATRIX_SCHEMA,
+	runDifferentialMatrix,
+	SemanticModelDifferentialProofProvider,
+} from "./differential-matrix.ts";
 export {
 	VALIDATOR_SCHEMA,
 	STYLE_VALIDATORS,
@@ -327,6 +332,7 @@ export type {
 export type {
 	DifferentialMatrixCase,
 	DifferentialMatrixCatalog,
+	DifferentialMatrixProofProvider,
 	DifferentialMatrixResult,
 } from "./differential-matrix.ts";
 export { STYLE_RECIPE_SCHEMA, resolveStyleRecipe } from "./recipe-ir.ts";

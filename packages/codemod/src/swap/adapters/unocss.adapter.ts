@@ -44,12 +44,6 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 		const selector = rule[1];
 		const body = rule[2];
 		if (selector === undefined || body === undefined) continue;
-		const classMatch = /\.([A-Za-z0-9_-]+(?:\\:[A-Za-z0-9_-]+)*)/.exec(selector);
-		if (classMatch?.[1] === undefined) continue;
-		const token = unescapeUnoCssSelector(classMatch[1]);
-		const prefixes = token.split(":");
-		const utility = prefixes.pop();
-		if (utility === undefined) continue;
 		const declarations: StyleDeclaration[] = [];
 		for (const declaration of body.split(";")) {
 			const colon = declaration.indexOf(":");
@@ -59,19 +53,47 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 			if (name !== "" && value !== "") declarations.push(literal(name, value));
 		}
 		if (declarations.length === 0) continue;
-		entries.set(
-			token,
-			declarations.map((declaration) => ({
-				...declaration,
-				conditions: prefixes.map(condition),
-			})),
-		);
+		for (const classMatch of selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)) {
+			const rawToken = classMatch[1];
+			if (rawToken === undefined) continue;
+			const token = unescapeUnoCssSelector(rawToken);
+			const prefixes = token.split(":");
+			const utility = prefixes.pop();
+			if (utility === undefined) continue;
+			entries.set(
+				token,
+				declarations.map((declaration) => ({
+					...declaration,
+					conditions: prefixes.map(condition),
+				})),
+			);
+		}
+	}
+	for (const theme of css.matchAll(/@theme[^{}]*\{([^{}]*)\}/gs)) {
+		const body = theme[1] ?? "";
+		for (const variable of body.matchAll(/--color-([\w-]+)\s*:\s*([^;]+);?/g)) {
+			const name = variable[1];
+			const value = variable[2]?.trim();
+			if (name === undefined || value === undefined || value === "") continue;
+			entries.set(`bg-${name}`, [literal("backgroundColor", value)]);
+			entries.set(`text-${name}`, [literal("color", value)]);
+		}
 	}
 	return {
 		resolve(token) {
 			return entries.get(token);
 		},
 	};
+}
+
+function projectThemeCss(context: AdapterConfigContext): string {
+	if (context.root === undefined || context.readFile === undefined) return "";
+	const readFile = context.readFile;
+	return (
+		["app/globals.css", "src/app/globals.css", "styles/globals.css", "src/styles/globals.css"]
+			.map((file) => readFile(joinDocumentPath(context.root!, file)))
+			.find((source) => source !== undefined) ?? ""
+	);
 }
 
 const literal = (property: string, value: string | number): StyleDeclaration => ({
@@ -230,6 +252,7 @@ async function officialConfig(
 			preflights: false,
 			minify: true,
 		});
+		const themeCss = projectThemeCss(context);
 		return {
 			...fallback,
 			files: [
@@ -241,7 +264,7 @@ async function officialConfig(
 			values: {
 				...fallback.values,
 				unoConfig: loaded.config,
-				unoResolver: createUnoCssResolverFromCss(generated.css),
+				unoResolver: createUnoCssResolverFromCss(`${themeCss}\n${generated.css}`),
 				unoGeneratedCss: generated.css,
 				officialConfigPackages: ["@unocss/config", "@unocss/core"],
 			},

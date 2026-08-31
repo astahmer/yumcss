@@ -97,16 +97,16 @@ export interface CodemodAdapterSpec {
 	readonly loadConfigAsync?: (context: AdapterConfigContext) => Promise<AdapterProjectConfig>;
 	readonly parse?: (source: string, context: AdapterParseContext) => AdapterParseResult;
 	readonly postprocessEmit?: (
-		emission: Pick<AdapterEmitResult, "text" | "imports">,
+		emission: Pick<AdapterEmitResult, "text" | "imports" | "semantic">,
 		context: AdapterEmitContext,
-	) => Pick<AdapterEmitResult, "text" | "imports">;
+	) => Pick<AdapterEmitResult, "text" | "imports" | "semantic">;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,
 		context?: AdapterEmitContext,
-	): Pick<AdapterEmitResult, "text" | "imports">;
+	): Pick<AdapterEmitResult, "text" | "imports" | "semantic">;
 }
 
 export function dependency(
@@ -678,6 +678,23 @@ function parseCalls(
 		// Source parsers are allowed to operate on snippets that are not complete
 		// modules; the adapter remains conservative through its balanced matcher.
 	}
+	const hostRanges = patterns.flatMap((pattern) => {
+		if (pattern.form !== "jsx-style") return [];
+		return [...source.matchAll(pattern.regex)].flatMap((match) => {
+			const start = match.index ?? 0;
+			if (mask?.isExcluded(start)) return [];
+			const tag = JsxStyleHost.parse(
+				source,
+				start,
+				context,
+				pattern.styleProps ?? [],
+				adapterSource(context, start),
+			);
+			return tag === undefined ? [] : [{ start, end: tag.end }];
+		});
+	});
+	const isInsideHostRange = (start: number): boolean =>
+		hostRanges.some((range) => start >= range.start && start < range.end);
 	for (const pattern of patterns) {
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
@@ -703,15 +720,26 @@ function parseCalls(
 									adapterSource(context, start),
 								);
 					if (tag === undefined) continue;
-					const program = styleProgramFromSourceObject(tag.body, {
-						...resolvedObjectOptions,
-						source: tag.source,
-						sourceOffset: start,
-					});
+					const program =
+						tag.template === undefined
+							? styleProgramFromSourceObject(tag.body, {
+									...resolvedObjectOptions,
+									source: tag.source,
+									sourceOffset: start,
+								})
+							: parseTemplateProgram(tag.template, context, start);
+					const hostProgram = {
+						...program,
+						source: {
+							...program.source,
+							...tag.source,
+							...(tag.template === undefined ? {} : { template: tag.template }),
+						},
+					};
 					matches.push({
 						start,
 						end: tag.end,
-						program,
+						program: pattern.transform?.(hostProgram, context) ?? hostProgram,
 						sourceText: tag.openingTag,
 					});
 				}
@@ -764,6 +792,10 @@ function parseCalls(
 				const firstTick = source.indexOf("`", start);
 				const lastTick = findTemplateLiteralEnd(source, firstTick);
 				if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
+				// A JSX style host owns the complete tagged template. Do not parse the
+				// nested `css\`...\`` again: doing so creates residuals for the same
+				// source site and makes a valid host migration look incomplete.
+				if (isInsideHostRange(start)) continue;
 				if (source.slice(start, firstTick).includes("=>")) {
 					residuals.push({
 						kind: "capability",

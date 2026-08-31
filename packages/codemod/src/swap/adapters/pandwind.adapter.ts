@@ -219,13 +219,7 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
 		const block = matchBlock(template, index + 1);
 		if (block === null) continue;
-		const expression = block.body.trim();
-		if (
-			/^[A-Z_$][\w$]*$/.test(expression) ||
-			/^(?:\(\s*[^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*[A-Z_$][\w$]*$/.test(expression)
-		) {
-			if (isSelectorPosition(block.end)) return true;
-		}
+		if (isSelectorPosition(block.end)) return true;
 		index = block.end - 1;
 	}
 	return false;
@@ -692,7 +686,7 @@ function runtimeGlobalTemplate(
 	return `(css.sheet.register([{ id: ${JSON.stringify(id)}, css: ${runtimeTemplateExpression(template, file)}, priority: 0 }]), null)`;
 }
 
-function runtimeTemplateExpression(template: string, file?: string): string {
+function runtimeTemplateExpression(template: string, file?: string, parameter = "props"): string {
 	const pieces: string[] = [];
 	let cursor = 0;
 	for (let index = 0; index < template.length; index++) {
@@ -701,7 +695,7 @@ function runtimeTemplateExpression(template: string, file?: string): string {
 		if (block === null) continue;
 		const staticPart = template.slice(cursor, index);
 		if (staticPart !== "") pieces.push(JSON.stringify(staticPart));
-		const expression = block.body.trim().replace(/\bcss(?:\s*<[^`]*>)?\s*`/g, "cssTemplate`");
+		const expression = block.body.trim().replace(/\bcss(?:\s*<[^`]*>)?\s*`/g, "`");
 		const subject =
 			/^(?:\(\s*[^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*([A-Z_$][\w$]*)$/.exec(expression)?.[1] ??
 			(/^[A-Z_$][\w$]*$/.test(expression) ? expression : undefined);
@@ -717,10 +711,10 @@ function runtimeTemplateExpression(template: string, file?: string): string {
 			// styled-components omits nullish interpolations. Keeping that
 			// invariant matters for SSR parity: String(undefined) would emit an
 			// invalid declaration and is observably different from the source.
-			pieces.push(`String(((${expression})(props)) ?? "")`);
+			pieces.push(`String(((${expression})(${parameter})) ?? "")`);
 		} else {
 			pieces.push(
-				`String((typeof (${expression}) === "function" ? (${expression})(props) : (${expression})) ?? "")`,
+				`String((typeof (${expression}) === "function" ? (${expression})(${parameter}) : (${expression})) ?? "")`,
 			);
 		}
 		index = block.end - 1;
@@ -729,6 +723,47 @@ function runtimeTemplateExpression(template: string, file?: string): string {
 	if (cursor < template.length) pieces.push(JSON.stringify(template.slice(cursor)));
 	if (pieces.length === 0) return JSON.stringify(template);
 	return pieces.join(" + ");
+}
+
+function runtimeHostTemplateExpression(
+	program: StyleProgram,
+	context: AdapterEmitContext | undefined,
+): { text: string; imports: readonly string[] } | undefined {
+	const host = program.source;
+	const template = host?.template;
+	if (
+		host?.hostOpenTag === undefined ||
+		host.hostStyleAttributes === undefined ||
+		template === undefined
+	)
+		return undefined;
+	const framework =
+		host.framework ??
+		context?.document?.framework ??
+		(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
+	const stableClass = CodemodStyleIdentity.className(
+		context?.file ?? "host",
+		`template-${host.start ?? "0"}`,
+	);
+	const cssText = `".${stableClass}{" + ${runtimeTemplateExpression(template, context?.file, "undefined")} + "}"`;
+	const classExpression = `(() => { const __pandwindCss = ${cssText}; css.sheet.register([{ id: ${JSON.stringify(stableClass)} + ":" + __pandwindCss, css: __pandwindCss, priority: 0 }]); return ${JSON.stringify(stableClass)}; })()`;
+	const rendered = JsxStyleHost.render(
+		host.hostOpenTag,
+		host.hostStyleAttributes,
+		classExpression,
+		framework,
+	);
+	return {
+		text: rendered.text,
+		imports: [
+			'import { createRuntimeCss } from "pandwind/css/runtime";',
+			'import { pandwindPreset } from "pandwind/preset";',
+			"const css = createRuntimeCss(pandwindPreset);",
+			...(rendered.needsCx
+				? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+				: []),
+		],
+	};
 }
 
 function runtimeStaticTemplateExpression(template: string, file?: string, source?: string): string {
@@ -956,8 +991,23 @@ export default defineCodemodAdapter({
 	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 	emit(program, { programObject, declarationsObject }, context) {
 		const cssBinding = generatedCssBinding(context?.document?.document.source);
-		const finalize = (emission: { text: string; imports: readonly string[] }) =>
-			renameGeneratedCssBinding(emission, cssBinding);
+		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
+			return (
+				rule.declarations.some(
+					(declaration) =>
+						declaration.value.kind === "dynamic" &&
+						/=>|^function\b/.test(declaration.value.expression.trim()),
+				) || rule.children.some(containsFunction)
+			);
+		});
+		const finalize = (emission: { text: string; imports: readonly string[] }) => ({
+			...renameGeneratedCssBinding(emission, cssBinding),
+			// The target object syntax is intentionally a projection of the
+			// versioned program. Keep the program attached for validation and
+			// downstream tools so nested conditions, rule kinds, and provenance are
+			// never inferred back from generated JavaScript.
+			semantic: program,
+		});
 		if (
 			program.source?.pattern === CodemodPatternId.CssTemplate &&
 			program.source.hostOpenTag === undefined
@@ -1027,12 +1077,19 @@ export default defineCodemodAdapter({
 		}
 		const host = program.source;
 		if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
+			const runtimeHost =
+				host.template !== undefined && hasComponentSelectorInterpolation(host.template)
+					? runtimeHostTemplateExpression(program, context)
+					: undefined;
+			if (runtimeHost !== undefined) return finalize(runtimeHost);
 			const framework =
 				host.framework ??
 				context?.document?.framework ??
 				(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
 			const dynamicHost = hasDynamicValues(program);
-			const programObjectText = programObject(program);
+			const programObjectText = programObject(
+				hasFunctionDynamic ? mapRuntimeProps(program, "undefined") : program,
+			);
 			const rendered = JsxStyleHost.render(
 				host.hostOpenTag,
 				host.hostStyleAttributes,
@@ -1057,15 +1114,6 @@ export default defineCodemodAdapter({
 			});
 		}
 		const kind = program.rules[0]?.kind;
-		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
-			return (
-				rule.declarations.some(
-					(declaration) =>
-						declaration.value.kind === "dynamic" &&
-						/=>|^function\b/.test(declaration.value.expression.trim()),
-				) || rule.children.some(containsFunction)
-			);
-		});
 		const stylexDynamicGroup =
 			program.source?.adapter === CodemodAdapterId.StyleX &&
 			program.source.pattern === CodemodPatternId.StyleXCreate;

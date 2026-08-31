@@ -5,6 +5,12 @@ import { CodemodAdapterId } from "../identifiers.ts";
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.NextYak,
 	patterns: [
+		{
+			name: "jsx-css",
+			regex: /<[A-Za-z_$][\w$.-]*\b/g,
+			form: "jsx-style",
+			styleProps: ["css"],
+		},
 		{ name: "css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{
 			name: "styled",
@@ -29,6 +35,13 @@ export default defineCodemodAdapter({
 	detectPatterns: [/\bfrom\s+["']next-yak["']/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["next-yak"],
 	configFiles: ["package.json"],
+	migration: {
+		prepareDynamic: ({ program }) => ({
+			handled:
+				program.source?.hostOpenTag !== undefined &&
+				program.source.hostStyleAttributes !== undefined,
+		}),
+	},
 	emit(program, { templateCss }) {
 		const text = templateCss(program);
 		return program.source?.subject !== undefined

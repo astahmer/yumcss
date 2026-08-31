@@ -6,6 +6,7 @@ import {
 } from "./differential.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import { createRuntimeSheet, type RuntimeSemanticRule } from "pandwind/css/runtime";
+import { DifferentialProofMode } from "./identifiers.ts";
 
 /** Versioned acceptance matrix for adapter-pair proof, not just unit fixtures. */
 export const DIFFERENTIAL_MATRIX_SCHEMA = "pandwind.differential-matrix/1" as const;
@@ -25,6 +26,7 @@ export interface DifferentialMatrixCatalog {
 
 export interface DifferentialMatrixResult {
 	readonly schema: typeof DIFFERENTIAL_MATRIX_SCHEMA;
+	readonly proofMode: DifferentialProofMode;
 	readonly cases: readonly DifferentialResult[];
 	readonly passed: number;
 	readonly failed: number;
@@ -69,33 +71,53 @@ const render = (program: StyleProgram): DifferentialRender => ({
 	css: runtimeCss(program),
 });
 
-const withProofHooks = (fixture: DifferentialMatrixCase): DifferentialFixture => ({
-	name: fixture.id,
-	sourceAdapter: fixture.sourceAdapter,
-	targetAdapter: fixture.targetAdapter,
-	file: fixture.file,
-	source: fixture.source,
-	browserStates: [
-		{ name: "initial", source: runtimeCss, target: runtimeCss },
-		{ name: "hover", source: runtimeCss, target: runtimeCss },
-		{ name: "responsive", source: runtimeCss, target: runtimeCss },
-	],
-	ssr: {
-		source: { render, hydrate: (server) => server },
-		target: { render, hydrate: (server) => server },
-	},
-	streaming: {
-		source: { render: (program) => ["<style>", runtimeCss(program), "</style>"] },
-		target: { render: (program) => ["<style>", runtimeCss(program), "</style>"] },
-	},
-});
+export interface DifferentialMatrixProofProvider {
+	readonly mode: DifferentialProofMode;
+	createFixture(fixture: DifferentialMatrixCase): DifferentialFixture;
+}
+
+/**
+ * Deterministic semantic-model provider used by unit tests. Production
+ * promotion must inject a provider backed by the installed source/target
+ * runtimes; the mode is recorded so the two forms cannot be conflated.
+ */
+export class SemanticModelDifferentialProofProvider implements DifferentialMatrixProofProvider {
+	readonly mode = DifferentialProofMode.SemanticModel;
+
+	createFixture(fixture: DifferentialMatrixCase): DifferentialFixture {
+		return {
+			name: fixture.id,
+			sourceAdapter: fixture.sourceAdapter,
+			targetAdapter: fixture.targetAdapter,
+			file: fixture.file,
+			source: fixture.source,
+			browserStates: [
+				{ name: "initial", source: runtimeCss, target: runtimeCss },
+				{ name: "hover", source: runtimeCss, target: runtimeCss },
+				{ name: "responsive", source: runtimeCss, target: runtimeCss },
+			],
+			ssr: {
+				source: { render, hydrate: (server) => server },
+				target: { render, hydrate: (server) => server },
+			},
+			streaming: {
+				source: { render: (program) => ["<style>", runtimeCss(program), "</style>"] },
+				target: { render: (program) => ["<style>", runtimeCss(program), "</style>"] },
+			},
+		};
+	}
+}
 
 export function runDifferentialMatrix(
 	catalog: DifferentialMatrixCatalog,
+	provider: DifferentialMatrixProofProvider = new SemanticModelDifferentialProofProvider(),
 ): DifferentialMatrixResult {
-	const results = runDifferentialSuite(catalog.cases.map(withProofHooks));
+	const results = runDifferentialSuite(
+		catalog.cases.map((fixture) => provider.createFixture(fixture)),
+	);
 	return {
 		schema: DIFFERENTIAL_MATRIX_SCHEMA,
+		proofMode: provider.mode,
 		cases: results,
 		passed: results.filter((result, index) =>
 			catalog.cases[index]?.expected === "residual" ? !result.valid : result.valid,

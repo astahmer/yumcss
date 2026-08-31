@@ -169,6 +169,25 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		);
 	});
 
+	test("decodes escaped official utility selectors and CSS theme aliases", () => {
+		const resolver = createUnoCssResolverFromCss(
+			".hover\\:bg-\\[\\#383838\\]:hover{background-color:#383838}" +
+				"@theme inline { --color-foreground: var(--foreground); --color-background: var(--background); }",
+		);
+		expect(resolver.resolve("hover:bg-[#383838]", {} as never)).toEqual([
+			expect.objectContaining({
+				property: "backgroundColor",
+				conditions: [{ kind: "pseudo", name: "hover" }],
+			}),
+		]);
+		expect(resolver.resolve("bg-foreground", {} as never)).toEqual([
+			expect.objectContaining({
+				property: "backgroundColor",
+				value: { kind: "literal", value: "var(--foreground)" },
+			}),
+		]);
+	});
+
 	test("loads Tokenami aliases through its official config package boundary", async () => {
 		const loader: ProjectModuleLoader = {
 			async importPackage(packageName) {

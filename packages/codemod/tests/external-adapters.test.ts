@@ -224,6 +224,29 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
 	});
 
+	test("lowers Next-yak JSX css hosts with dynamic nested rules through the runtime fallback", () => {
+		const result = runAdapterMigration(
+			'import { css } from "next-yak";\n' +
+				'const desktop = "@media (min-width: 992px)";\n' +
+				'const variant = "primary";\n' +
+				'const App = () => <button css={css`color: red; ${desktop} { font-size: 14px; } ${() => variant === "primary" && css`color: blue;`}`}/>;',
+			{
+				from: "next-yak",
+				to: "pandwind",
+				file: "App.tsx",
+				mode: "safe",
+				semantic: { source: { file: "App.tsx", framework: "react" } },
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
+		expect(result.code).toContain("css.sheet.register");
+		expect(result.code).toContain("className=");
+		expect(result.code).not.toContain('from "next-yak"');
+	});
+
 	test("migrates Linaria static CSS templates and preserves styled subjects", () => {
 		const css = runAdapterMigration(
 			'import { css } from "@linaria/core";\nconst card = css`color: red; background-color: blue;`;',

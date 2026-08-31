@@ -37,6 +37,10 @@ import {
 function programHasDynamic(program: StyleProgram): boolean {
 	return program.rules.some(function containsDynamic(rule): boolean {
 		return (
+			(rule.selector?.includes("${") ?? false) ||
+			rule.conditions.some(
+				(condition) => condition.name.includes("${") || condition.value?.includes("${"),
+			) ||
 			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
 			rule.children.some(containsDynamic)
 		);

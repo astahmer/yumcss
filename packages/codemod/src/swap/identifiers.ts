@@ -147,6 +147,12 @@ export enum RealRepositoryProofStatus {
 	PipelineUnpaired = "pipeline-unpaired",
 }
 
+/** Execution source for differential evidence; semantic-model is not browser proof. */
+export enum DifferentialProofMode {
+	SemanticModel = "semantic-model",
+	ExternalRuntime = "external-runtime",
+}
+
 export enum MigrationStageId {
 	AdapterMigration = "adapter-migration",
 }

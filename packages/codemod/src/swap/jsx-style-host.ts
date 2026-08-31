@@ -14,6 +14,8 @@ export interface JsxStyleHostMatch {
 	readonly attributes: readonly JsxStyleAttribute[];
 	readonly styleAttributes: readonly JsxStyleAttribute[];
 	readonly body: string;
+	/** Tagged-template style values can be extracted without treating the tag as a dynamic property. */
+	readonly template?: string;
 	readonly source: StyleProgramSource;
 }
 
@@ -39,6 +41,7 @@ export class JsxStyleHost {
 		const styleAttributes = attributes.filter((attribute) => names.has(attribute.name));
 		if (styleAttributes.length === 0) return undefined;
 		const parts: string[] = [];
+		let template: string | undefined;
 		for (const attribute of styleAttributes) {
 			if (attribute.value === true) {
 				parts.push(`${attribute.name}: true`);
@@ -49,6 +52,11 @@ export class JsxStyleHost {
 				continue;
 			}
 			const expression = attribute.value.trim();
+			const taggedTemplate = expression.match(/^(?:css|style)\s*`([\s\S]*)`$/u);
+			if (taggedTemplate !== null && attribute.name === "css") {
+				template = taggedTemplate[1] ?? "";
+				continue;
+			}
 			if (this.isObject(expression) && ["css", "sx", "style"].includes(attribute.name)) {
 				parts.push(expression.slice(1, -1).replace(/,\s*$/, ""));
 			} else {
@@ -61,6 +69,7 @@ export class JsxStyleHost {
 			attributes,
 			styleAttributes,
 			body: parts.join(", "),
+			...(template === undefined ? {} : { template }),
 			source: {
 				...styleSource,
 				hostOpenTag: openingTag,
