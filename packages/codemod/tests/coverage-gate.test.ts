@@ -4,6 +4,8 @@ import {
 	createAdapterCoverageGate,
 	createStyleAdapterRegistry,
 	createBuiltinCodemodCatalog,
+	RealRepositoryProofDimension,
+	RealRepositoryProofDimensionStatus,
 } from "../src/swap/index.ts";
 
 describe("adapter coverage gate", () => {
@@ -40,7 +42,7 @@ describe("adapter coverage gate", () => {
 		});
 	});
 
-	test("fails explicitly for missing adapter and capability evidence", () => {
+		test("fails explicitly for missing adapter and capability evidence", () => {
 		const emotion = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Emotion)!;
 		const report = createAdapterCoverageGate().evaluate(createStyleAdapterRegistry([emotion]), [], {
 			minimumFixturesPerAdapter: 1,
@@ -54,5 +56,88 @@ describe("adapter coverage gate", () => {
 				expect.objectContaining({ capability: "declarations" }),
 			]),
 		);
+	});
+
+	test("enforces direct capability and production proof per promoted adapter", () => {
+		const emotion = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Emotion)!;
+		const required = [
+			RealRepositoryProofDimension.BrowserStates,
+			RealRepositoryProofDimension.SsrHydration,
+			RealRepositoryProofDimension.CssSize,
+		] as const;
+		const incomplete = createAdapterCoverageGate().evaluate(
+			createStyleAdapterRegistry([emotion]),
+			[
+				{
+					adapter: CodemodAdapterId.Emotion,
+					fixture: "emotion.tsx",
+					kind: "contract",
+					capabilities: ["declarations"],
+				},
+				{
+					adapter: CodemodAdapterId.Emotion,
+					fixture: "emotion-real",
+					kind: "real-repository",
+					capabilities: [],
+					proof: {
+						[RealRepositoryProofDimension.BrowserStates]:
+							RealRepositoryProofDimensionStatus.Passed,
+					},
+				},
+			],
+			{
+				minimumContractFixturesPerAdapter: 1,
+				minimumRealRepositoryFixturesPerAdapter: 1,
+				requiredCapabilitiesPerAdapter: ["declarations"],
+				requiredProofDimensionsByAdapter: { [CodemodAdapterId.Emotion]: required },
+			},
+		);
+		expect(incomplete.passed).toBe(false);
+		expect(incomplete.failures).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					adapter: CodemodAdapterId.Emotion,
+					dimension: RealRepositoryProofDimension.SsrHydration,
+				}),
+			]),
+		);
+
+		const complete = createAdapterCoverageGate().evaluate(
+			createStyleAdapterRegistry([emotion]),
+			[
+				{
+					adapter: CodemodAdapterId.Emotion,
+					fixture: "emotion.tsx",
+					kind: "contract",
+					capabilities: ["declarations"],
+				},
+				{
+					adapter: CodemodAdapterId.Emotion,
+					fixture: "emotion-real",
+					kind: "real-repository",
+					capabilities: [],
+					proof: Object.fromEntries(
+						required.map((dimension) => [dimension, RealRepositoryProofDimensionStatus.Passed]),
+					),
+				},
+			],
+			{
+				minimumContractFixturesPerAdapter: 1,
+				minimumRealRepositoryFixturesPerAdapter: 1,
+				requiredCapabilitiesPerAdapter: ["declarations"],
+				requiredProofDimensionsByAdapter: { [CodemodAdapterId.Emotion]: required },
+			},
+		);
+		expect(complete.passed).toBe(true);
+		expect(complete.proofTotals[RealRepositoryProofDimension.CssSize]).toBe(1);
+	});
+
+	test("can exclude target-only registry entries without weakening source gates", () => {
+		const emotion = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Emotion)!;
+		const report = createAdapterCoverageGate().evaluate(createStyleAdapterRegistry([emotion]), [], {
+			minimumFixturesPerAdapter: 1,
+			excludedAdapters: [CodemodAdapterId.Emotion],
+		});
+		expect(report.passed).toBe(true);
 	});
 });

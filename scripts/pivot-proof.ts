@@ -8,6 +8,8 @@ import {
 	createAdapterCoverageGate,
 	createBuiltinCodemodCatalog,
 	createRealRepositoryCorpus,
+	RealRepositoryProofDimension,
+	RealRepositoryProofDimensionStatus,
 	requiredAdapterCapabilities,
 	type AdapterCoverageEvidence,
 	type AdapterContractFixture,
@@ -20,9 +22,14 @@ const proofMatrixPath = resolve(root, "plans/evidence/real-browser-ssr-proof-mat
 
 interface ProofMatrixClaim {
 	readonly id: string;
+	readonly sourceAdapter: string;
 	readonly report: string;
 	readonly server: { readonly checked: boolean };
-	readonly browser: { readonly checked: boolean; readonly equivalent: boolean };
+	readonly browser: {
+		readonly checked: boolean;
+		readonly equivalent: boolean;
+		readonly hydrationRoutes?: number;
+	};
 	readonly css: { readonly notLarger: boolean };
 }
 
@@ -70,6 +77,23 @@ function readCheckedInProofMatrix(): ProofMatrix {
 	return matrix;
 }
 
+function parseProductionProofEvidence(claim: ProofMatrixClaim): AdapterCoverageEvidence {
+	const proof: Partial<Record<RealRepositoryProofDimension, RealRepositoryProofDimensionStatus>> = {};
+	if (claim.browser.checked && claim.browser.equivalent)
+		proof[RealRepositoryProofDimension.BrowserStates] = RealRepositoryProofDimensionStatus.Passed;
+	if (claim.server.checked)
+		proof[RealRepositoryProofDimension.SsrHydration] = RealRepositoryProofDimensionStatus.Passed;
+	if (claim.css.notLarger)
+		proof[RealRepositoryProofDimension.CssSize] = RealRepositoryProofDimensionStatus.Passed;
+	return {
+		adapter: claim.sourceAdapter,
+		fixture: claim.id,
+		kind: "browser",
+		capabilities: [],
+		proof,
+	};
+}
+
 function runOfflineGate(): void {
 	const catalog = createBuiltinCodemodCatalog();
 	const contract = createAdapterContractSuite().run(catalog.registry, adapterContractFixtures);
@@ -84,7 +108,7 @@ function runOfflineGate(): void {
 	const references = createRealRepositoryCorpus().references;
 	const referencedAdapters = new Set(references.map((reference) => reference.from));
 	for (const adapter of catalog.adapters) {
-		if (adapter.id === CodemodAdapterId.Pandwind || fixtureOnlyAdapters.has(adapter.id)) continue;
+		if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative) continue;
 		if (!referencedAdapters.has(adapter.id))
 			throw new Error(`adapter ${adapter.id} has no pinned real-repository corpus entry`);
 	}
@@ -96,8 +120,24 @@ function runOfflineGate(): void {
 			capabilities: [],
 		});
 	}
+	for (const claim of matrix.claims) evidence.push(parseProductionProofEvidence(claim));
+	const promotedProofDimensions = Object.fromEntries(
+		matrix.claims.map((claim) => [
+			claim.sourceAdapter,
+			[
+				RealRepositoryProofDimension.BrowserStates,
+				RealRepositoryProofDimension.SsrHydration,
+				RealRepositoryProofDimension.CssSize,
+			],
+		]),
+	);
 	const coverage = createAdapterCoverageGate().evaluate(catalog.registry, evidence, {
 		minimumFixturesPerAdapter: 1,
+		minimumContractFixturesPerAdapter: 1,
+		minimumRealRepositoryFixturesPerAdapter: 1,
+		requiredCapabilitiesPerAdapter: ["declarations"],
+		requiredProofDimensionsByAdapter: promotedProofDimensions,
+		excludedAdapters: [CodemodAdapterId.Pandwind, CodemodAdapterId.ReactNative],
 		requiredCapabilities: ["declarations"],
 	});
 	if (!coverage.passed)
@@ -113,6 +153,7 @@ function runOfflineGate(): void {
 				proofClaims: matrix.claims.length,
 				fixtureOnlyAdapters: [...fixtureOnlyAdapters],
 				capabilities: coverage.capabilityTotals,
+				proof: coverage.proofTotals,
 			},
 			null,
 			2,
