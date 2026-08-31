@@ -1,5 +1,6 @@
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
 import type { AdapterDependencies } from "./adapter-contract.ts";
+import { StyleDynamicExpressionKind } from "./identifiers.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
 export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as const;
@@ -9,6 +10,7 @@ export type AdapterCapability =
 	| "token-values"
 	| "custom-properties"
 	| "dynamic-values"
+	| "function-values"
 	| "named-conditions"
 	| "named-rules"
 	| "pseudo-conditions"
@@ -193,7 +195,12 @@ export function requiredAdapterCapabilities(
 		}
 		if (declaration.value.kind === "token") add("token-values", `token: ${declaration.value.ref}`);
 		if (declaration.value.kind === "dynamic") {
-			add("dynamic-values", `dynamic: ${dynamicDetail(declaration.value)}`);
+			add(
+				declaration.value.expressionKind === StyleDynamicExpressionKind.Function
+					? "function-values"
+					: "dynamic-values",
+				`dynamic: ${dynamicDetail(declaration.value)}`,
+			);
 		}
 	}
 	if ((program.themes?.length ?? 0) > 0)

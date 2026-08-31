@@ -416,11 +416,16 @@ function runAdapterMigrationInternal(
 					program.source?.hostOpenTag !== undefined &&
 					program.source.hostStyleAttributes !== undefined &&
 					!programHasFunctionDynamic(program);
+				const nativeFunctionHandled =
+					programHasFunctionDynamic(program) &&
+					program.source?.hostOpenTag === undefined &&
+					targetAdapter.capabilities.capabilities["function-values"] !== "unsupported";
 				const dynamicHandled = hostDynamicHandled || dynamicPolicy?.handled === true;
+				const dynamicHandledWithTarget = dynamicHandled || nativeFunctionHandled;
 				const dynamicStandalone = dynamicPolicy?.standalone === true;
 				if (
 					(preview === undefined || preview.residuals.length > 0) &&
-					!dynamicHandled &&
+					!dynamicHandledWithTarget &&
 					!dynamicStandalone
 				) {
 					skipped++;
@@ -447,7 +452,7 @@ function runAdapterMigrationInternal(
 					});
 					continue;
 				}
-				if (dynamicHandled || preview?.residuals.length === 0) {
+				if (dynamicHandledWithTarget || preview?.residuals.length === 0) {
 					program = {
 						...program,
 						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),

@@ -884,6 +884,24 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(vue.code).toContain('import { computed, defineComponent, h } from "vue";');
 	});
 
+	test("uses Pandwind's native function carrier for static StyleX groups", () => {
+		const result = runAdapterMigration(
+			'import stylex from "@stylexjs/stylex";\n' +
+				"const styles = stylex.create({ offset: (value) => ({ paddingLeft: value }) });",
+			{
+				from: "stylex",
+				to: "pandwind",
+				file: "styles.ts",
+				mode: "safe",
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.group");
+		expect(result.code).toContain("(value) =>");
+	});
+
 	test("lowers Solid function-call styles and custom component subjects", () => {
 		const result = runAdapterMigration(
 			'import { styled } from "solid-styled-components";\n' +

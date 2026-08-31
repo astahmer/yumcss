@@ -985,6 +985,7 @@ export default defineCodemodAdapter({
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
 		"named-conditions": "exact",
 		"named-rules": "exact",
+		"function-values": "exact",
 		"framework-semantics": "exact",
 		composition: "exact",
 		recipes: "exact",

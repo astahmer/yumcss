@@ -145,6 +145,7 @@ export function allRuleCapabilities(
 			ordering: "exact",
 			"token-values": "exact",
 			"dynamic-values": dynamic,
+			"function-values": "unsupported",
 			"pseudo-conditions": "exact",
 			"selector-conditions": "exact",
 			"media-conditions": "exact",

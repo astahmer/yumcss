@@ -122,6 +122,10 @@ const dynamicAndThemes: StyleLowering = {
 			// its props/theme evaluation. Only a target-native function carrier or a
 			// host/framework lowering may consume it.
 			if (value.expressionKind === StyleDynamicExpressionKind.Function) {
+				if (level(target, "function-values") !== "unsupported") {
+					resolvedDynamicCapability = true;
+					return declaration;
+				}
 				residuals.push({
 					kind: "function-dynamic",
 					text: value.expression,
@@ -294,6 +298,7 @@ const runtimeAndPlugins: StyleLowering = {
 			residuals,
 			applied: applied ? [StyleLoweringId.RuntimeAndPlugin] : [],
 			...(program.plugins !== undefined &&
+			program.plugins.length > 0 &&
 			residuals.every((residual) => residual.kind !== "plugin-transform") &&
 			resolvedPluginIds.size === program.plugins.length
 				? { resolvedCapabilities: ["plugin-transforms"] }
@@ -424,7 +429,14 @@ function representationFor(
 	if (result.program.rules.some((rule) => rule.name !== undefined))
 		return StyleRepresentationKind.NamedMap;
 	if (hasDynamic) {
-		const dynamicCapability = level(context.target, "dynamic-values");
+		const hasFunctionDynamic = declarations.some(
+			(declaration) =>
+				declaration.value.kind === "dynamic" &&
+				declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
+		);
+		const dynamicCapability = hasFunctionDynamic
+			? level(context.target, "function-values")
+			: level(context.target, "dynamic-values");
 		return dynamicCapability === "unsupported"
 			? StyleRepresentationKind.Residual
 			: StyleRepresentationKind.TargetNative;

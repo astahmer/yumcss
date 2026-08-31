@@ -160,6 +160,28 @@ describe("semantic metadata and validator domains", () => {
 		);
 	});
 
+	test("keeps function-valued styles for targets with a native function carrier", () => {
+		const program = styleProgramFromSourceObject("color: (props) => props.color", {});
+		const result = STYLE_LOWERING_REGISTRY.plan({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "function-target",
+				capabilities: {
+					declarations: "exact",
+					"function-values": "exact",
+				},
+			},
+			mode: "safe",
+		});
+		expect(result.residuals).toEqual([]);
+		expect(result.representation).toBe("target-native");
+		expect(result.program.declarations[0]?.value).toMatchObject({
+			kind: "dynamic",
+			expressionKind: StyleDynamicExpressionKind.Function,
+		});
+	});
+
 	test("accepts a target-native dynamic carrier when the target declares partial support", () => {
 		const program = styleProgramFromSourceObject("color: props.color", {});
 		const plan = STYLE_LOWERING_REGISTRY.plan({
