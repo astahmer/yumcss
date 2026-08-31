@@ -5,7 +5,7 @@
  * filesystem orchestration. It still uses the same adapter catalog and
  * migration use case, with callers supplying an in-memory source document.
  */
-export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
+export { createBrowserCodemodCatalog as createBuiltinCodemodCatalog } from "./browser-adapter-catalog.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
 export { CodemodAdapterId } from "./identifiers.ts";
 export type { AdapterCapabilityReport } from "./capabilities.ts";

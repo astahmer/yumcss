@@ -16,7 +16,7 @@ import type {
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
-import { join } from "node:path";
+import { joinDocumentPath } from "../../path-utils.ts";
 
 /** Tokenami property aliases that are part of its standard design-system vocabulary. */
 const STANDARD_ALIASES: Readonly<Record<string, string | readonly string[]>> = {
@@ -124,7 +124,7 @@ async function officialTokenamiConfig(
 		"tokenami.config.cjs",
 	];
 	for (const candidate of candidates) {
-		const path = join(context.root, candidate);
+		const path = joinDocumentPath(context.root, candidate);
 		// Preserve candidate priority: the first project config wins.
 		// oxlint-disable-next-line no-await-in-loop
 		const module = await loader.importFile<Record<string, unknown>>(path);
@@ -218,9 +218,12 @@ const sourceOptions: AdapterSourceObjectOptions = {
 
 /** Semantic Tokenami source adapter. It owns Tokenami's encoded property keys and aliases. */
 export function createTokenamiAdapter(
-	options: { readonly moduleLoader?: ProjectModuleLoader } = {},
+	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
-	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
+	const moduleLoader =
+		options.moduleLoader === null
+			? undefined
+			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Tokenami,
 		packages: {
@@ -247,7 +250,12 @@ export function createTokenamiAdapter(
 		sourceModules: ["@tokenami/css", "@tokenami/config"],
 		configFiles: [".tokenami/tokenami.config.ts", ".tokenami/tokenami.config.js", "package.json"],
 		loadConfig: tokenamiConfig,
-		loadConfigAsync: (context) => officialTokenamiConfig(context, moduleLoader),
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						officialTokenamiConfig(context, moduleLoader),
+				}),
 		sourceObjectOptions: sourceOptions,
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },

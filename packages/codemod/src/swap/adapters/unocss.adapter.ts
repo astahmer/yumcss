@@ -16,7 +16,7 @@ import {
 } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
-import { isAbsolute, join } from "node:path";
+import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -235,7 +235,7 @@ async function officialConfig(
 			files: [
 				...fallback.files,
 				...(loaded.sources ?? []).map((file) =>
-					isAbsolute(file) ? file : join(context.root!, file),
+					isAbsoluteDocumentPath(file) ? file : joinDocumentPath(context.root!, file),
 				),
 			],
 			values: {
@@ -333,7 +333,10 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 	const fallbackResolver = options.resolver ?? {
 		resolve: (token: string) => defaultResolve(token),
 	};
-	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
+	const moduleLoader =
+		options.moduleLoader === null
+			? undefined
+			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.UnoCSS,
@@ -362,7 +365,11 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			};
 		},
 		loadConfig: (context) => config(context),
-		loadConfigAsync: (context) => officialConfig(context, moduleLoader),
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) => officialConfig(context, moduleLoader),
+				}),
 		parse: (source, context) =>
 			parseUnoCss(
 				source,

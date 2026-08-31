@@ -1,9 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { AdapterParseContext } from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { CodemodAdapterId } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
-import { join } from "node:path";
+import { joinDocumentPath } from "../../path-utils.ts";
 import { matchBlock } from "../../sources.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
 
@@ -406,7 +406,7 @@ async function officialChakraConfig(
 		"theme.mjs",
 	];
 	for (const candidate of candidates) {
-		const path = join(context.root, candidate);
+		const path = joinDocumentPath(context.root, candidate);
 		// Preserve candidate priority: the first project theme wins.
 		// oxlint-disable-next-line no-await-in-loop
 		const module = await loader.importFile<Record<string, unknown>>(path);
@@ -468,8 +468,13 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 	return references;
 }
 
-export function createChakraAdapter(options: { readonly moduleLoader?: ProjectModuleLoader } = {}) {
-	const moduleLoader = options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER;
+export function createChakraAdapter(
+	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
+) {
+	const moduleLoader =
+		options.moduleLoader === null
+			? undefined
+			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.ChakraUi,
 		patterns: [
@@ -495,7 +500,12 @@ export function createChakraAdapter(options: { readonly moduleLoader?: ProjectMo
 		// Component imports remain in place because the host element still uses Chakra's component.
 		sourceModules: [],
 		configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
-		loadConfigAsync: (context) => officialChakraConfig(context, moduleLoader),
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						officialChakraConfig(context, moduleLoader),
+				}),
 		sourceObjectOptions: (source, context) => ({
 			propertyAliases,
 			objectReferences: objectReferences(source),

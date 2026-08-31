@@ -1,5 +1,5 @@
-import { dirname, join, resolve } from "node:path";
 import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
+import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import type {
 	AdapterDetectionContext,
 	AdapterDetectionResult,
@@ -8,7 +8,8 @@ import type {
 import { CodemodAdapterId } from "../identifiers.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
-	return `${resolve(context.root ?? ".", dirname(context.file), specifier)}.ts`;
+	const directory = dirnameDocumentPath(context.file);
+	return `${joinDocumentPath(directory.startsWith("/") ? directory : (context.root ?? "."), directory, specifier)}.ts`;
 }
 
 function importedStaticValues(
@@ -37,7 +38,7 @@ function importedStaticValues(
 		for (const reexport of imported.matchAll(/export\s+\*\s+from\s*["']([^"']+)["']/g)) {
 			const targetSpecifier = reexport[1];
 			if (targetSpecifier === undefined) continue;
-			const targetFile = `${resolve(dirname(file), targetSpecifier)}.ts`;
+			const targetFile = `${joinDocumentPath(dirnameDocumentPath(file), targetSpecifier)}.ts`;
 			if (seen.has(targetFile)) continue;
 			seen.add(targetFile);
 			const target = context.readFile?.(targetFile);
@@ -79,17 +80,17 @@ function detectEmotion(
 		context.readFile === undefined
 	)
 		return fallback();
-	let directory = resolve(context.root, dirname(context.file));
-	const root = resolve(context.root);
+	let directory = joinDocumentPath(context.root, dirnameDocumentPath(context.file));
+	const root = joinDocumentPath(context.root);
 	while (directory.startsWith(root)) {
 		for (const candidate of [".babelrc.js", ".babelrc", "babel.config.js", "babel.config.cjs"]) {
-			const file = join(directory, candidate);
+			const file = joinDocumentPath(directory, candidate);
 			const config = context.readFile(file);
 			if (config?.includes("@emotion/react") === true)
 				return { matched: true, confidence: 0.95, evidence: [`config:${file}`] };
 		}
 		if (directory === root) break;
-		directory = dirname(directory);
+		directory = dirnameDocumentPath(directory);
 	}
 	return fallback();
 }

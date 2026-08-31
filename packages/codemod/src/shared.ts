@@ -1,5 +1,5 @@
 /** Small helpers shared between the mode passes and the source passes. */
-import { dirname, join, relative } from "node:path";
+import { dirnameDocumentPath, joinDocumentPath, relativeDocumentPath } from "./path-utils.ts";
 
 export const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
 
@@ -15,8 +15,8 @@ export const SKIP_MARKER_DEFAULT = "pandwind:migrate-skip";
  * own generated module instead of the package subpath.
  */
 export function relativeModuleImport(file: string, metaDir: string, moduleName: string): string {
-	const target = join(metaDir, moduleName).replaceAll("\\", "/");
-	let path = relative(dirname(file), target).replaceAll("\\", "/");
+	const target = joinDocumentPath(metaDir, moduleName);
+	let path = relativeDocumentPath(dirnameDocumentPath(file), target);
 	if (!path.startsWith(".")) path = `./${path}`;
 	return path;
 }

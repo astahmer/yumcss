@@ -1,37 +1,31 @@
-import { createStyleAdapterRegistry, type StyleAdapterRegistry } from "./adapter-registry.ts";
-import { BUILTIN_ADAPTER_PLUGIN } from "./adapters/plugin.ts";
-import {
-	createStyleSystemRegistry,
-	createStyleSystem,
-	asStyleDialect,
-	type StyleSystemRegistry,
-} from "./style-systems.ts";
-import { PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
+import { readFileSync } from "node:fs";
+import { NODE_PROJECT_MODULE_LOADER } from "./project-module-loader.ts";
+import { createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
+import type { AdapterConfigContext, StyleAdapter } from "./adapter-contract.ts";
+import { createCodemodAdapterCatalog, type CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 
-export interface CodemodAdapterCatalog {
-	readonly adapters: StyleAdapterRegistry["adapters"];
-	readonly registry: StyleAdapterRegistry;
-	readonly systems: StyleSystemRegistry;
-}
+export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 
 /** Build the default composition root without exposing adapter implementation modules. */
 export function createBuiltinCodemodCatalog(): CodemodAdapterCatalog {
-	const registry = createStyleAdapterRegistry();
-	registry.registerPlugin(BUILTIN_ADAPTER_PLUGIN);
-	const adapters = registry.adapters;
-	return {
-		adapters,
-		registry,
-		systems: createStyleSystemRegistry([
-			PANDWIND_STYLE_SYSTEM,
-			...adapters
-				.filter((adapter) => adapter.id !== CodemodAdapterId.Pandwind)
-				.map((adapter) =>
-					createStyleSystem(adapter.id, [
-						asStyleDialect(adapter, { system: adapter.id, dialect: "css", role: "both" }),
-					]),
-				),
-		]),
+	const sourcePlugin = createBuiltinAdapterPlugin(NODE_PROJECT_MODULE_LOADER);
+	const readFile = (file: string): string | undefined => {
+		try {
+			return readFileSync(file, "utf8");
+		} catch {
+			return undefined;
+		}
 	};
+	const adapters = sourcePlugin.adapters.map((adapter): StyleAdapter => ({
+		...adapter,
+		loadConfig: (context: AdapterConfigContext) =>
+			adapter.loadConfig({ ...context, readFile: context.readFile ?? readFile }),
+		...(adapter.loadConfigAsync === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						adapter.loadConfigAsync!({ ...context, readFile: context.readFile ?? readFile }),
+				}),
+	}));
+	return createCodemodAdapterCatalog({ ...sourcePlugin, adapters });
 }

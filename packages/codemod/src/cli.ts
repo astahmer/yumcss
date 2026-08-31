@@ -430,6 +430,13 @@ async function runExternalAdapterSwap(
 			to: target,
 			file: relative,
 			root,
+			readFile: (candidate) => {
+				try {
+					return readFileSync(candidate, "utf8");
+				} catch {
+					return undefined;
+				}
+			},
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
 		});

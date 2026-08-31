@@ -1,8 +1,10 @@
 import { createStyleAdapterPlugin, type StyleAdapterPlugin } from "../adapter-registry.ts";
 import { CodemodPluginId } from "../identifiers.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import aphrodite from "./aphrodite.adapter.ts";
 import bamboo from "./bamboo.adapter.ts";
 import chakra from "./chakra.adapter.ts";
+import { createChakraAdapter } from "./chakra.adapter.ts";
 import compiled from "./compiled.adapter.ts";
 import emotion from "./emotion.adapter.ts";
 import fela from "./fela.adapter.ts";
@@ -23,15 +25,18 @@ import treat from "./treat.adapter.ts";
 import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
 import tokenami from "./tokenami.adapter.ts";
+import { createTokenamiAdapter } from "./tokenami.adapter.ts";
 import unocss from "./unocss.adapter.ts";
+import { createUnoCssAdapter } from "./unocss.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
-export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlugin(
-	CodemodPluginId.BuiltinAdapters,
-	[
+export function createBuiltinAdapterPlugin(moduleLoader?: ProjectModuleLoader): StyleAdapterPlugin {
+	return createStyleAdapterPlugin(CodemodPluginId.BuiltinAdapters, [
 		pandwind,
 		bamboo,
-		chakra,
+		moduleLoader === undefined
+			? createChakraAdapter({ moduleLoader: null })
+			: createChakraAdapter({ moduleLoader }),
 		emotion,
 		styledComponents,
 		vanillaExtract,
@@ -51,7 +56,13 @@ export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createStyleAdapterPlug
 		solidStyled,
 		vueStyled,
 		reactNative,
-		tokenami,
-		unocss,
-	],
-);
+		moduleLoader === undefined
+			? createTokenamiAdapter({ moduleLoader: null })
+			: createTokenamiAdapter({ moduleLoader }),
+		moduleLoader === undefined
+			? createUnoCssAdapter({ moduleLoader: null })
+			: createUnoCssAdapter({ moduleLoader }),
+	]);
+}
+
+export const BUILTIN_ADAPTER_PLUGIN: StyleAdapterPlugin = createBuiltinAdapterPlugin();

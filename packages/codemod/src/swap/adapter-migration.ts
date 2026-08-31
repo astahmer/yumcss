@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { ensureImport } from "../shared.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
@@ -184,15 +183,7 @@ export async function runAdapterMigrationAsync(
 		options.from,
 		options.to,
 	);
-	const readFile =
-		options.readFile ??
-		((file: string) => {
-			try {
-				return readFileSync(file, "utf8");
-			} catch {
-				return undefined;
-			}
-		});
+	const readFile = options.readFile;
 	const context = {
 		file: options.file,
 		source,
@@ -230,15 +221,7 @@ function runAdapterMigrationInternal(
 	);
 	const sourceAdapter = route.source;
 	const targetAdapter = route.target;
-	const readFile =
-		options.readFile ??
-		((file: string) => {
-			try {
-				return readFileSync(file, "utf8");
-			} catch {
-				return undefined;
-			}
-		});
+	const readFile = options.readFile;
 	const detection = sourceAdapter.detect({
 		file: options.file,
 		source,

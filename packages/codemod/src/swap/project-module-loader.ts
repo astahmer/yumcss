@@ -1,7 +1,3 @@
-import { createRequire } from "node:module";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
-
 /** Host-project module loading boundary used by optional official integrations. */
 export interface ProjectModuleLoader {
 	importPackage<T>(packageName: string, root: string): Promise<T | undefined>;
@@ -23,6 +19,9 @@ function isMissingModule(error: unknown): boolean {
 export class NodeProjectModuleLoader implements ProjectModuleLoader {
 	async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
 		try {
+			const { createRequire } = await import("node:module");
+			const { join } = await import("node:path");
+			const { pathToFileURL } = await import("node:url");
 			const importer = createRequire(join(root, "package.json"));
 			const resolved = importer.resolve(packageName);
 			return (await import(pathToFileURL(resolved).href)) as T;
@@ -34,6 +33,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 
 	async importFile<T>(file: string): Promise<T | undefined> {
 		try {
+			const { pathToFileURL } = await import("node:url");
 			return (await import(pathToFileURL(file).href)) as T;
 		} catch (error) {
 			if (isMissingModule(error)) return undefined;

@@ -1,7 +1,6 @@
-import { join } from "node:path";
-import { readFileSync } from "node:fs";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
+import { joinDocumentPath } from "../path-utils.ts";
 import { computeExcludedRanges } from "pandwind/source";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
 import {
@@ -162,18 +161,10 @@ function configFor(
 ): AdapterProjectConfig {
 	const files: string[] = [];
 	const values: Record<string, unknown> = {};
-	const readFile =
-		context.readFile ??
-		((file: string) => {
-			try {
-				return readFileSync(file, "utf8");
-			} catch {
-				return undefined;
-			}
-		});
+	const readFile = context.readFile;
 	const packageText =
 		context.packageJson === undefined && context.root !== undefined && readFile !== undefined
-			? readFile(join(context.root, "package.json"))
+			? readFile(joinDocumentPath(context.root, "package.json"))
 			: undefined;
 	let packageJson = context.packageJson;
 	if (packageJson === undefined && packageText !== undefined) {
@@ -186,7 +177,7 @@ function configFor(
 	if (packageJson !== undefined) values.packageJson = packageJson;
 	for (const relative of configFiles) {
 		if (context.root === undefined || readFile === undefined) continue;
-		const file = join(context.root, relative);
+		const file = joinDocumentPath(context.root, relative);
 		const text = readFile(file);
 		if (text === undefined) continue;
 		files.push(file);
