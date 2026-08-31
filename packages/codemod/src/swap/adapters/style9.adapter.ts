@@ -1,5 +1,10 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 const style9 = makeExtraAdapter({
 	id: CodemodAdapterId.Style9,
@@ -12,6 +17,25 @@ const style9 = makeExtraAdapter({
 	namedObjects: true,
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	sourceObjectOptions: { namedRuleObjects: true },
+	targetPolicy: {
+		handlesHostRewrites: true,
+		handlesFrameworkSemantics: true,
+		hostFrameworks: [BuiltinHostFramework.React],
+		hostRepresentation: StyleHostRepresentationKind.Class,
+		resolveHostRepresentation: ({ framework }) =>
+			framework === undefined || framework === BuiltinHostFramework.React
+				? StyleHostRepresentationKind.Class
+				: undefined,
+	},
+	targetEmit: (program, context, programObject) => {
+		if (context?.host?.representation !== StyleHostRepresentationKind.Class) return undefined;
+		if (program.rules.some((rule) => rule.name !== undefined)) return undefined;
+		return {
+			text: `style9(style9.create({ style: ${programObject(program)} }).style)`,
+			imports: ['import style9 from "style9";'],
+			residuals: [],
+		};
+	},
 	migration: {
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };

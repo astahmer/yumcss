@@ -55,6 +55,18 @@ rewrites `<Card />` to `<div {...stylex.props(Card)} />`; StyleX is never
 treated as if its style object were a DOM class string. The component rewrite
 port remains conservative for non-React or unsupported attribute shapes.
 
+JSS now demonstrates a target-owned static class projection. A static style
+used by a React host is emitted through
+`jss.createStyleSheet({ style: {...} }).attach().classes.style`, allowing
+`className` to remain a class carrier without incorrectly generating a
+`react-jss` hook. Imperative and dynamic JSS semantics remain separately
+reported until their host context is available.
+
+Style9 now uses the shared target-emission port for its callable class
+contract: `style9(style9.create({ style: {...} }).style)`. Static React host
+routes therefore preserve `className` without making the orchestrator aware
+of Style9 syntax.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still

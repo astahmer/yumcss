@@ -594,6 +594,66 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test("emits Aphrodite's class carrier for a static Pandwind React host", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box className={card} />;",
+			{ from: "pandwind", to: "aphrodite", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { StyleSheet, css } from "aphrodite";');
+		expect(result.code).toContain('css(StyleSheet.create({ style: { "color": "red" } }).style)');
+		expect(result.code).toContain("<Box className={card} />");
+	});
+
+	test("lowers a static styled intrinsic into an Aphrodite class host", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "aphrodite", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("StyleSheet.create");
+		expect(result.code).toContain("<div className={Card} />");
+		expect(result.code).not.toContain("styled-components");
+	});
+
+	test("emits Style9's class carrier for a static Pandwind React host", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box className={card} />;",
+			{ from: "pandwind", to: "style9", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import style9 from "style9";');
+		expect(result.code).toContain('style9(style9.create({ style: { "color": "red" } }).style)');
+		expect(result.code).toContain("<Box className={card} />");
+	});
+
+	test("lowers a static styled intrinsic into a Style9 class host", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "style9", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("style9.create");
+		expect(result.code).toContain("<div className={Card} />");
+		expect(result.code).not.toContain("styled-components");
+	});
+
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

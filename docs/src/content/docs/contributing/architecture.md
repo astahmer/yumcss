@@ -127,6 +127,18 @@ use to `<div {...stylex.props(Card)} />`. The target owns this rewrite because
 StyleX's `stylex.props` result is not a DOM `className` string. A non-React
 host or an unsupported attribute shape remains an explicit host residual.
 
+JSS uses the same class representation through a target-owned stylesheet
+carrier: static styles become
+`jss.createStyleSheet({ style: {...} }).attach().classes.style`, and existing
+React `className` uses remain class uses. This keeps JSS's imperative rule
+application semantics explicit while avoiding an invalid conversion to a
+`react-jss` hook at a module-level class site.
+
+A Style9 target uses the same class port with its own callable contract:
+`style9(style9.create({ style: {...} }).style)`. The shared runner does not
+need to know that Style9 wraps a named style object before producing a class;
+the Style9 adapter owns that target emission and its React host declaration.
+
 `StyleProgram.sourceMap` is the provenance projection for a semantic program:
 it aggregates the program, rule, theme/composition, and dynamic-value source
 locations without forcing legacy `SwapIR` callers to pay for rich nodes.

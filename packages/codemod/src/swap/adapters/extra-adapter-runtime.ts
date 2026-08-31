@@ -1,5 +1,7 @@
 import type {
 	AdapterDependencies,
+	AdapterEmitContext,
+	AdapterEmitResult,
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterProjectConfig,
@@ -40,6 +42,12 @@ export interface ExtraAdapterOptions {
 	readonly migration?: AdapterMigrationHooks;
 	/** Target-side host port for adapters whose style call returns a class string. */
 	readonly targetPolicy?: AdapterTargetMigrationPolicy;
+	/** Optional target-native emission for a host representation selected by the policy. */
+	readonly targetEmit?: (
+		program: StyleProgram,
+		context: AdapterEmitContext | undefined,
+		programObject: (program: StyleProgram) => string,
+	) => AdapterEmitResult | undefined;
 	/** How a target preserves named style maps when it has no native map API. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 }
@@ -403,7 +411,9 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 				residuals: [...parsed.residuals, ...functionParsed.residuals],
 			};
 		},
-		emit: (program) => {
+		emit: (program, context) => {
+			const targetEmission = options.targetEmit?.(program, context, objectText);
+			if (targetEmission !== undefined) return targetEmission;
 			const namedRules = program.rules.filter(
 				(rule) => rule.name !== undefined && rule.kind === "style",
 			);

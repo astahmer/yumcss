@@ -134,6 +134,19 @@ intrinsic use is rewritten from `<Card />` to
 StyleX's `props` helper owns the returned host props, and the adapter keeps a
 residual for unsupported framework or attribute shapes.
 
+JSS has a target-native static class carrier as well. A static Pandwind style
+used by a React host can become
+`jss.createStyleSheet({ style: {...} }).attach().classes.style`, preserving the
+existing `className` contract. The adapter does not substitute a
+`react-jss` hook where the source needs a class value; dynamic/function-valued
+styles still require their own host-aware lowering.
+
+Style9 is another class-oriented target with a different native call shape:
+static styles become `style9(style9.create({ style: {...} }).style)` and can
+continue to feed an existing React `className`. This target emission is
+adapter-owned, so the central route runner remains independent of Style9's
+callable wrapper.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening
