@@ -379,6 +379,7 @@ export type {
 	StyleRecipeVariant,
 } from "./recipe-ir.ts";
 export {
+	BuiltinHostFramework,
 	detectHostFramework,
 	getHostFrameworkAdapter,
 	HOST_FRAMEWORK_ADAPTERS,

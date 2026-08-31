@@ -639,6 +639,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("<Box className={card} />");
 	});
 
+	test("projects a static Pandwind class binding onto a React Native style prop", () => {
+		const result = runAdapterMigration(
+			'import { View } from "react-native";\n' +
+				'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red", padding: 2 });\n' +
+				"export const App = () => <View className={card} />;",
+			{ from: "pandwind", to: "react-native", file: "App.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { StyleSheet } from "react-native";');
+		expect(result.code).toContain("StyleSheet.create");
+		expect(result.code).toContain("<View style={card} />");
+		expect(result.code).not.toContain('from "pandwind/css"');
+	});
+
 	test("lowers a static styled intrinsic into a Style9 class host", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

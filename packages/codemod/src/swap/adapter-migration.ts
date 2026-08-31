@@ -37,7 +37,7 @@ import {
 	type HostComponentRewriteRequest,
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
-import { BuiltinHostFramework } from "./host-adapters.ts";
+import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";
 import { StyleHostRepresentationKind } from "./identifiers.ts";
 
 function programHasDynamic(program: StyleProgram): boolean {
@@ -88,9 +88,10 @@ function frameworkForHost(
 	program: StyleProgram,
 ): string | undefined {
 	return (
-		program.source?.framework ??
-		document.framework ??
 		semantic?.source?.framework ??
+		document.framework ??
+		detectHostFramework(document.document.source, document.document.file)?.id ??
+		program.source?.framework ??
 		(/\.(?:jsx|tsx)$/.test(file)
 			? BuiltinHostFramework.React
 			: file.endsWith(".vue")

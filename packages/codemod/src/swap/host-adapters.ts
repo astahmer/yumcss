@@ -7,6 +7,7 @@ export enum BuiltinHostFramework {
 	Vue = "vue",
 	Svelte = "svelte",
 	Astro = "astro",
+	ReactNative = "react-native",
 }
 export type HostFramework = BuiltinHostFramework | (string & {});
 
@@ -143,7 +144,16 @@ const builtin = {
 		(file, source) =>
 			/from\s+["']react(?:\/jsx-runtime)?["']|jsx-runtime/.test(source) ||
 			(/\.(?:jsx|tsx)$/.test(file) &&
-				!/from\s+["'](?:preact|solid-js)["']|\bcreateSignal\s*\(/.test(source)),
+				!/from\s+["'](?:preact|solid-js|react-native)["']|\bcreateSignal\s*\(/.test(source)),
+	),
+	[BuiltinHostFramework.ReactNative]: makeAdapter(
+		BuiltinHostFramework.ReactNative,
+		[".jsx", ".tsx"],
+		"className",
+		false,
+		true,
+		["react-native"],
+		(_file, source) => /from\s+["']react-native["']/.test(source),
 	),
 	preact: makeAdapter(
 		"preact",
