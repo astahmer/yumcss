@@ -186,6 +186,23 @@ describe("bidirectional registered adapter matrix", () => {
 });
 
 describe("composed cross-ecosystem routes", () => {
+	test("rewrites a styled subject into a static class target", () => {
+		const result = migrateTo(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.VanillaExtract,
+			"Card.tsx",
+			{ source: { framework: "react" } },
+		);
+
+		expect(result.residuals).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain("const Card = style({");
+		expect(result.code).toContain("<div className={Card} />");
+	});
+
 	const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
 	const meta = loadMetaFromSources({
 		typesDtsPath: resolve(appDir, "types.d.ts"),

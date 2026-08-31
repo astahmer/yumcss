@@ -13,6 +13,7 @@ const fela = makeExtraAdapter({
 	detect: [/from\s+["'](?:fela|react-fela)["']/g, /\brenderer\.renderRule\s*\(\s*\{/g],
 	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
+	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });
 
 export default fela;

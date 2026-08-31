@@ -260,6 +260,9 @@ export function createTokenamiAdapter(
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
 			{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
 		],
+		migration: {
+			targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+		},
 		emit(program, { programObject }) {
 			return {
 				text: `css(${programObject(program)})`,

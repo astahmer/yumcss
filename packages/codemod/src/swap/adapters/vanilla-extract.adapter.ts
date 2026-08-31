@@ -22,6 +22,7 @@ export default defineCodemodAdapter({
 	sourceModules: ["@vanilla-extract/css"],
 	configFiles: ["package.json"],
 	migration: {
+		targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
 				targetId === CodemodAdapterId.Pandwind &&

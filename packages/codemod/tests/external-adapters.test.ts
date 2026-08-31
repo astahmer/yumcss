@@ -665,9 +665,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals[0]?.kind).toBe("capability");
+		expect(result.residuals[0]?.kind).toBe("dynamic-values");
 		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain("capability-blocked");
+		expect(result.code).toContain("lowering-residual");
 	});
 
 	test("lowers JSS named rules and imperative application into Pandwind classes", () => {

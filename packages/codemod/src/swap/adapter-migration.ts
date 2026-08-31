@@ -370,6 +370,7 @@ function runAdapterMigrationInternal(
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,
+			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
@@ -419,7 +420,17 @@ function runAdapterMigrationInternal(
 					edits.push({
 						start: match.start,
 						end: match.start,
-						text: `// ${marker} (dynamic values require a host-bound style carrier)\n`,
+						text:
+							MigrationDiagnostics.skipMarker({
+								marker,
+								loweringResiduals: [
+									{
+										kind: "dynamic-values",
+										text: match.sourceText,
+										hint: "dynamic values require a host-bound class/style carrier",
+									},
+								],
+							}) + "\n",
 					});
 					continue;
 				}
@@ -501,7 +512,13 @@ function runAdapterMigrationInternal(
 						residuals: hasDynamic
 							? program.residuals.filter((residual) => residual.kind !== "dynamic")
 							: program.residuals,
-						source: { ...program.source, subject: undefined },
+						source: {
+							...program.source,
+							subject: undefined,
+							...(targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true
+								? { framework: undefined }
+								: {}),
+						},
 					};
 					if (!componentRewriteKeys.has(rewriteKey)) {
 						componentRewriteKeys.add(rewriteKey);

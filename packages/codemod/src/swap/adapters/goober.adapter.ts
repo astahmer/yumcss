@@ -8,6 +8,7 @@ const goober = makeExtraAdapter({
 	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],
 	call: /\bcss\s*\(\s*\{/g,
 	prefix: "css(",
+	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });
 
 export default goober;

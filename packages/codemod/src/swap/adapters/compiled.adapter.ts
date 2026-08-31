@@ -11,6 +11,7 @@ const compiled = makeExtraAdapter({
 	],
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
+	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });
 
 export default compiled;

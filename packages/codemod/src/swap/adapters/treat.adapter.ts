@@ -21,6 +21,7 @@ const treat = makeExtraAdapter({
 		}),
 	},
 	sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.RuntimeClass] },
+	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });
 
 export default treat;

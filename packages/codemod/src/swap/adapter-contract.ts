@@ -156,6 +156,8 @@ export interface AdapterMigrationHooks {
 
 export interface AdapterTargetMigrationPolicy {
 	readonly handlesHostRewrites?: boolean;
+	/** Host rewrites consume framework metadata when emitting an intrinsic host. */
+	readonly handlesFrameworkSemantics?: boolean;
 	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;
 	readonly handlesRawTemplate?: (context: { source: string }) => boolean;
 	readonly handlesTemplateFragment?: (program: StyleProgram) => boolean;

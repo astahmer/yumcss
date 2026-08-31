@@ -4,6 +4,7 @@ import type {
 	AdapterParseResult,
 	AdapterProjectConfig,
 	AdapterMigrationHooks,
+	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
@@ -34,6 +35,8 @@ export interface ExtraAdapterOptions {
 		"nestedObjectKind" | "arrayRuleKinds" | "emissionHints"
 	>;
 	readonly migration?: AdapterMigrationHooks;
+	/** Target-side host port for adapters whose style call returns a class string. */
+	readonly targetPolicy?: AdapterTargetMigrationPolicy;
 }
 
 const capabilities = (id: string): AdapterCapabilities => ({
@@ -335,7 +338,13 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		sourceModules: options.modules,
 		capabilities: capabilities(options.id),
 		dependencies: options.packages,
-		migration: options.migration,
+		migration:
+			options.migration === undefined && options.targetPolicy === undefined
+				? undefined
+				: {
+						...options.migration,
+						targetPolicy: options.targetPolicy ?? options.migration?.targetPolicy,
+					},
 		detect: (context) => {
 			const evidence = options.detect.flatMap((pattern) => {
 				pattern.lastIndex = 0;

@@ -29,6 +29,9 @@ export default defineCodemodAdapter({
 	detectPatterns: [/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["@linaria/core", "@linaria/react"],
 	configFiles: ["linaria.config.js", "package.json"],
+	migration: {
+		targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+	},
 	emit(program, { templateCss }) {
 		const text = templateCss(program);
 		return program.source?.subject !== undefined

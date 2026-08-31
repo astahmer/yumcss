@@ -95,6 +95,7 @@ describe("semantic metadata and validator domains", () => {
 				},
 			},
 			mode: "safe",
+			hostFramework: false,
 		});
 		expect(result.program.declarations.find((item) => item.property === "color")?.value).toEqual({
 			kind: "literal",

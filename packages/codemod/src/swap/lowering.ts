@@ -14,6 +14,8 @@ export interface StyleLoweringContext {
 	readonly program: StyleProgram;
 	readonly target: AdapterCapabilities;
 	readonly mode: AdapterCapabilityMode;
+	/** Target host adapter may consume framework semantics during rewriting. */
+	readonly hostFramework?: boolean;
 }
 
 export interface StyleLoweringResult {
@@ -187,7 +189,7 @@ const composition: StyleLowering = {
 const runtimeAndPlugins: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
 	id: StyleLoweringId.RuntimeAndPlugin,
-	apply: ({ program, target }) => {
+	apply: ({ program, target, hostFramework }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let rules = program.rules;
 		let applied = false;
@@ -231,7 +233,8 @@ const runtimeAndPlugins: StyleLowering = {
 		}
 		const source =
 			level(target, "framework-semantics") === "unsupported" &&
-			program.source?.framework !== undefined
+			program.source?.framework !== undefined &&
+			hostFramework !== true
 				? { ...program.source, framework: undefined }
 				: program.source;
 		if (source !== program.source) {
