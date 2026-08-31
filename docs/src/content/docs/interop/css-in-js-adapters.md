@@ -138,13 +138,17 @@ mode reports `framework-semantics` until that adapter exists.
 MUI also demonstrates a host-prop projection in the other direction. A
 Pandwind class binding used as `className={card}` becomes an object binding
 plus `sx={card}`. An inline expression becomes an object-valued `sx` prop.
-There is deliberately no standalone MUI `sx()` function, so an unused
-standalone Pandwind class binding remains source-preserving with a
-`host-framework` residual rather than becoming invalid target code. Intrinsic
-hosts such as `<div>` become `<Box component="div" sx={...}>`, preserving the
+There is deliberately no standalone MUI `sx()` function. Static unused
+standalone bindings therefore select an explicit portable-artifact fallback:
+the MUI adapter keeps Pandwind's `css.class(...)` carrier and declares the
+extra Pandwind dependency, preserving the style without pretending that MUI
+has a standalone `sx()` API. Dynamic unused bindings still produce a typed
+`host-framework` residual because no safe host carrier exists. Intrinsic hosts
+such as `<div>` become `<Box component="div" sx={...}>`, preserving the
 rendered element because `sx` is not a native DOM prop. Unknown custom
-components remain residuals unless their MUI ownership is proven by the
-source imports.
+components use the portable static fallback when their declarations are fully
+static; dynamic custom hosts remain residuals unless their MUI ownership is
+proven by the source imports.
 
 StyleX uses the same target-owned host port with a different representation.
 A static React styled subject can become a StyleX style object and its

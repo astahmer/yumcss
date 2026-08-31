@@ -135,8 +135,9 @@ class-string API from being called as a component, prevents a component
 factory from being assigned to `className`, and lets a target such as MUI
 rewrite `className={card}` to its host-owned `sx={card}` prop. Intrinsic DOM
 hosts are wrapped as `Box component="..."` first, because `sx` is not a DOM
-attribute; unknown custom components remain residuals unless the source
-proves that they are MUI components.
+attribute; static unknown custom components can use MUI's portable artifact
+fallback, while dynamic ones remain residuals unless the source proves that
+they are MUI components.
 
 The target policy owns the final host rewrite. It receives the normalized
 program, emitted expression, framework, binding, and selected representation;
@@ -153,12 +154,15 @@ identities are equal is instead an identity no-op; it does not renegotiate
 capabilities or manufacture a new representation.
 
 Targets that require a host use declare that requirement in the same policy.
-For example, MUI's `sx` carrier sets `requiresHostContext`; a bare style value
-therefore stops before target emission with the adapter-owned explanation that
-an `sx` prop must be attached to a component. When the source host is an
-intrinsic element, the same target port emits `Box component="..."` so the
-rendered element remains equivalent. This keeps “no standalone API” and host
-ownership as target contracts rather than special cases in the route runner.
+For example, MUI's `sx` carrier sets `requiresHostContext`; a static bare style
+value therefore selects the MUI adapter's portable-artifact representation and
+emits Pandwind's static `css.class(...)` carrier rather than inventing an
+`sx()` API that MUI does not have. Dynamic bare values still stop with the
+adapter-owned explanation that an `sx` prop must be attached to a component.
+When the source host is an intrinsic element, the same target port emits
+`Box component="..."` so the rendered element remains equivalent. This keeps
+the rule and its fallback under MUI ownership as target contracts rather than
+special cases in the route runner.
 
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component
@@ -306,7 +310,7 @@ static-evaluation evidence. The lowering registry handles resolved theme
 bindings, custom-property fallback, composition flattening, plugin transforms,
 runtime context, and framework metadata. Its `plan()` result records the
 selected representation (`static`, target-native, custom-property,
-runtime-carrier, or residual) and the representations the target contract can
+runtime-carrier, portable-artifact, or residual) and the representations the target contract can
 negotiate. A migration result also retains one lowering plan per parsed source
 match, so diagnostics, IDE tooling, and proof runners can inspect why a route
 selected a representation instead of inferring it from generated text. A
