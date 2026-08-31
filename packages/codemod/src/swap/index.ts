@@ -28,7 +28,7 @@ import {
 	type AdapterCapabilityMode,
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
-import { CodemodAdapterId, SwapTargetId } from "./identifiers.ts";
+import { CodemodAdapterId, MigrationSkipReason, SwapTargetId } from "./identifiers.ts";
 
 const builtinAdapterCatalog = createBuiltinCodemodCatalog();
 const builtinAdapterIds = builtinAdapterCatalog.adapters.map((adapter) => adapter.id);
@@ -127,7 +127,10 @@ export {
 	externalIdentifier,
 } from "./identifiers.ts";
 export { MigrationDiagnostics } from "./migration-diagnostics.ts";
-export type { MigrationSkipDiagnosticInput } from "./migration-diagnostics.ts";
+export type {
+	MigrationResidualLike,
+	MigrationSkipDiagnosticInput,
+} from "./migration-diagnostics.ts";
 export type { ExternalIdentifier } from "./identifiers.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
@@ -526,10 +529,15 @@ export function runSwap(
 		if (capabilityReport !== undefined) {
 			capabilityReports.push(capabilityReport);
 			if (options.capabilityMode !== undefined && !capabilityReport.convertible) {
-				const reason = capabilityReport.blockers
+				const details = capabilityReport.blockers
 					.map((issue) => `${issue.capability}: ${issue.detail}`)
 					.join("; ");
-				code = insertSkipMarker(code, match.start, reason || "adapter capability mismatch", marker);
+				code = insertSkipMarker(
+					code,
+					match.start,
+					`${MigrationSkipReason.CapabilityBlocked}: ${details}`,
+					marker,
+				);
 				skippedByMarker++;
 				for (const issue of capabilityReport.blockers) {
 					residualsOut.push({ file, token: issue.detail, reason: issue.level });
@@ -548,7 +556,7 @@ export function runSwap(
 			code = insertSkipMarker(
 				code,
 				match.start,
-				`no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
+				`${MigrationSkipReason.HostRewriteRequired}: no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
 				marker,
 			);
 			skippedByMarker++;
@@ -569,7 +577,12 @@ export function runSwap(
 			const hints = (ir.residuals.length > 0 ? ir.residuals : result.residuals)
 				.map((r) => r.hint ?? r.kind)
 				.join("; ");
-			code = insertSkipMarker(code, match.start, hints || "unconvertible", marker);
+			code = insertSkipMarker(
+				code,
+				match.start,
+				`${MigrationSkipReason.LoweringResidual}: ${hints || "unconvertible"}`,
+				marker,
+			);
 			skippedByMarker++;
 			continue;
 		}

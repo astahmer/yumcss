@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { MigrationDiagnostics, MigrationSkipReason } from "../src/swap/index.ts";
+import {
+	MigrationDiagnostics,
+	MigrationSkipReason,
+	StyleRepresentationKind,
+} from "../src/swap/index.ts";
 
 const residual = (kind: string) => ({ kind, text: kind });
 
@@ -53,5 +57,18 @@ describe("migration diagnostics", () => {
 		});
 
 		expect(marker).toContain(MigrationSkipReason.ConfigurationResidual);
+	});
+
+	test("reports the representations the target can negotiate", () => {
+		const marker = MigrationDiagnostics.skipMarker({
+			marker: "pandwind:migrate-skip",
+			availableRepresentations: [
+				StyleRepresentationKind.Static,
+				StyleRepresentationKind.CustomProperty,
+				StyleRepresentationKind.Residual,
+			],
+		});
+
+		expect(marker).toContain("available: static, custom-property, residual");
 	});
 });

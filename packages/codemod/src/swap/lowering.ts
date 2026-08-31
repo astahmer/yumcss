@@ -27,6 +27,8 @@ export interface StyleLoweringResult {
 export interface StyleLoweringPlan extends StyleLoweringResult {
 	/** The representation selected after all registered lowerings ran. */
 	readonly representation: StyleRepresentationKind;
+	/** Representations the target contract can accept for this program family. */
+	readonly availableRepresentations: readonly StyleRepresentationKind[];
 }
 
 export interface StyleLowering {
@@ -330,6 +332,7 @@ export function createStyleLoweringRegistry(
 			return {
 				...result,
 				representation: representationFor(context, result),
+				availableRepresentations: availableRepresentationsFor(context),
 			};
 		},
 	};
@@ -367,4 +370,18 @@ function representationFor(
 			: StyleRepresentationKind.TargetNative;
 	}
 	return StyleRepresentationKind.Static;
+}
+
+function availableRepresentationsFor(
+	context: StyleLoweringContext,
+): readonly StyleRepresentationKind[] {
+	const representations = [StyleRepresentationKind.Static];
+	if (level(context.target, "dynamic-values") !== "unsupported")
+		representations.push(StyleRepresentationKind.TargetNative);
+	if (level(context.target, "custom-properties") !== "unsupported")
+		representations.push(StyleRepresentationKind.CustomProperty);
+	if (level(context.target, "runtime-context") !== "unsupported")
+		representations.push(StyleRepresentationKind.RuntimeCarrier);
+	representations.push(StyleRepresentationKind.Residual);
+	return representations;
 }

@@ -623,12 +623,19 @@ interface SourceNode {
 	key?: SourceNode;
 	computed?: boolean;
 	operator?: string;
+	left?: SourceNode;
+	right?: SourceNode;
+	test?: SourceNode;
+	consequent?: SourceNode;
+	alternate?: SourceNode;
 	argument?: SourceNode;
 	kind?: string;
 	valueNode?: SourceNode;
 	expression?: SourceNode;
 	properties?: SourceNode[];
 	elements?: SourceNode[];
+	quasis?: SourceNode[];
+	expressions?: SourceNode[];
 }
 
 function sourceSlice(body: string, node: SourceNode): string {
@@ -674,6 +681,32 @@ function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions)
 }
 
 function literalSourceValue(node: SourceNode): StyleValue | null {
+	if (node.type === "ParenthesizedExpression" && node.expression !== undefined)
+		return literalSourceValue(node.expression);
+	if (node.type === "TemplateLiteral") {
+		const quasis = node.quasis ?? [];
+		const expressions = node.expressions ?? [];
+		if (quasis.length !== expressions.length + 1) return null;
+		let value = "";
+		for (let index = 0; index < quasis.length; index++) {
+			const quasiValue = quasis[index]?.value;
+			if (typeof quasiValue === "string") value += quasiValue;
+			else if (
+				quasiValue !== null &&
+				typeof quasiValue === "object" &&
+				typeof (quasiValue as { cooked?: unknown }).cooked === "string"
+			)
+				value += (quasiValue as { cooked: string }).cooked;
+			else return null;
+			const expression = expressions[index];
+			if (expression !== undefined) {
+				const evaluated = literalSourceValue(expression);
+				if (evaluated?.kind !== "literal") return null;
+				value += String(evaluated.value);
+			}
+		}
+		return { kind: "literal", value };
+	}
 	if (node.type === "UnaryExpression" && (node.operator === "-" || node.operator === "+")) {
 		const argument = node.argument === undefined ? null : literalSourceValue(node.argument);
 		if (argument?.kind === "literal" && typeof argument.value === "number") {
@@ -681,6 +714,21 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 				kind: "literal",
 				value: node.operator === "-" ? -argument.value : argument.value,
 			};
+		}
+	}
+	if (node.type === "ConditionalExpression") {
+		const test = node.test === undefined ? null : literalSourceValue(node.test);
+		if (test?.kind === "literal" && typeof test.value === "boolean") {
+			const selected = test.value ? node.consequent : node.alternate;
+			return selected === undefined ? null : literalSourceValue(selected);
+		}
+	}
+	if (node.type === "BinaryExpression" || node.type === "LogicalExpression") {
+		const left = node.left === undefined ? null : literalSourceValue(node.left);
+		const right = node.right === undefined ? null : literalSourceValue(node.right);
+		if (left?.kind === "literal" && right?.kind === "literal") {
+			const value = evaluateLiteralBinary(node.operator, left.value, right.value);
+			if (value !== undefined) return { kind: "literal", value };
 		}
 	}
 	if (node.type !== "Literal") return null;
@@ -692,6 +740,43 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 		return { kind: "literal", value: node.value };
 	}
 	return null;
+}
+
+function evaluateLiteralBinary(
+	operator: string | undefined,
+	left: string | boolean | number,
+	right: string | boolean | number,
+): string | boolean | number | undefined {
+	switch (operator) {
+		case "+":
+			if (
+				(typeof left !== "string" && typeof left !== "number") ||
+				(typeof right !== "string" && typeof right !== "number")
+			)
+				return undefined;
+			return typeof left === "number" && typeof right === "number"
+				? left + right
+				: `${left}${right}`;
+		case "-":
+		case "*":
+		case "/":
+		case "%":
+			if (typeof left !== "number" || typeof right !== "number") return undefined;
+			if (operator === "-") return left - right;
+			if (operator === "*") return left * right;
+			if (operator === "/") return right === 0 ? undefined : left / right;
+			return left % right;
+		case "&&":
+			return left && right;
+		case "||":
+			return left || right;
+		case "===":
+			return left === right;
+		case "!==":
+			return left !== right;
+		default:
+			return undefined;
+	}
 }
 
 function dynamicExpressionKind(expression: string): StyleDynamicExpressionKind {

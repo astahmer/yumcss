@@ -22,7 +22,6 @@ import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
-import { CodemodAdapterId } from "./identifiers.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
@@ -183,8 +182,8 @@ function configurationFailure(
 	};
 }
 
-function isPandwindTarget(adapter: { readonly id: string; readonly system?: string }): boolean {
-	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
+function hasTargetHostPort(adapter: StyleAdapter): boolean {
+	return adapter.migration?.targetPolicy?.handlesHostRewrites === true;
 }
 
 function loweringRegistryForRoute(
@@ -375,7 +374,7 @@ function runAdapterMigrationInternal(
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
-		if (isPandwindTarget(targetAdapter) && program.source?.subject === undefined) {
+		if (hasTargetHostPort(targetAdapter) && program.source?.subject === undefined) {
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
 				const binding = source
@@ -437,7 +436,7 @@ function runAdapterMigrationInternal(
 					};
 			}
 		}
-		if (isPandwindTarget(targetAdapter) && program.source?.subject !== undefined) {
+		if (hasTargetHostPort(targetAdapter) && program.source?.subject !== undefined) {
 			const hasDynamic = programHasDynamic(program);
 			const hasFunctionDynamic = programHasFunctionDynamic(program);
 			const binding = source
@@ -559,6 +558,7 @@ function runAdapterMigrationInternal(
 						parseResiduals: program.residuals,
 						loweringResiduals: lowering.residuals,
 						blockers: report.blockers,
+						availableRepresentations: lowering.availableRepresentations,
 					}) + "\n",
 			});
 			continue;
@@ -601,7 +601,7 @@ function runAdapterMigrationInternal(
 			}
 		}
 		if (
-			isPandwindTarget(targetAdapter) &&
+			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&
 			program.source?.framework !== undefined &&
 			program.source?.subject === undefined &&

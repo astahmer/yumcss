@@ -10,6 +10,25 @@ import {
 } from "../src/swap/semantic-ir.ts";
 
 describe("versioned semantic style-program IR", () => {
+	test("folds literal arithmetic and conditional expressions before lowering", () => {
+		const program = styleProgramFromSourceObject(
+			"padding: 2 + 2, color: true ? 'red' : 'blue', opacity: 1 / 2, width: `calc(${2 + 2}px)`",
+		);
+
+		expect(program.residuals).toEqual([]);
+		expect(program.declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ property: "padding", value: { kind: "literal", value: 4 } }),
+				expect.objectContaining({ property: "color", value: { kind: "literal", value: "red" } }),
+				expect.objectContaining({ property: "opacity", value: { kind: "literal", value: 0.5 } }),
+				expect.objectContaining({
+					property: "width",
+					value: { kind: "literal", value: "calc(4px)" },
+				}),
+			]),
+		);
+	});
+
 	test("lifts flat declarations without changing their lossless representation", () => {
 		const ir = {
 			entries: [

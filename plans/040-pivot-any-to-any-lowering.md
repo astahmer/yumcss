@@ -151,7 +151,9 @@ CI must fail when:
 
 ## Acceptance checklist
 
-- [ ] Every marker explains the actual semantic blocker.
+- [x] Every marker explains the actual semantic blocker.
+- [x] Configuration failures are source-visible and categorized separately.
+- [x] Lowering plans expose the selected and available representations.
 - [ ] Every HIR construct has a target lowering, runtime carrier, or residual.
 - [ ] Every registered source×target route is exercised in both modes.
 - [ ] Static extraction wins whenever the source is statically representable.
@@ -164,6 +166,23 @@ CI must fail when:
 - [ ] The full route matrix and residual policy are enforced in CI.
 - [ ] Documentation describes the actual proof boundary and no longer implies
       that a generic capability marker is an acceptable final outcome.
+
+## Current implementation evidence
+
+The first wave is implemented and tested in focused JJ revisions:
+
+- typed migration diagnostics distinguish configuration, parse, lowering, and
+  capability outcomes;
+- the lowering registry composes source/target adapter-owned strategies and
+  clears residuals explicitly when a later strategy replaces them;
+- the semantic parser folds literal arithmetic, conditionals, and template
+  interpolations before target negotiation;
+- the existing Cartesian route test remains green and the flat `SwapIR` path
+  remains unchanged.
+
+The remaining checkboxes are intentionally still open until each capability
+family has a concrete lowering and differential proof rather than only a
+route-level outcome.
 
 ## Non-goals
 

@@ -174,10 +174,14 @@ Semantic lowering is versioned with `StyleProgram /4`. Dynamic declarations
 retain expression kind, source range, dependency names, and explicit
 static-evaluation evidence. The lowering registry handles resolved theme
 bindings, custom-property fallback, composition flattening, plugin transforms,
-runtime context, and framework metadata. A target adapter receives an optional
-semantic observation on `AdapterEmitResult` when an opaque runtime registration
-cannot safely be reparsed; validators compare that observation rather than
-pretending the emitted call is a static class.
+runtime context, and framework metadata. Its `plan()` result records the
+selected representation (`static`, target-native, custom-property,
+runtime-carrier, or residual) and the representations the target contract can
+negotiate. Source and target adapters may contribute scoped lowering ports;
+the migration runner composes them without an ecosystem switch. A target
+adapter receives an optional semantic observation on `AdapterEmitResult` when
+an opaque runtime registration cannot safely be reparsed; validators compare
+that observation rather than pretending the emitted call is a static class.
 
 Runtime fallback is a deliberate second lane. Static extraction is attempted
 first; only unresolved dynamic expressions retain the smallest target runtime

@@ -147,6 +147,13 @@ describe("semantic metadata and validator domains", () => {
 		});
 
 		expect(plan.representation).toBe(StyleRepresentationKind.CustomProperty);
+		expect(plan.availableRepresentations).toEqual(
+			expect.arrayContaining([
+				StyleRepresentationKind.Static,
+				StyleRepresentationKind.CustomProperty,
+				StyleRepresentationKind.Residual,
+			]),
+		);
 	});
 
 	test("composes an adapter-owned lowering without changing the runner", () => {

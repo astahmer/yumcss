@@ -1,13 +1,20 @@
 import type { AdapterCapabilityIssue } from "./capabilities.ts";
-import type { StyleProgramResidual } from "./semantic-ir.ts";
 import { MigrationSkipReason } from "./identifiers.ts";
+import type { StyleRepresentationKind } from "./identifiers.ts";
+
+export interface MigrationResidualLike {
+	readonly kind: string;
+	readonly text: string;
+	readonly hint?: string;
+}
 
 export interface MigrationSkipDiagnosticInput {
 	readonly marker: string;
 	readonly blockers?: readonly AdapterCapabilityIssue[];
-	readonly configurationResiduals?: readonly StyleProgramResidual[];
-	readonly parseResiduals?: readonly StyleProgramResidual[];
-	readonly loweringResiduals?: readonly StyleProgramResidual[];
+	readonly configurationResiduals?: readonly MigrationResidualLike[];
+	readonly parseResiduals?: readonly MigrationResidualLike[];
+	readonly loweringResiduals?: readonly MigrationResidualLike[];
+	readonly availableRepresentations?: readonly StyleRepresentationKind[];
 }
 
 /**
@@ -32,12 +39,14 @@ export class MigrationDiagnostics {
 				.join("; ");
 			clauses.push(`${MigrationSkipReason.CapabilityBlocked}: ${details}`);
 		}
+		if ((input.availableRepresentations?.length ?? 0) > 0)
+			clauses.push(`available: ${input.availableRepresentations!.join(", ")}`);
 		return clauses.length === 0
 			? `// ${input.marker}`
 			: `// ${input.marker} (${clauses.join(" | ")})`;
 	}
 }
 
-function kinds(residuals: readonly StyleProgramResidual[]): string {
+function kinds(residuals: readonly MigrationResidualLike[]): string {
 	return [...new Set(residuals.map((residual) => residual.kind))].join(", ");
 }
