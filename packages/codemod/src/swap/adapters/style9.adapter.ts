@@ -1,5 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const style9 = makeExtraAdapter({
 	id: CodemodAdapterId.Style9,
@@ -10,6 +10,7 @@ const style9 = makeExtraAdapter({
 	prefix: "style9.create(",
 	targetImports: ['import style9 from "style9";'],
 	namedObjects: true,
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	sourceObjectOptions: { namedRuleObjects: true },
 	migration: {
 		rewrite: ({ code, targetId, convertedBindings, complete }) => {

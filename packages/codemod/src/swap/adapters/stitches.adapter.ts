@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleProgramCompositionKind } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleNamedRuleStrategy,
+	StyleProgramCompositionKind,
+} from "../identifiers.ts";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Stitches,
@@ -15,6 +19,7 @@ export default defineCodemodAdapter({
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],
 	sourceModules: ["@stitches/react", "@stitches/core"],
 	configFiles: ["stitches.config.ts", "package.json"],

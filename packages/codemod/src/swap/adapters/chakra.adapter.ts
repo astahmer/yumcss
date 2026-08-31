@@ -1,7 +1,7 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleValue } from "../semantic-ir.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { matchBlock } from "../../sources.ts";
@@ -493,8 +493,9 @@ export function createChakraAdapter(
 			"theme-context": "partial",
 			"runtime-context": "partial",
 			"framework-semantics": "partial",
-			components: "partial",
-		}),
+		components: "partial",
+	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
 		// Component imports remain in place because the host element still uses Chakra's component.
 		sourceModules: [],

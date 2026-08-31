@@ -404,7 +404,9 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			};
 		},
 		emit: (program) => {
-			const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+			const namedRules = program.rules.filter(
+				(rule) => rule.name !== undefined && rule.kind === "style",
+			);
 			if (namedRules.length > 0 && options.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap) {
 				const entries = namedRules.map((rule) => {
 					const single = {

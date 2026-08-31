@@ -1,6 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const styleProps = [
 	"style",
@@ -134,6 +134,7 @@ export default defineCodemodAdapter({
 		"framework-semantics": "partial",
 		components: "partial",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@mantine\/core/, /\b(?:sx|maw|fz|c|bg)\s*=/],
 	// Mantine components remain imported; only the style-prop layer is lowered.
 	sourceModules: [],

@@ -1,5 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const vueStyled = makeExtraAdapter({
 	id: CodemodAdapterId.VueStyled,
@@ -14,6 +14,7 @@ const vueStyled = makeExtraAdapter({
 	form: "template",
 	prefix: "styled.div(",
 	targetImports: ['import styled from "vue-styled-components";'],
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });

@@ -1,5 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const aphrodite = makeExtraAdapter({
 	id: CodemodAdapterId.Aphrodite,
@@ -10,6 +10,7 @@ const aphrodite = makeExtraAdapter({
 	prefix: "StyleSheet.create(",
 	targetImports: ['import { StyleSheet } from "aphrodite";'],
 	namedObjects: true,
+	namedRuleStrategy: StyleNamedRuleStrategy.NativeMap,
 	sourceObjectOptions: {
 		namedRuleObjects: true,
 		arrayRuleKinds: { fontFamily: "font-face" },

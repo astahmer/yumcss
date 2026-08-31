@@ -1,6 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const spacing = new Set([
 	"m",
@@ -99,6 +99,7 @@ export default defineCodemodAdapter({
 		"framework-semantics": "partial",
 		components: "partial",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
 	sourceModules: [],
 	configFiles: ["package.json", "src/theme.ts", "src/theme.js"],

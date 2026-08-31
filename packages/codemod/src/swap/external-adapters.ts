@@ -1059,7 +1059,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				templateCss,
 			};
 			const render = (value: StyleProgram) => spec.emit(value, renderers, context);
-			const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+			const namedRules = program.rules.filter(
+				(rule) => rule.name !== undefined && rule.kind === "style",
+			);
 			const rendered =
 				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
 					? (() => {
