@@ -150,3 +150,12 @@ longer depend on their concrete policy and the module is not exporting a bag
 of ecosystem-specific operations. Record each completed domain in
 `docs/src/content/docs/contributing/architecture.md` and keep the relevant
 JJ revision focused and described.
+
+## Pre-launch Evolution
+
+We have not launched and have no production users or production data. Revisit this policy before the first production deployment.
+
+* Optimize for the smallest coherent design that represents the product today.
+* Remove obsolete code, schemas, APIs, configuration, aliases, and transitional paths directly.
+* Do not add backward-compatibility shims, legacy aliases, dual-read or dual-write paths, or data-preserving backfills unless the user explicitly asks for them.
+* Internal interfaces are not public compatibility contracts. Update their callers and tests atomically when they change.
