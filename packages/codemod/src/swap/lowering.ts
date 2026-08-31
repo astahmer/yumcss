@@ -337,8 +337,13 @@ export function createStyleLoweringRegistry(
 					const resolved = new Set(result.resolvedResidualKinds);
 					for (let index = residuals.length - 1; index >= 0; index--)
 						if (resolved.has(residuals[index]!.kind)) residuals.splice(index, 1);
+					program = {
+						...result.program,
+						residuals: result.program.residuals.filter((residual) => !resolved.has(residual.kind)),
+					};
+				} else {
+					program = result.program;
 				}
-				program = result.program;
 				residuals.push(...result.residuals);
 				applied.push(...result.applied);
 				for (const capability of result.resolvedCapabilities ?? [])

@@ -178,7 +178,10 @@ describe("semantic metadata and validator domains", () => {
 	});
 
 	test("composes an adapter-owned lowering without changing the runner", () => {
-		const input = styleProgramFromSourceObject("color: props.color", {});
+		const input = {
+			...styleProgramFromSourceObject("color: props.color", {}),
+			residuals: [{ kind: "dynamic", text: "props.color" }],
+		};
 		const staticProgram = styleProgramFromSourceObject("color: 'red'", {});
 		const registry = createStyleLoweringRegistry().extend([
 			{
@@ -205,5 +208,6 @@ describe("semantic metadata and validator domains", () => {
 		expect(plan.applied).toContain("fixture-source-lowering");
 		expect(plan.representation).toBe(StyleRepresentationKind.Static);
 		expect(plan.program.declarations[0]?.value).toEqual({ kind: "literal", value: "red" });
+		expect(plan.program.residuals).toEqual([]);
 	});
 });
