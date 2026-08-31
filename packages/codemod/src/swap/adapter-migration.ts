@@ -1,6 +1,6 @@
 import { applyEdits } from "../migrate.ts";
 import { ensureImport } from "../shared.ts";
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
 import {
 	inspectAdapterCapabilities,
@@ -83,7 +83,7 @@ function bindingForMatch(source: string, start: number): string | undefined {
 
 function frameworkForHost(
 	file: string,
-	document: { readonly framework?: string },
+	document: SourceScanResult,
 	semantic: AdapterParseContext["semantic"],
 	program: StyleProgram,
 ): string | undefined {

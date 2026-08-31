@@ -6,7 +6,7 @@ import {
 	CodemodAdapterId,
 	createAdapterContractSuite,
 	createAdapterCoverageGate,
-	createBidirectionalAdapterMatrix,
+	createAdapterConformanceSuite,
 	createBuiltinCodemodCatalog,
 	createRealRepositoryCorpus,
 	RealRepositoryProofDimension,
@@ -102,9 +102,18 @@ function runOfflineGate(): void {
 	const contract = createAdapterContractSuite().run(catalog.registry, adapterContractFixtures);
 	if (contract.failed > 0)
 		throw new Error(`adapter contract gate failed:\n${JSON.stringify(contract.failures, null, 2)}`);
-	const routeMatrix = createBidirectionalAdapterMatrix(catalog.registry, {
+	const conformance = createAdapterConformanceSuite(catalog.registry, {
 		readFile: () => undefined,
 	}).run(completeAdapterMatrixFixtures);
+	if (!conformance.passed)
+		throw new Error(
+			`adapter conformance gate failed:\n${JSON.stringify(
+				{ direct: conformance.failures, routes: conformance.routes.failures },
+				null,
+				2,
+			)}`,
+		);
+	const routeMatrix = conformance.routes;
 	if (routeMatrix.failed > 0)
 		throw new Error(
 			`bidirectional route matrix failed:\n${JSON.stringify(routeMatrix.failures, null, 2)}`,
@@ -166,6 +175,11 @@ function runOfflineGate(): void {
 					cases: routeMatrix.cases.length,
 					passed: routeMatrix.passed,
 					failed: routeMatrix.failed,
+				},
+				adapterConformance: {
+					adapters: conformance.direct.length,
+					directPhases: ["detection", "configuration", "parsing", "emission", "validation"],
+					scenarios: ["happy", "edge", "malformed"],
 				},
 				fixtureOnlyAdapters: [...fixtureOnlyAdapters],
 				capabilities: coverage.capabilityTotals,

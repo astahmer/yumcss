@@ -787,7 +787,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "pandwind", to: "react-native", file: "App.tsx", mode: "safe" },
 		);
 		expect(
-			result.residuals.some((residual) => residual.hint.includes("framework-semantics: react")),
+			result.residuals.some(
+				(residual) => residual.hint?.includes("framework-semantics: react") ?? false,
+			),
 		).toBe(true);
 		expect(result.code).toContain("className={card}");
 		expect(result.code).toContain('from "pandwind/css"');

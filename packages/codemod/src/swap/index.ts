@@ -402,7 +402,6 @@ export {
 	createHostFrameworkContractSuite,
 } from "./host-adapters.ts";
 export type {
-	BuiltinHostFramework,
 	HostFramework,
 	HostFrameworkAdapter,
 	HostFrameworkContractFixture,
