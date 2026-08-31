@@ -9,6 +9,11 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		source: "css.class({ color: 'red' })",
 	},
 	{
+		adapter: CodemodAdapterId.Panda,
+		file: "panda.ts",
+		source: "import { css } from '@pandacss/dev'; css({ color: 'red' })",
+	},
+	{
 		adapter: CodemodAdapterId.Emotion,
 		file: "emotion.ts",
 		source: "import { css } from '@emotion/css'; css({ color: 'red' })",

@@ -21,7 +21,7 @@ import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
 import { parseSourceList } from "./sources.ts";
 import * as swapImport from "./swap/index.ts";
-import { CodemodAdapterId, SwapTargetId } from "./swap/identifiers.ts";
+import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
 
@@ -356,7 +356,29 @@ function isExternalAdapterId(value: string): value is import("./swap/index.ts").
 	return swapImport.listCodemodAdapterIds().includes(value);
 }
 
+/**
+ * Keep the flat SwapIR path as the cheap compatibility projection for its
+ * native source dialects. Those target names are also registered as v2
+ * adapters, but selecting them from a flat source must not silently switch
+ * token-aware legacy semantics to the generic object renderer.
+ */
+function isLegacyFlatRoute(args: swapImport.SwapCliArgs): boolean {
+	const flatSources: readonly string[] = [
+		SwapSourceId.Auto,
+		SwapSourceId.Tw,
+		SwapSourceId.Css,
+		SwapSourceId.Design,
+	];
+	const flatTargets: readonly string[] = [
+		CodemodAdapterId.Panda,
+		CodemodAdapterId.Tailwind,
+		CodemodAdapterId.StyleX,
+	];
+	return flatSources.includes(args.from) && flatTargets.includes(args.to);
+}
+
 function isExternalSwap(args: swapImport.SwapCliArgs): boolean {
+	if (isLegacyFlatRoute(args)) return false;
 	return isExternalAdapterId(args.from) || isExternalAdapterId(args.to);
 }
 

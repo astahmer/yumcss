@@ -14,6 +14,7 @@ import linaria from "./linaria.adapter.ts";
 import mantine from "./mantine.adapter.ts";
 import mui from "./mui.adapter.ts";
 import nextYak from "./next-yak.adapter.ts";
+import panda from "./panda.adapter.ts";
 import pandwind from "./pandwind.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
@@ -48,6 +49,7 @@ export function createBuiltinAdapterPlugin(
 		mantine,
 		mui,
 		nextYak,
+		panda,
 		jss,
 		stylex,
 		fela,

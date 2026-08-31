@@ -32,6 +32,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"react-native":
 				"import { StyleSheet } from 'react-native'; StyleSheet.create({ button: { color: 'red' } })",
 			bamboo: "import { css } from 'styled-system/css'; css({ color: 'red' })",
+			panda: "import { css } from 'styled-system/css'; css({ color: 'red' })",
 			"next-yak": "import { css } from 'next-yak'; css`color: red;`",
 			"chakra-ui": "import { Box } from '@chakra-ui/react'; <Box bg='tomato' />",
 			mui: "import { Box } from '@mui/material'; <Box sx={{ color: 'red' }} />",
