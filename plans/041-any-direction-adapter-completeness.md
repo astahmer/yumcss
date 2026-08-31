@@ -139,6 +139,11 @@ default representation. The runner preserves the source with a typed
 no-ops, so partial cross-framework component capability metadata cannot create
 a false skip on a route that does not need conversion.
 
+The target policy also carries an explicit `requiresHostContext` contract and
+an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop
+before target emission, while a real host prop can still receive the projected
+object representation.
+
 The most important unresolved families are:
 
 - runtime interpolations, themes, and function-valued styles;

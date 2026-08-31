@@ -115,6 +115,12 @@ an actionable `host-framework` residual. A route whose source and target
 identities are equal is instead an identity no-op; it does not renegotiate
 capabilities or manufacture a new representation.
 
+Targets that require a host use declare that requirement in the same policy.
+For example, MUI's `sx` carrier sets `requiresHostContext`; a bare style value
+therefore stops before target emission with the adapter-owned explanation that
+an `sx` prop must be attached to a component. This keeps “no standalone API”
+as a target contract rather than a special case in the route runner.
+
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component
 subject and declares that React as its supported host framework. A Solid or

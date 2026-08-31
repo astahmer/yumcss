@@ -121,6 +121,12 @@ mistake. The original source remains intact and the result carries a typed
 operation and therefore leaves the source unchanged without producing a
 capability diagnostic.
 
+Some targets also require a host use to carry the converted value. MUI's
+`sx`-based target declares that contract explicitly, so a bare style binding
+is preserved with a target-owned explanation instead of being emitted as an
+object that has nowhere to attach. Once a component prop is present, the same
+adapter can project the value to `sx={...}`.
+
 Some targets have a native component projection instead of a class projection.
 For example, a React styled-components subject can become MUI's
 `styled("div")({...})`; the MUI adapter does not claim that the same source is
