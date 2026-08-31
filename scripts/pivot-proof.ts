@@ -78,7 +78,8 @@ function readCheckedInProofMatrix(): ProofMatrix {
 }
 
 function parseProductionProofEvidence(claim: ProofMatrixClaim): AdapterCoverageEvidence {
-	const proof: Partial<Record<RealRepositoryProofDimension, RealRepositoryProofDimensionStatus>> = {};
+	const proof: Partial<Record<RealRepositoryProofDimension, RealRepositoryProofDimensionStatus>> =
+		{};
 	if (claim.browser.checked && claim.browser.equivalent)
 		proof[RealRepositoryProofDimension.BrowserStates] = RealRepositoryProofDimensionStatus.Passed;
 	if (claim.server.checked)
@@ -108,7 +109,8 @@ function runOfflineGate(): void {
 	const references = createRealRepositoryCorpus().references;
 	const referencedAdapters = new Set(references.map((reference) => reference.from));
 	for (const adapter of catalog.adapters) {
-		if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative) continue;
+		if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative)
+			continue;
 		if (!referencedAdapters.has(adapter.id))
 			throw new Error(`adapter ${adapter.id} has no pinned real-repository corpus entry`);
 	}
