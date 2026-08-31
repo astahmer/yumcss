@@ -1,5 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.StyledComponents,
@@ -43,6 +43,7 @@ export default defineCodemodAdapter({
 		"property-rules": "unsupported",
 		components: "exact",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],
 	sourceModules: ["styled-components"],
 	configFiles: ["package.json"],

@@ -26,32 +26,68 @@ function edgeSource(adapter: string, source: string): string {
 	return `${source}\nconst unresolvedStyle = runtimeTheme.foreground;`;
 }
 
+function happySource(adapter: string, source: string): { file: string; source: string } {
+	if (adapter === CodemodAdapterId.StyledComponents)
+		return {
+			file: "App.tsx",
+			source:
+				'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+		};
+	if (adapter === CodemodAdapterId.SolidStyled)
+		return {
+			file: "App.tsx",
+			source:
+				'import { styled } from "solid-styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+		};
+	if (adapter === CodemodAdapterId.VueStyled)
+		return {
+			file: "App.vue",
+			source:
+				"<script setup>\n" +
+				'import styled from "vue-styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"</script>\n<template><Card /></template>",
+		};
+	return { file: fixtureFileFor(adapter), source };
+}
+
+function fixtureFileFor(adapter: string): string {
+	return adapterContractFixtures.find((fixture) => fixture.adapter === adapter)?.file ?? "style.ts";
+}
+
 /**
  * Complete source corpus for the Cartesian route gate. Each adapter gets a
  * static happy path plus dynamic and malformed source so both ordered
  * directions are checked for conversion and source-preserving safety.
  */
 export const completeAdapterMatrixFixtures: readonly AdapterMatrixFixture[] =
-	adapterContractFixtures.flatMap((fixture) => [
+	adapterContractFixtures.flatMap((fixture) => {
+		const happy = happySource(fixture.adapter, fixture.source);
+		return [
 		{
 			sourceAdapter: fixture.adapter,
-			file: fixture.file,
-			source: fixture.source,
+			file: happy.file,
+			source: happy.source,
 			scenario: "happy" as const,
 			semantic: semanticFor(fixture.adapter),
 		},
 		{
 			sourceAdapter: fixture.adapter,
-			file: fixture.file,
-			source: edgeSource(fixture.adapter, fixture.source),
+			file: happy.file,
+			source: edgeSource(fixture.adapter, happy.source),
 			scenario: "edge" as const,
 			semantic: semanticFor(fixture.adapter),
 		},
 		{
 			sourceAdapter: fixture.adapter,
-			file: fixture.file,
-			source: `${fixture.source}\n/* unfinished ${fixture.adapter} */`,
+			file: happy.file,
+			source: `${happy.source}\n/* unfinished ${fixture.adapter} */`,
 			scenario: "malformed" as const,
 			semantic: semanticFor(fixture.adapter),
 		},
-	]);
+		];
+	});

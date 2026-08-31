@@ -200,6 +200,29 @@ describe("bidirectional registered adapter matrix", () => {
 });
 
 describe("composed cross-ecosystem routes", () => {
+	test.each([
+		CodemodAdapterId.ChakraUi,
+		CodemodAdapterId.Mantine,
+		CodemodAdapterId.Mui,
+		CodemodAdapterId.Stitches,
+		CodemodAdapterId.StyledComponents,
+		CodemodAdapterId.Style9,
+		CodemodAdapterId.SolidStyled,
+		CodemodAdapterId.VueStyled,
+	])("preserves named style maps when targeting %s", (targetId) => {
+		const result = migrateTo(
+			'import { StyleSheet } from "aphrodite";\n' +
+				"const styles = StyleSheet.create({ button: { color: \"red\" } });",
+			CodemodAdapterId.Aphrodite,
+			targetId,
+			"styles.ts",
+		);
+
+		expect(result.residuals, `${CodemodAdapterId.Aphrodite} -> ${targetId}`).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain('"button"');
+	});
+
 	const classTargets = [
 		CodemodAdapterId.Compiled,
 		CodemodAdapterId.Fela,
