@@ -61,7 +61,9 @@ describe("framework-native host compiler contract", () => {
 		const rewriter = getHostComponentRewriter("react");
 		expect(rewriter).toBeDefined();
 		const result = rewriter!.rewrite({
-			source: 'const view = <Card data={enabled ? ">" : "<"} style={props.style} />;',
+			source:
+				'// <Card />\nconst example = "<Card />";\nconst view = <Card data={enabled ? ">" : "<"} style={props.style} />;',
+			file: "App.tsx",
 			binding: "Card",
 			tag: "div",
 			framework: "react",
@@ -70,7 +72,7 @@ describe("framework-native host compiler contract", () => {
 		});
 		expect(result.changed).toBe(true);
 		expect(result.code).toBe(
-			'const view = <div data={enabled ? ">" : "<"} style={props.style} className={card.class} />;',
+			'// <Card />\nconst example = "<Card />";\nconst view = <div data={enabled ? ">" : "<"} style={props.style} className={card.class} />;',
 		);
 	});
 });

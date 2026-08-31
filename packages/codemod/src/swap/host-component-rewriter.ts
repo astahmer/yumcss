@@ -7,6 +7,8 @@ export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/
 
 export interface HostComponentRewriteRequest {
 	readonly source: string;
+	/** Source filename used to select parser-backed excluded ranges. */
+	readonly file?: string;
 	readonly binding: string;
 	readonly tag: string;
 	readonly framework: string;
@@ -134,10 +136,12 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let needsCx = false;
 	let found = false;
+	const mask = computeExcludedRanges(request.source, request.file ?? "pandwind-component.tsx");
 	const tag = request.tag;
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
 		const start = match.start;
+		if (mask.isExcluded(start)) continue;
 		const text = match.text;
 		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });
@@ -236,7 +240,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
 		const start = match.start;
-		if (excluded(request.source, "pandwind-component.vue", start)) continue;
+		if (excluded(request.source, request.file ?? "pandwind-component.vue", start)) continue;
 		const text = match.text;
 		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });

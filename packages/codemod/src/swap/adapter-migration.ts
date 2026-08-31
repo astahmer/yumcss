@@ -425,6 +425,7 @@ function runAdapterMigrationInternal(
 			} else {
 				const preview = rewriter.rewrite({
 					source,
+					file: options.file,
 					binding,
 					tag,
 					framework,
@@ -448,6 +449,7 @@ function runAdapterMigrationInternal(
 							binding,
 							tag,
 							framework,
+							file: options.file,
 							classExpression: hasDynamic ? `${binding}.class` : binding,
 							...(hasDynamic ? { styleExpression: `${binding}.style` } : {}),
 							source,
