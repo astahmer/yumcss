@@ -134,6 +134,24 @@ export interface AdapterDynamicPreparation {
 	readonly standalone?: boolean;
 }
 
+export interface AdapterHostRewriteContext {
+	readonly source: string;
+	readonly code: string;
+	readonly file: string;
+	readonly targetId: string;
+	readonly program: StyleProgram;
+	readonly emittedExpression: string;
+	readonly binding?: string;
+	readonly framework?: string;
+	readonly representation: StyleHostRepresentationKind;
+}
+
+export interface AdapterHostRewriteResult {
+	readonly code: string;
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+}
+
 export interface AdapterRewriteContext {
 	readonly source: string;
 	readonly code: string;
@@ -159,12 +177,19 @@ export interface AdapterTargetMigrationPolicy {
 	readonly handlesHostRewrites?: boolean;
 	/** Whether host-bound components become a class carrier or a target component wrapper. */
 	readonly hostRepresentation?: StyleHostRepresentationKind;
+	/** Select a target representation from the normalized program and host use. */
+	readonly resolveHostRepresentation?: (context: {
+		readonly program: StyleProgram;
+		readonly hasHostContext: boolean;
+	}) => StyleHostRepresentationKind | undefined;
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */
 	readonly handlesFrameworkSemantics?: boolean;
 	/** Frameworks whose component syntax the target adapter can preserve natively. */
 	readonly hostFrameworks?: readonly string[];
+	/** Target-owned rewrite for representations attached to a host prop. */
+	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
 	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;
 	readonly handlesRawTemplate?: (context: { source: string }) => boolean;
 	readonly handlesTemplateFragment?: (program: StyleProgram) => boolean;

@@ -113,7 +113,7 @@ export default defineCodemodAdapter({
 	sourceModules: [],
 	configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 	sourceObjectOptions: (source) => ({ propertyAliases, valueTransforms: muiTransforms(source) }),
-	emit(program, { programObject }) {
+	emit(program, { programObject }, context) {
 		const subject = program.source?.subject;
 		if (subject !== undefined) {
 			const tag = intrinsicTagForSubject(subject);
@@ -124,18 +124,66 @@ export default defineCodemodAdapter({
 				imports: ['import { styled } from "@mui/system";'],
 			};
 		}
+		if (
+			context?.host?.representation === StyleHostRepresentationKind.StyleProp ||
+			program.source?.hostOpenTag !== undefined
+		)
+			return { text: programObject(program) };
 		return {
-			text: `sx(${programObject(program)})`,
-			imports: ['import { sx } from "@mui/system";'],
+			text: programObject(program),
+			residuals: [
+				{
+					kind: "host-framework",
+					text: programObject(program),
+					hint: "MUI sx styles require a host component prop; no standalone sx() API exists",
+				},
+			],
 		};
 	},
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
 			hostRepresentation: StyleHostRepresentationKind.Component,
+			resolveHostRepresentation: ({ program }) =>
+				program.source?.subject === undefined
+					? StyleHostRepresentationKind.StyleProp
+					: StyleHostRepresentationKind.Component,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
+			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
+				if (representation !== StyleHostRepresentationKind.StyleProp)
+					return { code, residuals: [] };
+				if (framework !== undefined && framework !== BuiltinHostFramework.React)
+					return {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: emittedExpression,
+								hint: `MUI sx host projection requires ${BuiltinHostFramework.React}`,
+							},
+						],
+					};
+				const expression = binding === undefined ? emittedExpression : binding;
+				const escaped = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+				const pattern = new RegExp(`(\\b)(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
+				if (!pattern.test(code))
+					return {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: expression,
+								hint: "MUI sx host projection could not find the converted class binding",
+							},
+						],
+					};
+				return {
+					code: code.replace(pattern, `$1sx={${expression}}`),
+					residuals: [],
+				};
+			},
 		},
 	},
 });

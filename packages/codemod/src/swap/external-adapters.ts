@@ -85,6 +85,15 @@ export interface AdapterRenderers {
 	readonly templateCss: (program: StyleProgram) => string;
 }
 
+/**
+ * Adapter emitters may add residuals, but ordinary exact emitters should not
+ * have to manufacture an empty array. The registry adds the canonical source
+ * and emitted residuals together at the boundary.
+ */
+export type CodemodAdapterEmission = Pick<AdapterEmitResult, "text" | "imports" | "semantic"> & {
+	readonly residuals?: readonly StyleProgramResidual[];
+};
+
 export interface CodemodAdapterSpec {
 	readonly id: ExternalAdapterId;
 	readonly patterns: readonly CallPattern[];
@@ -102,9 +111,9 @@ export interface CodemodAdapterSpec {
 	readonly loadConfigAsync?: (context: AdapterConfigContext) => Promise<AdapterProjectConfig>;
 	readonly parse?: (source: string, context: AdapterParseContext) => AdapterParseResult;
 	readonly postprocessEmit?: (
-		emission: Pick<AdapterEmitResult, "text" | "imports" | "semantic">,
+		emission: CodemodAdapterEmission,
 		context: AdapterEmitContext,
-	) => Pick<AdapterEmitResult, "text" | "imports" | "semantic">;
+	) => CodemodAdapterEmission;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
 	/** Target-owned policy for preserving named style maps without source branches. */
@@ -113,7 +122,7 @@ export interface CodemodAdapterSpec {
 		program: StyleProgram,
 		renderers: AdapterRenderers,
 		context?: AdapterEmitContext,
-	): Pick<AdapterEmitResult, "text" | "imports" | "semantic">;
+	): CodemodAdapterEmission;
 }
 
 export function dependency(
@@ -1062,7 +1071,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			const namedRules = program.rules.filter(
 				(rule) => rule.name !== undefined && rule.kind === "style",
 			);
-			const rendered =
+			const rendered: CodemodAdapterEmission =
 				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
 					? (() => {
 							const imports = new Set<string>();
@@ -1079,7 +1088,11 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 						})()
 					: render(program);
 			const processed = spec.postprocessEmit?.(rendered, context) ?? rendered;
-			return { ...processed, dependencies: spec.packages, residuals: [...program.residuals] };
+			return {
+				...processed,
+				dependencies: spec.packages,
+				residuals: [...program.residuals, ...(processed.residuals ?? [])],
+			};
 		},
 		validate: validatePrograms,
 	};

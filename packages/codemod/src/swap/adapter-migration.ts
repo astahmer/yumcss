@@ -388,6 +388,13 @@ function runAdapterMigrationInternal(
 	> = [];
 	const componentRewriteKeys = new Set<string>();
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
+	const targetHostRewrites: Array<{
+		readonly program: StyleProgram;
+		readonly emittedExpression: string;
+		readonly binding?: string;
+		readonly framework?: string;
+		readonly representation: StyleHostRepresentationKind;
+	}> = [];
 	let skipped = 0;
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
 		const lowering = loweringRegistry.plan({
@@ -401,7 +408,7 @@ function runAdapterMigrationInternal(
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
-		const hostRepresentation = targetPolicy?.hostRepresentation;
+		let hostRepresentation = targetPolicy?.hostRepresentation;
 		if (
 			program.source?.framework !== undefined &&
 			hostRepresentation === StyleHostRepresentationKind.Component &&
@@ -417,11 +424,14 @@ function runAdapterMigrationInternal(
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(source, bindingBeforeMatch) ||
 			hasInlineHostUse(source, match.start);
+		hostRepresentation =
+			targetPolicy?.resolveHostRepresentation?.({ program, hasHostContext }) ?? hostRepresentation;
 		if (
 			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&
 			(hasHostContext || program.source?.hostStyleAttributes !== undefined)
 		) {
+			if (hostRepresentation !== undefined) emittedHostRepresentation = hostRepresentation;
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
 				const binding = bindingBeforeMatch;
@@ -702,7 +712,26 @@ function runAdapterMigrationInternal(
 					: { representation: emittedHostRepresentation }),
 			},
 		});
+		// Preserve target-owned residuals in the public report as well as in
+		// validation. A failed validation is an aggregate consequence; it must
+		// not hide the precise semantic reason emitted by the target adapter.
+		residuals.push(...emitted.residuals);
 		const emittedForValidation = validationSource(emitted.text, program);
+		if (
+			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
+			emittedHostRepresentation !== undefined &&
+			program.source?.subject === undefined
+		) {
+			targetHostRewrites.push({
+				program,
+				emittedExpression: emitted.text,
+				representation: emittedHostRepresentation,
+				...(bindingForMatch(source, match.start) === undefined
+					? {}
+					: { binding: bindingForMatch(source, match.start) }),
+				...(program.source?.framework === undefined ? {} : { framework: program.source.framework }),
+			});
+		}
 		const reparsed = targetAdapter.parse(emittedForValidation, {
 			file: options.file,
 			source: emittedForValidation,
@@ -808,6 +837,19 @@ function runAdapterMigrationInternal(
 	const edited = applyEdits(source, edits);
 	let runtimeEdited = edited;
 	let needsCx = false;
+	for (const request of targetHostRewrites) {
+		const rewrite = targetAdapter.migration?.targetPolicy?.rewriteHost?.({
+			source,
+			code: runtimeEdited,
+			file: options.file,
+			targetId: targetAdapter.id,
+			...request,
+		});
+		if (rewrite === undefined) continue;
+		runtimeEdited = rewrite.code;
+		for (const statement of rewrite.imports ?? []) imports.add(statement);
+		residuals.push(...rewrite.residuals);
+	}
 	for (const request of dynamicRewrites) {
 		const rewritten =
 			request.binding === undefined

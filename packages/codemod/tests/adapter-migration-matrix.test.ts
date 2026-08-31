@@ -118,6 +118,19 @@ describe("bidirectional registered adapter matrix", () => {
 				targetId,
 				"Card.tsx",
 			);
+			if (targetId === CodemodAdapterId.Mui) {
+				expect(result.converted, `${targetId} was converted`).toBe(0);
+				expect(result.skipped, `${targetId} was skipped`).toBe(1);
+				expect(result.residuals).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({
+							kind: "host-framework",
+							hint: expect.stringContaining("no standalone sx() API"),
+						}),
+					]),
+				);
+				return;
+			}
 			expect(
 				result.residuals,
 				`${pandwind} -> ${targetId}: ${JSON.stringify(result.residuals)}`,

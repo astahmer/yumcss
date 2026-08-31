@@ -146,6 +146,7 @@ export enum StyleRepresentationKind {
 export enum StyleHostRepresentationKind {
 	Class = "class",
 	Component = "component",
+	StyleProp = "style-prop",
 }
 
 /** Target-owned strategy for preserving named style object return shapes. */

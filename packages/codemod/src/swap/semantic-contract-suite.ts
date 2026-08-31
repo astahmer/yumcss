@@ -112,7 +112,10 @@ function validateTarget(
 	fixture: SemanticContractFixture,
 	plan: StyleLoweringPlan,
 	config: AdapterProjectConfig,
-): AdapterValidationResult {
+): {
+	readonly validation: AdapterValidationResult;
+	readonly residuals: readonly StyleProgramResidual[];
+} {
 	const emitted = target.emit(plan.program, {
 		file: fixture.file ?? "semantic-contract.tsx",
 		config,
@@ -123,11 +126,11 @@ function validateTarget(
 		file: fixture.file ?? "semantic-contract.tsx",
 		config,
 	});
-	return target.validate(plan.program, parsed.program, [
-		...plan.residuals,
-		...emitted.residuals,
-		...parsed.residuals,
-	]);
+	const residuals = [...plan.residuals, ...emitted.residuals, ...parsed.residuals];
+	return {
+		validation: target.validate(plan.program, parsed.program, residuals),
+		residuals,
+	};
 }
 
 export function createSemanticContractSuite(
@@ -170,7 +173,20 @@ export function createSemanticContractSuite(
 						}
 						let validation: AdapterValidationResult;
 						try {
-							validation = validateTarget(target, fixture, plan, config);
+							const targetResult = validateTarget(target, fixture, plan, config);
+							if (targetResult.residuals.length > 0) {
+								cases.push({
+									fixture: fixture.name,
+									targetAdapter: target.id,
+									mode,
+									outcome: "explicit-residual",
+									representation: plan.representation,
+									plan,
+									capabilities,
+								});
+								continue;
+							}
+							validation = targetResult.validation;
 						} catch (error) {
 							failures.push({
 								fixture: fixture.name,
