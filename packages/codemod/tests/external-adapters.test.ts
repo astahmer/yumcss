@@ -471,6 +471,53 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("className={Card}");
 	});
 
+	test.each([
+		[
+			"next-yak",
+			"App.tsx",
+			'import { styled } from "next-yak";\nconst Card = styled.div`color: red; padding: 1rem;`;',
+			"className={cx(style",
+		],
+		[
+			"solid-styled",
+			"App.tsx",
+			'import { styled } from "solid-styled-components";\nconst Card = styled.div`color: red; padding: 1rem;`;',
+			"class={cx(style",
+		],
+	] as const)(
+		"statically extracts standalone %s subjects for Pandwind",
+		(_id, file, source, marker) => {
+			const result = runAdapterMigration(source, { from: _id, to: "pandwind", file, mode: "safe" });
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("css.class");
+			expect(result.code).toContain(marker);
+			expect(result.code).not.toContain("styled-components");
+			expect(result.code).not.toContain("createRuntimeCss");
+		},
+	);
+
+	test("keeps Vue standalone component imports inside script setup", () => {
+		const result = runAdapterMigration(
+			"<script setup>\n" +
+				'import styled from "vue-styled-components";\n' +
+				"const Card = styled.div`color: red; padding: 1rem;`;\n" +
+				"</script>",
+			{ from: "vue-styled", to: "pandwind", file: "Card.vue", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("defineComponent");
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code.indexOf("<script setup>")).toBeLessThan(
+			result.code.indexOf('import { defineComponent, h } from "vue";'),
+		);
+		expect(result.code).not.toMatch(/^import .*vue.*\n<script setup>/);
+		expect(result.code).not.toContain("vue-styled-components");
+	});
+
 	test("reports bare Pandwind style bindings because MUI sx is host-owned", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
@@ -799,7 +846,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			mode: "safe",
 		});
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
 	});
 
 	test("lowers dynamic intrinsic styled components into class and style carriers", () => {
@@ -1167,7 +1214,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(solid.residuals).toEqual([]);
 		expect(solid.code).toContain("css.vars({ color: ((props) => props.color)(props) })");
 		expect(solid.code).toContain('import { createCx } from "pandwind/cx";');
-		expect(solid.code).toContain("class={cx(style.class, props.class)}");
+		expect(solid.code).toContain("class={cx(");
+		expect(solid.code).toContain("dynamic.class");
+		expect(solid.code).toContain("props.class");
 
 		const vue = runAdapterMigration(
 			'import styled from "vue-styled-components";\n' +

@@ -144,7 +144,9 @@ const builtin = {
 		(file, source) =>
 			/from\s+["']react(?:\/jsx-runtime)?["']|jsx-runtime/.test(source) ||
 			(/\.(?:jsx|tsx)$/.test(file) &&
-				!/from\s+["'](?:preact|solid-js|react-native)["']|\bcreateSignal\s*\(/.test(source)),
+				!/from\s+["'](?:preact|solid-js|solid-styled-components|react-native)["']|\bcreateSignal\s*\(/.test(
+					source,
+				)),
 	),
 	[BuiltinHostFramework.ReactNative]: makeAdapter(
 		BuiltinHostFramework.ReactNative,
@@ -171,7 +173,8 @@ const builtin = {
 		true,
 		true,
 		["solid-js"],
-		(_file, source) => /from\s+["']solid-js["']|\bcreateSignal\s*\(/.test(source),
+		(_file, source) =>
+			/from\s+["'](?:solid-js|solid-styled-components)["']|\bcreateSignal\s*\(/.test(source),
 	),
 	qwik: makeAdapter(
 		"qwik",

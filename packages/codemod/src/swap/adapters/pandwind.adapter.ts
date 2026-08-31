@@ -24,8 +24,55 @@ import {
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
+	handlesFrameworkSemantics: true,
 	hostRepresentation: StyleHostRepresentationKind.Class,
 	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+	resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
+		if (hasHostContext || program.source?.subject === undefined)
+			return StyleHostRepresentationKind.Class;
+		if (
+			framework === BuiltinHostFramework.React ||
+			framework === BuiltinHostFramework.Preact ||
+			framework === BuiltinHostFramework.Solid ||
+			framework === BuiltinHostFramework.Vue
+		)
+			return StyleHostRepresentationKind.Component;
+		return StyleHostRepresentationKind.Class;
+	},
+	rewriteComponent: ({ code, binding, framework, emittedExpression, representation }) => {
+		if (representation !== StyleHostRepresentationKind.Component)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: binding,
+						hint: "Pandwind class projection should use the shared host rewriter",
+					},
+				],
+			};
+		if (
+			framework !== BuiltinHostFramework.React &&
+			framework !== BuiltinHostFramework.Preact &&
+			framework !== BuiltinHostFramework.Solid &&
+			framework !== BuiltinHostFramework.Vue
+		)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: binding,
+						hint: `Pandwind static component projection requires a supported host, got ${framework}`,
+					},
+				],
+			};
+		// The Pandwind emitter owns the component wrapper for this representation.
+		// Preview calls pass the binding; the final emitted expression already has
+		// the wrapper and must not be wrapped a second time.
+		if (emittedExpression !== binding) return { code, residuals: [] };
+		return { code, residuals: [] };
+	},
 	requiresHostWrapper: ({ source, binding }) => {
 		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		return (
@@ -485,7 +532,8 @@ function staticComponent(
 	if (
 		framework !== BuiltinHostFramework.React &&
 		framework !== BuiltinHostFramework.Preact &&
-		framework !== BuiltinHostFramework.Solid
+		framework !== BuiltinHostFramework.Solid &&
+		framework !== BuiltinHostFramework.Vue
 	)
 		return undefined;
 	const tag = intrinsicTagForSubject(subject);
@@ -512,6 +560,19 @@ function staticComponent(
 			: classExpression.replace(/^cx\(/, "composedCx(");
 	const composedCxBinding =
 		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
+	if (framework === BuiltinHostFramework.Vue) {
+		const tagExpression = tag === undefined ? `(${base})` : JSON.stringify(tag);
+		return {
+			text: `defineComponent({ setup(_props, { attrs, slots }) { const style = ${style}; return () => h(${tagExpression}, { ...attrs, class: cx(style, attrs.class) }, slots.default?.()); } })`,
+			imports: [
+				'import { defineComponent, h } from "vue";',
+				'import { createCss } from "pandwind/css";',
+				'import { createCx } from "pandwind/cx";',
+				"const css = createCss();",
+				"const cx = createCx();",
+			],
+		};
+	}
 	return {
 		text: `(() => { ${composedCxBinding}const style = ${style}; const component = (props) => { const Component = props.as ?? ${tag === undefined ? `(${base})` : JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; return <Component {...attrs} {...rest} ${classAttribute}={${resolvedClassExpression}} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
 		imports: [
@@ -992,6 +1053,7 @@ export default defineCodemodAdapter({
 		"framework-semantics": "exact",
 		composition: "exact",
 		recipes: "exact",
+		components: "exact",
 	}),
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],

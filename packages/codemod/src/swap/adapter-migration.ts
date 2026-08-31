@@ -89,8 +89,8 @@ function frameworkForHost(
 ): string | undefined {
 	return (
 		semantic?.source?.framework ??
-		document.framework ??
 		detectHostFramework(document.document.source, document.document.file)?.id ??
+		document.framework ??
 		program.source?.framework ??
 		(/\.(?:jsx|tsx)$/.test(file)
 			? BuiltinHostFramework.React
@@ -119,6 +119,20 @@ function hasInlineHostUse(source: string, start: number): boolean {
 function classExpressionFromEmission(emitted: string): string | undefined {
 	const expression = emitted.trim();
 	return expression.length === 0 ? undefined : expression;
+}
+
+/** Keep generated module statements inside the executable block of an SFC. */
+function ensureGeneratedStatement(code: string, statement: string, file: string): string {
+	if (!file.endsWith(".vue") || code.includes(statement)) return ensureImport(code, statement);
+	const script = /<script(?:\s+setup)?(?:\s[^>]*)?>/i.exec(code);
+	if (script === null) return `<script setup>\n${statement}\n</script>\n${code}`;
+	const contentStart = script.index + script[0].length;
+	const contentEnd = code.indexOf("</script>", contentStart);
+	if (contentEnd === -1)
+		return `${code.slice(0, contentStart)}\n${statement}${code.slice(contentStart)}`;
+	const content = code.slice(contentStart, contentEnd);
+	const updated = ensureImport(content, statement);
+	return `${code.slice(0, contentStart)}${updated.startsWith("\n") ? "" : "\n"}${updated}${code.slice(contentEnd)}`;
 }
 
 function selectNonOverlappingMatches<
@@ -1019,8 +1033,12 @@ function runAdapterMigrationInternal(
 		needsCx ||= rewritten.needsCx;
 	}
 	if (needsCx) {
-		runtimeEdited = ensureImport(runtimeEdited, 'import { createCx } from "pandwind/cx";');
-		runtimeEdited = ensureImport(runtimeEdited, "const cx = createCx();");
+		runtimeEdited = ensureGeneratedStatement(
+			runtimeEdited,
+			'import { createCx } from "pandwind/cx";',
+			options.file,
+		);
+		runtimeEdited = ensureGeneratedStatement(runtimeEdited, "const cx = createCx();", options.file);
 	}
 	const rewrite = sourceAdapter.migration?.rewrite?.({
 		source,
@@ -1045,7 +1063,8 @@ function runAdapterMigrationInternal(
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");
 	}
-	for (const statement of consolidateImports(imports)) code = ensureImport(code, statement);
+	for (const statement of consolidateImports(imports))
+		code = ensureGeneratedStatement(code, statement, options.file);
 	return {
 		code,
 		changed: code !== source,
