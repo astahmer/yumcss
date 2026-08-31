@@ -3,10 +3,11 @@
 ## Scope and anchors
 
 - Repository: `/Users/astahmer/dev/pandwind`
-- Audited branch: `main` at `4e6bf39b63a60e513daeb4a5b2098195d65d8f37`
-- JJ operation anchor before the audit checks: `3367589c3b65`
+- Audited branch: `main` at `493ffa9bc34aaedb13e4fb9ce5f4fc7086249227`
+- JJ operation anchor before the audit checks: `6010af91a8ef`
 - Workspaces inspected: `default`, `pandwind-history-cleanup`,
-  `pandwind-playground-migration`
+  `pandwind-playground-migration`, and the isolated recovery workspace
+  `pandwind-pivot-completion`
 - All three workspace working-copy commits were empty. No sibling workspace
   contained uncommitted implementation work.
 
@@ -69,17 +70,39 @@ from its workspace parent, but a later history recovery/proof revision
 reintroduced it. The current `main` tree contains the document and its pinned
 proof instructions.
 
+### Genuine omission recovered
+
+The styled-components merge resolution also omitted two maintained proof
+scripts that were present in the workspace parent immediately before the
+resolution:
+
+- `scripts/migrate-styled-components-docs.ts`
+- `scripts/verify-styled-components-docs.mjs`
+
+These were not obsolete duplicates. Historical commits
+`73c932181289` through `78f8877a0eac` used them to materialize the pinned
+styled-components documentation site, run static-first `runtime-css` and
+`design-css` lanes, and verify browser/SSR parity. The recovery workspace
+restores both from parent `df2245c1370fa47c65fac10e5d7fe4c6775660f9` and
+restores the corresponding reproducible command in the architecture guide.
+They remain uncommitted here until the playground and script validation pass.
+
 ## Final checks
 
 - All seven merge commits are reachable from `main`.
 - `jj log -r '::main & conflicts()'` returned no revisions.
-- No relevant deletion remained unexplained.
-- No implementation or proof restoration was necessary.
-- The current workspace is clean after recording this audit.
+- The styled-components proof omission was corrected in the recovery
+  workspace; all other reviewed deletions remain classified as intentional or
+  replaced ownership.
+- The recovery workspace has two restored proof scripts pending validation and
+  a documentation correction; the default workspace's unrelated dirty files
+  were not touched.
 
 ## Conclusion
 
-The prior workspace consolidations did not drop relevant Pandwind behavior.
-The deletions are either intentional reference-repository de-vendoring,
-generated-artifact cleanup, documented proof recovery, or ownership-preserving
-decomposition. No merge repair is required.
+The workspace consolidations preserved the implementation and most proof
+assets, but they did drop the styled-components proof runner and verifier.
+That omission is now explicitly identified and restored from the exact merge
+parent. The remaining deletions are intentional reference-repository
+de-vendoring, generated-artifact cleanup, or ownership-preserving
+decomposition; no other merge repair was found.

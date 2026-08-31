@@ -233,3 +233,19 @@ The promotion matrix intentionally mixes full documentation-site claims with
 smaller installed-adapter claims. A fixture claim proves the adapter contract
 in a real package/runtime, but does not imply that every application using that
 ecosystem has been migrated; site-level claims remain separately identified.
+
+The styled-components documentation site is also a reproducible acceptance
+corpus. Its pinned checkout is never edited. The migration runner exposes two
+target lanes over the same source adapter:
+
+```sh
+pnpm exec tsx scripts/migrate-styled-components-docs.ts runtime-css /tmp/pandwind-styled-runtime
+pnpm exec tsx scripts/migrate-styled-components-docs.ts design-css /tmp/pandwind-styled-design
+```
+
+The runner owns disposable materialization and lane accounting; the adapter
+owns styled-components template/object parsing, subjects, `.attrs`, globals,
+keyframes, and framework rewrites. `scripts/verify-styled-components-docs.mjs`
+then checks the pinned baseline and migrated applications in the browser and
+records route, hydration, screenshot, and CSS-size evidence. This proof is
+kept as a script and a pinned reference rather than as a vendored website.
