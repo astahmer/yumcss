@@ -438,6 +438,56 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
+	test("parses and lowers function-valued styled subjects through the shared call parser", () => {
+		const source =
+			'import styled from "styled-components";\n' +
+			"const Card = styled.div((props) => ({ color: props.color, padding: '1rem' }));";
+		const parsed = getCodemodAdapter("styled-components")!.parse(source, {
+			file: "Card.tsx",
+			source,
+			config: { adapter: "styled-components", files: [], values: {} },
+		});
+		expect(parsed.residuals).toEqual([]);
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.source).toMatchObject({
+			pattern: "styled-function",
+			subject: "styled.div",
+		});
+		expect(parsed.matches[0]?.program.declarations).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property: "color",
+					value: expect.objectContaining({ kind: "dynamic" }),
+				}),
+			]),
+		);
+
+		const result = runAdapterMigration(source, {
+			from: "styled-components",
+			to: "emotion",
+			file: "Card.tsx",
+			mode: "safe",
+		});
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("styled.div({");
+		expect(result.code).toContain("props.color");
+	});
+
+	test("preserves an unbalanced function style as a parse residual", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\nconst Card = styled.div((props) => ({ color: props.color });',
+			{ from: "styled-components", to: "emotion", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "parse" })]),
+		);
+		expect(result.code).toContain("styled.div");
+	});
+
 	test("wraps a standalone styled intrinsic default export for React", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\nexport default styled.div({ color: "red" });',

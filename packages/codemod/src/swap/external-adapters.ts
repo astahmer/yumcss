@@ -35,6 +35,7 @@ import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
 import { StyleNamedRuleStrategy } from "./identifiers.ts";
+import { FunctionStyleCallParser } from "./function-style-parser.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -43,6 +44,10 @@ type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly form?: "object" | "template" | "reference" | "jsx-style";
+	readonly functionCall?: Pick<
+		import("./function-style-parser.ts").FunctionStyleCallParserOptions,
+		"functionCall" | "namedObjects" | "sourceObjectOptions" | "subjectFromMatch"
+	>;
 	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
 	readonly styleProps?: readonly string[];
@@ -789,6 +794,16 @@ function parseCalls(
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
 	for (const pattern of patterns) {
+		if (pattern.functionCall !== undefined) {
+			const parsed = FunctionStyleCallParser.parse(source, context, {
+				id: context.config.adapter,
+				pattern: pattern.name,
+				...pattern.functionCall,
+			});
+			matches.push(...parsed.matches);
+			residuals.push(...parsed.residuals);
+			continue;
+		}
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;

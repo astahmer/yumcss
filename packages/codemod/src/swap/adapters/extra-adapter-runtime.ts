@@ -20,6 +20,7 @@ import {
 } from "../semantic-ir.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
+import { FunctionStyleCallParser } from "../function-style-parser.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -152,43 +153,6 @@ function balanced(source: string, open: number): { end: number; body: string } |
 	return undefined;
 }
 
-function balancedPair(
-	source: string,
-	open: number,
-	openChar: string,
-	closeChar: string,
-): { end: number; body: string } | undefined {
-	let depth = 0;
-	for (let index = open; index < source.length; index++) {
-		if (source[index] === openChar) depth++;
-		if (source[index] === closeChar) {
-			depth--;
-			if (depth === 0) return { end: index + 1, body: source.slice(open + 1, index) };
-		}
-	}
-	return undefined;
-}
-
-function markFunctionValues(program: StyleProgram, parameter: string): StyleProgram {
-	const declaration = (item: StyleProgram["declarations"][number]) => ({
-		...item,
-		value:
-			item.value.kind === "dynamic"
-				? { ...item.value, expression: `(${parameter}) => ${item.value.expression}` }
-				: item.value,
-	});
-	const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
-		...item,
-		declarations: item.declarations.map(declaration),
-		children: item.children.map(rule),
-	});
-	return {
-		...program,
-		declarations: program.declarations.map(declaration),
-		rules: program.rules.map(rule),
-	};
-}
-
 function parseFunctionCalls(
 	id: string,
 	source: string,
@@ -197,91 +161,24 @@ function parseFunctionCalls(
 ): AdapterParseResult {
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [];
-	const mask = context.document?.isExcluded ?? (() => false);
 	const functionCall = options.functionCall;
 	if (functionCall === undefined) return { matches, residuals };
 	for (const match of source.matchAll(functionCall)) {
 		const start = match.index ?? 0;
-		if (mask(start)) continue;
-		const open = start + match[0].lastIndexOf("(");
-		const call = balancedPair(source, open, "(", ")");
-		if (call === undefined) {
-			residuals.push({
-				kind: "parse",
-				text: source.slice(start),
-				hint: `${id} function style is unbalanced`,
-			});
-			continue;
-		}
-		const subject = match[0]
-			.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-			?.replace(/\s+/g, " ")
-			.replace(/\.\s+/g, ".");
-		const staticBody = call.body.trim();
-		if (staticBody.startsWith("{")) {
-			const objectOpen = source.indexOf("{", open);
-			const object = balanced(source, objectOpen);
-			if (object !== undefined) {
-				const program = styleProgramFromSourceObject(object.body, {
-					source: {
-						file: context.file,
-						start,
-						end: call.end,
-						adapter: id,
-						...(context.semantic?.source?.framework
-							? { framework: context.semantic.source.framework }
-							: {}),
-					},
-					sourceOffset: objectOpen + 1,
-					...(options.namedObjects ? { nestedObjectKind: "named" as const } : {}),
-					...options.sourceObjectOptions,
-				});
-				matches.push({
-					start,
-					end: call.end,
-					program:
-						subject === undefined
-							? program
-							: { ...program, source: { ...program.source, subject } },
-					sourceText: source.slice(start, call.end),
-				});
-				continue;
-			}
-		}
-		const arrow = call.body.indexOf("=>");
-		const objectOpen = arrow === -1 ? -1 : call.body.indexOf("{", arrow);
-		const object = objectOpen === -1 ? undefined : balanced(source, open + 1 + objectOpen);
-		if (arrow === -1 || object === undefined) {
-			residuals.push({
-				kind: "dynamic",
-				text: source.slice(start, call.end),
-				hint: `${id} function-valued styles require a framework prop wrapper`,
-			});
-			continue;
-		}
-		const parameter = call.body.slice(0, arrow).trim();
-		const program = markFunctionValues(
-			styleProgramFromSourceObject(object.body, {
-				source: {
-					file: context.file,
-					start,
-					end: call.end,
-					adapter: id,
-					...(context.semantic?.source?.framework
-						? { framework: context.semantic.source.framework }
-						: {}),
-				},
-				sourceOffset: open + 1 + objectOpen + 1,
-			}),
-			parameter,
-		);
-		matches.push({
-			start,
-			end: call.end,
-			program:
-				subject === undefined ? program : { ...program, source: { ...program.source, subject } },
-			sourceText: source.slice(start, call.end),
+		const parsed = FunctionStyleCallParser.parse(source, context, {
+			id,
+			functionCall,
+			namedObjects: options.namedObjects,
+			sourceObjectOptions: options.sourceObjectOptions,
+			subjectFromMatch: (value) =>
+				value
+					.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
+					?.replace(/\s+/g, " ")
+					.replace(/\.\s+/g, "."),
 		});
+		matches.push(...parsed.matches);
+		residuals.push(...parsed.residuals);
+		break;
 	}
 	return { matches, residuals };
 }

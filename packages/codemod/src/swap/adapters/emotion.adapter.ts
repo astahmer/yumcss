@@ -113,6 +113,22 @@ export default defineCodemodAdapter({
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*\{/g,
 		},
 		{
+			name: "styled-function",
+			kind: "styled",
+			regex:
+				/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
+			functionCall: {
+				functionCall:
+					/\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
+				subjectFromMatch: (match) =>
+					match
+						.match(/^styled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*/)?.[0]
+						?.trim()
+						.replace(/\s+/g, " ")
+						.replace(/\.\s+/g, "."),
+			},
+		},
+		{
 			name: "styled-template",
 			kind: "styled",
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
