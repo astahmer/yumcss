@@ -457,6 +457,24 @@ function runAdapterMigrationInternal(
 		readonly representation: StyleHostRepresentationKind;
 	}> = [];
 	let skipped = 0;
+	let converted = 0;
+	const unpreservedParseResiduals = parsed.residuals.filter(
+		(residual) => residual.preserved !== true,
+	);
+	if (unpreservedParseResiduals.length > 0) {
+		skipped++;
+		edits.push({
+			start: 0,
+			end: 0,
+			text:
+				MigrationDiagnostics.skipMarker({
+					marker,
+					sourceAdapter: sourceAdapter.id,
+					targetAdapter: targetAdapter.id,
+					parseResiduals: unpreservedParseResiduals,
+				}) + "\n",
+		});
+	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
 		const lowering = loweringRegistry.plan({
 			program: match.program,
@@ -806,8 +824,10 @@ function runAdapterMigrationInternal(
 						),
 					};
 		reports.push(effectiveReport);
-		const hasSemanticResiduals = program.residuals.length > 0 || loweringResiduals.length > 0;
-		if (!effectiveReport.convertible || (mode === "safe" && hasSemanticResiduals)) {
+		const unpreservedSemanticResiduals = [...program.residuals, ...loweringResiduals].filter(
+			(residual) => residual.preserved !== true,
+		);
+		if (!effectiveReport.convertible || unpreservedSemanticResiduals.length > 0) {
 			skipped++;
 			residuals.push(
 				...program.residuals,
@@ -860,6 +880,28 @@ function runAdapterMigrationInternal(
 					: { representation: emittedHostRepresentation }),
 			},
 		});
+		if (emitted.text.trim() === "") {
+			const emptyEmission = {
+				kind: "emission-empty",
+				text: match.sourceText,
+				hint: "target adapter produced no representable output",
+			} as const;
+			skipped++;
+			residuals.push(emptyEmission, ...emitted.residuals);
+			edits.push({
+				start: match.start,
+				end: match.start,
+				text:
+					MigrationDiagnostics.skipMarker({
+						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
+						loweringResiduals: [emptyEmission, ...emitted.residuals],
+						availableRepresentations: lowering.availableRepresentations,
+					}) + "\n",
+			});
+			continue;
+		}
 		if (
 			targetComponentProjection &&
 			program.source?.subject === undefined &&
@@ -928,7 +970,7 @@ function runAdapterMigrationInternal(
 			...reparsed.residuals,
 		]);
 		validations.push(validation);
-		if (!validation.valid && mode === "safe") {
+		if (!validation.valid) {
 			skipped++;
 			residuals.push({
 				kind: "validation",
@@ -1005,6 +1047,7 @@ function runAdapterMigrationInternal(
 		const emittedBinding = bindingForMatch(source, match.start);
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
+		converted++;
 	}
 	const edited = applyEdits(source, edits);
 	let runtimeEdited = edited;
@@ -1131,7 +1174,7 @@ function runAdapterMigrationInternal(
 	return {
 		code,
 		changed: code !== source,
-		converted: parsed.matches.length - skipped,
+		converted,
 		skipped,
 		reports,
 		validations,

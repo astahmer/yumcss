@@ -215,6 +215,24 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("project-only-utility");
 	});
 
+	test("never turns an unresolved semantic residual into an empty partial conversion", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const result = runAdapterMigration('<div className="project-only-utility" />', {
+			from: "tailwind",
+			to: "pandwind",
+			file: "Card.tsx",
+			mode: "partial",
+			adapterRegistry: catalog.registry,
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.code).toContain("project-only-utility");
+		expect(result.code).toContain("parse-residual");
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "unknown-utility" })]),
+		);
+	});
+
 	test("detects Emotion automatic JSX css props from project configuration", () => {
 		const emotion = getCodemodAdapter("emotion")!;
 		const detection = emotion.detect({
