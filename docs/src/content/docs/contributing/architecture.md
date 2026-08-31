@@ -120,6 +120,14 @@ targets and component-oriented targets therefore use different typed host
 representations, even when both produce equivalent declarations in the
 semantic program.
 
+Pandwind's own target adapter can preserve a standalone styled subject without
+retaining the source runtime. When a static subject has no local host use, the
+target selects a component representation and emits a static `css.class(...)`
+carrier inside a host-native wrapper. React-family and Solid wrappers use JSX;
+Vue uses `defineComponent`/`h`, with generated imports kept inside the
+component's `<script setup>` block. A dynamic subject follows the same route
+but uses Pandwind's runtime variable carrier only for the dynamic expression.
+
 StyleX is a class-oriented target with a React-specific host projection. When
 an intrinsic styled subject is used as `<Card />`, its static declaration is
 emitted as a StyleX style object and the target component port rewrites the

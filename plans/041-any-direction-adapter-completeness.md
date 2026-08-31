@@ -74,6 +74,13 @@ static class binding in a file importing `react-native`, the target emits
 specific React Native detection takes precedence over generic JSX metadata;
 ordinary React files therefore cannot receive the native rewrite accidentally.
 
+Standalone static styled subjects now use Pandwind's component representation
+when no local host use is present. React-family and Solid output keeps the
+static `css.class(...)` carrier inside a JSX wrapper, while Vue emits a
+`defineComponent`/`h` wrapper with imports placed inside `<script setup>`. This
+closes the common no-use declaration gap without introducing runtime CSS for
+static input; dynamic interpolations still use the validated runtime fallback.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still

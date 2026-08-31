@@ -155,6 +155,14 @@ for ordinary React or template hosts until a compatible host adapter is
 selected; the HIR is preserved, but it cannot make a DOM class attribute valid
 React Native code by itself.
 
+Standalone subjects are a separate case from class bindings. For static
+`const Card = styled.div\`...\``declarations without a local`<Card />` use,
+the Pandwind target emits a static class carrier inside a host-native component
+wrapper. React-family/Solid JSX and Vue SFC output have different wrapper
+contracts, so the host adapter owns the syntax and import placement. Runtime
+CSS is used only when the declaration contains a genuinely dynamic
+interpolation that cannot be statically evaluated.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening
