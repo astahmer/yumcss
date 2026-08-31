@@ -315,13 +315,6 @@ function namedClassMapEntries(source: string): readonly RegExpExecArray[] {
 	return [...source.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g)];
 }
 
-function staticClassValue(source: string, binding: string): string | undefined {
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=\\s*(["'])([^"']*)\\1`).exec(
-		source,
-	)?.[2];
-}
-
 function openingTagForAttribute(
 	source: string,
 	attributeStart: number,

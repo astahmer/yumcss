@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId, createBuiltinCodemodCatalog } from "../src/swap/index.ts";
+import { createBuiltinCodemodCatalog } from "../src/swap/index.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");

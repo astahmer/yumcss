@@ -2,7 +2,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 
 type CoverageMetric = { readonly pct: number };
-type CoverageSummary = Readonly<Record<string, { readonly lines: CoverageMetric; readonly branches: CoverageMetric }>>;
+type CoverageSummary = Readonly<
+	Record<string, { readonly lines: CoverageMetric; readonly branches: CoverageMetric }>
+>;
 
 const summaryPath = resolve("coverage/coverage-summary.json");
 if (!existsSync(summaryPath)) throw new Error(`coverage summary not found: ${summaryPath}`);
@@ -23,9 +25,7 @@ const failures = adapterFiles.flatMap(([file, metrics]) => {
 });
 
 if (failures.length > 0)
-	throw new Error(
-		["adapter-specific coverage gate failed", ...failures].join("\n"),
-	);
+	throw new Error(["adapter-specific coverage gate failed", ...failures].join("\n"));
 
 console.log(
 	JSON.stringify({
