@@ -21,6 +21,14 @@ The façade is not the architecture by itself. A domain is only decomposed when
 the policy implementation is behind the port and a test can substitute a
 minimal implementation without changing orchestration.
 
+Migration skips are typed at this boundary. `capability-blocked` means the
+selected target has no safe representation for a required semantic;
+`parse-residual` means the source adapter could not model the source; and
+`lowering-residual` means the semantic program was understood but no registered
+lowering could represent it for that target. The source is preserved in all
+three cases. A generic `adapter capability mismatch` marker is not a valid
+diagnosis.
+
 ## Official project configuration
 
 Project-aware migration must ask the ecosystem's own packages to interpret

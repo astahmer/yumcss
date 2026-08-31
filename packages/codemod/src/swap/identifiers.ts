@@ -122,6 +122,24 @@ export enum StyleLoweringId {
 	Builtin = "pandwind-core-lowerings",
 }
 
+/** Typed causes used by the source-preserving migration diagnostics. */
+export enum MigrationSkipReason {
+	CapabilityBlocked = "capability-blocked",
+	ParseResidual = "parse-residual",
+	LoweringResidual = "lowering-residual",
+	HostRewriteRequired = "host-rewrite-required",
+	ConfigurationResidual = "configuration-residual",
+}
+
+/** Ordered semantic representations negotiated by the lowering planner. */
+export enum StyleRepresentationKind {
+	Static = "static",
+	TargetNative = "target-native",
+	CustomProperty = "custom-property",
+	RuntimeCarrier = "runtime-carrier",
+	Residual = "residual",
+}
+
 /** Independent evidence dimensions used by real-repository promotion reports. */
 export enum RealRepositoryProofDimension {
 	CanonicalCss = "canonical-css",

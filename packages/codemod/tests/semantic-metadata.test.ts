@@ -6,6 +6,7 @@ import {
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
 	StyleProgramCompositionKind,
+	StyleRepresentationKind,
 } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/index.ts";
 
@@ -125,5 +126,24 @@ describe("semantic metadata and validator domains", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "dynamic-custom-property" })]),
 		);
+	});
+
+	test("classifies the selected representation after lowering", () => {
+		const program = styleProgramFromSourceObject("color: props.color", {});
+		const plan = STYLE_LOWERING_REGISTRY.plan({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "static-target",
+				capabilities: {
+					declarations: "exact",
+					"dynamic-values": "unsupported",
+					"custom-properties": "partial",
+				},
+			},
+			mode: "partial",
+		});
+
+		expect(plan.representation).toBe(StyleRepresentationKind.CustomProperty);
 	});
 });

@@ -115,6 +115,8 @@ export {
 	StyleProgramEmissionHint,
 	StyleValidatorId,
 	StyleLoweringId,
+	StyleRepresentationKind,
+	MigrationSkipReason,
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,
 	RealRepositoryProofStatus,
@@ -124,6 +126,8 @@ export {
 	PandaMigrationStageId,
 	externalIdentifier,
 } from "./identifiers.ts";
+export { MigrationDiagnostics } from "./migration-diagnostics.ts";
+export type { MigrationSkipDiagnosticInput } from "./migration-diagnostics.ts";
 export type { ExternalIdentifier } from "./identifiers.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
@@ -186,6 +190,7 @@ export type {
 	StyleLoweringContext,
 	StyleLoweringRegistry,
 	StyleLoweringResult,
+	StyleLoweringPlan,
 } from "./lowering.ts";
 export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
 export { createAdapterContractSuite } from "./adapter-contract-suite.ts";

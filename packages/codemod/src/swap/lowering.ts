@@ -5,7 +5,7 @@ import type {
 	StyleProgramResidual,
 	StyleRule,
 } from "./semantic-ir.ts";
-import { StyleLoweringId } from "./identifiers.ts";
+import { StyleLoweringId, StyleRepresentationKind } from "./identifiers.ts";
 
 export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
 export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
@@ -20,6 +20,11 @@ export interface StyleLoweringResult {
 	readonly program: StyleProgram;
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly applied: readonly string[];
+}
+
+export interface StyleLoweringPlan extends StyleLoweringResult {
+	/** The representation selected after all registered lowerings ran. */
+	readonly representation: StyleRepresentationKind;
 }
 
 export interface StyleLowering {
@@ -40,6 +45,7 @@ export interface StyleLoweringRegistry {
 	register(lowering: StyleLowering): StyleLoweringRegistry;
 	registerPlugin(plugin: StyleLoweringPlugin): StyleLoweringRegistry;
 	lower(context: StyleLoweringContext): StyleLoweringResult;
+	plan(context: StyleLoweringContext): StyleLoweringPlan;
 }
 
 const level = (
@@ -301,6 +307,13 @@ export function createStyleLoweringRegistry(
 			}
 			return { program, residuals, applied };
 		},
+		plan(context) {
+			const result = registry.lower(context);
+			return {
+				...result,
+				representation: representationFor(context, result),
+			};
+		},
 	};
 	if (initial === undefined) registry.registerPlugin(BUILTIN_STYLE_LOWERING_PLUGIN);
 	else for (const lowering of initial) registry.register(lowering);
@@ -308,3 +321,32 @@ export function createStyleLoweringRegistry(
 }
 
 export const STYLE_LOWERING_REGISTRY = createStyleLoweringRegistry();
+
+function representationFor(
+	context: StyleLoweringContext,
+	result: StyleLoweringResult,
+): StyleRepresentationKind {
+	const declarations = result.program.rules.flatMap(function collect(rule): StyleDeclaration[] {
+		return [...rule.declarations, ...rule.children.flatMap(collect)];
+	});
+	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
+	if (result.residuals.length > 0 || result.program.residuals.length > 0) {
+		if (
+			declarations.some(
+				(declaration) =>
+					declaration.value.kind === "literal" &&
+					typeof declaration.value.value === "string" &&
+					declaration.value.value.startsWith("var(--pandwind-dynamic-"),
+			)
+		)
+			return StyleRepresentationKind.CustomProperty;
+		return StyleRepresentationKind.Residual;
+	}
+	if (hasDynamic) {
+		const dynamicCapability = level(context.target, "dynamic-values");
+		return dynamicCapability === "unsupported"
+			? StyleRepresentationKind.Residual
+			: StyleRepresentationKind.TargetNative;
+	}
+	return StyleRepresentationKind.Static;
+}

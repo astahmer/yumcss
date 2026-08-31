@@ -23,6 +23,7 @@ import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
+import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	getHostComponentRewriter,
@@ -147,9 +148,25 @@ async function resolveNodeAdapterRegistry(): Promise<StyleAdapterRegistry> {
 	return createBuiltinCodemodCatalog().registry;
 }
 
-function configurationFailure(source: string, detail: string): AdapterMigrationResult {
+function configurationFailure(
+	source: string,
+	detail: string,
+	marker = "pandwind:migrate-skip",
+): AdapterMigrationResult {
 	return {
-		code: source,
+		code:
+			MigrationDiagnostics.skipMarker({
+				marker,
+				configurationResiduals: [
+					{
+						kind: "configuration",
+						text: "official project configuration",
+						hint: `official adapter configuration loading failed: ${detail}`,
+					},
+				],
+			}) +
+			"\n" +
+			source,
 		changed: false,
 		converted: 0,
 		skipped: 1,
@@ -211,7 +228,11 @@ export async function runAdapterMigrationAsync(
 			route.target.loadConfigAsync?.(context) ?? route.target.loadConfig(context),
 		]);
 	} catch (error) {
-		return configurationFailure(source, error instanceof Error ? error.message : String(error));
+		return configurationFailure(
+			source,
+			error instanceof Error ? error.message : String(error),
+			options.skipMarker,
+		);
 	}
 	return runAdapterMigrationInternal(
 		source,
@@ -275,8 +296,15 @@ function runAdapterMigrationInternal(
 		});
 	const configurationResiduals = [...(config.residuals ?? []), ...(targetConfig.residuals ?? [])];
 	if (configurationResiduals.length > 0) {
+		const marker = options.skipMarker ?? "pandwind:migrate-skip";
 		return {
-			code: source,
+			code:
+				MigrationDiagnostics.skipMarker({
+					marker,
+					configurationResiduals,
+				}) +
+				"\n" +
+				source,
 			changed: false,
 			converted: 0,
 			skipped: 1,
@@ -323,7 +351,7 @@ function runAdapterMigrationInternal(
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
 	let skipped = 0;
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).lower({
+		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,
@@ -488,8 +516,8 @@ function runAdapterMigrationInternal(
 		}
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
 		reports.push(report);
-		const hasParseResiduals = program.residuals.length > 0 || lowering.residuals.length > 0;
-		if (!report.convertible || (mode === "safe" && hasParseResiduals)) {
+		const hasSemanticResiduals = program.residuals.length > 0 || lowering.residuals.length > 0;
+		if (!report.convertible || (mode === "safe" && hasSemanticResiduals)) {
 			skipped++;
 			residuals.push(
 				...program.residuals,
@@ -509,7 +537,13 @@ function runAdapterMigrationInternal(
 			edits.push({
 				start: match.start,
 				end: match.start,
-				text: `// ${marker} (adapter capability mismatch)\n`,
+				text:
+					MigrationDiagnostics.skipMarker({
+						marker,
+						parseResiduals: program.residuals,
+						loweringResiduals: lowering.residuals,
+						blockers: report.blockers,
+					}) + "\n",
 			});
 			continue;
 		}

@@ -171,6 +171,41 @@ function parseFunctionCalls(
 			});
 			continue;
 		}
+		const subject = match[0]
+			.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
+			?.replace(/\s+/g, " ")
+			.replace(/\.\s+/g, ".");
+		const staticBody = call.body.trim();
+		if (staticBody.startsWith("{")) {
+			const objectOpen = source.indexOf("{", open);
+			const object = balanced(source, objectOpen);
+			if (object !== undefined) {
+				const program = styleProgramFromSourceObject(object.body, {
+					source: {
+						file: context.file,
+						start,
+						end: call.end,
+						adapter: id,
+						...(context.semantic?.source?.framework
+							? { framework: context.semantic.source.framework }
+							: {}),
+					},
+					sourceOffset: objectOpen + 1,
+					...(options.namedObjects ? { nestedObjectKind: "named" as const } : {}),
+					...options.sourceObjectOptions,
+				});
+				matches.push({
+					start,
+					end: call.end,
+					program:
+						subject === undefined
+							? program
+							: { ...program, source: { ...program.source, subject } },
+					sourceText: source.slice(start, call.end),
+				});
+				continue;
+			}
+		}
 		const arrow = call.body.indexOf("=>");
 		const objectOpen = arrow === -1 ? -1 : call.body.indexOf("{", arrow);
 		const object = objectOpen === -1 ? undefined : balanced(source, open + 1 + objectOpen);
@@ -198,10 +233,6 @@ function parseFunctionCalls(
 			}),
 			parameter,
 		);
-		const subject = match[0]
-			.match(/^styled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[0]
-			?.replace(/\s+/g, " ")
-			.replace(/\.\s+/g, ".");
 		matches.push({
 			start,
 			end: call.end,
@@ -329,7 +360,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			};
 		},
 		emit: (program) => ({
-			text: `${options.prefix}${objectText(program)}${options.suffix ?? ""}`,
+			text: `${options.prefix}${objectText(program)}${options.suffix ?? ")"}`,
 			residuals: [...program.residuals],
 			dependencies: options.packages,
 		}),

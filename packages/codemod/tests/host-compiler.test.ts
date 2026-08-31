@@ -75,4 +75,20 @@ describe("framework-native host compiler contract", () => {
 			'// <Card />\nconst example = "<Card />";\nconst view = <div data={enabled ? ">" : "<"} style={props.style} className={card.class} />;',
 		);
 	});
+
+	test("preserves self-closing template hosts", () => {
+		const rewriter = getHostComponentRewriter("vue");
+		expect(rewriter).toBeDefined();
+		const result = rewriter!.rewrite({
+			source: '<Card data-id="example" />',
+			file: "App.vue",
+			binding: "Card",
+			tag: "div",
+			framework: "vue",
+			classExpression: "card.class",
+		});
+		expect(result.changed).toBe(true);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toBe('<div data-id="example" :class="card.class" />');
+	});
 });

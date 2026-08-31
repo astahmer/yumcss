@@ -247,6 +247,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 			found = true;
 			continue;
 		}
+		const selfClosing = /\/\s*>$/.test(text);
 		let attrs = text
 			.slice(1 + binding.length, -1)
 			.replace(/\/\s*$/, "")
@@ -274,7 +275,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 				attrs += ` style={${request.styleExpression}}`;
 			}
 		}
-		edits.push({ start, end: match.end, text: `<${tag}${attrs}>` });
+		edits.push({ start, end: match.end, text: `<${tag}${attrs}${selfClosing ? " />" : ">"}` });
 		found = true;
 	}
 	if (!found)

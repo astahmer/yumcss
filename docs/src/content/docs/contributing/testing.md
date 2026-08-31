@@ -106,6 +106,18 @@ transforms, generated Tailwind consumers, codemod CLI reports, analyzer
 collection, inspector gathering, and playground evaluation. These tests catch
 source-loader and module-resolution failures that isolated unit tests miss.
 
+The codemod integration matrix in
+`packages/codemod/tests/adapter-migration-matrix.test.ts` exercises every
+registered adapter in both directions: each source lowers to Pandwind, and a
+representative Pandwind program emits to every registered target. It also
+asserts explicit evidence for dynamic values and composes the real
+Chakra-to-Tailwind and Tailwind-dialect-to-Chakra routes. This is deliberately
+separate from the adapter contract fixture: the contract checks one adapter's
+ports, while the matrix checks route composition. Its Cartesian pass invokes
+all 576 registered source-to-target routes and requires either a conversion or
+structured residual evidence for every route; a skipped route may never be
+silent.
+
 ### End-to-end tests
 
 The recursive test command includes:
@@ -118,6 +130,11 @@ The recursive test command includes:
 
 When changing a host adapter or backend, run the matching example directly as
 well as `pnpm test:all`.
+
+The Playwright-BDD migration lab adds browser coverage for every registered
+source and target selector. Its feature scenarios prove that the browser
+composition root exposes the same adapter registry as the migration use case;
+the residual scenario keeps non-happy behavior visible to users.
 
 ## Coverage interpretation
 

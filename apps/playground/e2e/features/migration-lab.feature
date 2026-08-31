@@ -32,3 +32,68 @@ Feature: Playground migration lab
     Then the "Residual report" panel is visible
     And the "Target contract · Pandwind" panel is visible
     And the page contains the text "dynamic-values"
+
+  Scenario Outline: every registered source adapter routes through Pandwind
+    When I choose "<sourceLabel>" from "from · source adapter"
+    And I choose "Pandwind" from "to · target adapter"
+    Then the "from · source adapter" selector has value "<sourceId>"
+    And the output pane for "Pandwind" contains "pandwind"
+
+    Examples:
+      | sourceLabel       | sourceId         |
+      | Pandwind           | pandwind         |
+      | Bamboo             | bamboo           |
+      | Chakra Ui          | chakra-ui        |
+      | Emotion            | emotion          |
+      | Styled Components  | styled-components |
+      | Vanilla Extract    | vanilla-extract  |
+      | Stitches           | stitches         |
+      | Linaria            | linaria           |
+      | Mantine            | mantine          |
+      | Mui                | mui              |
+      | Next Yak           | next-yak          |
+      | Jss                | jss              |
+      | Stylex             | stylex            |
+      | Fela               | fela              |
+      | Goober             | goober            |
+      | Aphrodite          | aphrodite         |
+      | Style9             | style9            |
+      | Treat              | treat             |
+      | Compiled           | compiled          |
+      | Solid Styled       | solid-styled      |
+      | Vue Styled         | vue-styled        |
+      | React Native       | react-native      |
+      | Tokenami           | tokenami          |
+      | Unocss             | unocss            |
+
+  Scenario Outline: every registered target adapter is reachable in the browser
+    When I choose "<targetLabel>" from "to · target adapter"
+    Then the "to · target adapter" selector has value "<targetId>"
+    And the output pane for "<targetLabel>" is visible
+
+    Examples:
+      | targetLabel       | targetId         |
+      | Pandwind          | pandwind         |
+      | Bamboo            | bamboo           |
+      | Chakra Ui         | chakra-ui        |
+      | Emotion           | emotion          |
+      | Styled Components | styled-components |
+      | Vanilla Extract   | vanilla-extract  |
+      | Stitches          | stitches         |
+      | Linaria           | linaria          |
+      | Mantine           | mantine          |
+      | Mui               | mui              |
+      | Next Yak          | next-yak          |
+      | Jss               | jss              |
+      | Stylex            | stylex            |
+      | Fela              | fela              |
+      | Goober            | goober            |
+      | Aphrodite         | aphrodite         |
+      | Style9            | style9            |
+      | Treat             | treat             |
+      | Compiled          | compiled          |
+      | Solid Styled      | solid-styled      |
+      | Vue Styled        | vue-styled        |
+      | React Native      | react-native      |
+      | Tokenami          | tokenami          |
+      | Unocss            | unocss            |
