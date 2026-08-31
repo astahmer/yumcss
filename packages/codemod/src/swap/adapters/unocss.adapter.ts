@@ -249,6 +249,13 @@ async function officialConfig(
 	} catch (error) {
 		return {
 			...fallback,
+			residuals: [
+				{
+					kind: "configuration",
+					text: "UnoCSS project configuration",
+					hint: `official UnoCSS config loading failed: ${error instanceof Error ? error.message : String(error)}`,
+				},
+			],
 			values: {
 				...fallback.values,
 				officialConfigError: error instanceof Error ? error.message : String(error),
@@ -263,16 +270,7 @@ function parseUnoCss(
 	resolver: UnoCssTokenResolver,
 ): AdapterParseResult {
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
-	const residuals: StyleProgramResidual[] =
-		typeof context.config.values.officialConfigError === "string"
-			? [
-					{
-						kind: "configuration",
-						text: "UnoCSS project configuration",
-						hint: `official UnoCSS config loading failed: ${context.config.values.officialConfigError}`,
-					},
-				]
-			: [];
+	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const excluded = context.document?.isExcluded ?? (() => false);
 	const attribute = /\b(className|class)\s*=\s*(["'])([^"']*)\2/g;
 	for (const match of source.matchAll(attribute)) {

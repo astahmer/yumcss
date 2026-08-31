@@ -269,6 +269,19 @@ function runAdapterMigrationInternal(
 			packageJson: options.packageJson,
 			readFile,
 		});
+	const configurationResiduals = [...(config.residuals ?? []), ...(targetConfig.residuals ?? [])];
+	if (configurationResiduals.length > 0) {
+		return {
+			code: source,
+			changed: false,
+			converted: 0,
+			skipped: 1,
+			reports: [],
+			validations: [],
+			dependencies: [],
+			residuals: configurationResiduals,
+		};
+	}
 	const document = SOURCE_SCANNER_SERVICE.scan({
 		file: options.file,
 		source,

@@ -252,6 +252,11 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		});
 		const source = '<div className="brand" />';
 		const config = await adapter.loadConfigAsync?.({ file: "App.tsx", source, root: "/project" });
+		expect(config?.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
+			]),
+		);
 		const parsed = adapter.parse(source, {
 			file: "App.tsx",
 			source,
@@ -259,6 +264,44 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 			config: config!,
 		});
 		expect(parsed.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
+			]),
+		);
+	});
+
+	test("stops a project migration when official config carries a residual", async () => {
+		const adapter = createUnoCssAdapter({
+			moduleLoader: {
+				async importPackage(packageName) {
+					if (packageName === "@unocss/config")
+						return {
+							loadConfig: async () => {
+								throw new Error("preset failed to load");
+							},
+						} as never;
+					if (packageName === "@unocss/core")
+						return {
+							createGenerator: async () => ({ generate: async () => ({ css: "" }) }),
+						} as never;
+					return undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+		});
+		const pandwind = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!;
+		const result = await runAdapterMigrationAsync('<div className="brand" />', {
+			from: CodemodAdapterId.UnoCSS,
+			to: CodemodAdapterId.Pandwind,
+			file: "App.tsx",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([adapter, pandwind]),
+		});
+		expect(result.changed).toBe(false);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({ kind: "configuration", text: "UnoCSS project configuration" }),
 			]),

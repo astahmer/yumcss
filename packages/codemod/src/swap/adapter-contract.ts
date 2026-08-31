@@ -51,6 +51,8 @@ export interface AdapterProjectConfig {
 	readonly root?: string;
 	readonly files: readonly string[];
 	readonly values: Readonly<Record<string, unknown>>;
+	/** Configuration-loading failures are semantic residuals, never silent fallback. */
+	readonly residuals?: readonly StyleProgramResidual[];
 }
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
