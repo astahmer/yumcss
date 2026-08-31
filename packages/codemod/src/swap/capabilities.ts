@@ -210,7 +210,18 @@ export function requiredAdapterCapabilities(
 	if (program.runtime !== undefined) add("runtime-context", `${program.runtime.phase} runtime`);
 	if ((program.plugins?.length ?? 0) > 0)
 		add("plugin-transforms", `${program.plugins?.length ?? 0} plugin transform(s)`);
-	if (program.source?.framework !== undefined) add("framework-semantics", program.source.framework);
+	// A document's language/framework is provenance until the program actually
+	// carries host or component semantics. Requiring a target framework adapter
+	// for a standalone style value creates false capability mismatches: the
+	// target only needs to preserve the style carrier, not rewrite JSX/template
+	// syntax. Host-bound and styled-subject programs still require this contract.
+	if (
+		program.source?.framework !== undefined &&
+		(program.source.subject !== undefined ||
+			program.source.hostOpenTag !== undefined ||
+			program.source.hostStyleAttributes !== undefined)
+	)
+		add("framework-semantics", program.source.framework);
 	return requirements;
 }
 

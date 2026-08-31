@@ -39,6 +39,31 @@ describe("semantic adapter capability contracts", () => {
 		]);
 	});
 
+	test("does not require framework semantics for a hostless style carrier", () => {
+		const hostless: StyleProgram = {
+			...program,
+			source: { file: "Card.tsx", framework: "react" },
+		};
+		expect(requiredAdapterCapabilities(hostless).map((item) => item.capability)).not.toContain(
+			"framework-semantics",
+		);
+	});
+
+	test("requires framework semantics for host-bound style programs", () => {
+		const hostBound: StyleProgram = {
+			...program,
+			source: {
+				file: "Card.tsx",
+				framework: "react",
+				hostOpenTag: "<div className={card}>",
+				hostStyleAttributes: ["className={card}"],
+			},
+		};
+		expect(requiredAdapterCapabilities(hostBound).map((item) => item.capability)).toContain(
+			"framework-semantics",
+		);
+	});
+
 	test("safe mode blocks partial and unsupported semantics", () => {
 		const report = inspectAdapterCapabilities(contract, program, "safe");
 		expect(report.convertible).toBe(false);
