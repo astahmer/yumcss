@@ -66,10 +66,12 @@ and host-framework contract, not adding a central adapter branch.
 
 MUI also demonstrates a target-owned style-prop projection. A Pandwind class
 binding used by a React host is emitted as an object and rewritten from
-`className={binding}` to `sx={binding}`. The target policy owns that rewrite;
-the runner only negotiates the typed representation and applies the returned
-edit. Bare unused bindings remain explicit residuals because MUI has no
-standalone `sx()` API.
+`className={binding}` to `sx={binding}`. Intrinsic DOM hosts are first wrapped
+as `Box component="..."`, because `sx` is not a native DOM prop; known MUI
+components receive `sx` directly, while unknown custom components remain
+residuals. The target policy owns that rewrite; the runner only negotiates the
+typed representation and applies the returned edit. Bare unused bindings
+remain explicit residuals because MUI has no standalone `sx()` API.
 
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and

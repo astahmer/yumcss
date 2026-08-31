@@ -115,7 +115,10 @@ policy only when the source has a real host use; otherwise a target-native
 component expression can be preserved. This distinction prevents a
 class-string API from being called as a component, prevents a component
 factory from being assigned to `className`, and lets a target such as MUI
-rewrite `className={card}` to its host-owned `sx={card}` prop.
+rewrite `className={card}` to its host-owned `sx={card}` prop. Intrinsic DOM
+hosts are wrapped as `Box component="..."` first, because `sx` is not a DOM
+attribute; unknown custom components remain residuals unless the source
+proves that they are MUI components.
 
 The target policy owns the final host rewrite. It receives the normalized
 program, emitted expression, framework, binding, and selected representation;
@@ -134,8 +137,10 @@ capabilities or manufacture a new representation.
 Targets that require a host use declare that requirement in the same policy.
 For example, MUI's `sx` carrier sets `requiresHostContext`; a bare style value
 therefore stops before target emission with the adapter-owned explanation that
-an `sx` prop must be attached to a component. This keeps “no standalone API”
-as a target contract rather than a special case in the route runner.
+an `sx` prop must be attached to a component. When the source host is an
+intrinsic element, the same target port emits `Box component="..."` so the
+rendered element remains equivalent. This keeps “no standalone API” and host
+ownership as target contracts rather than special cases in the route runner.
 
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component

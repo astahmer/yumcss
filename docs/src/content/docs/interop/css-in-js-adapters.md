@@ -140,7 +140,11 @@ Pandwind class binding used as `className={card}` becomes an object binding
 plus `sx={card}`. An inline expression becomes an object-valued `sx` prop.
 There is deliberately no standalone MUI `sx()` function, so an unused
 standalone Pandwind class binding remains source-preserving with a
-`host-framework` residual rather than becoming invalid target code.
+`host-framework` residual rather than becoming invalid target code. Intrinsic
+hosts such as `<div>` become `<Box component="div" sx={...}>`, preserving the
+rendered element because `sx` is not a native DOM prop. Unknown custom
+components remain residuals unless their MUI ownership is proven by the
+source imports.
 
 StyleX uses the same target-owned host port with a different representation.
 A static React styled subject can become a StyleX style object and its
