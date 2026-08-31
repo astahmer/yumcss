@@ -961,8 +961,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(
 			result.residuals.some(
-				(residual) =>
-					residual.hint?.includes("react-native has no host representation for react") ?? false,
+				(residual) => residual.hint?.includes("react-native has no host representation for react") ?? false,
 			),
 		).toBe(true);
 		expect(result.code).toContain("className={card}");
