@@ -18,7 +18,11 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
-import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
+import {
+	STYLE_LOWERING_REGISTRY,
+	type StyleLoweringPlan,
+	type StyleLoweringRegistry,
+} from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
@@ -133,6 +137,8 @@ export interface AdapterMigrationResult {
 	readonly validations: readonly AdapterValidationResult[];
 	readonly dependencies: readonly AdapterDependencies[];
 	readonly residuals: readonly StyleProgramResidual[];
+	/** One inspectable representation decision for each parsed source match. */
+	readonly loweringPlans: readonly StyleLoweringPlan[];
 }
 
 interface LoadedAdapterConfigs {
@@ -179,6 +185,7 @@ function configurationFailure(
 				hint: `official adapter configuration loading failed: ${detail}`,
 			},
 		],
+		loweringPlans: [],
 	};
 }
 
@@ -284,6 +291,7 @@ function runAdapterMigrationInternal(
 			validations: [],
 			dependencies: [],
 			residuals: [],
+			loweringPlans: [],
 		};
 	}
 	const config =
@@ -322,6 +330,7 @@ function runAdapterMigrationInternal(
 			validations: [],
 			dependencies: [],
 			residuals: configurationResiduals,
+			loweringPlans: [],
 		};
 	}
 	const document = SOURCE_SCANNER_SERVICE.scan({
@@ -352,6 +361,7 @@ function runAdapterMigrationInternal(
 	const validations: AdapterValidationResult[] = [];
 	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
+	const loweringPlans: StyleLoweringPlan[] = [];
 	const convertedBindings = new Set<string>();
 	const componentRewrites: HostComponentRewriteRequest[] = [];
 	const pendingComponentDeclarationRewrites = new Map<
@@ -372,6 +382,7 @@ function runAdapterMigrationInternal(
 			mode,
 			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
+		loweringPlans.push(lowering);
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
@@ -798,5 +809,6 @@ function runAdapterMigrationInternal(
 		validations,
 		dependencies,
 		residuals,
+		loweringPlans,
 	};
 }

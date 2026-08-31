@@ -169,6 +169,10 @@ describe("bidirectional registered adapter matrix", () => {
 					result.validations.flatMap((validation) => validation.residuals).length;
 				const converted = result.converted > 0;
 				expect(
+					result.loweringPlans.length,
+					`${sourceAdapter.id} -> ${targetAdapter.id} did not expose a lowering decision`,
+				).toBeGreaterThan(0);
+				expect(
 					converted || residualEvidence > 0,
 					`${sourceAdapter.id} -> ${targetAdapter.id} produced no conversion or residual evidence`,
 				).toBe(true);
