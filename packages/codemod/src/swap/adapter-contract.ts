@@ -1,6 +1,7 @@
 import type { PandwindMeta } from "../meta.ts";
 import type {
 	AdapterCapabilities,
+	AdapterCapability,
 	AdapterCapabilityMode,
 	AdapterCapabilityReport,
 } from "./capabilities.ts";
@@ -224,6 +225,11 @@ export interface AdapterTargetMigrationPolicy {
 		readonly binding?: string;
 		readonly hostRepresentation?: StyleHostRepresentationKind;
 	}) => StyleRepresentationKind | undefined;
+	/** Capabilities satisfied by the selected target-owned representation. */
+	readonly capabilitiesForRepresentation?: (context: {
+		readonly program: StyleProgram;
+		readonly representation: StyleRepresentationKind;
+	}) => readonly AdapterCapability[];
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */

@@ -157,8 +157,10 @@ Targets that require a host use declare that requirement in the same policy.
 For example, MUI's `sx` carrier sets `requiresHostContext`; a static bare style
 value therefore selects the MUI adapter's portable-artifact representation and
 emits Pandwind's static `css.class(...)` carrier rather than inventing an
-`sx()` API that MUI does not have. Dynamic bare values still stop with the
-adapter-owned explanation that an `sx` prop must be attached to a component.
+`sx()` API that MUI does not have. Dynamic bare values use the same portable
+carrier as an explicit runtime fallback; dynamic values with an unknown host
+still stop with the adapter-owned explanation that an `sx` prop must be
+attached to a component.
 When the source host is an intrinsic element, the same target port emits
 `Box component="..."` so the rendered element remains equivalent. This keeps
 the rule and its fallback under MUI ownership as target contracts rather than

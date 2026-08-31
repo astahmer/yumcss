@@ -142,8 +142,9 @@ There is deliberately no standalone MUI `sx()` function. Static unused
 standalone bindings therefore select an explicit portable-artifact fallback:
 the MUI adapter keeps Pandwind's `css.class(...)` carrier and declares the
 extra Pandwind dependency, preserving the style without pretending that MUI
-has a standalone `sx()` API. Dynamic unused bindings still produce a typed
-`host-framework` residual because no safe host carrier exists. Intrinsic hosts
+has a standalone `sx()` API. Dynamic unused bindings use the same Pandwind
+carrier as an explicit runtime fallback, while dynamic unknown hosts still
+produce a typed `host-framework` residual. Intrinsic hosts
 such as `<div>` become `<Box component="div" sx={...}>`, preserving the
 rendered element because `sx` is not a native DOM prop. Unknown custom
 components use the portable static fallback when their declarations are fully

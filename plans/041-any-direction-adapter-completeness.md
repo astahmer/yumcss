@@ -89,11 +89,14 @@ binding used by a React host is emitted as an object and rewritten from
 `className={binding}` to `sx={binding}`. Intrinsic DOM hosts are first wrapped
 as `Box component="..."`, because `sx` is not a native DOM prop; known MUI
 components receive `sx` directly, while static unknown custom components use
-the portable fallback and dynamic ones remain residuals. The target policy owns that rewrite; the runner only negotiates the
-typed representation and applies the returned edit. Static bare unused
+the portable fallback and dynamic ones remain residuals. Hostless dynamic
+values use the same portable Pandwind carrier as an explicit runtime fallback.
+The target policy owns that rewrite; the runner only negotiates the typed
+representation and applies the returned edit. Static bare unused
 bindings use MUI's portable-artifact fallback because MUI has no standalone
-`sx()` API; dynamic bare bindings remain explicit residuals until a host
-carrier is available.
+`sx()` API; dynamic bare bindings use the portable runtime carrier, while
+dynamic unknown hosts remain explicit residuals until their MUI ownership is
+proven.
 
 The lowering plan's `availableRepresentations` is now program-aware: static is
 listed only when no dynamic or residual semantics remain, custom-property is
