@@ -71,4 +71,23 @@ describe("migration diagnostics", () => {
 
 		expect(marker).toContain("available: static, custom-property, residual");
 	});
+
+	test("includes the ordered route when a capability blocks a migration", () => {
+		const marker = MigrationDiagnostics.skipMarker({
+			marker: "pandwind:migrate-skip",
+			sourceAdapter: "styled-components",
+			targetAdapter: "unocss",
+			blockers: [
+				{
+					capability: "components",
+					detail: "component subject",
+					level: "unsupported",
+					blocking: true,
+				},
+			],
+		});
+
+		expect(marker).toContain("route: styled-components -> unocss");
+		expect(marker).toContain("components: component subject");
+	});
 });

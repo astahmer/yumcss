@@ -10,6 +10,9 @@ export interface MigrationResidualLike {
 
 export interface MigrationSkipDiagnosticInput {
 	readonly marker: string;
+	/** Optional route context for a developer-facing source marker. */
+	readonly sourceAdapter?: string;
+	readonly targetAdapter?: string;
 	readonly blockers?: readonly AdapterCapabilityIssue[];
 	readonly configurationResiduals?: readonly MigrationResidualLike[];
 	readonly parseResiduals?: readonly MigrationResidualLike[];
@@ -25,6 +28,11 @@ export interface MigrationSkipDiagnosticInput {
 export class MigrationDiagnostics {
 	static skipMarker(input: MigrationSkipDiagnosticInput): string {
 		const clauses: string[] = [];
+		if (input.sourceAdapter !== undefined || input.targetAdapter !== undefined) {
+			const source = input.sourceAdapter ?? "unknown-source";
+			const target = input.targetAdapter ?? "unknown-target";
+			clauses.push(`route: ${source} -> ${target}`);
+		}
 		if ((input.configurationResiduals?.length ?? 0) > 0)
 			clauses.push(
 				`${MigrationSkipReason.ConfigurationResidual}: ${kinds(input.configurationResiduals!)}`,

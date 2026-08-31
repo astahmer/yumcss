@@ -76,6 +76,14 @@ static evaluation, a target-native runtime carrier, or an explicit custom
 property binding; a Tailwind utility cannot safely invent one from syntax
 alone.
 
+Named style maps are projected through the target adapter when the target
+declares `native-map` or `class-map` support. The generic emitters apply that
+projection only to named style rules, so keyframe names cannot accidentally be
+wrapped as style-map entries. Class/compiler targets such as UnoCSS still need
+a target-owned generated stylesheet plus lookup projection; until that port
+exists, a named map remains an explicit residual instead of being flattened
+into one utility.
+
 That is why safe mode reports a typed capability residual instead of guessing.
 The bidirectional guarantee is that every declared route is resolved to a
 static representation first, then the smallest validated runtime carrier, or

@@ -613,6 +613,8 @@ function runAdapterMigrationInternal(
 				text:
 					MigrationDiagnostics.skipMarker({
 						marker,
+						sourceAdapter: sourceAdapter.id,
+						targetAdapter: targetAdapter.id,
 						parseResiduals: program.residuals,
 						loweringResiduals,
 						blockers: report.blockers,

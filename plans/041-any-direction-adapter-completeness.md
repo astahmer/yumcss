@@ -50,10 +50,18 @@ This slice proves route orchestration and no-silent-loss behavior. It does not
 turn fixture evidence into a browser/SSR promotion claim; those dimensions
 remain governed by the real-repository proof matrix below.
 
+The named-map projection slice is now implemented for target adapters that
+declare `native-map` or `class-map`. The generic adapter emitters only apply
+that projection to named style rules, so keyframe names cannot be accidentally
+wrapped as style-map entries. UnoCSS remains an explicit boundary because a
+class/compiler target needs a generated stylesheet plus a lookup projection,
+not an object-map expression.
+
 The most important unresolved families are:
 
 - runtime interpolations, themes, and function-valued styles;
-- named maps, composition, recipes, and variant systems;
+- composition, recipes, and variant systems; named maps remain open only for
+  class/compiler targets that need generated stylesheet lookup projection;
 - styled-component subjects, `attrs`, polymorphism, and use-site rewrites;
 - JSS imperative rule application and plugin-generated styles;
 - globals, keyframes, font-face, layers, supports, selectors, nesting, and
