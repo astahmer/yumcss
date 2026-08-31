@@ -397,7 +397,7 @@ export function createStyleLoweringRegistry(
 			return {
 				...result,
 				representation: representationFor(context, result),
-				availableRepresentations: availableRepresentationsFor(context),
+				availableRepresentations: availableRepresentationsFor(context, result),
 			};
 		},
 	};
@@ -448,15 +448,39 @@ function representationFor(
 
 function availableRepresentationsFor(
 	context: StyleLoweringContext,
+	result: StyleLoweringResult,
 ): readonly StyleRepresentationKind[] {
-	const representations = [StyleRepresentationKind.Static];
+	const declarations = allDeclarations(result.program);
+	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
+	const hasFunctionDynamic = declarations.some(
+		(declaration) =>
+			declaration.value.kind === "dynamic" &&
+			declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
+	);
+	const hasCustomProperty = declarations.some(
+		(declaration) =>
+			declaration.value.kind === "literal" &&
+			typeof declaration.value.value === "string" &&
+			declaration.value.value.startsWith("var(--pandwind-dynamic-"),
+	);
+	const hasResidual = result.program.residuals.length > 0 || result.residuals.length > 0;
+	const representations: StyleRepresentationKind[] = [];
+	if (!hasDynamic && !hasResidual) representations.push(StyleRepresentationKind.Static);
 	if (level(context.target, "named-rules") !== "unsupported")
 		representations.push(StyleRepresentationKind.NamedMap);
-	if (level(context.target, "dynamic-values") !== "unsupported")
+	if (
+		hasDynamic &&
+		!hasFunctionDynamic &&
+		level(context.target, "dynamic-values") !== "unsupported"
+	)
 		representations.push(StyleRepresentationKind.TargetNative);
-	if (level(context.target, "custom-properties") !== "unsupported")
+	if (
+		(hasDynamic || hasCustomProperty) &&
+		!hasFunctionDynamic &&
+		level(context.target, "custom-properties") !== "unsupported"
+	)
 		representations.push(StyleRepresentationKind.CustomProperty);
-	if (level(context.target, "runtime-context") !== "unsupported")
+	if (hasDynamic && level(context.target, "runtime-context") !== "unsupported")
 		representations.push(StyleRepresentationKind.RuntimeCarrier);
 	representations.push(StyleRepresentationKind.Residual);
 	return representations;
