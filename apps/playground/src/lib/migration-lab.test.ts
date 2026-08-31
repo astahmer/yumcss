@@ -45,6 +45,14 @@ describe("migration lab", () => {
 		for (const source of lab.sources) {
 			const result = lab.migrate(source.id, CodemodAdapterId.Pandwind, lab.sampleFor(source.id));
 			expect(result.ok, source.id).toBe(true);
+			if (!result.ok) continue;
+			if (source.id !== CodemodAdapterId.Pandwind) {
+				expect(result.code, source.id).not.toBe(lab.sampleFor(source.id));
+				expect(
+					result.converted + result.skipped + result.residuals.length,
+					source.id,
+				).toBeGreaterThan(0);
+			}
 		}
 	});
 });

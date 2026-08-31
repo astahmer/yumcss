@@ -55,6 +55,10 @@ const card = css({
 	color: "red.500",
 	padding: "4",
 });`,
+	[CodemodAdapterId.Pandwind]: `import { createCss } from "pandwind/css";
+
+const css = createCss();
+const card = css.class({ color: "red", padding: "1rem" });`,
 	[CodemodAdapterId.StyledComponents]: `import styled from "styled-components";
 
 const Card = styled.div\`
@@ -85,9 +89,9 @@ const card = css\`
 	color: red;
 	padding: 1rem;
 \`;`,
-	[CodemodAdapterId.Stitches]: `import { styled } from "@stitches/react";
+	[CodemodAdapterId.Stitches]: `import { css } from "@stitches/react";
 
-const Card = styled("div", {
+const card = css({
 	color: "red",
 	padding: "1rem",
 });`,
@@ -105,9 +109,9 @@ const useStyles = createUseStyles({
 		padding: 16,
 	},
 });`,
-	[CodemodAdapterId.Fela]: `import { createComponent } from "react-fela";
+	[CodemodAdapterId.Fela]: `import { RendererProvider } from "react-fela";
 
-const Card = createComponent(() => ({
+const card = renderer.renderRule(() => ({
 	color: "red",
 	padding: "1rem",
 }));`,
@@ -160,14 +164,17 @@ const Card = styled.div\`
 \`;`,
 	[CodemodAdapterId.SolidStyled]: `import { styled } from "solid-styled-components";
 
-const Card = styled("div")({
-	color: "red",
-	padding: "1rem",
-});`,
+const Card = styled.div\`
+	color: red;
+	padding: 1rem;
+\`;`,
 	[CodemodAdapterId.VueStyled]: `<script setup>
-import styled from "vue3-styled-components";
+import styled from "vue-styled-components";
 
-const Card = styled.div({ color: "red", padding: "1rem" });
+const Card = styled.div\`
+	color: red;
+	padding: 1rem;
+\`;
 </script>`,
 	[CodemodAdapterId.Tokenami]: `import { css } from "@tokenami/css";
 
@@ -184,9 +191,9 @@ export const styles = StyleSheet.create({
 		padding: 16,
 	},
 });`,
-	[CodemodAdapterId.Bamboo]: `import { styled } from "bamboo-css";
+	[CodemodAdapterId.Bamboo]: `import { css } from "styled-system/css";
 
-const Card = styled.div({ color: "red", padding: "1rem" });`,
+const card = css({ color: "red", padding: "1rem" });`,
 	[CodemodAdapterId.Style9]: `import style9 from "style9";
 
 const styles = style9.create({
