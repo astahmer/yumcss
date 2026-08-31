@@ -67,6 +67,15 @@ component factories from being assigned to `className`, preserves native
 component targets for unused declarations, and keeps Pandwind's runtime
 component carrier limited to function-valued cases.
 
+The migration result now exposes a typed outcome for each parsed call in
+addition to the lowering plan. `static` means no runtime carrier was needed;
+`target-native` means the target's own map, component, or style-prop contract
+was used; `host-runtime` means a validated runtime or host binding remains;
+`portable-artifact` is reserved for a future neutral artifact fallback; and
+`residual` means the original source was preserved with an actionable reason.
+This makes a capability report inspectable rather than a boolean gate and lets
+the playground distinguish a real target gap from a successful projection.
+
 MUI now demonstrates a target-owned component projection: React component
 subjects are emitted through MUI's `styled` API, while Solid/Vue subjects are
 blocked by an explicit framework residual. This is the required shape for

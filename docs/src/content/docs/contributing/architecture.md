@@ -29,6 +29,14 @@ lowering could represent it for that target. The source is preserved in all
 three cases. A generic `adapter capability mismatch` marker is not a valid
 diagnosis.
 
+The migration result also exposes one typed outcome per matched program. The
+outcome is `static`, `target-native`, `host-runtime`, `portable-artifact`, or
+`residual`, alongside the selected representation. This is deliberately
+separate from the capability report: a target may begin with a partial
+capability and still resolve it through a target-owned host or lowering port.
+Tooling should display the outcome and residual detail, not collapse the
+decision into a generic capability mismatch.
+
 ## Official project configuration
 
 Project-aware migration must ask the ecosystem's own packages to interpret
