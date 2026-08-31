@@ -2,7 +2,7 @@
   "schema": "pandwind.real-repository-report/3",
   "generatedFrom": "scripts/generate-real-repository-report.ts",
   "cloneRoot": "${PANDWIND_REFERENCE_ROOT:-~/.references}",
-  "sourceFiles": 24,
+  "sourceFiles": 25,
   "reports": [
     {
       "id": "panda-website-home",
@@ -113,9 +113,9 @@
         ]
       },
       "sourceBytes": 164,
-      "outputBytes": 147,
-      "outputByteDelta": -17,
-      "converted": 2,
+      "outputBytes": 126,
+      "outputByteDelta": -38,
+      "converted": 1,
       "skipped": 0,
       "residuals": 0,
       "residualKinds": {},
@@ -123,8 +123,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 39,
-        "targetBytes": 39,
+        "sourceBytes": 16,
+        "targetBytes": 16,
         "byteDelta": 0
       },
       "promotion": {
@@ -184,7 +184,7 @@
           "@emotion/css",
           "@emotion/react"
         ],
-        "byteDelta": -17
+        "byteDelta": -38
       }
     },
     {
@@ -385,28 +385,27 @@
         ]
       },
       "sourceBytes": 164,
-      "outputBytes": 455,
-      "outputByteDelta": 291,
-      "converted": 2,
+      "outputBytes": 277,
+      "outputByteDelta": 113,
+      "converted": 1,
       "skipped": 0,
       "residuals": 0,
       "residualKinds": {},
       "validations": 1,
       "canonicalCss": {
         "checked": true,
-        "equal": false,
-        "sourceBytes": 39,
-        "targetBytes": 78,
-        "byteDelta": 39
+        "equal": true,
+        "sourceBytes": 16,
+        "targetBytes": 16,
+        "byteDelta": 0
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "source-mismatch",
+        "status": "source-static",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "failed",
-            "reason": "canonical CSS differs"
+            "status": "passed"
           },
           "browser-states": {
             "status": "pending",
@@ -430,7 +429,6 @@
           }
         },
         "reasons": [
-          "canonical CSS differs",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -458,7 +456,7 @@
           "@emotion/css",
           "@emotion/react"
         ],
-        "byteDelta": 291
+        "byteDelta": 113
       }
     },
     {
@@ -649,8 +647,8 @@
         ]
       },
       "sourceBytes": 7459,
-      "outputBytes": 7972,
-      "outputByteDelta": 513,
+      "outputBytes": 7964,
+      "outputByteDelta": 505,
       "converted": 11,
       "skipped": 0,
       "residuals": 0,
@@ -718,7 +716,7 @@
         "removed": [
           "@stitches/react"
         ],
-        "byteDelta": 513
+        "byteDelta": 505
       }
     },
     {
@@ -1079,8 +1077,8 @@
         ]
       },
       "sourceBytes": 16434,
-      "outputBytes": 14538,
-      "outputByteDelta": -1896,
+      "outputBytes": 14567,
+      "outputByteDelta": -1867,
       "converted": 22,
       "skipped": 0,
       "residuals": 0,
@@ -1089,8 +1087,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1323,
-        "targetBytes": 1323,
+        "sourceBytes": 1108,
+        "targetBytes": 1108,
         "byteDelta": 0
       },
       "promotion": {
@@ -1148,7 +1146,7 @@
         "removed": [
           "aphrodite"
         ],
-        "byteDelta": -1896
+        "byteDelta": -1867
       }
     },
     {
@@ -1176,8 +1174,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 86,
-        "targetBytes": 86,
+        "sourceBytes": 76,
+        "targetBytes": 76,
         "byteDelta": 0
       },
       "promotion": {
@@ -1428,8 +1426,8 @@
         ]
       },
       "sourceBytes": 4251,
-      "outputBytes": 4707,
-      "outputByteDelta": 456,
+      "outputBytes": 5489,
+      "outputByteDelta": 1238,
       "converted": 9,
       "skipped": 0,
       "residuals": 0,
@@ -1495,7 +1493,7 @@
         "removed": [
           "solid-styled-components"
         ],
-        "byteDelta": 456
+        "byteDelta": 1238
       }
     },
     {
@@ -1608,8 +1606,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 289,
-        "targetBytes": 289,
+        "sourceBytes": 276,
+        "targetBytes": 276,
         "byteDelta": 0
       },
       "promotion": {
@@ -1857,25 +1855,27 @@
         ]
       },
       "sourceBytes": 3121,
-      "outputBytes": 2803,
-      "outputByteDelta": -318,
-      "converted": 3,
+      "outputBytes": 3880,
+      "outputByteDelta": 759,
+      "converted": 2,
       "skipped": 0,
       "residuals": 0,
       "residualKinds": {},
       "validations": 2,
       "canonicalCss": {
-        "checked": false,
-        "reason": "runtime-dependent semantics require browser/SSR proof before canonical comparison"
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1539,
+        "targetBytes": 1539,
+        "byteDelta": 0
       },
       "promotion": {
         "schema": "pandwind.real-repository-proof/1",
-        "status": "runtime-pending",
+        "status": "source-static",
         "eligible": false,
         "dimensions": {
           "canonical-css": {
-            "status": "pending",
-            "reason": "adapter-level canonical CSS pair was not exposed"
+            "status": "passed"
           },
           "browser-states": {
             "status": "pending",
@@ -1899,8 +1899,6 @@
           }
         },
         "reasons": [
-          "runtime-dependent semantics require browser and SSR proof",
-          "adapter-level canonical CSS pair was not exposed",
           "real browser states have not been executed for this reference",
           "real SSR and hydration have not been executed for this reference",
           "RSC/streaming proof is not available in the source-only runner",
@@ -1926,7 +1924,7 @@
         "removed": [
           "next-yak"
         ],
-        "byteDelta": -318
+        "byteDelta": 759
       }
     },
     {
@@ -2288,8 +2286,8 @@
         ]
       },
       "sourceBytes": 2935,
-      "outputBytes": 3866,
-      "outputByteDelta": 931,
+      "outputBytes": 4746,
+      "outputByteDelta": 1811,
       "converted": 2,
       "skipped": 10,
       "residuals": 35,
@@ -2365,7 +2363,101 @@
           "unocss",
           "@unocss/core"
         ],
-        "byteDelta": 931
+        "byteDelta": 1811
+      }
+    },
+    {
+      "id": "tailwindcss-docs-home",
+      "repository": "https://github.com/tailwindlabs/tailwindcss.com",
+      "commit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+      "path": "src/app/page.tsx",
+      "adapterRoute": "tailwind -> pandwind",
+      "detection": {
+        "matched": true,
+        "confidence": 0.6,
+        "evidence": [
+          "literal-class-attribute"
+        ]
+      },
+      "sourceBytes": 2708,
+      "outputBytes": 4303,
+      "outputByteDelta": 1595,
+      "converted": 0,
+      "skipped": 11,
+      "residuals": 58,
+      "residualKinds": {
+        "unknown-utility": 58
+      },
+      "validations": 0,
+      "canonicalCss": {
+        "checked": false,
+        "reason": "pipeline migration did not expose an adapter-level canonical CSS pair"
+      },
+      "promotion": {
+        "schema": "pandwind.real-repository-proof/1",
+        "status": "pipeline-unpaired",
+        "eligible": false,
+        "dimensions": {
+          "canonical-css": {
+            "status": "pending",
+            "reason": "adapter-level canonical CSS pair was not exposed"
+          },
+          "browser-states": {
+            "status": "pending",
+            "reason": "real browser states have not been executed for this reference"
+          },
+          "ssr-hydration": {
+            "status": "pending",
+            "reason": "real SSR and hydration have not been executed for this reference"
+          },
+          "rsc-streaming": {
+            "status": "pending",
+            "reason": "RSC/streaming proof is not available in the source-only runner"
+          },
+          "dependencies": {
+            "status": "pending",
+            "reason": "dependency graphs are not installed by the reference runner"
+          },
+          "css-size": {
+            "status": "pending",
+            "reason": "built CSS size is not measured by the source-only runner"
+          }
+        },
+        "reasons": [
+          "pipeline migration has no adapter-level canonical pair",
+          "58 residual conversion(s) remain",
+          "11 source match(es) were skipped",
+          "adapter-level canonical CSS pair was not exposed",
+          "real browser states have not been executed for this reference",
+          "real SSR and hydration have not been executed for this reference",
+          "RSC/streaming proof is not available in the source-only runner",
+          "dependency graphs are not installed by the reference runner",
+          "built CSS size is not measured by the source-only runner"
+        ]
+      },
+      "manualFixes": [
+        "Tailwind utility requires the project engine or a custom preset"
+      ],
+      "emittedModules": [],
+      "runtimeBundleImpact": {
+        "measured": false,
+        "measurement": "source-artifact",
+        "notMeasuredReason": "reference repositories are intentionally not installed or bundled in CI",
+        "sourceRuntimePackages": [
+          "tailwindcss",
+          "@tailwindcss/node"
+        ],
+        "targetRuntimePackages": [
+          "pandwind"
+        ],
+        "added": [
+          "pandwind"
+        ],
+        "removed": [
+          "tailwindcss",
+          "@tailwindcss/node"
+        ],
+        "byteDelta": 1595
       }
     }
   ],

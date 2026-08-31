@@ -127,6 +127,11 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		source: "import { css } from '@tokenami/css'; css({ '--hover_color': 'red' })",
 	},
 	{
+		adapter: CodemodAdapterId.Tailwind,
+		file: "tailwind.tsx",
+		source: "import 'tailwindcss'; <div className='flex p-4' />",
+	},
+	{
 		adapter: CodemodAdapterId.UnoCSS,
 		file: "unocss.tsx",
 		source: '<div className="flex items-center" />',

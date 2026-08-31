@@ -368,6 +368,16 @@ export default styled.div({
 				to: CodemodAdapterId.Pandwind,
 				framework: "react",
 			},
+			{
+				id: "tailwindcss-docs-home",
+				repository: "https://github.com/tailwindlabs/tailwindcss.com",
+				clone: "tailwindcss.com",
+				commit: "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+				path: "src/app/page.tsx",
+				from: CodemodAdapterId.Tailwind,
+				to: CodemodAdapterId.Pandwind,
+				framework: "react",
+			},
 		],
 	};
 }

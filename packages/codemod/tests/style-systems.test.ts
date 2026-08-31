@@ -75,7 +75,22 @@ describe("style system and dialect registry", () => {
 		const catalog = createBuiltinCodemodCatalog();
 		expect(catalog.systems.getDialect("emotion")?.system).toBe("emotion");
 		expect(getCodemodAdapter("linaria")?.id).toBe("linaria");
+		expect(catalog.systems.getDialect("panda")?.id).toBe("panda");
+		expect(catalog.systems.getDialect("pandwind")?.id).toBe("pandwind");
 		expect(catalog.systems.systems.length).toBeGreaterThanOrEqual(7);
+	});
+
+	test("projects core dialects and modern adapters through one route registry", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const pandaToPandwind = catalog.systems.resolveRoute("panda", "pandwind");
+		const pandaTwToPandwindCss = catalog.systems.resolveRoute(
+			{ system: "panda", dialect: "tw" },
+			{ system: "pandwind", dialect: "css" },
+		);
+		expect(pandaToPandwind.source.id).toBe("panda");
+		expect(pandaToPandwind.target.id).toBe("pandwind");
+		expect(pandaTwToPandwindCss.source.id).toBe("panda:tw");
+		expect(pandaTwToPandwindCss.target.id).toBe("pandwind:css");
 	});
 
 	test("registers Panda's nested dialects and Pandwind's target dialects", () => {

@@ -67,6 +67,7 @@ const sourcePackages: Readonly<Record<string, readonly string[]>> = {
 	mantine: ["@mantine/core"],
 	tokenami: ["@tokenami/css", "@tokenami/config"],
 	unocss: ["unocss", "@unocss/core"],
+	tailwind: ["tailwindcss", "@tailwindcss/node"],
 };
 
 function dependencyNames(value: readonly { packages: readonly { name: string }[] }[]): string[] {

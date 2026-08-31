@@ -123,7 +123,7 @@ describe("pinned real repository corpus", () => {
 		const vue = report.reports.find((item) => item.id === "vue-styled-css-test");
 		expect(panda?.promotion.status).toBe(RealRepositoryProofStatus.PipelineUnpaired);
 		expect(panda?.promotion.eligible).toBe(false);
-		expect(dynamic?.promotion.status).toBe(RealRepositoryProofStatus.RuntimePending);
+		expect(dynamic?.promotion.status).toBe(RealRepositoryProofStatus.SourceStatic);
 		expect(dynamic?.promotion.eligible).toBe(false);
 		expect(mismatch?.promotion.status).toBe(RealRepositoryProofStatus.SourceStatic);
 		expect(vue?.promotion.status).toBe(RealRepositoryProofStatus.SourceStatic);

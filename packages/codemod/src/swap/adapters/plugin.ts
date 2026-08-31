@@ -22,6 +22,7 @@ import stitches from "./stitches.adapter.ts";
 import style9 from "./style9.adapter.ts";
 import { createStyleXAdapter } from "./stylex.adapter.ts";
 import styledComponents from "./styled-components.adapter.ts";
+import { createTailwindAdapter } from "./tailwind.adapter.ts";
 import treat from "./treat.adapter.ts";
 import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
@@ -50,6 +51,9 @@ export function createBuiltinAdapterPlugin(
 		mui,
 		nextYak,
 		panda,
+		moduleLoader === undefined
+			? createTailwindAdapter({ moduleLoader: null })
+			: createTailwindAdapter({ moduleLoader }),
 		jss,
 		stylex,
 		fela,

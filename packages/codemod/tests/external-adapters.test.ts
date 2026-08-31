@@ -38,6 +38,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			mui: "import { Box } from '@mui/material'; <Box sx={{ color: 'red' }} />",
 			mantine: "import { Box } from '@mantine/core'; <Box c='red' />",
 			tokenami: "import { css } from '@tokenami/css'; css({ '--color': 'red' })",
+			tailwind: "import 'tailwindcss'; <div className='flex p-4' />",
 			unocss: '<div className="flex items-center" />',
 		};
 		for (const adapter of createBuiltinCodemodCatalog().adapters) {
@@ -159,6 +160,59 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.code).toContain('global({ body: { color: "red" } })');
 		expect(result.code).not.toContain("adapter capability mismatch");
+	});
+
+	test("projects Tailwind classes through the semantic boundary in both directions", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const toPandwind = runAdapterMigration(
+			'import "tailwindcss";\nexport const Card = () => <div className="flex p-4" />;',
+			{
+				from: "tailwind",
+				to: "pandwind",
+				file: "Card.tsx",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			},
+		);
+		expect(toPandwind.converted).toBe(1);
+		expect(toPandwind.skipped).toBe(0);
+		expect(toPandwind.residuals).toEqual([]);
+		expect(toPandwind.code).toContain("css.class");
+		expect(toPandwind.code).toContain("className={");
+
+		const toTailwind = runAdapterMigration(
+			'import { createCss } from "pandwind/css";\n' +
+				"const css = createCss();\n" +
+				'export const card = css.class({ display: "flex", padding: "1rem" });',
+			{
+				from: "pandwind",
+				to: "tailwind",
+				file: "Card.tsx",
+				mode: "safe",
+				adapterRegistry: catalog.registry,
+			},
+		);
+		expect(toTailwind.converted).toBe(1);
+		expect(toTailwind.skipped).toBe(0);
+		expect(toTailwind.residuals).toEqual([]);
+		expect(toTailwind.code).toContain("[display:flex] [padding:1rem]");
+	});
+
+	test("keeps an unknown Tailwind utility source-preserving", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const result = runAdapterMigration('<div className="project-only-utility" />', {
+			from: "tailwind",
+			to: "pandwind",
+			file: "Card.tsx",
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "unknown-utility" })]),
+		);
+		expect(result.code).toContain("project-only-utility");
 	});
 
 	test("detects Emotion automatic JSX css props from project configuration", () => {

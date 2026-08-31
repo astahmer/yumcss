@@ -10,6 +10,7 @@ import {
 	asStyleDialect,
 	createStyleSystem,
 	createStyleSystemRegistry,
+	type StyleSystemAdapter,
 	type StyleSystemRegistry,
 } from "./style-systems.ts";
 import {
@@ -17,6 +18,8 @@ import {
 	type AdapterCapabilityMatrix,
 	type AdapterCapabilityMatrixEntry,
 } from "./capabilities.ts";
+import { PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
+import { CodemodAdapterId } from "./identifiers.ts";
 
 /** Versioned package contract for third-party adapter discovery. */
 export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
@@ -139,13 +142,39 @@ export function createStyleAdapterRegistry(
 				})),
 			),
 		toStyleSystemRegistry() {
-			return createStyleSystemRegistry(
-				registry.adapters.map((adapter) =>
-					createStyleSystem(adapter.id, [
-						asStyleDialect(adapter, { system: adapter.id, dialect: "css", role: "both" }),
-					]),
-				),
-			);
+			const adapters = registry.adapters;
+			const panda = adapters.find((adapter) => adapter.id === CodemodAdapterId.Panda);
+			const pandwind = adapters.find((adapter) => adapter.id === CodemodAdapterId.Pandwind);
+			const systems: StyleSystemAdapter[] = [
+				createStyleSystem(CodemodAdapterId.Panda, [
+					...(panda === undefined
+						? []
+						: [asStyleDialect(panda, { system: CodemodAdapterId.Panda, dialect: panda.id })]),
+					...PANDA_STYLE_SYSTEM.dialects,
+				]),
+				createStyleSystem(CodemodAdapterId.Pandwind, [
+					...(pandwind === undefined
+						? []
+						: [
+								asStyleDialect(pandwind, {
+									system: CodemodAdapterId.Pandwind,
+									dialect: pandwind.id,
+								}),
+							]),
+					...PANDWIND_STYLE_SYSTEM.dialects,
+				]),
+				...adapters
+					.filter(
+						(adapter) =>
+							adapter.id !== CodemodAdapterId.Panda && adapter.id !== CodemodAdapterId.Pandwind,
+					)
+					.map((adapter) =>
+						createStyleSystem(adapter.id, [
+							asStyleDialect(adapter, { system: adapter.id, dialect: adapter.id, role: "both" }),
+						]),
+					),
+			];
+			return createStyleSystemRegistry(systems);
 		},
 		async discover(specifiers, options = {}) {
 			const load = options.load ?? ((specifier: string) => import(/* @vite-ignore */ specifier));

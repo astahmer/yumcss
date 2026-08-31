@@ -183,6 +183,9 @@ const card = css({
 	"--padding": "1rem",
 });`,
 	[CodemodAdapterId.UnoCSS]: `<div class="text-red-500 p-4" />`,
+	[CodemodAdapterId.Tailwind]: `import "tailwindcss";
+
+<div className="text-white bg-black p-4" />`,
 	[CodemodAdapterId.ReactNative]: `import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({

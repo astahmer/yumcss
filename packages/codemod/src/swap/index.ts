@@ -179,6 +179,7 @@ export type { ExternalAdapterId } from "./external-adapters.ts";
 export { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 export { createTokenamiAdapter } from "./adapters/tokenami.adapter.ts";
 export { createUnoCssAdapter, createUnoCssResolverFromCss } from "./adapters/unocss.adapter.ts";
+export { createTailwindAdapter } from "./adapters/tailwind.adapter.ts";
 export { createChakraAdapter } from "./adapters/chakra.adapter.ts";
 export { NODE_PROJECT_MODULE_LOADER, NodeProjectModuleLoader } from "./project-module-loader.ts";
 export type { ProjectModuleLoader } from "./project-module-loader.ts";
