@@ -20,10 +20,31 @@ host does not provide. Therefore every semantic must end in exactly one of:
 No route may silently discard semantics, and no route may expose the obsolete
 generic `adapter capability mismatch` diagnosis.
 
+## Completion boundary
+
+The complete matrix is the union of every adapter that can be selected as a
+source or target. The current repository has two registries that must be
+converged before this plan can be called complete:
+
+- the versioned `StyleAdapterRegistry`, currently containing 24 modern
+  adapters; and
+- the legacy `SwapIR` registry, containing the `tw`, `css`, `design`, and
+  `dss` source dialects plus the Panda, Tailwind, StyleX, and Pandwind target
+  lanes.
+
+The 3,456-case result currently proves only the first registry (24 × 24 × 2 ×
+3). The flat matrix proves its own smaller lane, but it is not yet a proof of
+the complete pivot surface. Completion requires Panda, Tailwind, and the core
+Pandwind dialects to be registered through the same source/target adapter
+contract. Their cheap `SwapIR` parser/emitter implementations may remain as
+internal projections; callers and proof runners must see one registry and one
+ordered route model.
+
 ## Current evidence and known gap
 
-The current registry and route matrix exercise all registered pairs and retain
-the flat `SwapIR` fast path. Named style maps and function-valued styles now
+The current versioned registry and route matrix exercise all of its registered
+pairs and retain the flat `SwapIR` fast path. They do not yet include every
+legacy Panda/Tailwind/core dialect endpoint in the same registry. Named style maps and function-valued styles now
 have explicit representation contracts. The route proof is no longer only a
 single happy fixture: the shared proof corpus exercises happy, edge, and
 malformed inputs in safe and partial modes.
@@ -188,6 +209,11 @@ target-owned ports and prove them, rather than weakening the capability gate.
 - Make capability and representation IDs typed and registry-owned.
 - Add substitution tests proving that a fake source/target/lowering/host can be
   registered without editing the orchestrator.
+- Promote Panda, Tailwind, and the core Pandwind dialects from the legacy
+  `SwapIR` registry into this same adapter registry. Keep `SwapIR` behind a
+  source/target compatibility projection so the fast path remains cheap.
+- Derive CLI, playground, conformance, and differential route lists from the
+  unified registry; no proof may maintain a second hardcoded adapter list.
 
 ### 2. Complete semantic lowering
 
@@ -223,8 +249,8 @@ or residual-producing, preserve provenance, and be independently unit tested.
 
 ### 4. Make every direction testable
 
-For every registered pair `X × Y`, test both directions and both capability
-modes:
+For every unified registered pair `X × Y`, test both directions and both
+capability modes:
 
 - unit: parser, semantic normalization, lowering, emitter, validator, and
   residual edge cases;
@@ -236,6 +262,12 @@ modes:
 - streaming/RSC where the host supports it;
 - canonical CSS and size comparison;
 - structured residual and lossiness assertions.
+
+The matrix must include legacy `SwapIR` endpoints after promotion, not merely
+the modern external-adapter subset. Every route must have a source fixture and
+a target fixture; source-only or target-only adapters are incomplete unless
+their declared role explicitly excludes that direction and the exclusion is
+represented as a typed contract result.
 
 A route that cannot be fully represented is still a passing safety outcome only
 when its residual is explicit, source-preserving, and actionable. A green route
