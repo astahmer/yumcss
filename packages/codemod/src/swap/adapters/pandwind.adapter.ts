@@ -1131,10 +1131,12 @@ export default defineCodemodAdapter({
 			return rule.kind === "font-face" || rule.children.some(containsFontFace);
 		});
 		if (hasFontFaces) {
-			const withoutFontFaces = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
-			...rule,
-			children: rule.children.filter((child) => child.kind !== "font-face").map(withoutFontFaces),
-		});
+			const withoutFontFaces = (
+				rule: StyleProgram["rules"][number],
+			): StyleProgram["rules"][number] => ({
+				...rule,
+				children: rule.children.filter((child) => child.kind !== "font-face").map(withoutFontFaces),
+			});
 			const styleProgram = {
 				...program,
 				rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),

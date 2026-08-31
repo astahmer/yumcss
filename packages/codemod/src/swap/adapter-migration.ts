@@ -564,7 +564,9 @@ function runAdapterMigrationInternal(
 				? report
 				: {
 						...report,
-						blockers: report.blockers.filter((issue) => !resolvedCapabilities.has(issue.capability)),
+						blockers: report.blockers.filter(
+							(issue) => !resolvedCapabilities.has(issue.capability),
+						),
 						convertible: report.blockers.every(
 							(issue) => resolvedCapabilities.has(issue.capability) === true,
 						),

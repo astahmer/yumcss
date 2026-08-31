@@ -153,7 +153,12 @@ export function requiredAdapterCapabilities(
 		requirements.push({ capability, detail });
 	};
 
-	if (program.declarations.length > 0) add("declarations", "style declarations");
+	const hasDeclarations = program.rules.some(function containsDeclarations(
+		rule: StyleProgram["rules"][number],
+	): boolean {
+		return rule.declarations.length > 0 || rule.children.some(containsDeclarations);
+	});
+	if (program.declarations.length > 0 || hasDeclarations) add("declarations", "style declarations");
 	if (program.source?.subject !== undefined)
 		add("components", `component subject: ${program.source.subject}`);
 	for (const rule of program.rules) {

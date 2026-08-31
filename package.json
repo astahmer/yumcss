@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "pnpm -r --if-present build",
 		"dev": "pnpm --filter example dev",
-		"typecheck": "pnpm -r --aggregate-output run typecheck",
+		"typecheck": "pnpm -r --workspace-concurrency=1 --if-present --stream run typecheck",
 		"test": "pnpm --filter pandwind test && pnpm --filter pandwind test:types",
 		"test:all": "pnpm -r --workspace-concurrency=1 --if-present test",
 		"test:coverage": "pnpm --filter pandwind test:coverage && pnpm --filter pandwind-codemod test:coverage && pnpm --filter pandwind-analyze test:coverage",

@@ -26,9 +26,15 @@ function semanticFor(adapter: string): AdapterParseContext["semantic"] | undefin
 
 function edgeSource(adapter: string, source: string): { source: string; expression?: string } {
 	if (source.includes("'red'"))
-		return { source: source.replaceAll("'red'", "theme.foreground"), expression: "theme.foreground" };
+		return {
+			source: source.replaceAll("'red'", "theme.foreground"),
+			expression: "theme.foreground",
+		};
 	if (source.includes('"red"'))
-		return { source: source.replaceAll('"red"', "theme.foreground"), expression: "theme.foreground" };
+		return {
+			source: source.replaceAll('"red"', "theme.foreground"),
+			expression: "theme.foreground",
+		};
 	if (source.includes("color: red"))
 		return {
 			source: source.replaceAll("color: red", "color: ${theme.foreground}"),
@@ -40,7 +46,7 @@ function edgeSource(adapter: string, source: string): { source: string; expressi
 			expression: "theme.foreground",
 		};
 	if (adapter === CodemodAdapterId.UnoCSS)
-		return { source: '<div className={theme.foreground} />', expression: "theme.foreground" };
+		return { source: "<div className={theme.foreground} />", expression: "theme.foreground" };
 	return { source: `${source}\nconst broken =`, expression: undefined };
 }
 
@@ -72,8 +78,7 @@ describe("adapter edge and non-happy matrix", () => {
 					unchanged || converted || explicitEvidence,
 					`${sourceId} -> ${target.id} silently discarded an edge case`,
 				).toBe(true);
-				if (result.skipped > 0)
-					expect(result.residuals.length).toBeGreaterThan(0);
+				if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
 				if (result.code.includes("pandwind:migrate-skip")) {
 					expect(result.code).toMatch(
 						/(capability-blocked|parse-residual|lowering-residual|host-rewrite-required|configuration-residual)/,
@@ -97,8 +102,8 @@ describe("adapter edge and non-happy matrix", () => {
 				expect(result.code.length).toBeGreaterThan(0);
 				expect(
 					result.code.includes(`unfinished ${sourceId}`) ||
-					result.residuals.length > 0 ||
-					result.skipped > 0,
+						result.residuals.length > 0 ||
+						result.skipped > 0,
 					`${sourceId} -> ${target.id} lost malformed source`,
 				).toBe(true);
 			}
