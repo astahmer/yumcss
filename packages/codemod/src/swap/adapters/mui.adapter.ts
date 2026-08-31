@@ -311,23 +311,23 @@ export default defineCodemodAdapter({
 				"MUI sx styles require a host component prop; no standalone sx() API exists",
 			hostRepresentation: StyleHostRepresentationKind.Component,
 			resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
-				(framework === undefined || framework === BuiltinHostFramework.React) &&
-				program.source?.subject === undefined
-					? (() => {
-							if (!hasHostContext)
-								return isStaticProgram(program) ? StyleHostRepresentationKind.Class : undefined;
-							const host = findHostUse(source ?? "", binding);
-							const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
-							if (tag === undefined) return undefined;
-							return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
-								? StyleHostRepresentationKind.StyleProp
-								: isStaticProgram(program)
-									? StyleHostRepresentationKind.Class
-									: undefined;
-						})()
-					: framework === undefined || framework === BuiltinHostFramework.React
-						? StyleHostRepresentationKind.Component
-						: undefined,
+				program.source?.subject === undefined && !hasHostContext && isStaticProgram(program)
+					? StyleHostRepresentationKind.Class
+					: (framework === undefined || framework === BuiltinHostFramework.React) &&
+						  program.source?.subject === undefined
+						? (() => {
+								const host = findHostUse(source ?? "", binding);
+								const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
+								if (tag === undefined) return undefined;
+								return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
+									? StyleHostRepresentationKind.StyleProp
+									: isStaticProgram(program)
+										? StyleHostRepresentationKind.Class
+										: undefined;
+							})()
+						: framework === undefined || framework === BuiltinHostFramework.React
+							? StyleHostRepresentationKind.Component
+							: undefined,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			resolveRepresentation: ({ program, hostRepresentation }) =>
 				hostRepresentation === StyleHostRepresentationKind.Class && isStaticProgram(program)
