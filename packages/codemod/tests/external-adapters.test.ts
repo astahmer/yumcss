@@ -692,6 +692,49 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('from "pandwind/css"');
 	});
 
+	test("projects a Pandwind class binding through StyleX props on a React host", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box className={card} />;",
+			{ from: "pandwind", to: "stylex", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('stylex.create({ style: { color: "red" } }).style');
+		expect(result.code).toContain("<Box {...stylex.props(card)} />");
+		expect(result.code).not.toContain("className={card}");
+		expect(result.code).not.toContain('from "pandwind/css"');
+	});
+
+	test("reports StyleX host projection when a non-React framework is explicit", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <Box class={card} />;",
+			{
+				from: "pandwind",
+				to: "stylex",
+				file: "Card.tsx",
+				mode: "safe",
+				semantic: { source: { framework: "solid" } },
+			},
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: "capability",
+					hint: expect.stringContaining("framework-semantics: solid"),
+				}),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain('from "pandwind/css"');
+	});
+
 	test("lowers inline dynamic tagged templates through the host carrier", () => {
 		const result = runAdapterMigration(
 			'import { css } from "@linaria/core";\n' +

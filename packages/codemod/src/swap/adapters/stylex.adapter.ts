@@ -9,7 +9,9 @@ import {
 	CodemodPatternId,
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
+	StyleHostRepresentationKind,
 } from "../identifiers.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 
 function generatedCssBinding(source: string): string {
 	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+pandwindCss\b/.test(source))
@@ -722,6 +724,50 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 		sourceObjectOptions: (source, context) =>
 			sourceObjectOptions(source, context, options.crossModuleResolver),
 		migration: {
+			targetPolicy: {
+				handlesHostRewrites: true,
+				handlesFrameworkSemantics: true,
+				hostRepresentation: StyleHostRepresentationKind.Component,
+				resolveHostRepresentation: ({ program, framework }) => {
+					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;
+					return program.source?.subject === undefined
+						? StyleHostRepresentationKind.StyleProp
+						: StyleHostRepresentationKind.Component;
+				},
+				rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
+					if (representation !== StyleHostRepresentationKind.StyleProp)
+						return { code, residuals: [] };
+					if (framework !== undefined && framework !== BuiltinHostFramework.React)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: emittedExpression,
+									hint: `StyleX host projection requires ${BuiltinHostFramework.React}`,
+								},
+							],
+						};
+					const expression = binding ?? emittedExpression;
+					const escaped = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+					const pattern = new RegExp(`(\\s)className\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
+					if (!pattern.test(code))
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: expression,
+									hint: "StyleX host projection requires an exact className binding",
+								},
+							],
+						};
+					return {
+						code: code.replace(pattern, `$1{...stylex.props(${expression})}`),
+						residuals: [],
+					};
+				},
+			},
 			prepareDynamic: ({ source, targetId, binding }) => ({
 				handled:
 					targetId === CodemodAdapterId.Pandwind &&

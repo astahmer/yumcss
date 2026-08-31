@@ -1,0 +1,1 @@
+css.class({ color: theme.foreground })
