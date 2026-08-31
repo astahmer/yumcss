@@ -5,7 +5,8 @@
  */
 import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { collectFiles, loadTwConfig } from "../analyze.ts";
+import { loadTwConfig } from "../analyze.ts";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import { runCli } from "../cli.ts";
 import { createCssBudgetService } from "../analysis-service.ts";
 import { examplePreset } from "pandwind/preset/example-preset";
@@ -39,9 +40,19 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		repoRoot ?? process.env.INSPECTOR_ROOT ?? resolve(import.meta.dirname, "../../../..");
 	const APP = process.env.INSPECTOR_APP ?? DEFAULT_APP;
 	const isDogfoodApp = APP === DEFAULT_APP;
+	const sourceWorkspace = createSourceWorkspace();
 	const cssBudgetService = createCssBudgetService();
 	const cssExtraction = createCssExtractionService({ matchers: [], preset: examplePreset });
 	const appSrc = (p: string): string => resolve(root, APP, "src", p);
+	const readSourceArtifact = (file: string): string | undefined =>
+		sourceWorkspace.read([file])[0]?.source;
+	const appSourceFiles = sourceWorkspace
+		.collect(["**/*"], root)
+		.filter(
+			({ path: file }) =>
+				file.includes(`${APP}/src`) && SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
+		)
+		.map(({ path: file, source: content }) => ({ file, content }));
 
 	// --- coverage: the CLI is the single interface to fold analysis.
 	const summaryJson = await runCli([
@@ -76,19 +87,19 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	let themeCss = "";
 	try {
-		themeCss = readFileSync(appSrc("pandwind-theme.css"), "utf8");
+		themeCss = readSourceArtifact(appSrc("pandwind-theme.css")) ?? "";
 	} catch {
 		themeCss = "";
 	}
 	const budgetPromise = cssBudgetService.measure({
-		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
+		files: appSourceFiles.map(({ file }) => file),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
 		base: appSrc("."),
 	});
 	const budget = await budgetPromise;
 	const shape = await cssBudgetService.sheetShape({
-		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
+		files: appSourceFiles.map(({ file }) => file),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
 		base: appSrc("."),
@@ -96,7 +107,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	// Per-class rule drill-down data (capped: the UI searches, not paginates).
 	const drills = await cssBudgetService.classRules({
-		files: collectFiles(["**/*.{ts,tsx}"], root).filter((f) => f.includes(`${APP}/src`)),
+		files: appSourceFiles.map(({ file }) => file),
 		twEntry: appSrc("tw.ts"),
 		themeCss: themeCss || undefined,
 		base: appSrc("."),
@@ -123,11 +134,11 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	);
 
 	// --- design system: generated artifacts + preset tokens.
-	const utilities = parseUtilityUnions(readFileSync(appSrc("types.d.ts"), "utf8"));
+	const utilities = parseUtilityUnions(readSourceArtifact(appSrc("types.d.ts")) ?? "");
 	const config = loadTwConfig(appSrc("tw.ts"));
 	let bridgeSource = "";
 	try {
-		bridgeSource = readFileSync(appSrc("bridge.ts"), "utf8");
+		bridgeSource = readSourceArtifact(appSrc("bridge.ts")) ?? "";
 	} catch {
 		bridgeSource = "";
 	}
@@ -172,9 +183,6 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	const mergedThemeVars = [...crawledVars.values()];
 
 	// --- usage analytics over the app's styling call sites.
-	const appSourceFiles = collectFiles(["**/*.{ts,tsx}"], root)
-		.filter((f) => f.includes(`${APP}/src`))
-		.map((f) => ({ file: f, content: readFileSync(f, "utf8") }));
 	const cssReport = collectCssReport(appSourceFiles);
 	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 	const cssSourcesByStart = new Map(cssSources.map((site) => [`${site.file}:${site.start}`, site]));

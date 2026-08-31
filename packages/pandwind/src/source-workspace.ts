@@ -49,6 +49,9 @@ function expandPattern(pattern: string, root: string): readonly string[] {
 		.map((entry) => resolve(root, entry));
 }
 
+const isIgnoredPath = (file: string): boolean =>
+	file.split(/[\\/]/).some((segment) => segment === "node_modules" || segment === ".git");
+
 class NodeSourceWorkspace implements SourceWorkspace {
 	readonly schema = SOURCE_WORKSPACE_SCHEMA;
 
@@ -56,6 +59,7 @@ class NodeSourceWorkspace implements SourceWorkspace {
 		const files = new Set<string>();
 		for (const pattern of patterns)
 			for (const file of expandPattern(pattern, root)) {
+				if (isIgnoredPath(file)) continue;
 				try {
 					if (statSync(file).isFile() && SOURCE_SCANNER_SERVICE.isSupportedFile(file))
 						files.add(file);

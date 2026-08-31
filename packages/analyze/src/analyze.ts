@@ -17,9 +17,9 @@
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
-import { globSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { createSourceWorkspace, type SourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
@@ -429,7 +429,8 @@ function lineOf(lineStarts: Array<number>, offset: number): number {
 
 /** Load a generated tw module's config from disk. */
 export function loadTwConfig(twPath: string): TwConfig {
-	const config = extractTwConfig(readFileSync(twPath, "utf8"));
+	const source = createSourceWorkspace().read([twPath])[0]?.source;
+	const config = source === undefined ? undefined : extractTwConfig(source);
 	if (config === undefined) {
 		throw new Error(`pandwind analyze: could not extract tw config from ${twPath}`);
 	}
@@ -438,15 +439,18 @@ export function loadTwConfig(twPath: string): TwConfig {
 
 /** Collect unique .ts/.tsx files matching globs under root (no node_modules). */
 export function collectFiles(patterns: Array<string>, root: string): Array<string> {
-	const files = new Set<string>();
-	for (const pattern of patterns) {
-		const matches = globSync(pattern, { cwd: root }) as unknown[];
-		for (const match of matches) {
-			if (typeof match !== "string") continue;
-			if (match.includes("node_modules")) continue;
-			if (!SOURCE_SCANNER_SERVICE.isScriptFile(match)) continue;
-			files.add(resolve(root, match));
-		}
-	}
-	return [...files].toSorted();
+	return [...createSourceWorkspace().files(patterns, root)].filter((file) =>
+		SOURCE_SCANNER_SERVICE.isTypeScriptFile(file),
+	);
+}
+
+/** Read source files through the shared document workspace, preserving scan metadata. */
+export function collectSourceFiles(
+	patterns: readonly string[],
+	root: string,
+	workspace: SourceWorkspace = createSourceWorkspace(),
+): readonly { file: string; content: string }[] {
+	return workspace.collect(patterns, root)
+		.filter(({ scan }) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(scan.document.file))
+		.map(({ path: file, source: content }) => ({ file, content }));
 }

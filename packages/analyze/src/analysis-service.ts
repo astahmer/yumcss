@@ -1,6 +1,5 @@
 import {
 	analyzeSource,
-	collectFiles,
 	loadTwConfig,
 	summarize,
 	formatReport,
@@ -8,6 +7,8 @@ import {
 	type FileFoldStats,
 	type FoldSummary,
 } from "./analyze.ts";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import type { CssResidualCollector } from "./css-residual-collector.ts";
 import { CssBudgetEvaluator } from "./css-budget-evaluator.ts";
 import type { CssBudget } from "./css-budget-contracts.ts";
@@ -134,16 +135,28 @@ class CssBudgetService implements CssBudgetPort {
 
 export interface AnalysisWorkspacePort {
 	loadConfig(twPath: string): ReturnType<typeof loadTwConfig>;
-	collectFiles(patterns: Array<string>, root: string): Array<string>;
+	collectFiles(patterns: readonly string[], root: string): readonly string[];
+	readFiles(paths: readonly string[]): readonly { file: string; content: string }[];
 }
 
 class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
+	private readonly sourceWorkspace = createSourceWorkspace();
+
 	loadConfig(twPath: string): ReturnType<typeof loadTwConfig> {
 		return loadTwConfig(twPath);
 	}
 
-	collectFiles(patterns: Array<string>, root: string): Array<string> {
-		return collectFiles(patterns, root);
+	collectFiles(patterns: readonly string[], root: string): readonly string[] {
+		return this.sourceWorkspace
+			.files(patterns, root)
+			.filter((file) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(file));
+	}
+
+	readFiles(paths: readonly string[]): readonly { file: string; content: string }[] {
+		return this.sourceWorkspace.read(paths).map(({ path: file, source: content }) => ({
+			file,
+			content,
+		}));
 	}
 }
 

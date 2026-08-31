@@ -162,10 +162,10 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		: undefined;
 	const files = workspace
 		.collectFiles(patterns, args.root)
-		.filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
-	const sourceFiles = files.map((file) => ({
-		file: file.replace(args.root + "/", ""),
-		content: readFileSync(file, "utf8"),
+		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
+	const sourceFiles = workspace.readFiles(files).map(({ file, content }) => ({
+		file: file.startsWith(`${args.root}/`) ? file.slice(args.root.length + 1) : file,
+		content,
 	}));
 
 	const stats = sourceFiles.map(({ file, content }) =>
@@ -236,7 +236,7 @@ async function main(): Promise<void> {
 		const workspace = createAnalysisWorkspace();
 		const files = workspace
 			.collectFiles(args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"], args.root)
-			.filter((f) => SOURCE_SCANNER_SERVICE.isScriptFile(f));
+			.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
 		const measured = await computeCssBudget(args, files);
 		const caps =
 			args.budgetsPath !== undefined ? parseBudgets(readFileSync(args.budgetsPath!, "utf8")) : {};

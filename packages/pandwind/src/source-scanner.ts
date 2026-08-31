@@ -102,6 +102,7 @@ export interface SourceScannerRegistry {
 	languageForFile(file: string): SourceLanguage;
 	isSupportedFile(file: string): boolean;
 	isScriptFile(file: string): boolean;
+	isTypeScriptFile(file: string): boolean;
 	detect(document: SourceDocument): SourceLanguageAdapter | undefined;
 	scan(document: SourceDocument): SourceScanResult;
 }
@@ -110,6 +111,7 @@ export interface SourceLanguageClassifier {
 	languageForFile(file: string): SourceLanguage;
 	isSupportedFile(file: string): boolean;
 	isScriptFile(file: string): boolean;
+	isTypeScriptFile(file: string): boolean;
 }
 
 /** Shared scanner facade consumed by build, analyze, codemod, and collection.
@@ -120,6 +122,7 @@ export interface SourceScannerService {
 	languageForFile(file: string): SourceLanguage;
 	isSupportedFile(file: string): boolean;
 	isScriptFile(file: string): boolean;
+	isTypeScriptFile(file: string): boolean;
 	scan(document: SourceDocument): SourceScanResult;
 	parse(document: SourceDocument): ParseResult;
 }
@@ -163,6 +166,10 @@ export function isSupportedSourceFile(file: string): boolean {
 
 export function isScriptSourceFile(file: string): boolean {
 	return SOURCE_LANGUAGE_CLASSIFIER.isScriptFile(file);
+}
+
+export function isTypeScriptSourceFile(file: string): boolean {
+	return SOURCE_LANGUAGE_CLASSIFIER.isTypeScriptFile(file);
 }
 
 const isOxcLanguage = (language: SourceLanguage): boolean =>
@@ -441,6 +448,10 @@ export function createSourceLanguageClassifier(
 		isScriptFile(file) {
 			return isOxcLanguage(this.languageForFile(file));
 		},
+		isTypeScriptFile(file) {
+			const language = this.languageForFile(file);
+			return language === "typescript" || language === "tsx";
+		},
 	};
 }
 
@@ -486,6 +497,7 @@ export function createSourceScannerRegistry(
 		languageForFile: (file) => classifier.languageForFile(file),
 		isSupportedFile: (file) => classifier.isSupportedFile(file),
 		isScriptFile: (file) => classifier.isScriptFile(file),
+		isTypeScriptFile: (file) => classifier.isTypeScriptFile(file),
 		detect: (document) => registry.adapters.find((adapter) => adapter.detect(document)),
 		scan(document) {
 			const adapter = registry.detect(document);
@@ -514,6 +526,7 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 	languageForFile: (file) => SOURCE_SCANNER.languageForFile(file),
 	isSupportedFile: (file) => SOURCE_SCANNER.isSupportedFile(file),
 	isScriptFile: (file) => SOURCE_SCANNER.isScriptFile(file),
+	isTypeScriptFile: (file) => SOURCE_SCANNER.isTypeScriptFile(file),
 	scan: (document) => SOURCE_SCANNER.scan(document),
 	parse: (document) =>
 		parseSourceProgram({
