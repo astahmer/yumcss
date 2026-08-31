@@ -125,8 +125,9 @@ never be silent.
 The binary-level matrix in
 `packages/codemod/tests/adapter-cli-e2e.test.ts` spawns the real CLI for every
 registered adapter in both `adapter → Pandwind` and `Pandwind → adapter`
-directions, writes a temporary source file, parses the JSON report, and checks
-that source-preserving skips carry typed residual markers. Run it alone with:
+directions (104 cases), writes temporary source files, parses JSON reports, and
+checks that source-preserving skips carry typed residual markers. Run it alone
+with:
 
 ```sh
 pnpm --filter pandwind-codemod test:e2e

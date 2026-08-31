@@ -134,9 +134,10 @@ matrix:
   target capability; that negotiation remains an ordered-route concern.
 - 4,056 Cartesian route cases cover every ordered source/target pair, both
   capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
-- 96 CLI end-to-end cases spawn the real command, write temporary files, parse
-  JSON reports, and cover every adapter in both `adapter → Pandwind` and
-  `Pandwind → adapter` directions, including edge inputs.
+- 104 per-adapter CLI end-to-end cases spawn the real command, write temporary
+  files, parse JSON reports, and cover every adapter in both `adapter →
+  Pandwind` and `Pandwind → adapter` directions, including edge inputs. A
+  separate 676-case CLI matrix covers every ordered happy source/target pair.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
   both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
   route cases as the test suite.
