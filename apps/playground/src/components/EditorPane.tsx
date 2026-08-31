@@ -1,4 +1,5 @@
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
+import { EDITOR_TYPE_LIBRARIES } from "../lib/editor-types.ts";
 import { Kbd, Pane } from "./ui.tsx";
 
 /**
@@ -35,6 +36,30 @@ function defineTheme(monaco: Monaco): void {
 	});
 }
 
+/** Give migration snippets the same generated vocabulary as the real app. */
+function configureTypeScript(monaco: Monaco): void {
+	const typescript = monaco.languages.typescript;
+	const defaults = typescript.typescriptDefaults;
+	defaults.setCompilerOptions({
+		allowNonTsExtensions: true,
+		allowJs: true,
+		checkJs: false,
+		jsx: typescript.JsxEmit.ReactJSX,
+		module: typescript.ModuleKind.ESNext,
+		moduleResolution: typescript.ModuleResolutionKind.NodeJs,
+		target: typescript.ScriptTarget.ES2022,
+		noEmit: true,
+		strict: true,
+	});
+	defaults.setDiagnosticsOptions({
+		noSemanticValidation: false,
+		noSyntaxValidation: false,
+	});
+	for (const library of EDITOR_TYPE_LIBRARIES) {
+		defaults.addExtraLib(library.content, library.filePath);
+	}
+}
+
 /** Quiet stand-in while the Monaco chunk loads: a single breathing dot. */
 function EditorBooting() {
 	return (
@@ -68,7 +93,11 @@ export function EditorPane(props: {
 					height="100%"
 					defaultLanguage="typescript"
 					theme="pandwind"
-					beforeMount={defineTheme}
+					path="file:///pandwind/playground/Example.tsx"
+					beforeMount={(monaco) => {
+						defineTheme(monaco);
+						configureTypeScript(monaco);
+					}}
 					value={props.code}
 					onChange={(value) => props.onChange(value ?? "")}
 					options={{

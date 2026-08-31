@@ -51,10 +51,10 @@ export const EXAMPLES: Array<ExampleDef> = [
 		title: "Responsive",
 		blurb: "nested variant stacks, compiled statically",
 		code: `tw({
-	display: "flex",
+	flex: true,
 	gap: "2",
 	md: {
-		flexDirection: "col",
+		flex: "col",
 		gap: "6",
 	},
 })`,

@@ -8,6 +8,10 @@ Given("I open the playground migration lab", async ({ page }) => {
 	await expect(page.getByRole("heading", { name: "Migration lab" })).toBeVisible();
 });
 
+Given("I open the playground route {string}", async ({ page }, route: string) => {
+	await page.goto(route);
+});
+
 When("I choose {string} from {string}", async ({ page }, option: string, label: string) => {
 	await page.getByRole("combobox", { name: label }).selectOption({ label: option });
 });
@@ -17,7 +21,13 @@ When("I click the {string} button", async ({ page }, name: string) => {
 });
 
 Then("the page heading is {string}", async ({ page }, name: string) => {
-	await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+	await expect(page.locator("h1").filter({ hasText: name })).toBeVisible();
+});
+
+Then("the editor has no TypeScript error markers", async ({ page }) => {
+	await expect(page.locator(".monaco-editor")).toBeVisible();
+	await page.waitForTimeout(1000);
+	await expect(page.locator(".monaco-editor .squiggly-error")).toHaveCount(0);
 });
 
 Then("the {string} selector has value {string}", async ({ page }, label: string, value: string) => {

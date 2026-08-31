@@ -9,6 +9,7 @@ Feature: Playground migration lab
   @smoke
   Scenario: the default migration lane is visible
     Then the page heading is "Migration lab"
+    And the editor has no TypeScript error markers
     And the "from · source adapter" selector has value "styled-components"
     And the "to · target adapter" selector has value "pandwind"
     And the output pane for "Pandwind" is visible
