@@ -21,6 +21,8 @@ export interface HostComponentRewriteResult {
 	readonly code: string;
 	readonly changed: boolean;
 	readonly needsCx: boolean;
+	/** Import statements required by a framework-specific declaration projection. */
+	readonly imports?: readonly string[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
@@ -297,6 +299,37 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 	return { code, changed: code !== request.source, needsCx: false, residuals: [] };
 }
 
+function rewriteVueDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
+	const assignment = `${request.binding} = ${request.classExpression};`;
+	const start = request.source.indexOf(assignment);
+	if (start === -1)
+		return {
+			code: request.source,
+			changed: false,
+			needsCx: false,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: request.binding,
+					hint: `converted ${request.binding} declaration could not be wrapped`,
+				},
+			],
+		};
+	const declaration =
+		`${request.binding} = defineComponent((props, { attrs, slots }) => () => ` +
+		`h(${JSON.stringify(request.tag)}, { ...attrs, ...props, class: [${request.classExpression}, attrs.class] }, slots.default?.()));`;
+	return {
+		code:
+			request.source.slice(0, start) +
+			declaration +
+			request.source.slice(start + assignment.length),
+		changed: true,
+		needsCx: false,
+		imports: ['import { defineComponent, h } from "vue";'],
+		residuals: [],
+	};
+}
+
 function rewriteStandaloneJsx(
 	request: StandaloneHostComponentRewriteRequest,
 ): HostComponentRewriteResult {
@@ -487,6 +520,7 @@ const rewriters: readonly HostComponentRewriter[] = [
 			.filter((adapter) => adapter.syntax === "template")
 			.map((adapter) => adapter.id),
 		rewrite: rewriteTemplate,
+		rewriteDeclaration: rewriteVueDeclaration,
 	},
 ];
 

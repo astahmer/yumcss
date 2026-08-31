@@ -1024,6 +1024,7 @@ function runAdapterMigrationInternal(
 		}
 		runtimeEdited = rewritten.code;
 		needsCx ||= rewritten.needsCx;
+		for (const statement of rewritten.imports ?? []) imports.add(statement);
 	}
 	for (const request of componentDeclarationRewrites.values()) {
 		const rewriter = getHostComponentRewriter(request.framework);
@@ -1038,6 +1039,7 @@ function runAdapterMigrationInternal(
 		}
 		runtimeEdited = rewritten.code;
 		needsCx ||= rewritten.needsCx;
+		for (const statement of rewritten.imports ?? []) imports.add(statement);
 	}
 	for (const request of standaloneComponentRewrites) {
 		const rewriter = getHostComponentRewriter(request.framework);

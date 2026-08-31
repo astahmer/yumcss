@@ -518,6 +518,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("vue-styled-components");
 	});
 
+	test("wraps an unused Vue styled subject for a static class target", () => {
+		const result = runAdapterMigration(
+			"<script setup>\n" +
+				'import styled from "vue-styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"</script>",
+			{ from: "vue-styled", to: "goober", file: "Card.vue", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { defineComponent, h } from "vue";');
+		expect(result.code).toContain("defineComponent");
+		expect(result.code).toContain('h("div"');
+		expect(result.code).not.toContain("vue-styled-components");
+	});
+
 	test("reports bare Pandwind style bindings because MUI sx is host-owned", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
