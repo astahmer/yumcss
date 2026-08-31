@@ -50,6 +50,15 @@ representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
 in safe and partial modes.
 
+Function-valued object calls now share `FunctionStyleCallParser` across the
+normal adapter-definition path and the generic extra-adapter runtime. The
+parser selects the balanced invocation rather than a nested parameter list,
+normalizes parenthesized arrow parameters, carries the adapter pattern into
+provenance, and validates emitted function carriers on the reverse parse. This
+closes the previous false skip/validation gap for Styled Components and
+Emotion function calls; template interpolations and target/framework runtime
+wrappers remain governed by their separate lowering contracts.
+
 The host projection contract now distinguishes the representation needed for a
 bound host from the representation needed by a standalone component export.
 The runner detects actual JSX/template use before applying a host rewrite, and

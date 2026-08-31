@@ -91,6 +91,16 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+Function-valued style calls use the same shared parser port as the generic
+adapter runtime. `FunctionStyleCallParser` balances the actual invocation,
+normalizes arrow parameters, preserves the styled subject and source pattern,
+and records function-valued declarations in the semantic program. Styled
+Components, Emotion, Solid, and Vue adapters provide only their call patterns
+and subject policy; they do not duplicate invocation parsing. This keeps a
+target-native function carrier or a framework wrapper selectable by the
+lowering/host ports, while malformed calls remain source-preserving parse
+residuals.
+
 The route catalog projects both modern adapters and the core nested dialects
 into one style-system registry. `panda/tw`, `panda/dss`, `panda/css`, and the
 corresponding `pandwind/*` dialects therefore use the same source/target route
