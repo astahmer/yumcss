@@ -656,6 +656,37 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "pandwind/css"');
 	});
 
+	test("imports a React Native style map into Pandwind without losing the style lookup", () => {
+		const result = runAdapterMigration(
+			'import { StyleSheet } from "react-native";\n' +
+				'const styles = StyleSheet.create({ card: { color: "red", padding: 2 } });\n' +
+				"export const App = () => <View style={styles.card} />;",
+			{ from: "react-native", to: "pandwind", file: "App.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain('css.group({ card: { color: "red", padding: 2 } })');
+		expect(result.code).toContain("styles.card");
+		expect(result.code).not.toContain("StyleSheet.create");
+	});
+
+	test("does not apply a React Native style-prop rewrite to ordinary React JSX", () => {
+		const result = runAdapterMigration(
+			'import React from "react";\n' +
+				'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <View className={card} />;",
+			{ from: "pandwind", to: "react-native", file: "App.tsx", mode: "safe" },
+		);
+		expect(
+			result.residuals.some((residual) => residual.hint.includes("framework-semantics: react")),
+		).toBe(true);
+		expect(result.code).toContain("className={card}");
+		expect(result.code).toContain('from "pandwind/css"');
+	});
+
 	test("lowers a static styled intrinsic into a Style9 class host", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
