@@ -21,8 +21,10 @@
 		"knip": "knip --reporter compact",
 		"knip:production": "knip --production --reporter compact",
 		"references:prepare": "tsx scripts/prepare-reference-repositories.ts",
+		"references:deps": "tsx scripts/prepare-reference-dependencies.ts",
 		"references:check": "tsx scripts/audit-real-repository-pins.ts",
 		"pivot:proof": "tsx scripts/pivot-proof.ts",
+		"pivot:proof:adapters": "tsx scripts/run-adapter-reference-proof.ts",
 		"pivot:proof:references": "tsx scripts/pivot-proof.ts --prepare",
 		"pivot:proof:installed": "tsx scripts/promote-goober-fixture.ts",
 		"check": "oxlint --fix --deny-warnings --report-unused-disable-directives && oxfmt",
@@ -50,6 +52,7 @@
 		"playwright-core": "1.61.1",
 		"pngjs": "7.0.0",
 		"tsx": "4.23.12",
-		"typescript": "7.0.2"
+		"typescript": "7.0.2",
+		"unocss": "66.8.1"
 	}
 }

@@ -241,6 +241,17 @@ smaller installed-adapter claims. A fixture claim proves the adapter contract
 in a real package/runtime, but does not imply that every application using that
 ecosystem has been migrated; site-level claims remain separately identified.
 
+The adapter-reference runner is the intermediate proof layer for all pinned
+ecosystems. It reads the exact source file from the detached checkout, resolves
+the source and target through the adapter registry, validates the semantic
+program, and compares it in Chromium. It reports `adapter-program` evidence
+separately from an installed application promotion. Official ecosystem
+configuration is loaded through the adapter's `ProjectModuleLoader`; reference
+projects receive only explicit, pinned packages via `pnpm references:deps`.
+This keeps project presets, CSS theme variables, and generated utilities in the
+official-loader path without vendoring or silently substituting Pandwind's
+fallback resolver.
+
 Knip intentionally ignores the `pandwind-codemod` dependency in the
 playground. The playground imports the browser-only public subpath
 `pandwind-codemod/swap/browser`; Knip cannot follow that workspace package

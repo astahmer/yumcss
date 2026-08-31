@@ -58,7 +58,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 029–033      | Complete for bundler adoption, pivot completion, and interface-first architecture                                                             | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/)                                          |
 | 035–036      | Complete                                                                                                                                      | This page and the repository's contributor guidance                                                                                    |
 | 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/)                                        |
-| 038          | Complete for the reproducible offline pivot gate, pinned-reference runner, and explicit per-adapter coverage evidence                         | [Testing](/contributing/testing/), [Shipped plans](/reference/shipped-plans/)                                                          |
+| 038–039      | Complete for the reproducible offline pivot gate, pinned-reference adapter browser proof, explicit per-adapter coverage evidence, and the final history/proof audit | [Testing](/contributing/testing/), [Architecture](/contributing/architecture/), [Shipped plans](/reference/shipped-plans/) |
 
 ## What remains intentionally bounded
 

@@ -1,0 +1,772 @@
+{
+  "schema": "pandwind.adapter-reference-proof/1",
+  "execution": "adapter-program",
+  "generatedAt": "deterministic",
+  "excluded": {
+    "panda": "Panda uses its project migration pipeline, not the file adapter route",
+    "react-native": "React Native requires the object-backend proof harness"
+  },
+  "references": [
+    {
+      "id": "emotion-fixture",
+      "repository": "https://github.com/emotion-js/emotion",
+      "commit": "b882bcba85132554992e4bd49e94c95939bbf810",
+      "path": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
+      "adapter": "emotion",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 16,
+        "targetBytes": 16,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "styled-components-benchmark",
+      "repository": "https://github.com/styled-components/styled-components",
+      "commit": "5f2a27ad31d4b17315a099c7f4ac8300c15f2cc2",
+      "path": "packages/benchmarks/src/implementations/styled-components-object/View.js",
+      "adapter": "styled-components",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 196,
+        "targetBytes": 196,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "vanilla-extract-example",
+      "repository": "https://github.com/vanilla-extract-css/vanilla-extract",
+      "commit": "881c256a867f55386f96a7fe95068300bac720e6",
+      "path": "examples/next/components/HelloWorld.css.ts",
+      "adapter": "vanilla-extract",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 402,
+        "targetBytes": 402,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "stitches-react-test",
+      "repository": "https://github.com/stitchesjs/stitches",
+      "commit": "50fd8a1adc6360340fe348a8b3ebc8b06d38e230",
+      "path": "packages/core/tests/basic.js",
+      "adapter": "stitches",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 11,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 11,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 333,
+        "targetBytes": 333,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 11,
+        "errors": []
+      }
+    },
+    {
+      "id": "linaria-solid-example",
+      "repository": "https://github.com/callstack/linaria",
+      "commit": "41d201d45aa7c64aa0f2bd3148ec919c8e1f54eb",
+      "path": "examples/astro-solid/pages/csr.tsx",
+      "adapter": "linaria",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 4,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 4,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 158,
+        "targetBytes": 158,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 4,
+        "errors": []
+      }
+    },
+    {
+      "id": "jss-nested-benchmark",
+      "repository": "https://github.com/cssinjs/jss",
+      "commit": "901882a894c7e802450696ebe2ea633ae63c5977",
+      "path": "examples/inline/app.js",
+      "adapter": "jss",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 75,
+        "targetBytes": 75,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "fela-render-test",
+      "repository": "https://github.com/rofrischmann/fela",
+      "commit": "6883525fa44c2c47d0d93768eb26f072fee3c439",
+      "path": "packages/fela-dom/src/dom/__tests__/render-test.js",
+      "adapter": "fela",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 8,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 8,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 405,
+        "targetBytes": 405,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 8,
+        "errors": []
+      }
+    },
+    {
+      "id": "goober-css-test",
+      "repository": "https://github.com/cristianbote/goober",
+      "commit": "e7e6d33e210ed1f886fb4f372fc25ffd22d358d0",
+      "path": "src/__tests__/css.test.js",
+      "adapter": "goober",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 8,
+        "targetBytes": 8,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "aphrodite-api-test",
+      "repository": "https://github.com/Khan/aphrodite",
+      "commit": "225f43c5802259a9e042b384a1f4f2e5b48094ea",
+      "path": "tests/index_test.js",
+      "adapter": "aphrodite",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 22,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 22,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1344,
+        "targetBytes": 1344,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 22,
+        "errors": []
+      }
+    },
+    {
+      "id": "style9-next-styles",
+      "repository": "https://github.com/johanholmerin/style9",
+      "commit": "b0657ddb3cd24434a6a59db9c2e22cbedf5e6f42",
+      "path": "examples/nextjs/shared/styles.js",
+      "adapter": "style9",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 86,
+        "targetBytes": 86,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "treat-button",
+      "repository": "https://github.com/seek-oss/treat",
+      "commit": "1cc001170ee6b66b1d960ac4097fb84597163d1c",
+      "path": "examples/gatsby-plugin-treat-example/src/components/Button.treat.js",
+      "adapter": "treat",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 208,
+        "targetBytes": 208,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "compiled-vite-example",
+      "repository": "https://github.com/atlassian-labs/compiled",
+      "commit": "0f5d2b606471b9fb92c2402d5367c3c23efd1a29",
+      "path": "fixtures/parcel-optimizer-test-app/src/index.jsx",
+      "adapter": "compiled",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 4,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 4,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 213,
+        "targetBytes": 213,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 4,
+        "errors": []
+      }
+    },
+    {
+      "id": "solid-styled-runtime",
+      "repository": "https://github.com/solidjs/solid-styled-components",
+      "commit": "b798a6d91a02450f3649365a3cdb27a282f4b37d",
+      "path": "test/test.spec.tsx",
+      "adapter": "solid-styled",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 9,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 9,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1026,
+        "targetBytes": 1026,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 9,
+        "errors": []
+      }
+    },
+    {
+      "id": "vue-styled-css-test",
+      "repository": "https://github.com/vue-styled-components/core",
+      "commit": "5874630ed4d54aa955052fc864140eeae30fad2c",
+      "path": "packages/playground/src/App.vue",
+      "adapter": "vue-styled",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 7,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 7,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1487,
+        "targetBytes": 1487,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 7,
+        "errors": []
+      }
+    },
+    {
+      "id": "stylex-example",
+      "repository": "https://github.com/facebook/stylex",
+      "commit": "5f7acaa4b332e2cf8352e95e5bc83efd70904fd4",
+      "path": "examples/example-bun/src/App.jsx",
+      "adapter": "stylex",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 289,
+        "targetBytes": 289,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "bamboo-benchmark-realistic-button",
+      "repository": "https://github.com/jantimon/css-in-js-bench",
+      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+      "path": "techs/bamboo/case/realistic-button/index.tsx",
+      "adapter": "bamboo",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 4,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 4,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1134,
+        "targetBytes": 1134,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 4,
+        "errors": []
+      }
+    },
+    {
+      "id": "next-yak-benchmark-realistic-button",
+      "repository": "https://github.com/jantimon/css-in-js-bench",
+      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+      "path": "techs/next-yak/case/realistic-button/index.tsx",
+      "adapter": "next-yak",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 3,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 3,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 381,
+        "targetBytes": 381,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 3,
+        "errors": []
+      }
+    },
+    {
+      "id": "next-yak-css-prop-benchmark-realistic-button",
+      "repository": "https://github.com/jantimon/css-in-js-bench",
+      "commit": "3dee1bc32e651ace01c5e4d9306c541337d0c1ce",
+      "path": "techs/next-yak-css/case/realistic-button/index.tsx",
+      "adapter": "next-yak",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 1540,
+        "targetBytes": 1540,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "chakra-ui-box-sx",
+      "repository": "https://github.com/chakra-ui/chakra-ui",
+      "commit": "7aca83e44de50f501d8274a55c331cb8fb06e4fa",
+      "path": "apps/www/components/chakra-mastery-ad.tsx",
+      "adapter": "chakra-ui",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 5,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 5,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 347,
+        "targetBytes": 347,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 5,
+        "errors": []
+      }
+    },
+    {
+      "id": "mui-box-sx",
+      "repository": "https://github.com/mui/material-ui",
+      "commit": "fc3a3a0a8b7c8f20274eca4758ea07a33e25c1b4",
+      "path": "docs/data/material/components/box/BoxSx.tsx",
+      "adapter": "mui",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 96,
+        "targetBytes": 96,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "mantine-style-props",
+      "repository": "https://github.com/mantinedev/mantine",
+      "commit": "8a284e2c2c53a9cb6f39f5dc389bf41b7a2073f8",
+      "path": "apps/help.mantine.dev/src/components/MdxLayout/MdxLayout.tsx",
+      "adapter": "mantine",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 9,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 9,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 296,
+        "targetBytes": 296,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 9,
+        "errors": []
+      }
+    },
+    {
+      "id": "tokenami-nextjs-button",
+      "repository": "https://github.com/tokenami/tokenami",
+      "commit": "29cf3b97ef14b22421734113f37b7b29e73f35e0",
+      "path": "examples/nextjs/src/components/button.tsx",
+      "adapter": "tokenami",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 367,
+        "targetBytes": 367,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "unocss-nextjs-page",
+      "repository": "https://github.com/unocss/unocss",
+      "commit": "75103d5e12ec9876069daf6b97a7db1d73428829",
+      "path": "examples/next/app/page.tsx",
+      "adapter": "unocss",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 12,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 12,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 4613,
+        "targetBytes": 4613,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 12,
+        "errors": []
+      }
+    }
+  ],
+  "passed": 23,
+  "failed": 0
+}

@@ -116,7 +116,7 @@ StyleX export.
 See [codemods](/tooling/codemod/), [adapter migrations](/interop/css-in-js-adapters/),
 and [the adapter contract](/reference/adapter-contract/).
 
-### The CSS-in-JS pivot — plans 025–027 and 029–037
+### The CSS-in-JS pivot — plans 025–027 and 029–039
 
 The pivot is defined as a capability contract rather than an unconditional
 claim that unrelated runtimes are interchangeable:
@@ -143,6 +143,14 @@ Otherwise the source remains in place with a structured residual and source
 provenance. Differential proof covers canonical CSS, browser states,
 SSR/hydration, streaming where applicable, dependencies, CSS size, and
 residuals.
+
+The final proof wave adds a reproducible adapter-reference runner. It verifies
+all pinned non-project adapters at their exact source commits, exercises their
+registered migration pipeline in Chromium, and records 23 passing
+adapter-program references in `plans/evidence/adapter-reference-proof.json`.
+This report is deliberately separate from installed-site promotion: the
+checked-in production matrix remains the authority for framework builds,
+application SSR, and route-level browser claims.
 
 ## Deliberately not complete
 

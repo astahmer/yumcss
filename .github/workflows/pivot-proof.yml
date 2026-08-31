@@ -32,9 +32,21 @@ jobs:
           PANDWIND_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/real-repository-migrations-v2.json
         run: pnpm pivot:proof:references
 
+      - name: Run pinned adapter browser proof
+        env:
+          PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
+        run: pnpm references:deps && pnpm pivot:proof:adapters
+
       - name: Upload source-only proof report
         uses: actions/upload-artifact@v4
         with:
           name: pivot-proof-report
           path: ${{ runner.temp }}/pandwind-pivot-proof/real-repository-migrations-v2.json
+          if-no-files-found: error
+
+      - name: Upload adapter browser proof report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pivot-adapter-reference-proof
+          path: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
           if-no-files-found: error

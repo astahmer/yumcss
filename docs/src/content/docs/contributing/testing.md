@@ -46,6 +46,23 @@ capabilities, and validates every promoted browser/SSR/CSS-size claim. The
 coverage report is versioned and records production dimensions independently;
 fixture-only entries cannot satisfy a promoted adapter claim.
 
+The adapter-reference proof adds an actual Chromium check for every pinned
+file-level corpus entry that can run without an upstream application build:
+
+```sh
+pnpm references:prepare
+pnpm references:deps
+pnpm pivot:proof:adapters
+```
+
+`references:deps` installs only the explicitly pinned official packages needed
+by a reference configuration into the disposable checkout. The resulting
+`plans/evidence/adapter-reference-proof.json` records canonical CSS equality,
+CSS byte size, computed-style equivalence, hydration-style replacement, and
+structured residuals. A residual is a proof failure when the adapter claims
+the capability; it is never hidden by falling back to the hand-written token
+table.
+
 The full reference run is intentionally separate because it downloads pinned
 public repositories and can take substantially longer:
 

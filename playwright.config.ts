@@ -30,7 +30,10 @@ export default defineConfig({
 	webServer: {
 		command: `pnpm --filter playground dev --host 127.0.0.1 --port ${playgroundPort}`,
 		url: `${playgroundUrl}/migrate`,
-		reuseExistingServer: !process.env.CI,
+		// Reusing an arbitrary process on the fixed port can run a different
+		// workspace's playground and make the BDD suite report misleading UI
+		// failures. Opt in only when the caller has verified the server identity.
+		reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER === "1",
 		timeout: 120_000,
 	},
 });
