@@ -9,7 +9,12 @@ import type {
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "../adapter-contract.ts";
-import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
+import {
+	ADAPTER_CAPABILITIES_SCHEMA,
+	type AdapterCapability,
+	type AdapterCapabilities,
+	type AdapterCapabilityLevel,
+} from "../capabilities.ts";
 import { ADAPTER_CONTRACT_SCHEMA } from "../adapter-contract.ts";
 import {
 	styleProgramFromSourceObject,
@@ -43,6 +48,8 @@ export interface ExtraAdapterOptions {
 	readonly migration?: AdapterMigrationHooks;
 	/** Target-side host port for adapters whose style call returns a class string. */
 	readonly targetPolicy?: AdapterTargetMigrationPolicy;
+	/** Adapter-owned exceptions to the conservative generic capability baseline. */
+	readonly capabilityOverrides?: Partial<Record<AdapterCapability, AdapterCapabilityLevel>>;
 	/** Optional target-native emission for a host representation selected by the policy. */
 	readonly targetEmit?: (
 		program: StyleProgram,
@@ -57,6 +64,7 @@ const capabilities = (
 	id: string,
 	namedRules: boolean,
 	strategy: StyleNamedRuleStrategy | undefined,
+	overrides: ExtraAdapterOptions["capabilityOverrides"],
 ): AdapterCapabilities => ({
 	schema: ADAPTER_CAPABILITIES_SCHEMA,
 	adapter: id,
@@ -75,6 +83,7 @@ const capabilities = (
 		"supports-conditions": "exact",
 		"dynamic-values": "partial",
 		components: "partial",
+		...overrides,
 	},
 });
 
@@ -275,6 +284,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			options.id,
 			options.namedObjects === true,
 			options.namedRuleStrategy,
+			options.capabilityOverrides,
 		),
 		dependencies: options.packages,
 		migration:

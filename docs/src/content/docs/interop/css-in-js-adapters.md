@@ -114,6 +114,15 @@ component representation is valid. This is why a valid Emotion/styled-
 components theme callback can remain target-native while a static Pandwind
 host use becomes `css.class(...)` plus an intrinsic element rewrite.
 
+Framework provenance alone is not a framework requirement. A hostless carrier
+such as `css.class({ color: theme.foreground })` can target a runtime style API
+without a JSX/template rewrite; `framework-semantics` is required only when the
+program contains a component subject or host-bound attributes. Goober and Fela
+declare their object carriers as exact scalar-dynamic targets, so safe mode
+preserves that expression instead of reporting a false framework or capability
+skip. Static-only targets still produce a residual for the same input unless
+their own adapter can lower it to a custom property or other validated carrier.
+
 Target representation negotiation is also fail-closed. When a target
 explicitly refuses the detected framework or host shape, the runner does not
 reuse its default representation and hope that a later validator catches the

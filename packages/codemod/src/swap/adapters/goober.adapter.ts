@@ -14,6 +14,10 @@ const goober = makeExtraAdapter({
 	prefix: "css(",
 	targetImports: ['import { css } from "goober";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	// Goober's object carrier evaluates scalar expressions at runtime, so a
+	// hostless dynamic value does not need to become a residual when Goober is
+	// the selected target.
+	capabilityOverrides: { "dynamic-values": "exact" },
 	targetPolicy: {
 		handlesHostRewrites: true,
 		handlesFrameworkSemantics: true,

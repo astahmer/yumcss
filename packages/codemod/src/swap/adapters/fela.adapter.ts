@@ -18,6 +18,8 @@ const fela = makeExtraAdapter({
 	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	// Fela's renderRule object is a runtime carrier for scalar expressions.
+	capabilityOverrides: { "dynamic-values": "exact" },
 	targetPolicy: {
 		handlesHostRewrites: true,
 		handlesFrameworkSemantics: true,
