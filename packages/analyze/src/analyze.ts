@@ -32,7 +32,11 @@ import {
 	type MissingCssSite,
 } from "./css-residual-collector.ts";
 
-export type { ArbitraryValueSite, CssResidualCollector, MissingCssSite } from "./css-residual-collector.ts";
+export type {
+	ArbitraryValueSite,
+	CssResidualCollector,
+	MissingCssSite,
+} from "./css-residual-collector.ts";
 
 export { formatReport, summarize } from "./analysis-report.ts";
 
@@ -450,7 +454,8 @@ export function collectSourceFiles(
 	root: string,
 	workspace: SourceWorkspace = createSourceWorkspace(),
 ): readonly { file: string; content: string }[] {
-	return workspace.collect(patterns, root)
+	return workspace
+		.collect(patterns, root)
 		.filter(({ scan }) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(scan.document.file))
 		.map(({ path: file, source: content }) => ({ file, content }));
 }

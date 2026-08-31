@@ -21,15 +21,15 @@ implementation delta; that content remains reachable and present in `main`.
 The second-parent history and the later tree were checked explicitly rather
 than assuming that a conflict-free merge implied content retention.
 
-| Merge commit   | Workspace contribution | Conflict | First-parent tree delta | Audit result                                           |
-| -------------- | ---------------------- | -------- | ----------------------- | ------------------------------------------------------ |
-| `26afbdb4f4c4` | CSS-in-JS overall | no | empty | retained |
-| `29819ed3268a` | Effect | no | non-empty | second-parent implementation retained; later cleanup classified below |
-| `5dc524700bae` | Emotion | no | empty | retained; generated/obsolete files classified below |
-| `f795e09c58e0` | Astryx | no | empty | retained; repeated vendored StyleX cleanup intentional |
-| `470341f2dc96` | codemod | no | empty | retained; inspector code moved to analyze ownership |
-| `b1dd0bd5b141` | experiment | no | empty | retained |
-| `45cce8328daa` | PostHog | no | empty | retained; repeated vendored StyleX cleanup intentional |
+| Merge commit   | Workspace contribution | Conflict | First-parent tree delta | Audit result                                                          |
+| -------------- | ---------------------- | -------- | ----------------------- | --------------------------------------------------------------------- |
+| `26afbdb4f4c4` | CSS-in-JS overall      | no       | empty                   | retained                                                              |
+| `29819ed3268a` | Effect                 | no       | non-empty               | second-parent implementation retained; later cleanup classified below |
+| `5dc524700bae` | Emotion                | no       | empty                   | retained; generated/obsolete files classified below                   |
+| `f795e09c58e0` | Astryx                 | no       | empty                   | retained; repeated vendored StyleX cleanup intentional                |
+| `470341f2dc96` | codemod                | no       | empty                   | retained; inspector code moved to analyze ownership                   |
+| `b1dd0bd5b141` | experiment             | no       | empty                   | retained                                                              |
+| `45cce8328daa` | PostHog                | no       | empty                   | retained; repeated vendored StyleX cleanup intentional                |
 
 ## Workspace-side deletions
 
@@ -106,10 +106,10 @@ the playground migration lab exercises the same browser-safe adapter surface.
 
 The recovery rerun completed both lanes with the same pinned source revision:
 
-| Lane | Converted | Static | Runtime fallback | Skipped | Static CSS coverage | Output delta |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `runtime-css` | 140 | 35 | 11 | 30 | 92.14% | +8,471 bytes |
-| `design-css` | 140 | 35 | 11 | 30 | 92.14% | +7,792 bytes |
+| Lane          | Converted | Static | Runtime fallback | Skipped | Static CSS coverage | Output delta |
+| ------------- | --------: | -----: | ---------------: | ------: | ------------------: | -----------: |
+| `runtime-css` |       140 |     35 |               11 |      30 |              92.14% | +8,471 bytes |
+| `design-css`  |       140 |     35 |               11 |      30 |              92.14% | +7,792 bytes |
 
 The positive source-output deltas are expected for this recovery run: the
 materializer preserves source imports and runtime fallbacks for unsupported

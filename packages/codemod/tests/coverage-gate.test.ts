@@ -42,7 +42,7 @@ describe("adapter coverage gate", () => {
 		});
 	});
 
-		test("fails explicitly for missing adapter and capability evidence", () => {
+	test("fails explicitly for missing adapter and capability evidence", () => {
 		const emotion = createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Emotion)!;
 		const report = createAdapterCoverageGate().evaluate(createStyleAdapterRegistry([emotion]), [], {
 			minimumFixturesPerAdapter: 1,
@@ -80,8 +80,7 @@ describe("adapter coverage gate", () => {
 					kind: "real-repository",
 					capabilities: [],
 					proof: {
-						[RealRepositoryProofDimension.BrowserStates]:
-							RealRepositoryProofDimensionStatus.Passed,
+						[RealRepositoryProofDimension.BrowserStates]: RealRepositoryProofDimensionStatus.Passed,
 					},
 				},
 			],

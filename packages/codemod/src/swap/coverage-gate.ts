@@ -1,9 +1,6 @@
 import type { AdapterCapability } from "./capabilities.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
-import {
-	RealRepositoryProofDimension,
-	RealRepositoryProofDimensionStatus,
-} from "./identifiers.ts";
+import { RealRepositoryProofDimension, RealRepositoryProofDimensionStatus } from "./identifiers.ts";
 
 /** Versioned evidence contract for adapter and capability coverage gates. */
 export const ADAPTER_COVERAGE_SCHEMA = "pandwind.adapter-coverage/2" as const;
@@ -56,7 +53,7 @@ export interface AdapterCoverageEntry {
 
 export interface AdapterCoverageReport {
 	readonly schema: typeof ADAPTER_COVERAGE_SCHEMA;
-		readonly entries: readonly AdapterCoverageEntry[];
+	readonly entries: readonly AdapterCoverageEntry[];
 	readonly capabilityTotals: Readonly<Partial<Record<AdapterCapability, number>>>;
 	readonly proofTotals: Readonly<Partial<Record<RealRepositoryProofDimension, number>>>;
 	readonly failures: readonly AdapterCoverageFailure[];

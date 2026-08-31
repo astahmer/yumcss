@@ -6,7 +6,7 @@
 			"project": ["scripts/**/*.{ts,mts,mjs}"]
 		},
 		"packages/codemod": {
-			"entry": ["src/cli.ts", "src/swap/index.ts", "tests/**/*.test.ts"],
+			"entry": ["src/cli.ts", "src/swap/index.ts", "src/swap/browser.ts", "tests/**/*.test.ts"],
 			"project": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]
 		},
 		"packages/pandwind": {
@@ -65,6 +65,7 @@
 		"@unocss/core",
 		"class-variance-authority",
 		"pandwind",
+		"pandwind-codemod",
 		"pandwind-analyze",
 		"postcss",
 		"postcss-selector-parser",

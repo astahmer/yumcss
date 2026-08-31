@@ -199,6 +199,13 @@ The pinned real-repository report adds a typed promotion object with explicit
 states. A pending dimension is never counted as a passing real-repository
 promotion.
 
+Backends follow the same rule. CSS, object, React Native, and OpenTUI are
+registered as `StyleBackendFactory` plugins and are exercised by the generic
+`StyleBackendContractSuite`. The suite checks construction, capability
+publication, representative lowering, and stable repeated declarations; a
+new backend can be substituted in a local registry without changing the
+design or runtime orchestration.
+
 ## Real repository migration proof
 
 The Chakra UI docs corpus is a maintained acceptance fixture for the pivot
@@ -233,6 +240,13 @@ The promotion matrix intentionally mixes full documentation-site claims with
 smaller installed-adapter claims. A fixture claim proves the adapter contract
 in a real package/runtime, but does not imply that every application using that
 ecosystem has been migrated; site-level claims remain separately identified.
+
+Knip intentionally ignores the `pandwind-codemod` dependency in the
+playground. The playground imports the browser-only public subpath
+`pandwind-codemod/swap/browser`; Knip cannot follow that workspace package
+subpath through the source-package boundary, while the playground build and
+browser tests do. The codemod subpath is listed as a production entry in
+`knip.json`, so its exports remain owned and checked.
 
 The styled-components documentation site is also a reproducible acceptance
 corpus. Its pinned checkout is never edited. The migration runner exposes two

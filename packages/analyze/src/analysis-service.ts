@@ -78,9 +78,13 @@ class FoldAnalysisService implements FoldAnalysisPort {
 export interface CssBudgetPort {
 	measure(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<CssBudget>;
 	format(budget: CssBudget): string;
-	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]>;
+	classRules(
+		options: Parameters<CssBudgetEvaluator["measure"]>[0],
+	): Promise<readonly ClassDrillDown[]>;
 	sheetShape(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<SheetShape>;
-	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape;
+	sheetShapeFromRoot(
+		root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0],
+	): SheetShape;
 }
 
 type SheetShape = ReturnType<CssArtifactInspectionPort["sheetShapeFromRoot"]>;
@@ -98,10 +102,7 @@ class CssBudgetService implements CssBudgetPort {
 
 	constructor(
 		evaluator: Pick<CssBudgetEvaluator, "measure"> = new CssBudgetEvaluator(),
-		renderer: Pick<
-			CssBudgetReportRenderer,
-			"format"
-		> = new CssBudgetReportRenderer(),
+		renderer: Pick<CssBudgetReportRenderer, "format"> = new CssBudgetReportRenderer(),
 		inspection: CssArtifactInspectionPort = new TailwindCssArtifactInspection(
 			new TailwindCandidateScanner(),
 			new TailwindArtifactCompiler(),
@@ -120,7 +121,9 @@ class CssBudgetService implements CssBudgetPort {
 		return this.renderer.format(budget);
 	}
 
-	classRules(options: Parameters<CssBudgetEvaluator["measure"]>[0]): Promise<readonly ClassDrillDown[]> {
+	classRules(
+		options: Parameters<CssBudgetEvaluator["measure"]>[0],
+	): Promise<readonly ClassDrillDown[]> {
 		return this.inspection.classRules(options);
 	}
 
@@ -128,7 +131,9 @@ class CssBudgetService implements CssBudgetPort {
 		return this.inspection.sheetShape(options);
 	}
 
-	sheetShapeFromRoot(root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0]): SheetShape {
+	sheetShapeFromRoot(
+		root: Parameters<CssArtifactInspectionPort["sheetShapeFromRoot"]>[0],
+	): SheetShape {
 		return this.inspection.sheetShapeFromRoot(root);
 	}
 }
@@ -177,8 +182,4 @@ export const createFoldAnalysisService = (
 };
 export const createAnalysisWorkspace = (): AnalysisWorkspacePort => new DefaultAnalysisWorkspace();
 export const createCssBudgetService = (dependencies: CssBudgetDependencies = {}): CssBudgetPort =>
-	new CssBudgetService(
-		dependencies.evaluator,
-		dependencies.renderer,
-		dependencies.inspection,
-	);
+	new CssBudgetService(dependencies.evaluator, dependencies.renderer, dependencies.inspection);

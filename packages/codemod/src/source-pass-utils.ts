@@ -26,7 +26,9 @@ export function insertSkipMarker(
 	const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
 	const indentMatch = /^\s*/.exec(source.slice(lineStart));
 	const indent = indentMatch?.[0] ?? "";
-	return source.slice(0, lineStart) + `${indent}// ${marker} (${reason})\n` + source.slice(lineStart);
+	return (
+		source.slice(0, lineStart) + `${indent}// ${marker} (${reason})\n` + source.slice(lineStart)
+	);
 }
 
 export function matchBlock(source: string, open: number): { body: string; end: number } | null {

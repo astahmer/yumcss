@@ -731,11 +731,13 @@ function dynamicSourceValue(
 	const expression = sourceExpression.replace(
 		/\$\{([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\}/g,
 		(match, name: string) =>
-				options.dynamicReferences?.[name] === undefined
-					? match
-					: options.dynamicReferences[name]!,
+			options.dynamicReferences?.[name] === undefined ? match : options.dynamicReferences[name]!,
 	);
-	if (expression.trim().startsWith("`") && expression.trim().endsWith("`") && !expression.includes("${"))
+	if (
+		expression.trim().startsWith("`") &&
+		expression.trim().endsWith("`") &&
+		!expression.includes("${")
+	)
 		return { kind: "literal", value: expression.trim().slice(1, -1) };
 	return {
 		kind: "dynamic",

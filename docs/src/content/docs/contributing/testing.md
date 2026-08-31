@@ -35,9 +35,11 @@ artifacts and are ignored by Git.
 ### Pivot proof matrix
 
 `pnpm pivot:proof` is the deterministic offline gate for the migration pivot.
-It runs every registered adapter's contract fixture, checks the per-adapter
-coverage dimensions, verifies that non-fixture-only adapters have pinned
-repository corpus entries, and validates every promoted browser/SSR claim.
+It runs every registered adapter's contract fixture, requires direct and pinned
+real-repository evidence for every source adapter, checks per-adapter
+capabilities, and validates every promoted browser/SSR/CSS-size claim. The
+coverage report is versioned and records production dimensions independently;
+fixture-only entries cannot satisfy a promoted adapter claim.
 
 The full reference run is intentionally separate because it downloads pinned
 public repositories and can take substantially longer:
@@ -52,6 +54,10 @@ generated report to a temporary output path (or to `PANDWIND_PROOF_OUTPUT` if
 set). It never vendors upstream source into Pandwind. CI runs this workflow on
 schedule and through manual dispatch; the offline gate runs with the regular
 suite.
+
+`pnpm references:check` audits already-materialized checkouts and exits
+non-zero if any pinned commit drifts or is unavailable. `pnpm knip:production`
+is the ownership gate for public subpaths and dynamic entry points.
 
 ## What each layer covers
 

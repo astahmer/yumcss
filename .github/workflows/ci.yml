@@ -12,7 +12,7 @@ concurrency:
 jobs:
   gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +32,9 @@ jobs:
       - name: Test (includes runtime-size gate)
         run: pnpm --filter pandwind test
 
+      - name: Codemod and analyzer tests
+        run: pnpm --filter pandwind-codemod test && pnpm --filter pandwind-analyze test
+
       - name: Type tests (tstyche)
         run: pnpm --filter pandwind test:types
 
@@ -43,6 +46,9 @@ jobs:
 
       - name: Format check (oxfmt)
         run: pnpm format
+
+      - name: Production ownership and pivot gates
+        run: pnpm knip:production && pnpm pivot:proof
 
   # Preview tarballs for every PR (pkg.pr.new) — installable without merging.
   # Source-published packages need no build step; failures are non-blocking.

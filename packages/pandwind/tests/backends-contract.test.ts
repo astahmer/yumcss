@@ -13,7 +13,11 @@ const backendOptions = (id: string) => (id === StyleBackendId.Object ? { name: i
 
 const contractFixtures = [
 	{ backend: StyleBackendId.Css, declarations: { color: "red" } },
-	{ backend: StyleBackendId.Object, options: { name: StyleBackendId.Object }, declarations: { color: "red" } },
+	{
+		backend: StyleBackendId.Object,
+		options: { name: StyleBackendId.Object },
+		declarations: { color: "red" },
+	},
 	{ backend: StyleBackendId.ReactNative, declarations: { color: "red" } },
 	{ backend: StyleBackendId.OpenTui, declarations: { color: "red" } },
 ] as const;
