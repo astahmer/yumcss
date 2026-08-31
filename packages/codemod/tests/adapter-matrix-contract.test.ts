@@ -3,7 +3,7 @@ import {
 	createBidirectionalAdapterMatrix,
 	createBuiltinCodemodCatalog,
 } from "../src/swap/index.ts";
-import { completeAdapterMatrixFixtures } from "./adapter-matrix-fixtures.ts";
+import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 

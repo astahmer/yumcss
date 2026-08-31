@@ -6,7 +6,7 @@ import {
 	createStyleAdapterRegistry,
 	type AdapterContractFixture,
 } from "../src/swap/index.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
+import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const fixture = (adapter: string, source: string): AdapterContractFixture => ({
 	adapter,

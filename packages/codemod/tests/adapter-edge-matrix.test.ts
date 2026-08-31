@@ -4,7 +4,7 @@ import {
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
+import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
 
 const catalog = createBuiltinCodemodCatalog();

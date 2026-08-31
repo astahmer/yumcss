@@ -219,6 +219,14 @@ reports contract, real-repository, browser, and capability coverage per
 adapter. `pnpm pivot:proof` composes that gate with the checked-in promotion
 matrix; the scheduled full-proof workflow supplies the pinned repository
 evidence without importing upstream source into the workspace.
+
+Codemod route verification is owned by `packages/codemod/proof`. Its contract
+and scenario fixtures are shared by the Vitest suites and the offline proof
+composition root, so the two gates cannot silently use different corpora. The
+complete matrix covers every ordered adapter pair in safe and partial modes
+for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
+the real binary in both directions for every adapter. A route is accepted only
+when it converts or preserves the source with a typed residual.
 The pinned real-repository report adds a typed promotion object with explicit
 `source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
 states. A pending dimension is never counted as a passing real-repository

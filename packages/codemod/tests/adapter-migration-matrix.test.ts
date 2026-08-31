@@ -9,7 +9,7 @@ import {
 	runSwap,
 } from "../src/swap/index.ts";
 import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
+import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
 const pandwind = CodemodAdapterId.Pandwind;

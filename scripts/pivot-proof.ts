@@ -15,8 +15,8 @@ import {
 	type AdapterCoverageEvidence,
 	type AdapterContractFixture,
 } from "../packages/codemod/src/swap/index.ts";
-import { adapterContractFixtures } from "../packages/codemod/tests/adapter-contract-fixtures.ts";
-import { completeAdapterMatrixFixtures } from "../packages/codemod/tests/adapter-matrix-fixtures.ts";
+import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
+import { completeAdapterMatrixFixtures } from "../packages/codemod/proof/adapter-matrix-fixtures.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const root = resolve(import.meta.dirname, "..");

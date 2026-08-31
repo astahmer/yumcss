@@ -3,8 +3,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { CodemodAdapterId, createBuiltinCodemodCatalog } from "../src/swap/index.ts";
-import { adapterContractFixtures } from "./adapter-contract-fixtures.ts";
-import { completeAdapterMatrixFixtures } from "./adapter-matrix-fixtures.ts";
+import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
+import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
 const codemodRoot = resolve(import.meta.dirname, "..");

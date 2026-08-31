@@ -24,9 +24,31 @@ generic `adapter capability mismatch` diagnosis.
 
 The current registry and route matrix exercise all registered pairs and retain
 the flat `SwapIR` fast path. Named style maps and function-valued styles now
-have explicit representation contracts. The remaining work is to turn that
-contract into complete, production-level coverage rather than merely making a
-fixture matrix green.
+have explicit representation contracts. The route proof is no longer only a
+single happy fixture: the shared proof corpus exercises happy, edge, and
+malformed inputs in safe and partial modes.
+
+## Completed codemod verification slice
+
+The bidirectional codemod proof work is complete for the registered adapter
+matrix:
+
+- 24 contract fixtures cover detection, configuration, parsing, capabilities,
+  emission, and validation for every registered adapter.
+- 3,456 Cartesian route cases cover every ordered source/target pair, both
+  capability modes, and all three proof scenarios (24 × 24 × 2 × 3).
+- 96 CLI end-to-end cases spawn the real command, write temporary files, parse
+  JSON reports, and cover every adapter in both `adapter → Pandwind` and
+  `Pandwind → adapter` directions, including edge inputs.
+- The same proof corpus is owned by `packages/codemod/proof` and consumed by
+  both Vitest and `pnpm pivot:proof`; the proof command reports the same 3,456
+  route cases as the test suite.
+- Every skipped route must preserve its source and carry a typed residual;
+  the obsolete generic `adapter capability mismatch` marker is rejected.
+
+This slice proves route orchestration and no-silent-loss behavior. It does not
+turn fixture evidence into a browser/SSR promotion claim; those dimensions
+remain governed by the real-repository proof matrix below.
 
 The most important unresolved families are:
 
