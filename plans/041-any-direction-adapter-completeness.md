@@ -71,7 +71,9 @@ The migration result now exposes a typed outcome for each parsed call in
 addition to the lowering plan. `static` means no runtime carrier was needed;
 `target-native` means the target's own map, component, or style-prop contract
 was used; `host-runtime` means a validated runtime or host binding remains;
-`portable-artifact` is reserved for a future neutral artifact fallback; and
+`portable-artifact` is a target-owned static fallback that preserves a
+portable Pandwind class artifact when the target has no legal native carrier;
+MUI is the first implementation; and
 `residual` means the original source was preserved with an actionable reason.
 This makes a capability report inspectable rather than a boolean gate and lets
 the playground distinguish a real target gap from a successful projection.
@@ -84,10 +86,14 @@ and host-framework contract, not adding a central adapter branch.
 
 MUI also demonstrates a target-owned style-prop projection. A Pandwind class
 binding used by a React host is emitted as an object and rewritten from
-`className={binding}` to `sx={binding}`. The target policy owns that rewrite;
-the runner only negotiates the typed representation and applies the returned
-edit. Bare unused bindings remain explicit residuals because MUI has no
-standalone `sx()` API.
+`className={binding}` to `sx={binding}`. Intrinsic DOM hosts are first wrapped
+as `Box component="..."`, because `sx` is not a native DOM prop; known MUI
+components receive `sx` directly, while static unknown custom components use
+the portable fallback and dynamic ones remain residuals. The target policy owns that rewrite; the runner only negotiates the
+typed representation and applies the returned edit. Static bare unused
+bindings use MUI's portable-artifact fallback because MUI has no standalone
+`sx()` API; dynamic bare bindings remain explicit residuals until a host
+carrier is available.
 
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and
