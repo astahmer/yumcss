@@ -104,4 +104,28 @@ describe("adapter route round-trip contract", () => {
 		});
 		expect(parsed.matches).toEqual([]);
 	});
+
+	test("preserves a single named rule through a Tailwind class map", () => {
+		const catalog = createBuiltinCodemodCatalog();
+		const forward = migrate(
+			'import { createUseStyles } from "react-jss";\n' +
+				"createUseStyles({ button: { color: 'red' } })",
+			CodemodAdapterId.Jss,
+			CodemodAdapterId.Tailwind,
+			"styles.ts",
+			undefined,
+		);
+		const reverse = runAdapterMigration(forward.code, {
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.Jss,
+			file: "styles.ts",
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: catalog.registry,
+		});
+
+		expect(forward.residuals).toEqual([]);
+		expect(reverse.residuals).toEqual([]);
+		expect(reverse.code).toContain("button");
+	});
 });

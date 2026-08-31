@@ -367,7 +367,12 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 }
 
 function programObject(program: StyleProgram): string {
-	if (program.rules.length === 1) return ruleObject(program.rules[0]!);
+	if (program.rules.length === 1) {
+		const rule = program.rules[0]!;
+		if (rule.name !== undefined)
+			return `{ ${JSON.stringify(rule.name)}: ${ruleObject({ ...rule, name: undefined })} }`;
+		return ruleObject(rule);
+	}
 	if (program.rules.every((rule) => rule.kind === "global")) {
 		const root = objectNode();
 		for (const rule of program.rules) {

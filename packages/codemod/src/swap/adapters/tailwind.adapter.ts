@@ -224,6 +224,21 @@ function parseClassValue(
 	};
 }
 
+function standaloneClassMap(
+	source: string,
+):
+	| { readonly start: number; readonly end: number; readonly entries: readonly RegExpExecArray[] }
+	| undefined {
+	const outer = /^\s*\{([\s\S]*)\}\s*;?\s*$/u.exec(source);
+	if (outer?.[1] === undefined) return undefined;
+	const entries = [
+		...outer[1].matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g),
+	];
+	if (entries.length === 0 || entries.some((entry) => entry[4] === undefined)) return undefined;
+	const start = source.indexOf("{");
+	return start < 0 ? undefined : { start, end: start + outer[0].trim().length, entries };
+}
+
 function parseTailwind(
 	source: string,
 	context: AdapterParseContext,
@@ -232,6 +247,47 @@ function parseTailwind(
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const excluded = context.document?.isExcluded ?? (() => false);
+	const classMap = standaloneClassMap(source);
+	if (classMap !== undefined) {
+		const parsedEntries = classMap.entries.map(
+			(entry) =>
+				parseClassValue(entry[4] ?? "", context, resolver, classMap.start, classMap.end).program,
+		);
+		const rules = parsedEntries.map((parsed, index) => {
+			const entry = classMap.entries[index]!;
+			const rule = parsed.rules[0];
+			if (rule === undefined)
+				return {
+					kind: "style" as const,
+					name: entry[2],
+					conditions: [],
+					declarations: [],
+					children: [],
+					order: index,
+				};
+			return { ...rule, name: entry[2], order: index };
+		});
+		residuals.push(...parsedEntries.flatMap((parsed) => parsed.residuals));
+		const parsed = styleProgramFromRules(rules, {
+			source: {
+				file: context.file,
+				start: classMap.start,
+				end: classMap.end,
+				adapter: CodemodAdapterId.Tailwind,
+			},
+		});
+		return {
+			matches: [
+				{
+					start: classMap.start,
+					end: classMap.end,
+					program: parsed,
+					sourceText: source.slice(classMap.start, classMap.end),
+				},
+			],
+			residuals,
+		};
+	}
 	for (const attribute of staticClassAttributes(source)) {
 		const attributeStart = attribute.index ?? 0;
 		if (excluded(attributeStart)) continue;
@@ -497,6 +553,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			version: "1",
 			capabilities: {
 				declarations: "exact",
+				"named-rules": "exact",
 				"token-values": "partial",
 				"rule-level": "partial",
 				selectors: "exact",
@@ -541,6 +598,26 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 					fallbackResolver,
 			),
 		emit: (program) => {
+			const namedRules = program.rules.filter(
+				(rule) => rule.kind === "style" && rule.name !== undefined,
+			);
+			if (namedRules.length > 0) {
+				const residuals: StyleProgramResidual[] = [];
+				const entries = namedRules.map((rule) => {
+					const emitted = emitTailwind({
+						...program,
+						rules: [{ ...rule, name: undefined }],
+						declarations: rule.declarations,
+					});
+					residuals.push(...emitted.residuals);
+					return `${JSON.stringify(rule.name)}: ${emitted.text}`;
+				});
+				return {
+					text: `{ ${entries.join(", ")} }`,
+					semantic: program,
+					residuals,
+				};
+			}
 			const emitted = emitTailwind(program);
 			return { ...emitted, semantic: program };
 		},
