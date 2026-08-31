@@ -85,24 +85,41 @@ styled-components documentation site, run static-first `runtime-css` and
 `design-css` lanes, and verify browser/SSR parity. The recovery workspace
 restores both from parent `df2245c1370fa47c65fac10e5d7fe4c6775660f9` and
 restores the corresponding reproducible command in the architecture guide.
-They remain uncommitted here until the playground and script validation pass.
+The recovery revision also validates their formatting and TypeScript imports;
+the playground migration lab exercises the same browser-safe adapter surface.
 
 ## Final checks
 
 - All seven merge commits are reachable from `main`.
 - `jj log -r '::main & conflicts()'` returned no revisions.
 - The styled-components proof omission was corrected in the recovery
-  workspace; all other reviewed deletions remain classified as intentional or
-  replaced ownership.
-- The recovery workspace has two restored proof scripts pending validation and
-  a documentation correction; the default workspace's unrelated dirty files
-  were not touched.
+  workspace; both restored lanes now materialize and execute their static
+  collector against pinned reference commit
+  `c03d2925ab44f447b385d2f463fe971de2e15c7c`.
+- The recovery workspace has two restored proof scripts, a documentation
+  correction, and the parser/runtime fixes needed to make those scripts
+  executable. The default workspace's unrelated dirty files were not touched.
+
+The recovery rerun completed both lanes with the same pinned source revision:
+
+| Lane | Converted | Static | Runtime fallback | Skipped | Static CSS coverage | Output delta |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `runtime-css` | 140 | 35 | 11 | 30 | 92.14% | +8,471 bytes |
+| `design-css` | 140 | 35 | 11 | 30 | 92.14% | +7,792 bytes |
+
+The positive source-output deltas are expected for this recovery run: the
+materializer preserves source imports and runtime fallbacks for unsupported
+theme, nested-template, and host-context semantics. Those cases remain
+structured residuals; they are not counted as successful static lowering.
 
 ## Conclusion
 
 The workspace consolidations preserved the implementation and most proof
 assets, but they did drop the styled-components proof runner and verifier.
-That omission is now explicitly identified and restored from the exact merge
-parent. The remaining deletions are intentional reference-repository
-de-vendoring, generated-artifact cleanup, or ownership-preserving
-decomposition; no other merge repair was found.
+That omission was explicitly identified and restored from the exact merge
+parent. Re-running both lanes exposed and fixed stale parser, import, theme,
+selector, keyframe, JSX-host, and collector assumptions; the recovered proof
+now completes with explicit residuals rather than broken generated modules.
+The remaining deletions are intentional reference-repository de-vendoring,
+generated-artifact cleanup, or ownership-preserving decomposition; no other
+merge repair was found.

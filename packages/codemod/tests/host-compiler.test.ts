@@ -3,6 +3,7 @@ import {
 	HOST_COMPILER_PLUGINS,
 	HOST_COMPILER_SCHEMA,
 	createHostCompilerPlugin,
+	getHostComponentRewriter,
 } from "../src/swap/index.ts";
 
 describe("framework-native host compiler contract", () => {
@@ -54,5 +55,22 @@ describe("framework-native host compiler contract", () => {
 			adapter: HOST_COMPILER_PLUGINS.svelte as never,
 		});
 		expect(result.code).toContain('<div class="shell flex flex-col">');
+	});
+
+	test("rewrites JSX subjects with nested expressions without duplicating style props", () => {
+		const rewriter = getHostComponentRewriter("react");
+		expect(rewriter).toBeDefined();
+		const result = rewriter!.rewrite({
+			source: 'const view = <Card data={enabled ? ">" : "<"} style={props.style} />;',
+			binding: "Card",
+			tag: "div",
+			framework: "react",
+			classExpression: "card.class",
+			styleExpression: "card.style",
+		});
+		expect(result.changed).toBe(true);
+		expect(result.code).toBe(
+			'const view = <div data={enabled ? ">" : "<"} style={props.style} className={card.class} />;',
+		);
 	});
 });

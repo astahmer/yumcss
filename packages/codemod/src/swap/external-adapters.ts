@@ -456,8 +456,11 @@ function camelProperty(property: string): string {
 }
 
 function templateDynamicExpression(rawValue: string): string {
-	const interpolation = /^\$\{([\s\S]+)\}$/.exec(rawValue.trim());
-	if (interpolation?.[1] !== undefined) return interpolation[1].trim();
+	const normalized = rawValue.trim();
+	if (normalized.startsWith("${")) {
+		const interpolation = matchBlock(normalized, 1);
+		if (interpolation?.end === normalized.length) return interpolation.body.trim();
+	}
 	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
 }
 
@@ -491,15 +494,15 @@ function parseTemplateProgram(
 				return;
 			}
 			const rawValue = trimmed.slice(colon + 1).trim();
-			const interpolation = /\$\{([\s\S]+)\}/.exec(rawValue);
+			const hasInterpolation = rawValue.includes("${");
 			let value: StyleDeclaration["value"];
-			if (interpolation?.[1] !== undefined) {
+			if (hasInterpolation) {
 				const expression = templateDynamicExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
 					kind: "dynamic",
 					text: rawValue,
-					hint: interpolation[1]?.includes("=>")
+					hint: rawValue.includes("=>")
 						? "function interpolation requires a framework prop wrapper"
 						: "template interpolation requires a runtime-aware lowering",
 				});
@@ -554,10 +557,20 @@ function parseTemplateProgram(
 					});
 					break;
 				}
+				if (selector.includes("${"))
+					residuals.push({
+						kind: "dynamic",
+						text: selector,
+						hint: "component selector interpolation requires a host rewrite",
+					});
 				const nested = parseBlock(block.body);
 				children.push({
 					kind: "style",
-					selector,
+					selector: selector.startsWith("&")
+						? selector
+						: selector.startsWith(":") || selector.startsWith("[")
+							? `&${selector}`
+							: `& ${selector}`,
 					conditions: [],
 					declarations: nested.declarations,
 					children: nested.children,
@@ -589,6 +602,32 @@ function parseTemplateProgram(
 			},
 		],
 		{ source: adapterSource(context, start), residuals: parsed.residuals },
+	);
+}
+
+function parseKeyframeTemplateProgram(
+	body: string,
+	context: AdapterParseContext,
+	start: number,
+	name: string,
+): StyleProgram {
+	const base = parseTemplateProgram(body, context, start);
+	const root = base.rules[0];
+	return styleProgramFromRules(
+		[
+			{
+				kind: "keyframes",
+				name,
+				conditions: [],
+				declarations: [],
+				children: (root?.children ?? []).map((child) => ({
+					...child,
+					selector: child.selector?.replace(/^&\s+/u, ""),
+				})),
+				order: 0,
+			},
+		],
+		{ source: base.source, residuals: base.residuals },
 	);
 }
 
@@ -733,8 +772,25 @@ function parseCalls(
 					});
 					continue;
 				}
+				const templateBody = source.slice(firstTick + 1, lastTick);
+				if (/\$\{[^`]*`/u.test(templateBody)) {
+					residuals.push({
+						kind: "dynamic",
+						text: source.slice(start, lastTick + 1),
+						hint: `${pattern.name} nested template interpolation requires a host-specific lowering`,
+					});
+					continue;
+				}
 				const template = source.slice(start, lastTick + 1);
-				let program = parseTemplateProgram(source.slice(firstTick + 1, lastTick), context, start);
+				let program =
+					pattern.kind === "keyframes"
+						? parseKeyframeTemplateProgram(
+								templateBody,
+								context,
+								start,
+								sourceName(source, start, `${pattern.name}${matches.length + 1}`),
+							)
+						: parseTemplateProgram(templateBody, context, start);
 				program = {
 					...program,
 					source: {

@@ -24,7 +24,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 			const importer = createRequire(join(root, "package.json"));
 			const resolved = importer.resolve(packageName);
-			return (await import(pathToFileURL(resolved).href)) as T;
+			return (await import(/* @vite-ignore */ pathToFileURL(resolved).href)) as T;
 		} catch (error) {
 			if (isMissingModule(error)) return undefined;
 			throw error;
@@ -34,7 +34,7 @@ export class NodeProjectModuleLoader implements ProjectModuleLoader {
 	async importFile<T>(file: string): Promise<T | undefined> {
 		try {
 			const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
-			return (await import(pathToFileURL(file).href)) as T;
+			return (await import(/* @vite-ignore */ pathToFileURL(file).href)) as T;
 		} catch (error) {
 			if (isMissingModule(error)) return undefined;
 			throw error;

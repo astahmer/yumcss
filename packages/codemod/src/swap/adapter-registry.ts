@@ -148,7 +148,7 @@ export function createStyleAdapterRegistry(
 			);
 		},
 		async discover(specifiers, options = {}) {
-			const load = options.load ?? ((specifier: string) => import(specifier));
+			const load = options.load ?? ((specifier: string) => import(/* @vite-ignore */ specifier));
 			return Promise.all(
 				specifiers.map(async (specifier): Promise<AdapterDiscoveryResult> => {
 					try {
@@ -185,7 +185,9 @@ export function createStyleAdapterRegistry(
 				options.loadPackageJson ??
 				(async (specifier: string) => {
 					try {
-						const loaded = await import(`${specifier}/package.json`, { with: { type: "json" } });
+						const loaded = await import(/* @vite-ignore */ `${specifier}/package.json`, {
+							with: { type: "json" },
+						});
 						return (loaded.default ?? loaded) as Readonly<Record<string, unknown>>;
 					} catch {
 						return undefined;

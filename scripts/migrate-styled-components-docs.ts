@@ -11,7 +11,7 @@ import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
-	DEFAULT_MIGRATION_PROGRAM_POLICY,
+	StyleProgramEmissionHint,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "../packages/codemod/src/swap/index.ts";
@@ -131,7 +131,7 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 }
 
 function requiresRuntimeCss(program: StyleProgram): boolean {
-	if (DEFAULT_MIGRATION_PROGRAM_POLICY.needsRawTemplate(program)) return true;
+	if (program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true) return true;
 	if (program.residuals.some((residual) => residual.kind === "parse")) return true;
 	if (
 		program.residuals.some(
@@ -161,33 +161,63 @@ function requiresRuntimeCss(program: StyleProgram): boolean {
 function withRuntimeImports(source: string, lane: StyledComponentsDocsLane): string {
 	const needsRuntime = /\bcss\.(?:class|vars|group|props|raw|input|sheet)\b/.test(source);
 	const needsTemplate = /\bcssTemplate\s*`/.test(source);
-	const needsThemeProvider =
-		/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["']/.test(source);
-	const normalizedSource = needsThemeProvider
-		? source.replace(
-				/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["'];/g,
-				'import { ThemeProvider } from "@/pandwind/theme";',
-			)
-		: source;
-	if (!needsRuntime && !needsTemplate && !needsThemeProvider) return source;
+	const hasSourceCssImport =
+		/import\s+(?:[A-Za-z_$][\w$]*\s*,\s*)?\{[^}]*\bcss\b[^}]*\}\s+from\s+["']styled-components["']/u.test(
+			source,
+		);
+	const needsStyledCssFallback = /\bcss\s*`/.test(source) && !hasSourceCssImport;
+	const keepsSourceCss = hasSourceCssImport || needsStyledCssFallback;
+	const needsThemeProvider = /\bThemeProvider\b/.test(source);
+	const needsCreateTheme = /\bcreateTheme\s*\(/.test(source);
+	const needsStyledFallback =
+		/\bstyled\s*(?:\.|\()/.test(source) && !/\bimport\s+styled\b/.test(source);
+	const normalizedSource = source.replace(
+		/import\s+\{\s*ThemeProvider\s*\}\s+from\s+["']styled-components["'];?/g,
+		'import { ThemeProvider } from "@/pandwind/theme";',
+	);
+	if (
+		!needsRuntime &&
+		!needsTemplate &&
+		!needsThemeProvider &&
+		!needsStyledFallback &&
+		!needsStyledCssFallback
+	)
+		return source;
 	const runtimeBinding = lane === StyledComponentsDocsLane.DesignCss ? "dcss" : "css";
+	const runtimeAlias = keepsSourceCss ? "__pandwindCss" : runtimeBinding;
 	const runtimeSource = normalizedSource
 		.replaceAll('from "pandwind/runtime"', 'from "@/pandwind/runtime"')
 		.replaceAll('from "pandwind/theme"', 'from "@/pandwind/theme"');
 	const hasRuntime = new RegExp(
-		`import\\s*\\{[^}]*\\b${runtimeBinding}\\b[^}]*\\}\\s*from\\s*["']@/pandwind/runtime["']`,
+		`import\\s*\\{[^}]*\\b${runtimeAlias}\\b[^}]*\\}\\s*from\\s*["']@/pandwind/runtime["']`,
 	).test(runtimeSource);
 	const hasTemplate = runtimeSource.includes("const cssTemplate =");
 	const imports =
-		(hasRuntime ? "" : `import { ${runtimeBinding} } from "@/pandwind/runtime";\n`) +
+		(needsRuntime || needsTemplate
+			? hasRuntime
+				? ""
+				: `import { ${runtimeAlias === runtimeBinding ? runtimeBinding : `${runtimeBinding} as ${runtimeAlias}`} } from "@/pandwind/runtime";\n`
+			: "") +
+		(needsStyledFallback ? 'import styled from "styled-components";\n' : "") +
+		(needsStyledCssFallback ? 'import { css } from "styled-components";\n' : "") +
+		(needsThemeProvider || needsCreateTheme
+			? `import { ${[needsThemeProvider ? "ThemeProvider" : "", needsCreateTheme ? "createTheme" : ""].filter(Boolean).join(", ")} } from "@/pandwind/theme";\n`
+			: "") +
 		(needsTemplate && !hasTemplate
 			? 'const cssTemplate = (strings, ...values) => values.some((value) => typeof value === "function") ? (props) => strings.reduce((output, string, index) => { const value = values[index]; const resolved = typeof value === "function" ? (value.__pandwindClassName === undefined ? value(props) : "." + value.__pandwindClassName) : value; return output + string + (resolved ?? ""); }, "") : strings.reduce((output, string, index) => output + string + (values[index] ?? ""), "");\n'
 			: "");
-	if (imports === "") return runtimeSource;
+	const isolatedRuntimeSource =
+		keepsSourceCss && runtimeAlias !== runtimeBinding
+			? runtimeSource.replace(
+					/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g,
+					`${runtimeAlias}.$1`,
+				)
+			: runtimeSource;
+	if (imports === "") return isolatedRuntimeSource;
 	const directive = /^(?:["']use client["'];\s*\n?)/.exec(runtimeSource)?.[0];
 	return directive === undefined
-		? imports + runtimeSource
-		: directive + imports + runtimeSource.slice(directive.length);
+		? imports + isolatedRuntimeSource
+		: directive + imports + isolatedRuntimeSource.slice(directive.length);
 }
 
 class StyledComponentsLaneAdapter implements LaneAdapter {
@@ -246,6 +276,7 @@ class StyledComponentsLaneAdapter implements LaneAdapter {
 		return {
 			...result,
 			code: runtimeCode
+				.replaceAll("__pandwindCss", "dcss")
 				.replace(/\bcss\.(class|vars|group|props|raw|input|sheet)\b/g, "dcss.$1")
 				.replaceAll("css(", "dcss(")
 				.replaceAll("createCx({ css })", "createCx({ css: dcss })"),
@@ -328,9 +359,6 @@ function staticStyleCollector(files: ReadonlyMap<string, string>): string {
 		.join("\n");
 	return `import { runtimeSheet } from "./runtime";
 ${imports}
-import GlobalStyles from "../components/GlobalStyles";
-
-GlobalStyles();
 process.stdout.write(runtimeSheet.css());
 `;
 }
@@ -343,13 +371,25 @@ function staticCssFromSource(files: ReadonlyMap<string, string>): string {
 	const runtimeScanner = createCssSourceScanner(["runtime"]);
 	const styles: StyleObject[] = [];
 	const sheet = createStylesheet(staticPreset as never);
+	const processStaticVarKey = (key: string): void => {
+		try {
+			sheet.processVarKey(key);
+		} catch (error) {
+			// A component interpolation is a runtime selector, not a static
+			// condition. The runtime collector imports the same source files and
+			// remains the authoritative fallback for those keys; static extraction
+			// must not make the whole migration fail while trying to decode one.
+			if (error instanceof Error && error.message.startsWith("Unknown condition")) return;
+			throw error;
+		}
+	};
 	for (const [file, source] of files) {
 		const extracted = extraction.extractFile(source, file);
 		for (const style of extracted.sources) styles.push(style.style);
-		for (const key of extracted.varKeys) sheet.processVarKey(key);
+		for (const key of extracted.varKeys) processStaticVarKey(key);
 		const runtimeNames = runtimeScanner.findImports(source, file);
 		for (const key of runtimeScanner.findVarKeys(source, file, runtimeNames))
-			sheet.processVarKey(key);
+			processStaticVarKey(key);
 	}
 	return [sheet.generate(styles), sheet.gen.varRules()].filter((value) => value !== "").join("\n");
 }
@@ -419,6 +459,34 @@ const pandwindThemeContext = createContext<unknown>(undefined);
 export const usePandwindTheme = () => useContext(pandwindThemeContext);
 export const ThemeProvider = ({ theme, children }: { theme: unknown; children: unknown }) =>
   createElement(pandwindThemeContext.Provider, { value: theme }, children);
+
+type ThemeValue = string | number | boolean | null | undefined | ThemeRecord | ThemeValue[];
+type ThemeRecord = { [key: string]: ThemeValue };
+
+const themeValue = (value: ThemeValue, path: string[], prefix: string): ThemeValue => {
+  if (Array.isArray(value)) return value.map((item, index) => themeValue(item, [...path, String(index)], prefix));
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, themeValue(child, [...path, key], prefix)]));
+  }
+  if (value === null || value === undefined) return value;
+  const name = [prefix, ...path].join('-');
+  return 'var(--' + name + ', ' + String(value) + ')';
+};
+
+const themeVariables = (value: ThemeValue, path: string[], prefix: string): ThemeValue => {
+  if (Array.isArray(value)) return value.map((item, index) => themeVariables(item, [...path, String(index)], prefix));
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, themeVariables(child, [...path, key], prefix)]));
+  }
+  if (value === null || value === undefined) return value;
+  return '--' + [prefix, ...path].join('-');
+};
+
+export const createTheme = (value: ThemeRecord, options: { prefix?: string } = {}) => ({
+  ...themeValue(value, [], options.prefix ?? 'pw') as ThemeRecord,
+  vars: themeVariables(value, [], options.prefix ?? 'pw') as ThemeRecord,
+  GlobalStyle: () => null,
+});
 `;
 }
 
@@ -493,6 +561,22 @@ async function materialize(
 		const target = join(outputRoot, file);
 		await mkdir(dirname(target), { recursive: true });
 		await writeFile(target, code);
+	}
+	const sourceThemeFile = join(outputRoot, "utils/theme.ts");
+	try {
+		const sourceTheme = await readFile(sourceThemeFile, "utf8");
+		const migratedTheme = sourceTheme.replace(
+			/import\s+\{\s*createTheme\s*\}\s+from\s+["']styled-components["'];?/g,
+			'import { createTheme } from "@/pandwind/theme";',
+		);
+		const withThemeImport =
+			!migratedTheme.match(/\bimport\s+\{\s*createTheme\s*\}/) &&
+			/\bcreateTheme\s*\(/.test(migratedTheme)
+				? 'import { createTheme } from "@/pandwind/theme";\n' + migratedTheme
+				: migratedTheme;
+		if (withThemeImport !== sourceTheme) await writeFile(sourceThemeFile, withThemeImport);
+	} catch {
+		// Some reference revisions do not expose the optional theme helper.
 	}
 	const collectorFile = join(outputRoot, `${supportRoot}/static-style-collector.ts`);
 	await writeFile(collectorFile, staticStyleCollector(files));

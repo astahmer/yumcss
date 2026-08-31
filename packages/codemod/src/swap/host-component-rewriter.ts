@@ -122,8 +122,9 @@ function tagMatches(
 	const matches: Array<{ start: number; end: number; text: string }> = [];
 	for (const match of source.matchAll(pattern)) {
 		const start = match.index ?? 0;
-		const end = findTagEnd(source, start);
+		const end = findTagEnd(source, start) ?? source.indexOf(">", start);
 		if (end === undefined) continue;
+		if (end < 0) continue;
 		matches.push({ start, end: end + 1, text: source.slice(start, end + 1) });
 	}
 	return matches;
@@ -137,7 +138,6 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
 		const start = match.start;
-		if (excluded(request.source, "pandwind-component.tsx", start)) continue;
 		const text = match.text;
 		if (new RegExp(`<\\/\\s*${binding}\\b`).test(text)) {
 			edits.push({ start, end: match.end, text: `</${tag}>` });
@@ -169,8 +169,7 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 			attrs += ` className={${classExpression}}`;
 		}
 		if (styleExpression !== undefined) {
-			if (/\bstyle\s*=/.test(attrs)) continue;
-			attrs += ` style={${styleExpression}}`;
+			if (!/\bstyle\s*=/.test(attrs)) attrs += ` style={${styleExpression}}`;
 		}
 		edits.push({
 			start,

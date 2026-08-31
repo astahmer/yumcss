@@ -774,6 +774,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(parsed.matches[0]?.program.rules[0]?.children[0]?.selector).toBe("& h1");
 	});
 
+	test("keeps template keyframes as keyframe rules", () => {
+		const adapter = getCodemodAdapter("styled-components")!;
+		const source = "const fade = keyframes`0%, 100% { opacity: 0; } 50% { opacity: 1; }`;";
+		const parsed = adapter.parse(source, {
+			file: "animation.ts",
+			source,
+			config: { adapter: "styled-components", files: [], values: {} },
+		});
+		expect(parsed.matches[0]?.program.rules[0]?.kind).toBe("keyframes");
+		expect(parsed.matches[0]?.program.rules[0]?.children.map((child) => child.selector)).toEqual([
+			"0%, 100%",
+			"50%",
+		]);
+	});
+
 	test("wraps function-valued Solid and Vue styles with host runtime context", () => {
 		const solid = runAdapterMigration(
 			'import { styled } from "solid-styled-components";\n' +
