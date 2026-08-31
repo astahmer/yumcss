@@ -20,6 +20,8 @@ export interface StyleLoweringResult {
 	readonly program: StyleProgram;
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly applied: readonly string[];
+	/** Residual kinds this strategy proved it replaced with a safe representation. */
+	readonly resolvedResidualKinds?: readonly string[];
 }
 
 export interface StyleLoweringPlan extends StyleLoweringResult {
@@ -44,6 +46,7 @@ export interface StyleLoweringRegistry {
 	readonly lowerings: readonly StyleLowering[];
 	register(lowering: StyleLowering): StyleLoweringRegistry;
 	registerPlugin(plugin: StyleLoweringPlugin): StyleLoweringRegistry;
+	extend(lowerings: readonly StyleLowering[]): StyleLoweringRegistry;
 	lower(context: StyleLoweringContext): StyleLoweringResult;
 	plan(context: StyleLoweringContext): StyleLoweringPlan;
 }
@@ -295,12 +298,27 @@ export function createStyleLoweringRegistry(
 			for (const lowering of plugin.lowerings) registry.register(lowering);
 			return registry;
 		},
+		extend(additional) {
+			const known = new Set(registry.lowerings.map((lowering) => lowering.id));
+			const merged = [...registry.lowerings];
+			for (const lowering of additional) {
+				if (known.has(lowering.id)) continue;
+				known.add(lowering.id);
+				merged.push(lowering);
+			}
+			return createStyleLoweringRegistry(merged);
+		},
 		lower(context) {
 			let program = context.program;
 			const residuals: StyleProgramResidual[] = [];
 			const applied: string[] = [];
 			for (const lowering of registry.lowerings) {
 				const result = lowering.apply({ ...context, program });
+				if (result.resolvedResidualKinds !== undefined) {
+					const resolved = new Set(result.resolvedResidualKinds);
+					for (let index = residuals.length - 1; index >= 0; index--)
+						if (resolved.has(residuals[index]!.kind)) residuals.splice(index, 1);
+				}
 				program = result.program;
 				residuals.push(...result.residuals);
 				applied.push(...result.applied);

@@ -2,6 +2,8 @@ import { describe, expect, test } from "vitest";
 import {
 	STYLE_VALIDATORS,
 	STYLE_LOWERING_REGISTRY,
+	STYLE_LOWERING_SCHEMA,
+	createStyleLoweringRegistry,
 	createStyleValidatorRegistry,
 	requiredAdapterCapabilities,
 	styleProgramFromSourceObject,
@@ -145,5 +147,35 @@ describe("semantic metadata and validator domains", () => {
 		});
 
 		expect(plan.representation).toBe(StyleRepresentationKind.CustomProperty);
+	});
+
+	test("composes an adapter-owned lowering without changing the runner", () => {
+		const input = styleProgramFromSourceObject("color: props.color", {});
+		const staticProgram = styleProgramFromSourceObject("color: 'red'", {});
+		const registry = createStyleLoweringRegistry().extend([
+			{
+				schema: STYLE_LOWERING_SCHEMA,
+				id: "fixture-source-lowering",
+				apply: () => ({
+					program: staticProgram,
+					residuals: [],
+					applied: ["fixture-source-lowering"],
+					resolvedResidualKinds: ["dynamic"],
+				}),
+			},
+		]);
+		const plan = registry.plan({
+			program: input,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "fixture-target",
+				capabilities: { declarations: "exact" },
+			},
+			mode: "safe",
+		});
+
+		expect(plan.applied).toContain("fixture-source-lowering");
+		expect(plan.representation).toBe(StyleRepresentationKind.Static);
+		expect(plan.program.declarations[0]?.value).toEqual({ kind: "literal", value: "red" });
 	});
 });

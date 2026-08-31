@@ -187,6 +187,17 @@ function isPandwindTarget(adapter: { readonly id: string; readonly system?: stri
 	return adapter.id === CodemodAdapterId.Pandwind || adapter.system === CodemodAdapterId.Pandwind;
 }
 
+function loweringRegistryForRoute(
+	base: StyleLoweringRegistry,
+	source: StyleAdapter,
+	target: StyleAdapter,
+): StyleLoweringRegistry {
+	const byId = new Map<string, NonNullable<StyleAdapter["lowerings"]>[number]>();
+	for (const lowering of [...(source.lowerings ?? []), ...(target.lowerings ?? [])])
+		byId.set(lowering.id, lowering);
+	return byId.size === 0 ? base : base.extend([...byId.values()]);
+}
+
 /** Run one v2 adapter-to-adapter migration over a source file. */
 export function runAdapterMigration(
 	source: string,
@@ -330,6 +341,11 @@ function runAdapterMigrationInternal(
 		semantic: options.semantic,
 	});
 	const mode = options.mode ?? "safe";
+	const loweringRegistry = loweringRegistryForRoute(
+		options.loweringRegistry ?? STYLE_LOWERING_REGISTRY,
+		sourceAdapter,
+		targetAdapter,
+	);
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const imports = new Set<string>();
@@ -351,7 +367,7 @@ function runAdapterMigrationInternal(
 	const dynamicRewrites: Array<{ binding?: string; expression: string; framework: string }> = [];
 	let skipped = 0;
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		const lowering = (options.loweringRegistry ?? STYLE_LOWERING_REGISTRY).plan({
+		const lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,

@@ -32,6 +32,7 @@ import {
 } from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
+import type { StyleLowering } from "./lowering.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -88,6 +89,7 @@ export interface CodemodAdapterSpec {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	readonly lowerings?: readonly StyleLowering[];
 	readonly configFiles?: readonly string[];
 	readonly detect?: (
 		context: AdapterDetectionContext,
@@ -944,6 +946,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		sourceModules: spec.sourceModules,
 		capabilities: spec.capabilities,
 		dependencies: spec.packages,
+		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
 		migration: spec.migration,
 		detect: (context) =>
 			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??

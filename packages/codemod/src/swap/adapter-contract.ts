@@ -14,6 +14,7 @@ import type {
 	StyleThemeBinding,
 } from "./semantic-ir.ts";
 import type { SourceScanResult } from "pandwind/source";
+import type { StyleLowering } from "./lowering.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
@@ -179,6 +180,8 @@ export interface StyleAdapter {
 	readonly sourceModules: readonly string[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
+	/** Adapter-owned semantic strategies; the runner only composes these ports. */
+	readonly lowerings?: readonly StyleLowering[];
 	readonly migration?: AdapterMigrationHooks;
 	detect(context: AdapterDetectionContext): AdapterDetectionResult;
 	loadConfig(context: AdapterConfigContext): AdapterProjectConfig;

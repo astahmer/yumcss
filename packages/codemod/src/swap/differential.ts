@@ -204,7 +204,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		};
 	}
 	const capability = targetAdapter.capabilities;
-	const lowering = (fixture.lowerings ?? STYLE_LOWERING_REGISTRY).lower({
+	const lowering = (fixture.lowerings ?? STYLE_LOWERING_REGISTRY).plan({
 		program: sourceProgram,
 		target: capability,
 		mode,
