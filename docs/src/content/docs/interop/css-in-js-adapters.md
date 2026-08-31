@@ -127,6 +127,13 @@ There is deliberately no standalone MUI `sx()` function, so an unused
 standalone Pandwind class binding remains source-preserving with a
 `host-framework` residual rather than becoming invalid target code.
 
+StyleX uses the same target-owned host port with a different representation.
+A static React styled subject can become a StyleX style object and its
+intrinsic use is rewritten from `<Card />` to
+`<div {...stylex.props(Card)} />`. This is not a generic class rewrite:
+StyleX's `props` helper owns the returned host props, and the adapter keeps a
+residual for unsupported framework or attribute shapes.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening

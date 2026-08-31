@@ -120,6 +120,13 @@ targets and component-oriented targets therefore use different typed host
 representations, even when both produce equivalent declarations in the
 semantic program.
 
+StyleX is a class-oriented target with a React-specific host projection. When
+an intrinsic styled subject is used as `<Card />`, its static declaration is
+emitted as a StyleX style object and the target component port rewrites the
+use to `<div {...stylex.props(Card)} />`. The target owns this rewrite because
+StyleX's `stylex.props` result is not a DOM `className` string. A non-React
+host or an unsupported attribute shape remains an explicit host residual.
+
 `StyleProgram.sourceMap` is the provenance projection for a semantic program:
 it aggregates the program, rule, theme/composition, and dynamic-value source
 locations without forcing legacy `SwapIR` callers to pay for rich nodes.

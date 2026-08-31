@@ -49,6 +49,12 @@ the runner only negotiates the typed representation and applies the returned
 edit. Bare unused bindings remain explicit residuals because MUI has no
 standalone `sx()` API.
 
+StyleX now demonstrates a target-owned component-to-host projection. For a
+static React intrinsic subject, the target emits a StyleX style object and
+rewrites `<Card />` to `<div {...stylex.props(Card)} />`; StyleX is never
+treated as if its style object were a DOM class string. The component rewrite
+port remains conservative for non-React or unsupported attribute shapes.
+
 The same contract now describes Stitches and styled-components as native React
 component targets rather than class-string targets. Their component subjects
 remain component expressions in host usage, while class-oriented targets still
