@@ -310,8 +310,8 @@ static-evaluation evidence. The lowering registry handles resolved theme
 bindings, custom-property fallback, composition flattening, plugin transforms,
 runtime context, and framework metadata. Its `plan()` result records the
 selected representation (`static`, target-native, custom-property,
-runtime-carrier, portable-artifact, or residual) and the representations the target contract can
-negotiate. A migration result also retains one lowering plan per parsed source
+runtime-carrier, portable-artifact, or residual) and the representations the
+target contract can negotiate. A migration result also retains one lowering plan per parsed source
 match, so diagnostics, IDE tooling, and proof runners can inspect why a route
 selected a representation instead of inferring it from generated text. A
 target-native plan may explicitly resolve a partial capability only for the
@@ -321,6 +321,14 @@ the migration runner composes them without an ecosystem switch. A target
 adapter receives an optional semantic observation on `AdapterEmitResult` when
 an opaque runtime registration cannot safely be reparsed; validators compare
 that observation rather than pretending the emitted call is a static class.
+
+Class-oriented targets may also implement a named-map projection. Tailwind's
+adapter accepts a program such as `{ button: { color: "red" } }` and emits a
+map of class strings, allowing JSS, StyleX, Aphrodite, and Style9 named rules
+to cross that boundary without flattening the rule name. The reverse parser
+recognizes the same map, including conditional arbitrary utilities such as
+`hover:[color:red]`; bracket-aware token splitting is part of the UnoCSS and
+Tailwind adapter contracts rather than a runner special case.
 
 Runtime fallback is a deliberate second lane. Static extraction is attempted
 first; only unresolved dynamic expressions retain the smallest target runtime
