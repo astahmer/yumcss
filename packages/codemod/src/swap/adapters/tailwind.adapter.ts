@@ -20,12 +20,7 @@ import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 
-export interface TailwindDeclaration {
-	readonly prop: string;
-	readonly value: string;
-}
-
-export interface TailwindUtilityResolver {
+interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
 }
 
@@ -422,5 +417,3 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 		},
 	};
 }
-
-export default createTailwindAdapter({ moduleLoader: null });

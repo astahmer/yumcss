@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { examplePreset } from "pandwind/preset";
 import { resolve } from "node:path";
 import { loadMetaFromSources } from "../src/meta.ts";
-import { SWAP_REGISTRY, runSwap, SwapSourceId, SwapTargetId } from "../src/swap/index.ts";
+import { SWAP_REGISTRY, runSwap, SwapSourceId } from "../src/swap/index.ts";
 
 const appDir = resolve(import.meta.dirname, "../../../apps/example/src");
 const meta = loadMetaFromSources({
@@ -70,7 +70,7 @@ describe("flat SwapIR source/target matrix", () => {
 
 	test("keeps unmapped utilities source-preserving in every target direction", () => {
 		const source =
-			'import { tw } from "./tw";\n' + 'const card = tw({ totallyUnknownUtility: "value" });';
+			'import { tw } from "./tw";\nconst card = tw({ totallyUnknownUtility: "value" });';
 		for (const target of targets) {
 			const result = migrate(source, SwapSourceId.Tw, target);
 			expect(result.skippedByMarker, `tw -> ${target}`).toBe(1);
