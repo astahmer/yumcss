@@ -141,6 +141,18 @@ export type {
 	MigrationSkipDiagnosticInput,
 } from "./migration-diagnostics.ts";
 export type { ExternalIdentifier } from "./identifiers.ts";
+export {
+	SEMANTIC_CONTRACT_SUITE_SCHEMA,
+	createSemanticContractSuite,
+} from "./semantic-contract-suite.ts";
+export type {
+	SemanticContractCase,
+	SemanticContractFailure,
+	SemanticContractFixture,
+	SemanticContractOutcome,
+	SemanticContractReport,
+	SemanticContractSuite,
+} from "./semantic-contract-suite.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
