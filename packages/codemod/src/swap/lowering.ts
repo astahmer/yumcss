@@ -385,7 +385,14 @@ export function createStyleLoweringRegistry(
 			}
 			return {
 				program,
-				residuals,
+				residuals: [
+					...new Map(
+						residuals.map((residual) => [
+							`${residual.kind}\0${residual.text}\0${residual.hint ?? ""}`,
+							residual,
+						]),
+					).values(),
+				],
 				applied,
 				...(resolvedCapabilities.size === 0
 					? {}

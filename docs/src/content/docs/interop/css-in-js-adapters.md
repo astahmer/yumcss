@@ -123,7 +123,13 @@ preserves that expression instead of reporting a false framework or capability
 skip. Chakra UI and next-yak likewise negotiate their own runtime carriers for
 hostless dynamic values. Static-only targets still produce a residual for the
 same input unless their own adapter can lower it to a custom property or other
-validated carrier.
+validated carrier. Tailwind's class target now owns that latter projection for
+React/Preact host bindings: it emits an arbitrary utility using
+`var(--pandwind-dynamic-...)` and adds the matching inline custom-property
+binding. Existing style props and non-JSX hosts remain residuals until their
+host adapter can merge the binding safely. UnoCSS uses the same custom-property
+carrier and host port, while preserving the same fail-closed behavior for
+unsupported host shapes.
 
 Target representation negotiation is also fail-closed. When a target
 explicitly refuses the detected framework or host shape, the runner does not

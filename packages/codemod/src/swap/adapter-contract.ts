@@ -147,6 +147,10 @@ export interface AdapterHostRewriteContext {
 	readonly binding?: string;
 	readonly framework?: string;
 	readonly representation: StyleHostRepresentationKind;
+	/** Semantic carrier selected for the emitted style value. */
+	readonly representationKind?: StyleRepresentationKind;
+	/** Lowering residuals that a target carrier may explicitly preserve. */
+	readonly residuals?: readonly StyleProgramResidual[];
 }
 
 export interface AdapterHostRewriteResult {
@@ -224,12 +228,19 @@ export interface AdapterTargetMigrationPolicy {
 		readonly framework?: string;
 		readonly binding?: string;
 		readonly hostRepresentation?: StyleHostRepresentationKind;
+		/** Original source used to preflight host rewrites before lowering. */
+		readonly source?: string;
 	}) => StyleRepresentationKind | undefined;
 	/** Capabilities satisfied by the selected target-owned representation. */
 	readonly capabilitiesForRepresentation?: (context: {
 		readonly program: StyleProgram;
 		readonly representation: StyleRepresentationKind;
 	}) => readonly AdapterCapability[];
+	/** Residual kinds represented by the selected target carrier and host rewrite. */
+	readonly preservesResidualKindsForRepresentation?: (context: {
+		readonly program: StyleProgram;
+		readonly representation: StyleRepresentationKind;
+	}) => readonly string[];
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */

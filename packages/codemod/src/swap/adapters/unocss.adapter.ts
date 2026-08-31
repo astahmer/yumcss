@@ -15,10 +15,16 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
-import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleRepresentationKind,
+} from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
+import { DynamicClassHost } from "./class-target-dynamic.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -689,6 +695,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				"named-conditions": "partial",
 				"pseudo-conditions": "exact",
 				"dynamic-values": "unsupported",
+				"custom-properties": "exact",
 			},
 		},
 		detect: (context) => {
@@ -723,6 +730,32 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
+				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) =>
+					DynamicClassHost.hasCarrier(program) &&
+						hasHostContext &&
+						(binding !== undefined &&
+							(framework === undefined ||
+								[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
+									framework as BuiltinHostFramework,
+								))) &&
+						DynamicClassHost.canRewrite(source ?? "", binding)
+						? StyleRepresentationKind.CustomProperty
+						: undefined,
+				capabilitiesForRepresentation: ({ representation }) =>
+					representation === StyleRepresentationKind.CustomProperty
+						? ["custom-properties"]
+						: [],
+				preservesResidualKindsForRepresentation: ({ representation }) =>
+					representation === StyleRepresentationKind.CustomProperty
+						? ["dynamic-custom-property"]
+						: [],
+				rewriteHost: ({ code, binding, framework, representationKind, residuals }) =>
+					DynamicClassHost.rewrite("UnoCSS", code, {
+						binding,
+						framework,
+						representationKind,
+						residuals,
+					}),
 			},
 		},
 		validate: (source, target, residuals = []) => {

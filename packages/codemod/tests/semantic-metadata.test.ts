@@ -16,7 +16,12 @@ import type { StyleProgram } from "../src/swap/index.ts";
 describe("semantic metadata and validator domains", () => {
 	test("retains dynamic dependencies and project semantic context", () => {
 		const program = styleProgramFromSourceObject("color: theme.colors.foreground, padding: 2", {
-			source: { file: "Card.tsx", framework: "react" },
+			source: {
+				file: "Card.tsx",
+				framework: "react",
+				hostOpenTag: "<div className={card}>",
+				hostStyleAttributes: ["className={card}"],
+			},
 			themes: [{ path: "colors.foreground", authored: "theme.colors.foreground" }],
 			compositions: [{ kind: StyleProgramCompositionKind.Mixin, reference: "surface" }],
 			runtime: { phase: "render", framework: "react", dependencies: ["theme"] },

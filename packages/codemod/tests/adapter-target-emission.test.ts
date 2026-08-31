@@ -132,6 +132,59 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain(expression);
 	});
 
+	test("lowers a host-bound dynamic value to a Tailwind custom-property carrier", () => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				"const card = css.class({ color: theme.foreground });\n" +
+				"export const App = () => <div className={card} />;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Tailwind,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("[color:var(--pandwind-dynamic-");
+		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("theme.foreground");
+	});
+
+	test("lowers a host-bound dynamic value to an UnoCSS custom-property carrier", () => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				"const card = css.class({ color: theme.foreground });\n" +
+				"export const App = () => <div className={card} />;",
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.UnoCSS,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("[color:var(--pandwind-dynamic-");
+		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("theme.foreground");
+	});
+
+	test("does not overwrite an existing host style while lowering a dynamic class", () => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				"const card = css.class({ color: theme.foreground });\n" +
+				'export const App = () => <div className={card} style={{ color: "blue" }} />;',
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Tailwind,
+		);
+
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("style={{ color: \"blue\" }}");
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "dynamic-custom-property" }),
+			]),
+		);
+	});
+
 	test("preserves a React Native named style map through MUI's portable target", () => {
 		const result = migrate(
 			'import { StyleSheet } from "react-native";\n' +

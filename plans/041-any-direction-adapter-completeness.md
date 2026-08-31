@@ -216,6 +216,11 @@ because its generic object renderer happens to echo an expression.
 Chakra UI and next-yak now make the same decision through explicit
 `RuntimeCarrier` negotiation; static/compiler targets remain fail-closed until
 they own a host-bound custom-property projection.
+Tailwind now owns that projection for React/Preact named class bindings: the
+lowering emits a `var(--pandwind-dynamic-...)` utility and the adapter's host
+rewrite binds the original expression inline. Existing style props and
+non-JSX hosts remain explicit residuals. UnoCSS uses the same shared class-host
+port and retains the same fail-closed behavior for unsupported host shapes.
 
 The target policy also carries an explicit `requiresHostContext` contract and
 an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop
