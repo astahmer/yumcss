@@ -109,6 +109,20 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("css.class({ color: theme.foreground })");
 	});
 
+	test("preserves a React Native named style map through MUI's portable target", () => {
+		const result = migrate(
+			'import { StyleSheet } from "react-native";\n' +
+				'const styles = StyleSheet.create({ button: { color: "red" } });',
+			CodemodAdapterId.ReactNative,
+			CodemodAdapterId.Mui,
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('"button": css.class({ color: "red" })');
+	});
+
 	test.each([
 		[CodemodAdapterId.Goober, 'import { css } from "goober";'],
 		[CodemodAdapterId.Aphrodite, 'import { StyleSheet } from "aphrodite";'],
