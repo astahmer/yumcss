@@ -132,6 +132,13 @@ export default defineCodemodAdapter({
 			form: "jsx-style",
 			styleProps,
 		},
+		// Mantine's standalone target projection must also be parseable when a
+		// later migration starts from the emitted file.
+		{
+			name: "mantine-style",
+			regex: /\bstyle\s*\(\s*\{/g,
+			form: "object",
+		},
 	],
 	packages: dependency("@mantine/core", "peer"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
@@ -162,6 +169,17 @@ export default defineCodemodAdapter({
 		),
 	},
 	emit(program, { programObject }) {
+		if (program.rules.some((rule) => rule.kind !== "style"))
+			return {
+				text: programObject(program),
+				residuals: [
+					{
+						kind: "rule-level",
+						text: program.rules.map((rule) => rule.kind).join(", "),
+						hint: "Mantine standalone style projection supports style rules only",
+					},
+				],
+			};
 		return {
 			text: `style(${programObject(program)})`,
 			imports: ['import { style } from "@mantine/core";'],

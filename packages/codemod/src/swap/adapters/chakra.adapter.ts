@@ -491,6 +491,14 @@ export function createChakraAdapter(
 					...preserveNextImageFill(host),
 				],
 			},
+			// This is the adapter's canonical standalone projection. Keeping it in
+			// the source pattern set makes a Chakra emission a valid source for the
+			// reverse route instead of creating a one-way pseudo target.
+			{
+				name: "chakra-css",
+				regex: /\bcss\s*\(\s*\{/g,
+				form: "object",
+			},
 		],
 		packages: dependency("@chakra-ui/react", "peer"),
 		capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
@@ -538,6 +546,17 @@ export function createChakraAdapter(
 			),
 		}),
 		emit(program, { programObject }) {
+			if (program.rules.some((rule) => rule.kind !== "style"))
+				return {
+					text: programObject(program),
+					residuals: [
+						{
+							kind: "rule-level",
+							text: program.rules.map((rule) => rule.kind).join(", "),
+							hint: "Chakra standalone css projection supports style rules only",
+						},
+					],
+				};
 			return {
 				text: `css(${programObject(program)})`,
 				imports: ['import { css } from "@chakra-ui/react";'],

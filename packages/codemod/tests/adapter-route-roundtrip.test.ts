@@ -1,0 +1,106 @@
+import { describe, expect, test } from "vitest";
+import {
+	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
+	runAdapterMigration,
+} from "../src/swap/index.ts";
+import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
+
+const catalog = createBuiltinCodemodCatalog();
+const happyFixtures = new Map(
+	completeAdapterMatrixFixtures
+		.filter((fixture) => fixture.scenario === "happy")
+		.map((fixture) => [fixture.sourceAdapter, fixture]),
+);
+
+function migrate(
+	source: string,
+	from: string,
+	to: string,
+	file: string,
+	semantic: (typeof completeAdapterMatrixFixtures)[number]["semantic"],
+) {
+	return runAdapterMigration(source, {
+		from,
+		to,
+		file,
+		mode: "safe",
+		readFile: () => undefined,
+		adapterRegistry: catalog.registry,
+		...(semantic === undefined ? {} : { semantic }),
+	});
+}
+
+describe("adapter route round-trip contract", () => {
+	test("every clean forward route remains actionable in the reverse direction", () => {
+		const failures: string[] = [];
+		for (const source of catalog.adapters) {
+			const sourceFixture = happyFixtures.get(source.id);
+			if (sourceFixture === undefined) throw new Error(`missing fixture for ${source.id}`);
+			for (const target of catalog.adapters) {
+				if (source.id === target.id) continue;
+				const forward = migrate(
+					sourceFixture.source,
+					source.id,
+					target.id,
+					sourceFixture.file,
+					sourceFixture.semantic,
+				);
+				if (forward.converted === 0 || forward.skipped > 0 || forward.residuals.length > 0)
+					continue;
+				const targetFixture = happyFixtures.get(target.id);
+				if (targetFixture === undefined) throw new Error(`missing fixture for ${target.id}`);
+				const reverse = migrate(
+					forward.code,
+					target.id,
+					source.id,
+					sourceFixture.file,
+					targetFixture.semantic,
+				);
+				const actionable =
+					reverse.converted > 0 ||
+					reverse.skipped > 0 ||
+					reverse.residuals.length > 0 ||
+					reverse.code !== forward.code;
+				if (!actionable) failures.push(`${source.id} -> ${target.id}`);
+			}
+		}
+		expect(failures).toEqual([]);
+	});
+
+	test.each([CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS])(
+		"parses a generated standalone class literal in a module",
+		(targetId) => {
+			const result = migrate(
+				'css.class({ color: "red", display: "flex" })',
+				CodemodAdapterId.Pandwind,
+				targetId,
+				"Card.tsx",
+				undefined,
+			);
+			const generated = `import { Box } from "@example/host"; ${result.code}`;
+			const reverse = migrate(
+				generated,
+				targetId,
+				CodemodAdapterId.Pandwind,
+				"Card.tsx",
+				undefined,
+			);
+			expect(result.residuals).toEqual([]);
+			expect(reverse.converted).toBeGreaterThan(0);
+			expect(reverse.residuals).toEqual([]);
+			expect(reverse.code).toContain("css.class");
+		},
+	);
+
+	test("does not treat a commented arbitrary class as executable source", () => {
+		const adapter = catalog.registry.get(CodemodAdapterId.Tailwind)!;
+		const source = '// "[color:red]"\nconst value = "plain";';
+		const parsed = adapter.parse(source, {
+			file: "comment.ts",
+			source,
+			config: adapter.loadConfig({ file: "comment.ts", source }),
+		});
+		expect(parsed.matches).toEqual([]);
+	});
+});

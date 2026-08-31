@@ -79,10 +79,11 @@ alone.
 Named style maps are projected through the target adapter when the target
 declares `native-map` or `class-map` support. The generic emitters apply that
 projection only to named style rules, so keyframe names cannot accidentally be
-wrapped as style-map entries. Class/compiler targets such as UnoCSS still need
-a target-owned generated stylesheet plus lookup projection; until that port
-exists, a named map remains an explicit residual instead of being flattened
-into one utility.
+wrapped as style-map entries. Class/compiler targets such as UnoCSS emit a
+named lookup object whose values are generated utility strings; the adapter
+parser recognizes that projection on the reverse route. Project-specific
+presets still require the official generator context, and unresolved utilities
+remain explicit residuals.
 
 That is why safe mode reports a typed capability residual instead of guessing.
 The bidirectional guarantee is that every declared route is resolved to a

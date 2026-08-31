@@ -19,6 +19,7 @@ import {
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
+import { detectStaticClassTarget } from "../class-target-detection.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -86,6 +87,8 @@ function arbitraryUtility(
 }
 
 function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
+	const arbitrary = arbitraryUtility(token, []);
+	if (arbitrary !== undefined) return arbitrary;
 	const prefixes = token.split(":");
 	const utility = prefixes.pop();
 	if (utility === undefined) return undefined;
@@ -132,6 +135,93 @@ function openingTagForAttribute(
 
 function staticClassAttributes(source: string): readonly RegExpExecArray[] {
 	return [...source.matchAll(/\b(className|class)\s*=\s*(["'])([^"']*)\2/g)];
+}
+
+function classBindingAttributes(source: string): readonly RegExpExecArray[] {
+	return [...source.matchAll(/\b(className|class)\s*=\s*\{\s*([A-Za-z_$][\w$]*)\s*\}/g)];
+}
+
+function staticClassAssignments(source: string): readonly RegExpExecArray[] {
+	return [...source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'])([^"']*)\2/g)];
+}
+
+function standaloneClassLiteral(
+	source: string,
+): { value: string; start: number; end: number } | undefined {
+	const match = /^\s*(["'])([^"']*\[[^"']*)\1\s*;?\s*$/u.exec(source);
+	if (match?.[2] === undefined) return undefined;
+	const start = source.indexOf(match[1]!, match[0].indexOf(match[1]!));
+	return start < 0 ? undefined : { value: match[2], start, end: start + match[2].length + 2 };
+}
+
+function classLiteralExpressions(source: string): readonly RegExpExecArray[] {
+	return [...source.matchAll(/(["'])([^"']*\[[^"']*)\1/g)];
+}
+
+function isExecutableClassLiteral(source: string, start: number): boolean {
+	const lineStart = source.lastIndexOf("\n", start - 1) + 1;
+	const linePrefix = source.slice(lineStart, start);
+	if (/\/\/.*$/u.test(linePrefix)) return false;
+	const blockStart = source.lastIndexOf("/*", start);
+	const blockEnd = source.lastIndexOf("*/", start);
+	if (blockStart > blockEnd) return false;
+	return /(?:^|;)\s*$/u.test(linePrefix);
+}
+
+function staticClassValue(source: string, binding: string): string | undefined {
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=\\s*(["'])([^"']*)\\1`).exec(
+		source,
+	)?.[2];
+}
+
+function parseClassValue(
+	value: string,
+	context: AdapterParseContext,
+	resolver: TailwindUtilityResolver,
+	start: number,
+	end: number,
+	residuals: readonly StyleProgramResidual[] = [],
+): AdapterParseResult["matches"][number] {
+	const declarations: StyleDeclaration[] = [];
+	const unknown: string[] = [];
+	for (const token of value.split(/\s+/u).filter(Boolean)) {
+		const resolved = resolver.resolve(token);
+		if (resolved === undefined) unknown.push(token);
+		else declarations.push(...resolved);
+	}
+	return {
+		start,
+		end,
+		program: styleProgramFromRules(
+			[
+				{
+					kind: "style",
+					conditions: [],
+					declarations,
+					children: [],
+					order: 0,
+				},
+			],
+			{
+				source: {
+					file: context.file,
+					start,
+					end,
+					adapter: CodemodAdapterId.Tailwind,
+				},
+				residuals: [
+					...residuals,
+					...unknown.map((token) => ({
+						kind: "unknown-utility" as const,
+						text: token,
+						hint: "Tailwind utility requires the project engine or a custom preset",
+					})),
+				],
+			},
+		),
+		sourceText: value,
+	};
 }
 
 function parseTailwind(
@@ -190,6 +280,74 @@ function parseTailwind(
 			program,
 			sourceText: openingTag.text,
 		});
+	}
+	const boundNames = new Set(
+		classBindingAttributes(source)
+			.map((attribute) => attribute[2])
+			.filter((binding): binding is string => binding !== undefined),
+	);
+	for (const attribute of classBindingAttributes(source)) {
+		const attributeStart = attribute.index ?? 0;
+		const binding = attribute[2];
+		if (binding === undefined || excluded(attributeStart)) continue;
+		const value = staticClassValue(source, binding);
+		const openingTag = openingTagForAttribute(source, attributeStart);
+		if (value === undefined || openingTag === undefined) continue;
+		const match = parseClassValue(value, context, resolver, openingTag.start, openingTag.end);
+		matches.push({
+			...match,
+			program: {
+				...match.program,
+				source: {
+					...match.program.source,
+					hostAttribute: attribute[0],
+					hostOpenTag: openingTag.text,
+					hostStyleAttributes: [attribute[0]!],
+				},
+			},
+			sourceText: openingTag.text,
+		});
+	}
+	for (const assignment of staticClassAssignments(source)) {
+		const binding = assignment[1];
+		const quote = assignment[2];
+		const value = assignment[3];
+		if (
+			binding === undefined ||
+			value === undefined ||
+			boundNames.has(binding) ||
+			!value.includes("[")
+		)
+			continue;
+		const valueStart =
+			(assignment.index ?? 0) + assignment[0].lastIndexOf(`${quote ?? '"'}${value}`);
+		matches.push(
+			parseClassValue(value, context, resolver, valueStart, valueStart + value.length + 2),
+		);
+	}
+	const standalone = standaloneClassLiteral(source);
+	if (standalone !== undefined)
+		matches.push(
+			parseClassValue(standalone.value, context, resolver, standalone.start, standalone.end),
+		);
+	const assignmentValueStarts = new Set(
+		staticClassAssignments(source).map(
+			(assignment) =>
+				(assignment.index ?? 0) +
+				assignment[0].lastIndexOf(`${assignment[2] ?? '"'}${assignment[3] ?? ""}`),
+		),
+	);
+	for (const literal of classLiteralExpressions(source)) {
+		const start = literal.index ?? 0;
+		const value = literal[2];
+		if (
+			value === undefined ||
+			assignmentValueStarts.has(start) ||
+			standalone?.start === start ||
+			!isExecutableClassLiteral(source, start)
+		)
+			continue;
+		matches.push(parseClassValue(value, context, resolver, start, start + value.length + 2));
 	}
 	return { matches, residuals };
 }
@@ -361,7 +519,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			},
 		},
 		detect: (context) => {
-			const matched = staticClassAttributes(context.source).length > 0;
+			const matched = detectStaticClassTarget(context.source).matched;
 			const configured = /(?:tailwindcss|@tailwindcss\/)/u.test(context.source);
 			return {
 				matched,

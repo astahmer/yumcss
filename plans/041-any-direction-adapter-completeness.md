@@ -155,9 +155,9 @@ remain governed by the real-repository proof matrix below.
 The named-map projection slice is now implemented for target adapters that
 declare `native-map` or `class-map`. The generic adapter emitters only apply
 that projection to named style rules, so keyframe names cannot be accidentally
-wrapped as style-map entries. UnoCSS remains an explicit boundary because a
-class/compiler target needs a generated stylesheet plus a lookup projection,
-not an object-map expression.
+wrapped as style-map entries. UnoCSS emits and parses a named lookup projection
+for its class/compiler target; project-specific presets still require the
+official generator context and unresolved utilities remain explicit residuals.
 
 Blocked source markers now include the ordered source and target adapter IDs,
 so a playground or CLI user can see which target contract is missing instead of
@@ -175,11 +175,17 @@ an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop
 before target emission, while a real host prop can still receive the projected
 object representation.
 
+The reverse-route contract now checks the emitted syntax itself. A clean
+forward route must either convert or report an explicit residual when the
+generated file is fed back through the source adapter; a no-op with no
+diagnostic is a contract failure. Tailwind and UnoCSS arbitrary utility
+literals, named lookup maps, and standalone projections are parsed by their
+own adapters, while comment literals remain excluded.
+
 The most important unresolved families are:
 
 - runtime interpolations, themes, and function-valued styles;
-- composition, recipes, and variant systems; named maps remain open only for
-  class/compiler targets that need generated stylesheet lookup projection;
+- composition, recipes, and variant systems;
 - styled-component subjects, `attrs`, polymorphism, and use-site rewrites;
 - JSS imperative rule application and plugin-generated styles;
 - globals, keyframes, font-face, layers, supports, selectors, nesting, and
@@ -192,9 +198,9 @@ The most important unresolved families are:
 
 The remaining skips are therefore not evidence that the HIR is missing. They
 identify target projections that still need an implementation: for example,
-MUI's `sx` object prop, UnoCSS's generated utility lookup, or cross-framework
-component rewrites. The next implementation must add those projections behind
-target-owned ports and prove them, rather than weakening the capability gate.
+MUI's `sx` object prop or cross-framework component rewrites. The next
+implementation must add those projections behind target-owned ports and prove
+them, rather than weakening the capability gate.
 
 ## Workstreams
 
