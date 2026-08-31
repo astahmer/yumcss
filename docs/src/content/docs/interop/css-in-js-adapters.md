@@ -120,8 +120,10 @@ without a JSX/template rewrite; `framework-semantics` is required only when the
 program contains a component subject or host-bound attributes. Goober and Fela
 declare their object carriers as exact scalar-dynamic targets, so safe mode
 preserves that expression instead of reporting a false framework or capability
-skip. Static-only targets still produce a residual for the same input unless
-their own adapter can lower it to a custom property or other validated carrier.
+skip. Chakra UI and next-yak likewise negotiate their own runtime carriers for
+hostless dynamic values. Static-only targets still produce a residual for the
+same input unless their own adapter can lower it to a custom property or other
+validated carrier.
 
 Target representation negotiation is also fail-closed. When a target
 explicitly refuses the detected framework or host shape, the runner does not

@@ -187,6 +187,9 @@ their dynamic-value promotion in their adapter module; Goober and Fela now
 declare and test exact scalar-dynamic carriers. The shared extra-adapter
 baseline remains partial so an adapter cannot claim runtime preservation merely
 because its generic object renderer happens to echo an expression.
+Chakra UI and next-yak now make the same decision through explicit
+`RuntimeCarrier` negotiation; static/compiler targets remain fail-closed until
+they own a host-bound custom-property projection.
 
 The target policy also carries an explicit `requiresHostContext` contract and
 an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop

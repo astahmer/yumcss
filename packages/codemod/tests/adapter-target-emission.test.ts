@@ -114,6 +114,8 @@ describe("target adapter emission contract", () => {
 		[CodemodAdapterId.Emotion, "theme.foreground"],
 		[CodemodAdapterId.StyledComponents, "theme.foreground"],
 		[CodemodAdapterId.Stitches, "theme.foreground"],
+		[CodemodAdapterId.ChakraUi, "theme.foreground"],
+		[CodemodAdapterId.NextYak, "theme.foreground"],
 		[CodemodAdapterId.Goober, "theme.foreground"],
 		[CodemodAdapterId.Fela, "theme.foreground"],
 	] as const)("preserves a hostless dynamic carrier for %s", (target, expression) => {
