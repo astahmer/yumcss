@@ -42,6 +42,8 @@ Feature: Playground migration lab
     Examples:
       | sourceLabel       | sourceId         |
       | Pandwind           | pandwind         |
+      | Panda              | panda            |
+      | Tailwind           | tailwind         |
       | Bamboo             | bamboo           |
       | Chakra Ui          | chakra-ui        |
       | Emotion            | emotion          |
@@ -74,6 +76,8 @@ Feature: Playground migration lab
     Examples:
       | targetLabel       | targetId         |
       | Pandwind          | pandwind         |
+      | Panda             | panda            |
+      | Tailwind          | tailwind         |
       | Bamboo            | bamboo           |
       | Chakra Ui         | chakra-ui        |
       | Emotion           | emotion          |

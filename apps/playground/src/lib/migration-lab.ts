@@ -250,6 +250,7 @@ export function createMigrationLab(): MigrationLab {
 					to,
 					file: fileFor(from),
 					readFile: () => undefined,
+					registry: catalog.systems,
 					adapterRegistry: catalog.registry,
 					mode: "safe",
 				});

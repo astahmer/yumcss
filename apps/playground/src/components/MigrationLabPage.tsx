@@ -177,7 +177,8 @@ function CapabilityReport(props: { result: MigrationLabResult }) {
 	if (blockers.length === 0)
 		return (
 			<p className="px-3 py-2 text-[12px] text-emerald-300/80">
-				The target contract accepts the semantic program or a registered lowering.
+				The target contract accepts the semantic program or a registered lowering; any remaining
+				host/configuration issue is listed in the residual report.
 			</p>
 		);
 	return (
