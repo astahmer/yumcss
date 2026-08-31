@@ -9,7 +9,11 @@ import type {
 	StyleProgramResidual,
 	StyleRule,
 } from "./semantic-ir.ts";
-import { StyleLoweringId, StyleRepresentationKind } from "./identifiers.ts";
+import {
+	StyleDynamicExpressionKind,
+	StyleLoweringId,
+	StyleRepresentationKind,
+} from "./identifiers.ts";
 
 export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
 export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
@@ -113,6 +117,18 @@ const dynamicAndThemes: StyleLowering = {
 		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
 			const value = declaration.value;
 			if (value.kind !== "dynamic") return declaration;
+			// A function-valued style is not a scalar runtime value. Replacing it
+			// with a custom property would stringify the function and silently lose
+			// its props/theme evaluation. Only a target-native function carrier or a
+			// host/framework lowering may consume it.
+			if (value.expressionKind === StyleDynamicExpressionKind.Function) {
+				residuals.push({
+					kind: "function-dynamic",
+					text: value.expression,
+					hint: "function-valued styles require a target-native or host prop wrapper",
+				});
+				return declaration;
+			}
 			const resolved = resolveThemeExpression(value.expression, program);
 			if (resolved !== undefined && level(target, "theme-context") === "unsupported") {
 				changed = true;
@@ -206,6 +222,8 @@ const runtimeAndPlugins: StyleLowering = {
 		const residuals: StyleProgramResidual[] = [];
 		let rules = program.rules;
 		let applied = false;
+		const resolvedPluginIds = new Set<string>();
+		let remainingPlugins = program.plugins;
 		if (
 			(program.plugins?.length ?? 0) > 0 &&
 			level(target, "plugin-transforms") === "unsupported"
@@ -217,22 +235,24 @@ const runtimeAndPlugins: StyleLowering = {
 					if (value.kind !== "dynamic") return declaration;
 					let expression = value.expression;
 					for (const transform of transforms) {
+						const before = expression;
 						if (transform.output !== undefined)
 							expression = expression.replace(transform.input, transform.output);
+						if (expression !== before) resolvedPluginIds.add(transform.id);
 					}
 					if (expression === value.expression) return declaration;
 					applied = true;
 					return { ...declaration, value: { ...value, expression } };
 				}),
 			);
-			if (!applied) {
-				for (const transform of transforms)
+			for (const transform of transforms)
+				if (!resolvedPluginIds.has(transform.id))
 					residuals.push({
 						kind: "plugin-transform",
 						text: transform.id,
 						hint: "target lacks plugin transform support",
 					});
-			}
+			remainingPlugins = transforms.filter((transform) => !resolvedPluginIds.has(transform.id));
 		}
 		const runtime =
 			level(target, "runtime-context") === "unsupported" ? undefined : program.runtime;
@@ -266,11 +286,18 @@ const runtimeAndPlugins: StyleLowering = {
 						declarations: allDeclarations({ ...program, rules }),
 						runtime,
 						source,
-						plugins: undefined,
+						...(remainingPlugins === undefined
+							? {}
+							: { plugins: remainingPlugins.length === 0 ? undefined : remainingPlugins }),
 					}
 				: program,
 			residuals,
 			applied: applied ? [StyleLoweringId.RuntimeAndPlugin] : [],
+			...(program.plugins !== undefined &&
+			residuals.every((residual) => residual.kind !== "plugin-transform") &&
+			resolvedPluginIds.size === program.plugins.length
+				? { resolvedCapabilities: ["plugin-transforms"] }
+				: {}),
 		};
 	},
 };

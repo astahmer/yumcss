@@ -785,6 +785,11 @@ function evaluateLiteralBinary(
 
 function dynamicExpressionKind(expression: string): StyleDynamicExpressionKind {
 	const trimmed = expression.trim();
+	if (
+		/^(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/.test(trimmed) ||
+		/^function(?:\s+[A-Za-z_$][\w$]*)?\s*\(/.test(trimmed)
+	)
+		return StyleDynamicExpressionKind.Function;
 	if (trimmed.startsWith("`") || trimmed.includes("${")) return StyleDynamicExpressionKind.Template;
 	if (trimmed.startsWith("{") && trimmed.endsWith("}")) return StyleDynamicExpressionKind.Object;
 	if (trimmed.startsWith("[") && trimmed.endsWith("]")) return StyleDynamicExpressionKind.Array;

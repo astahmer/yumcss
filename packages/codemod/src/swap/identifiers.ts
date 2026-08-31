@@ -89,6 +89,7 @@ export enum StyleDynamicExpressionKind {
 	Identifier = "identifier",
 	Member = "member",
 	Call = "call",
+	Function = "function",
 	Template = "template",
 	Conditional = "conditional",
 	Binary = "binary",

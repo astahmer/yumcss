@@ -9,6 +9,7 @@ import {
 	styleProgramFromSourceObject,
 	StyleProgramCompositionKind,
 	StyleRepresentationKind,
+	StyleDynamicExpressionKind,
 } from "../src/swap/index.ts";
 import type { StyleProgram } from "../src/swap/index.ts";
 
@@ -131,6 +132,34 @@ describe("semantic metadata and validator domains", () => {
 		);
 	});
 
+	test("never stringifies function-valued styles into custom properties", () => {
+		const program = styleProgramFromSourceObject("color: (props) => props.color", {});
+		expect(program.declarations[0]?.value).toMatchObject({
+			kind: "dynamic",
+			expressionKind: StyleDynamicExpressionKind.Function,
+		});
+		const result = STYLE_LOWERING_REGISTRY.lower({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "static-target",
+				capabilities: {
+					declarations: "exact",
+					"dynamic-values": "unsupported",
+					"custom-properties": "exact",
+				},
+			},
+			mode: "partial",
+		});
+		expect(result.program.declarations[0]?.value.kind).toBe("dynamic");
+		expect(result.program.declarations[0]?.value).not.toMatchObject({
+			value: expect.stringContaining("var(--pandwind-dynamic-"),
+		});
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "function-dynamic" })]),
+		);
+	});
+
 	test("accepts a target-native dynamic carrier when the target declares partial support", () => {
 		const program = styleProgramFromSourceObject("color: props.color", {});
 		const plan = STYLE_LOWERING_REGISTRY.plan({
@@ -149,6 +178,34 @@ describe("semantic metadata and validator domains", () => {
 		expect(plan.representation).toBe(StyleRepresentationKind.TargetNative);
 		expect(plan.resolvedCapabilities).toContain("dynamic-values");
 		expect(plan.residuals).toEqual([]);
+	});
+
+	test("retains unresolved plugin transforms while clearing only applied transforms", () => {
+		const program = styleProgramFromSourceObject("color: props.color", {
+			plugins: [
+				{ id: "replace-props", input: "props.color", output: "theme.color" },
+				{ id: "unavailable", input: "props.missing" },
+			],
+		});
+		const result = STYLE_LOWERING_REGISTRY.lower({
+			program,
+			target: {
+				schema: "pandwind.adapter-capabilities/2",
+				adapter: "static-target",
+				capabilities: { declarations: "exact", "plugin-transforms": "unsupported" },
+			},
+			mode: "partial",
+		});
+		expect(result.program.plugins).toEqual([expect.objectContaining({ id: "unavailable" })]);
+		expect(result.program.declarations[0]?.value).toMatchObject({
+			kind: "dynamic",
+			expression: "theme.color",
+		});
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: "plugin-transform", text: "unavailable" }),
+			]),
+		);
 	});
 
 	test("classifies the selected representation after lowering", () => {
