@@ -1,6 +1,10 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 const styleProps = [
 	"style",
@@ -135,6 +139,13 @@ export default defineCodemodAdapter({
 		components: "partial",
 	}),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+		},
+	},
 	detectPatterns: [/@mantine\/core/, /\b(?:sx|maw|fz|c|bg)\s*=/],
 	// Mantine components remain imported; only the style-prop layer is lowered.
 	sourceModules: [],

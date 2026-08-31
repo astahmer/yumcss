@@ -12,6 +12,7 @@ import {
 	CodemodStyleIdentity,
 	StyleProgramCompositionKind,
 	StyleProgramEmissionHint,
+	StyleHostRepresentationKind,
 } from "../identifiers.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -23,6 +24,8 @@ import {
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
+	hostRepresentation: StyleHostRepresentationKind.Class,
+	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 	requiresHostWrapper: ({ source, binding }) => {
 		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		return (
@@ -1068,13 +1071,13 @@ export default defineCodemodAdapter({
 			});
 		}
 		if (
-			context?.host?.wrapComponent === true &&
+			context?.host?.representation === StyleHostRepresentationKind.Component &&
 			program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
 		) {
 			const component = runtimeRawComponent(program, context);
 			if (component !== undefined) return finalize(component);
 		}
-		if (context?.host?.wrapComponent === true) {
+		if (context?.host?.representation === StyleHostRepresentationKind.Component) {
 			const component = staticComponent(program, programObject, context);
 			if (component !== undefined) return finalize(component);
 			const hybrid = hybridComponent(program, programObject, context);
@@ -1122,7 +1125,11 @@ export default defineCodemodAdapter({
 		const stylexDynamicGroup =
 			program.source?.adapter === CodemodAdapterId.StyleX &&
 			program.source.pattern === CodemodPatternId.StyleXCreate;
-		if ((context?.host?.wrapComponent === true || hasFunctionDynamic) && !stylexDynamicGroup) {
+		if (
+			(context?.host?.representation === StyleHostRepresentationKind.Component ||
+				hasFunctionDynamic) &&
+			!stylexDynamicGroup
+		) {
 			const component = runtimeComponent(program, programObject, context);
 			if (component !== undefined) return finalize(component);
 		}

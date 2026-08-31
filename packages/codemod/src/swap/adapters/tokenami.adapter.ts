@@ -14,7 +14,11 @@ import type {
 	StyleProgram,
 	StyleProgramResidual,
 } from "../semantic-ir.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 
@@ -266,7 +270,11 @@ export function createTokenamiAdapter(
 			{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
 		],
 		migration: {
-			targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+			targetPolicy: {
+				handlesHostRewrites: true,
+				handlesFrameworkSemantics: true,
+				hostRepresentation: StyleHostRepresentationKind.Class,
+			},
 		},
 		emit(program, { programObject }) {
 			return {

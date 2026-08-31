@@ -15,6 +15,7 @@ import type {
 } from "./semantic-ir.ts";
 import type { SourceScanResult } from "pandwind/source";
 import type { StyleLowering } from "./lowering.ts";
+import type { StyleHostRepresentationKind } from "./identifiers.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
@@ -105,8 +106,8 @@ export interface AdapterEmitContext {
 		readonly subject?: string;
 		readonly subjectAttrs?: string;
 		readonly stableClassName?: string;
-		/** Ask a target to emit a host component instead of a style value. */
-		readonly wrapComponent?: boolean;
+		/** Target-owned representation selected for this host projection. */
+		readonly representation?: StyleHostRepresentationKind;
 	};
 }
 
@@ -156,6 +157,10 @@ export interface AdapterMigrationHooks {
 
 export interface AdapterTargetMigrationPolicy {
 	readonly handlesHostRewrites?: boolean;
+	/** Whether host-bound components become a class carrier or a target component wrapper. */
+	readonly hostRepresentation?: StyleHostRepresentationKind;
+	/** Representation to use when a styled intrinsic is exported as a component itself. */
+	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */
 	readonly handlesFrameworkSemantics?: boolean;
 	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;

@@ -142,6 +142,12 @@ export enum StyleRepresentationKind {
 	Residual = "residual",
 }
 
+/** How a target adapter materializes a source component when host rewriting is needed. */
+export enum StyleHostRepresentationKind {
+	Class = "class",
+	Component = "component",
+}
+
 /** Target-owned strategy for preserving named style object return shapes. */
 export enum StyleNamedRuleStrategy {
 	NativeMap = "native-map",

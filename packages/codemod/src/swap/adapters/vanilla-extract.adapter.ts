@@ -1,6 +1,7 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import {
 	CodemodAdapterId,
+	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
@@ -27,7 +28,11 @@ export default defineCodemodAdapter({
 	sourceModules: ["@vanilla-extract/css"],
 	configFiles: ["package.json"],
 	migration: {
-		targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+		},
 		prepareDynamic: ({ targetId, program }) => ({
 			handled:
 				targetId === CodemodAdapterId.Pandwind &&

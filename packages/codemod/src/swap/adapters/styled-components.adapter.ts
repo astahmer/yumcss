@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.StyledComponents,
@@ -34,6 +38,7 @@ export default defineCodemodAdapter({
 	capabilities: allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
+		"function-values": "exact",
 		composition: "partial",
 		"plugin-transforms": "partial",
 		"framework-semantics": "exact",
@@ -44,6 +49,13 @@ export default defineCodemodAdapter({
 		components: "exact",
 	}),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		},
+	},
 	detectPatterns: [/styled-components/, /\bstyled\s*\./],
 	sourceModules: ["styled-components"],
 	configFiles: ["package.json"],

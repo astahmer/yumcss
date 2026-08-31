@@ -1,6 +1,7 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
 	CodemodAdapterId,
+	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 	StyleProgramEmissionHint,
 } from "../identifiers.ts";
@@ -26,7 +27,11 @@ const treat = makeExtraAdapter({
 		}),
 	},
 	sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.RuntimeClass] },
-	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+	targetPolicy: {
+		handlesHostRewrites: true,
+		handlesFrameworkSemantics: true,
+		hostRepresentation: StyleHostRepresentationKind.Class,
+	},
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 });
 

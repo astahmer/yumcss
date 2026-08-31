@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Linaria,
@@ -31,11 +35,17 @@ export default defineCodemodAdapter({
 	sourceModules: ["@linaria/core", "@linaria/react"],
 	configFiles: ["linaria.config.js", "package.json"],
 	migration: {
-		targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		},
 	},
-	emit(program, { templateCss }) {
+	emit(program, { templateCss }, context) {
 		const text = templateCss(program);
-		return program.source?.subject !== undefined
+		return program.source?.subject !== undefined &&
+			context?.host?.representation !== StyleHostRepresentationKind.Class
 			? {
 					text: `${program.source.subject}\`${text}\``,
 					imports: ['import { styled } from "@linaria/react";'],

@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 /** Bamboo CSS uses the Panda-compatible styled-system object dialect. */
 export default defineCodemodAdapter({
@@ -27,6 +31,13 @@ export default defineCodemodAdapter({
 		"property-rules": "unsupported",
 	}),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+		},
+	},
 	detectPatterns: [/styled-system\/css/, /@bamboocss\/(?:dev|vite)/],
 	sourceModules: ["styled-system/css"],
 	configFiles: ["bamboo.config.ts", "package.json"],

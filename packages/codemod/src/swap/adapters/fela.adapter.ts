@@ -1,5 +1,9 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 const fela = makeExtraAdapter({
 	id: CodemodAdapterId.Fela,
@@ -14,7 +18,11 @@ const fela = makeExtraAdapter({
 	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+	targetPolicy: {
+		handlesHostRewrites: true,
+		handlesFrameworkSemantics: true,
+		hostRepresentation: StyleHostRepresentationKind.Class,
+	},
 });
 
 export default fela;

@@ -1,5 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
-import { StyleNamedRuleStrategy } from "../identifiers.ts";
+import { StyleHostRepresentationKind, StyleNamedRuleStrategy } from "../identifiers.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import type {
 	AdapterDetectionContext,
@@ -130,6 +130,7 @@ export default defineCodemodAdapter({
 	capabilities: allRuleCapabilities(CodemodAdapterId.Emotion, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
+		"function-values": "exact",
 		composition: "partial",
 		"plugin-transforms": "partial",
 		"framework-semantics": "exact",
@@ -153,6 +154,12 @@ export default defineCodemodAdapter({
 		};
 	},
 	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		},
 		rewrite: ({ code, targetId, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 			return {
@@ -161,7 +168,7 @@ export default defineCodemodAdapter({
 			};
 		},
 	},
-	emit(program, { firstKind, programObject }) {
+	emit(program, { firstKind, programObject }, context) {
 		const kind = firstKind(program);
 		if (kind === "keyframes")
 			return {
@@ -173,7 +180,10 @@ export default defineCodemodAdapter({
 				text: `injectGlobal(${programObject(program)})`,
 				imports: ['import { injectGlobal } from "@emotion/css";'],
 			};
-		if (program.source?.subject !== undefined)
+		if (
+			program.source?.subject !== undefined &&
+			context?.host?.representation !== StyleHostRepresentationKind.Class
+		)
 			return {
 				text: `${program.source.subject}(${programObject(program)})`,
 				imports: ['import styled from "@emotion/styled";'],

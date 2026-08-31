@@ -1,5 +1,9 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 const compiled = makeExtraAdapter({
 	id: CodemodAdapterId.Compiled,
@@ -13,7 +17,11 @@ const compiled = makeExtraAdapter({
 	prefix: "css(",
 	targetImports: ['import { css } from "@compiled/react";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
+	targetPolicy: {
+		handlesHostRewrites: true,
+		handlesFrameworkSemantics: true,
+		hostRepresentation: StyleHostRepresentationKind.Class,
+	},
 });
 
 export default compiled;

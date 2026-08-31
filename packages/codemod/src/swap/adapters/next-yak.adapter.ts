@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */
 export default defineCodemodAdapter({
@@ -37,15 +41,22 @@ export default defineCodemodAdapter({
 	sourceModules: ["next-yak"],
 	configFiles: ["package.json"],
 	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			handlesFrameworkSemantics: true,
+			hostRepresentation: StyleHostRepresentationKind.Class,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		},
 		prepareDynamic: ({ program }) => ({
 			handled:
 				program.source?.hostOpenTag !== undefined &&
 				program.source.hostStyleAttributes !== undefined,
 		}),
 	},
-	emit(program, { templateCss }) {
+	emit(program, { templateCss }, context) {
 		const text = templateCss(program);
-		return program.source?.subject !== undefined
+		return program.source?.subject !== undefined &&
+			context?.host?.representation !== StyleHostRepresentationKind.Class
 			? {
 					text: `${program.source.subject}\`${text}\``,
 					imports: ['import { styled } from "next-yak";'],

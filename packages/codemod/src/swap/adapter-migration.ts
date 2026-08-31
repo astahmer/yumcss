@@ -38,6 +38,7 @@ import {
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
 import { BuiltinHostFramework } from "./host-adapters.ts";
+import { StyleHostRepresentationKind } from "./identifiers.ts";
 
 function programHasDynamic(program: StyleProgram): boolean {
 	return program.rules.some(function containsDynamic(rule): boolean {
@@ -78,6 +79,18 @@ function isStandaloneDefaultExport(source: string, start: number): boolean {
 
 function bindingForMatch(source: string, start: number): string | undefined {
 	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
+}
+
+function hasHostBindingUse(source: string, binding: string | undefined): boolean {
+	if (binding === undefined) return false;
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return new RegExp(
+		`(?:<\\s*${escaped}\\b|\\b(?:class|className|style|css)\\s*=\\s*\\{\\s*${escaped}\\s*\\})`,
+	).test(source);
+}
+
+function hasInlineHostUse(source: string, start: number): boolean {
+	return /(?:class|className|style|css)\s*=\s*\{\s*$/.test(source.slice(0, start));
 }
 
 function classExpressionFromEmission(emitted: string): string | undefined {
@@ -387,13 +400,23 @@ function runAdapterMigrationInternal(
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
+		const hostRepresentation = targetAdapter.migration?.targetPolicy?.hostRepresentation;
+		let targetHostProjection = false;
+		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
-		if (hasTargetHostPort(targetAdapter) && program.source?.subject === undefined) {
+		const bindingBeforeMatch = bindingForMatch(source, match.start);
+		const hasHostContext =
+			program.source?.hostOpenTag !== undefined ||
+			hasHostBindingUse(source, bindingBeforeMatch) ||
+			hasInlineHostUse(source, match.start);
+		if (
+			hasTargetHostPort(targetAdapter) &&
+			program.source?.subject === undefined &&
+			(hasHostContext || program.source?.hostStyleAttributes !== undefined)
+		) {
 			const hasDynamic = programHasDynamic(program);
 			if (hasDynamic) {
-				const binding = source
-					.slice(0, match.start)
-					.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
+				const binding = bindingBeforeMatch;
 				const framework =
 					document.framework ??
 					options.semantic?.source?.framework ??
@@ -458,7 +481,7 @@ function runAdapterMigrationInternal(
 						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
 					};
 				}
-				if (framework !== undefined && !dynamicStandalone && !dynamicHandled)
+				if (framework !== undefined && !dynamicStandalone && !dynamicHandledWithTarget)
 					dynamicCarrier = {
 						...(binding === undefined ? {} : { binding }),
 						framework,
@@ -480,6 +503,19 @@ function runAdapterMigrationInternal(
 				binding !== undefined && tag !== undefined && framework !== undefined
 					? getHostComponentRewriter(framework)
 					: undefined;
+			const hasHostUsage =
+				binding !== undefined &&
+				tag !== undefined &&
+				framework !== undefined &&
+				rewriter !== undefined &&
+				rewriter.rewrite({
+					source,
+					file: options.file,
+					binding,
+					tag,
+					framework,
+					classExpression: binding,
+				}).changed;
 			const standaloneExport =
 				binding === undefined &&
 				tag !== undefined &&
@@ -493,9 +529,19 @@ function runAdapterMigrationInternal(
 				(framework === BuiltinHostFramework.Solid ||
 					framework === BuiltinHostFramework.Vue ||
 					framework === BuiltinHostFramework.React ||
-					framework === BuiltinHostFramework.Preact);
+					framework === BuiltinHostFramework.Preact) &&
+				((targetAdapter.migration?.targetPolicy?.standaloneHostRepresentation ??
+					hostRepresentation) === StyleHostRepresentationKind.Class ||
+					hasHostUsage);
+			const standaloneRepresentation =
+				targetAdapter.migration?.targetPolicy?.standaloneHostRepresentation ?? hostRepresentation;
 			if (standaloneExport || frameworkWrapper) {
-				program = { ...program, source: { ...program.source, subject: undefined } };
+				emittedHostRepresentation = standaloneExport
+					? standaloneRepresentation
+					: hostRepresentation;
+				targetHostProjection = emittedHostRepresentation === StyleHostRepresentationKind.Class;
+				if (targetHostProjection)
+					program = { ...program, source: { ...program.source, subject: undefined } };
 				if (frameworkWrapper)
 					loweringResiduals = loweringResiduals.filter(
 						(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
@@ -549,6 +595,8 @@ function runAdapterMigrationInternal(
 						},
 					};
 					if (!componentRewriteKeys.has(rewriteKey)) {
+						emittedHostRepresentation = hostRepresentation;
+						targetHostProjection = hostRepresentation === StyleHostRepresentationKind.Class;
 						componentRewriteKeys.add(rewriteKey);
 						componentRewrites.push({
 							binding,
@@ -565,6 +613,8 @@ function runAdapterMigrationInternal(
 					getHostComponentRewriter(framework)?.rewriteDeclaration !== undefined &&
 					new RegExp(`styled\\(\\s*${binding}\\s*\\)`).test(source)
 				) {
+					emittedHostRepresentation = hostRepresentation;
+					targetHostProjection = hostRepresentation === StyleHostRepresentationKind.Class;
 					program = { ...program, source: { ...program.source, subject: undefined } };
 					pendingComponentDeclarationRewrites.set(index, {
 						binding,
@@ -638,6 +688,9 @@ function runAdapterMigrationInternal(
 					: { binding: bindingForMatch(source, match.start) }),
 				...(program.source?.framework ? { framework: program.source.framework } : {}),
 				...(sourceSubject ? { subject: sourceSubject } : {}),
+				...(emittedHostRepresentation === undefined
+					? {}
+					: { representation: emittedHostRepresentation }),
 			},
 		});
 		const emittedForValidation = validationSource(emitted.text, program);
