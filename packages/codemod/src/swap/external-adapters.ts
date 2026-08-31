@@ -24,6 +24,7 @@ import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	styleProgramToCanonicalCss,
+	inferSemanticConditionKind,
 	type StyleDeclaration,
 	type StyleProgram,
 	type StyleProgramOptions,
@@ -587,14 +588,24 @@ function parseTemplateProgram(
 						hint: "component selector interpolation requires a host rewrite",
 					});
 				const nested = parseBlock(block.body);
+				const conditionKind = inferSemanticConditionKind(selector);
+				const conditionValue = selector.replace(/^@(media|container|supports)\s+/, "");
+				const atRuleCondition =
+					conditionKind === "media" || conditionKind === "container" || conditionKind === "supports"
+						? { kind: conditionKind, name: selector, value: conditionValue }
+						: undefined;
 				children.push({
 					kind: "style",
-					selector: selector.startsWith("&")
-						? selector
-						: selector.startsWith(":") || selector.startsWith("[")
-							? `&${selector}`
-							: `& ${selector}`,
-					conditions: [],
+					...(atRuleCondition === undefined
+						? {
+								selector: selector.startsWith("&")
+									? selector
+									: selector.startsWith(":") || selector.startsWith("[")
+										? `&${selector}`
+										: `& ${selector}`,
+							}
+						: { conditions: [atRuleCondition] }),
+					conditions: atRuleCondition === undefined ? [] : [atRuleCondition],
 					declarations: nested.declarations,
 					children: nested.children,
 					order: order++,
@@ -674,7 +685,9 @@ function templateCss(program: StyleProgram): string {
 			condition.kind === "container" ||
 			condition.kind === "supports"
 		)
-			return `@${condition.kind} ${condition.value ?? condition.name}`;
+			return (condition.value ?? condition.name).startsWith(`@${condition.kind}`)
+				? (condition.value ?? condition.name)
+				: `@${condition.kind} ${condition.value ?? condition.name}`;
 		if (condition.kind === "pseudo")
 			return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
 		const value = condition.value ?? condition.raw ?? condition.name;

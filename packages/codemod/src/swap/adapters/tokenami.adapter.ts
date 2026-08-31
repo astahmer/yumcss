@@ -240,6 +240,10 @@ export function createTokenamiAdapter(
 			"theme-context": "partial",
 			"runtime-context": "exact",
 			"framework-semantics": "exact",
+			"global-rules": "unsupported",
+			keyframes: "unsupported",
+			layers: "unsupported",
+			"supports-rules": "unsupported",
 		}),
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [
