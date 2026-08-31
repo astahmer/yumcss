@@ -1,4 +1,5 @@
 import type { AdapterParseContext } from "./adapter-contract.ts";
+import { getHostFrameworkAdapter } from "./host-adapters.ts";
 import type { StyleProgramSource } from "./semantic-ir.ts";
 
 export interface JsxStyleAttribute {
@@ -94,7 +95,8 @@ export class JsxStyleHost {
 				text = `${text.slice(0, index - whitespace)}${text.slice(index + raw.length)}`;
 			}
 		}
-		const attribute = framework === "react" || framework === "preact" ? "className" : "class";
+		const host = framework === undefined ? undefined : getHostFrameworkAdapter(framework);
+		const attribute = host?.classAttribute ?? "class";
 		let needsCx = false;
 		const classPattern = new RegExp(
 			`(\\s)${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\\{([\\s\\S]*?)\\})`,

@@ -1,6 +1,10 @@
 import { computeExcludedRanges } from "../sources.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
-import { HOST_FRAMEWORK_REGISTRY, getHostFrameworkAdapter } from "./host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	HOST_FRAMEWORK_REGISTRY,
+	getHostFrameworkAdapter,
+} from "./host-adapters.ts";
 import { HostComponentRewriterId } from "./identifiers.ts";
 
 export const HOST_COMPONENT_REWRITER_SCHEMA = "pandwind.host-component-rewriter/1" as const;
@@ -220,7 +224,7 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 			],
 		};
 	}
-	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
 	const declaration =
 		`${request.binding} = (props) => <${request.tag} {...props} ` +
 		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
@@ -254,7 +258,7 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 			.slice(1 + binding.length, -1)
 			.replace(/\/\s*$/, "")
 			.trimEnd();
-		if (request.framework === "vue") {
+		if (request.framework === BuiltinHostFramework.Vue) {
 			const dynamic = /:class\s*=\s*"([^"]*)"/.exec(attrs);
 			const staticClass = /\bclass\s*=\s*"([^"]*)"/.exec(attrs);
 			if (dynamic !== null)
@@ -367,7 +371,7 @@ function rewriteStandaloneJsx(
 	}
 	const className = "__pandwindStandaloneClass";
 	const componentName = "__pandwindStandaloneComponent";
-	const classAttribute = request.framework === "solid" ? "class" : "className";
+	const classAttribute = getHostFrameworkAdapter(request.framework)?.classAttribute ?? "className";
 	const replacement =
 		`const ${className} = ${request.classExpression};\n` +
 		`const ${componentName} = (props) => <${request.tag} {...props} ` +
@@ -392,7 +396,7 @@ export function rewriteDynamicCarrier(
 	let found = false;
 	let needsCx = false;
 	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
-	const vue = framework === "vue";
+	const vue = getHostFrameworkAdapter(framework)?.id === BuiltinHostFramework.Vue;
 	const pattern = jsx
 		? /\b(className|class)\s*=\s*\{([^{}]*)\}/g
 		: vue
@@ -449,7 +453,7 @@ export function rewriteDynamicExpressionCarrier(
 ): HostDynamicCarrierRewriteResult {
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
-	const vue = framework === "vue";
+	const vue = getHostFrameworkAdapter(framework)?.id === BuiltinHostFramework.Vue;
 	const attributes = jsx
 		? [`className={${expression}}`, `class={${expression}}`]
 		: vue
