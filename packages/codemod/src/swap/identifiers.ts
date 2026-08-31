@@ -153,15 +153,6 @@ export enum StyleMigrationOutcome {
 	Residual = "residual",
 }
 
-/** Stable route-level result after lowering, host rewrites, and validation. */
-export enum StyleMigrationOutcome {
-	Static = "static",
-	TargetNative = "target-native",
-	HostRuntime = "host-runtime",
-	PortableArtifact = "portable-artifact",
-	Residual = "residual",
-}
-
 /** How a target adapter materializes a source component when host rewriting is needed. */
 export enum StyleHostRepresentationKind {
 	Class = "class",

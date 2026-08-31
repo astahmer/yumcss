@@ -1,6 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
-import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -171,7 +170,7 @@ function isKnownMuiComponent(source: string, tag: string): boolean {
 	if (tag === "Box") return true;
 	const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return new RegExp(
-		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+["']@mui\\/(?:material|system)["']`,
+		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+[\"']@mui\\/(?:material|system)[\"']`,
 	).test(source);
 }
 
@@ -191,7 +190,7 @@ function rewriteMuiIntrinsicHost(
 	code: string,
 	expression: string,
 	host: HostUse,
-): AdapterHostRewriteResult {
+): { code: string; imports: readonly string[]; residuals: readonly never[] } {
 	const opening = host.opening;
 	const selfClosing = /\/\s*>$/.test(opening);
 	const attributes = opening
@@ -311,32 +310,28 @@ export default defineCodemodAdapter({
 				"MUI sx styles require a host component prop; no standalone sx() API exists",
 			hostRepresentation: StyleHostRepresentationKind.Component,
 			resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
-				program.source?.subject === undefined && !hasHostContext
-					? StyleHostRepresentationKind.Class
-					: (framework === undefined || framework === BuiltinHostFramework.React) &&
-						  program.source?.subject === undefined
-						? (() => {
-								const host = findHostUse(source ?? "", binding);
-								const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
-								if (tag === undefined) return undefined;
-								return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
-									? StyleHostRepresentationKind.StyleProp
-									: isStaticProgram(program)
-										? StyleHostRepresentationKind.Class
-										: undefined;
-							})()
-						: framework === undefined || framework === BuiltinHostFramework.React
-							? StyleHostRepresentationKind.Component
-							: undefined,
+				(framework === undefined || framework === BuiltinHostFramework.React) &&
+				program.source?.subject === undefined
+					? (() => {
+							if (!hasHostContext)
+								return isStaticProgram(program) ? StyleHostRepresentationKind.Class : undefined;
+							const host = findHostUse(source ?? "", binding);
+							const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
+							if (tag === undefined) return undefined;
+							return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
+								? StyleHostRepresentationKind.StyleProp
+								: isStaticProgram(program)
+									? StyleHostRepresentationKind.Class
+									: undefined;
+						})()
+					: framework === undefined || framework === BuiltinHostFramework.React
+						? StyleHostRepresentationKind.Component
+						: undefined,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			resolveRepresentation: ({ program, hostRepresentation }) =>
-				hostRepresentation === StyleHostRepresentationKind.Class &&
-				program.source?.subject === undefined &&
-				program.residuals.length === 0
+				hostRepresentation === StyleHostRepresentationKind.Class && isStaticProgram(program)
 					? StyleRepresentationKind.PortableArtifact
 					: undefined,
-			capabilitiesForRepresentation: ({ representation }) =>
-				representation === StyleRepresentationKind.PortableArtifact ? ["theme-context"] : [],
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
