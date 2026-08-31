@@ -132,6 +132,13 @@ Blocked source markers now include the ordered source and target adapter IDs,
 so a playground or CLI user can see which target contract is missing instead of
 receiving an undifferentiated capability message.
 
+Host representation negotiation is fail-closed: an explicit target refusal for
+the detected framework or host shape is never replaced by the target's
+default representation. The runner preserves the source with a typed
+`host-framework` residual before emission. Same-adapter routes are identity
+no-ops, so partial cross-framework component capability metadata cannot create
+a false skip on a route that does not need conversion.
+
 The most important unresolved families are:
 
 - runtime interpolations, themes, and function-valued styles;

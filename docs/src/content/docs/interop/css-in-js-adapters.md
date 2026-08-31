@@ -113,6 +113,14 @@ component representation is valid. This is why a valid Emotion/styled-
 components theme callback can remain target-native while a static Pandwind
 host use becomes `css.class(...)` plus an intrinsic element rewrite.
 
+Target representation negotiation is also fail-closed. When a target
+explicitly refuses the detected framework or host shape, the runner does not
+reuse its default representation and hope that a later validator catches the
+mistake. The original source remains intact and the result carries a typed
+`host-framework` residual. Migrating an adapter to itself is an identity
+operation and therefore leaves the source unchanged without producing a
+capability diagnostic.
+
 Some targets have a native component projection instead of a class projection.
 For example, a React styled-components subject can become MUI's
 `styled("div")({...})`; the MUI adapter does not claim that the same source is

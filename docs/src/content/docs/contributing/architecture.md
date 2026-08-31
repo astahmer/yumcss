@@ -107,6 +107,14 @@ the shared runner only applies the returned edit and records its residuals.
 This keeps target-specific prop names and host syntax out of migration
 orchestration.
 
+An explicit host-policy refusal is terminal for that use site. If a target
+resolver returns no representation for the detected framework or host shape,
+the runner does not fall back to the target's default representation and emit
+code that will only fail during validation. It preserves the source and emits
+an actionable `host-framework` residual. A route whose source and target
+identities are equal is instead an identity no-op; it does not renegotiate
+capabilities or manufacture a new representation.
+
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component
 subject and declares that React as its supported host framework. A Solid or
