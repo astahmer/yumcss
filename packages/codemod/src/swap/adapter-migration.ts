@@ -400,7 +400,15 @@ function runAdapterMigrationInternal(
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
-		const hostRepresentation = targetAdapter.migration?.targetPolicy?.hostRepresentation;
+		const targetPolicy = targetAdapter.migration?.targetPolicy;
+		const hostRepresentation = targetPolicy?.hostRepresentation;
+		if (
+			program.source?.framework !== undefined &&
+			hostRepresentation === StyleHostRepresentationKind.Component &&
+			targetPolicy?.hostFrameworks?.includes(program.source.framework)
+		) {
+			program = { ...program, source: { ...program.source, framework: undefined } };
+		}
 		let targetHostProjection = false;
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
@@ -556,6 +564,7 @@ function runAdapterMigrationInternal(
 			}
 			if (
 				standaloneExport ||
+				hostRepresentation === StyleHostRepresentationKind.Component ||
 				binding === undefined ||
 				tag === undefined ||
 				framework === undefined ||

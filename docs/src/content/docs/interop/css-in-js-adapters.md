@@ -104,6 +104,22 @@ the result in the target framework. The HIR already carries the subject,
 framework, declarations, conditions, and provenance; the projection is what
 turns those nodes into valid target code.
 
+The projection is contextual. A target may use a class carrier for a styled
+binding that is consumed by JSX, while using its native component factory for
+an exported standalone component. Dynamic declarations are not treated as
+host rewrites merely because they are functions: the runner first checks for a
+real host use, then asks the target policy whether a standalone class or
+component representation is valid. This is why a valid Emotion/styled-
+components theme callback can remain target-native while a static Pandwind
+host use becomes `css.class(...)` plus an intrinsic element rewrite.
+
+Some targets have a native component projection instead of a class projection.
+For example, a React styled-components subject can become MUI's
+`styled("div")({...})`; the MUI adapter does not claim that the same source is
+valid Solid or Vue output. Those cross-framework migrations need a host
+adapter that rewrites bindings, attributes, and lifecycle semantics, so safe
+mode reports `framework-semantics` until that adapter exists.
+
 Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
 Those adapters expose a named lookup object, while UnoCSS currently accepts
 class literals and generated CSS, not a runtime style map. Flattening

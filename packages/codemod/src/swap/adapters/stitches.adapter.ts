@@ -1,4 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -19,13 +20,16 @@ export default defineCodemodAdapter({
 		layers: "unsupported",
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
+		components: "exact",
 	}),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
-			hostRepresentation: StyleHostRepresentationKind.Class,
+			hostRepresentation: StyleHostRepresentationKind.Component,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			hostFrameworks: [BuiltinHostFramework.React],
 		},
 	},
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],

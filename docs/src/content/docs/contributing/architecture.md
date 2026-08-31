@@ -91,6 +91,28 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+Host projection is negotiated per use site, not inferred from the presence of
+an adapter. A target policy declares the representation for a bound host
+(`class` or `component`) and may declare a different representation for a
+standalone exported component. The runner selects that policy only when the
+source has a real host use; otherwise a target-native component expression can
+be preserved. This distinction prevents a class-string API from being called
+as a component and prevents a component factory from being assigned to
+`className`.
+
+Target-native component projections may also constrain the host language. For
+example, the MUI adapter emits `styled("div")({...})` for a React component
+subject and declares that React as its supported host framework. A Solid or
+Vue subject therefore remains source-preserving with a framework residual until
+an explicit cross-framework host adapter is registered; it is never emitted as
+React-shaped code by accident.
+
+The same rule applies to Stitches and styled-components: their `css`/`styled`
+targets produce React component values, not class strings. Class-oriented
+targets and component-oriented targets therefore use different typed host
+representations, even when both produce equivalent declarations in the
+semantic program.
+
 `StyleProgram.sourceMap` is the provenance projection for a semantic program:
 it aggregates the program, rule, theme/composition, and dynamic-value source
 locations without forcing legacy `SwapIR` callers to pay for rich nodes.

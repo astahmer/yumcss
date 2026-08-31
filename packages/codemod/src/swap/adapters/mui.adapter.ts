@@ -1,6 +1,15 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
+import {
+	componentExpressionForSubject,
+	intrinsicTagForSubject,
+} from "../host-component-rewriter.ts";
 
 const spacing = new Set([
 	"m",
@@ -94,10 +103,10 @@ export default defineCodemodAdapter({
 		],
 	},
 	capabilities: allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
+		"function-values": "exact",
 		"theme-context": "partial",
 		"runtime-context": "partial",
-		"framework-semantics": "partial",
-		components: "partial",
+		components: "exact",
 	}),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
@@ -105,9 +114,28 @@ export default defineCodemodAdapter({
 	configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
 	sourceObjectOptions: (source) => ({ propertyAliases, valueTransforms: muiTransforms(source) }),
 	emit(program, { programObject }) {
+		const subject = program.source?.subject;
+		if (subject !== undefined) {
+			const tag = intrinsicTagForSubject(subject);
+			const base = componentExpressionForSubject(subject);
+			const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
+			return {
+				text: `styled(${targetSubject})(${programObject(program)})`,
+				imports: ['import { styled } from "@mui/system";'],
+			};
+		}
 		return {
 			text: `sx(${programObject(program)})`,
 			imports: ['import { sx } from "@mui/system";'],
 		};
+	},
+	migration: {
+		targetPolicy: {
+			handlesHostRewrites: true,
+			hostRepresentation: StyleHostRepresentationKind.Component,
+			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			handlesFrameworkSemantics: true,
+			hostFrameworks: [BuiltinHostFramework.React],
+		},
 	},
 });

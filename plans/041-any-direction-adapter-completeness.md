@@ -28,6 +28,27 @@ have explicit representation contracts. The route proof is no longer only a
 single happy fixture: the shared proof corpus exercises happy, edge, and
 malformed inputs in safe and partial modes.
 
+The host projection contract now distinguishes the representation needed for a
+bound host from the representation needed by a standalone component export.
+The runner detects actual JSX/template use before applying a host rewrite, and
+target adapters receive the selected typed representation. This prevents
+component factories from being assigned to `className`, preserves native
+component targets for unused declarations, and keeps Pandwind's runtime
+component carrier limited to function-valued cases.
+
+MUI now demonstrates a target-owned component projection: React component
+subjects are emitted through MUI's `styled` API, while Solid/Vue subjects are
+blocked by an explicit framework residual. This is the required shape for
+future non-class targets; adding a target means implementing its projection
+and host-framework contract, not adding a central adapter branch.
+
+The same contract now describes Stitches and styled-components as native React
+component targets rather than class-string targets. Their component subjects
+remain component expressions in host usage, while class-oriented targets still
+perform explicit declaration/use-site rewrites. This removes a class/component
+shape mismatch that previously could pass canonical-CSS validation while
+emitting an invalid `className={component}` value.
+
 ## Completed codemod verification slice
 
 The bidirectional codemod proof work is complete for the registered adapter
@@ -75,6 +96,12 @@ The most important unresolved families are:
 - official project configuration, presets, plugins, generated CSS, and custom
   token/shortcut/variant context;
 - SSR, hydration, streaming/RSC, injection order, and dependency changes.
+
+The remaining skips are therefore not evidence that the HIR is missing. They
+identify target projections that still need an implementation: for example,
+MUI's `sx` object prop, UnoCSS's generated utility lookup, or cross-framework
+component rewrites. The next implementation must add those projections behind
+target-owned ports and prove them, rather than weakening the capability gate.
 
 ## Workstreams
 

@@ -163,6 +163,8 @@ export interface AdapterTargetMigrationPolicy {
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */
 	readonly handlesFrameworkSemantics?: boolean;
+	/** Frameworks whose component syntax the target adapter can preserve natively. */
+	readonly hostFrameworks?: readonly string[];
 	readonly requiresHostWrapper?: (context: { source: string; binding: string }) => boolean;
 	readonly handlesRawTemplate?: (context: { source: string }) => boolean;
 	readonly handlesTemplateFragment?: (program: StyleProgram) => boolean;

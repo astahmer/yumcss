@@ -455,6 +455,22 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("styled.button");
 	});
 
+	test("uses MUI's native styled component projection instead of a class string", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "mui", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { styled } from "@mui/system";');
+		expect(result.code).toContain('styled("div")({ color: "red" })');
+		expect(result.code).toContain("<Card />");
+		expect(result.code).not.toContain("className={Card}");
+	});
+
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
