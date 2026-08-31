@@ -482,6 +482,8 @@ function runAdapterMigrationInternal(
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly representation: StyleHostRepresentationKind;
+		readonly representationKind: StyleRepresentationKind;
+		readonly residuals: readonly StyleProgramResidual[];
 	}> = [];
 	const targetComponentRewrites: Array<{
 		readonly program: StyleProgram;
@@ -564,13 +566,28 @@ function runAdapterMigrationInternal(
 			...(hostFramework === undefined ? {} : { framework: hostFramework }),
 			...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
+			source,
 		});
+		const representationNegotiated = resolvedRepresentation !== undefined;
 		if (resolvedRepresentation !== undefined) targetRepresentationKind = resolvedRepresentation;
 		const representationCapabilities =
 			targetPolicy?.capabilitiesForRepresentation?.({
 				program,
 				representation: targetRepresentationKind,
 				}) ?? [];
+		const preservedResidualKinds = new Set(
+			representationNegotiated
+				? (targetPolicy?.preservesResidualKindsForRepresentation?.({
+						program,
+						representation: targetRepresentationKind,
+					}) ?? [])
+				: [],
+		);
+		const carrierResiduals = loweringResiduals;
+		if (preservedResidualKinds.size > 0)
+			loweringResiduals = loweringResiduals.filter(
+				(residual) => !preservedResidualKinds.has(residual.kind),
+			);
 		if (!lowering.availableRepresentations.includes(targetRepresentationKind))
 			lowering = {
 				...lowering,
@@ -583,6 +600,12 @@ function runAdapterMigrationInternal(
 		if (
 			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
 			hostRepresentation !== undefined
+		)
+			emittedHostRepresentation = hostRepresentation;
+		if (
+			targetRepresentationKind === StyleRepresentationKind.CustomProperty &&
+			hostRepresentation !== undefined &&
+			hasHostContext
 		)
 			emittedHostRepresentation = hostRepresentation;
 		if (
@@ -1038,6 +1061,8 @@ function runAdapterMigrationInternal(
 				program,
 				emittedExpression: emitted.text,
 				representation: emittedHostRepresentation,
+				representationKind: targetRepresentationKind,
+				residuals: carrierResiduals,
 				...(bindingForMatch(source, match.start) === undefined
 					? {}
 					: { binding: bindingForMatch(source, match.start) }),
@@ -1181,7 +1206,7 @@ function runAdapterMigrationInternal(
 			file: options.file,
 			targetId: targetAdapter.id,
 			...request,
-		});
+			});
 		if (rewrite === undefined) continue;
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);

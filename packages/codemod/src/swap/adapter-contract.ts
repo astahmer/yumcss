@@ -1,7 +1,6 @@
 import type { PandwindMeta } from "../meta.ts";
 import type {
 	AdapterCapabilities,
-	AdapterCapability,
 	AdapterCapabilityMode,
 	AdapterCapabilityReport,
 } from "./capabilities.ts";
@@ -16,7 +15,7 @@ import type {
 } from "./semantic-ir.ts";
 import type { SourceScanResult } from "pandwind/source";
 import type { StyleLowering } from "./lowering.ts";
-import type { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
+import type { StyleHostRepresentationKind } from "./identifiers.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
@@ -109,8 +108,6 @@ export interface AdapterEmitContext {
 		readonly stableClassName?: string;
 		/** Target-owned representation selected for this host projection. */
 		readonly representation?: StyleHostRepresentationKind;
-		/** Target-owned semantic carrier selected for this emission. */
-		readonly representationKind?: StyleRepresentationKind;
 	};
 }
 
@@ -213,23 +210,6 @@ export interface AdapterTargetMigrationPolicy {
 		/** Source binding whose host use is being projected. */
 		readonly binding?: string;
 	}) => StyleHostRepresentationKind | undefined;
-	/**
-	 * Select a semantic carrier independently from the host shape. A target can
-	 * use this port to opt into a portable static artifact when its native API
-	 * is unavailable, without adding a target-specific branch to the runner.
-	 */
-	readonly resolveRepresentation?: (context: {
-		readonly program: StyleProgram;
-		readonly hasHostContext: boolean;
-		readonly framework?: string;
-		readonly binding?: string;
-		readonly hostRepresentation?: StyleHostRepresentationKind;
-	}) => StyleRepresentationKind | undefined;
-	/** Capabilities satisfied by the selected target-owned representation. */
-	readonly capabilitiesForRepresentation?: (context: {
-		readonly program: StyleProgram;
-		readonly representation: StyleRepresentationKind;
-	}) => readonly AdapterCapability[];
 	/** Representation to use when a styled intrinsic is exported as a component itself. */
 	readonly standaloneHostRepresentation?: StyleHostRepresentationKind;
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */

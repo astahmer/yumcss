@@ -636,17 +636,19 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) =>
 					DynamicClassHost.hasCarrier(program) &&
-					hasHostContext &&
-					binding !== undefined &&
-					(framework === undefined ||
-						[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
-							framework as BuiltinHostFramework,
-						)) &&
-					DynamicClassHost.canRewrite(source ?? "", binding)
+						hasHostContext &&
+						(binding !== undefined &&
+							(framework === undefined ||
+								[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
+									framework as BuiltinHostFramework,
+								))) &&
+						DynamicClassHost.canRewrite(source ?? "", binding)
 						? StyleRepresentationKind.CustomProperty
 						: undefined,
 				capabilitiesForRepresentation: ({ representation }) =>
-					representation === StyleRepresentationKind.CustomProperty ? ["custom-properties"] : [],
+					representation === StyleRepresentationKind.CustomProperty
+						? ["custom-properties"]
+						: [],
 				preservesResidualKindsForRepresentation: ({ representation }) =>
 					representation === StyleRepresentationKind.CustomProperty
 						? ["dynamic-custom-property"]
