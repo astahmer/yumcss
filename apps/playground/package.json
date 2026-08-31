@@ -8,7 +8,7 @@
 		"prebuild": "pnpm tw:codegen && pnpm tw:bridge",
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
+		"test": "vitest run --config vitest.config.ts",
 		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
 		"tw:bridge": "tsx ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
 	},

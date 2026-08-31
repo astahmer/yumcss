@@ -9,3 +9,8 @@ coverage/
 apps/inspector/.studio-history/
 docs/.astro/
 docs/dist/
+
+# generated Playwright-BDD specs and browser artifacts
+apps/playground/e2e/.features-gen/
+playwright-report/
+test-results/
