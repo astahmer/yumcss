@@ -163,8 +163,7 @@ function parseFunctionCalls(
 	const residuals: StyleProgramResidual[] = [];
 	const functionCall = options.functionCall;
 	if (functionCall === undefined) return { matches, residuals };
-	for (const match of source.matchAll(functionCall)) {
-		const start = match.index ?? 0;
+	for (const _match of source.matchAll(functionCall)) {
 		const parsed = FunctionStyleCallParser.parse(source, context, {
 			id,
 			functionCall,

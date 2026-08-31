@@ -171,7 +171,7 @@ function isKnownMuiComponent(source: string, tag: string): boolean {
 	if (tag === "Box") return true;
 	const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	return new RegExp(
-		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+[\"']@mui\\/(?:material|system)[\"']`,
+		`import\\s+\\{[^}]*\\b${escaped}(?:\\s+as\\s+${escaped})?\\b[^}]*\\}\\s+from\\s+["']@mui\\/(?:material|system)["']`,
 	).test(source);
 }
 
