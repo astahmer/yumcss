@@ -1,10 +1,11 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
-import type { StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
+	StyleRepresentationKind,
 } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
@@ -156,6 +157,15 @@ const styleProps = [
 	"borderStartColor",
 	"borderEndColor",
 ] as const;
+
+function hasDynamicValues(program: StyleProgram): boolean {
+	return program.rules.some(function containsDynamic(rule): boolean {
+		return (
+			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+			rule.children.some(containsDynamic)
+		);
+	});
+}
 
 const propertyAliases = {
 	bg: "backgroundColor",
@@ -513,6 +523,16 @@ export function createChakraAdapter(
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
+				resolveRepresentation: ({ program, hasHostContext }) =>
+					!hasHostContext &&
+						program.source?.subject === undefined &&
+						hasDynamicValues(program)
+						? StyleRepresentationKind.RuntimeCarrier
+						: undefined,
+				capabilitiesForRepresentation: ({ representation }) =>
+					representation === StyleRepresentationKind.RuntimeCarrier
+						? ["dynamic-values", "theme-context", "runtime-context"]
+						: [],
 			},
 		},
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
