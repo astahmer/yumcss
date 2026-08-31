@@ -3,7 +3,7 @@
 ## Scope and anchors
 
 - Repository: `/Users/astahmer/dev/pandwind`
-- Audited branch: `main` at `493ffa9bc34aaedb13e4fb9ce5f4fc7086249227`
+- Audited branch: `main` at `7a6cec646c755073db01006865e782bfe8bbd920`
 - JJ operation anchor before the audit checks: `6010af91a8ef`
 - Workspaces inspected: `default`, `pandwind-history-cleanup`,
   `pandwind-playground-migration`, and the isolated recovery workspace
@@ -14,27 +14,28 @@
 ## Merge inventory
 
 Every two-parent merge reachable from `main` was enumerated with
-`parents.len() > 1`. All seven are conflict-free. In each case, the merge tree
-is identical to the first parent (`jj diff --from <first-parent> --to <merge>`
-is empty), so the first-parent tree was the selected resolution. The second
-parent's history remains reachable through the merge; its content was checked
-against the selected tree and later replacement revisions rather than assumed
-to have been applied automatically.
+`parents.len() > 1`. All seven are conflict-free. Six are tree-identical to
+their first parent, meaning the first-parent tree was the selected resolution.
+The Effect merge intentionally retains a substantial second-parent
+implementation delta; that content remains reachable and present in `main`.
+The second-parent history and the later tree were checked explicitly rather
+than assuming that a conflict-free merge implied content retention.
 
 | Merge commit   | Workspace contribution | Conflict | First-parent tree delta | Audit result                                           |
 | -------------- | ---------------------- | -------- | ----------------------- | ------------------------------------------------------ |
-| `38fb0efaea0e` | CSS-in-JS overall      | no       | empty                   | retained                                               |
-| `25955257bd62` | Effect                 | no       | empty                   | retained; vendored StyleX source intentionally removed |
-| `d5db4e4dbc18` | Emotion                | no       | empty                   | retained; generated/obsolete files classified below    |
-| `1137a46b2c1f` | Astryx                 | no       | empty                   | retained; repeated vendored StyleX cleanup intentional |
-| `b2abc2a58e2b` | codemod                | no       | empty                   | retained; inspector code moved to analyze ownership    |
-| `b4e8f9ee60d8` | experiment             | no       | empty                   | retained                                               |
-| `f04c1901f0ba` | PostHog                | no       | empty                   | retained; repeated vendored StyleX cleanup intentional |
+| `26afbdb4f4c4` | CSS-in-JS overall | no | empty | retained |
+| `29819ed3268a` | Effect | no | non-empty | second-parent implementation retained; later cleanup classified below |
+| `5dc524700bae` | Emotion | no | empty | retained; generated/obsolete files classified below |
+| `f795e09c58e0` | Astryx | no | empty | retained; repeated vendored StyleX cleanup intentional |
+| `470341f2dc96` | codemod | no | empty | retained; inspector code moved to analyze ownership |
+| `b1dd0bd5b141` | experiment | no | empty | retained |
+| `45cce8328daa` | PostHog | no | empty | retained; repeated vendored StyleX cleanup intentional |
 
 ## Workspace-side deletions
 
 The following deletions were present when comparing each workspace parent to
-its merge commit. They were checked against the current tree and the owning
+its merge commit, or when comparing the retained Effect merge to the current
+tip. They were checked against the current tree and the owning
 architecture/documentation.
 
 ### Intentionally removed vendored source
@@ -50,6 +51,9 @@ recreated by `pnpm references:prepare`.
 - `.prettierignore` was replaced by the repository's Oxfmt/Oxlint policy.
 - `apps/playground/src/pandwind.interop.json` is generated output and is
   intentionally removed from source history after codegen runs.
+- `examples/shadcn-ui-docs-migration/README.md` and the StyleX example's
+  `Dial.tsx` were later removed as superseded generated/example artifacts;
+  their migration reports and reproducible scripts remain available.
 
 ### Replaced implementation
 
