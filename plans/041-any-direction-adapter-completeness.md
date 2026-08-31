@@ -57,6 +57,10 @@ wrapped as style-map entries. UnoCSS remains an explicit boundary because a
 class/compiler target needs a generated stylesheet plus a lookup projection,
 not an object-map expression.
 
+Blocked source markers now include the ordered source and target adapter IDs,
+so a playground or CLI user can see which target contract is missing instead of
+receiving an undifferentiated capability message.
+
 The most important unresolved families are:
 
 - runtime interpolations, themes, and function-valued styles;

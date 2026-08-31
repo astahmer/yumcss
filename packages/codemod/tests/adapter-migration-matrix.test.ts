@@ -212,7 +212,7 @@ describe("composed cross-ecosystem routes", () => {
 	])("preserves named style maps when targeting %s", (targetId) => {
 		const result = migrateTo(
 			'import { StyleSheet } from "aphrodite";\n' +
-				"const styles = StyleSheet.create({ button: { color: \"red\" } });",
+				'const styles = StyleSheet.create({ button: { color: "red" } });',
 			CodemodAdapterId.Aphrodite,
 			targetId,
 			"styles.ts",

@@ -493,9 +493,9 @@ export function createChakraAdapter(
 			"theme-context": "partial",
 			"runtime-context": "partial",
 			"framework-semantics": "partial",
-		components: "partial",
-	}),
-	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+			components: "partial",
+		}),
+		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
 		// Component imports remain in place because the host element still uses Chakra's component.
 		sourceModules: [],

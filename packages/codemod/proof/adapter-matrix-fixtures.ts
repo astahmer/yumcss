@@ -68,26 +68,26 @@ export const completeAdapterMatrixFixtures: readonly AdapterMatrixFixture[] =
 	adapterContractFixtures.flatMap((fixture) => {
 		const happy = happySource(fixture.adapter, fixture.source);
 		return [
-		{
-			sourceAdapter: fixture.adapter,
-			file: happy.file,
-			source: happy.source,
-			scenario: "happy" as const,
-			semantic: semanticFor(fixture.adapter),
-		},
-		{
-			sourceAdapter: fixture.adapter,
-			file: happy.file,
-			source: edgeSource(fixture.adapter, happy.source),
-			scenario: "edge" as const,
-			semantic: semanticFor(fixture.adapter),
-		},
-		{
-			sourceAdapter: fixture.adapter,
-			file: happy.file,
-			source: `${happy.source}\n/* unfinished ${fixture.adapter} */`,
-			scenario: "malformed" as const,
-			semantic: semanticFor(fixture.adapter),
-		},
+			{
+				sourceAdapter: fixture.adapter,
+				file: happy.file,
+				source: happy.source,
+				scenario: "happy" as const,
+				semantic: semanticFor(fixture.adapter),
+			},
+			{
+				sourceAdapter: fixture.adapter,
+				file: happy.file,
+				source: edgeSource(fixture.adapter, happy.source),
+				scenario: "edge" as const,
+				semantic: semanticFor(fixture.adapter),
+			},
+			{
+				sourceAdapter: fixture.adapter,
+				file: happy.file,
+				source: `${happy.source}\n/* unfinished ${fixture.adapter} */`,
+				scenario: "malformed" as const,
+				semantic: semanticFor(fixture.adapter),
+			},
 		];
 	});

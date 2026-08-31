@@ -94,6 +94,24 @@ The current implementation emits `capability-blocked`, `parse-residual`,
 markers; the old generic `adapter capability mismatch` marker is no longer a
 valid current diagnostic.
 
+When a marker is produced by the semantic adapter runner, it includes the
+ordered route (`source -> target`) and the blocked capability. For example,
+`styled-components -> unocss` may be blocked by `components` because a styled
+component is a host component factory while UnoCSS is a class/compiler target.
+The missing work is a target-owned host projection: rewrite the declaration and
+all JSX/template use sites, select the target's class/style carrier, and prove
+the result in the target framework. The HIR already carries the subject,
+framework, declarations, conditions, and provenance; the projection is what
+turns those nodes into valid target code.
+
+Likewise, `JSS/StyleX/Aphrodite -> UnoCSS` can be blocked by `named-rules`.
+Those adapters expose a named lookup object, while UnoCSS currently accepts
+class literals and generated CSS, not a runtime style map. Flattening
+`styles.button` into one class would be a semantic regression. The correct
+next adapter feature is a generated stylesheet plus a stable lookup projection
+and use-site rewrite; until then the residual is intentional and source
+preserving.
+
 The benchmark acceptance corpus is pinned in `reference-repos.md` and
 `plans/evidence/real-repository-migrations-v2.json`. It exercises the
 `css-in-js-bench` Bamboo and Next-yak lanes plus the existing ecosystem
