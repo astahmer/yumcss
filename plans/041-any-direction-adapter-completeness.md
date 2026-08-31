@@ -136,7 +136,7 @@ matrix:
   capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
 - 104 per-adapter CLI end-to-end cases spawn the real command, write temporary
   files, parse JSON reports, and cover every adapter in both `adapter →
-  Pandwind` and `Pandwind → adapter` directions, including edge inputs. A
+Pandwind` and `Pandwind → adapter` directions, including edge inputs. A
   separate 676-case CLI matrix covers every ordered happy source/target pair.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
   both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
@@ -202,6 +202,32 @@ identify target projections that still need an implementation: for example,
 MUI's `sx` object prop or cross-framework component rewrites. The next
 implementation must add those projections behind target-owned ports and prove
 them, rather than weakening the capability gate.
+
+### Why the playground shows capability skips
+
+The playground currently invokes the semantic runner in `safe` mode. In that
+mode, an adapter capability marked `partial` is intentionally treated as a
+blocker, even when the adapter can emit a useful projection for a narrower
+host shape. This is correct for source-preserving migration, but the user
+experience must not stop at an opaque skip. The route planner must first ask
+the target-owned lowering and host ports for a static or target-native
+representation, then expose the exact missing host/configuration input when
+none exists.
+
+In particular, a bare Pandwind style binding cannot be rewritten to MUI's
+`sx` prop without knowing its host component. Inventing a component or
+changing a class-valued binding into an object would change the program's
+contract. The completion work therefore has two obligations: discover host
+context through the shared workspace when it exists, and preserve a typed
+residual when it does not. Switching every route to partial mode is not a
+completion strategy because it can report a conversion while dropping the
+source value's host semantics.
+
+The canonical route outcome is consequently one of `static`, `target-native`,
+`host-runtime`, `portable-artifact`, or `residual`. Capability negotiation is
+complete only when the outcome is explicit, the selected representation is
+validated, and the route report explains why a later representation was not
+selected.
 
 ## Workstreams
 
