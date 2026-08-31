@@ -55,4 +55,22 @@ describe("migration lab", () => {
 			}
 		}
 	});
+
+	test("exposes explicit evidence for every source-to-target route", () => {
+		const lab = createMigrationLab();
+		for (const source of lab.sources) {
+			for (const target of lab.targets) {
+				const result = lab.migrate(source.id, target.id, lab.sampleFor(source.id));
+				expect(result.ok, `${source.id} -> ${target.id}`).toBe(true);
+				if (!result.ok) continue;
+				const evidence = result.converted + result.skipped + result.residuals.length;
+				expect(evidence, `${source.id} -> ${target.id} has no outcome evidence`).toBeGreaterThan(0);
+				if (result.skipped > 0)
+					expect(
+						result.residuals.length,
+						`${source.id} -> ${target.id} skipped silently`,
+					).toBeGreaterThan(0);
+			}
+		}
+	});
 });
