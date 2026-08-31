@@ -37,6 +37,7 @@ import {
 	type HostComponentRewriteRequest,
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
+import { BuiltinHostFramework } from "./host-adapters.ts";
 
 function programHasDynamic(program: StyleProgram): boolean {
 	return program.rules.some(function containsDynamic(rule): boolean {
@@ -383,6 +384,7 @@ function runAdapterMigrationInternal(
 			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
 		loweringPlans.push(lowering);
+		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
@@ -483,16 +485,22 @@ function runAdapterMigrationInternal(
 				hasFunctionDynamic &&
 				binding !== undefined &&
 				tag !== undefined &&
-				(framework === "solid" ||
-					framework === "vue" ||
-					framework === "react" ||
-					framework === "preact");
+				(framework === BuiltinHostFramework.Solid ||
+					framework === BuiltinHostFramework.Vue ||
+					framework === BuiltinHostFramework.React ||
+					framework === BuiltinHostFramework.Preact);
 			if (standaloneExport || frameworkWrapper) {
 				program = { ...program, source: { ...program.source, subject: undefined } };
 				if (frameworkWrapper)
+					loweringResiduals = loweringResiduals.filter(
+						(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+					);
+				if (frameworkWrapper)
 					program = {
 						...program,
-						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
+						residuals: program.residuals.filter(
+							(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+						),
 					};
 			}
 			if (
@@ -514,14 +522,18 @@ function runAdapterMigrationInternal(
 					classExpression: binding,
 				});
 				const residualsCanUseHostLowering = program.residuals.every(
-					(residual) => residual.kind === "dynamic",
+					(residual) =>
+						residual.kind === "dynamic" ||
+						(residual.kind === "function-dynamic" && hasFunctionDynamic),
 				);
 				const rewriteKey = `${binding}:${tag}:${framework}`;
 				if (preview.residuals.length === 0 && residualsCanUseHostLowering && !hasFunctionDynamic) {
 					program = {
 						...program,
 						residuals: hasDynamic
-							? program.residuals.filter((residual) => residual.kind !== "dynamic")
+							? program.residuals.filter(
+									(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+								)
 							: program.residuals,
 						source: {
 							...program.source,
@@ -572,7 +584,7 @@ function runAdapterMigrationInternal(
 						),
 					};
 		reports.push(effectiveReport);
-		const hasSemanticResiduals = program.residuals.length > 0 || lowering.residuals.length > 0;
+		const hasSemanticResiduals = program.residuals.length > 0 || loweringResiduals.length > 0;
 		if (!effectiveReport.convertible || (mode === "safe" && hasSemanticResiduals)) {
 			skipped++;
 			residuals.push(
@@ -588,7 +600,7 @@ function runAdapterMigrationInternal(
 									.join("; "),
 							},
 						]),
-				...lowering.residuals,
+				...loweringResiduals,
 			);
 			edits.push({
 				start: match.start,
@@ -597,14 +609,14 @@ function runAdapterMigrationInternal(
 					MigrationDiagnostics.skipMarker({
 						marker,
 						parseResiduals: program.residuals,
-						loweringResiduals: lowering.residuals,
+						loweringResiduals,
 						blockers: report.blockers,
 						availableRepresentations: lowering.availableRepresentations,
 					}) + "\n",
 			});
 			continue;
 		}
-		residuals.push(...lowering.residuals);
+		residuals.push(...loweringResiduals);
 		const emitted = targetAdapter.emit(program, {
 			file: options.file,
 			config: targetConfig,

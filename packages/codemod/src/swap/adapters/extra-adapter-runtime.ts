@@ -17,6 +17,7 @@ import {
 	type StyleProgramOptions,
 } from "../semantic-ir.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
+import { StyleNamedRuleStrategy } from "../identifiers.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -37,9 +38,15 @@ export interface ExtraAdapterOptions {
 	readonly migration?: AdapterMigrationHooks;
 	/** Target-side host port for adapters whose style call returns a class string. */
 	readonly targetPolicy?: AdapterTargetMigrationPolicy;
+	/** How a target preserves named style maps when it has no native map API. */
+	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 }
 
-const capabilities = (id: string, namedRules: boolean): AdapterCapabilities => ({
+const capabilities = (
+	id: string,
+	namedRules: boolean,
+	strategy: StyleNamedRuleStrategy | undefined,
+): AdapterCapabilities => ({
 	schema: ADAPTER_CAPABILITIES_SCHEMA,
 	adapter: id,
 	version: "1",
@@ -48,6 +55,9 @@ const capabilities = (id: string, namedRules: boolean): AdapterCapabilities => (
 		"rule-level": "partial",
 		"named-conditions": "exact",
 		...(namedRules ? { "named-rules": "exact" as const } : {}),
+		...(strategy !== undefined && strategy !== StyleNamedRuleStrategy.Unsupported
+			? { "named-rules": "exact" as const }
+			: {}),
 		"pseudo-conditions": "exact",
 		"selector-conditions": "exact",
 		"media-conditions": "exact",
@@ -355,7 +365,11 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		id: options.id,
 		version: "2",
 		sourceModules: options.modules,
-		capabilities: capabilities(options.id, options.namedObjects === true),
+		capabilities: capabilities(
+			options.id,
+			options.namedObjects === true,
+			options.namedRuleStrategy,
+		),
 		dependencies: options.packages,
 		migration:
 			options.migration === undefined && options.targetPolicy === undefined
@@ -387,11 +401,29 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 				residuals: [...parsed.residuals, ...functionParsed.residuals],
 			};
 		},
-		emit: (program) => ({
-			text: `${options.prefix}${objectText(program)}${options.suffix ?? ")"}`,
-			residuals: [...program.residuals],
-			dependencies: options.packages,
-		}),
+		emit: (program) => {
+			const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+			if (namedRules.length > 0 && options.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap) {
+				const entries = namedRules.map((rule) => {
+					const single = {
+						...program,
+						rules: [{ ...rule, name: undefined }],
+						declarations: rule.declarations,
+					};
+					return `${JSON.stringify(rule.name)}: ${options.prefix}${objectText(single)}${options.suffix ?? ")"}`;
+				});
+				return {
+					text: `{ ${entries.join(", ")} }`,
+					residuals: [...program.residuals],
+					dependencies: options.packages,
+				};
+			}
+			return {
+				text: `${options.prefix}${objectText(program)}${options.suffix ?? ")"}`,
+				residuals: [...program.residuals],
+				dependencies: options.packages,
+			};
+		},
 		validate: (source, target, residuals = []) => {
 			const canonicalSource = styleProgramToCanonicalCss(source);
 			const canonicalTarget = styleProgramToCanonicalCss(target);

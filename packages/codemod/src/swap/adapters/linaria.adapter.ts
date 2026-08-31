@@ -1,5 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Linaria,
@@ -26,6 +26,7 @@ export default defineCodemodAdapter({
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@linaria\/(?:core|react)/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["@linaria/core", "@linaria/react"],
 	configFiles: ["linaria.config.js", "package.json"],

@@ -1,4 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter } from "../external-adapters.ts";
+import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import type {
 	AdapterDetectionContext,
@@ -138,6 +139,7 @@ export default defineCodemodAdapter({
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@emotion\/(?:css|react|styled)/, /\bcss\s*\(\s*\{/, /\bcss\s*`/],
 	detect: detectEmotion,
 	sourceModules: ["@emotion/css", "@emotion/react", "@emotion/styled"],

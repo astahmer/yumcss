@@ -224,6 +224,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
 	});
 
+	test("lowers named style maps to target class maps when the target owns that strategy", () => {
+		const result = runAdapterMigration(
+			'import { createUseStyles } from "react-jss";\n' +
+				"const useStyles = createUseStyles({ button: { color: 'red' } });",
+			{
+				from: "jss",
+				to: "emotion",
+				file: "styles.ts",
+				mode: "safe",
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('{ "button": css({ color: "red" }) }');
+	});
+
 	test("lowers Next-yak JSX css hosts with dynamic nested rules through the runtime fallback", () => {
 		const result = runAdapterMigration(
 			'import { css } from "next-yak";\n' +

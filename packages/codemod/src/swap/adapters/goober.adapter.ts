@@ -1,5 +1,5 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 const goober = makeExtraAdapter({
 	id: CodemodAdapterId.Goober,
@@ -8,6 +8,7 @@ const goober = makeExtraAdapter({
 	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],
 	call: /\bcss\s*\(\s*\{/g,
 	prefix: "css(",
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	targetPolicy: { handlesHostRewrites: true, handlesFrameworkSemantics: true },
 });
 

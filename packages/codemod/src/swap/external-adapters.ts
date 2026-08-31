@@ -33,6 +33,7 @@ import {
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
+import { StyleNamedRuleStrategy } from "./identifiers.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -105,6 +106,8 @@ export interface CodemodAdapterSpec {
 	) => Pick<AdapterEmitResult, "text" | "imports" | "semantic">;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
+	/** Target-owned policy for preserving named style maps without source branches. */
+	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 	emit(
 		program: StyleProgram,
 		renderers: AdapterRenderers,
@@ -1005,12 +1008,23 @@ function validatePrograms(
 }
 
 export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
+	const capabilities =
+		spec.namedRuleStrategy === undefined ||
+		spec.namedRuleStrategy === StyleNamedRuleStrategy.Unsupported
+			? spec.capabilities
+			: {
+					...spec.capabilities,
+					capabilities: {
+						...spec.capabilities.capabilities,
+						"named-rules": "exact" as const,
+					},
+				};
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: spec.id,
 		version: "2",
 		sourceModules: spec.sourceModules,
-		capabilities: spec.capabilities,
+		capabilities,
 		dependencies: spec.packages,
 		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
 		migration: spec.migration,
@@ -1030,7 +1044,24 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				declarationsObject,
 				templateCss,
 			};
-			const rendered = spec.emit(program, renderers, context);
+			const render = (value: StyleProgram) => spec.emit(value, renderers, context);
+			const namedRules = program.rules.filter((rule) => rule.name !== undefined);
+			const rendered =
+				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
+					? (() => {
+							const imports = new Set<string>();
+							const entries = namedRules.map((rule) => {
+								const single = render({
+									...program,
+									rules: [{ ...rule, name: undefined }],
+									declarations: rule.declarations,
+								});
+								for (const statement of single.imports ?? []) imports.add(statement);
+								return `${JSON.stringify(rule.name)}: ${single.text}`;
+							});
+							return { text: `{ ${entries.join(", ")} }`, imports: [...imports] };
+						})()
+					: render(program);
 			const processed = spec.postprocessEmit?.(rendered, context) ?? rendered;
 			return { ...processed, dependencies: spec.packages, residuals: [...program.residuals] };
 		},

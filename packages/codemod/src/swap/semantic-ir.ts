@@ -569,6 +569,10 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		}
 	};
 	const render = (rule: StyleRule): string => {
+		// Source-object adapters keep an empty root style rule as the structural
+		// parent of named rules. It has no CSS meaning and must not make a
+		// semantically equivalent target look different during validation.
+		if (rule.declarations.length === 0 && rule.children.length === 0) return "";
 		const rootDeclarations = rule.declarations.filter(
 			(declaration) => canonicalConditions(declaration.conditions).length === 0,
 		);

@@ -421,6 +421,8 @@ function representationFor(
 			return StyleRepresentationKind.CustomProperty;
 		return StyleRepresentationKind.Residual;
 	}
+	if (result.program.rules.some((rule) => rule.name !== undefined))
+		return StyleRepresentationKind.NamedMap;
 	if (hasDynamic) {
 		const dynamicCapability = level(context.target, "dynamic-values");
 		return dynamicCapability === "unsupported"
@@ -434,6 +436,8 @@ function availableRepresentationsFor(
 	context: StyleLoweringContext,
 ): readonly StyleRepresentationKind[] {
 	const representations = [StyleRepresentationKind.Static];
+	if (level(context.target, "named-rules") !== "unsupported")
+		representations.push(StyleRepresentationKind.NamedMap);
 	if (level(context.target, "dynamic-values") !== "unsupported")
 		representations.push(StyleRepresentationKind.TargetNative);
 	if (level(context.target, "custom-properties") !== "unsupported")

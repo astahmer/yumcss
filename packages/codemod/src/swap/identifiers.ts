@@ -135,10 +135,18 @@ export enum MigrationSkipReason {
 /** Ordered semantic representations negotiated by the lowering planner. */
 export enum StyleRepresentationKind {
 	Static = "static",
+	NamedMap = "named-map",
 	TargetNative = "target-native",
 	CustomProperty = "custom-property",
 	RuntimeCarrier = "runtime-carrier",
 	Residual = "residual",
+}
+
+/** Target-owned strategy for preserving named style object return shapes. */
+export enum StyleNamedRuleStrategy {
+	NativeMap = "native-map",
+	ClassMap = "class-map",
+	Unsupported = "unsupported",
 }
 
 /** Independent evidence dimensions used by real-repository promotion reports. */

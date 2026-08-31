@@ -116,6 +116,7 @@ export {
 	StyleValidatorId,
 	StyleLoweringId,
 	StyleRepresentationKind,
+	StyleNamedRuleStrategy,
 	MigrationSkipReason,
 	RealRepositoryProofDimension,
 	RealRepositoryProofDimensionStatus,

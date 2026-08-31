@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId, StyleProgramEmissionHint } from "../identifiers.ts";
+import {
+	CodemodAdapterId,
+	StyleNamedRuleStrategy,
+	StyleProgramEmissionHint,
+} from "../identifiers.ts";
 
 const runtimeFallbackVar =
 	"const fallbackVar = (variable, fallback) => `var(${variable}, ${fallback})`;";
@@ -18,6 +22,7 @@ export default defineCodemodAdapter({
 		"supports-rules": "unsupported",
 		"property-rules": "unsupported",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 	sourceModules: ["@vanilla-extract/css"],
 	configFiles: ["package.json"],

@@ -1,5 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */
 export default defineCodemodAdapter({
@@ -32,6 +32,7 @@ export default defineCodemodAdapter({
 		"supports-rules": "partial",
 		"property-rules": "unsupported",
 	}),
+	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/\bfrom\s+["']next-yak["']/, /\b(?:css|styled)\s*`/],
 	sourceModules: ["next-yak"],
 	configFiles: ["package.json"],

@@ -14,7 +14,7 @@ import type {
 	StyleProgram,
 	StyleProgramResidual,
 } from "../semantic-ir.ts";
-import { CodemodAdapterId } from "../identifiers.ts";
+import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 
@@ -241,6 +241,7 @@ export function createTokenamiAdapter(
 			"runtime-context": "exact",
 			"framework-semantics": "exact",
 		}),
+		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [
 			/@tokenami\/(?:css|config)/,
 			/\bcss\.compose\s*\(/,
