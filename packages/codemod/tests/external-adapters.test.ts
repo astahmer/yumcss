@@ -319,6 +319,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			config: { adapter: "jss", files: [], values: {} },
 		});
 		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.declarations).toEqual([]);
 		expect(parsed.matches[0]?.program.rules).toEqual(
 			expect.arrayContaining([expect.objectContaining({ name: "button", kind: "style" })]),
 	);

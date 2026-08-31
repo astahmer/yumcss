@@ -429,7 +429,9 @@ export function styleProgramFromRules(
 		schema: STYLE_PROGRAM_SCHEMA,
 		rules: ordered,
 		declarations: ordered.flatMap((rule) =>
-			rule.kind === "style" && rule.conditions.length === 0 ? rule.declarations : [],
+			rule.kind === "style" && rule.name === undefined && rule.conditions.length === 0
+				? rule.declarations
+				: [],
 		),
 		residuals: [...(options.residuals ?? [])],
 		sourceMap: collectSources(
