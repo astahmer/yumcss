@@ -733,26 +733,18 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("vue-styled-components");
 	});
 
-	test("reports bare Pandwind style bindings because MUI sx is host-owned", () => {
+	test("uses MUI's portable artifact for a bare static Pandwind binding", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
 			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					kind: "host-framework",
-					hint: expect.stringContaining("no standalone sx() API"),
-				}),
-			]),
-		);
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).toContain("host-framework");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('from "pandwind/css"');
-		expect(result.code).not.toContain("sx({");
-		expect(result.validations).toEqual([]);
+		expect(result.code).toContain("css.class");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	});
 
 	test("projects a Pandwind class binding onto MUI's sx host prop", () => {

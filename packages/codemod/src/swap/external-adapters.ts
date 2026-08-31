@@ -369,7 +369,7 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 function programObject(program: StyleProgram): string {
 	if (program.rules.length === 1) {
 		const rule = program.rules[0]!;
-		if (rule.name !== undefined)
+		if (rule.kind === "style" && rule.name !== undefined)
 			return `{ ${JSON.stringify(rule.name)}: ${ruleObject({ ...rule, name: undefined })} }`;
 		return ruleObject(rule);
 	}
