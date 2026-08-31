@@ -4,18 +4,20 @@ import {
 	HOST_COMPILER_SCHEMA,
 	createHostCompilerPlugin,
 	getHostComponentRewriter,
+	BuiltinHostFramework,
 } from "../src/swap/index.ts";
 
 describe("framework-native host compiler contract", () => {
 	test("registers every supported host with one versioned shape", () => {
 		expect(Object.keys(HOST_COMPILER_PLUGINS)).toEqual([
-			"react",
-			"preact",
-			"solid",
-			"qwik",
-			"vue",
-			"svelte",
-			"astro",
+			BuiltinHostFramework.React,
+			BuiltinHostFramework.ReactNative,
+			BuiltinHostFramework.Preact,
+			BuiltinHostFramework.Solid,
+			BuiltinHostFramework.Qwik,
+			BuiltinHostFramework.Vue,
+			BuiltinHostFramework.Svelte,
+			BuiltinHostFramework.Astro,
 		]);
 		for (const plugin of Object.values(HOST_COMPILER_PLUGINS)) {
 			expect(plugin.schema).toBe(HOST_COMPILER_SCHEMA);
