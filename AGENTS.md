@@ -155,7 +155,7 @@ JJ revision focused and described.
 
 We have not launched and have no production users or production data. Revisit this policy before the first production deployment.
 
-* Optimize for the smallest coherent design that represents the product today.
-* Remove obsolete code, schemas, APIs, configuration, aliases, and transitional paths directly.
-* Do not add backward-compatibility shims, legacy aliases, dual-read or dual-write paths, or data-preserving backfills unless the user explicitly asks for them.
-* Internal interfaces are not public compatibility contracts. Update their callers and tests atomically when they change.
+- Optimize for the smallest coherent design that represents the product today.
+- Remove obsolete code, schemas, APIs, configuration, aliases, and transitional paths directly.
+- Do not add backward-compatibility shims, legacy aliases, dual-read or dual-write paths, or data-preserving backfills unless the user explicitly asks for them.
+- Internal interfaces are not public compatibility contracts. Update their callers and tests atomically when they change.
