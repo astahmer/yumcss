@@ -681,8 +681,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		"wraps an unused styled subject when the target only exposes a class carrier (%s)",
 		(target, carrier, targetImport) => {
 			const result = runAdapterMigration(
-				'import styled from "styled-components";\n' +
-					'const Card = styled.div({ color: "red" });',
+				'import styled from "styled-components";\n' + 'const Card = styled.div({ color: "red" });',
 				{ from: "styled-components", to: target, file: "Card.tsx", mode: "safe" },
 			);
 			expect(result.converted).toBe(1);
@@ -772,6 +771,19 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("style9.create");
 		expect(result.code).toContain("<div className={Card} />");
 		expect(result.code).not.toContain("styled-components");
+	});
+
+	test("normalizes CSS dimensions before validating a StyleX target", () => {
+		const result = runAdapterMigration(
+			'import { StyleSheet } from "aphrodite";\n' +
+				'const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });',
+			{ from: "aphrodite", to: "stylex", file: "styles.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations[0]?.valid).toBe(true);
+		expect(result.code).toContain('padding: "16px"');
 	});
 
 	test("rewrites intrinsic styled component JSX uses when lowering to Pandwind", () => {

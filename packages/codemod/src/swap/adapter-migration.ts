@@ -586,9 +586,9 @@ function runAdapterMigrationInternal(
 					? getHostComponentRewriter(framework)
 					: undefined;
 			const hasTargetComponentUsage = targetComponentPreview?.residuals.length === 0;
-		const hasHostUsage =
-			hasTargetComponentUsage ||
-			(binding !== undefined &&
+			const hasHostUsage =
+				hasTargetComponentUsage ||
+				(binding !== undefined &&
 					tag !== undefined &&
 					framework !== undefined &&
 					rewriter !== undefined &&
@@ -600,18 +600,18 @@ function runAdapterMigrationInternal(
 						framework,
 						classExpression: binding,
 					}).changed);
-		if (
-			!hasHostUsage &&
-			program.source?.subject !== undefined &&
-			targetPolicy?.standaloneHostRepresentation !== undefined &&
-			targetAdapter.capabilities.capabilities.components !== "unsupported"
-		) {
-			// A target may preserve an unused styled subject as its own component
-			// factory even when its host-bound representation is a class. Select the
-			// standalone contract before deciding whether a class wrapper is needed.
-			hostRepresentation = targetPolicy.standaloneHostRepresentation;
-		}
-		const standaloneExport =
+			if (
+				!hasHostUsage &&
+				program.source?.subject !== undefined &&
+				targetPolicy?.standaloneHostRepresentation !== undefined &&
+				targetAdapter.capabilities.capabilities.components !== "unsupported"
+			) {
+				// A target may preserve an unused styled subject as its own component
+				// factory even when its host-bound representation is a class. Select the
+				// standalone contract before deciding whether a class wrapper is needed.
+				hostRepresentation = targetPolicy.standaloneHostRepresentation;
+			}
+			const standaloneExport =
 				binding === undefined &&
 				tag !== undefined &&
 				framework !== undefined &&
@@ -737,9 +737,7 @@ function runAdapterMigrationInternal(
 						source: {
 							...program.source,
 							subject: undefined,
-							...(targetPolicy?.handlesFrameworkSemantics === true
-								? { framework: undefined }
-								: {}),
+							...(targetPolicy?.handlesFrameworkSemantics === true ? { framework: undefined } : {}),
 						},
 					};
 					pendingComponentDeclarationRewrites.set(index, {

@@ -120,6 +120,7 @@ export enum StyleLoweringId {
 	DynamicAndTheme = "dynamic-and-theme",
 	CompositionFlatten = "composition-flatten",
 	RuntimeAndPlugin = "runtime-and-plugin",
+	StyleXNumericNormalization = "stylex-numeric-normalization",
 	Builtin = "pandwind-core-lowerings",
 }
 

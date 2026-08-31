@@ -1,5 +1,7 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
+import type { StyleLowering } from "../lowering.ts";
+import { STYLE_LOWERING_SCHEMA } from "../lowering.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { applyEdits, computeExcludedRanges, matchBlock } from "../../source-pass-utils.ts";
@@ -10,6 +12,7 @@ import {
 	StyleProgramConditionOrder,
 	StyleProgramEmissionHint,
 	StyleHostRepresentationKind,
+	StyleLoweringId,
 } from "../identifiers.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 
@@ -635,6 +638,34 @@ function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
 	return { kind: "literal", value: `${numeric}px` };
 }
 
+const stylexNumericLowering: StyleLowering = {
+	schema: STYLE_LOWERING_SCHEMA,
+	id: StyleLoweringId.StyleXNumericNormalization,
+	apply: ({ program, target }) => {
+		if (target.adapter !== CodemodAdapterId.StyleX) return { program, residuals: [], applied: [] };
+		let changed = false;
+		const declaration = (item: StyleProgram["declarations"][number]) => {
+			const value = stylexNumericValue(item.value, item.property);
+			if (value === item.value) return item;
+			changed = true;
+			return { ...item, value };
+		};
+		const rule = (item: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+			...item,
+			declarations: item.declarations.map(declaration),
+			children: item.children.map(rule),
+		});
+		const rules = program.rules.map(rule);
+		return {
+			program: changed
+				? { ...program, declarations: program.declarations.map(declaration), rules }
+				: program,
+			residuals: [],
+			applied: changed ? [StyleLoweringId.StyleXNumericNormalization] : [],
+		};
+	},
+};
+
 function evaluateNumericExpression(expression: string): number | undefined {
 	const tokens = expression.match(/\d*\.?\d+|[()+\-*/]/g);
 	if (tokens === null || tokens.join("") !== expression.replace(/\s+/g, "")) return undefined;
@@ -876,6 +907,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				};
 			},
 		},
+		lowerings: [stylexNumericLowering],
 		emit(program, { programObject }) {
 			if (program.source?.pattern === CodemodPatternId.StyleXKeyframes) {
 				return {
