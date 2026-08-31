@@ -113,7 +113,7 @@ const dynamicAndThemes: StyleLowering = {
 	apply: ({ program, target }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let changed = false;
-		let resolvedDynamicCapability = false;
+		const resolvedDynamicCapabilities = new Set<AdapterCapability>();
 		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
 			const value = declaration.value;
 			if (value.kind !== "dynamic") return declaration;
@@ -123,7 +123,7 @@ const dynamicAndThemes: StyleLowering = {
 			// host/framework lowering may consume it.
 			if (value.expressionKind === StyleDynamicExpressionKind.Function) {
 				if (level(target, "function-values") !== "unsupported") {
-					resolvedDynamicCapability = true;
+					resolvedDynamicCapabilities.add("function-values");
 					return declaration;
 				}
 				residuals.push({
@@ -141,7 +141,7 @@ const dynamicAndThemes: StyleLowering = {
 			if (level(target, "dynamic-values") !== "unsupported") {
 				const themeExpression = /^(?:theme|tokens)\./.test(value.expression.trim());
 				if (!themeExpression || level(target, "theme-context") !== "unsupported")
-					resolvedDynamicCapability = true;
+					resolvedDynamicCapabilities.add("dynamic-values");
 				return declaration;
 			}
 			if (level(target, "custom-properties") !== "unsupported") {
@@ -182,7 +182,9 @@ const dynamicAndThemes: StyleLowering = {
 				: program,
 			residuals,
 			applied: changed ? [StyleLoweringId.DynamicAndTheme] : [],
-			...(resolvedDynamicCapability ? { resolvedCapabilities: ["dynamic-values"] } : {}),
+			...(resolvedDynamicCapabilities.size === 0
+				? {}
+				: { resolvedCapabilities: [...resolvedDynamicCapabilities] }),
 		};
 	},
 };

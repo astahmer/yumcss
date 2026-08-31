@@ -176,6 +176,8 @@ describe("semantic metadata and validator domains", () => {
 		});
 		expect(result.residuals).toEqual([]);
 		expect(result.representation).toBe("target-native");
+		expect(result.resolvedCapabilities).toContain("function-values");
+		expect(result.resolvedCapabilities).not.toContain("dynamic-values");
 		expect(result.program.declarations[0]?.value).toMatchObject({
 			kind: "dynamic",
 			expressionKind: StyleDynamicExpressionKind.Function,
