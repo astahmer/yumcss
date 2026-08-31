@@ -60,6 +60,32 @@ sites, residual counts, and capability blockers. Use `--diff` before `--write`;
 partial mode is an adapter API option for controlled tooling, not the CLI's
 default safety policy.
 
+### Why a capability skip can still be correct
+
+The semantic IR is the pivot boundary, not a universal target API. It preserves
+meaning such as a named style map, a component subject, a theme lookup, a
+function-valued declaration, or a framework binding. The target still needs a
+safe representation for that meaning.
+
+For example, `styled.div({ color: "red" })` produces a component factory,
+while `css.class({ color: "red" })` produces a class string. Replacing one with
+the other without rewriting the JSX/template use sites changes behavior. A
+JSS `{ button: {...} }` map similarly needs either a target map API or a
+class-map lowering plus use-site rewrites. A theme-dependent function needs a
+static evaluation, a target-native runtime carrier, or an explicit custom
+property binding; a Tailwind utility cannot safely invent one from syntax
+alone.
+
+That is why safe mode reports a typed capability residual instead of guessing.
+The bidirectional guarantee is that every declared route is resolved to a
+static representation first, then the smallest validated runtime carrier, or
+the unchanged source with an actionable residual. It does not mean that an AST
+can manufacture a target equivalent for semantics the target does not expose.
+The current implementation emits `capability-blocked`, `parse-residual`,
+`lowering-residual`, `host-rewrite-required`, or `configuration-residual`
+markers; the old generic `adapter capability mismatch` marker is no longer a
+valid current diagnostic.
+
 The benchmark acceptance corpus is pinned in `reference-repos.md` and
 `plans/evidence/real-repository-migrations-v2.json`. It exercises the
 `css-in-js-bench` Bamboo and Next-yak lanes plus the existing ecosystem

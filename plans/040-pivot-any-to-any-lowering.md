@@ -7,12 +7,13 @@ Pandwind has the essential pivot substrate: a versioned semantic
 adapters, shared scanning, official configuration-loader ports, host adapters,
 lowering plugins, and differential proof tooling.
 
-The remaining weakness is visible in the frequent
+The remaining weakness was previously visible in the frequent
 `pandwind:migrate-skip (adapter capability mismatch)` marker. The semantic IR
-can describe more than the current lowering registry and target contracts can
-prove. A capability gate is therefore rejecting programs before a complete
-target-specific representation has been planned. The same generic marker is
-also used for parse and lowering residuals, which hides the real reason.
+could describe more than the lowering registry and target contracts could
+prove, and one generic marker hid whether the problem was parsing, lowering, or
+target representation. The current diagnostics now classify those outcomes;
+the old generic marker is retained here only as historical context for the
+work this plan closes.
 
 ## Goal
 
