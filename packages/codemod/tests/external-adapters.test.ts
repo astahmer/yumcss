@@ -715,7 +715,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		"wraps an unused styled subject when the target only exposes a class carrier (%s)",
 		(target, carrier, targetImport) => {
 			const result = runAdapterMigration(
-				'import styled from "styled-components";\n' + 'const Card = styled.div({ color: "red" });',
+				'import styled from "styled-components";\nconst Card = styled.div({ color: "red" });',
 				{ from: "styled-components", to: target, file: "Card.tsx", mode: "safe" },
 			);
 			expect(result.converted).toBe(1);

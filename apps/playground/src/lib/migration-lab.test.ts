@@ -74,6 +74,12 @@ describe("migration lab", () => {
 				const result = lab.migrate(source.id, target.id, lab.sampleFor(source.id));
 				expect(result.ok, `${source.id} -> ${target.id}`).toBe(true);
 				if (!result.ok) continue;
+				if (source.id === target.id) {
+					expect(result.changed, `${source.id} -> ${target.id}`).toBe(false);
+					expect(result.skipped, `${source.id} -> ${target.id}`).toBe(0);
+					expect(result.residuals, `${source.id} -> ${target.id}`).toEqual([]);
+					continue;
+				}
 				const evidence = result.converted + result.skipped + result.residuals.length;
 				expect(evidence, `${source.id} -> ${target.id} has no outcome evidence`).toBeGreaterThan(0);
 				if (result.skipped > 0)
