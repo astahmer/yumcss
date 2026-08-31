@@ -71,9 +71,7 @@ The migration result now exposes a typed outcome for each parsed call in
 addition to the lowering plan. `static` means no runtime carrier was needed;
 `target-native` means the target's own map, component, or style-prop contract
 was used; `host-runtime` means a validated runtime or host binding remains;
-`portable-artifact` is a target-owned static fallback that preserves a
-portable Pandwind class artifact when the target has no legal native carrier;
-MUI is the first implementation; and
+`portable-artifact` is reserved for a future neutral artifact fallback; and
 `residual` means the original source was preserved with an actionable reason.
 This makes a capability report inspectable rather than a boolean gate and lets
 the playground distinguish a real target gap from a successful projection.
@@ -86,25 +84,10 @@ and host-framework contract, not adding a central adapter branch.
 
 MUI also demonstrates a target-owned style-prop projection. A Pandwind class
 binding used by a React host is emitted as an object and rewritten from
-`className={binding}` to `sx={binding}`. Intrinsic DOM hosts are first wrapped
-as `Box component="..."`, because `sx` is not a native DOM prop; known MUI
-components receive `sx` directly, while static unknown custom components use
-the portable fallback and dynamic ones remain residuals. Hostless dynamic
-values use the same portable Pandwind carrier as an explicit runtime fallback.
-The target policy owns that rewrite; the runner only negotiates the typed
-representation and applies the returned edit. Static bare unused
-bindings use MUI's portable-artifact fallback because MUI has no standalone
-`sx()` API; dynamic bare bindings use the portable runtime carrier, while
-dynamic unknown hosts remain explicit residuals until their MUI ownership is
-proven.
-
-The lowering plan's `availableRepresentations` is now program-aware: static is
-listed only when no dynamic or residual semantics remain, custom-property is
-listed only when the lowered program actually carries a dynamic variable, and
-function-valued programs do not claim scalar dynamic carriers. This keeps a
-diagnostic from advertising a representation that the current program cannot
-use. Tailwind also accepts static named maps and UnoCSS parses bracketed
-conditional arbitrary utilities without splitting inside their brackets.
+`className={binding}` to `sx={binding}`. The target policy owns that rewrite;
+the runner only negotiates the typed representation and applies the returned
+edit. Bare unused bindings remain explicit residuals because MUI has no
+standalone `sx()` API.
 
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and
@@ -171,11 +154,8 @@ matrix:
   capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
 - 104 per-adapter CLI end-to-end cases spawn the real command, write temporary
   files, parse JSON reports, and cover every adapter in both `adapter →
-Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
-  public-boundary suite runs all 676 ordered source/target pairs through the
-  real CLI, passing happy, edge, and malformed files together for every pair.
-  The expensive suite is invoked with `pnpm --filter pandwind-codemod test:e2e`;
-  the default coverage suite runs the same corpus in-process.
+Pandwind` and `Pandwind → adapter` directions, including edge inputs. A
+  separate 676-case CLI matrix covers every ordered happy source/target pair.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
   both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
   route cases as the test suite.
@@ -208,22 +188,6 @@ default representation. The runner preserves the source with a typed
 `host-framework` residual before emission. Same-adapter routes are identity
 no-ops, so partial cross-framework component capability metadata cannot create
 a false skip on a route that does not need conversion.
-
-Framework provenance is not itself a target obligation for a hostless style
-carrier. The capability planner now requires `framework-semantics` only for a
-component subject or host-bound style attributes. Runtime-capable adapters own
-their dynamic-value promotion in their adapter module; Goober and Fela now
-declare and test exact scalar-dynamic carriers. The shared extra-adapter
-baseline remains partial so an adapter cannot claim runtime preservation merely
-because its generic object renderer happens to echo an expression.
-Chakra UI and next-yak now make the same decision through explicit
-`RuntimeCarrier` negotiation; static/compiler targets remain fail-closed until
-they own a host-bound custom-property projection.
-Tailwind now owns that projection for React/Preact named class bindings: the
-lowering emits a `var(--pandwind-dynamic-...)` utility and the adapter's host
-rewrite binds the original expression inline. Existing style props and
-non-JSX hosts remain explicit residuals. UnoCSS uses the same shared class-host
-port and retains the same fail-closed behavior for unsupported host shapes.
 
 The target policy also carries an explicit `requiresHostContext` contract and
 an adapter-owned explanation. MUI uses it for `sx`: bare style values now stop
