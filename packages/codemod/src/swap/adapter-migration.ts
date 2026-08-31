@@ -567,6 +567,11 @@ function runAdapterMigrationInternal(
 			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
 		});
 		if (resolvedRepresentation !== undefined) targetRepresentationKind = resolvedRepresentation;
+		const representationCapabilities =
+			targetPolicy?.capabilitiesForRepresentation?.({
+				program,
+				representation: targetRepresentationKind,
+			}) ?? [];
 		if (
 			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
 			hostRepresentation !== undefined
@@ -870,7 +875,10 @@ function runAdapterMigrationInternal(
 			}
 		}
 		const report = inspectAdapterCapabilities(targetAdapter.capabilities, program, mode);
-		const resolvedCapabilities = new Set(lowering.resolvedCapabilities ?? []);
+		const resolvedCapabilities = new Set([
+			...(lowering.resolvedCapabilities ?? []),
+			...representationCapabilities,
+		]);
 		if (targetComponentProjection) {
 			resolvedCapabilities.add("components");
 			if (targetPolicy?.handlesFrameworkSemantics === true)

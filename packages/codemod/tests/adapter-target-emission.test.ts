@@ -91,7 +91,7 @@ describe("target adapter emission contract", () => {
 		]);
 	});
 
-	test("does not use the portable artifact for a dynamic MUI style value", () => {
+	test("uses the runtime portable artifact for a hostless dynamic MUI value", () => {
 		const result = migrate(
 			'import { createCss } from "pandwind/css";\n' +
 				"const css = createCss();\n" +
@@ -100,12 +100,12 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
-		);
-		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
+		]);
 		expect(result.code).toContain("css.class({ color: theme.foreground })");
 	});
 
