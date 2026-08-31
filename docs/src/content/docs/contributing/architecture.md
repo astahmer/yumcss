@@ -251,11 +251,15 @@ root.
 
 The codemod registry exposes a derived `capabilityMatrix()` view containing
 each adapter's contract version, source modules, dependencies, and declared
-capabilities. `createAdapterContractSuite()` is the reusable conformance
-runner: it requires a representative parse fixture for every registered
-adapter and fails when a fixture exercises a capability the adapter declares
-unsupported. A minimal injected registry is tested through the same runner,
-so adding an adapter does not require changing migration orchestration.
+capabilities. `createAdapterContractSuite()` remains the focused contract
+checker for detection, configuration, parsing, emission, validation, and
+target capability declarations. `createAdapterConformanceSuite()` is the
+stronger reusable gate: it runs those adapter-owned phases and the complete
+ordered source/target matrix in safe and partial modes over happy, edge, and
+malformed fixtures. Capabilities are judged during target negotiation, not
+against a source adapter's own semantic metadata. A minimal injected registry
+is tested through the same runner, so adding an adapter does not require
+changing migration orchestration.
 
 Semantic lowering is versioned with `StyleProgram /4`. Dynamic declarations
 retain expression kind, source range, dependency names, and explicit
@@ -306,6 +310,11 @@ complete matrix covers every ordered adapter pair in safe and partial modes
 for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
 the real binary in both directions for every adapter. A route is accepted only
 when it converts or preserves the source with a typed residual.
+`createAdapterConformanceSuite()` adds the direct adapter-owned gate before the
+route matrix: each registered adapter must independently pass detection,
+configuration, parsing, emission, and validation against its happy fixture.
+Source-side semantic metadata is not judged as a target capability; that
+negotiation remains an ordered-route concern.
 The pinned real-repository report adds a typed promotion object with explicit
 `source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
 states. A pending dimension is never counted as a passing real-repository

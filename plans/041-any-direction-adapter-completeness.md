@@ -106,6 +106,10 @@ matrix:
 
 - 24 contract fixtures cover detection, configuration, parsing, capabilities,
   emission, and validation for every registered adapter.
+- `createAdapterConformanceSuite()` directly exercises every adapter-owned
+  detection, configuration, parsing, emission, and validation port before the
+  ordered route matrix runs. Source-side semantic metadata is not judged as a
+  target capability; that negotiation remains an ordered-route concern.
 - 3,456 Cartesian route cases cover every ordered source/target pair, both
   capability modes, and all three proof scenarios (24 × 24 × 2 × 3).
 - 96 CLI end-to-end cases spawn the real command, write temporary files, parse

@@ -137,6 +137,17 @@ export type {
 	AdapterMatrixReport,
 	BidirectionalAdapterMatrix,
 } from "./adapter-matrix.ts";
+export {
+	ADAPTER_CONFORMANCE_SCHEMA,
+	createAdapterConformanceSuite,
+} from "./adapter-conformance.ts";
+export type {
+	AdapterConformanceFailure,
+	AdapterConformancePhase,
+	AdapterConformanceReport,
+	AdapterConformanceSuite,
+	AdapterDirectConformance,
+} from "./adapter-conformance.ts";
 export type {
 	MigrationResidualLike,
 	MigrationSkipDiagnosticInput,
