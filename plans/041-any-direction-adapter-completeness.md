@@ -23,31 +23,32 @@ generic `adapter capability mismatch` diagnosis.
 ## Completion boundary
 
 The complete matrix is the union of every adapter that can be selected as a
-source or target. The current repository has two registries that must be
-converged before this plan can be called complete:
+source or target. The current repository has two intentionally different
+execution paths:
 
-- the versioned `StyleAdapterRegistry`, currently containing 24 modern
-  adapters; and
+- the versioned `StyleAdapterRegistry`, containing the modern ecosystem
+  adapters plus the modern `panda` and `pandwind` endpoints; and
 - the legacy `SwapIR` registry, containing the `tw`, `css`, `design`, and
   `dss` source dialects plus the Panda, Tailwind, StyleX, and Pandwind target
   lanes.
 
-The 3,456-case result currently proves only the first registry (24 × 24 × 2 ×
-3). The flat matrix proves its own smaller lane, but it is not yet a proof of
-the complete pivot surface. Completion requires Panda, Tailwind, and the core
-Pandwind dialects to be registered through the same source/target adapter
-contract. Their cheap `SwapIR` parser/emitter implementations may remain as
-internal projections; callers and proof runners must see one registry and one
-ordered route model.
+The modern route catalog projects the core nested dialects into the same
+ordered `StyleSystemRegistry`: `panda/tw|dss|css` and
+`pandwind/tw|dss|css` are registered beside the modern short `panda` and
+`pandwind` adapters. The flat path remains a separate cheap `SwapIR`
+compatibility projection; it is not a second semantic route registry. Callers
+that need rich conversion use the unified style-system route registry, while
+the legacy CLI path keeps its low-cost parser/emitter.
 
 ## Current evidence and known gap
 
-The current versioned registry and route matrix exercise all of its registered
-pairs and retain the flat `SwapIR` fast path. They do not yet include every
-legacy Panda/Tailwind/core dialect endpoint in the same registry. Named style maps and function-valued styles now
-have explicit representation contracts. The route proof is no longer only a
-single happy fixture: the shared proof corpus exercises happy, edge, and
-malformed inputs in safe and partial modes.
+The current versioned registry and route matrix exercise all 26 registered
+modern adapters and retain the flat `SwapIR` fast path. The route catalog also
+exposes the legacy Panda/Pandwind dialects through the same style-system
+registry. Named style maps and function-valued styles now have explicit
+representation contracts. The route proof is no longer only a single happy
+fixture: the shared proof corpus exercises happy, edge, and malformed inputs
+in safe and partial modes.
 
 The host projection contract now distinguishes the representation needed for a
 bound host from the representation needed by a standalone component export.
@@ -125,19 +126,19 @@ emitting an invalid `className={component}` value.
 The bidirectional codemod proof work is complete for the registered adapter
 matrix:
 
-- 24 contract fixtures cover detection, configuration, parsing, capabilities,
+- 26 contract fixtures cover detection, configuration, parsing, capabilities,
   emission, and validation for every registered adapter.
 - `createAdapterConformanceSuite()` directly exercises every adapter-owned
   detection, configuration, parsing, emission, and validation port before the
   ordered route matrix runs. Source-side semantic metadata is not judged as a
   target capability; that negotiation remains an ordered-route concern.
-- 3,456 Cartesian route cases cover every ordered source/target pair, both
-  capability modes, and all three proof scenarios (24 × 24 × 2 × 3).
+- 4,056 Cartesian route cases cover every ordered source/target pair, both
+  capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
 - 96 CLI end-to-end cases spawn the real command, write temporary files, parse
   JSON reports, and cover every adapter in both `adapter → Pandwind` and
   `Pandwind → adapter` directions, including edge inputs.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
-  both Vitest and `pnpm pivot:proof`; the proof command reports the same 3,456
+  both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
   route cases as the test suite.
 - Every skipped route must preserve its source and carry a typed residual;
   the obsolete generic `adapter capability mismatch` marker is rejected.

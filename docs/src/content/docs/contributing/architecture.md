@@ -91,6 +91,13 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+The route catalog projects both modern adapters and the core nested dialects
+into one style-system registry. `panda/tw`, `panda/dss`, `panda/css`, and the
+corresponding `pandwind/*` dialects therefore use the same source/target route
+ports as external ecosystems. The old `SwapIR` registry remains only as an
+internal compatibility projection for the fast flat CLI path; it is not a
+second rich migration architecture.
+
 The flat path is fail-closed as well. A target emitter may return text and a
 residual, but the runner only applies that replacement when the residual is
 explicitly marked as preserved by a target carrier such as `$raw` or a runtime

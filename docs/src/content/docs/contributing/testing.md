@@ -117,9 +117,10 @@ separate from the adapter contract fixture: the contract checks one adapter's
 ports, while the matrix checks route composition. The complete Cartesian gate
 in `packages/codemod/tests/adapter-matrix-contract.test.ts` invokes every
 registered source/target pair in safe and partial modes for happy, edge, and
-malformed fixtures: 24 × 24 × 2 × 3 = 3,456 route cases. Every case requires
-conversion or structured residual evidence; a skipped route may never be
-silent.
+malformed fixtures: 26 × 26 × 2 × 3 = 4,056 route cases. The legacy `SwapIR`
+path remains separately covered as the cheap compatibility projection. Every
+case requires conversion or structured residual evidence; a skipped route may
+never be silent.
 
 The binary-level matrix in
 `packages/codemod/tests/adapter-cli-e2e.test.ts` spawns the real CLI for every
