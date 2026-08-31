@@ -518,13 +518,12 @@ function runAdapterMigrationInternal(
 		});
 	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		const lowering = loweringRegistry.plan({
+		let lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,
 			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
-		loweringPlans.push(lowering);
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
@@ -571,7 +570,16 @@ function runAdapterMigrationInternal(
 			targetPolicy?.capabilitiesForRepresentation?.({
 				program,
 				representation: targetRepresentationKind,
-			}) ?? [];
+				}) ?? [];
+		if (!lowering.availableRepresentations.includes(targetRepresentationKind))
+			lowering = {
+				...lowering,
+				availableRepresentations: [
+					...lowering.availableRepresentations,
+					targetRepresentationKind,
+				],
+			};
+		loweringPlans.push(lowering);
 		if (
 			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
 			hostRepresentation !== undefined
