@@ -11,7 +11,7 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
 		adapter: CodemodAdapterId.Panda,
 		file: "panda.ts",
-		source: "import { css } from '@pandacss/dev'; css({ color: 'red' })",
+		source: "import { css } from 'styled-system/css'; css({ color: 'red' })",
 	},
 	{
 		adapter: CodemodAdapterId.Emotion,
@@ -129,7 +129,7 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
 		adapter: CodemodAdapterId.Tailwind,
 		file: "tailwind.tsx",
-		source: "import 'tailwindcss'; <div className='flex p-4' />",
+		source: "<div className='flex p-4' />",
 	},
 	{
 		adapter: CodemodAdapterId.UnoCSS,
