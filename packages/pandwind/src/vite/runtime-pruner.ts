@@ -1,7 +1,7 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { OxcNode } from "../tw/literal.ts";
 
-export enum CssRuntimeMethodTag {
+enum CssRuntimeMethodTag {
 	Class = "class",
 	Vars = "vars",
 	Raw = "raw",

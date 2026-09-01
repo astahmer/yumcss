@@ -473,7 +473,7 @@ function placeEntry(
 			return true;
 		}
 		case "fontFamily": {
-			const ref = toTokenRef(tokens, ["fonts"], str, mode, "fonts");
+			const ref = toDesignTokenRef(tokens, ["fonts"], str, mode, "fonts");
 			if (ref === null) return false;
 			scope.text.push(["font", ref]);
 			return true;
@@ -489,9 +489,6 @@ function placeEntry(
 			return false;
 	}
 }
-
-// alias kept so both call shapes above stay valid if one is renamed later
-const toTokenRef = toDesignTokenRef;
 
 function emitDesignVocabWithCallee(
 	callee: "css.class" | "dss",
