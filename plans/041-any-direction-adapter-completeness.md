@@ -93,8 +93,8 @@ exposes the legacy Panda/Pandwind dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
-in safe and partial modes. The codemod suite currently passes 51 test files
-and 746 tests including the adapter coverage gate; the CLI e2e matrix passes
+in safe and partial modes. The codemod suite currently passes 52 test files
+and 777 tests including the adapter coverage gate; the CLI e2e matrix passes
 105 tests across the ordered routes, and the route proof passes 4,056 cases.
 
 Function-valued object calls now share `FunctionStyleCallParser` across the
