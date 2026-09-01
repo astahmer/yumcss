@@ -1175,6 +1175,7 @@ function runAdapterMigrationInternal(
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
 			!targetComponentProjection &&
 			!targetHostProjection &&
+			hasHostContext &&
 			emittedHostRepresentation !== undefined &&
 			program.source?.subject === undefined &&
 			(program.source?.hostOpenTag === undefined ||
