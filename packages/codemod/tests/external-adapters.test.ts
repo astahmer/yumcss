@@ -1078,7 +1078,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain(carrier);
 			expect(result.code).toContain(targetImport);
-			expect(result.code).toContain("const Card = (props) => <chakra.div");
+			expect(result.code).toContain(
+				target === "chakra-ui"
+					? "const Card = (props) => <chakra.div"
+					: "const Card = (props) => <div",
+			);
 			if (target === "chakra-ui") expect(result.code).toContain('css={{ color: "red" }}');
 			else expect(result.code).toContain("props.className");
 			expect(result.code).not.toContain("styled-components");
