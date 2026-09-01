@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { SourceBindingKind, SourceBindings } from "pandwind/source";
+import { SourceBindingKind, SourceCallSiteKind, SourceBindings } from "pandwind/source";
 
 describe("source binding index", () => {
 	test("resolves named aliases, default imports, and namespace imports", () => {
@@ -92,5 +92,34 @@ describe("source binding index", () => {
 		expect(index.isShadowedAt("makeCss", nestedCall)).toBe(true);
 		expect(index.isShadowedAt("makeCss", outerCall)).toBe(false);
 		expect(index.isImportedFrom("makeCss", "@emotion/react", "css")).toBe(false);
+	});
+
+	test("indexes imported calls and tagged templates with exact AST ranges", () => {
+		const source = [
+			'import { css as makeCss } from "@emotion/react";',
+			'const card = makeCss({ color: "red" });',
+			"const label = makeCss`color: blue;`;",
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "calls.tsx", source });
+
+		expect(index.callSites).toHaveLength(2);
+		expect(
+			index.callSites.map(({ kind, binding, start, end }) => ({
+				kind,
+				localName: binding?.localName,
+				text: source.slice(start, end),
+			})),
+		).toEqual([
+			{
+				kind: SourceCallSiteKind.Call,
+				localName: "makeCss",
+				text: 'makeCss({ color: "red" })',
+			},
+			{
+				kind: SourceCallSiteKind.TaggedTemplate,
+				localName: "makeCss",
+				text: "makeCss`color: blue;`",
+			},
+		]);
 	});
 });

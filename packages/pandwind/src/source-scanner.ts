@@ -538,7 +538,9 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 export {
 	SourceBindings,
 	SourceBindingKind,
+	SourceCallSiteKind,
 	type SourceBinding,
+	type SourceCallSite,
 	type SourceBindingIndex,
 	type SourceReexport,
 } from "./source-bindings.ts";

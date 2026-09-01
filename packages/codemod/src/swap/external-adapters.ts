@@ -14,7 +14,7 @@ import {
 } from "./semantic-ir.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { joinDocumentPath } from "../path-utils.ts";
-import { SourceBindingKind, type SourceBinding } from "pandwind/source";
+import { SourceBindingKind, type SourceBinding, type SourceCallSite } from "pandwind/source";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	AdapterCapabilityLevelTag,
@@ -810,28 +810,45 @@ function parseCalls(
 	interface RegexCandidate {
 		readonly regex: RegExp;
 		readonly binding?: SourceBinding;
+		readonly callSite?: SourceCallSite;
 	}
 	const regexesFor = (pattern: CallPattern): readonly RegexCandidate[] => {
 		if (pattern.semanticBindings === undefined || context.bindings === undefined)
 			return [{ regex: pattern.regex }];
-		const bindings = context.bindings.bindings
-			.filter((binding) =>
+		const sites = context.bindings.callSites.filter(
+			(site) =>
+				site.binding !== undefined &&
 				pattern.semanticBindings?.some(
 					(candidate) =>
-						candidate.source === binding.source &&
-						(candidate.imported === binding.importedName ||
-							binding.kind === SourceBindingKind.Namespace),
+						candidate.source === site.binding?.source &&
+						(candidate.imported === site.binding.importedName ||
+							(site.binding.kind === SourceBindingKind.Namespace &&
+								site.property === candidate.imported)),
 				),
-			)
-			.filter(
-				(binding, index, all) =>
-					all.findIndex((candidate) => candidate.localName === binding.localName) === index,
-			);
-		if (bindings.length === 0) return [];
-		return bindings.map((binding) => ({
-			regex: pattern.regexForBinding?.(binding) ?? pattern.regex,
-			binding,
-		}));
+		);
+		return sites.flatMap((callSite) => {
+			const binding = callSite.binding;
+			if (binding === undefined) return [];
+			const regex = pattern.regexForBinding?.(binding) ?? pattern.regex;
+			regex.lastIndex = 0;
+			const localSource = context.source.slice(callSite.start, callSite.end);
+			if (regex.test(localSource) === false) return [];
+			return [{ regex, binding, callSite }];
+		});
+	};
+	const matchesFor = (
+		candidate: RegexCandidate,
+	): readonly { candidate: RegexCandidate; match: RegExpMatchArray }[] => {
+		if (candidate.callSite === undefined)
+			return [...source.matchAll(candidate.regex)].map((match) => ({ candidate, match }));
+		const sourceText = source.slice(candidate.callSite.start, candidate.callSite.end);
+		candidate.regex.lastIndex = 0;
+		const localMatch = candidate.regex.exec(sourceText);
+		if (localMatch === null) return [];
+		const match = [sourceText, ...localMatch.slice(1)] as unknown as RegExpMatchArray;
+		match.index = candidate.callSite.start;
+		match.input = source;
+		return [{ candidate, match }];
 	};
 	let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 	try {
@@ -843,9 +860,7 @@ function parseCalls(
 	const hostRanges = patterns.flatMap((pattern) => {
 		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
 		return regexesFor(pattern)
-			.flatMap((candidate) =>
-				[...source.matchAll(candidate.regex)].map((match) => ({ candidate, match })),
-			)
+			.flatMap(matchesFor)
 			.flatMap((match) => {
 				const start = match.match.index ?? 0;
 				if (
@@ -882,7 +897,7 @@ function parseCalls(
 			continue;
 		}
 		for (const candidate of regexesFor(pattern))
-			for (const match of source.matchAll(candidate.regex)) {
+			for (const { match } of matchesFor(candidate)) {
 				const start = match.index ?? 0;
 				if (
 					candidate.binding !== undefined &&

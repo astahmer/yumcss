@@ -15,6 +15,12 @@ export const enum SourceBindingKind {
 	Reexport = "reexport",
 }
 
+/** AST-owned semantic call shapes exposed to adapter parsers. */
+export const enum SourceCallSiteKind {
+	Call = "call",
+	TaggedTemplate = "tagged-template",
+}
+
 export interface SourceBinding {
 	readonly localName: string;
 	readonly importedName: string;
@@ -30,9 +36,20 @@ export interface SourceReexport {
 	readonly range: SourceRange;
 }
 
+export interface SourceCallSite {
+	readonly kind: SourceCallSiteKind;
+	readonly start: number;
+	readonly end: number;
+	readonly localName: string;
+	readonly property?: string;
+	readonly binding?: SourceBinding;
+}
+
 export interface SourceBindingIndex {
 	readonly bindings: readonly SourceBinding[];
 	readonly reexports: readonly SourceReexport[];
+	/** AST-owned calls and tagged templates with resolved imported bindings. */
+	readonly callSites: readonly SourceCallSite[];
 	/** Resolve the authored local name to its imported module binding. */
 	binding(localName: string): SourceBinding | undefined;
 	/** Return all imports from one module, preserving authored order. */
@@ -249,11 +266,61 @@ function collectBindings(program: OxcNode): {
 	return { bindings, reexports, declared, shadowedScopes };
 }
 
+const memberCallee = (node: unknown): { localName: string; property?: string } | undefined => {
+	if (node === null || typeof node !== "object") return undefined;
+	const value = node as {
+		type?: string;
+		name?: string;
+		object?: unknown;
+		property?: unknown;
+		computed?: boolean;
+	};
+	if (value.type === "Identifier" && typeof value.name === "string")
+		return { localName: value.name };
+	if (
+		value.type === "MemberExpression" &&
+		value.computed !== true &&
+		value.property !== undefined
+	) {
+		const object = memberCallee(value.object);
+		const property = nodeName(value.property);
+		if (object !== undefined && property !== undefined) return { ...object, property };
+	}
+	return undefined;
+};
+
+function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]): SourceCallSite[] {
+	const sites: SourceCallSite[] = [];
+	const bindingFor = (localName: string): SourceBinding | undefined =>
+		bindings.find((binding) => binding.localName === localName);
+	const add = (kind: SourceCallSiteKind, node: AstNode, callee: unknown): void => {
+		const shape = memberCallee(callee);
+		const range = rangeOf(node, { start: 0, end: 0 });
+		if (shape === undefined || range.end <= range.start) return;
+		sites.push({
+			kind,
+			...range,
+			...shape,
+			...(bindingFor(shape.localName) === undefined
+				? {}
+				: { binding: bindingFor(shape.localName) }),
+		});
+	};
+	walkWithParent(program, (node) => {
+		if (node.type === "CallExpression")
+			add(SourceCallSiteKind.Call, node, (node as { callee?: unknown }).callee);
+		else if (node.type === "TaggedTemplateExpression")
+			add(SourceCallSiteKind.TaggedTemplate, node, (node as { tag?: unknown }).tag);
+	});
+	return sites.toSorted((a, b) => a.start - b.start);
+}
+
 /** Immutable AST import index shared by codemod, Vite, analyzer, and hosts. */
 export class SourceBindings {
 	private constructor(
 		private readonly entries: readonly SourceBinding[],
 		private readonly exported: readonly SourceReexport[],
+		private readonly calls: readonly SourceCallSite[],
 		private readonly shadowed: ReadonlySet<string>,
 		private readonly shadowedScopes: readonly ShadowedScope[],
 	) {}
@@ -265,6 +332,7 @@ export class SourceBindings {
 		return new SourceBindings(
 			collected.bindings,
 			collected.reexports,
+			collectCallSites(program, collected.bindings),
 			shadowed,
 			collected.shadowedScopes,
 		);
@@ -293,6 +361,10 @@ export class SourceBindings {
 
 	get reexports(): readonly SourceReexport[] {
 		return this.exported;
+	}
+
+	get callSites(): readonly SourceCallSite[] {
+		return this.calls;
 	}
 
 	binding(localName: string): SourceBinding | undefined {
