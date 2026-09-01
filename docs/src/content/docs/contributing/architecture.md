@@ -29,6 +29,32 @@ lowering could represent it for that target. The source is preserved in all
 three cases. A generic `adapter capability mismatch` marker is not a valid
 diagnosis.
 
+An HIR cannot by itself make every route native. It preserves the source
+meaning, provenance, conditions, and runtime context; the target adapter still
+has to own a legal representation for that meaning in the target API and host
+framework. The route contract is therefore bidirectional and lossless rather
+than naively native in every case: choose a static target representation when
+possible, then a target-owned portable or runtime carrier when it is proven,
+otherwise preserve the source and report the exact typed residual. A skip is a
+real capability gap only when that negotiation has exhausted the target's
+declared representations; it is not a license for the runner to drop a style
+or silently coerce a component into a class string.
+
+The migration result also exposes one typed outcome per matched program. The
+outcome is `static`, `target-native`, `host-runtime`, `portable-artifact`, or
+`residual`, alongside the selected representation. This is deliberately
+separate from the capability report: a target may begin with a partial
+capability and still resolve it through a target-owned host or lowering port.
+Tooling should display the outcome and residual detail, not collapse the
+decision into a generic capability mismatch.
+
+Framework metadata is only a capability requirement when the program carries
+host or component semantics. Standalone style carriers retain framework
+provenance in the IR but do not need a framework-specific target rewrite. Each
+runtime-capable adapter must opt into exact dynamic support in its own adapter
+module and prove that its emitted carrier preserves the authored expression;
+the generic adapter runtime remains conservative by default.
+
 ## Official project configuration
 
 Project-aware migration must ask the ecosystem's own packages to interpret
@@ -125,7 +151,11 @@ policy only when the source has a real host use; otherwise a target-native
 component expression can be preserved. This distinction prevents a
 class-string API from being called as a component, prevents a component
 factory from being assigned to `className`, and lets a target such as MUI
-rewrite `className={card}` to its host-owned `sx={card}` prop.
+rewrite `className={card}` to its host-owned `sx={card}` prop. Intrinsic DOM
+hosts are wrapped as `Box component="..."` first, because `sx` is not a DOM
+attribute; static unknown custom components can use MUI's portable artifact
+fallback, while dynamic ones remain residuals unless the source proves that
+they are MUI components.
 
 The target policy owns the final host rewrite. It receives the normalized
 program, emitted expression, framework, binding, and selected representation;
@@ -142,10 +172,17 @@ identities are equal is instead an identity no-op; it does not renegotiate
 capabilities or manufacture a new representation.
 
 Targets that require a host use declare that requirement in the same policy.
-For example, MUI's `sx` carrier sets `requiresHostContext`; a bare style value
-therefore stops before target emission with the adapter-owned explanation that
-an `sx` prop must be attached to a component. This keeps “no standalone API”
-as a target contract rather than a special case in the route runner.
+For example, MUI's `sx` carrier sets `requiresHostContext`; a static bare style
+value therefore selects the MUI adapter's portable-artifact representation and
+emits Pandwind's static `css.class(...)` carrier rather than inventing an
+`sx()` API that MUI does not have. Dynamic bare values use the same portable
+carrier as an explicit runtime fallback; dynamic values with an unknown host
+still stop with the adapter-owned explanation that an `sx` prop must be
+attached to a component.
+When the source host is an intrinsic element, the same target port emits
+`Box component="..."` so the rendered element remains equivalent. This keeps
+the rule and its fallback under MUI ownership as target contracts rather than
+special cases in the route runner.
 
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component
@@ -293,8 +330,8 @@ static-evaluation evidence. The lowering registry handles resolved theme
 bindings, custom-property fallback, composition flattening, plugin transforms,
 runtime context, and framework metadata. Its `plan()` result records the
 selected representation (`static`, target-native, custom-property,
-runtime-carrier, or residual) and the representations the target contract can
-negotiate. A migration result also retains one lowering plan per parsed source
+runtime-carrier, portable-artifact, or residual) and the representations the
+target contract can negotiate. A migration result also retains one lowering plan per parsed source
 match, so diagnostics, IDE tooling, and proof runners can inspect why a route
 selected a representation instead of inferring it from generated text. A
 target-native plan may explicitly resolve a partial capability only for the
@@ -304,6 +341,14 @@ the migration runner composes them without an ecosystem switch. A target
 adapter receives an optional semantic observation on `AdapterEmitResult` when
 an opaque runtime registration cannot safely be reparsed; validators compare
 that observation rather than pretending the emitted call is a static class.
+
+Class-oriented targets may also implement a named-map projection. Tailwind's
+adapter accepts a program such as `{ button: { color: "red" } }` and emits a
+map of class strings, allowing JSS, StyleX, Aphrodite, and Style9 named rules
+to cross that boundary without flattening the rule name. The reverse parser
+recognizes the same map, including conditional arbitrary utilities such as
+`hover:[color:red]`; bracket-aware token splitting is part of the UnoCSS and
+Tailwind adapter contracts rather than a runner special case.
 
 Runtime fallback is a deliberate second lane. Static extraction is attempted
 first; only unresolved dynamic expressions retain the smallest target runtime
@@ -334,8 +379,11 @@ and scenario fixtures are shared by the Vitest suites and the offline proof
 composition root, so the two gates cannot silently use different corpora. The
 complete matrix covers every ordered adapter pair in safe and partial modes
 for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
-the real binary in both directions for every adapter. A route is accepted only
-when it converts or preserves the source with a typed residual.
+the real binary for all 676 ordered pairs, passing the three scenarios through
+each pair in both directions. A route is accepted only when it converts or
+preserves the source with a typed residual. Run the expensive public-boundary
+proof with `pnpm --filter pandwind-codemod test:e2e`; the normal coverage gate
+runs the same route corpus in-process.
 `createAdapterConformanceSuite()` adds the direct adapter-owned gate before the
 route matrix: each registered adapter must independently pass detection,
 configuration, parsing, emission, and validation against its happy fixture.

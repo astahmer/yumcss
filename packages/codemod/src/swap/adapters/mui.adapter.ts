@@ -1,5 +1,6 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
+import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -190,7 +191,7 @@ function rewriteMuiIntrinsicHost(
 	code: string,
 	expression: string,
 	host: HostUse,
-): { code: string; imports: readonly string[]; residuals: readonly never[] } {
+): AdapterHostRewriteResult {
 	const opening = host.opening;
 	const selfClosing = /\/\s*>$/.test(opening);
 	const attributes = opening

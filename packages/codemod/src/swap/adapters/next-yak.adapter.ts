@@ -3,7 +3,18 @@ import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
+	StyleRepresentationKind,
 } from "../identifiers.ts";
+import type { StyleProgram } from "../semantic-ir.ts";
+
+function hasDynamicValues(program: StyleProgram): boolean {
+	return program.rules.some(function containsDynamic(rule): boolean {
+		return (
+			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+			rule.children.some(containsDynamic)
+		);
+	});
+}
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */
 export default defineCodemodAdapter({
@@ -46,6 +57,14 @@ export default defineCodemodAdapter({
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			resolveRepresentation: ({ program, hasHostContext }) =>
+				!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
+					? StyleRepresentationKind.RuntimeCarrier
+					: undefined,
+			capabilitiesForRepresentation: ({ representation }) =>
+				representation === StyleRepresentationKind.RuntimeCarrier
+					? ["dynamic-values", "theme-context", "runtime-context"]
+					: [],
 		},
 		prepareDynamic: ({ program }) => ({
 			handled:
