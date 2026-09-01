@@ -172,6 +172,13 @@ export default defineCodemodAdapter({
 			regex: /\bstyle\s*\(\s*\{/g,
 			form: "object",
 		},
+		{
+			name: "mantine-createStyles",
+			regex: /\bcreateStyles\s*\(\s*\{/g,
+			form: "object",
+			sourceObjectOptions: { namedRuleObjects: true },
+			suffix: /\.classes\b/u,
+		},
 	],
 	packages: dependency("@mantine/core", "peer"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
@@ -180,7 +187,7 @@ export default defineCodemodAdapter({
 		"framework-semantics": "partial",
 		components: "partial",
 	}),
-	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	namedRuleStrategy: StyleNamedRuleStrategy.NativeMap,
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
@@ -244,6 +251,16 @@ export default defineCodemodAdapter({
 				],
 			};
 		const styleObject = programObject(program);
+		if (
+			program.rules.some((rule) => rule.name !== undefined) &&
+			context?.host?.subject === undefined &&
+			context?.host?.representation !== StyleHostRepresentationKind.StyleProp
+		)
+			return {
+				text: `createStyles(${styleObject}).classes`,
+				imports: ['import { createStyles } from "@mantine/core";'],
+				semantic: program,
+			};
 		if (context?.host?.subject !== undefined)
 			return {
 				text: `style(${styleObject})`,

@@ -56,6 +56,9 @@ type CallPattern = {
 	>;
 	readonly kind?: "style" | "styled" | "keyframes" | "global" | "font-face";
 	readonly objectKind?: StyleProgramOptions["nestedObjectKind"];
+	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
+	/** Optional source syntax immediately following the balanced call body. */
+	readonly suffix?: RegExp;
 	readonly styleProps?: readonly string[];
 	/** Source-specific host props that must remain for component semantics. */
 	readonly preserveHostStyleProps?: (host: JsxStyleHostMatch) => readonly string[];
@@ -805,6 +808,10 @@ function parseCalls(
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
 	for (const pattern of patterns) {
+		const patternObjectOptions =
+			typeof pattern.sourceObjectOptions === "function"
+				? pattern.sourceObjectOptions(context.source, context)
+				: (pattern.sourceObjectOptions ?? {});
 		if (pattern.functionCall !== undefined) {
 			const parsed = FunctionStyleCallParser.parse(source, context, {
 				id: context.config.adapter,
@@ -843,6 +850,7 @@ function parseCalls(
 						tag.template === undefined
 							? styleProgramFromSourceObject(tag.body, {
 									...resolvedObjectOptions,
+									...patternObjectOptions,
 									source: tag.source,
 									sourceOffset: start,
 								})
@@ -967,6 +975,8 @@ function parseCalls(
 				continue;
 			}
 			const end = source[block.end] === ")" ? block.end + 1 : block.end;
+			const suffixMatch = pattern.suffix?.exec(source.slice(end));
+			const fullEnd = suffixMatch?.index === 0 ? end + suffixMatch[0].length : end;
 			const fallbackName = `${pattern.name}Style${matches.length + 1}`;
 			let program: StyleProgram;
 			if (pattern.kind === "keyframes") {
@@ -975,7 +985,7 @@ function parseCalls(
 					context,
 					start,
 					sourceName(source, start, fallbackName),
-					resolvedObjectOptions,
+					{ ...resolvedObjectOptions, ...patternObjectOptions },
 				);
 			} else if (pattern.kind === "global") {
 				const selector = source.slice(start, open).match(/\(\s*(["'])([^"']+)\1\s*,\s*$/)?.[2];
@@ -985,7 +995,7 @@ function parseCalls(
 					source: {
 						file: context.file,
 						start,
-						end,
+						end: fullEnd,
 						adapter: context.config.adapter,
 						...(context.document?.framework ? { framework: context.document.framework } : {}),
 						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
@@ -999,6 +1009,7 @@ function parseCalls(
 					...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
 					...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
 					...resolvedObjectOptions,
+					...patternObjectOptions,
 					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
 				});
 				if (pattern.kind === "font-face") {
@@ -1023,7 +1034,7 @@ function parseCalls(
 				...program,
 				source: { ...program.source, pattern: pattern.name },
 			};
-			matches.push({ start, end, program, sourceText: source.slice(start, end) });
+			matches.push({ start, end: fullEnd, program, sourceText: source.slice(start, fullEnd) });
 		}
 	}
 	matches.sort((a, b) => a.start - b.start);

@@ -26,6 +26,7 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { matchBlock } from "../../sources.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -249,6 +250,25 @@ function standaloneClassMap(
 	return start < 0 ? undefined : { start, end: start + outer[0].trim().length, entries };
 }
 
+function assignedClassMap(
+	source: string,
+):
+	| { readonly start: number; readonly end: number; readonly entries: readonly RegExpExecArray[] }
+	| undefined {
+	for (const match of source.matchAll(/\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{/g)) {
+		const open = source.indexOf("{", match.index ?? 0);
+		if (open < 0) continue;
+		const block = matchBlock(source, open);
+		if (block === null) continue;
+		const entries = [
+			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g),
+		];
+		if (entries.length === 0 || entries.some((entry) => entry[4] === undefined)) continue;
+		return { start: open, end: block.end, entries };
+	}
+	return undefined;
+}
+
 function parseTailwind(
 	source: string,
 	context: AdapterParseContext,
@@ -257,7 +277,7 @@ function parseTailwind(
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const excluded = context.document?.isExcluded ?? (() => false);
-	const classMap = standaloneClassMap(source);
+	const classMap = standaloneClassMap(source) ?? assignedClassMap(source);
 	if (classMap !== undefined) {
 		const parsedEntries = classMap.entries.map(
 			(entry) =>
