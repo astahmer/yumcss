@@ -30,7 +30,7 @@ import {
 	type StyleLoweringRegistry,
 } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
-import { consolidateImports, removeSourceImports, validationSource } from "./external-adapters.ts";
+import { MigrationOutput } from "./migration-output.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
@@ -1270,7 +1270,7 @@ function runAdapterMigrationInternal(
 		// validation. A failed validation is an aggregate consequence; it must
 		// not hide the precise semantic reason emitted by the target adapter.
 		residuals.push(...emitted.residuals);
-		const emittedForValidation = validationSource(emitted.text, program);
+		const emittedForValidation = MigrationOutput.validationSource(emitted.text, program);
 		if (
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
 			!targetComponentProjection &&
@@ -1614,7 +1614,7 @@ function runAdapterMigrationInternal(
 	// source runtime. Removing them would turn a safe residual into broken code.
 	let code =
 		skipped === 0 && residuals.length === 0
-			? removeSourceImports(runtimeEdited, [
+			? MigrationOutput.removeSourceImports(runtimeEdited, [
 					...sourceAdapter.sourceModules,
 					...sourceModulesToRemove,
 				])
@@ -1624,7 +1624,7 @@ function runAdapterMigrationInternal(
 		imports.delete("const css = createCss();");
 	}
 	const outputFile = fileWithExtension(options.file, outputExtension);
-	for (const statement of consolidateImports(imports))
+	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = ensureGeneratedStatement(code, statement, outputFile);
 	return {
 		code,

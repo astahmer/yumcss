@@ -14,12 +14,12 @@ import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
-	StyleRuleKindTag,
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 import { STYLE_VALIDATORS, type StyleValidatorRegistry } from "./validator-registry.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
+import { MigrationOutput } from "./migration-output.ts";
 
 export interface DifferentialBrowserState {
 	readonly name: string;
@@ -151,13 +151,6 @@ function renderAdapterProgram(
 	return adapter.emit(program, { file, config, mode, index: 0 });
 }
 
-function validationSource(text: string, program: StyleProgram): string {
-	const rule = program.rules[0];
-	return rule?.kind === StyleRuleKindTag.Keyframes && rule.name !== undefined
-		? `const ${rule.name} = ${text}`
-		: text;
-}
-
 /**
  * Compare a source adapter with a target adapter through the emitted source,
  * then exercise browser-state and SSR/hydration hooks when a fixture provides
@@ -252,7 +245,7 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 	);
 	residuals.push(...emitted.residuals);
 	if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
-	const emittedForValidation = validationSource(emitted.text, loweredProgram);
+	const emittedForValidation = MigrationOutput.validationSource(emitted.text, loweredProgram);
 	const targetParsed = targetAdapter.parse(emittedForValidation, {
 		file: fixture.file,
 		source: emittedForValidation,
