@@ -53,7 +53,6 @@ export const enum AdapterCapabilityLevelTag {
 
 export const enum AdapterCapabilityModeTag {
 	Safe = "safe",
-	Partial = "partial",
 }
 
 export interface AdapterCapabilities {

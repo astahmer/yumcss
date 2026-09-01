@@ -18,7 +18,6 @@ export type TokenRefMode = "off" | "bare" | "group";
 
 export const enum TokenRefModeTag {
 	Off = "off",
-	Bare = "bare",
 	Group = "group",
 }
 
