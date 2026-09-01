@@ -237,6 +237,7 @@ export function createTokenamiAdapter(
 		},
 		capabilities: allRuleCapabilities(CodemodAdapterId.Tokenami, "partial", {
 			"token-values": "exact",
+			"custom-properties": "exact",
 			"named-conditions": "partial",
 			"pseudo-conditions": "exact",
 			"selector-conditions": "exact",
@@ -274,6 +275,7 @@ export function createTokenamiAdapter(
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
+				dynamicClassCarrier: true,
 			},
 		},
 		emit(program, { programObject }) {

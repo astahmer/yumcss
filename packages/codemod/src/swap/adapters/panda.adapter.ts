@@ -45,6 +45,7 @@ export default defineCodemodAdapter({
 		// rule API. Keep unsupported rule kinds explicit so the IR residual remains
 		// actionable instead of claiming a false exact conversion.
 		"rule-level": "partial",
+		"custom-properties": "exact",
 		"global-rules": "unsupported",
 		keyframes: "unsupported",
 		"font-face": "unsupported",
@@ -72,6 +73,7 @@ export default defineCodemodAdapter({
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
+			dynamicClassCarrier: true,
 		},
 	},
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
