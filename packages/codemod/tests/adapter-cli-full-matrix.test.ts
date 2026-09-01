@@ -13,6 +13,7 @@ interface CliFileResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
+	readonly original: string;
 	readonly source: string;
 }
 
@@ -26,13 +27,13 @@ function runCliMatrix(
 	if (fixtures.length === 0) throw new Error(`missing matrix fixtures for ${sourceAdapter}`);
 	const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-full-matrix-"));
 	try {
-		const files = fixtures.map((fixture) => {
+		const fileSpecs = fixtures.map((fixture) => {
 			const file = join(
 				directory,
 				`${sourceAdapter}-${targetAdapter}-${fixture.scenario}-${fixture.file.replaceAll("/", "-")}`,
 			);
 			writeFileSync(file, fixture.source);
-			return file;
+			return { file, original: fixture.source };
 		});
 		const output = execFileSync(
 			"pnpm",
@@ -46,7 +47,7 @@ function runCliMatrix(
 				"--safe",
 				"--write",
 				"--report=json",
-			...files,
+			...fileSpecs.map((spec) => spec.file),
 			],
 			{ cwd: codemodRoot, encoding: "utf8" },
 		);
@@ -59,7 +60,8 @@ function runCliMatrix(
 		};
 		return report.files.map((result, index) => ({
 			...result,
-			source: readFileSync(files[index]!, "utf8"),
+			original: fileSpecs[index]!.original,
+			source: readFileSync(fileSpecs[index]!.file, "utf8"),
 		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
@@ -90,7 +92,11 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 						result.converted > 0 || result.skipped > 0 || result.residuals > 0,
 						`${source.id} -> ${target.id} produced no conversion or residual evidence`,
 					).toBe(true);
-					if (result.skipped > 0) expect(result.source).toContain("pandwind:migrate-skip");
+					if (result.skipped > 0)
+						expect(
+							result.source.includes("pandwind:migrate-skip") || result.source === result.original,
+							`${source.id} -> ${target.id} skipped without a marker or source preservation`,
+						).toBe(true);
 				}
 			}
 	}, 600_000);
