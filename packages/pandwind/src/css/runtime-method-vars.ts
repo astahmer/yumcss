@@ -2,6 +2,7 @@ import type { StyleObject } from "../types/typings.ts";
 import { createVarCompiler, VARS_ATOMS, type VarAtom, type VarsOutput } from "./var-compiler.ts";
 import type { RuntimeCssAttachment } from "./runtime-base.ts";
 
+/** Attach the dynamic-value projection that emits classes plus custom properties. */
 export const attachVars: RuntimeCssAttachment = (css, context) => {
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = context.flatten(context.assign(...styles));

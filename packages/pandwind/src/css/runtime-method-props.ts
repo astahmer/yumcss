@@ -24,6 +24,7 @@ interface PropsReturn {
 	[key: string]: unknown;
 }
 
+/** Attach the host-prop projection that combines classes and inline variables. */
 export const attachProps: RuntimeCssAttachment = (css) => {
 	css.props = (...props: Array<PropsInput>): PropsReturn => {
 		const compiled: Array<CompiledStyles> = [];

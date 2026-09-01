@@ -15,6 +15,7 @@ type GroupValue =
 	| string
 	| ((...args: any[]) => StyleObject);
 
+/** Attach reusable static and dynamic group definitions to the CSS runtime. */
 export const attachGroup: RuntimeCssAttachment = (css, context) => {
 	const vars = css.vars as ((...styles: Array<StyleObject>) => VarsOutput) | undefined;
 	const transform = (styles: StyleObject | DynamicStyles | string) => {

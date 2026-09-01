@@ -38,7 +38,15 @@ const ALL_RUNTIME_METHODS = [
 	attachInput,
 ] as const;
 
-/** Fully capable public factory; bundler adapters may emit fewer attachments. */
+/**
+ * Create the typed CSS function used by the public `css()` lane.
+ *
+ * A preset supplies the token and condition vocabulary; the returned callable
+ * compiles style objects to declaration maps and exposes the attached
+ * projections documented by `CssFn`. Bundler integrations may replace this
+ * full runtime with a statically lowered callable or a smaller attachment set
+ * without changing the source-level type surface.
+ */
 export function createCss<TPreset extends TypedPreset>(
 	preset: TPreset,
 	options?: CreateCssOptions,
@@ -76,12 +84,26 @@ type PropsInput =
 	| null
 	| undefined;
 
+/**
+ * The complete source-level contract for `createCss`.
+ *
+ * The callable form is the low-level declaration-map result. The named
+ * methods are explicit projections for class strings, dynamic values, host
+ * props, reusable groups, and raw style objects; keeping them on one typed
+ * value lets compiler and runtime implementations share the same API.
+ */
 export interface CssFn<TStyles extends StyleObject = StyleObject> {
+	/** Compile style objects to the atomic declaration map consumed by the CSS engine. */
 	(...styles: Array<TStyles>): CompiledStyles;
+	/** Compile style objects and return their atom classes as one class string. */
 	class: (...styles: Array<TStyles>) => string;
+	/** Encode style declarations as classes plus inline custom properties for dynamic values. */
 	vars: (...styles: Array<TStyles>) => VarsOutput;
+	/** Merge style objects without compiling them, for stylesheet and bridge consumers. */
 	raw: (...styles: Array<TStyles>) => StyleObject;
+	/** Normalize compiled styles, variable carriers, and class strings into host props. */
 	props: (...styles: Array<PropsInput>) => PropsReturn;
+	/** Build a reusable map of static, dynamic, string, or parameterized style groups. */
 	group: <
 		TGroup extends Record<
 			string,
@@ -100,5 +122,6 @@ export interface CssFn<TStyles extends StyleObject = StyleObject> {
 					? string
 					: CompiledStyles;
 	};
+	/** Mark a named runtime input for a dynamic `group` definition. */
 	input: (name: string) => never;
 }
