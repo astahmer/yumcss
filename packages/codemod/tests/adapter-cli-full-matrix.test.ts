@@ -14,7 +14,6 @@ interface CliFileResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
-	readonly original: string;
 	readonly source: string;
 }
 
@@ -25,13 +24,13 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 	if (fixtures.length === 0) throw new Error(`missing matrix fixtures for ${sourceAdapter}`);
 	const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-full-matrix-"));
 	try {
-		const fileSpecs = fixtures.map((fixture) => {
+		const files = fixtures.map((fixture) => {
 			const file = join(
 				directory,
 				`${sourceAdapter}-${targetAdapter}-${fixture.scenario}-${fixture.file.replaceAll("/", "-")}`,
 			);
 			writeFileSync(file, fixture.source);
-			return { file, original: fixture.source };
+			return file;
 		});
 		const output = execFileSync(
 			"pnpm",
@@ -45,7 +44,7 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 				"--safe",
 				"--write",
 				"--report=json",
-			...fileSpecs.map((spec) => spec.file),
+			...files,
 			],
 			{ cwd: codemodRoot, encoding: "utf8" },
 		);
@@ -59,8 +58,7 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 		};
 		return report.files.map((result, index) => ({
 			...result,
-			original: fileSpecs[index]!.original,
-			source: readFileSync(fileSpecs[index]!.file, "utf8"),
+			source: readFileSync(files[index]!, "utf8"),
 		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
