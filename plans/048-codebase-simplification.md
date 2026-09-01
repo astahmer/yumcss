@@ -1,6 +1,6 @@
 # Codebase simplification plan
 
-Status: in progress
+Status: complete
 
 ## Goal
 
@@ -30,8 +30,11 @@ duplicates, or preserves an obsolete compatibility shape.
 
 1. Remove dead exports and private compatibility aliases.
 2. Establish one owner for source-pass primitives and update all callers.
-3. Inspect the deepest migration domains by call shape, then split only a
-   replaceable policy with a default implementation and substitution test.
+3. Inspect the deepest migration domains by call shape. Keep the semantic IR,
+   adapter migration, and Panda pipeline cohesive for now: their current
+   boundaries already own complete lifecycles, and a line-count-only split
+   would add indirection without a replaceable policy or useful substitution
+   test.
 4. Record the completed boundaries in the architecture guide.
 5. Run focused package tests, typechecks, formatting, Knip, and repository
    status checks. The full codemod suite is intentionally deferred unless
@@ -52,3 +55,14 @@ duplicates, or preserves an obsolete compatibility shape.
 - Architecture documentation describes the final ownership.
 - Focused tests, typechecks, formatter, and Knip pass with a clean JJ working
   copy.
+
+## Completed evidence
+
+- `SourcePass` owns all shared source-pass mechanics; callers no longer import
+  editing or balanced-block helpers from `migrate.ts` or `sources.ts`.
+- The unused `CssRuntimeMethodTag` export and private token-reference alias
+  were removed.
+- The focused codemod boundary tests pass: 183 tests across source, swap,
+  migration-matrix, and template-parser coverage.
+- Knip and production Knip pass. Full codemod execution remains intentionally
+  deferred while the fast focused workflow is used.

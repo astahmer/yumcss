@@ -226,7 +226,7 @@ core never invents a target token path from a matching string alone.
 | Analyze/reporting      | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge         | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
 | Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                   |
-| Runtime specialization | static-call rewriting, usage-aware factory pruning, factory-elision safety, virtual runtime modules, and runtime-size regression proof      | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                            |
+| Runtime specialization | static-call rewriting, usage-aware factory pruning, factory-elision safety, virtual runtime modules, and runtime-size regression proof       | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                            |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
@@ -557,6 +557,17 @@ constant, import, evaluation, fold, and rewrite policies. Analyzer/reporting
 and design vocabulary use the same port/registry pattern. New policies must
 include a minimal substitution test before they are wired into a composition
 root.
+
+Source transformation primitives have one owner: `SourcePass` in
+`packages/codemod/src/source-pass-utils.ts`. It scopes balanced-block matching,
+excluded-range calculation, offset-safe edits, and residual-marker insertion
+behind one small class. The legacy copies in the source migration façade and
+the general migration runner were removed; adapter and pipeline code consumes
+this owner instead. The large adapter-migration, semantic-IR, and Panda files
+remain cohesive because they still own a complete lifecycle or policy surface;
+they are not split merely to reduce line count. A future split must introduce
+an independently replaceable port, default implementation, and substitution
+test, otherwise it would add indirection without improving the architecture.
 
 The codemod registry exposes a derived `capabilityMatrix()` view containing
 each adapter's contract version, source modules, dependencies, and declared
