@@ -143,6 +143,13 @@ function dynamicDetail(value: StyleDynamicValue): string {
 	return value.expression.length > 80 ? `${value.expression.slice(0, 77)}...` : value.expression;
 }
 
+function isFunctionDynamic(value: StyleDynamicValue): boolean {
+	return (
+		value.expressionKind === StyleDynamicExpressionKind.Function ||
+		/=>|^function\b/.test(value.expression.trim())
+	);
+}
+
 /** Return the minimum target capabilities needed to interpret a program. */
 export function requiredAdapterCapabilities(
 	program: StyleProgram,
@@ -196,9 +203,7 @@ export function requiredAdapterCapabilities(
 		if (declaration.value.kind === "token") add("token-values", `token: ${declaration.value.ref}`);
 		if (declaration.value.kind === "dynamic") {
 			add(
-				declaration.value.expressionKind === StyleDynamicExpressionKind.Function
-					? "function-values"
-					: "dynamic-values",
+				isFunctionDynamic(declaration.value) ? "function-values" : "dynamic-values",
 				`dynamic: ${dynamicDetail(declaration.value)}`,
 			);
 		}

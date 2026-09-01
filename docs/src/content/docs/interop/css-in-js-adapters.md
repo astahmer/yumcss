@@ -140,6 +140,13 @@ binding. This keeps the generated stylesheet static; only the value lookup is
 runtime code. Targets that cannot prove this carrier, or hosts whose existing
 style binding cannot be merged, remain residuals.
 
+The same path handles simple function-valued styled subjects. For example,
+`styled.div((props) => ({ color: props.color }))` can become a static target
+class plus a generated intrinsic wrapper whose custom-property binding
+evaluates the function with `props`. The function is never stringified into
+CSS. More complex functions, unsupported hosts, and targets without this
+contract remain explicit `function-dynamic` residuals.
+
 There is one additional safe static case: a styled intrinsic used as a
 discarded expression statement has no component value to preserve. The shared
 host boundary detects that shape and lets class-valued targets lower it in

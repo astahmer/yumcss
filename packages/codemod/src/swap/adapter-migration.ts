@@ -38,6 +38,7 @@ import {
 	type HostComponentRewriteRequest,
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
+import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
 import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";
 import {
 	StyleHostRepresentationKind,
@@ -115,6 +116,12 @@ function hasHostBindingUse(source: string, binding: string | undefined): boolean
 	return new RegExp(
 		`(?:<\\s*${escaped}\\b|\\b(?:class|className|style|css)\\s*=\\s*\\{\\s*${escaped}\\s*\\})`,
 	).test(source);
+}
+
+function hasComponentBindingUse(source: string, binding: string | undefined): boolean {
+	if (binding === undefined) return false;
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return new RegExp(`<\\s*${escaped}\\b`).test(source);
 }
 
 function hasInlineHostUse(source: string, start: number): boolean {
@@ -522,6 +529,7 @@ function runAdapterMigrationInternal(
 		});
 	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
+		const sourceHasFunctionDynamic = programHasFunctionDynamic(match.program);
 		let lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
@@ -530,6 +538,7 @@ function runAdapterMigrationInternal(
 		});
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
+		const hasFunctionDynamic = sourceHasFunctionDynamic || programHasFunctionDynamic(program);
 		const sourceSubject = program.source?.subject;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
@@ -549,7 +558,8 @@ function runAdapterMigrationInternal(
 		const hasHostContext =
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(source, bindingBeforeMatch) ||
-			hasInlineHostUse(source, match.start);
+			hasInlineHostUse(source, match.start) ||
+			hasComponentBindingUse(source, bindingBeforeMatch);
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
 			bindingBeforeMatch === undefined &&
@@ -664,9 +674,9 @@ function runAdapterMigrationInternal(
 				const hostDynamicHandled =
 					program.source?.hostOpenTag !== undefined &&
 					program.source.hostStyleAttributes !== undefined &&
-					!programHasFunctionDynamic(program);
+					!hasFunctionDynamic;
 				const nativeFunctionHandled =
-					programHasFunctionDynamic(program) &&
+					hasFunctionDynamic &&
 					program.source?.hostOpenTag === undefined &&
 					targetAdapter.capabilities.capabilities["function-values"] !== "unsupported";
 				const dynamicHandled = hostDynamicHandled || dynamicPolicy?.handled === true;
@@ -723,7 +733,6 @@ function runAdapterMigrationInternal(
 		}
 		if (hasTargetHostPort(targetAdapter) && program.source?.subject !== undefined) {
 			const hasDynamic = programHasDynamic(program);
-			const hasFunctionDynamic = programHasFunctionDynamic(program);
 			const binding = source
 				.slice(0, match.start)
 				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
@@ -806,15 +815,39 @@ function runAdapterMigrationInternal(
 					program = { ...program, source: { ...program.source, subject: undefined } };
 				if (frameworkWrapper)
 					loweringResiduals = loweringResiduals.filter(
-						(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+						(residual) =>
+							residual.kind !== "dynamic" &&
+							residual.kind !== "function-dynamic" &&
+							residual.kind !== "dynamic-custom-property",
 					);
 				if (frameworkWrapper)
 					program = {
 						...program,
 						residuals: program.residuals.filter(
-							(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+							(residual) =>
+								residual.kind !== "dynamic" &&
+								residual.kind !== "function-dynamic" &&
+								residual.kind !== "dynamic-custom-property",
 						),
 					};
+				if (
+					frameworkWrapper &&
+					binding !== undefined &&
+					tag !== undefined &&
+					framework !== undefined &&
+					hostRepresentation === StyleHostRepresentationKind.Class
+				) {
+					pendingComponentDeclarationRewrites.set(index, {
+						binding,
+						tag,
+						framework,
+						...(DynamicClassHost.styleExpression(carrierResiduals, "props") === undefined
+							? {}
+							: {
+									styleExpression: DynamicClassHost.styleExpression(carrierResiduals, "props"),
+								}),
+					});
+				}
 			}
 			const residualsCanUseHostLowering = program.residuals.every(
 				(residual) =>
@@ -911,6 +944,11 @@ function runAdapterMigrationInternal(
 						binding,
 						tag,
 						framework,
+						...(DynamicClassHost.styleExpression(loweringResiduals, "props") === undefined
+							? {}
+							: {
+									styleExpression: DynamicClassHost.styleExpression(loweringResiduals, "props"),
+								}),
 					});
 				}
 			}
@@ -1063,6 +1101,7 @@ function runAdapterMigrationInternal(
 		if (
 			targetAdapter.migration?.targetPolicy?.rewriteHost !== undefined &&
 			!targetComponentProjection &&
+			!targetHostProjection &&
 			emittedHostRepresentation !== undefined &&
 			program.source?.subject === undefined &&
 			program.source?.hostOpenTag === undefined

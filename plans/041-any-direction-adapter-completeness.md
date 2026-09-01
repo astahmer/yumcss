@@ -136,8 +136,16 @@ opt-in class targets. Bamboo, Vanilla Extract, JSS, Aphrodite, Style9,
 Compiled, Treat, and Linaria declare that their emitted class carriers preserve
 `var(...)`; the shared lowering binds the original expression on a React/Preact
 host. This is target-owned through the adapter factory and is still
-fail-closed for hostless values, existing style props, and function-valued
-expressions.
+fail-closed for hostless values, existing style props, and complex
+function-valued expressions.
+
+Simple function-valued declarations on styled intrinsic subjects now use the
+same static carrier when the target opts in: the function becomes a custom
+property in the generated stylesheet and is evaluated with `props` inside the
+generated intrinsic wrapper. The HIR classifies complete arrow expressions as
+`function-values` even when a source parser reports their inner expression
+shape. Targets without this carrier still preserve the source with a
+`function-dynamic` residual.
 
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and

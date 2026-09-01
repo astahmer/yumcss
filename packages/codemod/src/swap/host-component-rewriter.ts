@@ -245,10 +245,14 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 	const declaration =
 		`${request.binding} = (props) => <${request.tag} {...props} ` +
 		`${classAttribute}={cx(${request.classExpression}, props.${classAttribute})} />;`;
+	const declarationWithStyle =
+		request.styleExpression === undefined
+			? declaration
+			: declaration.replace(" />;", ` style={${request.styleExpression}} />;`);
 	return {
 		code:
 			request.source.slice(0, start) +
-			declaration +
+			declarationWithStyle +
 			request.source.slice(start + assignment.length),
 		changed: true,
 		needsCx: true,

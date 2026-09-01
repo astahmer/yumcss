@@ -5,6 +5,7 @@ import {
 	requiredAdapterCapabilities,
 	type AdapterCapabilities,
 } from "../src/swap/capabilities.ts";
+import { StyleDynamicExpressionKind } from "../src/swap/identifiers.ts";
 import { STYLE_PROGRAM_SCHEMA, type StyleProgram } from "../src/swap/semantic-ir.ts";
 
 const contract: AdapterCapabilities = {
@@ -118,5 +119,27 @@ describe("semantic adapter capability contracts", () => {
 		expect(requiredAdapterCapabilities(nested).map((item) => item.capability)).toContain(
 			"dynamic-values",
 		);
+	});
+
+	test("classifies complete arrow expressions as function values", () => {
+		const functionProgram: StyleProgram = {
+			...program,
+			declarations: [
+				{
+					...program.declarations[0]!,
+					value: {
+						kind: "dynamic",
+						expression: "(props) => props.color",
+						expressionKind: StyleDynamicExpressionKind.Member,
+					},
+				},
+			],
+		};
+		expect(requiredAdapterCapabilities(functionProgram).map((item) => item.capability)).toContain(
+			"function-values",
+		);
+		expect(
+			requiredAdapterCapabilities(functionProgram).map((item) => item.capability),
+		).not.toContain("dynamic-values");
 	});
 });

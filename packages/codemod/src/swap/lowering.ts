@@ -70,6 +70,11 @@ const level = (
 	capability: keyof AdapterCapabilities["capabilities"],
 ) => target.capabilities[capability] ?? "unsupported";
 
+const isFunctionDynamic = (value: StyleDeclaration["value"]): boolean =>
+	value.kind === "dynamic" &&
+	(value.expressionKind === StyleDynamicExpressionKind.Function ||
+		/=>|^function\b/.test(value.expression.trim()));
+
 const allDeclarations = (program: StyleProgram): StyleDeclaration[] =>
 	program.rules.flatMap(function collect(rule): StyleDeclaration[] {
 		return [...rule.declarations, ...rule.children.flatMap(collect)];
@@ -121,10 +126,23 @@ const dynamicAndThemes: StyleLowering = {
 			// with a custom property would stringify the function and silently lose
 			// its props/theme evaluation. Only a target-native function carrier or a
 			// host/framework lowering may consume it.
-			if (value.expressionKind === StyleDynamicExpressionKind.Function) {
+			if (isFunctionDynamic(value)) {
 				if (level(target, "function-values") !== "unsupported") {
 					resolvedDynamicCapabilities.add("function-values");
 					return declaration;
+				}
+				if (level(target, "custom-properties") === "exact") {
+					changed = true;
+					const variable = dynamicVariableName(value.expression);
+					residuals.push({
+						kind: "dynamic-custom-property",
+						text: value.expression,
+						hint: `evaluate ${value.expression} for ${variable} in the generated host wrapper`,
+					});
+					return {
+						...declaration,
+						value: { kind: "literal", value: `var(${variable})` },
+					};
 				}
 				residuals.push({
 					kind: "function-dynamic",
@@ -464,10 +482,8 @@ function availableRepresentationsFor(
 ): readonly StyleRepresentationKind[] {
 	const declarations = allDeclarations(result.program);
 	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
-	const hasFunctionDynamic = declarations.some(
-		(declaration) =>
-			declaration.value.kind === "dynamic" &&
-			declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
+	const hasFunctionDynamic = declarations.some((declaration) =>
+		isFunctionDynamic(declaration.value),
 	);
 	const hasCustomProperty = declarations.some(
 		(declaration) =>

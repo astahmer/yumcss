@@ -846,6 +846,39 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("String(theme.foreground)");
 	});
 
+	test("lowers a function-valued styled subject through a static class and host wrapper", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div((props) => ({ color: props.color }));\n" +
+				'export const App = () => <Card color="red" />;',
+			{ from: "styled-components", to: "vanilla-extract", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("var(--pandwind-dynamic-");
+		expect(result.code).toContain("(props) => props.color");
+		expect(result.code).toContain("style={{");
+		expect(result.code).toContain("props.color)(props)");
+	});
+
+	test("keeps a function-valued subject residual on a target without a function carrier", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div((props) => ({ color: props.color }));\n" +
+				'export const App = () => <Card color="red" />;',
+			{ from: "styled-components", to: "stylex", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: expect.stringMatching(/function|capability/) }),
+			]),
+		);
+		expect(result.code).toContain("styled.div");
+	});
+
 	test("does not discard a static styled subject passed as a value", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components"; const result = use(styled.div({ color: "red" }));',

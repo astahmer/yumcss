@@ -53,6 +53,22 @@ export class DynamicClassHost {
 		return [...new Map(entries.map(([variable, expression]) => [variable, expression] as const))];
 	}
 
+	/** Build a style object expression for a generated component wrapper. */
+	static styleExpression(
+		residuals: readonly StyleProgramResidual[] | undefined,
+		parameter?: string,
+	): string | undefined {
+		const entries = DynamicClassHost.entries(residuals);
+		if (entries.length === 0) return undefined;
+		const values = entries.map(([variable, expression]) => {
+			const callable = /=>|^function\b/.test(expression.trim());
+			if (callable && parameter === undefined) return undefined;
+			const evaluated = callable ? `(${expression})(${parameter})` : expression;
+			return `${JSON.stringify(variable)}: String(${evaluated})`;
+		});
+		return values.some((value) => value === undefined) ? undefined : `{ ${values.join(", ")} }`;
+	}
+
 	static rewrite(
 		target: string,
 		code: string,
@@ -119,9 +135,19 @@ export class DynamicClassHost {
 					},
 				],
 			};
-		const style = ` style={{ ${entries
-			.map(([variable, expression]) => `${JSON.stringify(variable)}: String(${expression})`)
-			.join(", ")} }}`;
+		const styleExpression = DynamicClassHost.styleExpression(context.residuals);
+		if (styleExpression === undefined)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: context.binding,
+						hint: `${target} dynamic function values require a generated component wrapper`,
+					},
+				],
+			};
+		const style = ` style={${styleExpression}}`;
 		return { code: code.replace(match[0], `${match[0]}${style}`), residuals: [] };
 	}
 }
