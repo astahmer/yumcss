@@ -82,6 +82,13 @@ count the preserved IR residual as a failed conversion. This does not bless
 function-valued callbacks, provider-specific theme lookups, or framework-only
 bindings: those still require a target wrapper or an explicit residual.
 
+Next-yak uses the same contract for scalar template values: a styled subject
+with a host use stays a Next-yak `styled` template, while a hostless template
+can use the target's runtime `css` carrier. The template serializer preserves
+the interpolation delimiters, and the target parser's matching residual is
+excluded from validation only because the target explicitly owns that runtime
+representation.
+
 Cross-framework and cross-backend migration uses an explicit host-conversion
 port. A target declares native host frameworks separately from
 `hostFrameworkConversions`; the latter describes a source host dialect that it

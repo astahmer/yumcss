@@ -94,7 +94,7 @@ registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
 in safe and partial modes. The codemod suite currently passes 52 test files
-and 781 tests including the adapter coverage gate; the CLI e2e matrix passes
+and 783 tests including the adapter coverage gate; the CLI e2e matrix passes
 105 tests across the ordered routes, and the route proof passes 4,056 cases.
 
 Function-valued object calls now share `FunctionStyleCallParser` across the
@@ -341,6 +341,9 @@ styled subjects can become Chakra-backed static custom-property classes with a
 generated React host wrapper rather than a capability skip. MUI preserves the
 same scalar expression in its target-native `styled()` carrier for styled
 subjects; callback-valued styles remain outside that contract.
+Next-yak now makes the equivalent target-native choice for scalar dynamic
+styled subjects and preserves `${expression}` in emitted runtime templates;
+function-valued callbacks remain an explicit boundary.
 Tailwind now owns that projection for React/Preact named class bindings: the
 lowering emits a `var(--pandwind-dynamic-...)` utility and the adapter's host
 rewrite binds the original expression inline. Existing style props and
