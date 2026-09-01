@@ -28,6 +28,17 @@ to measured throughput wins.
 3. The already conservative no-config `cx` fast path now handles up to four
    only when it is provably equivalent to the normal deduplicating path.
 4. `tw` output assembly avoids intermediate `map`/`filter` arrays.
+5. Conflict-free `tw` compilation now writes directly to a string array,
+   avoiding emitted-rule objects and signature maps when no conflict metadata
+   is configured. The conflict-aware path is unchanged.
+6. Stylesheet path canonicalization uses one filtered mutable array and
+   `lastIndexOf` instead of repeated `split`/`filter`/`toSorted` allocations.
+7. Runtime-pruner virtual modules are cached per plugin instance with a cap of
+   64 entries, and its AST traversal reuses one ancestor stack instead of
+   allocating an array for every node.
+8. Engine miss resolution and cross-module constant analysis use bounded
+   2,048-entry caches. Trivial codemod edit application avoids sorting for zero
+   or one edit.
 
 ## Guardrails
 
@@ -47,12 +58,23 @@ to measured throughput wins.
 
 ## Measured outcome
 
-- representative CSS object: ~552K → ~617K calls/sec (+12%);
-- generated-config `tw` object: ~270K → ~296K calls/sec (+10%);
+- representative CSS object: local hot-loop sample ~562K → ~715K calls/sec;
+- conflict-free nested `tw` object: local hot-loop sample ~887K → ~1.29M
+  calls/sec;
+- configured `tw` remains on the conflict-aware path (local sample ~316K
+  calls/sec after the specialization);
 - no-config `cx` with three/four tokens: ~11.7M/~10.5M calls/sec;
-- full CSS fallback: 6,538 min / 2,953 gzip;
-- all-engine runtime: 14,594 min / 6,008 gzip.
+- current full CSS fallback: 6,538 min / 2,953 gzip;
+- current compiler-pruned CSS call: 3,931 min / 1,892 gzip;
+- current `tw`: 2,396 min / 1,141 gzip;
+- current all-engine runtime: 14,671 min / 6,054 gzip.
 
-The CSS fallback size increase is intentional and bounded by the reviewed
-runtime budget. Static calls remain compiler-erased, so these optimizations
-primarily improve dynamic and unsupported semantic fallbacks.
+The all-engine size increase is intentional and bounded by the reviewed
+14,700-minified-byte budget; the `tw` specialization contributes only to the
+combined engine entry and keeps its standalone entry within budget. Static
+calls remain compiler-erased, so these optimizations primarily improve
+dynamic and unsupported semantic fallbacks. The remaining unbounded-looking
+runtime collections are correctness state: emitted unique CSS atoms and
+their merge identities cannot be evicted while their class names remain in
+the document. Tooling caches are bounded or scoped to one project/plugin
+instance.

@@ -67,6 +67,9 @@ export const createStylesheet = (
 			if (part === emptyCondition || (omitEmptyParts && part === "")) continue;
 			parts.push(part);
 		}
+		// `parts` is private scratch allocated by this call; sorting in place
+		// avoids the second array that `toSorted()` would require.
+		// oxlint-disable-next-line no-array-sort
 		return sort ? parts.sort() : parts;
 	};
 
@@ -181,6 +184,9 @@ export const createStylesheet = (
 		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
+		// `conditionParts` comes from `slice`, so in-place ordering cannot
+		// mutate the caller's flattened key.
+		// oxlint-disable-next-line no-array-sort
 		const orderedConditions = conditionParts.sort();
 		const orderedKey = pairs.join([...orderedConditions, propPart]);
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
