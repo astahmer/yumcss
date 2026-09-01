@@ -40,6 +40,7 @@
 		"test": "vitest run",
 		"test:routes": "vitest run tests/routes",
 		"test:roundtrips": "vitest run tests/roundtrips",
+		"test:route-matrix": "vitest --config vitest.route-matrix.config.ts run",
 		"generate:route-tests": "tsx ../../scripts/generate-adapter-route-specs.ts",
 		"generate:roundtrip-tests": "tsx ../../scripts/generate-adapter-route-specs.ts",
 		"test:coverage": "vitest run --coverage && tsx scripts/check-adapter-coverage.ts",

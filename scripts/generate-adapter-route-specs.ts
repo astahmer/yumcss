@@ -118,6 +118,10 @@ function projectFilesFor(
 			return {
 				[`${virtualProjectRoot}/emotion.config.js`]: `module.exports = { theme: { colors: { brand: ${value} } } };`,
 			};
+		case CodemodAdapterId.Bamboo:
+			return {
+				[`${virtualProjectRoot}/bamboo.config.ts`]: `export default { theme: { tokens: { colors: { brand: { value: ${value} } } } } };`,
+			};
 		default:
 			return {};
 	}
@@ -152,6 +156,30 @@ function themedSource(adapter: CodemodAdapterId, source: string): string {
 		return source.replace('bg="tomato"', `bg={${themeExpression}}`);
 	if (source.includes('c="red"')) return source.replace('c="red"', `c={${themeExpression}}`);
 	return `${source}\nconst themedValue = ${themeExpression};`;
+}
+
+function tokenSource(adapter: CodemodAdapterId, source: string): string {
+	if (adapter === CodemodAdapterId.Tailwind)
+		return source.replace(
+			'className="flex gap-4 p-4 text-black"',
+			'className="flex gap-4 p-4 text-brand"',
+		);
+	if (adapter === CodemodAdapterId.UnoCSS)
+		return source.replace(
+			'className="flex items-center gap-4"',
+			'className="flex items-center gap-4 text-brand"',
+		);
+	if (adapter === CodemodAdapterId.ChakraUi && source.includes('bg="tomato"'))
+		return source.replace('bg="tomato"', 'bg="$colors.brand"');
+	if (adapter === CodemodAdapterId.Mantine && source.includes('c="red"'))
+		return source.replace('c="red"', 'c="brand.0"');
+	if (adapter === CodemodAdapterId.Mui && source.includes('color: "red"'))
+		return source.replace('color: "red"', 'color: "primary.main"');
+	if (source.includes('"red"')) return source.replaceAll('"red"', '"$colors.brand"');
+	if (source.includes("'red'")) return source.replaceAll("'red'", "'$colors.brand'");
+	if (source.includes("color: red"))
+		return source.replaceAll("color: red", "color: var(--colors-brand)");
+	return `${source}\nconst tokenValue = "$colors.brand";`;
 }
 
 function edgeSource(adapter: CodemodAdapterId, source: string): string {
@@ -399,6 +427,7 @@ function sourceConstants(
 		`const malformedSource = ${JSON.stringify(example.malformed)};`,
 		`const sourceSemantic = ${example.semantic};`,
 		`const themedSource = ${JSON.stringify(themedSource(source, example.happy))};`,
+		`const tokenSource = ${JSON.stringify(tokenSource(source, example.happy))};`,
 		`const blueSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#2563eb" })};`,
 		`const amberSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#f97316" })};`,
 		`const blueTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#2563eb" })};`,
@@ -453,6 +482,13 @@ test("${source} -> ${target}: lowers concrete theme and project context variants
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+});
+
+test("${source} -> ${target}: resolves concrete token references with project context", () => {
+	const result = route.run({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("${source} -> ${target}: preserves malformed concrete ${source} input", () => {
@@ -527,6 +563,16 @@ test("${source} -> ${target} -> ${source}: preserves concrete theme and project 
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
 	}).toMatchInlineSnapshot();
+});
+
+test("${source} -> ${target} -> ${source}: resolves token references across both concrete legs", () => {
+	const first = forward.run({ source: tokenSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const second = reverse.run({ source: first.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 `;
