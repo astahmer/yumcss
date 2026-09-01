@@ -67,6 +67,26 @@ describe("migration lab", () => {
 		}
 	});
 
+	test("uses a static class plus host binding for a dynamic styled subject", () => {
+		const lab = createMigrationLab();
+		const result = lab.migrate(
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.Tailwind,
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+		);
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("<Card />");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	});
+
 	test("exposes explicit evidence for every source-to-target route", () => {
 		const lab = createMigrationLab();
 		for (const source of lab.sources) {
