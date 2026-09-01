@@ -29,7 +29,57 @@ test("jss -> mantine -> jss: preserves an actionable concrete round trip", () =>
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { createStyles } from "@mantine/core";
+		import { createUseStyles } from "react-jss";
+
+		export const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("jss -> mantine -> jss: retains edge semantics without silent loss", () => {
@@ -39,5 +89,55 @@ test("jss -> mantine -> jss: retains edge semantics without silent loss", () => 
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = // pandwind:migrate-skip (route: mantine -> jss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target jss",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

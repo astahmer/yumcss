@@ -537,6 +537,25 @@ as `className={<Box ... />}`. This suite runs directly against the registry and
 runner, so a new adapter route is cheap to select and review; the CLI matrix
 remains the separate public-boundary proof.
 
+Every ordered pair also has a matching
+`packages/codemod/tests/roundtrips/*-to-*-to-*.test.ts` specification. These
+tests run concrete source syntax through the forward adapter and feed the
+emitted result back through the reverse adapter, covering static and dynamic
+cases with inline snapshots for both legs. The snapshots are deliberately
+paired with executable assertions: reverse conversion, an explicit residual,
+or a visible source-preserving fallback is required. A byte-stable second leg
+is valid only when the reverse adapter actually parsed and converted it; a
+silent no-op is rejected. The current fast corpus is 650 directional files
+(1,950 tests) plus 650 round-trip files (1,300 tests), and it can be run by
+directory without invoking the slower CLI suite.
+
+Named-style targets must emit syntax that their own source adapter can parse
+again. For example, Mantine named maps use its `createStyles(...).classes`
+carrier, while Tailwind named maps use an assigned class-map representation.
+These are adapter-owned policies, not generic runner exceptions. The route
+corpus consequently catches invalid bare-object output and proves reversibility
+for JSS, Aphrodite, Style9, StyleX, and React Native named-style routes.
+
 Backends follow the same rule. CSS, object, React Native, and OpenTUI are
 registered as `StyleBackendFactory` plugins and are exercised by the generic
 `StyleBackendContractSuite`. The suite checks construction, capability

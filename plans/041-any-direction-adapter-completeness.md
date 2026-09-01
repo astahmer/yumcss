@@ -110,6 +110,22 @@ emitter leaks a second host into a JSX attribute expression. This gives every
 route an independently selectable in-process proof while the slower CLI matrix
 remains the public-boundary proof.
 
+The companion `packages/codemod/tests/roundtrips` directory has one generated
+`X-to-Y-to-X.test.ts` file for each of the same 650 ordered pairs. It feeds
+real, adapter-specific source programs—not scenario labels—through both legs
+and snapshots each leg independently. Assertions require the reverse leg to
+convert, report an explicit residual, or preserve a visible fallback; they
+reject an unreported silent no-op. The fast proof currently passes 650
+directional files / 1,950 tests and 650 round-trip files / 1,300 tests.
+
+The generated source corpus intentionally uses each adapter's actual syntax:
+CSS-in-JS calls, tagged templates, named style maps, host bindings, and
+framework-specific forms where supported. This keeps inline snapshots useful
+for debugging without making them the only safety mechanism. A canonical
+target is allowed to remain byte-stable on the reverse leg only when its
+adapter parsed and converted the program, which is important for equivalent
+Tailwind and UnoCSS output.
+
 Function-valued object calls now share `FunctionStyleCallParser` across the
 normal adapter-definition path and the generic extra-adapter runtime. The
 parser selects the balanced invocation rather than a nested parameter list,

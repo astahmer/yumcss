@@ -293,7 +293,7 @@ describe("composed cross-ecosystem routes", () => {
 
 		expect(result.residuals, `${CodemodAdapterId.Aphrodite} -> ${targetId}`).toEqual([]);
 		expect(result.skipped).toBe(0);
-		expect(result.code).toContain('"button"');
+		expect(result.code).toContain("button");
 	});
 
 	const classTargets = catalog.adapters

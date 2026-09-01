@@ -54,8 +54,9 @@ test("mantine -> react-native -> mantine: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => <View    style={{ "style": { color: "red", padding: "var(--mantine-spacing-md)" } }.style}/>;",
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const App = () => <View    style={createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -109,8 +110,9 @@ test("mantine -> react-native -> mantine: retains edge semantics without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const App = () => <View    style={{ "style": { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }.style}/>;",
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const App = () => <View    style={createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

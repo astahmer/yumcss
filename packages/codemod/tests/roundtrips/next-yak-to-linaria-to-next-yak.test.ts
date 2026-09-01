@@ -89,5 +89,54 @@ test("next-yak -> linaria -> next-yak: retains edge semantics without silent los
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> linaria | parse-residual: dynamic | available: named-map, custom-property, residual)
+		css\`color: \${theme.foreground}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "template interpolation requires a runtime-aware lowering",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> linaria | parse-residual: dynamic | available: named-map, custom-property, residual)
+		css\`color: \${theme.foreground}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "runtime-carrier",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });

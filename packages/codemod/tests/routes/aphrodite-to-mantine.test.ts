@@ -28,8 +28,9 @@ test("aphrodite -> mantine: migrates concrete aphrodite syntax to mantine", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: "red", padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -58,8 +59,9 @@ test("aphrodite -> mantine: carries concrete aphrodite dynamics or edge syntax e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: theme.foreground, padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -88,8 +90,9 @@ test("aphrodite -> mantine: preserves malformed concrete aphrodite input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: "red", padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

@@ -56,8 +56,9 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={{ "style": { color: "red", padding: "var(--mantine-spacing-md)" } }.attach().classes.style}/>;",
+		export const App = () => <Box  className={createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -113,8 +114,9 @@ test("mantine -> jss -> mantine: retains edge semantics without silent loss", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={{ "style": { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }.attach().classes.style}/>;",
+		export const App = () => <Box  className={createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

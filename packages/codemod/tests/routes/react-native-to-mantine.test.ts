@@ -28,8 +28,9 @@ test("react-native -> mantine: migrates concrete react-native syntax to mantine"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: "red", padding: 16 } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: "red", padding: 16 } }).classes;
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -58,8 +59,9 @@ test("react-native -> mantine: carries concrete react-native dynamics or edge sy
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: theme.foreground, padding: 16 } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: theme.foreground, padding: 16 } }).classes;
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -88,8 +90,9 @@ test("react-native -> mantine: preserves malformed concrete react-native input",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const styles = { "card": { color: "red", padding: 16 } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: "red", padding: 16 } }).classes;
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

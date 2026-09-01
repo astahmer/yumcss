@@ -56,8 +56,9 @@ test("mantine -> aphrodite -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={css({ "style": { color: "red", padding: "var(--mantine-spacing-md)" } }.style)}/>;",
+		export const App = () => <Box  className={css(createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -113,8 +114,9 @@ test("mantine -> aphrodite -> mantine: retains edge semantics without silent los
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={css({ "style": { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }.style)}/>;",
+		export const App = () => <Box  className={css(createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

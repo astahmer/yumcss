@@ -33,8 +33,9 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": { color: "red", padding: 16 } };
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: "red", padding: 16 } }).classes;
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -55,12 +56,18 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": { color: "red", padding: 16 } };
+		    "code": "import { createStyles } from "@mantine/core";
+		import { StyleSheet } from "react-native";
+
+		export const styles = StyleSheet.create({ "card": { "color": "red", "padding": 16 } });
 		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
 		<View style={styles.card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
 		      {
 		        "outcome": "residual",
 		        "representation": "target-native",
@@ -74,7 +81,13 @@ test("react-native -> mantine -> react-native: preserves an actionable concrete 
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -91,8 +104,9 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": { color: theme.foreground, padding: 16 } };
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = createStyles({ card: { color: theme.foreground, padding: 16 } }).classes;
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -113,12 +127,18 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
-		export const styles = { "card": { color: theme.foreground, padding: 16 } };
+		    "code": "import { createStyles } from "@mantine/core";
+
+		export const styles = // pandwind:migrate-skip (route: mantine -> react-native | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		createStyles({ card: { color: theme.foreground, padding: 16 } }).classes;
 		export const App = () => // pandwind:migrate-skip (route: mantine -> react-native | lowering-residual: host-framework | available: named-map, target-native, residual)
 		<View style={styles.card} />;",
 		    "converted": 0,
 		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
 		      {
 		        "outcome": "residual",
 		        "representation": "target-native",
@@ -126,12 +146,17 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 		    ],
 		    "residuals": [
 		      {
+		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
 		        "hint": "react-native has no host representation for react-native",
 		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 2,
 		    "validations": [],
 		  },
 		}

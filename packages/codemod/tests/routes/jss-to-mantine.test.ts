@@ -28,8 +28,9 @@ test("jss -> mantine: migrates concrete jss syntax to mantine", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": { color: "red", padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -58,8 +59,9 @@ test("jss -> mantine: carries concrete jss dynamics or edge syntax explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": { color: theme.foreground, padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -88,8 +90,9 @@ test("jss -> mantine: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
-		export const useStyles = { "card": { color: "red", padding: "1rem" } };
+		  "code": "import { createStyles } from "@mantine/core";
+
+		export const useStyles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
 		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

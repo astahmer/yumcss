@@ -56,8 +56,9 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={style9({ "style": { color: "red", padding: "var(--mantine-spacing-md)" } }.style)}/>;",
+		export const App = () => <Box  className={style9(createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -113,8 +114,9 @@ test("mantine -> style9 -> mantine: retains edge semantics without silent loss",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={style9({ "style": { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }.style)}/>;",
+		export const App = () => <Box  className={style9(createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

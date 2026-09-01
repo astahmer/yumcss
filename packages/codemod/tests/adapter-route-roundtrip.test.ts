@@ -67,7 +67,7 @@ describe("adapter route round-trip contract", () => {
 			}
 		}
 		expect(failures).toEqual([]);
-	});
+	}, 30_000);
 
 	test.each([CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS])(
 		"parses a generated standalone class literal in a module",

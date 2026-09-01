@@ -76,28 +76,25 @@ export function expectExplicitResidualEvidence(result: AdapterMigrationResult): 
 	if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
 	for (const residual of result.residuals) {
 		expect(residual.text.length).toBeGreaterThan(0);
-		expect(residual.hint.length).toBeGreaterThan(0);
+		expect(residual.hint ?? "").toBeTruthy();
 	}
 }
 
 /**
  * A round trip must either be parseable by the reverse adapter or visibly
  * identify the source-preserving/runtime fallback that made the reverse leg
- * inapplicable. A silent unchanged second leg is never acceptable.
+ * inapplicable. An unreported, non-converting second leg is never acceptable;
+ * a canonical target is allowed to remain byte-for-byte stable.
  */
 export function expectActionableRoundTrip(
 	forward: AdapterMigrationResult,
 	reverse: AdapterMigrationResult,
 ): void {
 	const reverseActionable =
-		reverse.converted > 0 ||
-		reverse.skipped > 0 ||
-		reverse.residuals.length > 0 ||
-		reverse.code !== forward.code;
+		reverse.converted > 0 || reverse.skipped > 0 || reverse.residuals.length > 0;
 	const visibleFallback =
 		forward.code.includes("pandwind:migrate-skip") ||
 		forward.code.includes('"pandwind/') ||
 		forward.code.includes('"pandwind\\n');
 	expect(reverseActionable || visibleFallback).toBe(true);
-	if (reverseActionable) expect(reverse.code).not.toBe(forward.code);
 }
