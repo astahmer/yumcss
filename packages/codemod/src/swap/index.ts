@@ -250,7 +250,7 @@ export type {
 	StyleLoweringResult,
 	StyleLoweringPlan,
 } from "./lowering.ts";
-export type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
 export { createAdapterContractSuite } from "./adapter-contract-suite.ts";
 export type {
 	AdapterContractFailure,

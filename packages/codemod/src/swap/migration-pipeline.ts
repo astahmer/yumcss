@@ -1,4 +1,4 @@
-import type { AdapterMigrationOptions, AdapterMigrationResult } from "./external-adapters.ts";
+import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
 import { runAdapterMigration } from "./adapter-migration.ts";
 import { MigrationStageId } from "./identifiers.ts";
 

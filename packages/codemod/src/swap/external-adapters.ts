@@ -1313,5 +1313,3 @@ export function validationSource(text: string, program: StyleProgram): string {
 		? `const ${rule.name} = ${text}`
 		: text;
 }
-
-export type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
