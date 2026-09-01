@@ -4,6 +4,10 @@ import {
 	type AdapterDependencies,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
+import {
+	StyleProgramCompatibility,
+	type StyleProgramCoreRequirement,
+} from "./style-program-core.ts";
 
 /** Package metadata convention consumed before an adapter is registered. */
 export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/1" as const;
@@ -21,6 +25,7 @@ export interface StyleAdapterManifest {
 	readonly schema: typeof ADAPTER_MANIFEST_SCHEMA;
 	readonly packageName: string;
 	readonly packageVersion: string;
+	readonly core: StyleProgramCoreRequirement;
 	readonly adapters: readonly StyleAdapterManifestEntry[];
 }
 
@@ -38,6 +43,7 @@ export function createStyleAdapterManifest(
 		schema: ADAPTER_MANIFEST_SCHEMA,
 		packageName,
 		packageVersion,
+		core: StyleProgramCompatibility.current(),
 		adapters: adapters.map((adapter) => ({
 			id: adapter.id,
 			version: adapter.version,
@@ -66,6 +72,8 @@ export function validateStyleAdapterManifest(
 ): void {
 	if (manifest.schema !== ADAPTER_MANIFEST_SCHEMA)
 		throw new Error(`unsupported adapter manifest schema: ${manifest.schema}`);
+	const core = StyleProgramCompatibility.negotiate(manifest.core);
+	if (!core.supported) throw new Error(core.reason ?? "adapter core compatibility check failed");
 	if (manifest.adapters.length !== adapters.length)
 		throw new Error(`adapter manifest count does not match package ${manifest.packageName}`);
 	for (const adapter of adapters) {
@@ -75,5 +83,19 @@ export function validateStyleAdapterManifest(
 			throw new Error(`adapter ${adapter.id} requires unsupported contract ${entry.contract}`);
 		if (entry.version !== adapter.version)
 			throw new Error(`adapter ${adapter.id} manifest version does not match implementation`);
+		if (!sameCapabilities(entry.capabilities, adapter.capabilities.capabilities))
+			throw new Error(`adapter ${adapter.id} manifest capabilities do not match implementation`);
 	}
+}
+
+function sameCapabilities(
+	left: Readonly<Record<string, unknown>>,
+	right: Readonly<Record<string, unknown>>,
+): boolean {
+	const leftKeys = Object.keys(left).toSorted();
+	const rightKeys = Object.keys(right).toSorted();
+	return (
+		leftKeys.length === rightKeys.length &&
+		leftKeys.every((key, index) => key === rightKeys[index] && left[key] === right[key])
+	);
 }

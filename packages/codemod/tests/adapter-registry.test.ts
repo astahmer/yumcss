@@ -6,6 +6,7 @@ import {
 	createStyleAdapterRegistry,
 	readAdapterPackageDeclaration,
 	getCodemodAdapter,
+	StyleProgramCompatibility,
 } from "../src/swap/index.ts";
 
 describe("third-party adapter registry", () => {
@@ -15,6 +16,7 @@ describe("third-party adapter registry", () => {
 		const plugin = createStyleAdapterPlugin("test-plugin", [emotion]);
 		expect(plugin.schema).toBe(ADAPTER_PLUGIN_SCHEMA);
 		expect(plugin.manifest.adapters[0]?.id).toBe("emotion");
+		expect(plugin.manifest.core).toEqual(StyleProgramCompatibility.current());
 		const results = await registry.discover(["test-plugin"], { load: async () => plugin });
 		expect(results[0]).toMatchObject({ registered: ["emotion"], errors: [] });
 		expect(registry.get("emotion")).toBe(emotion);
@@ -42,6 +44,40 @@ describe("third-party adapter registry", () => {
 				},
 			}),
 		).toThrow(/manifest version/);
+	});
+
+	test("rejects plugins built for an incompatible semantic core", () => {
+		const plugin = createStyleAdapterPlugin("future-core", [
+			createBuiltinCodemodCatalog().registry.get("emotion")!,
+		]);
+		const registry = createStyleAdapterRegistry();
+
+		expect(() =>
+			registry.registerPlugin({
+				...plugin,
+				manifest: {
+					...plugin.manifest,
+					core: { ...plugin.manifest.core, versionRange: "^2" },
+				},
+			}),
+		).toThrow(/core version range/);
+	});
+
+	test("rejects manifests whose declared capabilities drift from the adapter", () => {
+		const plugin = createStyleAdapterPlugin("drifted-capabilities", [
+			createBuiltinCodemodCatalog().registry.get("emotion")!,
+		]);
+		const registry = createStyleAdapterRegistry();
+
+		expect(() =>
+			registry.registerPlugin({
+				...plugin,
+				manifest: {
+					...plugin.manifest,
+					adapters: [{ ...plugin.manifest.adapters[0]!, capabilities: {} }],
+				},
+			}),
+		).toThrow(/manifest capabilities/);
 	});
 
 	test("ships expanded ecosystem adapters as ordinary registry entries", () => {

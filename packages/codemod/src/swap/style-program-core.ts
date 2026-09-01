@@ -13,6 +13,21 @@ import {
 /** Versioned envelope for programs exchanged between compiler/tooling stages. */
 export const STYLE_PROGRAM_ARTIFACT_SCHEMA = "pandwind.style-program-artifact/1" as const;
 export const STYLE_PROGRAM_CORE_VERSION = "1" as const;
+export const STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA =
+	"pandwind.style-program-core-compatibility/1" as const;
+
+export interface StyleProgramCoreRequirement {
+	readonly schema: typeof STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA;
+	/** Semver-like range accepted by the plugin, for example `^1`. */
+	readonly versionRange: string;
+}
+
+export interface StyleProgramCoreNegotiation {
+	readonly supported: boolean;
+	readonly currentVersion: typeof STYLE_PROGRAM_CORE_VERSION;
+	readonly requestedRange: string;
+	readonly reason?: string;
+}
 
 export interface StyleProgramArtifact {
 	readonly schema: typeof STYLE_PROGRAM_ARTIFACT_SCHEMA;
@@ -116,6 +131,43 @@ export class StyleProgramCore {
 	}
 }
 
+/**
+ * Negotiates the small compatibility contract shared by every plugin.
+ *
+ * The core intentionally supports only the range syntax needed by the
+ * manifest protocol (`^`, `~`, comparison operators, exact versions, and
+ * whitespace-separated ranges). Keeping this parser local avoids taking a
+ * semver dependency into codemod/browser consumers while rejecting ambiguous
+ * ranges instead of guessing.
+ */
+export class StyleProgramCompatibility {
+	static current(): StyleProgramCoreRequirement {
+		return {
+			schema: STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA,
+			versionRange: `^${STYLE_PROGRAM_CORE_VERSION}`,
+		};
+	}
+
+	static negotiate(requirement: StyleProgramCoreRequirement): StyleProgramCoreNegotiation {
+		if (requirement.schema !== STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA)
+			return {
+				supported: false,
+				currentVersion: STYLE_PROGRAM_CORE_VERSION,
+				requestedRange: requirement.versionRange,
+				reason: `unsupported core compatibility schema: ${requirement.schema}`,
+			};
+		const supported = satisfiesVersionRange(STYLE_PROGRAM_CORE_VERSION, requirement.versionRange);
+		return {
+			supported,
+			currentVersion: STYLE_PROGRAM_CORE_VERSION,
+			requestedRange: requirement.versionRange,
+			...(supported
+				? {}
+				: { reason: "plugin core version range does not include the current core" }),
+		};
+	}
+}
+
 function validateRule(value: unknown, path: string, issues: StyleProgramIssue[]): void {
 	if (!isRecord(value)) {
 		issues.push({ path, message: "rule must be an object" });
@@ -183,4 +235,56 @@ function fingerprintCanonical(canonical: string): string {
 		hash = Math.imul(hash, 16777619);
 	}
 	return `sp-${(hash >>> 0).toString(36)}`;
+}
+
+interface CoreVersion {
+	readonly major: number;
+	readonly minor: number;
+	readonly patch: number;
+}
+
+function satisfiesVersionRange(version: string, range: string): boolean {
+	const current = parseCoreVersion(version);
+	if (current === undefined || range.trim() === "") return false;
+	const atoms = range.trim().split(/\s+/u);
+	return atoms.every((atom) => satisfiesVersionAtom(current, atom));
+}
+
+function satisfiesVersionAtom(current: CoreVersion, atom: string): boolean {
+	const match = /^(\^|~|>=|<=|>|<|=)?(\d+)(?:\.(\d+|x|X|\*))?(?:\.(\d+|x|X|\*))?$/u.exec(atom);
+	if (match === null) return false;
+	const operator = match[1] ?? "=";
+	const major = Number(match[2]);
+	const minor = match[3] === undefined || /[xX*]/u.test(match[3]) ? 0 : Number(match[3]);
+	const patch = match[4] === undefined || /[xX*]/u.test(match[4]) ? 0 : Number(match[4]);
+	const candidate = { major, minor, patch };
+	const comparison = compareCoreVersions(current, candidate);
+	const hasMinor = match[3] !== undefined && !/[xX*]/u.test(match[3]);
+	const hasPatch = match[4] !== undefined && !/[xX*]/u.test(match[4]);
+	if (operator === "^") return current.major === major && comparison >= 0;
+	if (operator === "~")
+		return current.major === major && current.minor === minor && comparison >= 0;
+	if (operator === ">=") return comparison >= 0;
+	if (operator === "<=") return comparison <= 0;
+	if (operator === ">") return comparison > 0;
+	if (operator === "<") return comparison < 0;
+	if (hasPatch) return comparison === 0;
+	if (hasMinor) return current.major === major && current.minor === minor;
+	return current.major === major;
+}
+
+function parseCoreVersion(value: string): CoreVersion | undefined {
+	const match = /^(\d+)(?:\.(\d+))?(?:\.(\d+))?$/u.exec(value);
+	if (match === null) return undefined;
+	return {
+		major: Number(match[1]),
+		minor: Number(match[2] ?? 0),
+		patch: Number(match[3] ?? 0),
+	};
+}
+
+function compareCoreVersions(left: CoreVersion, right: CoreVersion): number {
+	if (left.major !== right.major) return left.major - right.major;
+	if (left.minor !== right.minor) return left.minor - right.minor;
+	return left.patch - right.patch;
 }

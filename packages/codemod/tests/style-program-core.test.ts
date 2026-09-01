@@ -6,6 +6,7 @@ import {
 	runAdapterMigration,
 	STYLE_PROGRAM_ARTIFACT_SCHEMA,
 	STYLE_PROGRAM_CORE_VERSION,
+	StyleProgramCompatibility,
 	StyleProgramBuilder,
 	StyleProgramCore,
 } from "../src/swap/index.ts";
@@ -221,6 +222,25 @@ describe("StyleProgramCore", () => {
 		expect(() => StyleProgramCore.decode({ ...artifact, fingerprint: "sp-tampered" })).toThrow(
 			"fingerprint does not match",
 		);
+	});
+
+	test("negotiates supported core ranges without accepting ambiguous ranges", () => {
+		const current = StyleProgramCompatibility.current();
+
+		expect(StyleProgramCompatibility.negotiate(current)).toMatchObject({
+			supported: true,
+			currentVersion: STYLE_PROGRAM_CORE_VERSION,
+		});
+		expect(
+			StyleProgramCompatibility.negotiate({ ...current, versionRange: ">=1 <2" }),
+		).toMatchObject({ supported: true });
+		expect(StyleProgramCompatibility.negotiate({ ...current, versionRange: "^2" })).toMatchObject({
+			supported: false,
+			reason: "plugin core version range does not include the current core",
+		});
+		expect(
+			StyleProgramCompatibility.negotiate({ ...current, versionRange: "latest" }),
+		).toMatchObject({ supported: false });
 	});
 
 	test("normalizes a replaceable frontend before the target adapter sees it", () => {

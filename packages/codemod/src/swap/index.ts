@@ -167,11 +167,15 @@ export {
 export { StyleProgramBuilder } from "./style-program-builder.ts";
 export {
 	STYLE_PROGRAM_ARTIFACT_SCHEMA,
+	STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA,
 	STYLE_PROGRAM_CORE_VERSION,
+	StyleProgramCompatibility,
 	StyleProgramCore,
 } from "./style-program-core.ts";
 export type {
 	StyleProgramArtifact,
+	StyleProgramCoreNegotiation,
+	StyleProgramCoreRequirement,
 	StyleProgramIssue,
 	StyleProgramValidation,
 } from "./style-program-core.ts";
