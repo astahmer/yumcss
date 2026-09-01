@@ -39,7 +39,7 @@
 import { ATOM_REGISTRY, type AtomRegistry } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";
 import { dashCase } from "../css/hash.ts";
-import { VARS_ATOMS, type VarAtom, type VarsOutput } from "../css/vars.ts";
+import { VARS_ATOMS, type VarAtom, type VarsOutput } from "../css/var-compiler.ts";
 import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.ts";
 
 export interface CxOptions {

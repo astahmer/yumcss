@@ -10,7 +10,7 @@ import type {
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
-import { encodeVars, VARS_ATOMS, type VarAtom, type VarsOutput } from "./vars.ts";
+import { createVarCompiler, VARS_ATOMS, type VarAtom, type VarsOutput } from "./var-compiler.ts";
 
 export type { ClassNameStrategy };
 
@@ -139,10 +139,9 @@ export function createCss(
 	// any generated stylesheet (plans/014 §1).
 	css.vars = (...styles: Array<StyleObject>): VarsOutput => {
 		const flat = flattenStyle(assign(...styles));
-		const { atoms: varAtoms, style: varStyle } = encodeVars(
-			flat,
+		const { atoms: varAtoms, style: varStyle } = createVarCompiler(
 			backendOptions.conditions && Object.keys(backendOptions.conditions),
-		);
+		).encode(flat);
 		const output: VarsOutput = {
 			class: varAtoms.map((atom) => atom.cls).join(" "),
 			style: varStyle,

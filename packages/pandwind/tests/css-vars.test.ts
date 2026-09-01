@@ -12,7 +12,7 @@ import { parse } from "postcss";
 import { describe, expect, test } from "vitest";
 import { createCss } from "../src/css/create-css.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
-import { VARS_ATOMS } from "../src/css/vars.ts";
+import { VARS_ATOMS } from "../src/css/var-compiler.ts";
 import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { createCssSourceScanner } from "../src/vite/css-extract.ts";
