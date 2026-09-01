@@ -24,16 +24,16 @@
     "gz": 2481
   },
   "tw": {
-    "min": 2319,
-    "gz": 1103
+    "min": 2396,
+    "gz": 1141
   },
   "cx": {
     "min": 12321,
     "gz": 5206
   },
   "all (css+tw+cx)": {
-    "min": 14594,
-    "gz": 6008
+    "min": 14671,
+    "gz": 6054
   },
   "stylesheet generator (build-time only)": {
     "min": 85769,
@@ -44,8 +44,8 @@
     "gz": 2953
   },
   "root barrel, tw only": {
-    "min": 2319,
-    "gz": 1103
+    "min": 2396,
+    "gz": 1141
   },
   "root barrel, cx only": {
     "min": 12321,

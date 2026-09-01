@@ -47,7 +47,10 @@ export interface TwOptions {
 export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 	const variants = options.variants ?? {};
 	const conflicts = options.conflicts;
-	const compose = options.compose === undefined ? undefined : new Set(options.compose);
+	const compose =
+		options.compose === undefined || options.compose.length === 0
+			? undefined
+			: new Set(options.compose);
 	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts, compose);
 }
 

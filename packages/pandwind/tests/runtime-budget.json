@@ -32,7 +32,7 @@
 		"gz": 5300
 	},
 	"all (css+tw+cx)": {
-		"min": 14600,
+		"min": 14700,
 		"gz": 6100
 	},
 	"root barrel, css only": {

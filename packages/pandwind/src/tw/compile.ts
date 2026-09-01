@@ -131,8 +131,8 @@ function visit(
 	variants: TwVariantsMeta,
 	conflicts: TwConflictsMeta | undefined,
 	compose: ReadonlySet<string> | undefined,
-	classes: Emitted[],
-	signatures: Map<string, number>,
+	classes: Emitted[] | string[],
+	signatures: Map<string, number> | undefined,
 	prefix: string,
 	parentName: string | undefined,
 ): void {
@@ -208,8 +208,8 @@ function visit(
 }
 
 function push(
-	classes: Emitted[],
-	signatures: Map<string, number>,
+	classes: Emitted[] | string[],
+	signatures: Map<string, number> | undefined,
 	conflicts: TwConflictsMeta | undefined,
 	compose: ReadonlySet<string> | undefined,
 	className: string,
@@ -218,9 +218,11 @@ function push(
 	value: string,
 ): void {
 	if (conflicts === undefined) {
-		classes.push({ className, ownedSignatures: [] });
+		(classes as string[]).push(className);
 		return;
 	}
+	const emittedClasses = classes as Emitted[];
+	const conflictSignatures = signatures!;
 
 	// Opacity-modified colors (`bg-red-500/50`) share the base value's
 	// properties; exact lookup first, then the modifier-stripped form.
@@ -234,19 +236,19 @@ function push(
 	// coexist (`scale-x` + `scale-y`): merge only within the same key.
 	if (compose?.has(utility)) {
 		const signature = `${prefix}|~${utility}`;
-		const previous = signatures.get(signature);
+		const previous = conflictSignatures.get(signature);
 		if (previous !== undefined) {
-			classes[previous]!.className = "";
-			classes[previous]!.ownedSignatures = [];
-			signatures.delete(signature);
+			emittedClasses[previous]!.className = "";
+			emittedClasses[previous]!.ownedSignatures = [];
+			conflictSignatures.delete(signature);
 		}
-		classes.push({ className, ownedSignatures: [signature] });
-		signatures.set(signature, classes.length - 1);
+		emittedClasses.push({ className, ownedSignatures: [signature] });
+		conflictSignatures.set(signature, emittedClasses.length - 1);
 		return;
 	}
 
 	if (props.length === 0) {
-		classes.push({ className, ownedSignatures: [] });
+		emittedClasses.push({ className, ownedSignatures: [] });
 		return;
 	}
 
@@ -256,18 +258,18 @@ function push(
 	const ownedSignatures = props.map((prop) => `${prefix}|${prop}`);
 	for (const prop of props) {
 		const signature = `${prefix}|${prop}`;
-		const previous = signatures.get(signature);
+		const previous = conflictSignatures.get(signature);
 		if (previous !== undefined) {
-			const previousOwned = classes[previous]!.ownedSignatures;
+			const previousOwned = emittedClasses[previous]!.ownedSignatures;
 			const ownedIndex = previousOwned.indexOf(signature);
 			if (ownedIndex !== -1) previousOwned.splice(ownedIndex, 1);
-			if (previousOwned.length === 0) classes[previous]!.className = "";
-			signatures.delete(signature);
+			if (previousOwned.length === 0) emittedClasses[previous]!.className = "";
+			conflictSignatures.delete(signature);
 		}
 	}
-	classes.push({ className, ownedSignatures });
+	emittedClasses.push({ className, ownedSignatures });
 	for (const signature of ownedSignatures) {
-		signatures.set(signature, classes.length - 1);
+		conflictSignatures.set(signature, emittedClasses.length - 1);
 	}
 }
 
@@ -285,6 +287,11 @@ export function compileStyles(
 	conflicts?: TwConflictsMeta,
 	compose?: TwComposeMeta | ReadonlySet<string>,
 ): string {
+	if (conflicts === undefined) {
+		const classes: string[] = [];
+		visit(styles, variants, conflicts, undefined, classes, undefined, "", undefined);
+		return classes.join(" ");
+	}
 	const classes: Emitted[] = [];
 	const composeSet = compose === undefined || compose instanceof Set ? compose : new Set(compose);
 	visit(styles, variants, conflicts, composeSet, classes, new Map(), "", undefined);
