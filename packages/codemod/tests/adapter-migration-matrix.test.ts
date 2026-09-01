@@ -224,8 +224,7 @@ describe("bidirectional registered adapter matrix", () => {
 					expect(
 						result.validations.every(
 							(validation) =>
-								validation.valid &&
-								validation.canonicalSource === validation.canonicalTarget,
+								validation.valid && validation.canonicalSource === validation.canonicalTarget,
 						),
 						`${sourceAdapter.id} -> ${targetAdapter.id} changed the canonical style semantics`,
 					).toBe(true);

@@ -7,7 +7,6 @@ import {
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 	StyleHostRepresentationKind,
-	StyleRepresentationKind,
 } from "../src/swap/index.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
@@ -82,11 +81,7 @@ describe("registered adapter conformance", () => {
 				if (dynamic !== undefined) expect(dynamic.handled).toBeTypeOf("boolean");
 			}
 			if (policy?.resolveHostRepresentation !== undefined)
-				for (const framework of [
-					undefined,
-					BuiltinHostFramework.React,
-					BuiltinHostFramework.Solid,
-				])
+				for (const framework of [undefined, BuiltinHostFramework.React, BuiltinHostFramework.Solid])
 					policy.resolveHostRepresentation({
 						program,
 						hasHostContext: true,
@@ -95,17 +90,18 @@ describe("registered adapter conformance", () => {
 						source: fixture.source,
 					});
 			if (policy?.resolveRepresentation !== undefined)
-				for (const representation of [
-					StyleRepresentationKind.Static,
-					StyleRepresentationKind.PortableArtifact,
-					StyleRepresentationKind.RuntimeCarrier,
+				for (const hostRepresentation of [
+					undefined,
+					StyleHostRepresentationKind.Class,
+					StyleHostRepresentationKind.Component,
+					StyleHostRepresentationKind.StyleProp,
 				])
 					policy.resolveRepresentation({
 						program,
 						hasHostContext: true,
 						framework: BuiltinHostFramework.React,
 						binding: "card",
-						hostRepresentation: StyleHostRepresentationKind.Class,
+						...(hostRepresentation === undefined ? {} : { hostRepresentation }),
 						source: fixture.source,
 					});
 			if (policy?.rewriteHost !== undefined) {
