@@ -15,7 +15,12 @@ import {
 import { matchBlock } from "../sources.ts";
 import { joinDocumentPath } from "../path-utils.ts";
 import { computeExcludedRanges } from "pandwind/source";
-import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "./capabilities.ts";
+import {
+	ADAPTER_CAPABILITIES_SCHEMA,
+	AdapterCapabilityLevelTag,
+	type AdapterCapabilities,
+	type AdapterCapabilityLevel,
+} from "./capabilities.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
@@ -163,32 +168,32 @@ export class CodemodAdapterKit {
 
 	static allRuleCapabilities(
 		adapterId: string,
-		dynamic: "exact" | "partial" | "unsupported",
+		dynamic: AdapterCapabilityLevel,
 		capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
 	): AdapterCapabilities {
 		return {
 			schema: ADAPTER_CAPABILITIES_SCHEMA,
 			adapter: adapterId,
 			capabilities: {
-				declarations: "exact",
-				"rule-level": "exact",
-				"global-rules": "exact",
-				keyframes: "exact",
-				"font-face": "exact",
-				layers: "exact",
-				"supports-rules": "exact",
-				"property-rules": "exact",
-				selectors: "exact",
-				nesting: "exact",
-				ordering: "exact",
-				"token-values": "exact",
+				declarations: AdapterCapabilityLevelTag.Exact,
+				"rule-level": AdapterCapabilityLevelTag.Exact,
+				"global-rules": AdapterCapabilityLevelTag.Exact,
+				keyframes: AdapterCapabilityLevelTag.Exact,
+				"font-face": AdapterCapabilityLevelTag.Exact,
+				layers: AdapterCapabilityLevelTag.Exact,
+				"supports-rules": AdapterCapabilityLevelTag.Exact,
+				"property-rules": AdapterCapabilityLevelTag.Exact,
+				selectors: AdapterCapabilityLevelTag.Exact,
+				nesting: AdapterCapabilityLevelTag.Exact,
+				ordering: AdapterCapabilityLevelTag.Exact,
+				"token-values": AdapterCapabilityLevelTag.Exact,
 				"dynamic-values": dynamic,
-				"function-values": "unsupported",
-				"pseudo-conditions": "exact",
-				"selector-conditions": "exact",
-				"media-conditions": "exact",
-				"container-conditions": "exact",
-				"supports-conditions": "exact",
+				"function-values": AdapterCapabilityLevelTag.Unsupported,
+				"pseudo-conditions": AdapterCapabilityLevelTag.Exact,
+				"selector-conditions": AdapterCapabilityLevelTag.Exact,
+				"media-conditions": AdapterCapabilityLevelTag.Exact,
+				"container-conditions": AdapterCapabilityLevelTag.Exact,
+				"supports-conditions": AdapterCapabilityLevelTag.Exact,
 				...capabilities,
 			},
 		};
@@ -1121,7 +1126,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 					...spec.capabilities,
 					capabilities: {
 						...spec.capabilities.capabilities,
-						"named-rules": "exact" as const,
+						"named-rules": AdapterCapabilityLevelTag.Exact,
 					},
 				};
 	const migration = projectPortableDynamicMigration(
@@ -1134,7 +1139,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 					...capabilities,
 					capabilities: {
 						...capabilities.capabilities,
-						"custom-properties": "exact" as const,
+						"custom-properties": AdapterCapabilityLevelTag.Exact,
 					},
 				}
 			: capabilities;
