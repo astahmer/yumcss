@@ -1113,6 +1113,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
 					? (() => {
 							const imports = new Set<string>();
+							const semanticPrograms: StyleProgram[] = [];
 							const entries = namedRules.map((rule) => {
 								const single = render({
 									...program,
@@ -1120,9 +1121,29 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 									declarations: rule.declarations,
 								});
 								for (const statement of single.imports ?? []) imports.add(statement);
+								if (single.semantic !== undefined) semanticPrograms.push(single.semantic);
 								return `${JSON.stringify(rule.name)}: ${single.text}`;
 							});
-							return { text: `{ ${entries.join(", ")} }`, imports: [...imports] };
+							return {
+								text: `{ ${entries.join(", ")} }`,
+								imports: [...imports],
+								...(semanticPrograms.length === entries.length
+									? {
+											semantic: styleProgramFromRules(
+												semanticPrograms.flatMap((item) => item.rules),
+												{
+													source: program.source,
+													themes: program.themes,
+													compositions: program.compositions,
+													runtime: program.runtime,
+													plugins: program.plugins,
+													emissionHints: program.emissionHints,
+													canonicalization: program.canonicalization,
+												},
+											),
+										}
+									: {}),
+							};
 						})()
 					: render(program);
 			const processed = spec.postprocessEmit?.(rendered, context) ?? rendered;
