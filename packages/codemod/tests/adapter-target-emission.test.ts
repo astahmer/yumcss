@@ -50,7 +50,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("<div sx={card}");
 	});
 
-	test("does not guess sx support for an unknown custom component", () => {
+	test("uses a portable static artifact for an unknown custom component", () => {
 		const result = migrate(
 			'import { createCss } from "pandwind/css";\n' +
 				"const css = createCss();\n" +
@@ -60,12 +60,15 @@ describe("target adapter emission contract", () => {
 			CodemodAdapterId.Mui,
 		);
 
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
-		);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain("className={card}");
+		expect(result.code).toContain('import { createCss } from "pandwind/css";');
+		expect(result.code).toContain("css.class");
 		expect(result.code).not.toContain("sx={card}");
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
+		]);
 	});
 
 	test.each([
