@@ -807,9 +807,13 @@ function parseCalls(
 		typeof sourceObjectOptions === "function"
 			? sourceObjectOptions(context.source, context)
 			: sourceObjectOptions;
-	const regexesFor = (pattern: CallPattern): readonly RegExp[] => {
+	interface RegexCandidate {
+		readonly regex: RegExp;
+		readonly binding?: SourceBinding;
+	}
+	const regexesFor = (pattern: CallPattern): readonly RegexCandidate[] => {
 		if (pattern.semanticBindings === undefined || context.bindings === undefined)
-			return [pattern.regex];
+			return [{ regex: pattern.regex }];
 		const bindings = context.bindings.bindings
 			.filter((binding) =>
 				pattern.semanticBindings?.some(
@@ -819,13 +823,15 @@ function parseCalls(
 							binding.kind === SourceBindingKind.Namespace),
 				),
 			)
-			.filter((binding) => !context.bindings?.isShadowed(binding.localName))
 			.filter(
 				(binding, index, all) =>
 					all.findIndex((candidate) => candidate.localName === binding.localName) === index,
 			);
 		if (bindings.length === 0) return [];
-		return bindings.map((binding) => pattern.regexForBinding?.(binding) ?? pattern.regex);
+		return bindings.map((binding) => ({
+			regex: pattern.regexForBinding?.(binding) ?? pattern.regex,
+			binding,
+		}));
 	};
 	let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 	try {
@@ -837,9 +843,16 @@ function parseCalls(
 	const hostRanges = patterns.flatMap((pattern) => {
 		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
 		return regexesFor(pattern)
-			.flatMap((regex) => [...source.matchAll(regex)])
+			.flatMap((candidate) =>
+				[...source.matchAll(candidate.regex)].map((match) => ({ candidate, match })),
+			)
 			.flatMap((match) => {
-				const start = match.index ?? 0;
+				const start = match.match.index ?? 0;
+				if (
+					match.candidate.binding !== undefined &&
+					context.bindings?.isShadowedAt(match.candidate.binding.localName, start)
+				)
+					return [];
 				if (mask?.isExcluded(start)) return [];
 				const tag = JsxStyleHost.parse(
 					source,
@@ -868,9 +881,14 @@ function parseCalls(
 			residuals.push(...parsed.residuals);
 			continue;
 		}
-		for (const regex of regexesFor(pattern))
-			for (const match of source.matchAll(regex)) {
+		for (const candidate of regexesFor(pattern))
+			for (const match of source.matchAll(candidate.regex)) {
 				const start = match.index ?? 0;
+				if (
+					candidate.binding !== undefined &&
+					context.bindings?.isShadowedAt(candidate.binding.localName, start)
+				)
+					continue;
 				if (mask?.isExcluded(start)) continue;
 				if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
 					const initialTag = JsxStyleHost.parse(

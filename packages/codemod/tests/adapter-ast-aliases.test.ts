@@ -55,4 +55,25 @@ describe("adapter semantic binding resolution", () => {
 		expect(result.matches).toEqual([]);
 		expect(result.residuals).toEqual([]);
 	});
+
+	test("still parses the imported alias outside a nested shadow scope", () => {
+		const source = [
+			'import { css as makeCss } from "@emotion/react";',
+			"function render(makeCss: unknown) { return makeCss({ color: 'blue' }); }",
+			'export const card = makeCss({ color: "red" });',
+		].join("\n");
+		const adapter = getCodemodAdapter(CodemodAdapterId.Emotion);
+		expect(adapter).toBeDefined();
+		if (adapter === undefined) return;
+		const document = SOURCE_SCANNER_SERVICE.scan({ file: "scoped.tsx", source });
+		const result = adapter.parse(source, {
+			file: "scoped.tsx",
+			source,
+			config: adapter.loadConfig({ file: "scoped.tsx", source }),
+			document,
+			bindings: SourceBindings.fromDocument(document.document),
+		});
+
+		expect(result.matches.map((match) => match.sourceText)).toEqual(['makeCss({ color: "red" })']);
+	});
 });

@@ -5,7 +5,7 @@ import {
 	type SourceDocument,
 	type SourceRange,
 } from "./source-scanner.ts";
-import { walk, type OxcNode } from "./tw/literal.ts";
+import type { OxcNode } from "./tw/literal.ts";
 
 /** Semantic import shapes understood by source adapters. */
 export const enum SourceBindingKind {
@@ -41,12 +41,38 @@ export interface SourceBindingIndex {
 	isImportedFrom(localName: string, source: string, importedName?: string): boolean;
 	/** Conservative safety check for an imported name used in this module. */
 	isShadowed(localName: string): boolean;
+	/** Check whether an imported name is shadowed at a specific source offset. */
+	isShadowedAt(localName: string, offset: number): boolean;
 }
 
 interface AstNode extends OxcNode {
 	readonly start?: number;
 	readonly end?: number;
 }
+
+interface ShadowedScope {
+	readonly name: string;
+	readonly range: SourceRange;
+}
+
+const walkWithParent = (
+	node: unknown,
+	visit: (node: AstNode, parent: AstNode | undefined) => void,
+	parent?: AstNode,
+): void => {
+	if (Array.isArray(node)) {
+		for (const item of node) walkWithParent(item, visit, parent);
+		return;
+	}
+	if (node === null || typeof node !== "object") return;
+	const current = node as AstNode;
+	if (typeof current.type !== "string") {
+		for (const value of Object.values(current)) walkWithParent(value, visit, parent);
+		return;
+	}
+	visit(current, parent);
+	for (const value of Object.values(current)) walkWithParent(value, visit, current);
+};
 
 const nodeName = (node: unknown): string | undefined => {
 	if (node === null || typeof node !== "object") return undefined;
@@ -112,12 +138,18 @@ function collectBindings(program: OxcNode): {
 	bindings: SourceBinding[];
 	reexports: SourceReexport[];
 	declared: Set<string>;
+	shadowedScopes: ShadowedScope[];
 } {
 	const bindings: SourceBinding[] = [];
 	const reexports: SourceReexport[] = [];
 	const declared = new Set<string>();
-	walk(program, (raw) => {
-		const node = raw as AstNode;
+	const shadowedScopes: ShadowedScope[] = [];
+	const addShadowedScope = (names: readonly string[], body: unknown): void => {
+		const range = rangeOf(body, { start: 0, end: 0 });
+		if (range.end <= range.start) return;
+		for (const name of names) shadowedScopes.push({ name, range });
+	};
+	walkWithParent(program, (node) => {
 		if (isImportNode(node)) {
 			if ((node as { importKind?: string }).importKind === "type") return;
 			const source = sourceOf(node);
@@ -197,8 +229,24 @@ function collectBindings(program: OxcNode): {
 			}
 			for (const name of names) declared.add(name);
 		}
+
+		if (
+			node.type === "FunctionDeclaration" ||
+			node.type === "FunctionExpression" ||
+			node.type === "ArrowFunctionExpression"
+		) {
+			const names: string[] = [];
+			for (const parameter of (node as { params?: unknown[] }).params ?? [])
+				bindingNames(parameter, names);
+			addShadowedScope(names, (node as { body?: unknown }).body);
+		}
+		if (node.type === "CatchClause") {
+			const names: string[] = [];
+			bindingNames((node as { param?: unknown }).param, names);
+			addShadowedScope(names, (node as { body?: unknown }).body);
+		}
 	});
-	return { bindings, reexports, declared };
+	return { bindings, reexports, declared, shadowedScopes };
 }
 
 /** Immutable AST import index shared by codemod, Vite, analyzer, and hosts. */
@@ -207,13 +255,19 @@ export class SourceBindings {
 		private readonly entries: readonly SourceBinding[],
 		private readonly exported: readonly SourceReexport[],
 		private readonly shadowed: ReadonlySet<string>,
+		private readonly shadowedScopes: readonly ShadowedScope[],
 	) {}
 
 	static fromProgram(program: OxcNode): SourceBindingIndex {
 		const collected = collectBindings(program);
 		const importedNames = new Set(collected.bindings.map((binding) => binding.localName));
 		const shadowed = new Set([...importedNames].filter((name) => collected.declared.has(name)));
-		return new SourceBindings(collected.bindings, collected.reexports, shadowed);
+		return new SourceBindings(
+			collected.bindings,
+			collected.reexports,
+			shadowed,
+			collected.shadowedScopes,
+		);
 	}
 
 	static fromParseResult(result: ParseResult): SourceBindingIndex {
@@ -261,5 +315,12 @@ export class SourceBindings {
 
 	isShadowed(localName: string): boolean {
 		return this.shadowed.has(localName);
+	}
+
+	isShadowedAt(localName: string, offset: number): boolean {
+		return this.shadowedScopes.some(
+			(scope) =>
+				scope.name === localName && offset >= scope.range.start && offset < scope.range.end,
+		);
 	}
 }

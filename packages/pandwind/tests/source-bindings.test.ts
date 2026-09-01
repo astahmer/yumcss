@@ -78,4 +78,19 @@ describe("source binding index", () => {
 		expect(index.isShadowed("makeCss")).toBe(true);
 		expect(index.isImportedFrom("makeCss", "@emotion/react", "css")).toBe(false);
 	});
+
+	test("limits shadowing to the nested function scope", () => {
+		const source = [
+			'import { css as makeCss } from "@emotion/react";',
+			"function render(makeCss: unknown) { return makeCss({ color: 'blue' }); }",
+			'const card = makeCss({ color: "red" });',
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "scoped.tsx", source });
+		const nestedCall = source.indexOf("makeCss({ color: 'blue' })");
+		const outerCall = source.indexOf('makeCss({ color: "red" })');
+
+		expect(index.isShadowedAt("makeCss", nestedCall)).toBe(true);
+		expect(index.isShadowedAt("makeCss", outerCall)).toBe(false);
+		expect(index.isImportedFrom("makeCss", "@emotion/react", "css")).toBe(false);
+	});
 });
