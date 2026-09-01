@@ -1,31 +1,19 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	CodemodAdapterId,
-	StyleDynamicExpressionKind,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 
-function hasScalarDynamicProgram(program: import("../semantic-ir.ts").StyleProgram): boolean {
-	return program.rules.some(function containsScalarDynamic(rule): boolean {
-		return (
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					declaration.value.expressionKind !== StyleDynamicExpressionKind.Function &&
-					!/=>|^function\b/.test(declaration.value.expression.trim()),
-			) || rule.children.some(containsScalarDynamic)
-		);
-	});
+function hasScalarDynamicProgram(program: StyleProgram): boolean {
+	return StyleProgramAnalysis.hasScalarDynamic(program);
 }
 
-function renderMantineHost(
-	program: import("../semantic-ir.ts").StyleProgram,
-	styleObject: string,
-): string | undefined {
+function renderMantineHost(program: StyleProgram, styleObject: string): string | undefined {
 	const source = program.source;
 	if (source?.hostOpenTag === undefined) return undefined;
 	let host = source.hostOpenTag;
@@ -278,18 +266,7 @@ export default defineCodemodAdapter({
 			handlesSourceHostAttributes: true,
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
 			resolveHostRepresentation: ({ program, framework }) => {
-				if (
-					program.rules.some(function containsFunction(rule): boolean {
-						return (
-							rule.declarations.some(
-								(declaration) =>
-									declaration.value.kind === "dynamic" &&
-									declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
-							) || rule.children.some(containsFunction)
-						);
-					})
-				)
-					return undefined;
+				if (StyleProgramAnalysis.hasFunctionDynamic(program)) return undefined;
 				return framework === undefined || framework === BuiltinHostFramework.React
 					? StyleHostRepresentationKind.StyleProp
 					: StyleHostRepresentationKind.Class;

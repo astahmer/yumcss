@@ -22,24 +22,37 @@ export class StyleProgramAnalysis {
 				({ value }) => value.kind === "dynamic",
 			);
 		}
-		return program.rules.some(function containsDynamic(rule: StyleRule): boolean {
+		return StyleProgramAnalysis.rules(program).some((rule) => {
 			return (
 				(rule.selector?.includes("${") ?? false) ||
 				rule.conditions.some(
 					(condition) => condition.name.includes("${") || condition.value?.includes("${"),
 				) ||
-				rule.declarations.some(({ value }) => value.kind === "dynamic") ||
-				rule.children.some(containsDynamic)
+				rule.declarations.some(({ value }) => value.kind === "dynamic")
 			);
 		});
 	}
 
 	static hasFunctionDynamic(program: StyleProgram): boolean {
 		return StyleProgramAnalysis.declarations(program).some(
-			({ value }) =>
-				value.kind === "dynamic" &&
-				(value.expressionKind === StyleDynamicExpressionKind.Function ||
-					/=>|^function\b/.test(value.expression.trim())),
+			({ value }) => value.kind === "dynamic" && isFunctionDynamic(value),
 		);
 	}
+
+	static hasScalarDynamic(program: StyleProgram): boolean {
+		return StyleProgramAnalysis.declarations(program).some(
+			({ value }) => value.kind === "dynamic" && !isFunctionDynamic(value),
+		);
+	}
+}
+
+function isFunctionDynamic(value: {
+	kind: "dynamic";
+	expression: string;
+	expressionKind?: StyleDynamicExpressionKind;
+}): boolean {
+	return (
+		value.expressionKind === StyleDynamicExpressionKind.Function ||
+		/=>|^function\b/.test(value.expression.trim())
+	);
 }

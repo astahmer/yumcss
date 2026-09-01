@@ -11,10 +11,8 @@ import type { StyleProgram } from "../semantic-ir.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 function isStaticProgram(program: StyleProgram): boolean {
-	return program.rules.every(
-		(rule) =>
-			rule.declarations.every((declaration) => declaration.value.kind !== "dynamic") &&
-			rule.children.every((child) => isStaticProgram({ ...program, rules: [child] })),
+	return StyleProgramAnalysis.declarations(program).every(
+		(declaration) => declaration.value.kind !== "dynamic",
 	);
 }
 

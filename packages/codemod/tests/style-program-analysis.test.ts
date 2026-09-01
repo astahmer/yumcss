@@ -53,6 +53,25 @@ describe("StyleProgramAnalysis", () => {
 		expect(StyleProgramAnalysis.hasFunctionDynamic(program)).toBe(false);
 	});
 
+	test("distinguishes scalar dynamic values from function values", () => {
+		const program = styleProgramFromRules([
+			{
+				kind: "style",
+				conditions: [],
+				declarations: [
+					{
+						conditions: [],
+						property: "color",
+						value: { kind: "dynamic", expression: "theme.color" },
+					},
+				],
+			},
+		]);
+
+		expect(StyleProgramAnalysis.hasScalarDynamic(program)).toBe(true);
+		expect(StyleProgramAnalysis.hasFunctionDynamic(program)).toBe(false);
+	});
+
 	test("keeps the root declaration projection for rule-less programs", () => {
 		const program = styleProgramFromRules([]);
 		const declaration = {

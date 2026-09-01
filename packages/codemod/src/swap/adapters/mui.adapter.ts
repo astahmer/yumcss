@@ -1,5 +1,5 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import {
 	BuiltinHostFramework,
@@ -9,7 +9,6 @@ import {
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
-	StyleDynamicExpressionKind,
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
@@ -17,6 +16,7 @@ import {
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 const spacing = new Set([
 	"m",
@@ -180,29 +180,17 @@ function isKnownMuiComponent(source: string, tag: string): boolean {
 	).test(source);
 }
 
-function isStaticRules(rules: readonly StyleRule[]): boolean {
-	return rules.every(
-		(rule) =>
-			rule.declarations.every((declaration) => declaration.value.kind !== "dynamic") &&
-			isStaticRules(rule.children),
+function isStaticProgram(program: StyleProgram): boolean {
+	return (
+		program.residuals.length === 0 &&
+		StyleProgramAnalysis.declarations(program).every(
+			(declaration) => declaration.value.kind !== "dynamic",
+		)
 	);
 }
 
-function isStaticProgram(program: StyleProgram): boolean {
-	return program.residuals.length === 0 && isStaticRules(program.rules);
-}
-
 function hasScalarDynamicProgram(program: StyleProgram): boolean {
-	return program.rules.some(function containsScalarDynamic(rule): boolean {
-		return (
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					declaration.value.expressionKind !== StyleDynamicExpressionKind.Function &&
-					!/=>|^function\b/.test(declaration.value.expression.trim()),
-			) || rule.children.some(containsScalarDynamic)
-		);
-	});
+	return StyleProgramAnalysis.hasScalarDynamic(program);
 }
 
 function rewriteMuiIntrinsicHost(
