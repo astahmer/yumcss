@@ -24,7 +24,7 @@ import {
 	type StyleProgramOptions,
 } from "../semantic-ir.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
-import { StyleHostRepresentationKind, StyleNamedRuleStrategy } from "../identifiers.ts";
+import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
 import { projectStaticSubjectMigration } from "../adapter-projections.ts";
 

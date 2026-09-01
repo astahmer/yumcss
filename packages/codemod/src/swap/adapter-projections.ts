@@ -13,7 +13,7 @@ import { StyleHostRepresentationKind } from "./identifiers.ts";
  * adapter-factory boundary so every class-valued adapter gets the same safe
  * projection, regardless of which concrete adapter factory constructs it.
  */
-export function projectStaticSubjectToClass(
+function projectStaticSubjectToClass(
 	policy: AdapterTargetMigrationPolicy | undefined,
 ): AdapterTargetMigrationPolicy | undefined {
 	if (
