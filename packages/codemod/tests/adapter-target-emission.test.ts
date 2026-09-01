@@ -79,7 +79,7 @@ describe("target adapter emission contract", () => {
 
 	test("preserves scalar template dynamics when Chakra has no host carrier", () => {
 		const result = runAdapterMigration(
-			'import { css } from "@linaria/core";\n' + "const card = css`color: ${theme.foreground};`;",
+			'import { css } from "@linaria/core";\nconst card = css`color: ${theme.foreground};`;',
 			{
 				from: CodemodAdapterId.Linaria,
 				to: CodemodAdapterId.ChakraUi,
