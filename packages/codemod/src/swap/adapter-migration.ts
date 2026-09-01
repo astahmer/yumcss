@@ -53,9 +53,6 @@ import {
 } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
-const programHasDynamic = StyleProgramAnalysis.hasDynamic;
-const programHasFunctionDynamic = StyleProgramAnalysis.hasFunctionDynamic;
-
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source
 		.slice(start)
@@ -587,7 +584,7 @@ function runAdapterMigrationInternal(
 		});
 	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		const sourceHasFunctionDynamic = programHasFunctionDynamic(match.program);
+		const sourceHasFunctionDynamic = StyleProgramAnalysis.hasFunctionDynamic(match.program);
 		let lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
@@ -596,7 +593,8 @@ function runAdapterMigrationInternal(
 		});
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
-		const hasFunctionDynamic = sourceHasFunctionDynamic || programHasFunctionDynamic(program);
+		const hasFunctionDynamic =
+			sourceHasFunctionDynamic || StyleProgramAnalysis.hasFunctionDynamic(program);
 		const sourceSubject = program.source?.subject;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
@@ -623,7 +621,7 @@ function runAdapterMigrationInternal(
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
 			bindingBeforeMatch === undefined &&
-			!programHasDynamic(program) &&
+			!StyleProgramAnalysis.hasDynamic(program) &&
 			!hasHostContext &&
 			isDiscardedExpressionStatement(source, match.start, match.end);
 		if (discardableStaticSubject)
@@ -745,7 +743,7 @@ function runAdapterMigrationInternal(
 			(hasHostContext || program.source?.hostStyleAttributes !== undefined)
 		) {
 			if (hostRepresentation !== undefined) emittedHostRepresentation = hostRepresentation;
-			const hasDynamic = programHasDynamic(program);
+			const hasDynamic = StyleProgramAnalysis.hasDynamic(program);
 			if (hasDynamic) {
 				const binding = bindingBeforeMatch;
 				const framework = hostFramework;
@@ -830,10 +828,8 @@ function runAdapterMigrationInternal(
 			}
 		}
 		if (hasTargetHostPort(targetAdapter) && program.source?.subject !== undefined) {
-			const hasDynamic = programHasDynamic(program);
-			const binding = source
-				.slice(0, match.start)
-				.match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
+			const hasDynamic = StyleProgramAnalysis.hasDynamic(program);
+			const binding = bindingBeforeMatch;
 			const tag = componentTagForSubject(program.source.subject);
 			const framework = hostFramework;
 			const targetComponentRewriter = targetPolicy?.rewriteComponent;
@@ -1173,9 +1169,7 @@ function runAdapterMigrationInternal(
 			document,
 			meta: options.meta,
 			host: {
-				...(bindingForMatch(source, match.start) === undefined
-					? {}
-					: { binding: bindingForMatch(source, match.start) }),
+				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 				...(hostFramework === undefined ? {} : { framework: hostFramework }),
 				...(sourceSubject ? { subject: sourceSubject } : {}),
 				...(emittedHostRepresentation === undefined
@@ -1259,9 +1253,7 @@ function runAdapterMigrationInternal(
 				representation: emittedHostRepresentation,
 				representationKind: targetRepresentationKind,
 				residuals: carrierResiduals,
-				...(bindingForMatch(source, match.start) === undefined
-					? {}
-					: { binding: bindingForMatch(source, match.start) }),
+				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 				...(hostFramework === undefined ? {} : { framework: hostFramework }),
 				...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
 			});
@@ -1374,7 +1366,7 @@ function runAdapterMigrationInternal(
 				expression: emitted.text,
 			});
 		}
-		const emittedBinding = bindingForMatch(source, match.start);
+		const emittedBinding = bindingBeforeMatch;
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		const deferSourceHostReplacement =
 			targetAdapter.migration?.targetPolicy?.handlesSourceHostAttributes === true &&
@@ -1391,7 +1383,9 @@ function runAdapterMigrationInternal(
 			outcome:
 				successfulRepresentation === StyleRepresentationKind.PortableArtifact
 					? StyleMigrationOutcome.PortableArtifact
-					: programHasDynamic(program) || hasDynamicCarrier || dynamicCarrier !== undefined
+					: StyleProgramAnalysis.hasDynamic(program) ||
+						  hasDynamicCarrier ||
+						  dynamicCarrier !== undefined
 						? StyleMigrationOutcome.HostRuntime
 						: successfulRepresentation === StyleRepresentationKind.Static
 							? StyleMigrationOutcome.Static
