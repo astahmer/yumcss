@@ -95,7 +95,13 @@ export interface AnalyzeSourceDependencies {
 	readonly residuals?: CssResidualCollector;
 }
 
-type FoldKind = "full" | "partial" | "runtime";
+const enum FoldKindTag {
+	Full = "full",
+	Partial = "partial",
+	Runtime = "runtime",
+}
+
+type FoldKind = FoldKindTag;
 
 interface CallInfo {
 	start: number;
@@ -198,7 +204,7 @@ function parseModule(
 		if (twNames.has(name)) {
 			calls.push({
 				start: call.start ?? 0,
-				kind: "full",
+				kind: FoldKindTag.Full,
 				reason: "",
 				args: call.arguments ?? [],
 				name,
@@ -295,7 +301,7 @@ function classify(
 			dynamicConditional = { index: i, arg: args[i] };
 			continue;
 		}
-		return { start, kind: "runtime", reason: explain(args), args, name };
+		return { start, kind: FoldKindTag.Runtime, reason: explain(args), args, name };
 	}
 	if (dynamicConditional !== undefined) {
 		// Partial folding mirrors buildSkeleton exactly: ternaries need
@@ -303,17 +309,29 @@ function classify(
 		// `&&` chain needs only its RIGHT side (the left is the kept-
 		// dynamic test). `||` / `??` never partially fold.
 		if (!isSkeletonable(dynamicConditional.arg, consts)) {
-			return { start, kind: "runtime", reason: "conditional with non-static branches", args, name };
+			return {
+				start,
+				kind: FoldKindTag.Runtime,
+				reason: "conditional with non-static branches",
+				args,
+				name,
+			};
 		}
-		return { start, kind: "partial", reason: "", args, name };
+		return { start, kind: FoldKindTag.Partial, reason: "", args, name };
 	}
 	// All args static: full fold — unless a css()/unknown helper call is
 	// among them without a fold context (the pass leaves those alone).
 	const hasUnknownCall = args.some((a) => (a as { type?: string })?.type === "CallExpression");
 	if (hasUnknownCall) {
-		return { start, kind: "runtime", reason: "unresolved helper call argument", args, name };
+		return {
+			start,
+			kind: FoldKindTag.Runtime,
+			reason: "unresolved helper call argument",
+			args,
+			name,
+		};
 	}
-	return { start, kind: "full", reason: "", args, name };
+	return { start, kind: FoldKindTag.Full, reason: "", args, name };
 }
 
 function explain(args: unknown[]): string {
@@ -377,8 +395,8 @@ export function analyzeSource(
 			continue;
 		}
 		cxTotal++;
-		if (call.kind === "full") cxFoldedFull++;
-		else if (call.kind === "partial") cxFoldedPartial++;
+		if (call.kind === FoldKindTag.Full) cxFoldedFull++;
+		else if (call.kind === FoldKindTag.Partial) cxFoldedPartial++;
 		else {
 			cxRuntime++;
 			runtimeSites.push(site);
@@ -386,7 +404,7 @@ export function analyzeSource(
 		// Warnings lane: statically-known strings from full folds (and the
 		// static arguments of partial folds — dynamic conditionals keep their
 		// branches out of scope here).
-		if (call.kind !== "runtime") {
+		if (call.kind !== FoldKindTag.Runtime) {
 			const values = call.args.map((arg) => evalStaticCx(arg as never, undefined, mod.consts));
 			missingCss.push(
 				...residuals.missingCss(values, mod.lineStarts, call.start, options.config, ignore),
