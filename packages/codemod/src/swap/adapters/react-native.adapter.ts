@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind, StyleLoweringId } from "../identifiers.ts";
 import { STYLE_LOWERING_SCHEMA, type StyleLowering } from "../lowering.ts";
 import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
@@ -21,6 +22,10 @@ const reactLayoutHosts = new Set([
 function reactNativeHostTag(tag: string): "View" | undefined {
 	return reactLayoutHosts.has(tag) ? "View" : undefined;
 }
+
+const reactToReactNative: readonly AdapterHostFrameworkConversion[] = [
+	{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.ReactNative },
+];
 
 function reactNativeValue(
 	property: string,
@@ -278,9 +283,7 @@ const reactNative = makeExtraAdapter({
 		handlesHostRewrites: true,
 		handlesFrameworkSemantics: true,
 		hostFrameworks: [BuiltinHostFramework.ReactNative],
-		hostFrameworkConversions: [
-			{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.ReactNative },
-		],
+		hostFrameworkConversions: reactToReactNative,
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
 		resolveHostRepresentation: ({ framework, program, source, binding }) =>
