@@ -73,9 +73,10 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 		const routes = catalog.adapters.flatMap((source) =>
 			catalog.adapters.map((target) => ({ source, target })),
 		);
-		for (let start = 0; start < routes.length; start += 8) {
+		const concurrency = 32;
+		for (let start = 0; start < routes.length; start += concurrency) {
 			await Promise.all(
-				routes.slice(start, start + 8).map(async ({ source, target }) => {
+				routes.slice(start, start + concurrency).map(async ({ source, target }) => {
 					const results = await runCliMatrix(source.id, target.id);
 					expect(results).toHaveLength(3);
 					const scenarios = results.map((result) =>
