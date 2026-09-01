@@ -524,9 +524,7 @@ export function createChakraAdapter(
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				resolveRepresentation: ({ program, hasHostContext }) =>
-					!hasHostContext &&
-						program.source?.subject === undefined &&
-						hasDynamicValues(program)
+					!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
 						? StyleRepresentationKind.RuntimeCarrier
 						: undefined,
 				capabilitiesForRepresentation: ({ representation }) =>

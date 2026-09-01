@@ -574,7 +574,7 @@ function runAdapterMigrationInternal(
 			targetPolicy?.capabilitiesForRepresentation?.({
 				program,
 				representation: targetRepresentationKind,
-				}) ?? [];
+			}) ?? [];
 		const preservedResidualKinds = new Set(
 			representationNegotiated
 				? (targetPolicy?.preservesResidualKindsForRepresentation?.({
@@ -591,10 +591,7 @@ function runAdapterMigrationInternal(
 		if (!lowering.availableRepresentations.includes(targetRepresentationKind))
 			lowering = {
 				...lowering,
-				availableRepresentations: [
-					...lowering.availableRepresentations,
-					targetRepresentationKind,
-				],
+				availableRepresentations: [...lowering.availableRepresentations, targetRepresentationKind],
 			};
 		loweringPlans.push(lowering);
 		if (
@@ -1206,7 +1203,7 @@ function runAdapterMigrationInternal(
 			file: options.file,
 			targetId: targetAdapter.id,
 			...request,
-			});
+		});
 		if (rewrite === undefined) continue;
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);

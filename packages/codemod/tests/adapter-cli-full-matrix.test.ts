@@ -16,10 +16,7 @@ interface CliFileResult {
 	readonly source: string;
 }
 
-function runCliMatrix(
-	sourceAdapter: string,
-	targetAdapter: string,
-): readonly CliFileResult[] {
+function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly CliFileResult[] {
 	const fixtures = completeAdapterMatrixFixtures.filter(
 		(item) => item.sourceAdapter === sourceAdapter,
 	);
@@ -46,7 +43,7 @@ function runCliMatrix(
 				"--safe",
 				"--write",
 				"--report=json",
-			...files,
+				...files,
 			],
 			{ cwd: codemodRoot, encoding: "utf8" },
 		);

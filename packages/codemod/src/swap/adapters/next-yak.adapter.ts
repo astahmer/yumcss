@@ -58,9 +58,7 @@ export default defineCodemodAdapter({
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			resolveRepresentation: ({ program, hasHostContext }) =>
-				!hasHostContext &&
-					program.source?.subject === undefined &&
-					hasDynamicValues(program)
+				!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
 					? StyleRepresentationKind.RuntimeCarrier
 					: undefined,
 			capabilitiesForRepresentation: ({ representation }) =>

@@ -22,7 +22,9 @@ export class DynamicClassHost {
 		if (match === null) return false;
 		const tagStart = code.lastIndexOf("<", match.index);
 		const tagEnd = code.indexOf(">", match.index);
-		return tagStart === -1 || tagEnd === -1 || !/\bstyle\s*=\s*/u.test(code.slice(tagStart, tagEnd));
+		return (
+			tagStart === -1 || tagEnd === -1 || !/\bstyle\s*=\s*/u.test(code.slice(tagStart, tagEnd))
+		);
 	}
 
 	static hasCarrier(program: StyleProgram): boolean {

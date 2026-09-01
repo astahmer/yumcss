@@ -336,9 +336,7 @@ export default defineCodemodAdapter({
 					? StyleRepresentationKind.PortableArtifact
 					: undefined,
 			capabilitiesForRepresentation: ({ representation }) =>
-				representation === StyleRepresentationKind.PortableArtifact
-					? ["theme-context"]
-					: [],
+				representation === StyleRepresentationKind.PortableArtifact ? ["theme-context"] : [],
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {

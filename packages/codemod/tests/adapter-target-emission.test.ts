@@ -120,8 +120,7 @@ describe("target adapter emission contract", () => {
 		[CodemodAdapterId.Fela, "theme.foreground"],
 	] as const)("preserves a hostless dynamic carrier for %s", (target, expression) => {
 		const result = migrate(
-			'import { css } from "pandwind/css";\n' +
-				`const card = css.class({ color: ${expression} });`,
+			`import { css } from "pandwind/css";\nconst card = css.class({ color: ${expression} });`,
 			CodemodAdapterId.Pandwind,
 			target,
 		);
@@ -176,12 +175,10 @@ describe("target adapter emission contract", () => {
 		);
 
 		expect(result.code).toContain("theme.foreground");
-		expect(result.code).toContain("style={{ color: \"blue\" }}");
+		expect(result.code).toContain('style={{ color: "blue" }}');
 		expect(result.skipped).toBeGreaterThan(0);
 		expect(result.residuals).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({ kind: "dynamic-custom-property" }),
-			]),
+			expect.arrayContaining([expect.objectContaining({ kind: "dynamic-custom-property" })]),
 		);
 	});
 
