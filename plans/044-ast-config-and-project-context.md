@@ -243,3 +243,21 @@ tests and are documented in the SDK reference.
 | 2026-09-01 | Use AST for semantic binding/call work and retain regex only for bounded filtering/text normalization | Regex cannot safely model aliases, shadowing, nested syntax, or source ranges                                       |
 | 2026-09-01 | Official loaders are strict-first but fallback remains explicit and observable                        | Ecosystem packages contain semantics Pandwind should not reimplement, while missing dependencies must remain usable |
 | 2026-09-01 | Pinned corpora remain evidence data, never adapter control flow                                       | Proof must validate generic behavior rather than reward repository-specific branches                                |
+
+## Progress — 2026-09-02
+
+The shared binding service now records nested function and catch-parameter
+shadow scopes and exposes `isShadowedAt(localName, offset)`. The generic
+adapter parser uses that offset-aware result for semantic-binding candidates,
+so a nested parameter no longer suppresses a valid imported call outside its
+scope. Focused tests cover aliases, namespace imports, re-exports, nested
+shadowing, and the outer-call regression.
+
+The production adapter tree also has a purity guard that rejects pinned corpus
+names and repository URLs. The one corpus-specific StyleX comment was
+rephrased around the generic `xstyle` host contract. This closes the
+corpus-independence enforcement gap without moving proof data into adapters.
+
+The plan remains open for true AST call-site/range ownership, cross-file
+re-export resolution, and broader official-loader coverage. Those are not
+marked complete by the current binding-index improvement.
