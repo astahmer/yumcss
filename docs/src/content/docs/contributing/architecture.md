@@ -83,13 +83,17 @@ component shape and is therefore invalid. This projection is selected by
 registry normalization and covered for every built-in dynamic class carrier.
 
 Runtime-capable targets make the same distinction for scalar expressions. A
-target-owned runtime object such as Chakra's `system.css()` (created with
-`createSystem(defaultConfig)`) or MUI's `styled()` may
-preserve a scalar expression when the expression remains in the source lexical
-scope; the adapter marks that representation explicitly so validation does not
-count the preserved IR residual as a failed conversion. This does not bless
-function-valued callbacks, provider-specific theme lookups, or framework-only
-bindings: those still require a target wrapper or an explicit residual.
+target-owned carrier such as Chakra's documented `css` prop or MUI's `styled()`
+may preserve a scalar expression when the expression remains in the source
+lexical scope; the adapter marks that representation explicitly so validation
+does not count the preserved IR residual as a failed conversion. Chakra's
+`system.css()` is an official style-object interop utility, not a class-name
+carrier: it is valid for a style object and may be used for a hostless Chakra
+target projection, but Pandwind never emits `className={system.css(...)}` or
+synthesizes `createSystem(defaultConfig)` as a generic target. This does not
+bless function-valued callbacks, provider-specific theme lookups, or
+framework-only bindings: those still require a target wrapper or an explicit
+residual.
 
 Next-yak uses the same contract for scalar template values: a styled subject
 with a host use stays a Next-yak `styled` template, while a hostless template

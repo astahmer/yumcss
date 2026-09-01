@@ -767,7 +767,10 @@ function runAdapterMigrationInternal(
 					hasFunctionDynamic &&
 					program.source?.hostOpenTag === undefined &&
 					targetAdapter.capabilities.capabilities["function-values"] !== "unsupported";
-				const dynamicHandled = hostDynamicHandled || dynamicPolicy?.handled === true;
+				const dynamicHandled =
+					hostDynamicHandled ||
+					dynamicPolicy?.handled === true ||
+					targetPolicy?.handlesDynamicValues === true;
 				const dynamicHandledWithTarget = dynamicHandled || nativeFunctionHandled;
 				const dynamicStandalone = dynamicPolicy?.standalone === true;
 				if (

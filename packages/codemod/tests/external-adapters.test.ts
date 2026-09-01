@@ -1063,11 +1063,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test.each([
 		["aphrodite", "StyleSheet.create", 'import { StyleSheet, css } from "aphrodite";'],
-		[
-			"chakra-ui",
-			"chakraSystem.css",
-			'import { createSystem, defaultConfig } from "@chakra-ui/react";',
-		],
+		["chakra-ui", 'css={{ color: "red" }}', 'import { chakra } from "@chakra-ui/react";'],
 		["goober", "css", 'import { css } from "goober";'],
 		["vanilla-extract", "style", 'import { style } from "@vanilla-extract/css";'],
 	] as const)(
@@ -1082,8 +1078,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain(carrier);
 			expect(result.code).toContain(targetImport);
-			expect(result.code).toContain("const Card = (props) => <div");
-			expect(result.code).toContain("props.className");
+			expect(result.code).toContain("const Card = (props) => <chakra.div");
+			if (target === "chakra-ui") expect(result.code).toContain('css={{ color: "red" }}');
+			else expect(result.code).toContain("props.className");
 			expect(result.code).not.toContain("styled-components");
 		},
 	);

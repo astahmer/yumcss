@@ -19,7 +19,35 @@ describe("installed adapter public API contracts", () => {
 		expect("css" in chakra).toBe(false);
 	});
 
-	test("Chakra target emission uses the documented system.css carrier", () => {
+	test("Chakra's documented style APIs are valid against the installed types", () => {
+		const system = createSystem(defaultConfig);
+		const styleObject = system.css({
+			color: "red.200",
+			_hover: { color: "blue.200" },
+		});
+		const recipe = system.cva({
+			base: { color: "white" },
+			variants: { size: { sm: { padding: "2" } } },
+		});
+		const slotRecipe = system.sva({
+			slots: ["title"],
+			base: { title: { color: "red.500" } },
+		});
+		const factory = chakra.chakra("a", { base: { color: "red.500" } });
+		const tokenValue = system.token("colors.red.200");
+		const tokenVariable = system.token.var("colors.red.200");
+
+		expect(styleObject).toMatchObject({ color: expect.any(String) });
+		expect(typeof recipe).toBe("function");
+		expect(typeof slotRecipe).toBe("function");
+		expect(typeof factory).toBe("function");
+		expect(typeof tokenValue).toBe("string");
+		expect(tokenVariable).toContain("var(");
+		expect(typeof chakra.useRecipe).toBe("function");
+		expect(typeof chakra.useSlotRecipe).toBe("function");
+	});
+
+	test("Chakra target emission uses the documented css prop carrier", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
 				'const Card = styled.div({ color: "red" });\n' +
@@ -35,11 +63,10 @@ describe("installed adapter public API contracts", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain(
-			'import { createSystem, defaultConfig } from "@chakra-ui/react";',
-		);
-		expect(result.code).toContain("const chakraSystem = createSystem(defaultConfig);");
-		expect(result.code).toContain("chakraSystem.css(");
+		expect(result.code).toContain('import { chakra } from "@chakra-ui/react";');
+		expect(result.code).toContain("<chakra.div");
+		expect(result.code).toContain('css={{ color: "red" }}');
+		expect(result.code).not.toContain("chakraSystem.css");
 		expect(result.code).not.toContain('import { css } from "@chakra-ui/react";');
 	});
 

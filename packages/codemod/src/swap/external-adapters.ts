@@ -49,7 +49,8 @@ export type ExternalAdapterId = string;
 type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
-	readonly form?: "object" | "template" | "reference" | "jsx-style";
+	readonly form?: "object" | "template" | "reference" | "jsx-style" | "residual";
+	readonly residual?: Pick<StyleProgramResidual, "kind" | "hint">;
 	readonly functionCall?: Pick<
 		import("./function-style-parser.ts").FunctionStyleCallParserOptions,
 		"functionCall" | "namedObjects" | "sourceObjectOptions" | "subjectFromMatch"
@@ -870,6 +871,33 @@ function parseCalls(
 						sourceText: tag.openingTag,
 					});
 				}
+				continue;
+			}
+			if (pattern.form === "residual") {
+				const residual = pattern.residual;
+				if (residual === undefined) continue;
+				const sourceMap: StyleProgramSource = {
+					file: context.file,
+					start,
+					end: start + match[0].length,
+					adapter: context.config.adapter,
+					...context.semantic?.source,
+				};
+				matches.push({
+					start,
+					end: start + match[0].length,
+					sourceText: match[0],
+					program: styleProgramFromRules([], {
+						source: sourceMap,
+						residuals: [
+							{
+								kind: residual.kind,
+								text: match[0],
+								hint: residual.hint,
+							},
+						],
+					}),
+				});
 				continue;
 			}
 			if (pattern.form === "reference") {

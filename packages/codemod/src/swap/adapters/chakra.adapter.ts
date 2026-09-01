@@ -1,11 +1,11 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
-	StyleRepresentationKind,
 } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
@@ -167,15 +167,6 @@ const styleProps = [
 	"borderStartColor",
 	"borderEndColor",
 ] as const;
-
-function hasDynamicValues(program: StyleProgram): boolean {
-	return program.rules.some(function containsDynamic(rule): boolean {
-		return (
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some(containsDynamic)
-		);
-	});
-}
 
 function isSpacingProperty(property: string): boolean {
 	return (
@@ -522,6 +513,211 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 	return references;
 }
 
+function compositionResidual(program: StyleProgram, text: string): StyleProgram {
+	return {
+		...program,
+		rules: [],
+		declarations: [],
+		residuals: [
+			...program.residuals,
+			{
+				kind: "composition",
+				text,
+				hint: "Chakra recipes and attached factory styles require explicit composition lowering",
+			},
+		],
+	};
+}
+
+function sourceHostTag(openingTag: string): string | undefined {
+	return /^<\s*([A-Za-z_$][\w$.-]*)/u.exec(openingTag)?.[1];
+}
+
+function qualifyChakraIntrinsicHost(
+	code: string,
+	openingTag: string,
+): {
+	readonly code: string;
+	readonly imports: readonly string[];
+} {
+	const tag = sourceHostTag(openingTag);
+	if (tag === undefined || !/^[a-z]/u.test(tag)) return { code, imports: [] };
+	const qualifiedOpening = `<chakra.${tag}`;
+	const openingIndex = code.indexOf(openingTag);
+	if (openingIndex < 0) return { code, imports: [] };
+	const opening = code.slice(openingIndex, openingIndex + openingTag.length);
+	const qualified = opening.replace(new RegExp(`^<\\s*${tag}(?=[\\s/>])`, "u"), qualifiedOpening);
+	let rewritten = `${code.slice(0, openingIndex)}${qualified}${code.slice(openingIndex + openingTag.length)}`;
+	const closing = new RegExp(`</${tag}>`, "g");
+	rewritten = rewritten.replace(closing, `</chakra.${tag}>`);
+	return {
+		code: rewritten,
+		imports: ['import { chakra } from "@chakra-ui/react";'],
+	};
+}
+
+function qualifyFirstChakraIntrinsicHost(code: string): {
+	readonly code: string;
+	readonly imports: readonly string[];
+} {
+	const opening = /<([a-z][\w.-]*)(?=[\s/>])[^>]*>/u.exec(code)?.[0];
+	return opening === undefined ? { code, imports: [] } : qualifyChakraIntrinsicHost(code, opening);
+}
+
+function replaceChakraClassAttribute(
+	code: string,
+	binding: string | undefined,
+	emittedExpression: string,
+): string | undefined {
+	if (binding !== undefined) {
+		const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const match = new RegExp(`\\sclassName\\s*=\\s*\\{\\s*${escapedBinding}\\s*\\}`, "u").exec(
+			code,
+		);
+		return match === null
+			? undefined
+			: `${code.slice(0, match.index)} css={${emittedExpression}}${code.slice(match.index + match[0].length)}`;
+	}
+	const match = /\sclassName\s*=\s*\{/u.exec(code);
+	if (match === null) return undefined;
+	const open = match.index + match[0].lastIndexOf("{");
+	const block = matchBlock(code, open);
+	if (block === null) return undefined;
+	return `${code.slice(0, match.index)} css={${emittedExpression}}${code.slice(block.end)}`;
+}
+
+function rewriteChakraStyleHost({
+	code,
+	program,
+	emittedExpression,
+}: {
+	readonly code: string;
+	readonly program: StyleProgram;
+	readonly emittedExpression: string;
+}): {
+	readonly code: string;
+	readonly imports: readonly string[];
+	readonly residuals: readonly import("../semantic-ir.ts").StyleProgramResidual[];
+} {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined) return { code, imports: [], residuals: [] };
+	let host = openingTag;
+	for (const attribute of program.source?.hostStyleAttributes ?? []) {
+		const index = host.indexOf(attribute);
+		if (index < 0) continue;
+		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
+		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
+	}
+	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
+	host = `${host.slice(0, insertion)} css={${emittedExpression}}${host.slice(insertion)}`;
+	const index = code.indexOf(openingTag);
+	if (index < 0)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: openingTag,
+					hint: "Chakra css-prop projection could not locate the source host",
+				},
+			],
+		};
+	const replaced = `${code.slice(0, index)}${host}${code.slice(index + openingTag.length)}`;
+	const qualified = qualifyChakraIntrinsicHost(replaced, host);
+	return { ...qualified, residuals: [] };
+}
+
+function rewriteChakraClassHost({
+	code,
+	binding,
+	program,
+	emittedExpression,
+}: {
+	readonly code: string;
+	readonly binding?: string;
+	readonly program: StyleProgram;
+	readonly emittedExpression: string;
+}): {
+	readonly code: string;
+	readonly imports: readonly string[];
+	readonly residuals: readonly import("../semantic-ir.ts").StyleProgramResidual[];
+} {
+	const replaced = replaceChakraClassAttribute(code, binding, emittedExpression);
+	if (replaced === undefined)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: binding ?? program.source?.hostOpenTag ?? emittedExpression,
+					hint: "Chakra css-prop projection could not locate a simple className binding",
+				},
+			],
+		};
+	const qualified =
+		program.source?.hostOpenTag === undefined
+			? qualifyFirstChakraIntrinsicHost(replaced)
+			: qualifyChakraIntrinsicHost(replaced, program.source.hostOpenTag);
+	return { ...qualified, residuals: [] };
+}
+
+function rewriteChakraStyledSubject({
+	code,
+	binding,
+	tag,
+	framework,
+	emittedExpression,
+}: {
+	readonly code: string;
+	readonly binding: string;
+	readonly tag: string;
+	readonly framework: string;
+	readonly emittedExpression: string;
+}): {
+	readonly code: string;
+	readonly imports: readonly string[];
+	readonly residuals: readonly import("../semantic-ir.ts").StyleProgramResidual[];
+} {
+	if (framework !== BuiltinHostFramework.React && framework !== BuiltinHostFramework.Preact)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: binding,
+					hint: `Chakra factory projection requires ${BuiltinHostFramework.React} or ${BuiltinHostFramework.Preact}`,
+				},
+			],
+		};
+	const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const assignment = new RegExp(`\\b(const|let|var)\\s+${escapedBinding}\\s*=\\s*[^;]+;`).exec(
+		code,
+	);
+	if (assignment === null)
+		return {
+			code,
+			imports: [],
+			residuals: [
+				{
+					kind: "host-framework",
+					text: binding,
+					hint: "Chakra factory projection could not locate the styled subject declaration",
+				},
+			],
+		};
+	const declaration =
+		`${assignment[1]} ${binding} = (props) => <chakra.${tag} {...props} ` +
+		`css={${emittedExpression}} />;`;
+	return {
+		code: `${code.slice(0, assignment.index)}${declaration}${code.slice(assignment.index + assignment[0].length)}`,
+		imports: ['import { chakra } from "@chakra-ui/react";'],
+		residuals: [],
+	};
+}
+
 export function createChakraAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
@@ -542,13 +738,61 @@ export function createChakraAdapter(
 					...preserveNextImageFill(host),
 				],
 			},
-			// This is the adapter's canonical standalone projection. Keeping it in
-			// the source pattern set makes a Chakra emission a valid source for the
-			// reverse route instead of creating a one-way pseudo target.
+			// Chakra documents system.css as an interop/source form. Target output
+			// uses the public css prop or chakra factory instead of putting its style
+			// object into className.
 			{
 				name: "chakra-system-css",
-				regex: /\b(?:system|chakraSystem)\.css\s*\(\s*\{/g,
+				regex: /\b(?:system|defaultSystem|chakraSystem)\.css\s*\(\s*\{/g,
 				form: "object",
+			},
+			{
+				name: "chakra-recipe",
+				regex: /\bdefineRecipe\s*\(\s*\{/g,
+				form: "object",
+				transform: (program) => compositionResidual(program, "defineRecipe"),
+			},
+			{
+				name: "chakra-slot-recipe",
+				regex: /\bdefineSlotRecipe\s*\(\s*\{/g,
+				form: "object",
+				transform: (program) => compositionResidual(program, "defineSlotRecipe"),
+			},
+			{
+				name: "chakra-cva",
+				regex: /\b(?:system|defaultSystem|chakraSystem)\.cva\s*\(\s*\{/g,
+				form: "object",
+				transform: (program) => compositionResidual(program, "system.cva"),
+			},
+			{
+				name: "chakra-sva",
+				regex: /\b(?:system|defaultSystem|chakraSystem)\.sva\s*\(\s*\{/g,
+				form: "object",
+				transform: (program) => compositionResidual(program, "system.sva"),
+			},
+			{
+				name: "chakra-factory-styles",
+				regex: /\bchakra\s*\(\s*(?:["'][^"']+["']|[A-Za-z_$][\w$]*)\s*,\s*\{/g,
+				form: "object",
+				transform: (program) => compositionResidual(program, "chakra factory styles"),
+			},
+			{
+				name: "chakra-use-recipe",
+				regex: /\buseRecipe\s*\(\s*[A-Za-z_$][\w$]*\s*\)/g,
+				form: "residual",
+				residual: {
+					kind: "composition",
+					hint: "Chakra recipe usage requires explicit variant/component lowering",
+				},
+			},
+			{
+				name: "chakra-use-slot-recipe",
+				regex: /\buseSlotRecipe\s*\(\s*[A-Za-z_$][\w$]*\s*\)/g,
+				form: "residual",
+				residual: {
+					kind: "composition",
+					hint: "Chakra slot recipe usage requires explicit variant/component lowering",
+				},
 			},
 		],
 		packages: dependency("@chakra-ui/react", "peer"),
@@ -564,30 +808,37 @@ export function createChakraAdapter(
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
-				hostRepresentation: StyleHostRepresentationKind.Class,
-				postRewriteHost: ({ code }) => {
-					const match = /import\s*\{\s*([^}]+?)\s*\}\s*from\s*["']@mantine\/core["'];?/u.exec(code);
-					if (match === null) return { code, residuals: [] };
-					const imported =
-						match[1]
-							?.split(",")
-							.map((name) => name.trim())
-							.filter(Boolean) ?? [];
-					if (imported.length !== 1 || imported[0] !== "Box") return { code, residuals: [] };
-					return {
-						code: code.replace(match[0], 'import { Box } from "@chakra-ui/react";'),
-						residuals: [],
-					};
+				hostRepresentation: StyleHostRepresentationKind.StyleProp,
+				hostFrameworks: [BuiltinHostFramework.React, BuiltinHostFramework.Preact],
+				handlesSourceHostAttributes: true,
+				handlesDynamicValues: true,
+				rewriteHost: ({ code, binding, program, emittedExpression }) => {
+					const hasStyleAttributes = (program.source?.hostStyleAttributes?.length ?? 0) > 0;
+					return hasStyleAttributes
+						? rewriteChakraStyleHost({ code, program, emittedExpression })
+						: rewriteChakraClassHost({
+								code,
+								binding,
+								program,
+								emittedExpression,
+							});
 				},
-				dynamicClassCarrier: true,
-				resolveRepresentation: ({ program, hasHostContext }) =>
-					!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
-						? StyleRepresentationKind.RuntimeCarrier
-						: undefined,
-				capabilitiesForRepresentation: ({ representation }) =>
-					representation === StyleRepresentationKind.RuntimeCarrier
-						? ["dynamic-values", "theme-context", "runtime-context"]
-						: [],
+				rewriteComponent: ({ code, binding, tag, framework, emittedExpression }) =>
+					rewriteChakraStyledSubject({
+						code,
+						binding,
+						tag,
+						framework,
+						emittedExpression,
+					}),
+				resolveHostRepresentation: ({ framework, hasHostContext, program }) => {
+					if (!hasHostContext && program.source?.subject === undefined) return undefined;
+					return framework === undefined ||
+						framework === BuiltinHostFramework.React ||
+						framework === BuiltinHostFramework.Preact
+						? StyleHostRepresentationKind.StyleProp
+						: undefined;
+				},
 			},
 		},
 		detectPatterns: [/@chakra-ui\/react/, /<(?:(?:Box|Flex|Stack|Text|Button)(?:\s|>))/],
@@ -620,7 +871,7 @@ export function createChakraAdapter(
 				]),
 			),
 		}),
-		emit(program, { programObject }) {
+		emit(program, { programObject }, context) {
 			const outputProgram = normalizeChakraEmissionProgram(program);
 			if (program.rules.some((rule) => rule.kind !== "style"))
 				return {
@@ -633,13 +884,14 @@ export function createChakraAdapter(
 						},
 					],
 				};
-			const expression = `chakraSystem.css(${programObject(outputProgram)})`;
+			const object = programObject(outputProgram);
+			const expression =
+				context?.host?.representation === undefined ? `defaultSystem.css(${object})` : object;
 			return {
 				text: expression,
-				imports: [
-					'import { createSystem, defaultConfig } from "@chakra-ui/react";',
-					"const chakraSystem = createSystem(defaultConfig);",
-				],
+				...(context?.host?.representation === undefined
+					? { imports: ['import { defaultSystem } from "@chakra-ui/react";'] }
+					: {}),
 				semantic: outputProgram,
 			};
 		},

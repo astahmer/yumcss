@@ -147,7 +147,7 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
-	test("projects a scalar dynamic styled subject through Chakra's class carrier", () => {
+	test("reports a styled subject whose theme expression has no verified Chakra mapping", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
 				"const Card = styled.div({ color: theme.foreground });\n" +
@@ -163,15 +163,11 @@ describe("target adapter emission contract", () => {
 			},
 		);
 
-		expect(result.skipped).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain(
-			'import { createSystem, defaultConfig } from "@chakra-ui/react";',
-		);
-		expect(result.code).toContain("const chakraSystem = createSystem(defaultConfig);");
-		expect(result.code).toContain("const Card = (props) => <div");
+		expect(result.skipped).toBe(1);
+		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain("theme.foreground");
-		expect(result.code).toContain("<Card />");
+		expect(result.code).toContain("<div className={Card} />");
 	});
 
 	test("keeps scalar dynamic styled subjects in MUI's target-native styled carrier", () => {

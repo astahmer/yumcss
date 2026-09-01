@@ -424,7 +424,7 @@ describe("composed cross-ecosystem routes", () => {
 		expect(chakra.residuals).toEqual([]);
 		expect(chakra.converted).toBe(1);
 		expect(chakra.validations.every((validation) => validation.valid)).toBe(true);
-		expect(chakra.code).toContain("@chakra-ui/react");
+		expect(chakra.code).toContain("const card =");
 		expect(chakra.code).toContain('backgroundColor: "#3182ce"');
 	});
 
@@ -456,8 +456,8 @@ describe("composed cross-ecosystem routes", () => {
 
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);
-		expect(result.code).toContain("<div");
-		expect(result.code).toContain('chakraSystem.css({ color: "red", padding: "1rem" })');
+		expect(result.code).toContain("<chakra.div");
+		expect(result.code).toContain('css={{ color: "red", padding: "1rem" }}');
 		expect(result.code).not.toMatch(/^\s*css\(\{/u);
 	});
 });
