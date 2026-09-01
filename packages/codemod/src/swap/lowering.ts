@@ -92,6 +92,48 @@ function replaceDeclarations(
 	};
 }
 
+const tokenFallback: StyleLowering = {
+	schema: STYLE_LOWERING_SCHEMA,
+	id: StyleLoweringId.TokenFallback,
+	apply: ({ program, target, mode }) => {
+		const tokenLevel = level(target, "token-values");
+		const mustInline =
+			tokenLevel === AdapterCapabilityLevelTag.Unsupported ||
+			(mode === AdapterCapabilityModeTag.Safe && tokenLevel === AdapterCapabilityLevelTag.Partial);
+		if (!mustInline) return { program, residuals: [], applied: [] };
+		const residuals: StyleProgramResidual[] = [];
+		const resolved = new Set<AdapterCapability>();
+		let changed = false;
+		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
+			const value = declaration.value;
+			if (value.kind !== StyleValueKindTag.Token) return declaration;
+			if (value.resolved !== undefined) {
+				changed = true;
+				resolved.add("token-values");
+				return {
+					...declaration,
+					value: { kind: StyleValueKindTag.Literal, value: value.resolved },
+				};
+			}
+			residuals.push({
+				kind: "token-values",
+				text: value.authored,
+				hint: `token ${value.ref} has no verified resolved value for target ${target.adapter}`,
+			});
+			return declaration;
+		};
+		const rules = program.rules.map((rule) => replaceDeclarations(rule, transform));
+		return {
+			program: changed
+				? { ...program, rules, declarations: program.declarations.map(transform) }
+				: program,
+			residuals,
+			applied: changed ? [StyleLoweringId.TokenFallback] : [],
+			...(resolved.size === 0 ? {} : { resolvedCapabilities: [...resolved] }),
+		};
+	},
+};
+
 function resolveThemeExpression(
 	expression: string,
 	program: StyleProgram,
@@ -356,6 +398,7 @@ const runtimeAndPlugins: StyleLowering = {
 };
 
 export const STYLE_LOWERINGS: readonly StyleLowering[] = [
+	tokenFallback,
 	dynamicAndThemes,
 	composition,
 	runtimeAndPlugins,

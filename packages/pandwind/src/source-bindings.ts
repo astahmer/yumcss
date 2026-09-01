@@ -1,25 +1,22 @@
 import type { ParseResult } from "oxc-parser";
-import {
-	parseSourceProgram,
-	SOURCE_SCANNER_SERVICE,
-	type SourceDocument,
-	type SourceRange,
-} from "./source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE, type SourceDocument, type SourceRange } from "./source-scanner.ts";
 import type { OxcNode } from "./tw/literal.ts";
 
-/** Semantic import shapes understood by source adapters. */
-export const enum SourceBindingKind {
-	Named = "named",
-	Default = "default",
-	Namespace = "namespace",
-	Reexport = "reexport",
-}
+/** Runtime-safe typed identity values used by source adapters. */
+export const SourceBindingKind = {
+	Named: "named",
+	Default: "default",
+	Namespace: "namespace",
+	Reexport: "reexport",
+} as const;
+export type SourceBindingKind = (typeof SourceBindingKind)[keyof typeof SourceBindingKind];
 
 /** AST-owned semantic call shapes exposed to adapter parsers. */
-export const enum SourceCallSiteKind {
-	Call = "call",
-	TaggedTemplate = "tagged-template",
-}
+export const SourceCallSiteKind = {
+	Call: "call",
+	TaggedTemplate: "tagged-template",
+} as const;
+export type SourceCallSiteKind = (typeof SourceCallSiteKind)[keyof typeof SourceCallSiteKind];
 
 export interface SourceBinding {
 	readonly localName: string;
@@ -36,6 +33,11 @@ export interface SourceReexport {
 	readonly range: SourceRange;
 }
 
+export interface SourceExportAll {
+	readonly source: string;
+	readonly range: SourceRange;
+}
+
 export interface SourceCallSite {
 	readonly kind: SourceCallSiteKind;
 	readonly start: number;
@@ -48,6 +50,7 @@ export interface SourceCallSite {
 export interface SourceBindingIndex {
 	readonly bindings: readonly SourceBinding[];
 	readonly reexports: readonly SourceReexport[];
+	readonly exportAllSources: readonly SourceExportAll[];
 	/** AST-owned calls and tagged templates with resolved imported bindings. */
 	readonly callSites: readonly SourceCallSite[];
 	/** Resolve the authored local name to its imported module binding. */
@@ -187,11 +190,13 @@ const recoverableParse = (document: SourceDocument): ParseResult => {
 function collectBindings(program: OxcNode): {
 	bindings: SourceBinding[];
 	reexports: SourceReexport[];
+	exportAllSources: SourceExportAll[];
 	declared: Set<string>;
 	shadowedScopes: ShadowedScope[];
 } {
 	const bindings: SourceBinding[] = [];
 	const reexports: SourceReexport[] = [];
+	const exportAllSources: SourceExportAll[] = [];
 	const declared = new Set<string>();
 	const shadowedScopes: ShadowedScope[] = [];
 	const addShadowedScope = (names: readonly string[], body: unknown): void => {
@@ -258,6 +263,15 @@ function collectBindings(program: OxcNode): {
 			}
 		}
 
+		if (node.type === "ExportAllDeclaration") {
+			const source = sourceOf(node);
+			if (source !== undefined)
+				exportAllSources.push({
+					source,
+					range: rangeOf(node, { start: 0, end: 0 }),
+				});
+		}
+
 		if (
 			node.type === "VariableDeclarator" ||
 			node.type === "FunctionDeclaration" ||
@@ -296,7 +310,7 @@ function collectBindings(program: OxcNode): {
 			addShadowedScope(names, (node as { body?: unknown }).body);
 		}
 	});
-	return { bindings, reexports, declared, shadowedScopes };
+	return { bindings, reexports, exportAllSources, declared, shadowedScopes };
 }
 
 const memberCallee = (node: unknown): { localName: string; property?: string } | undefined => {
@@ -350,13 +364,28 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 
 /** Immutable AST import index shared by codemod, Vite, analyzer, and hosts. */
 export class SourceBindings {
+	private readonly entries: readonly SourceBinding[];
+	private readonly exported: readonly SourceReexport[];
+	private readonly exportedAll: readonly SourceExportAll[];
+	private readonly calls: readonly SourceCallSite[];
+	private readonly shadowed: ReadonlySet<string>;
+	private readonly shadowedScopes: readonly ShadowedScope[];
+
 	private constructor(
-		private readonly entries: readonly SourceBinding[],
-		private readonly exported: readonly SourceReexport[],
-		private readonly calls: readonly SourceCallSite[],
-		private readonly shadowed: ReadonlySet<string>,
-		private readonly shadowedScopes: readonly ShadowedScope[],
-	) {}
+		entries: readonly SourceBinding[],
+		exported: readonly SourceReexport[],
+		exportedAll: readonly SourceExportAll[],
+		calls: readonly SourceCallSite[],
+		shadowed: ReadonlySet<string>,
+		shadowedScopes: readonly ShadowedScope[],
+	) {
+		this.entries = entries;
+		this.exported = exported;
+		this.exportedAll = exportedAll;
+		this.calls = calls;
+		this.shadowed = shadowed;
+		this.shadowedScopes = shadowedScopes;
+	}
 
 	static fromProgram(program: OxcNode): SourceBindingIndex {
 		const collected = collectBindings(program);
@@ -365,6 +394,7 @@ export class SourceBindings {
 		return new SourceBindings(
 			collected.bindings,
 			collected.reexports,
+			collected.exportAllSources,
 			collectCallSites(program, collected.bindings),
 			shadowed,
 			collected.shadowedScopes,
@@ -389,6 +419,10 @@ export class SourceBindings {
 
 	get reexports(): readonly SourceReexport[] {
 		return this.exported;
+	}
+
+	get exportAllSources(): readonly SourceExportAll[] {
+		return this.exportedAll;
 	}
 
 	get callSites(): readonly SourceCallSite[] {

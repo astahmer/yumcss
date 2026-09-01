@@ -13,8 +13,13 @@ import {
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
 import { SourcePass } from "../source-pass-utils.ts";
-import { joinDocumentPath } from "../path-utils.ts";
-import { SourceBindingKind, type SourceBinding, type SourceCallSite } from "pandwind/source";
+import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from "../path-utils.ts";
+import {
+	createSourceProjectBindingIndex,
+	SourceBindingKind,
+	type SourceBinding,
+	type SourceCallSite,
+} from "pandwind/source";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	AdapterCapabilityLevelTag,
@@ -255,6 +260,43 @@ function detectBy(
 		pattern.lastIndex = 0;
 		return matched ? [pattern.source] : [];
 	});
+	if (evidence.length === 0 && context.root !== undefined && context.readFile !== undefined) {
+		const file = isAbsoluteDocumentPath(context.file)
+			? context.file
+			: joinDocumentPath(context.root, context.file);
+		const projectBindings = createSourceProjectBindingIndex({
+			read: (candidate) => {
+				const source = context.readFile?.(candidate);
+				return source === undefined ? undefined : { file: candidate, source };
+			},
+			resolve: (importer, specifier) => {
+				if (!specifier.startsWith(".")) return undefined;
+				const base = joinDocumentPath(dirnameDocumentPath(importer), specifier);
+				return [
+					base,
+					`${base}.ts`,
+					`${base}.tsx`,
+					`${base}.js`,
+					`${base}.jsx`,
+					`${base}/index.ts`,
+					`${base}/index.tsx`,
+				].find((candidate) => context.readFile?.(candidate) !== undefined);
+			},
+		});
+		const resolvedEvidence =
+			projectBindings.index(file)?.bindings.flatMap((binding) => {
+				const resolved = projectBindings.resolve(file, binding.localName) ?? binding;
+				return patterns.some((pattern) => {
+					pattern.lastIndex = 0;
+					const matched = pattern.test(`${resolved.source}:${resolved.importedName}`);
+					pattern.lastIndex = 0;
+					return matched;
+				})
+					? [`project-binding:${binding.localName}->${resolved.source}`]
+					: [];
+			}) ?? [];
+		evidence.push(...resolvedEvidence);
+	}
 	return {
 		matched: evidence.length > 0,
 		confidence: evidence.length === 0 ? 0 : Math.min(1, 0.5 + evidence.length * 0.2),
@@ -817,19 +859,19 @@ function parseCalls(
 	const regexesFor = (pattern: CallPattern): readonly RegexCandidate[] => {
 		if (pattern.semanticBindings === undefined || context.bindings === undefined)
 			return [{ regex: pattern.regex }];
-		const sites = context.bindings.callSites.filter(
-			(site) =>
-				site.binding !== undefined &&
-				pattern.semanticBindings?.some(
-					(candidate) =>
-						candidate.source === site.binding?.source &&
-						(candidate.imported === site.binding.importedName ||
-							(site.binding.kind === SourceBindingKind.Namespace &&
-								site.property === candidate.imported)),
-				),
-		);
+		const sites = context.bindings.callSites.filter((site) => {
+			const binding = site.binding;
+			if (binding === undefined) return false;
+			const resolved = context.resolveBinding?.(binding.localName) ?? binding;
+			return pattern.semanticBindings?.some(
+				(candidate) =>
+					candidate.source === resolved.source &&
+					(candidate.imported === resolved.importedName ||
+						(binding.kind === SourceBindingKind.Namespace && site.property === candidate.imported)),
+			);
+		});
 		const astCandidates = sites.flatMap((callSite) => {
-			const binding = callSite.binding;
+			const binding = context.resolveBinding?.(callSite.binding!.localName) ?? callSite.binding;
 			if (binding === undefined) return [];
 			const regex = pattern.regexForBinding?.(binding) ?? pattern.regex;
 			regex.lastIndex = 0;

@@ -2,7 +2,8 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
-import { createSourceWorkspace } from "../src/source-workspace.ts";
+import { createSourceWorkspace, type SourceWorkspaceFileSystem } from "../src/source-workspace.ts";
+import type { SourceScannerService } from "../src/source-scanner.ts";
 
 const roots: string[] = [];
 
@@ -43,5 +44,40 @@ describe("source workspace", () => {
 		expect(workspace.files(["**/*.css"], root, { includeUnsupported: true })).toEqual([
 			join(root, "theme.css"),
 		]);
+	});
+
+	test("keeps filesystem and scanner policy replaceable at the workspace boundary", () => {
+		const root = "/virtual-project";
+		const file = `${root}/Card.virtual`;
+		const fileSystem: SourceWorkspaceFileSystem = {
+			readFile: (path) => (path === file ? "export const Card = 1;" : ""),
+			stat: (path) => ({
+				isFile: () => path === file,
+				isDirectory: () => path === root,
+			}),
+			glob: () => ["Card.virtual"],
+		};
+		const scanner = {
+			registry: {} as SourceScannerService["registry"],
+			languageForFile: () => "typescript" as const,
+			isSupportedFile: () => true,
+			isScriptFile: () => true,
+			isTypeScriptFile: () => true,
+			scan: (document) => ({
+				document,
+				language: "typescript" as const,
+				excluded: [],
+				diagnostics: [],
+				framework: "custom" as const,
+				runtimeBoundary: "shared" as const,
+				isExcluded: () => false,
+			}),
+			parse: () => undefined as never,
+		} satisfies SourceScannerService;
+
+		const workspace = createSourceWorkspace({ fileSystem, scanner });
+		const documents = workspace.collect(["**/*"], root);
+
+		expect(documents.map(({ path, scan }) => [path, scan.framework])).toEqual([[file, "custom"]]);
 	});
 });

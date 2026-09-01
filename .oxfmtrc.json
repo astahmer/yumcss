@@ -6,6 +6,10 @@
 		"**/apps/example/src/types.d.ts",
 		"**/apps/example/src/pandwind.safelist.ts",
 		"**/apps/example/src/tw.ts",
+		"**/apps/playground/src/generated/**",
+		"**/packages/codemod/tests/routes/**",
+		"**/packages/codemod/tests/roundtrips/**",
+		"apps/playground/src/pandwind.interop.json",
 		"**/dist/**",
 		"plans/evidence/**/*.json"
 	]

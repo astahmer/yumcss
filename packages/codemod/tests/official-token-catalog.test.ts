@@ -367,7 +367,7 @@ describe("official custom-token loaders", () => {
 			target,
 		]);
 		const source =
-			'import { css } from "@emotion/css";\n' + 'export const card = css({ color: "#123456" });';
+			'import { css } from "@emotion/css";\nexport const card = css({ color: "#123456" });';
 		const result = await runAdapterMigrationAsync(source, {
 			from: CodemodAdapterId.Emotion,
 			to: CodemodAdapterId.Pandwind,

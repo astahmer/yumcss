@@ -95,13 +95,13 @@ export interface AnalyzeSourceDependencies {
 	readonly residuals?: CssResidualCollector;
 }
 
-const enum FoldKindTag {
-	Full = "full",
-	Partial = "partial",
-	Runtime = "runtime",
-}
+const FoldKindTag = {
+	Full: "full",
+	Partial: "partial",
+	Runtime: "runtime",
+} as const;
 
-type FoldKind = FoldKindTag;
+type FoldKind = (typeof FoldKindTag)[keyof typeof FoldKindTag];
 
 interface CallInfo {
 	start: number;

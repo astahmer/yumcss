@@ -53,7 +53,7 @@ describe("verified Pandwind token preservation", () => {
 
 	test("keeps a literal when no target preset is available to prove a token", () => {
 		const result = migrate(
-			'import { css } from "@emotion/css";\n' + 'export const card = css({ color: "#3182ce" });',
+			'import { css } from "@emotion/css";\nexport const card = css({ color: "#3182ce" });',
 		);
 
 		expect(result.skipped).toBe(0);
@@ -70,7 +70,7 @@ describe("verified Pandwind token preservation", () => {
 
 	test("keeps an ambiguous token value literal instead of guessing a semantic name", () => {
 		const result = migrate(
-			'import { css } from "@emotion/css";\n' + 'export const card = css({ color: "#60A3BC" });',
+			'import { css } from "@emotion/css";\nexport const card = css({ color: "#60A3BC" });',
 			exampleMeta,
 		);
 

@@ -5,24 +5,18 @@ export interface RuntimeRule {
 	readonly priority: number;
 }
 
+/** Runtime-safe typed identities shared by the browser and Node entrypoints. */
+export const RuntimeSemanticRuleKindTag = {
+	Style: "style",
+	Global: "global",
+	Keyframes: "keyframes",
+	FontFace: "font-face",
+	Layer: "layer",
+	Supports: "supports",
+	Property: "property",
+} as const;
 export type RuntimeSemanticRuleKind =
-	| "style"
-	| "global"
-	| "keyframes"
-	| "font-face"
-	| "layer"
-	| "supports"
-	| "property";
-
-export const enum RuntimeSemanticRuleKindTag {
-	Style = "style",
-	Global = "global",
-	Keyframes = "keyframes",
-	FontFace = "font-face",
-	Layer = "layer",
-	Supports = "supports",
-	Property = "property",
-}
+	(typeof RuntimeSemanticRuleKindTag)[keyof typeof RuntimeSemanticRuleKindTag];
 
 /** A declaration accepted by the runtime semantic-rule serializer. */
 export interface RuntimeDeclaration {

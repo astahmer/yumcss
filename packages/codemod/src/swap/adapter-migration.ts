@@ -10,10 +10,12 @@ import { ensureImport } from "../shared.ts";
 import {
 	SOURCE_SCANNER_SERVICE,
 	SourceBindings,
+	createSourceProjectBindingIndex,
 	type SourceBindingIndex,
 	type SourceScanResult,
 } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
+import { dirname, resolve as resolvePath } from "node:path";
 import {
 	inspectAdapterCapabilities,
 	AdapterCapabilityLevelTag,
@@ -461,8 +463,34 @@ function runAdapterMigrationInternal(
 		root: options.root,
 	});
 	let bindings: SourceBindingIndex | undefined;
+	let resolveBinding:
+		| ((localName: string) => SourceBindingIndex["bindings"][number] | undefined)
+		| undefined;
 	try {
 		bindings = SourceBindings.fromDocument(document.document);
+		if (readFile !== undefined) {
+			const projectBindings = createSourceProjectBindingIndex({
+				read: (file) => {
+					const sourceText = readFile(file);
+					return sourceText === undefined ? undefined : { file, source: sourceText };
+				},
+				resolve: (importer, specifier) => {
+					if (!specifier.startsWith(".")) return undefined;
+					const base = resolvePath(dirname(importer), specifier);
+					const candidates = [
+						base,
+						`${base}.ts`,
+						`${base}.tsx`,
+						`${base}.js`,
+						`${base}.jsx`,
+						`${base}/index.ts`,
+						`${base}/index.tsx`,
+					];
+					return candidates.find((candidate) => readFile(candidate) !== undefined);
+				},
+			});
+			resolveBinding = (localName) => projectBindings.resolve(options.file, localName);
+		}
 	} catch {
 		// Snippet-like inputs can be scanned without a complete module AST. The
 		// adapter remains conservative and uses its bounded fallback matcher.
@@ -476,6 +504,7 @@ function runAdapterMigrationInternal(
 		meta: options.meta,
 		document,
 		...(bindings === undefined ? {} : { bindings }),
+		...(resolveBinding === undefined ? {} : { resolveBinding }),
 		semantic: options.semantic,
 	});
 	// Every frontend crosses the same compiler-core boundary before lowering.

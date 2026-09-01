@@ -20,7 +20,7 @@ describe("Chakra docs migration corpus", () => {
 				expect(report.skippedCallSites).toBe(report.residuals.length);
 				expect(report.residuals.length).toBeGreaterThan(0);
 				expect(report.residuals).toEqual(
-					report.residuals.map((residual) =>
+					report.residuals.map((_residual) =>
 						expect.objectContaining({
 							kind: "composition",
 							text: "chakra factory styles",

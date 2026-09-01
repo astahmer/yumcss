@@ -339,6 +339,28 @@ checks. Filesystem access in a CLI composition root or in the workspace
 provider is therefore infrastructure; parser and framework policy stays in
 the scanner or owning adapter.
 
+`SourceWorkspace` accepts both a `SourceWorkspaceFileSystem` and a
+`SourceScannerService`. Tests, browser tooling, and alternative hosts can
+therefore replace file expansion, reads, and language selection without
+reimplementing workspace semantics. Codemod parsing also receives the
+bounded `SourceProjectBindingIndex`: relative imports can be followed through
+barrel re-exports using AST binding facts, while package boundaries stop at
+the owning adapter. No project module is executed during this resolution.
+
+Generated artifacts are maintained through their generators rather than
+treated as hand-authored adapter implementations. Repository lint and
+formatting ignore the generated playground declaration graph and generated
+directional route fixtures; their generators and consumers remain checked,
+and the generated outputs are validated by the playground type-generation
+check and the codemod route/round-trip suites.
+
+When a target does not expose a token contract, the lowering planner first
+uses a verified resolved token value as a literal. An unresolved token remains
+an explicit `token-values` lowering residual. This makes safe migration
+static-first without silently replacing a custom token with a guessed value;
+targets that do support the token contract still receive the authored token
+through their token policy.
+
 Function-valued style calls use the same shared parser port as the generic
 adapter runtime. `FunctionStyleCallParser` balances the actual invocation,
 normalizes arrow parameters, preserves the styled subject and source pattern,
@@ -509,7 +531,10 @@ their literal-union views remain available at serialized and authored-source
 boundaries. Authored CSS values, property names, package specifiers in emitted
 source, and external AST protocol strings remain data rather than registry
 identities. Const enums have no runtime object, so registries expose explicit
-ordered arrays instead of relying on `Object.values`.
+ordered arrays instead of relying on `Object.values`. Runtime-loaded entrypoints
+such as Vite and Inspector use `as const` identity objects with derived union
+types instead: Node's strip-only loader cannot execute TypeScript enum syntax or
+parameter properties.
 
 Prefer one cohesive façade, registry, or class over a module that exports a
 collection of unrelated operations. Export a primitive only when it is an
@@ -794,10 +819,10 @@ deliberate:
   lowerings and production browser/SSR/RSC proof beyond the registered static
   subset. A residual matrix is safety evidence, not universal-compatibility
   proof.
-- `plans/044-ast-config-and-project-context.md` remains open for AST ownership
-  of every host rewrite range, cross-file re-export resolution, and broader
-  official-loader/custom-context coverage. The shared binding service now
-  owns imports, shadow scopes, and semantic call-site ranges.
+- `plans/044-ast-config-and-project-context.md` is complete for shared AST
+  imports, shadow scopes, semantic call-site ranges, and bounded relative
+  re-export resolution. It remains open for AST ownership of every host
+  rewrite range and broader official-loader/custom-context coverage.
 - `plans/024-panda-inbound-codemod.md` is complete for the automated product
   scope; dependency-installed typecheck and visual acceptance belong to the
   external pinned Panda host repository.

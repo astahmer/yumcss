@@ -78,4 +78,4 @@ export declare const UTILITY_SUBKEYS: Readonly<Record<string, string>>;
  * @param conflicts optional generated conflict map enabling last-wins merging
  * @param compose optional generated list of composing utility keys
  */
-export declare function compileStyles(styles: TwNestedStyles, variants: TwVariantsMeta, conflicts?: TwConflictsMeta, compose?: TwComposeMeta): string;
+export declare function compileStyles(styles: TwNestedStyles, variants: TwVariantsMeta, conflicts?: TwConflictsMeta, compose?: TwComposeMeta | ReadonlySet<string>): string;

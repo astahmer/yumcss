@@ -228,8 +228,8 @@ tests and are documented in the SDK reference.
       host rewrite ownership and the remaining adapter forms are still open.
 - [x] Aliased, namespace, and default imports are tested, and nested shadowed
       locals do not produce false positives.
-- [ ] Cross-file re-export resolution is implemented and exercised by adapter
-      parsing tests.
+- [x] Cross-file re-export resolution is implemented and exercised by adapter
+      parsing tests, including bounded `export *` barrels.
 - [ ] Official config loaders are attempted first where supported, with
       explicit evidence and residuals for fallback/unavailable paths.
 - [ ] Custom themes/tokens/presets/plugins are preserved or reported for
@@ -265,6 +265,11 @@ rephrased around the generic `xstyle` host contract. This closes the
 corpus-independence enforcement gap without moving proof data into adapters.
 
 The plan remains open for AST ownership of every adapter's host rewrite range,
-cross-file re-export resolution, and broader official-loader/custom-context
-coverage. Those are not marked complete by the current binding-index
-improvement.
+and broader official-loader/custom-context coverage. Cross-file relative
+re-export resolution is now implemented by `SourceProjectBindingIndex`: it
+follows bounded AST named and `export *` chains, stops at package boundaries,
+caches indexes per project file, and is injected into adapter
+detection/parsing. Focused source and real adapter migration tests cover
+aliased imports through multiple barrels. Host rewrite ownership and broader
+official-loader/custom-context coverage remain open because they need separate
+target-specific proof.

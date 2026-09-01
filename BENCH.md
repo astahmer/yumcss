@@ -141,13 +141,13 @@ Five narrow optimizations were measured against the existing size gate:
 
 The current size record after this pass is:
 
-| entry | minified | gzip |
-| --- | ---: | ---: |
-| CSS fallback | 6,538 | 2,953 |
-| CSS compiler-pruned call | 3,931 | 1,892 |
-| `tw()` | 2,319 | 1,103 |
-| `cx()` | 12,321 | 5,206 |
-| all engines | 14,594 | 6,008 |
+| entry                    | minified |  gzip |
+| ------------------------ | -------: | ----: |
+| CSS fallback             |    6,538 | 2,953 |
+| CSS compiler-pruned call |    3,931 | 1,892 |
+| `tw()`                   |    2,319 | 1,103 |
+| `cx()`                   |   12,321 | 5,206 |
+| all engines              |   14,594 | 6,008 |
 
 The CSS fallback grew by about 406 minified bytes versus the previous
 snapshot. That is an intentional trade: the measured representative CSS
@@ -156,6 +156,7 @@ by the compiler and the reviewed hard budgets remain explicit in
 `packages/pandwind/tests/runtime-budget.json`.
 
 The earlier runtime-sheet cache remains part of the same pass:
+
 - `createRuntimeSheet()` memoizes ordering and serialized CSS until a rule or
   token mutation. The substitution test verifies that repeated reads invoke
   neither policy again, while every state change invalidates both caches.

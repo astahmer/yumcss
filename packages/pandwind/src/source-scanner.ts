@@ -542,8 +542,15 @@ export {
 	type SourceBinding,
 	type SourceCallSite,
 	type SourceBindingIndex,
+	type SourceExportAll,
 	type SourceReexport,
 } from "./source-bindings.ts";
+export {
+	SOURCE_PROJECT_BINDINGS_SCHEMA,
+	createSourceProjectBindingIndex,
+	type SourceProjectBindingIndex,
+	type SourceProjectBindingLoader,
+} from "./source-project.ts";
 
 /**
  * Validate scanner substitutions at the language boundary. Consumers depend

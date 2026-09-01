@@ -1,7 +1,6 @@
-import { readFileSync, statSync } from "node:fs";
 import type { CssPreset } from "./css-extract.ts";
 import type { CssSourceService } from "./css-source-service.ts";
-import { createSourceWorkspace } from "../source-workspace.ts";
+import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
 
 interface CssSourceWorkspaceEntry {
 	readonly mtimeMs: number;
@@ -25,15 +24,17 @@ export interface CssSourceWorkspaceOptions {
 	readonly matchers: Array<string | RegExp>;
 	readonly preset: CssPreset;
 	readonly sourceService: CssSourceService;
+	readonly sourceWorkspace?: SourceWorkspace;
 }
 
 class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	private readonly cache = new Map<string, CssSourceWorkspaceEntry>();
 	private readonly options: CssSourceWorkspaceOptions;
-	private readonly sourceWorkspace = createSourceWorkspace();
+	private readonly sourceWorkspace: SourceWorkspace;
 
 	constructor(options: CssSourceWorkspaceOptions) {
 		this.options = options;
+		this.sourceWorkspace = options.sourceWorkspace ?? createSourceWorkspace();
 	}
 
 	private isScanned(file: string): boolean {
@@ -53,11 +54,13 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	}
 
 	scan(file: string): CssSourceWorkspaceEntry {
-		const mtimeMs = statSync(file).mtimeMs;
+		const document = this.sourceWorkspace.read([file])[0];
+		if (document === undefined) throw new Error(`Unable to read CSS source: ${file}`);
+		const mtimeMs = document.mtimeMs ?? -1;
 		const cached = this.cache.get(file);
 		if (cached?.mtimeMs === mtimeMs) return cached;
 		const extracted = this.options.sourceService.extractFile(
-			readFileSync(file, "utf8"),
+			document.source,
 			file,
 			this.options.matchers,
 			this.options.preset,
@@ -72,11 +75,9 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 		for (let index = 0; index < files.length; index++) {
 			const file = files[index]!;
 			if (file !== cachedFiles[index] || this.cache.get(file) === undefined) return false;
-			try {
-				if (this.cache.get(file)!.mtimeMs !== statSync(file).mtimeMs) return false;
-			} catch {
-				return false;
-			}
+			const document = this.sourceWorkspace.read([file])[0];
+			if (document === undefined) return false;
+			if (this.cache.get(file)!.mtimeMs !== (document.mtimeMs ?? -1)) return false;
 		}
 		return true;
 	}

@@ -12,6 +12,7 @@ import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createCssSourceWorkspace } from "./css-source-workspace.ts";
 import { createRuntimePruningTransform } from "./runtime-pruner.ts";
+import { createSourceWorkspace } from "../source-workspace.ts";
 
 export type { CssExtractorPreset };
 
@@ -62,6 +63,7 @@ export function createCssExtractorPluginCore(
 	const root = options.root ?? process.cwd();
 	const include = options.include ?? [/\.(?:[cm]?[jt]sx?)$/];
 	const exclude = options.exclude ?? [/node_modules/, /(^|\/)dist(\/|$)/, /\.git/];
+	const sourceWorkspace = createSourceWorkspace();
 	const workspace = createCssSourceWorkspace({
 		root,
 		include,
@@ -69,6 +71,7 @@ export function createCssExtractorPluginCore(
 		matchers,
 		preset,
 		sourceService,
+		sourceWorkspace,
 	});
 	type RenderCache<T> = { files: Array<string>; value: T };
 	let bodyCache: RenderCache<string> | undefined;

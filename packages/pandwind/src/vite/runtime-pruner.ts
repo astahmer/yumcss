@@ -1,14 +1,15 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { OxcNode } from "../tw/literal.ts";
 
-enum CssRuntimeMethodTag {
-	Class = "class",
-	Vars = "vars",
-	Raw = "raw",
-	Props = "props",
-	Group = "group",
-	Input = "input",
-}
+const CssRuntimeMethodTag = {
+	Class: "class",
+	Vars: "vars",
+	Raw: "raw",
+	Props: "props",
+	Group: "group",
+	Input: "input",
+} as const;
+type CssRuntimeMethodTag = (typeof CssRuntimeMethodTag)[keyof typeof CssRuntimeMethodTag];
 
 const ALL_METHODS = Object.values(CssRuntimeMethodTag);
 const VIRTUAL_PREFIX = "pandwind:runtime/css";

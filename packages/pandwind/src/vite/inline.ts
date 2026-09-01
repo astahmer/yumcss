@@ -108,11 +108,12 @@ export interface InlineResult {
  */
 export type OnUnresolved = "warn" | "error" | "off";
 
-export const enum OnUnresolvedTag {
-	Warn = "warn",
-	Error = "error",
-	Off = "off",
-}
+/** Runtime-safe identity values; this module is also loaded by Node's Vite config loader. */
+export const OnUnresolvedTag = {
+	Warn: "warn",
+	Error: "error",
+	Off: "off",
+} as const;
 
 export interface UnresolvedOptions {
 	/** Collect unresolved tokens for the plugin's onUnresolved lane. */

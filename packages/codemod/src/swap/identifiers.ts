@@ -172,6 +172,7 @@ export const BUILTIN_STYLE_VALIDATOR_IDS = [
 ] as const;
 
 export const enum StyleLoweringId {
+	TokenFallback = "token-fallback",
 	DynamicAndTheme = "dynamic-and-theme",
 	CompositionFlatten = "composition-flatten",
 	RuntimeAndPlugin = "runtime-and-plugin",

@@ -17,11 +17,11 @@ import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 export const CX_NOT_STATIC = Symbol("pandwind.cx-not-static");
 const NOT_STATIC: typeof CX_NOT_STATIC = CX_NOT_STATIC;
 
-const enum FoldSkeletonKindTag {
-	Leaf = "leaf",
-	Conditional = "cond",
-	And = "and",
-}
+const FoldSkeletonKindTag = {
+	Leaf: "leaf",
+	Conditional: "cond",
+	And: "and",
+} as const;
 
 /** `undefined` must remain distinguishable from an expression we cannot fold. */
 export type StaticEval = CxInput | true | typeof CX_NOT_STATIC;

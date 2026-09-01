@@ -5,7 +5,6 @@ import {
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */

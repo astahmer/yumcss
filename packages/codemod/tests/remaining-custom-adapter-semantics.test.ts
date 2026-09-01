@@ -34,9 +34,9 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).not.toContain("$colors$brand");
 		expect(result.code).toContain('color: "#123456"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from \"pandwind/css\";
+			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.class({ color: \"#123456\", padding: \"0.5rem\" });"
+			export const card = css.class({ color: "#123456", padding: "0.5rem" });"
 		`);
 	});
 

@@ -1,6 +1,6 @@
 // Generated from the workspace-linked pandwind package. Do not edit.
 import type { CssFn } from "../css/create-css.d.ts";
-import { type VarAtom, type VarsOutput } from "../css/vars.d.ts";
+import { type VarAtom, type VarsOutput } from "../css/var-compiler.d.ts";
 import type { TwComposeMeta, TwConflictsMeta, TwVariantsMeta } from "../tw/compile.d.ts";
 export interface CxOptions {
     variants?: TwVariantsMeta;

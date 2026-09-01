@@ -386,11 +386,11 @@ const main = (): void => {
 	const expected = readdirSync(temporaryRoot, { recursive: true, encoding: "utf8" })
 		.filter((path): path is string => typeof path === "string")
 		.filter((path) => path.endsWith(".d.ts"))
-		.sort();
+		.toSorted();
 	const current = readdirSync(outputRoot, { recursive: true, encoding: "utf8" })
 		.filter((path): path is string => typeof path === "string")
 		.filter((path) => path.endsWith(".d.ts"))
-		.sort();
+		.toSorted();
 	const same =
 		expected.length === current.length &&
 		expected.every(
@@ -404,14 +404,14 @@ const main = (): void => {
 	})
 		.filter((path): path is string => typeof path === "string")
 		.filter((path) => path.endsWith(".d.ts"))
-		.sort();
+		.toSorted();
 	const currentDependencyPaths = readdirSync(dependencyOutputRoot, {
 		recursive: true,
 		encoding: "utf8",
 	})
 		.filter((path): path is string => typeof path === "string")
 		.filter((path) => path.endsWith(".d.ts"))
-		.sort();
+		.toSorted();
 	const dependenciesSame =
 		expectedDependencies.length === currentDependencyPaths.length &&
 		expectedDependencies.every(

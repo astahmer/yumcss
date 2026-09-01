@@ -73,6 +73,11 @@ which concrete module to import or grow a switch statement in a central runner.
   enums have no runtime object, registries must expose an explicit ordered
   array for iteration instead of `Object.values`. Third-party ids remain
   extensible through a branded identifier factory and the plugin registry.
+- Runtime-loaded package entrypoints must not contain TypeScript `enum` syntax
+  (including `const enum`) or parameter properties: Node's strip-only loader
+  executes Vite/Inspector config imports directly. In those runtime boundaries,
+  use an exported `as const` identity object plus its derived union type; this
+  is the equivalent typed identifier form and remains fully type-safe.
 - Do not leak ecosystem branches into shared orchestration. Code outside an
   owning adapter must not contain checks such as `adapter === "stylex"` or
   `from === "panda"`; adapter-specific behavior is normalized into neutral

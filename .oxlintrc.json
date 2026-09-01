@@ -30,6 +30,9 @@
 		"**/dist/**",
 		"**/docs/.astro/**",
 		"**/docs/node_modules/**",
+		"**/apps/playground/src/generated/**",
+		"**/packages/codemod/tests/routes/**",
+		"**/packages/codemod/tests/roundtrips/**",
 		"**/packages/analyze/tests/fixtures/**"
 	],
 	"jsPlugins": ["./packages/lint-plugin/src/index.js"],

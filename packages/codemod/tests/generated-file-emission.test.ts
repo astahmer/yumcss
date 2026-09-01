@@ -158,8 +158,8 @@ describe("generated target files", () => {
 		]);
 		expect(result.code).toMatchInlineSnapshot(`
 		"// pandwind:migrate-skip (route: emotion -> test-generated-target | lowering-residual: generated-file)
-		import { css } from \"@emotion/css\";
-		const card = css({ color: \"red\" });
+		import { css } from "@emotion/css";
+		const card = css({ color: "red" });
 		"
 	`);
 		expect(result.code).toContain("@emotion/css");

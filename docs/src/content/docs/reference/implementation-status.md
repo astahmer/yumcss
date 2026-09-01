@@ -32,6 +32,9 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
 - a deterministic `StyleProgramCore` boundary with versioned artifact
   encoding, stable fingerprints, plugin core-version negotiation, and proof
   evidence that records the normalized core identity;
+- an injectable `SourceWorkspace` filesystem/scanner boundary and a bounded
+  AST-backed project binding index for aliased imports through relative barrel
+  re-exports;
 - a typed real-repository promotion report that distinguishes source-static
   evidence from runtime-pending, source-mismatch, and pipeline-unpaired
   entries across canonical CSS, browser, SSR/hydration, streaming,
@@ -62,7 +65,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 035–036      | Complete                                                                                                                                                            | This page and the repository's contributor guidance                                                                                    |
 | 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence                       | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/)                                        |
 | 038–039      | Complete for the reproducible offline pivot gate, pinned-reference adapter browser proof, explicit per-adapter coverage evidence, and the final history/proof audit | [Testing](/contributing/testing/), [Architecture](/contributing/architecture/), [Shipped plans](/reference/shipped-plans/)             |
-| 043          | Complete for the deterministic semantic core, compatibility negotiation, proof fingerprints, conformance tests, and architecture documentation | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/), [Testing](/contributing/testing/) |
+| 043          | Complete for the deterministic semantic core, compatibility negotiation, proof fingerprints, conformance tests, and architecture documentation                      | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/), [Testing](/contributing/testing/)       |
 
 ## What remains intentionally bounded
 
@@ -82,6 +85,9 @@ These are not missing pieces of the pivot boundary:
   pending browser, SSR/hydration, dependency, and CSS-size dimensions remain
   visible in the proof artifact until a repository-specific runner executes
   them.
+- Verified token values can be lowered to static literals when a target lacks
+  token support; unresolved custom tokens remain structured residuals rather
+  than being guessed or dropped.
 - Inspector visual polish and experimental cold-path optimizations are useful
   follow-ups, but do not block CSS-in-JS migration correctness.
 
