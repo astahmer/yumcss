@@ -15,6 +15,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const tokenSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -170,6 +172,40 @@ test("unocss -> jss: lowers concrete theme and project context variants", () => 
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("unocss -> jss: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> jss | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		      "kind": "unknown-utility",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

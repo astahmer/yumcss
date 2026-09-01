@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const tokenSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "$colors.brand", padding: "1rem" });';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -31,8 +33,20 @@ const blueTargetSemantic = {
 const amberTargetSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
 };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("vanilla-extract -> bamboo -> vanilla-extract: preserves an actionable concrete round trip", () => {
@@ -263,6 +277,62 @@ test("vanilla-extract -> bamboo -> vanilla-extract: preserves concrete theme and
 		      "skipped": 0,
 		      "validations": [],
 		    },
+		  },
+		}
+	`);
+});
+
+test("vanilla-extract -> bamboo -> vanilla-extract: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.css.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "$colors.brand", padding: "1rem" });",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "$colors.brand", padding: "1rem" });",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`);

@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const tokenSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -180,6 +182,43 @@ test("aphrodite -> pandwind: lowers concrete theme and project context variants"
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("aphrodite -> pandwind: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = css.group({ card: { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

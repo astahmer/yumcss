@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -53,14 +55,62 @@ test("pandwind -> fela: migrates concrete pandwind syntax to fela", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("pandwind -> fela: carries concrete pandwind dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("pandwind -> fela: lowers concrete theme and project context variants", () => {
@@ -80,12 +130,122 @@ test("pandwind -> fela: lowers concrete theme and project context variants", () 
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": "#f97316", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": "#2563eb", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
+});
+
+test("pandwind -> fela: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("pandwind -> fela: preserves malformed concrete pandwind input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "
+		const css = createCss();
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
+		const unfinished = { /* unfinished pandwind */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

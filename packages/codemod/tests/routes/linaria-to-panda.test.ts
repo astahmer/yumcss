@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { css } from "@linaria/core";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: var(--colors-brand); padding: 1rem;`;\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -176,6 +178,42 @@ test("linaria -> panda: lowers concrete theme and project context variants", () 
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("linaria -> panda: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "styled-system/css";
+
+		export const card = css({ color: "var(--colors-brand)", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

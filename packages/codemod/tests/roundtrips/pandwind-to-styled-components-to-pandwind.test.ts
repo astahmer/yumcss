@@ -25,6 +25,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -65,7 +67,62 @@ test("pandwind -> styled-components -> pandwind: preserves an actionable concret
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		const css = createCss();
+		export const card = styled.div({ color: "red", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { createCss } from "pandwind/css";
+		const pandwindCss = createCss();
+		const cx = createCx();
+
+		const css = createCss();
+		export const card = (props) => <div {...props} className={cx(pandwindCss.class({ color: "red", padding: "1rem" }), props.className)} />;
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("pandwind -> styled-components -> pandwind: retains edge semantics without silent loss", () => {
@@ -75,7 +132,60 @@ test("pandwind -> styled-components -> pandwind: retains edge semantics without 
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		const css = createCss();
+		export const card = styled.div({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { createCss } from "pandwind/css";
+		const pandwindCss = createCss();
+
+
+		const css = createCss();
+		export const card = pandwindCss.vars({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("pandwind -> styled-components -> pandwind: preserves concrete theme and project context variants", () => {
@@ -116,5 +226,191 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		const css = createCss();
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const pandwindCss = createCss();
+
+
+		const css = createCss();
+		export const card = (() => { const style = pandwindCss.class({ color: "#f97316", padding: "1rem" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fmduj8", props.className)} />; }; component.__pandwindClassName = "pw-1fmduj8"; return component; })();
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		const css = createCss();
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const pandwindCss = createCss();
+
+
+		const css = createCss();
+		export const card = (() => { const style = pandwindCss.class({ color: "#2563eb", padding: "1rem" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fmduj8", props.className)} />; }; component.__pandwindClassName = "pw-1fmduj8"; return component; })();
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		}
+	`);
+});
+
+test("pandwind -> styled-components -> pandwind: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		const css = createCss();
+		export const card = styled.div({ color: "$colors.brand", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { createCss } from "pandwind/css";
+		const pandwindCss = createCss();
+		const cx = createCx();
+
+		const css = createCss();
+		export const card = (props) => <div {...props} className={cx(pandwindCss.class({ color: "$colors.brand", padding: "1rem" }), props.className)} />;
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });

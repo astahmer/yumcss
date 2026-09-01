@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { css } from "styled-system/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -31,8 +33,20 @@ const amberTargetSemantic = {
 	source: { framework: BuiltinHostFramework.Solid },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
 };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
+	},
+};
 
 test("bamboo -> solid-styled: migrates concrete bamboo syntax to solid-styled", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -171,6 +185,42 @@ test("bamboo -> solid-styled: lowers concrete theme and project context variants
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("bamboo -> solid-styled: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { styled } from "solid-styled-components";
+
+		export const card = styled.div({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

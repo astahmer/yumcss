@@ -25,6 +25,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const tokenSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "$colors.brand", padding: "1rem" });';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -53,7 +55,57 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves an acti
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: "red", padding: "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
+		const cx = createCx();
+
+		export const card = (props) => <div {...props} className={cx(style({ color: "red", padding: "1rem" }), props.className)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("vanilla-extract -> styled-components -> vanilla-extract: retains edge semantics without silent loss", () => {
@@ -63,7 +115,55 @@ test("vanilla-extract -> styled-components -> vanilla-extract: retains edge sema
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: theme.foreground, padding: "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		export const card = // pandwind:migrate-skip (route: styled-components -> vanilla-extract | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target vanilla-extract",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("vanilla-extract -> styled-components -> vanilla-extract: preserves concrete theme and project context variants", () => {
@@ -104,5 +204,176 @@ test("vanilla-extract -> styled-components -> vanilla-extract: preserves concret
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
+		const cx = createCx();
+
+		export const card = (props) => <div {...props} className={cx(style({ color: "#f97316", padding: "1rem" }), props.className)} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
+		const cx = createCx();
+
+		export const card = (props) => <div {...props} className={cx(style({ color: "#2563eb", padding: "1rem" }), props.className)} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		}
+	`);
+});
+
+test("vanilla-extract -> styled-components -> vanilla-extract: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.css.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: "$colors.brand", padding: "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
+		const cx = createCx();
+
+		export const card = (props) => <div {...props} className={cx(style({ color: "$colors.brand", padding: "1rem" }), props.className)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });

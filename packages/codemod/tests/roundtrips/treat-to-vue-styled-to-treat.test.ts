@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const tokenSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "$colors.brand", padding: "1rem" });';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -51,7 +53,58 @@ test("treat -> vue-styled -> treat: preserves an actionable concrete round trip"
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { style } from "@treatjs/treat";
+		import styled from "vue-styled-components";
+		export const card = styled.div({ "color": "red", "padding": "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { style } from "@/styles.treat";
+		import { defineComponent, h } from "vue";
+		</script>
+		import { style } from "@treatjs/treat";
+
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "color": "red", "padding": "1rem" }), attrs.class] }, slots.default?.()));",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("treat -> vue-styled -> treat: retains edge semantics without silent loss", () => {
@@ -65,7 +118,47 @@ test("treat -> vue-styled -> treat: retains edge semantics without silent loss",
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("treat -> vue-styled -> treat: preserves concrete theme and project context variants", () => {
@@ -106,5 +199,157 @@ test("treat -> vue-styled -> treat: preserves concrete theme and project context
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { style } from "@treatjs/treat";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("treat -> vue-styled -> treat: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.treat.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.vue",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { style } from "@treatjs/treat";
+		import styled from "vue-styled-components";
+		export const card = styled.div({ "color": "$colors.brand", "padding": "1rem" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { style } from "@/styles.treat";
+		import { defineComponent, h } from "vue";
+		</script>
+		import { style } from "@treatjs/treat";
+
+		export const card = defineComponent((props, { attrs, slots }) => () => h("div", { ...attrs, ...props, class: [style({ "color": "$colors.brand", "padding": "1rem" }), attrs.class] }, slots.default?.()));",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });

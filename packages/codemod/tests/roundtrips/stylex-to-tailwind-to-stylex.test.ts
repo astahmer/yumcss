@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const tokenSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -293,6 +295,74 @@ test("stylex -> tailwind -> stylex: preserves concrete theme and project context
 		        },
 		      ],
 		    },
+		  },
+		}
+	`);
+});
+
+test("stylex -> tailwind -> stylex: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "
+		export const styles = { "card": "[color:$colors.brand] [padding:1rem]" };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+
+		export const styles = stylex.create({ "card": { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const tokenSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "$colors.brand", padding: "1rem" });';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -172,6 +174,41 @@ test("treat -> solid-styled: lowers concrete theme and project context variants"
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("treat -> solid-styled: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.treat.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { style } from "@treatjs/treat";
+		import { styled } from "solid-styled-components";
+		export const card = styled.div({ "color": "$colors.brand", "padding": "1rem" });",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

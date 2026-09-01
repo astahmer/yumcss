@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;';
+const tokenSource =
+	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [
@@ -315,6 +317,79 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		  },
+		}
+	`);
+});
+
+test("mui -> jss -> mui: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		import jss from "jss";
+		export const App = () => <Box  className={jss.createStyleSheet({ style: { color: "var(--mui-primary-main)", padding: "16px" } }).attach().classes.style}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		import jss from "jss";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { color: "var(--mui-primary-main)", padding: "16px" } }).attach().classes.style}/>;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

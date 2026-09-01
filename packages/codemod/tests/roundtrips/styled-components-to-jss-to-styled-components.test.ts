@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import styled from "styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const tokenSource =
+	'import styled from "styled-components";\nexport const Card = styled.div({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <Card />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -301,6 +303,76 @@ test("styled-components -> jss -> styled-components: preserves concrete theme an
 		        },
 		      ],
 		    },
+		  },
+		}
+	`);
+});
+
+test("styled-components -> jss -> styled-components: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import jss from "jss";
+
+		export const Card = jss.createStyleSheet({ style: { color: "$colors.brand", padding: "1rem" } }).attach().classes.style;
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+
+		export const Card = { "style": styled.div({ color: "$colors.brand", padding: "1rem" }) }.attach().classes.style;
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

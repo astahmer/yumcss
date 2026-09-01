@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const tokenSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -176,6 +178,42 @@ test("stylex -> next-yak: lowers concrete theme and project context variants", (
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("stylex -> next-yak: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

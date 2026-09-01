@@ -25,6 +25,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg={theme.colors.brand} p="4" />;';
+const tokenSource =
+	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="$colors.brand" p="4" />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -67,7 +69,55 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves an actionable concr
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		styled.div({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("chakra-ui -> styled-components -> chakra-ui: retains edge semantics without silent loss", () => {
@@ -77,7 +127,57 @@ test("chakra-ui -> styled-components -> chakra-ui: retains edge semantics withou
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		styled.div({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and project context variants", () => {
@@ -118,5 +218,180 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: named-map, custom-property, residual)
+		styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: named-map, custom-property, residual)
+		styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("chakra-ui -> styled-components -> chakra-ui: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => styled.div({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import styled from "styled-components";
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: static, named-map, residual)
+		styled.div({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" });",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

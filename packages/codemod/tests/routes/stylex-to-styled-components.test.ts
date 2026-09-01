@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const tokenSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -87,55 +89,30 @@ test("stylex -> styled-components: carries concrete stylex dynamics or edge synt
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-  {
-    "amber": {
-      "changed": true,
-      "code": "import styled from "styled-components";
+		{
+		  "changed": true,
+		  "code": "import styled from "styled-components";
 
-  export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
-  export const App = () => <div {...stylex.props(styles.card)} />;",
-      "converted": 1,
-      "outcomes": [
-        {
-          "outcome": "host-runtime",
-          "representation": "named-map",
-        },
-      ],
-      "residuals": [],
-      "skipped": 0,
-      "validations": [
-        {
-          "differences": [],
-          "lossiness": "lossless",
-          "valid": true,
-        },
-      ],
-    },
-    "blue": {
-      "changed": true,
-      "code": "import styled from "styled-components";
-
-  export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
-  export const App = () => <div {...stylex.props(styles.card)} />;",
-      "converted": 1,
-      "outcomes": [
-        {
-          "outcome": "host-runtime",
-          "representation": "named-map",
-        },
-      ],
-      "residuals": [],
-      "skipped": 0,
-      "validations": [
-        {
-          "differences": [],
-          "lossiness": "lossless",
-          "valid": true,
-        },
-      ],
-    },
-  }
-`);
+		export const styles = { "card": styled.div({ color: theme.foreground, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "host-runtime",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("stylex -> styled-components: lowers concrete theme and project context variants", () => {
@@ -156,31 +133,91 @@ test("stylex -> styled-components: lowers concrete theme and project context var
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
 	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
-		  	{
-		  	  "changed": true,
-		  	  "code": "import styled from "styled-components";
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
 
-		  	export const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
-		  	export const App = () => <div {...stylex.props(styles.card)} />;
-		  	const unfinished = { /* unfinished stylex */",
-		  	  "converted": 1,
-		  	  "outcomes": [
-		  	    {
-		  	      "outcome": "target-native",
-		  	      "representation": "named-map",
-		  	    },
-		  	  ],
-		  	  "residuals": [],
-		  	  "skipped": 0,
-		  	  "validations": [
-		  	    {
-		  	      "differences": [],
-		  	      "lossiness": "lossless",
-		  	      "valid": true,
-		  	    },
-		  	  ],
-		  	}
-		  `);
+		export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import styled from "styled-components";
+
+		export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
+});
+
+test("stylex -> styled-components: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import styled from "styled-components";
+
+		export const styles = { "card": styled.div({ color: "$colors.brand", padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("stylex -> styled-components: preserves malformed concrete stylex input", () => {

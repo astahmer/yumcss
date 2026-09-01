@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg={theme.colors.brand} p="4" />;';
+const tokenSource =
+	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="$colors.brand" p="4" />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -63,7 +65,55 @@ test("chakra-ui -> stylex -> chakra-ui: preserves an actionable concrete round t
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" } }).style;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@chakra-ui/react";
+
+		export const App = () => { "style": css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("chakra-ui -> stylex -> chakra-ui: retains edge semantics without silent loss", () => {
@@ -73,7 +123,57 @@ test("chakra-ui -> stylex -> chakra-ui: retains edge semantics without silent lo
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" } }).style;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@chakra-ui/react";
+
+		export const App = () => { "style": css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("chakra-ui -> stylex -> chakra-ui: preserves concrete theme and project context variants", () => {
@@ -114,5 +214,146 @@ test("chakra-ui -> stylex -> chakra-ui: preserves concrete theme and project con
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		<Box bg={theme.colors.brand} p="4" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@chakra-ui/react";
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		<Box bg={theme.colors.brand} p="4" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@chakra-ui/react";
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		<Box bg={theme.colors.brand} p="4" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@chakra-ui/react";
+		export const App = () => // pandwind:migrate-skip (route: chakra-ui -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		<Box bg={theme.colors.brand} p="4" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("chakra-ui -> stylex -> chakra-ui: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" } }).style;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ style: { backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" } }).style;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;';
+const tokenSource =
+	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [
@@ -63,14 +65,60 @@ test("mui -> stylex: migrates concrete mui syntax to stylex", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("mui -> stylex: carries concrete mui dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> stylex | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "target-native",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("mui -> stylex: lowers concrete theme and project context variants", () => {
@@ -90,12 +138,118 @@ test("mui -> stylex: lowers concrete theme and project context variants", () => 
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> stylex | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.palette.primary.main",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> stylex | capability-blocked: dynamic-values: dynamic: theme.palette.primary.main | available: named-map, target-native, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.palette.primary.main",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("mui -> stylex: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { color: "var(--mui-primary-main)", padding: "16px" } }).style;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("mui -> stylex: preserves malformed concrete mui input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mui */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@mui/material";
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => stylex.create({ style: { color: "red", padding: "16px" } }).style;
+		const unfinished = { /* unfinished mui */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg={theme.colors.brand} p="4" />;';
+const tokenSource =
+	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="$colors.brand" p="4" />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -175,6 +177,41 @@ test("chakra-ui -> style9: lowers concrete theme and project context variants", 
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("chakra-ui -> style9: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(style9.create({ style: { "backgroundColor": "$colors.brand", "padding": "var(--chakra-spacing-4)" } }).style)}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

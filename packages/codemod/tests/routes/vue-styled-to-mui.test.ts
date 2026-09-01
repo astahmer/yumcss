@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -208,6 +210,44 @@ test("vue-styled -> mui: lowers concrete theme and project context variants", ()
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("vue-styled -> mui: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

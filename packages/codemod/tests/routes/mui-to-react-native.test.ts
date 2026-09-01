@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;';
+const tokenSource =
+	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [
@@ -192,6 +194,40 @@ test("mui -> react-native: lowers concrete theme and project context variants", 
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("mui -> react-native: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View   style={StyleSheet.create({ style: { "color": "var(--mui-primary-main)", "padding": 16 } }).style}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

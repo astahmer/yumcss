@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@mantine/core";\nexport const App = () => <Box c=theme.colors.brand p="md" />;';
+const tokenSource =
+	'import { Box } from "@mantine/core";\nexport const App = () => <Box c="brand.0" p="md" />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -303,6 +305,74 @@ test("mantine -> vue-styled -> mantine: preserves concrete theme and project con
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		  },
+		}
+	`);
+});
+
+test("mantine -> vue-styled -> mantine: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.vue",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import styled from "vue-styled-components";
+		export const App = () => styled.div({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import styled from "vue-styled-components";
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

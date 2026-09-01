@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg={theme.colors.brand} p="4" />;';
+const tokenSource =
+	'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="$colors.brand" p="4" />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -59,14 +61,61 @@ test("chakra-ui -> tokenami: migrates concrete chakra-ui syntax to tokenami", ()
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("chakra-ui -> tokenami: carries concrete chakra-ui dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("chakra-ui -> tokenami: lowers concrete theme and project context variants", () => {
@@ -86,12 +135,118 @@ test("chakra-ui -> tokenami: lowers concrete theme and project context variants"
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
+});
+
+test("chakra-ui -> tokenami: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" })}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("chakra-ui -> tokenami: preserves malformed concrete chakra-ui input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished chakra-ui */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { Box } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		const unfinished = { /* unfinished chakra-ui */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

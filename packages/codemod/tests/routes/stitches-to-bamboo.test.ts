@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { css } from "@stitches/react";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card()} />;';
+const tokenSource =
+	'import { css } from "@stitches/react";\nexport const card = css({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card()} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -34,6 +36,8 @@ const blueProject = {
 	files: {
 		"/virtual/pandwind-route-project/stitches.config.ts":
 			'export const config = { theme: { colors: { brand: "#2563eb" }, space: { card: "1.125rem" } } };',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
 	},
 };
 const amberProject = {
@@ -41,6 +45,8 @@ const amberProject = {
 	files: {
 		"/virtual/pandwind-route-project/stitches.config.ts":
 			'export const config = { theme: { colors: { brand: "#f97316" }, space: { card: "1.125rem" } } };',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
 	},
 };
 
@@ -182,6 +188,42 @@ test("stitches -> bamboo: lowers concrete theme and project context variants", (
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("stitches -> bamboo: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "@stitches/react";
+		export const card = // pandwind:migrate-skip (route: stitches -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "$colors.brand", padding: "1rem" });
+		export const App = () => <div className={card()} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

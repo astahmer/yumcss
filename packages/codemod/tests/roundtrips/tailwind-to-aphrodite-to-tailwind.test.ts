@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
+const tokenSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -57,7 +59,54 @@ test("tailwind -> aphrodite -> tailwind: preserves an actionable concrete round 
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const App = () => <div  className={css(StyleSheet.create({ style: { "display": "flex", "gap": "1rem", "padding": "1rem", "color": "#000" } }).style)}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+
+		export const App = () => <div  className={css({ "style": "[display:flex] [gap:1rem] [padding:1rem] [color:#000]" }.style)}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("tailwind -> aphrodite -> tailwind: retains edge semantics without silent loss", () => {
@@ -67,7 +116,56 @@ test("tailwind -> aphrodite -> tailwind: retains edge semantics without silent l
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const App = () => <div  className={css(StyleSheet.create({ style: { "display": "flex", "gap": "1rem", "padding": "1rem", "color": "#000" } }).style)}/>;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+
+		export const App = () => <div  className={css({ "style": "[display:flex] [gap:1rem] [padding:1rem] [color:#000]" }.style)}/>;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "target-native",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project context variants", () => {
@@ -108,5 +206,134 @@ test("tailwind -> aphrodite -> tailwind: preserves concrete theme and project co
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("tailwind -> aphrodite -> tailwind: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Tailwind utility requires the project engine or a custom preset",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> aphrodite | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });

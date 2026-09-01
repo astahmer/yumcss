@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 const themedSource =
 	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const tokenSource =
+	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <Card />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Solid },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -47,7 +49,57 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = // pandwind:migrate-skip (route: react-native -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "solid-styled has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("solid-styled -> react-native -> solid-styled: retains edge semantics without silent loss", () => {
@@ -57,7 +109,50 @@ test("solid-styled -> react-native -> solid-styled: retains edge semantics witho
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "react-native has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("solid-styled -> react-native -> solid-styled: preserves concrete theme and project context variants", () => {
@@ -98,5 +193,176 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = // pandwind:migrate-skip (route: react-native -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "solid-styled has no host representation for react-native",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = // pandwind:migrate-skip (route: react-native -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "solid-styled has no host representation for react-native",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("solid-styled -> react-native -> solid-styled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = StyleSheet.create({ style: { "color": "$colors.brand", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		export const Card = // pandwind:migrate-skip (route: react-native -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "$colors.brand", "padding": 16 } }).style;
+		export const App = () => <View style={Card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "solid-styled has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

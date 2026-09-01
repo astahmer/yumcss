@@ -15,6 +15,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const tokenSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -34,6 +36,8 @@ const blueProject = {
 			'export default defineConfig({ theme: { colors: { brand: "#2563eb" } } });',
 		"/virtual/pandwind-route-project/app/globals.css":
 			"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
 	},
 };
 const amberProject = {
@@ -43,6 +47,8 @@ const amberProject = {
 			'export default defineConfig({ theme: { colors: { brand: "#f97316" } } });',
 		"/virtual/pandwind-route-project/app/globals.css":
 			"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
 	},
 };
 
@@ -170,6 +176,40 @@ test("unocss -> bamboo: lowers concrete theme and project context variants", () 
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("unocss -> bamboo: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> bamboo | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		      "kind": "unknown-utility",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

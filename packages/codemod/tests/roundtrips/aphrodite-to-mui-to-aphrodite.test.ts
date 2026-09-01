@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const tokenSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -63,7 +65,47 @@ test("aphrodite -> mui -> aphrodite: preserves an actionable concrete round trip
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("aphrodite -> mui -> aphrodite: retains edge semantics without silent loss", () => {
@@ -73,7 +115,47 @@ test("aphrodite -> mui -> aphrodite: retains edge semantics without silent loss"
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.foreground, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.foreground, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("aphrodite -> mui -> aphrodite: preserves concrete theme and project context variants", () => {
@@ -114,5 +196,146 @@ test("aphrodite -> mui -> aphrodite: preserves concrete theme and project contex
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("aphrodite -> mui -> aphrodite: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: "$colors.brand", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const styles = { "card": css.class({ color: "$colors.brand", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });

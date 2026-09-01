@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -193,6 +195,48 @@ test("vue-styled -> solid-styled: lowers concrete theme and project context vari
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("vue-styled -> solid-styled: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { styled } from "solid-styled-components";
+
+		const Card = styled.div({ "color": "$colors.brand", "padding": "1rem" });
+
+		export default function App() {
+			return (
+		<Card />
+			);
+		}
+		",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

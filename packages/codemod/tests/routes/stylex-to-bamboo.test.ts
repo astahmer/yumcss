@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const tokenSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -34,6 +36,8 @@ const blueProject = {
 	files: {
 		"/virtual/pandwind-route-project/package.json":
 			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
 	},
 };
 const amberProject = {
@@ -41,6 +45,8 @@ const amberProject = {
 	files: {
 		"/virtual/pandwind-route-project/package.json":
 			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
 	},
 };
 
@@ -53,14 +59,62 @@ test("stylex -> bamboo: migrates concrete stylex syntax to bamboo", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "styled-system/css";
+
+		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("stylex -> bamboo: carries concrete stylex dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "custom-property",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target bamboo",
+		      "kind": "dynamic-custom-property",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("stylex -> bamboo: lowers concrete theme and project context variants", () => {
@@ -80,12 +134,122 @@ test("stylex -> bamboo: lowers concrete theme and project context variants", () 
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("stylex -> bamboo: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("stylex -> bamboo: preserves malformed concrete stylex input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "styled-system/css";
+
+		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;
+		const unfinished = { /* unfinished stylex */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const tokenSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -186,6 +188,43 @@ test("jss -> mui: lowers concrete theme and project context variants", () => {
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("jss -> mui: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const useStyles = { "card": css.class({ color: "$colors.brand", padding: "1rem" }) };
+		export const App = () => <div className={useStyles().card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { css } from "@emotion/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { css } from "@emotion/css";\nexport const card = css({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -36,6 +38,8 @@ const blueProject = {
 	files: {
 		"/virtual/pandwind-route-project/emotion.config.js":
 			'module.exports = { theme: { colors: { brand: "#2563eb" } } };',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
 	},
 };
 const amberProject = {
@@ -43,6 +47,8 @@ const amberProject = {
 	files: {
 		"/virtual/pandwind-route-project/emotion.config.js":
 			'module.exports = { theme: { colors: { brand: "#f97316" } } };',
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
 	},
 };
 const targetSemantic = undefined;
@@ -307,6 +313,64 @@ test("emotion -> bamboo -> emotion: preserves concrete theme and project context
 		        },
 		      ],
 		    },
+		  },
+		}
+	`);
+});
+
+test("emotion -> bamboo -> emotion: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { css } from "@emotion/css";
+		export const card = // pandwind:migrate-skip (route: emotion -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "$colors.brand", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { css } from "@emotion/css";
+		export const card = // pandwind:migrate-skip (route: emotion -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "$colors.brand", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`);

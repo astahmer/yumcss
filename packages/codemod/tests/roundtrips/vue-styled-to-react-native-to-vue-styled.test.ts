@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -47,7 +49,69 @@ test("vue-styled -> react-native -> vue-styled: preserves an actionable concrete
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = // pandwind:migrate-skip (route: react-native -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "vue-styled has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> react-native -> vue-styled: retains edge semantics without silent loss", () => {
@@ -57,7 +121,54 @@ test("vue-styled -> react-native -> vue-styled: retains edge semantics without s
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		</script>
+		<template><div className={Card.class} style={Card.style} /></template>",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "react-native has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		</script>
+		<template><div className={Card.class} style={Card.style} /></template>",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> react-native -> vue-styled: preserves concrete theme and project context variants", () => {
@@ -98,5 +209,212 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = // pandwind:migrate-skip (route: react-native -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "#f97316", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "vue-styled has no host representation for react-native",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = // pandwind:migrate-skip (route: react-native -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "#2563eb", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "vue-styled has no host representation for react-native",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("vue-styled -> react-native -> vue-styled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = StyleSheet.create({ style: { "color": "$colors.brand", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+
+		const Card = // pandwind:migrate-skip (route: react-native -> vue-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "color": "$colors.brand", "padding": 16 } }).style;
+
+		export default function App() {
+			return (
+		<View style={Card} />
+			);
+		}
+		",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "vue-styled has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

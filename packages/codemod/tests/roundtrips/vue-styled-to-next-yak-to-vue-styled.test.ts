@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -47,7 +49,63 @@ test("vue-styled -> next-yak -> vue-styled: preserves an actionable concrete rou
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { css } from "next-yak";
+
+
+		const Card = css\`color: red; padding: 1rem;\`;
+		</script>
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import styled from "vue-styled-components";
+		<script setup>
+
+
+
+		const Card = styled.div({ "color": "red", "padding": "1rem" });
+		</script>
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> next-yak -> vue-styled: retains edge semantics without silent loss", () => {
@@ -57,7 +115,68 @@ test("vue-styled -> next-yak -> vue-styled: retains edge semantics without silen
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = styled.div\`color: \${theme.foreground}; padding: 1rem;\`;
+		</script>
+		<template><Card /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = // pandwind:migrate-skip (route: next-yak -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		styled.div\`color: \${theme.foreground}; padding: 1rem;\`;
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.foreground",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "vue-styled has no host representation for vue",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project context variants", () => {
@@ -98,5 +217,190 @@ test("vue-styled -> next-yak -> vue-styled: preserves concrete theme and project
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = styled.div\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		</script>
+		<template><Card /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = // pandwind:migrate-skip (route: next-yak -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		styled.div\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "vue-styled has no host representation for vue",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = styled.div\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		</script>
+		<template><Card /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { styled } from "next-yak";
+
+
+		const Card = // pandwind:migrate-skip (route: next-yak -> vue-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		styled.div\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "vue-styled has no host representation for vue",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("vue-styled -> next-yak -> vue-styled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });

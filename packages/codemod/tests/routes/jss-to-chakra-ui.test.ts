@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const tokenSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -55,14 +57,62 @@ test("jss -> chakra-ui: migrates concrete jss syntax to chakra-ui", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "@chakra-ui/react";
+
+		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={useStyles().card} />;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("jss -> chakra-ui: carries concrete jss dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "custom-property",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		      "kind": "dynamic-custom-property",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("jss -> chakra-ui: lowers concrete theme and project context variants", () => {
@@ -82,12 +132,122 @@ test("jss -> chakra-ui: lowers concrete theme and project context variants", () 
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("jss -> chakra-ui: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("jss -> chakra-ui: preserves malformed concrete jss input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "@chakra-ui/react";
+
+		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={useStyles().card} />;
+		const unfinished = { /* unfinished jss */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "target-native",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

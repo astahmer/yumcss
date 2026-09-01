@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 const themedSource =
 	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const tokenSource =
+	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <Card />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Solid },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -333,6 +335,84 @@ test("solid-styled -> vue-styled -> solid-styled: preserves concrete theme and p
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		  },
+		}
+	`);
+});
+
+test("solid-styled -> vue-styled -> solid-styled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.vue",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+
+
+		export const Card = styled.div({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <Card />;
+		</script>
+		",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+
+
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> solid-styled | lowering-residual: host-framework | available: static, named-map, residual)
+		styled.div({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <div :class="Card" />;
+		</script>
+		",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "solid-styled has no host representation for vue",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

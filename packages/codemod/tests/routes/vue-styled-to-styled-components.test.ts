@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -45,14 +47,68 @@ test("vue-styled -> styled-components: migrates concrete vue-styled syntax to st
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: "red", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("vue-styled -> styled-components: carries concrete vue-styled dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: theme.foreground, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("vue-styled -> styled-components: lowers concrete theme and project context variants", () => {
@@ -72,12 +128,134 @@ test("vue-styled -> styled-components: lowers concrete theme and project context
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
+});
+
+test("vue-styled -> styled-components: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("vue-styled -> styled-components: preserves malformed concrete vue-styled input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "<script setup>
+		import styled from "styled-components";
+
+
+		const Card = styled.div({ color: "red", padding: "1rem" });
+		</script>
+		<template><Card /></template>
+		const unfinished = { /* unfinished vue-styled */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

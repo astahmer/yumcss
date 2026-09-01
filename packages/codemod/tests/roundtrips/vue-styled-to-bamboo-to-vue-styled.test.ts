@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 const themedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const tokenSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "$colors.brand", padding: "1rem" });\n</script>\n<template><Card /></template>';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.Vue },
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
@@ -33,8 +35,20 @@ const blueTargetSemantic = {
 const amberTargetSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
 };
-const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
-const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#2563eb" } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/bamboo.config.ts":
+			'export default { theme: { tokens: { colors: { brand: { value: "#f97316" } } } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("vue-styled -> bamboo -> vue-styled: preserves an actionable concrete round trip", () => {
@@ -47,7 +61,63 @@ test("vue-styled -> bamboo -> vue-styled: preserves an actionable concrete round
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { css } from "styled-system/css";
+
+
+		const Card = css({ color: "red", padding: "1rem" });
+		</script>
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import styled from "vue-styled-components";
+		<script setup>
+
+
+
+		const Card = styled.div({ "color": "red", "padding": "1rem" });
+		</script>
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> bamboo -> vue-styled: retains edge semantics without silent loss", () => {
@@ -57,7 +127,49 @@ test("vue-styled -> bamboo -> vue-styled: retains edge semantics without silent 
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target bamboo",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.foreground, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("vue-styled -> bamboo -> vue-styled: preserves concrete theme and project context variants", () => {
@@ -98,5 +210,152 @@ test("vue-styled -> bamboo -> vue-styled: preserves concrete theme and project c
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("vue-styled -> bamboo -> vue-styled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "<script setup>
+		import styled from "vue-styled-components";
+		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		styled.div({ color: "$colors.brand", padding: "1rem" });
+		</script>
+		<template><Card /></template>",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });

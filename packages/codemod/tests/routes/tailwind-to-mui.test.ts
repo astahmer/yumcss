@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
+const tokenSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -181,6 +183,41 @@ test("tailwind -> mui: lowers concrete theme and project context variants", () =
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("tailwind -> mui: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> mui | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "Tailwind utility requires the project engine or a custom preset",
+		      "kind": "unknown-utility",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

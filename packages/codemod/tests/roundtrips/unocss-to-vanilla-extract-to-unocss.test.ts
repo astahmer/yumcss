@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const tokenSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -59,7 +61,52 @@ test("unocss -> vanilla-extract -> unocss: preserves an actionable concrete roun
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { style } from "@vanilla-extract/css";
+		export const App = () => <div  className={style({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		export const App = () => <div  className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("unocss -> vanilla-extract -> unocss: retains edge semantics without silent loss", () => {
@@ -69,7 +116,41 @@ test("unocss -> vanilla-extract -> unocss: retains edge semantics without silent
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex unknown-project-utility" />",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "// pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex unknown-project-utility" />",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });
 
 test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project context variants", () => {
@@ -110,5 +191,128 @@ test("unocss -> vanilla-extract -> unocss: preserves concrete theme and project 
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("unocss -> vanilla-extract -> unocss: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.css.ts",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> vanilla-extract | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
+		  },
+		}
+	`);
 });

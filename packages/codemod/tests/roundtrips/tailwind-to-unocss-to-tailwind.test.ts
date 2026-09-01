@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
+const tokenSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -65,7 +67,52 @@ test("tailwind -> unocss -> tailwind: preserves an actionable concrete round tri
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "
+		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "
+		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("tailwind -> unocss -> tailwind: retains edge semantics without silent loss", () => {
@@ -75,7 +122,54 @@ test("tailwind -> unocss -> tailwind: retains edge semantics without silent loss
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "
+		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "
+		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;
+		const unresolvedStyle = runtimeTheme.foreground;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("tailwind -> unocss -> tailwind: preserves concrete theme and project context variants", () => {
@@ -116,5 +210,170 @@ test("tailwind -> unocss -> tailwind: preserves concrete theme and project conte
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		// pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Tailwind utility requires the project engine or a custom preset",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		// pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		          "kind": "unknown-utility",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		}
+	`);
+});
+
+test("tailwind -> unocss -> tailwind: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "Tailwind utility requires the project engine or a custom preset",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import "tailwindcss";
+		export const App = () => // pandwind:migrate-skip (route: tailwind -> unocss | parse-residual: unknown-utility | available: named-map, residual)
+		// pandwind:migrate-skip (route: unocss -> tailwind | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex gap-4 p-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
 });

@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { css } from "@compiled/react";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const tokenSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: "$colors.brand", padding: "1rem" });\nexport const App = () => <div className={card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -63,7 +65,57 @@ test("compiled -> mui -> compiled: preserves an actionable concrete round trip",
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@compiled/react";
+
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div"  className={css({ "sx": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("compiled -> mui -> compiled: retains edge semantics without silent loss", () => {
@@ -73,7 +125,62 @@ test("compiled -> mui -> compiled: retains edge semantics without silent loss", 
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <Box component="div"  className={css({ "sx": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });
 
 test("compiled -> mui -> compiled: preserves concrete theme and project context variants", () => {
@@ -114,5 +221,186 @@ test("compiled -> mui -> compiled: preserves concrete theme and project context 
 	expect({
 		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
 		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
-	}).toMatchInlineSnapshot();
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <Box component="div"  className={css({ "sx": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { css } from "@compiled/react";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <Box component="div"  className={css({ "sx": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		}
+	`);
+});
+
+test("compiled -> mui -> compiled: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		import { css } from "@compiled/react";
+
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <Box component="div"  className={css({ "sx": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		}
+	`);
 });

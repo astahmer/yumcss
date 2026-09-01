@@ -15,6 +15,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const tokenSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -55,14 +57,58 @@ test("unocss -> linaria: migrates concrete unocss syntax to linaria", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "@linaria/core";
+		export const App = () => <div  className={css\`display: flex; align-items: center; gap: 1rem;\`}/>;",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });
 
 test("unocss -> linaria: carries concrete unocss dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "// pandwind:migrate-skip (route: unocss -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex unknown-project-utility" />",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		      "kind": "unknown-utility",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("unocss -> linaria: lowers concrete theme and project context variants", () => {
@@ -82,12 +128,114 @@ test("unocss -> linaria: lowers concrete theme and project context variants", ()
 	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(blue);
 	expectExplicitResidualEvidence(amber);
-	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("unocss -> linaria: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> linaria | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "residual",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		      "kind": "unknown-utility",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
+		}
+	`);
 });
 
 test("unocss -> linaria: preserves malformed concrete unocss input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished unocss */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot();
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { css } from "@linaria/core";
+		export const App = () => <div  className={css\`display: flex; align-items: center; gap: 1rem;\`}/>;
+		const unfinished = { /* unfinished unocss */",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "static",
+		      "representation": "static",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
+		}
+	`);
 });

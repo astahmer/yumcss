@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const tokenSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -176,6 +178,42 @@ test("jss -> tokenami: lowers concrete theme and project context variants", () =
 		    "skipped": 1,
 		    "validations": [],
 		  },
+		}
+	`);
+});
+
+test("jss -> tokenami: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		  "converted": 0,
+		  "outcomes": [
+		    {
+		      "outcome": "residual",
+		      "representation": "named-map",
+		    },
+		  ],
+		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });

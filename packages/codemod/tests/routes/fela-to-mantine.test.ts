@@ -17,6 +17,8 @@ const malformedSource =
 const sourceSemantic = undefined;
 const themedSource =
 	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.colors.brand, padding: "1rem" }));';
+const tokenSource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));';
 const blueSemantic = {
 	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
 };
@@ -185,6 +187,43 @@ test("fela -> mantine: lowers concrete theme and project context variants", () =
 		      },
 		    ],
 		  },
+		}
+	`);
+});
+
+test("fela -> mantine: resolves concrete token references with project context", () => {
+	const result = route.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(result);
+	expect(routeEvidence(result)).toMatchInlineSnapshot(`
+		{
+		  "changed": true,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		const renderer = createRenderer();
+		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });",
+		  "converted": 1,
+		  "outcomes": [
+		    {
+		      "outcome": "portable-artifact",
+		      "representation": "portable-artifact",
+		    },
+		  ],
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
+		    {
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
+		    },
+		  ],
 		}
 	`);
 });

@@ -19,6 +19,8 @@ const malformedSource =
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
 const themedSource =
 	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;';
+const tokenSource =
+	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "primary.main", p: 2 }} />;';
 const blueSemantic = {
 	source: { framework: BuiltinHostFramework.React },
 	themes: [
@@ -295,6 +297,71 @@ test("mui -> mantine -> mui: preserves concrete theme and project context varian
 		        },
 		      ],
 		    },
+		  },
+		}
+	`);
+});
+
+test("mui -> mantine -> mui: resolves token references across both concrete legs", () => {
+	const first = forward.run({
+		source: tokenSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const second = reverse.run({
+		source: first.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(first, second);
+	expectExplicitResidualEvidence(first);
+	expectExplicitResidualEvidence(second);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
+		{
+		  "forward": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box  style={{ color: "var(--mui-primary-main)", padding: "16px" }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => <Box  sx={{ color: "var(--mui-primary-main)", padding: "16px" }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
