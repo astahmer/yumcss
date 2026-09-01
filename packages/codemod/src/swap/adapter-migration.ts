@@ -645,6 +645,7 @@ function runAdapterMigrationInternal(
 					});
 		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
 			program,
+			representation: lowering.representation,
 			hasHostContext,
 			...(hostFramework === undefined ? {} : { framework: hostFramework }),
 			...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
@@ -1090,6 +1091,7 @@ function runAdapterMigrationInternal(
 			config: targetConfig,
 			mode,
 			capability: effectiveReport,
+			loweringResiduals: carrierResiduals,
 			index,
 			document,
 			meta: options.meta,

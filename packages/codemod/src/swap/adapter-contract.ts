@@ -97,6 +97,8 @@ export interface AdapterEmitContext {
 	readonly config: AdapterProjectConfig;
 	readonly mode: AdapterCapabilityMode;
 	readonly capability?: AdapterCapabilityReport;
+	/** Residuals produced by generic lowering before target emission. */
+	readonly loweringResiduals?: readonly StyleProgramResidual[];
 	readonly index: number;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view for target emitters. */
@@ -277,6 +279,8 @@ export interface AdapterTargetMigrationPolicy {
 	 */
 	readonly resolveRepresentation?: (context: {
 		readonly program: StyleProgram;
+		/** Representation selected by generic lowering before target negotiation. */
+		readonly representation?: StyleRepresentationKind;
 		readonly hasHostContext: boolean;
 		readonly framework?: string;
 		/** Source host dialect before a target-owned host conversion. */

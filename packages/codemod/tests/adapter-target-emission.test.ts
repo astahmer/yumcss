@@ -401,7 +401,8 @@ describe("target adapter emission contract", () => {
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
 		expect(result.loweringPlans[0]?.availableRepresentations).toContain("portable-artifact");
-		expect(result.code).toContain("css.class({ color: theme.foreground })");
+		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime"');
+		expect(result.code).toContain("css.vars({ color: theme.foreground })");
 	});
 
 	test.each([

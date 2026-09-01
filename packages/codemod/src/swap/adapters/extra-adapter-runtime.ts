@@ -29,8 +29,11 @@ import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
 import {
 	projectDynamicClassMigration,
+	projectPortableDynamicMigration,
 	projectStaticSubjectMigration,
 } from "../adapter-projections.ts";
+import { StyleRepresentationKind } from "../identifiers.ts";
+import { PortableStyleArtifact } from "../portable-artifact.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -308,10 +311,12 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		),
 		dependencies: options.packages,
 		...(options.lowerings === undefined ? {} : { lowerings: options.lowerings }),
-		migration: projectDynamicClassMigration(
-			options.id,
-			projectStaticSubjectMigration(
-				targetPolicy === undefined ? options.migration : { ...options.migration, targetPolicy },
+		migration: projectPortableDynamicMigration(
+			projectDynamicClassMigration(
+				options.id,
+				projectStaticSubjectMigration(
+					targetPolicy === undefined ? options.migration : { ...options.migration, targetPolicy },
+				),
 			),
 		),
 		detect: (context) => {
@@ -338,6 +343,31 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			};
 		},
 		emit: (program, context) => {
+			if (
+				context?.host?.representationKind === StyleRepresentationKind.PortableArtifact &&
+				!program.rules.some((rule) => rule.name !== undefined)
+			) {
+				const portableProgram = PortableStyleArtifact.restoreDynamicValues(
+					program,
+					context.loweringResiduals ?? [],
+				);
+				const dynamic = PortableStyleArtifact.containsDynamicValues(portableProgram);
+				return {
+					text: dynamic
+						? `css.vars(${objectText(portableProgram)})`
+						: `css.class(${objectText(portableProgram)})`,
+					imports: dynamic
+						? [
+								'import { createRuntimeCss } from "pandwind/css/runtime";',
+								'import { pandwindPreset } from "pandwind/preset";',
+								"const css = createRuntimeCss(pandwindPreset);",
+							]
+						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					semantic: portableProgram,
+					residuals: [],
+					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+				};
+			}
 			const targetEmission = options.targetEmit?.(program, context, objectText);
 			if (targetEmission !== undefined) return targetEmission;
 			const namedRules = program.rules.filter(

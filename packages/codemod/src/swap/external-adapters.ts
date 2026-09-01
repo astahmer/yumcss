@@ -34,12 +34,14 @@ import {
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
-import { StyleNamedRuleStrategy } from "./identifiers.ts";
+import { StyleNamedRuleStrategy, StyleRepresentationKind } from "./identifiers.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
 import {
 	projectDynamicClassMigration,
+	projectPortableDynamicMigration,
 	projectStaticSubjectMigration,
 } from "./adapter-projections.ts";
+import { PortableStyleArtifact } from "./portable-artifact.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -1066,9 +1068,8 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 						"named-rules": "exact" as const,
 					},
 				};
-	const migration = projectDynamicClassMigration(
-		spec.id,
-		projectStaticSubjectMigration(spec.migration),
+	const migration = projectPortableDynamicMigration(
+		projectDynamicClassMigration(spec.id, projectStaticSubjectMigration(spec.migration)),
 	);
 	const capabilitiesWithRepresentations =
 		migration?.targetPolicy?.dynamicClassCarrier === true
@@ -1106,6 +1107,31 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				templateCss,
 			};
 			const render = (value: StyleProgram) => spec.emit(value, renderers, context);
+			if (
+				context.host?.representationKind === StyleRepresentationKind.PortableArtifact &&
+				!program.rules.some((rule) => rule.name !== undefined)
+			) {
+				const portableProgram = PortableStyleArtifact.restoreDynamicValues(
+					program,
+					context.loweringResiduals ?? [],
+				);
+				const dynamic = PortableStyleArtifact.containsDynamicValues(portableProgram);
+				return {
+					text: dynamic
+						? `css.vars(${programObject(portableProgram)})`
+						: `css.class(${programObject(portableProgram)})`,
+					imports: dynamic
+						? [
+								'import { createRuntimeCss } from "pandwind/css/runtime";',
+								'import { pandwindPreset } from "pandwind/preset";',
+								"const css = createRuntimeCss(pandwindPreset);",
+							]
+						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					semantic: portableProgram,
+					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+					residuals: [],
+				};
+			}
 			const namedRules = program.rules.filter(
 				(rule) => rule.name !== undefined && rule.kind === "style",
 			);

@@ -8,6 +8,7 @@ import { BuiltinHostFramework } from "./host-adapters.ts";
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
 import { getHostComponentRewriter } from "./host-component-rewriter.ts";
 import { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
+import { PortableStyleArtifact } from "./portable-artifact.ts";
 
 /**
  * Preserve a static styled intrinsic on targets whose normal carrier is a
@@ -140,4 +141,73 @@ export function projectDynamicClassMigration(
 		},
 	};
 	return { ...migration, targetPolicy: composed };
+}
+
+function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgram): boolean {
+	return program.rules.some(function containsDynamic(rule): boolean {
+		return (
+			rule.declarations.some(
+				(declaration) =>
+					declaration.value.kind === "dynamic" ||
+					(declaration.value.kind === "literal" &&
+						typeof declaration.value.value === "string" &&
+						declaration.value.value.startsWith("var(--pandwind-dynamic-")),
+			) || rule.children.some(containsDynamic)
+		);
+	});
+}
+
+/**
+ * Give every target a last-resort carrier for hostless dynamic values. Native
+ * and target-runtime representations are selected first; this only preserves
+ * the authored expression in Pandwind's portable class runtime when the
+ * target has no equivalent carrier and no host rewrite is required.
+ */
+export function projectPortableDynamicMigration(
+	migration: AdapterMigrationHooks | undefined,
+): AdapterMigrationHooks {
+	const policy = migration?.targetPolicy;
+	const resolveRepresentation = policy?.resolveRepresentation;
+	const capabilitiesForRepresentation = policy?.capabilitiesForRepresentation;
+	const preservesResidualKinds = policy?.preservesResidualKindsForRepresentation;
+	return {
+		...migration,
+		targetPolicy: {
+			...policy,
+			resolveRepresentation: (context) => {
+				const selected = resolveRepresentation?.(context);
+				if (selected !== undefined) return selected;
+				if (
+					(context.representation !== StyleRepresentationKind.Residual &&
+						context.representation !== StyleRepresentationKind.CustomProperty) ||
+					context.hasHostContext ||
+					context.program.source?.subject !== undefined ||
+					context.program.rules.some((rule) => rule.name !== undefined) ||
+					!hasPortableDynamicValue(context.program) ||
+					context.program.residuals.length > 0
+				)
+					return undefined;
+				return StyleRepresentationKind.PortableArtifact;
+			},
+			capabilitiesForRepresentation: (context) => {
+				const capabilities = capabilitiesForRepresentation?.(context) ?? [];
+				return context.representation === StyleRepresentationKind.PortableArtifact
+					? [
+							...new Set<AdapterCapability>([
+								...capabilities,
+								"dynamic-values",
+								"theme-context",
+								"runtime-context",
+							]),
+						]
+					: capabilities;
+			},
+			preservesResidualKindsForRepresentation: (context) => {
+				const residuals = preservesResidualKinds?.(context) ?? [];
+				return context.representation === StyleRepresentationKind.PortableArtifact
+					? [...new Set([...residuals, ...PortableStyleArtifact.preservedResidualKinds])]
+					: residuals;
+			},
+		},
+	};
 }
