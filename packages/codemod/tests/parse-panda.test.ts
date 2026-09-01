@@ -19,8 +19,8 @@ import {
 	parseObjectLiteral,
 	parsePandaCalls,
 	type PandaRecipeIR,
-} from "../src/swap/adapters/panda/index.ts";
-import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/index.ts";
+} from "../src/swap/adapters/panda/parse.ts";
+import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 

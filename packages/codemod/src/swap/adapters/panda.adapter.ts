@@ -14,7 +14,7 @@ import {
 import { TokenCatalog } from "../tokens.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import type { PandaTheme } from "./panda/index.ts";
+import type { PandaTheme } from "./panda/theme.ts";
 
 /**
  * Panda's generated `styled-system/css` object dialect is a normal pivot

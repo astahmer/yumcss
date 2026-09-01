@@ -3,13 +3,7 @@
  * Panda's parser, project model, staged migration, and module emitters stay
  * owned by this adapter family.
  */
-export {
-	runPandaMigration,
-	inferCommonRoot,
-	scanFactoryElements,
-	factoryEdits,
-	stripSpreadElements,
-} from "./panda-migrate.ts";
+export { runPandaMigration } from "./panda-migrate.ts";
 export type { PandaMigrateOptions, PandaMigrateReport } from "./panda-migrate.ts";
 export {
 	PANDA_MIGRATION_PIPELINE,
@@ -43,17 +37,3 @@ export {
 	rewritePandaSource,
 	validatePandaSource,
 } from "./migration-stages.ts";
-export { expandBuiltinPattern } from "./patterns.ts";
-export { detectAlias } from "./project.ts";
-export { loadPandaTheme } from "./theme.ts";
-export type { PandaTheme } from "./theme.ts";
-export {
-	PANDA_ALIASES,
-	parsePandaCalls,
-	pandaRecipeToIr,
-	pandaStyleToIr,
-	normalizePandaStyleObject,
-	parseObjectLiteral,
-} from "./parse.ts";
-export type { PandaCall, PandaRecipeIR } from "./parse.ts";
-export { foldRecipeCall, renderJsxIndex, renderPatternModule } from "./modules.ts";

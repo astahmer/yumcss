@@ -14,15 +14,15 @@ import {
 	scanFactoryElements,
 	factoryEdits,
 	stripSpreadElements,
-} from "../src/swap/adapters/panda/index.ts";
+} from "../src/swap/adapters/panda/panda-migrate.ts";
 import {
 	foldRecipeCall,
 	renderJsxIndex,
 	renderPatternModule,
-} from "../src/swap/adapters/panda/index.ts";
-import { expandBuiltinPattern } from "../src/swap/adapters/panda/index.ts";
-import { detectAlias } from "../src/swap/adapters/panda/index.ts";
-import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/index.ts";
+} from "../src/swap/adapters/panda/modules.ts";
+import { expandBuiltinPattern } from "../src/swap/adapters/panda/patterns.ts";
+import { detectAlias } from "../src/swap/adapters/panda/project.ts";
+import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/parse.ts";
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { parseSwapArgs } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";

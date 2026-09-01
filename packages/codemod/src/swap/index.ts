@@ -54,12 +54,8 @@ export type SwapMissResolver = (
 
 export { createEngineMissResolver } from "./engine.ts";
 export { runPandaMigration } from "./adapters/panda/index.ts";
-export type {
-	PandaMigrateOptions,
-	PandaMigrateReport,
-	PandaCall,
-	PandaRecipeIR,
-} from "./adapters/panda/index.ts";
+export type { PandaMigrateOptions, PandaMigrateReport } from "./adapters/panda/index.ts";
+export type { PandaCall, PandaRecipeIR } from "./adapters/panda/parse.ts";
 export {
 	PANDA_MIGRATION_PIPELINE,
 	PANDA_MIGRATION_PIPELINE_SCHEMA,
@@ -92,7 +88,6 @@ export {
 	rewritePandaSource,
 	validatePandaSource,
 } from "./adapters/panda/index.ts";
-export { inferCommonRoot } from "./adapters/panda/index.ts";
 export type { TwMissResolver } from "./engine.ts";
 export {
 	STYLE_PROGRAM_SCHEMA,
