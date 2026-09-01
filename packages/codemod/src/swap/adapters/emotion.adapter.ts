@@ -7,6 +7,7 @@ import type {
 	AdapterDetectionResult,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
+import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import { CodemodAdapterId } from "../identifiers.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
@@ -106,8 +107,39 @@ export default defineCodemodAdapter({
 			form: "jsx-style",
 			styleProps: ["css"],
 		},
-		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
-		{ name: "css-template", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
+		{
+			name: "css",
+			regex: /\bcss\s*\(\s*\{/g,
+			semanticBindings: [
+				{ source: "@emotion/css", imported: "css" },
+				{ source: "@emotion/react", imported: "css" },
+			],
+			regexForBinding: (binding: SourceBinding) =>
+				new RegExp(
+					`\\b${(binding.kind === SourceBindingKind.Namespace
+						? `${binding.localName}.css`
+						: binding.localName
+					).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\\(\\s*\\{`,
+					"g",
+				),
+		},
+		{
+			name: "css-template",
+			regex: /\bcss\s*`(?:\\.|[^`])*`/g,
+			form: "template",
+			semanticBindings: [
+				{ source: "@emotion/css", imported: "css" },
+				{ source: "@emotion/react", imported: "css" },
+			],
+			regexForBinding: (binding: SourceBinding) =>
+				new RegExp(
+					`\\b${(binding.kind === SourceBindingKind.Namespace
+						? `${binding.localName}.css`
+						: binding.localName
+					).replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\s*\``,
+					"g",
+				),
+		},
 		{
 			name: "styled",
 			kind: "styled",

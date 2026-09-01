@@ -7,7 +7,12 @@ import {
 } from "./semantic-ir.ts";
 import { applyEdits } from "../migrate.ts";
 import { ensureImport } from "../shared.ts";
-import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
+import {
+	SOURCE_SCANNER_SERVICE,
+	SourceBindings,
+	type SourceBindingIndex,
+	type SourceScanResult,
+} from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
 import {
 	inspectAdapterCapabilities,
@@ -455,6 +460,13 @@ function runAdapterMigrationInternal(
 		source,
 		root: options.root,
 	});
+	let bindings: SourceBindingIndex | undefined;
+	try {
+		bindings = SourceBindings.fromDocument(document.document);
+	} catch {
+		// Snippet-like inputs can be scanned without a complete module AST. The
+		// adapter remains conservative and uses its bounded fallback matcher.
+	}
 	const parsedResult = sourceAdapter.parse(source, {
 		file: options.file,
 		source,
@@ -463,6 +475,7 @@ function runAdapterMigrationInternal(
 		readFile,
 		meta: options.meta,
 		document,
+		...(bindings === undefined ? {} : { bindings }),
 		semantic: options.semantic,
 	});
 	// Every frontend crosses the same compiler-core boundary before lowering.

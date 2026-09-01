@@ -535,6 +535,14 @@ export const SOURCE_SCANNER_SERVICE: SourceScannerService = {
 		}),
 };
 
+export {
+	SourceBindings,
+	SourceBindingKind,
+	type SourceBinding,
+	type SourceBindingIndex,
+	type SourceReexport,
+} from "./source-bindings.ts";
+
 /**
  * Validate scanner substitutions at the language boundary. Consumers depend
  * only on `SourceScannerRegistry`; a custom language adapter can therefore

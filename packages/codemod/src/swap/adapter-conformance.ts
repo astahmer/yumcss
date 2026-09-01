@@ -1,4 +1,5 @@
 import type { AdapterParseContext, StyleAdapter } from "./adapter-contract.ts";
+import { SourceBindings } from "pandwind/source";
 import {
 	createBidirectionalAdapterMatrix,
 	type AdapterMatrixFixture,
@@ -121,11 +122,18 @@ function directEvidence(
 					if (!detectedFixture)
 						failures.push(failure(adapter.id, "detection", "happy fixture was not detected"));
 				}
+				let bindings: ReturnType<typeof SourceBindings.fromDocument> | undefined;
+				try {
+					bindings = SourceBindings.fromDocument({ file: fixture.file, source: fixture.source });
+				} catch {
+					// Contract fixtures may intentionally be snippets, not complete modules.
+				}
 				const parseContext: AdapterParseContext = {
 					file: fixture.file,
 					source: fixture.source,
 					config,
 					...(fixture.semantic === undefined ? {} : { semantic: fixture.semantic }),
+					...(bindings === undefined ? {} : { bindings }),
 				};
 				const result = adapter.parse(fixture.source, parseContext);
 				parsed += result.matches.length;

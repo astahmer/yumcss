@@ -14,7 +14,7 @@ import type {
 	StyleRuntimeContext,
 	StyleThemeBinding,
 } from "./semantic-ir.ts";
-import type { SourceScanResult } from "pandwind/source";
+import type { SourceBindingIndex, SourceScanResult } from "pandwind/source";
 import type { StyleLowering } from "./lowering.ts";
 import type { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
 import type { HostFramework } from "./host-adapters.ts";
@@ -94,6 +94,8 @@ export interface AdapterConfigContext extends AdapterDetectionContext {
 
 export interface AdapterParseContext extends AdapterDetectionContext {
 	readonly config: AdapterProjectConfig;
+	/** AST-owned import/reference facts from the shared source scanner. */
+	readonly bindings?: SourceBindingIndex;
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view supplied by the scanner registry. */
 	readonly document?: SourceScanResult;

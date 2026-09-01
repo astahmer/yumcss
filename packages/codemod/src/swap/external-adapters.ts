@@ -14,7 +14,11 @@ import {
 } from "./semantic-ir.ts";
 import { matchBlock } from "../sources.ts";
 import { joinDocumentPath } from "../path-utils.ts";
-import { computeExcludedRanges } from "pandwind/source";
+import {
+	computeExcludedRanges,
+	SourceBindingKind,
+	type SourceBinding,
+} from "pandwind/source";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	AdapterCapabilityLevelTag,
@@ -63,6 +67,9 @@ export type ExternalAdapterId = string;
 type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
+	/** Resolve authored aliases through the shared AST binding index. */
+	readonly semanticBindings?: readonly { source: string; imported: string }[];
+	readonly regexForBinding?: (binding: SourceBinding) => RegExp;
 	readonly form?: "object" | "template" | "reference" | "jsx-style" | "residual";
 	readonly residual?: Pick<StyleProgramResidual, "kind" | "hint">;
 	readonly functionCall?: Pick<
@@ -804,6 +811,26 @@ function parseCalls(
 		typeof sourceObjectOptions === "function"
 			? sourceObjectOptions(context.source, context)
 			: sourceObjectOptions;
+	const regexesFor = (pattern: CallPattern): readonly RegExp[] => {
+		if (pattern.semanticBindings === undefined || context.bindings === undefined)
+			return [pattern.regex];
+		const bindings = context.bindings.bindings
+			.filter((binding) =>
+				pattern.semanticBindings?.some(
+					(candidate) =>
+						candidate.source === binding.source &&
+						(candidate.imported === binding.importedName ||
+							binding.kind === SourceBindingKind.Namespace),
+				),
+			)
+			.filter((binding) => !context.bindings?.isShadowed(binding.localName))
+			.filter(
+				(binding, index, all) =>
+					all.findIndex((candidate) => candidate.localName === binding.localName) === index,
+			);
+		if (bindings.length === 0) return [];
+		return bindings.map((binding) => pattern.regexForBinding?.(binding) ?? pattern.regex);
+	};
 	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
 	try {
 		mask = computeExcludedRanges(source, context.file);
@@ -813,7 +840,9 @@ function parseCalls(
 	}
 	const hostRanges = patterns.flatMap((pattern) => {
 		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
-		return [...source.matchAll(pattern.regex)].flatMap((match) => {
+		return regexesFor(pattern)
+			.flatMap((regex) => [...source.matchAll(regex)])
+			.flatMap((match) => {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) return [];
 			const tag = JsxStyleHost.parse(
@@ -824,7 +853,7 @@ function parseCalls(
 				adapterSource(context, start),
 			);
 			return tag === undefined ? [] : [{ start, end: tag.end }];
-		});
+			});
 	});
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
@@ -843,7 +872,8 @@ function parseCalls(
 			residuals.push(...parsed.residuals);
 			continue;
 		}
-		for (const match of source.matchAll(pattern.regex)) {
+		for (const regex of regexesFor(pattern))
+			for (const match of source.matchAll(regex)) {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;
 			if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
