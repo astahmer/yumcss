@@ -290,6 +290,7 @@ export default defineCodemodAdapter({
 			return {
 				text: `css.class(${programObject(program)})`,
 				imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+				semantic: program,
 			};
 		if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
 		return {

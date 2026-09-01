@@ -216,11 +216,24 @@ describe("bidirectional registered adapter matrix", () => {
 					converted || residualEvidence > 0,
 					`${sourceAdapter.id} -> ${targetAdapter.id} produced no conversion or residual evidence`,
 				).toBe(true);
-				if (converted && result.residuals.length === 0)
+				if (converted && result.residuals.length === 0) {
+					expect(
+						result.validations,
+						`${sourceAdapter.id} -> ${targetAdapter.id} has no target validation evidence`,
+					).toHaveLength(result.converted);
+					expect(
+						result.validations.every(
+							(validation) =>
+								validation.valid &&
+								validation.canonicalSource === validation.canonicalTarget,
+						),
+						`${sourceAdapter.id} -> ${targetAdapter.id} changed the canonical style semantics`,
+					).toBe(true);
 					expect(
 						result.validations.every((validation) => validation.valid),
 						`${sourceAdapter.id} -> ${targetAdapter.id} emitted an invalid semantic result`,
 					).toBe(true);
+				}
 				if (result.skipped > 0)
 					expect(
 						result.residuals.length,

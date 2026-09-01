@@ -1,10 +1,13 @@
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONFORMANCE_SCHEMA,
+	BuiltinHostFramework,
 	CodemodAdapterId,
 	createAdapterConformanceSuite,
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
+	StyleHostRepresentationKind,
+	StyleRepresentationKind,
 } from "../src/swap/index.ts";
 import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
@@ -79,11 +82,76 @@ describe("registered adapter conformance", () => {
 				if (dynamic !== undefined) expect(dynamic.handled).toBeTypeOf("boolean");
 			}
 			if (policy?.resolveHostRepresentation !== undefined)
-				policy.resolveHostRepresentation({
+				for (const framework of [
+					undefined,
+					BuiltinHostFramework.React,
+					BuiltinHostFramework.Solid,
+				])
+					policy.resolveHostRepresentation({
+						program,
+						hasHostContext: true,
+						...(framework === undefined ? {} : { framework }),
+						binding: "card",
+						source: fixture.source,
+					});
+			if (policy?.resolveRepresentation !== undefined)
+				for (const representation of [
+					StyleRepresentationKind.Static,
+					StyleRepresentationKind.PortableArtifact,
+					StyleRepresentationKind.RuntimeCarrier,
+				])
+					policy.resolveRepresentation({
+						program,
+						hasHostContext: true,
+						framework: BuiltinHostFramework.React,
+						binding: "card",
+						hostRepresentation: StyleHostRepresentationKind.Class,
+						source: fixture.source,
+					});
+			if (policy?.rewriteHost !== undefined) {
+				const rewritten = policy.rewriteHost({
+					source: fixture.source,
+					code: fixture.source,
+					file: fixture.file,
+					targetId: adapter.id,
+					sourceModules: adapter.sourceModules,
 					program,
-					hasHostContext: true,
-					framework: "react",
+					emittedExpression: "card",
+					binding: "card",
+					framework: BuiltinHostFramework.React,
+					representation: StyleHostRepresentationKind.Class,
 				});
+				expect(rewritten.code).toBeTypeOf("string");
+				expect(rewritten.residuals).toBeInstanceOf(Array);
+			}
+			if (policy?.rewriteComponent !== undefined) {
+				const rewritten = policy.rewriteComponent({
+					source: fixture.source,
+					code: fixture.source,
+					file: fixture.file,
+					targetId: adapter.id,
+					program,
+					binding: "card",
+					tag: "div",
+					framework: BuiltinHostFramework.React,
+					emittedExpression: "card",
+					representation: StyleHostRepresentationKind.Class,
+				});
+				expect(rewritten.code).toBeTypeOf("string");
+				expect(rewritten.residuals).toBeInstanceOf(Array);
+			}
+			if (adapter.migration?.rewrite !== undefined) {
+				const rewritten = adapter.migration.rewrite({
+					source: fixture.source,
+					code: fixture.source,
+					file: fixture.file,
+					targetId: CodemodAdapterId.Pandwind,
+					convertedBindings: new Set(["card", "styles"]),
+					complete: true,
+				});
+				expect(rewritten.code).toBeTypeOf("string");
+				expect(rewritten.residuals).toBeInstanceOf(Array);
+			}
 			if (policy?.requiresHostWrapper !== undefined)
 				expect(policy.requiresHostWrapper({ source: fixture.source, binding: "card" })).toBeTypeOf(
 					"boolean",

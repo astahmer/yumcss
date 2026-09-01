@@ -117,7 +117,7 @@ export interface AdapterEmitContext {
 
 export interface AdapterEmitResult {
 	readonly text: string;
-	/** Semantic observation when emitted syntax contains opaque runtime registration. */
+	/** Semantic observation for opaque runtime registration or an intentional portable artifact. */
 	readonly semantic?: StyleProgram;
 	readonly imports?: readonly string[];
 	readonly dependencies?: AdapterDependencies;
