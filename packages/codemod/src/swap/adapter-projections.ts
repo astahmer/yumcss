@@ -4,6 +4,7 @@ import type {
 	AdapterTargetMigrationPolicy,
 } from "./adapter-contract.ts";
 import type { AdapterCapability } from "./capabilities.ts";
+import type { AdapterCapabilities } from "./capabilities.ts";
 import { BuiltinHostFramework } from "./host-adapters.ts";
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
 import { getHostComponentRewriter } from "./host-component-rewriter.ts";
@@ -157,6 +158,13 @@ function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgra
 	});
 }
 
+function hasPortableDynamicResiduals(program: import("./semantic-ir.ts").StyleProgram): boolean {
+	return program.residuals.every(
+		(residual) =>
+			residual.kind === "dynamic" && !/selector interpolation/i.test(residual.hint ?? ""),
+	);
+}
+
 /**
  * Give every target a last-resort carrier for hostless dynamic values. Native
  * and target-runtime representations are selected first; this only preserves
@@ -164,7 +172,8 @@ function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgra
  * target has no equivalent carrier and no host rewrite is required.
  */
 export function projectPortableDynamicMigration(
-	migration: AdapterMigrationHooks | undefined,
+	 migration: AdapterMigrationHooks | undefined,
+	 targetCapabilities?: AdapterCapabilities,
 ): AdapterMigrationHooks {
 	const policy = migration?.targetPolicy;
 	const resolveRepresentation = policy?.resolveRepresentation;
@@ -177,14 +186,21 @@ export function projectPortableDynamicMigration(
 			resolveRepresentation: (context) => {
 				const selected = resolveRepresentation?.(context);
 				if (selected !== undefined) return selected;
+				const dynamicLevel = targetCapabilities?.capabilities["dynamic-values"];
+				const themeLevel = targetCapabilities?.capabilities["theme-context"];
+				const partialNativeRepresentation =
+					context.representation === StyleRepresentationKind.TargetNative &&
+					(dynamicLevel !== undefined && dynamicLevel !== "exact" ||
+						themeLevel !== undefined && themeLevel !== "exact");
 				if (
-					(context.representation !== StyleRepresentationKind.Residual &&
+					(!partialNativeRepresentation &&
+						context.representation !== StyleRepresentationKind.Residual &&
 						context.representation !== StyleRepresentationKind.CustomProperty) ||
 					context.hasHostContext ||
 					context.program.source?.subject !== undefined ||
 					context.program.rules.some((rule) => rule.name !== undefined) ||
 					!hasPortableDynamicValue(context.program) ||
-					context.program.residuals.length > 0
+					!hasPortableDynamicResiduals(context.program)
 				)
 					return undefined;
 				return StyleRepresentationKind.PortableArtifact;

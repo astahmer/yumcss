@@ -402,7 +402,8 @@ describe("target adapter emission contract", () => {
 		]);
 		expect(result.loweringPlans[0]?.availableRepresentations).toContain("portable-artifact");
 		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime"');
-		expect(result.code).toContain("css.vars({ color: theme.foreground })");
+		expect(result.code).toContain("css.vars({");
+		expect(result.code).toMatch(/["']color["']:\s*theme\.foreground/);
 	});
 
 	test.each([

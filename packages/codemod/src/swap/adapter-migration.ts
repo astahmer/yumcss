@@ -646,6 +646,7 @@ function runAdapterMigrationInternal(
 		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
 			program,
 			representation: lowering.representation,
+			targetCapabilities: targetAdapter.capabilities,
 			hasHostContext,
 			...(hostFramework === undefined ? {} : { framework: hostFramework }),
 			...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
@@ -669,6 +670,13 @@ function runAdapterMigrationInternal(
 				: [],
 		);
 		const carrierResiduals = loweringResiduals;
+		if (preservedResidualKinds.size > 0)
+			program = {
+				...program,
+				residuals: program.residuals.map((residual) =>
+					preservedResidualKinds.has(residual.kind) ? { ...residual, preserved: true } : residual,
+				),
+			};
 		if (preservedResidualKinds.size > 0)
 			loweringResiduals = loweringResiduals.filter(
 				(residual) => !preservedResidualKinds.has(residual.kind),

@@ -1070,6 +1070,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				};
 	const migration = projectPortableDynamicMigration(
 		projectDynamicClassMigration(spec.id, projectStaticSubjectMigration(spec.migration)),
+		spec.capabilities,
 	);
 	const capabilitiesWithRepresentations =
 		migration?.targetPolicy?.dynamicClassCarrier === true

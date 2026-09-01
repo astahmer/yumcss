@@ -281,6 +281,8 @@ export interface AdapterTargetMigrationPolicy {
 		readonly program: StyleProgram;
 		/** Representation selected by generic lowering before target negotiation. */
 		readonly representation?: StyleRepresentationKind;
+		/** Target contract used by shared representation projections. */
+		readonly targetCapabilities?: AdapterCapabilities;
 		readonly hasHostContext: boolean;
 		readonly framework?: string;
 		/** Source host dialect before a target-owned host conversion. */

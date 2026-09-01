@@ -59,6 +59,49 @@ export class PortableStyleArtifact {
 		});
 	}
 
+	static objectText(program: StyleProgram): string {
+		const valueText = (value: StyleValue): string => {
+			if (value.kind === "dynamic") return value.expression;
+			if (value.kind === "token") return JSON.stringify(value.authored);
+			return JSON.stringify(value.value);
+		};
+		type ObjectNode = { values: Array<[string, string]>; children: Map<string, ObjectNode> };
+		const render = (node: ObjectNode): string => {
+			const values = node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`);
+			const children = [...node.children].map(
+				([key, child]) => `${JSON.stringify(key)}: ${render(child)}`,
+			);
+			return `{ ${[...values, ...children].join(", ")} }`;
+		};
+		const root: ObjectNode = { values: [], children: new Map() };
+		const add = (
+			node: ObjectNode,
+			declaration: StyleProgram["declarations"][number],
+			index: number,
+		): void => {
+			const condition = declaration.conditions[index];
+			if (condition === undefined) {
+				node.values.push([declaration.property, valueText(declaration.value)]);
+				return;
+			}
+			const key = condition.raw ?? condition.value ?? condition.name;
+			const child = node.children.get(key) ?? { values: [], children: new Map() };
+			node.children.set(key, child);
+			add(child, declaration, index + 1);
+		};
+		const addRule = (node: ObjectNode, rule: StyleProgram["rules"][number]): void => {
+			for (const declaration of rule.declarations) add(node, declaration, 0);
+			for (const child of rule.children) {
+				const key = child.name ?? child.selector ?? child.kind;
+				const nested = node.children.get(key) ?? { values: [], children: new Map() };
+				node.children.set(key, nested);
+				addRule(nested, child);
+			}
+		};
+		for (const rule of program.rules) addRule(root, rule);
+		return render(root);
+	}
+
 	private static dynamicVariableName(expression: string): string {
 		let hash = 2166136261;
 		for (const character of expression) {

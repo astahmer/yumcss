@@ -318,6 +318,12 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 					targetPolicy === undefined ? options.migration : { ...options.migration, targetPolicy },
 				),
 			),
+			capabilities(
+				options.id,
+				options.namedObjects === true,
+				options.namedRuleStrategy,
+				options.capabilityOverrides,
+			),
 		),
 		detect: (context) => {
 			const evidence = options.detect.flatMap((pattern) => {

@@ -20,6 +20,9 @@ import {
 } from "./capabilities.ts";
 import { PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
+import { projectPortableDynamicMigration } from "./adapter-projections.ts";
+import { PortableStyleArtifact } from "./portable-artifact.ts";
+import { StyleRepresentationKind } from "./identifiers.ts";
 
 /** Versioned package contract for third-party adapter discovery. */
 export const ADAPTER_PLUGIN_SCHEMA = "pandwind.style-adapter-plugin/1" as const;
@@ -95,6 +98,42 @@ function isStyleAdapter(value: unknown): value is StyleAdapter {
 	);
 }
 
+function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
+	const migration = projectPortableDynamicMigration(adapter.migration, adapter.capabilities);
+	return {
+		...adapter,
+		migration,
+		emit: (program, context) => {
+			if (
+				context.host?.representationKind === StyleRepresentationKind.PortableArtifact &&
+				!program.rules.some((rule) => rule.name !== undefined)
+			) {
+				const portableProgram = PortableStyleArtifact.restoreDynamicValues(
+					program,
+					context.loweringResiduals ?? [],
+				);
+				const dynamic = PortableStyleArtifact.containsDynamicValues(portableProgram);
+				return {
+					text: dynamic
+						? `css.vars(${PortableStyleArtifact.objectText(portableProgram)})`
+						: `css.class(${PortableStyleArtifact.objectText(portableProgram)})`,
+					imports: dynamic
+						? [
+								'import { createRuntimeCss } from "pandwind/css/runtime";',
+								'import { pandwindPreset } from "pandwind/preset";',
+								"const css = createRuntimeCss(pandwindPreset);",
+							]
+						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					semantic: portableProgram,
+					dependencies: { packages: [{ name: "pandwind", kind: "runtime" }] },
+					residuals: [],
+				};
+			}
+			return adapter.emit(program, context);
+		},
+	};
+}
+
 export function createStyleAdapterPlugin(
 	id: string,
 	adapters: readonly StyleAdapter[],
@@ -120,9 +159,10 @@ export function createStyleAdapterRegistry(
 		},
 		register(adapter) {
 			if (!isStyleAdapter(adapter)) throw new Error("invalid style adapter");
-			if (values.has(adapter.id))
-				throw new Error(`style adapter already registered: ${adapter.id}`);
-			values.set(adapter.id, adapter);
+			const normalized = normalizeAdapter(adapter);
+			if (values.has(normalized.id))
+				throw new Error(`style adapter already registered: ${normalized.id}`);
+			values.set(normalized.id, normalized);
 			return registry;
 		},
 		registerPlugin(plugin) {
