@@ -23,10 +23,10 @@
  * complete no matter when it is requested. Every `css({ ... })` call with a
  * literal object is resolved through the design layer and its atomic rule is
  * added to a shared stylesheet; the virtual module serves the deduped CSS
- * (tokens + rules). The runtime hashes the same calls deterministically, so
- * runtime class names always match. Calls with dynamic arguments are skipped
- * — they need runtime styles, the same limitation as dynamic class names in
- * plain Tailwind.
+ * (tokens + rules), and the transform replaces the call with its final carrier.
+ * The runtime hashes the same calls deterministically, so runtime class names
+ * always match. Calls with dynamic arguments are skipped and keep the runtime
+ * fallback.
  *
  * This is a thin vite wrapper over the bundler-agnostic core in css-core.ts;
  * other bundlers are served by `pandwindUnpluginCss` (src/unplugin.ts).

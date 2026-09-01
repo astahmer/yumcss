@@ -163,6 +163,15 @@ describe("dev server", () => {
 		expect(result!.code).toMatch(/"px-2 [A-Za-z0-9_-]+"/);
 	});
 
+	test("static css() calls are erased before bundling", async () => {
+		const result = await server.transformRequest("/src/app.ts");
+		expect(result?.code).toBeDefined();
+		// The stylesheet plugin owns the generated rules; no static css factory
+		// call needs to remain in the browser module.
+		expect(result!.code).not.toContain("css.class(");
+		expect(result!.code).not.toContain("createDesignCss(");
+	});
+
 	test("virtual stylesheet serves deduped tokens + atomic rules", async () => {
 		const result = await server.transformRequest(virtualId);
 		expect(result?.code).toBeDefined();
@@ -309,6 +318,9 @@ describe("build", () => {
 		expect(code).not.toContain("tw({");
 		// The mixed cx() call folded too — no runtime merge call survives.
 		expect(code).not.toContain("cx(");
+		// The design module is imported only to feed static calls. Its factory
+		// must disappear with the now-unused binding.
+		expect(code).not.toContain("createDesignCss");
 
 		const css = output.find((chunk) => chunk.type === "asset" && chunk.fileName.endsWith(".css"));
 		expect(css).toBeDefined();

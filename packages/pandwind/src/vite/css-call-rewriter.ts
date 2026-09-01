@@ -5,7 +5,7 @@ import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 
-/** Tailwind-mode rewrite port; unsupported or dynamic calls remain untouched. */
+/** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
 	start: number;
 	end: number;
@@ -13,11 +13,11 @@ interface CallNode extends OxcNode {
 	arguments: unknown[];
 }
 
-export class TailwindCssCallRewriter implements CssCallRewriter {
+export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
-	private readonly className: ClassNameStrategy;
+	private readonly className: ClassNameStrategy | undefined;
 
-	constructor(preset: CssPreset, className: ClassNameStrategy) {
+	constructor(preset: CssPreset, className?: ClassNameStrategy) {
 		this.preset = preset;
 		this.className = className;
 	}
@@ -68,6 +68,82 @@ export class TailwindCssCallRewriter implements CssCallRewriter {
 		let output = code;
 		for (const edit of edits.toReversed())
 			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
+
+		// A static module no longer needs its factory instance. Mark only a
+		// factory whose local result has no remaining references: the bundler can
+		// then remove the call and its implementation, while dynamic/partial
+		// modules retain the ordinary runtime fallback.
+		const pureCalls = findUnusedCssFactoryCalls(output, id, names);
+		for (const start of pureCalls.toReversed()) {
+			output = output.slice(0, start) + "/* @__PURE__ */ " + output.slice(start);
+		}
 		return { code: output, inlined: edits.length };
 	}
+}
+
+const CSS_FACTORY_NAMES = new Set(["createCss"]);
+
+function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<string>): number[] {
+	const result: number[] = [];
+	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program;
+	const factoryNames = new Set<string>();
+	walk(program, (node) => {
+		if (node.type !== "ImportDeclaration") return;
+		for (const specifier of (
+			node as {
+				specifiers?: Array<{
+					type?: string;
+					imported?: { name?: string };
+					local?: { name?: string };
+				}>;
+			}
+		).specifiers ?? []) {
+			const imported = specifier.imported?.name;
+			const local = specifier.local?.name;
+			if (
+				specifier.type === "ImportSpecifier" &&
+				local !== undefined &&
+				imported !== undefined &&
+				CSS_FACTORY_NAMES.has(imported)
+			)
+				factoryNames.add(local);
+		}
+	});
+
+	walk(program, (node) => {
+		if (node.type !== "VariableDeclarator") return;
+		const declarator = node as unknown as {
+			id?: { type?: string; name?: string; start?: number };
+			init?: {
+				type?: string;
+				start?: number;
+				callee?: { type?: string; name?: string };
+				arguments?: unknown[];
+			} | null;
+		};
+		const binding = declarator.id;
+		const init = declarator.init;
+		if (
+			binding?.type !== "Identifier" ||
+			binding.name === undefined ||
+			!names.has(binding.name) ||
+			init?.type !== "CallExpression" ||
+			init.callee?.type !== "Identifier" ||
+			init.callee.name === undefined ||
+			!factoryNames.has(init.callee.name) ||
+			(init.arguments?.length ?? 0) !== 0 ||
+			init.start === undefined
+		)
+			return;
+
+		let references = 0;
+		walk(program, (candidate) => {
+			if (candidate.type !== "Identifier") return;
+			const identifier = candidate as unknown as { name?: string; start?: number };
+			if (identifier.name === binding.name && identifier.start !== binding.start) references++;
+		});
+		if (references === 0) result.push(init.start);
+	});
+
+	return result;
 }

@@ -3,6 +3,14 @@
 		"min": 5944,
 		"gz": 2673
 	},
+	"css, all static calls": {
+		"min": 5944,
+		"gz": 2673
+	},
+	"css, dynamic fallback": {
+		"min": 5944,
+		"gz": 2673
+	},
 	"tw": {
 		"min": 2300,
 		"gz": 1100

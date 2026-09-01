@@ -371,6 +371,46 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 	}
 });
 
+test("default stylesheet mode rewrites literal css calls", () => {
+	const code = `
+		import { css } from "./design";
+		const a = css.class({ $text: { color: "$blue-500" } });
+		const b = css({ $frame: { w: "20", fill: "$red-500" } });
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(2);
+	expect(result.code).toContain('const a = "');
+	expect(result.code).toContain('const b = {"width":"');
+	expect(result.code).not.toContain("css.class(");
+	expect(result.code).not.toContain("css({");
+});
+
+test("static direct factory calls are marked pure for bundler elimination", () => {
+	const code = `
+		import { createCss } from "../../src/css/index.ts";
+		const css = createCss();
+		const card = css.class({ color: "red" });
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(1);
+	expect(result.code).toContain("/* @__PURE__ */ createCss()");
+});
+
+test("dynamic css calls keep the runtime fallback", () => {
+	const code = `
+		import { createCss } from "../../src/css/index.ts";
+		const css = createCss();
+		const color = getColor();
+		const card = css.class({ color });
+	`;
+	const result = extract().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(0);
+	expect(result.code).toBe(code);
+});
+
 test("pandwindCssVite dedupes repeated rules and re-scans changed files", () => {
 	const dir = makeProject({
 		"src/app.ts": `

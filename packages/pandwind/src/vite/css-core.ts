@@ -1,6 +1,6 @@
 /**
- * Bundler-agnostic core of the css() static extractor: transform (tailwind /
- * sheet-backed strategy modes), virtual-module `resolveId`/`load`, and cache
+ * Bundler-agnostic core of the css() static extractor: transform (external,
+ * sheet-backed, and default atomic modes), virtual-module `resolveId`/`load`, and cache
  * invalidation. Shared by `pandwindCssVite` and the unplugin adapters.
  */
 import { readFileSync, writeFileSync } from "node:fs";
@@ -20,8 +20,8 @@ export interface CssExtractorCore {
 	/** Build-only: inline route critical chunks into configured HTML entries. */
 	closeBundle(): void;
 	name: string;
-	/** Present only in tailwind / sheet-backed strategy modes. */
-	transform?(code: string, id: string): { code: string; map: null } | null;
+	/** Rewrite statically representable css() calls before bundling. */
+	transform(code: string, id: string): { code: string; map: null } | null;
 	resolveId(source: string): string | null;
 	load(id: string): string | null;
 	invalidate(file: string): void;
@@ -79,17 +79,14 @@ export function createCssExtractorPluginCore(
 	const isScanned = (file: string): boolean =>
 		include.some((pattern) => pattern.test(file)) && !exclude.some((pattern) => pattern.test(file));
 
-	const transform =
-		className === undefined
-			? undefined
-			: (code: string, id: string): { code: string; map: null } | null => {
-					if (id.includes("node_modules")) return null;
-					if (!isScanned(id)) return null;
-					const names = sourceService.findCssImports(code, id, matchers);
-					if (names.size === 0) return null;
-					const result = sourceService.inline(code, id, names, preset, className);
-					return result.inlined === 0 ? null : { code: result.code, map: null };
-				};
+	const transform = (code: string, id: string): { code: string; map: null } | null => {
+		if (id.includes("node_modules")) return null;
+		if (!isScanned(id)) return null;
+		const names = sourceService.findCssImports(code, id, matchers);
+		if (names.size === 0) return null;
+		const result = sourceService.inline(code, id, names, preset, className);
+		return result.inlined === 0 ? null : { code: result.code, map: null };
+	};
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
 	const collectBody = (): string => {

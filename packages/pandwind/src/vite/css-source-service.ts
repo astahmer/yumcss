@@ -40,7 +40,7 @@ export interface CssSourceService {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-		className: ClassNameStrategy,
+		className?: ClassNameStrategy,
 	): InlineCssResult;
 }
 
@@ -126,7 +126,7 @@ class DefaultCssSourceService implements CssSourceService {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-		className: ClassNameStrategy,
+		className?: ClassNameStrategy,
 	): InlineCssResult {
 		return this.extraction([], preset, className).inline(code, id, cssNames);
 	}

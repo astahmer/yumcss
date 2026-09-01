@@ -3,7 +3,7 @@ import type { StyleObject } from "../types/typings.ts";
 import { DesignCssArtifactExtractor } from "./css-artifact-extractor.ts";
 import { CssDiagnosticScanner, CssSourceScannerService } from "./css-source-scanner.ts";
 import { PandwindPatternAdapter } from "./css-pattern-adapter.ts";
-import { TailwindCssCallRewriter } from "./css-call-rewriter.ts";
+import { StaticCssCallRewriter } from "./css-call-rewriter.ts";
 import type {
 	AuthoredCssImport,
 	CssArtifactExtractor,
@@ -39,12 +39,6 @@ export interface CssExtractionServiceOptions extends CssExtractorOptions {
 	readonly artifacts?: CssArtifactExtractor;
 	readonly diagnostics?: CssDiagnosticReporter;
 	readonly rewriter?: CssCallRewriter;
-}
-
-class NoopCssCallRewriter implements CssCallRewriter {
-	inline(code: string): InlineCssResult {
-		return { code, inlined: 0 };
-	}
 }
 
 class ComposedCssExtractionService implements CssExtractionService {
@@ -105,11 +99,7 @@ export function createCssExtractionService(
 		options.artifacts ??
 		new DesignCssArtifactExtractor(scanner, options.preset, [new PandwindPatternAdapter(scanner)]);
 	const diagnostics = options.diagnostics ?? new CssDiagnosticScanner();
-	const rewriter =
-		options.rewriter ??
-		(options.className === undefined
-			? new NoopCssCallRewriter()
-			: new TailwindCssCallRewriter(options.preset, options.className!));
+	const rewriter = options.rewriter ?? new StaticCssCallRewriter(options.preset, options.className);
 	return new ComposedCssExtractionService(scanner, artifacts, diagnostics, rewriter);
 }
 

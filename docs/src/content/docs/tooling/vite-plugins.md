@@ -32,8 +32,11 @@ plugins: [pandwindVite({ preset })];
 ## `pandwindCssVite()` — css() extraction
 
 Scans source files for literal `css(...)` / `css.class(...)` calls, resolves
-them through the design layer, and serves the deduped stylesheet as a virtual
-module:
+them through the design layer, rewrites the statically representable calls to
+their final class carriers, and serves the deduped stylesheet as a virtual
+module. This means the `createCss` runtime is not shipped when a module only
+contains static calls. Dynamic values and unsupported helpers stay on the
+runtime fallback path:
 
 ```ts
 import { pandwindCssVite } from "pandwind/vite";

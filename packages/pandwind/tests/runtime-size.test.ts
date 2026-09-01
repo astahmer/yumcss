@@ -26,6 +26,8 @@ import { gzipSync } from "node:zlib";
 import { resolve } from "node:path";
 import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
+import { examplePreset } from "../src/preset/example-preset.ts";
+import { createCssExtractionService } from "../src/vite/css-extract.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots", "runtime-size.json.snap");
@@ -34,6 +36,29 @@ const BUDGET = resolve(ROOT, "tests", "runtime-budget.json");
 const bundle = (fixture: string): { min: number; gz: number } => {
 	const result = buildSync({
 		entryPoints: [resolve(ROOT, "tests/fixtures", fixture)],
+		bundle: true,
+		minify: true,
+		format: "esm",
+		platform: "browser",
+		write: false,
+		logLevel: "silent",
+	});
+	const code = result.outputFiles[0]!.text;
+	return { min: code.length, gz: gzipSync(code).byteLength };
+};
+
+const bundleAfterCssExtraction = (fixture: string): { min: number; gz: number } => {
+	const entry = resolve(ROOT, "tests/fixtures", fixture);
+	const source = readFileSync(entry, "utf8");
+	const service = createCssExtractionService({ matchers: ["css"], preset: examplePreset });
+	const transformed = service.inline(source, entry, new Set(["css"]), examplePreset);
+	const result = buildSync({
+		stdin: {
+			contents: transformed.code,
+			loader: "ts",
+			resolveDir: resolve(ROOT, "tests/fixtures"),
+			sourcefile: entry,
+		},
 		bundle: true,
 		minify: true,
 		format: "esm",
@@ -65,6 +90,8 @@ const updatingSnapshots = (): boolean => {
 test("runtime entries stay stylex-sized", async () => {
 	const sizes = {
 		css: bundle("runtime-css.ts"),
+		"css, all static calls": bundleAfterCssExtraction("runtime-css-static.ts"),
+		"css, dynamic fallback": bundle("runtime-css-dynamic.ts"),
 		tw: bundle("runtime-tw.ts"),
 		cx: bundle("runtime-cx.ts"),
 		"all (css+tw+cx)": bundle("runtime-all.ts"),
@@ -137,4 +164,10 @@ test("runtime entries stay stylex-sized", async () => {
 	// near the css size — but it must still stay well under the combined
 	// bundle: tw()/preset have been shaken out.
 	expect(sizes["root barrel, cx only"].gz).toBeLessThan(sizes["all (css+tw+cx)"].gz - 400);
+
+	// The compiler path is the important runtime-size contract: a module made
+	// entirely from static css() calls carries only its resulting literals,
+	// while a dynamic value deliberately keeps the fallback engine.
+	expect(sizes["css, all static calls"].gz).toBeLessThan(200);
+	expect(sizes["css, all static calls"].gz).toBeLessThan(sizes["css, dynamic fallback"].gz);
 });
