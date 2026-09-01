@@ -1,5 +1,7 @@
 # Usage-aware runtime pruning
 
+Status: complete
+
 ## Goal
 
 Keep Pandwind's complete TypeScript API visible while making emitted browser

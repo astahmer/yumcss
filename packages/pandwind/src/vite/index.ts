@@ -36,6 +36,7 @@ import {
 	type TwConfig,
 } from "./inline.ts";
 import type { UnresolvedToken } from "./unresolved.ts";
+import { createRuntimePruningTransform } from "./runtime-pruner.ts";
 
 export interface PandwindViteOptions {
 	/**
@@ -179,6 +180,8 @@ export interface InlineTwPluginCore {
 	): Promise<{ code: string; map: null } | null>;
 	/** Drop cached analysis for `file` so propagated constants stay fresh. */
 	invalidate(file: string): void;
+	resolveId(source: string): string | null;
+	load(id: string): string | null;
 }
 
 const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnresolved): void => {
@@ -210,6 +213,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			}
 		: undefined;
 	const cssSourceService = createCssSourceService();
+	const runtimePruner = createRuntimePruningTransform();
 
 	const isTwSource = (source: string): boolean => matchesSource(source, options.twSources, "tw");
 	const isCxSource = (source: string): boolean =>
@@ -242,14 +246,14 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		async transform(code: string, id: string, resolver?: Resolver) {
 			if (id.includes("node_modules")) return null;
 			if (options.exclude?.some((pattern) => pattern.test(id))) return null;
-			if (!/\b(tw|cx)\b/.test(code)) return null;
+			if (!/\b(tw|cx)\b/.test(code)) return runtimePruner.transform(code, id);
 
 			const imports = findTwImports(code, id, isTwSource);
 			if (imports.localNames.size === 0 && imports.sources.length === 0) {
 				// A cx import without a tw import can't be folded safely: the
 				// generated conflict/compose metadata is what makes build-time
 				// output provably identical to the runtime merge.
-				return null;
+				return runtimePruner.transform(code, id);
 			}
 			if (resolver === undefined) return null;
 
@@ -306,7 +310,10 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				cxUnresolved = cxResult.unresolved ?? [];
 			}
 
-			return inlined === 0
+			const optimized = runtimePruner.transform(working, id);
+			if (optimized !== null) working = optimized.code;
+
+			return inlined === 0 && optimized === null
 				? null
 				: (() => {
 						if (unresolvedMode !== OnUnresolvedTag.Off) {
@@ -317,6 +324,12 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		},
 		invalidate(file: string) {
 			crossModuleResolver.invalidate(file);
+		},
+		resolveId(source: string) {
+			return runtimePruner.resolveId(source);
+		},
+		load(id: string) {
+			return runtimePruner.load(id);
 		},
 	};
 }
@@ -336,6 +349,12 @@ export function pandwindVite(options: PandwindViteOptions = {}) {
 		handleHotUpdate(ctx: { file: string }) {
 			// Re-analyze changed modules so propagated constants stay fresh.
 			core.invalidate(ctx.file);
+		},
+		resolveId(source: string) {
+			return core.resolveId(source);
+		},
+		load(id: string) {
+			return core.load(id);
 		},
 	};
 }

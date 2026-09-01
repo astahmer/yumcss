@@ -95,6 +95,12 @@ export const pandwindUnplugin = createUnplugin((options: PandwindUnpluginOptions
 		transform(code: string, id: string) {
 			return core.transform(code, id, inlineFsResolver);
 		},
+		resolveId(source: string) {
+			return core.resolveId(source);
+		},
+		load(id: string) {
+			return core.load(id);
+		},
 		watchChange(id: string) {
 			core.invalidate(id);
 		},

@@ -96,8 +96,8 @@ export function createCssRuntime(
 		backend,
 		atoms,
 		compileStyles,
-		flatten: (style) => flattenStyle(style),
-		assign: (...styles) => assign(...styles),
+		flatten: flattenStyle,
+		assign: assign as (...styles: Array<StyleObject>) => StyleObject,
 	};
 	const css = ((...styles: Array<StyleObject>) => compileStyles(...styles)) as RuntimeCssFunction;
 	css[ATOM_REGISTRY] = atoms;

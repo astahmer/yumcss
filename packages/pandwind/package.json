@@ -52,6 +52,13 @@
 		"./backends": "./src/backends/index.ts",
 		"./source": "./src/source-scanner.ts",
 		"./source/workspace": "./src/source-workspace.ts",
+		"./_runtime/css-base": "./src/css/runtime-base.ts",
+		"./_runtime/css-class": "./src/css/runtime-method-class.ts",
+		"./_runtime/css-vars": "./src/css/runtime-method-vars.ts",
+		"./_runtime/css-raw": "./src/css/runtime-method-raw.ts",
+		"./_runtime/css-props": "./src/css/runtime-method-props.ts",
+		"./_runtime/css-group": "./src/css/runtime-method-group.ts",
+		"./_runtime/css-input": "./src/css/runtime-method-input.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

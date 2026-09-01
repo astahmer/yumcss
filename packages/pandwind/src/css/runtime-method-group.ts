@@ -35,7 +35,7 @@ export const attachGroup: RuntimeCssAttachment = (css, context) => {
 				[DYNAMIC]: true,
 				style: Object.fromEntries(
 					Object.entries(input).map(([key, value]) => [cssVar(key), value]),
-				),
+				) as Record<string, string>,
 				compiled,
 			});
 		}

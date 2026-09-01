@@ -28,6 +28,7 @@ import { buildSync } from "esbuild";
 import { expect, test } from "vitest";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { createCssExtractionService } from "../src/vite/css-extract.ts";
+import { createRuntimePruningTransform } from "../src/vite/runtime-pruner.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const SNAPSHOT = resolve(ROOT, "tests/snapshots", "runtime-size.json.snap");
@@ -51,7 +52,7 @@ const bundleAfterCssExtraction = (fixture: string): { min: number; gz: number } 
 	const entry = resolve(ROOT, "tests/fixtures", fixture);
 	const source = readFileSync(entry, "utf8");
 	const service = createCssExtractionService({ matchers: ["css"], preset: examplePreset });
-	const transformed = service.inline(source, entry, new Set(["css"]), examplePreset);
+	const transformed = service.inline(source, entry, new Set(["css"]));
 	const result = buildSync({
 		stdin: {
 			contents: transformed.code,
@@ -66,6 +67,45 @@ const bundleAfterCssExtraction = (fixture: string): { min: number; gz: number } 
 		write: false,
 		logLevel: "silent",
 	});
+	const code = result.outputFiles[0]!.text;
+	return { min: code.length, gz: gzipSync(code).byteLength };
+};
+
+const bundleAfterRuntimePruning = async (fixture: string): Promise<{ min: number; gz: number }> => {
+	const entry = resolve(ROOT, "tests/fixtures", fixture);
+	const pruner = createRuntimePruningTransform();
+	const result = await import("esbuild").then(({ build }) =>
+		build({
+			entryPoints: [entry],
+			bundle: true,
+			minify: true,
+			format: "esm",
+			platform: "browser",
+			write: false,
+			logLevel: "silent",
+			plugins: [
+				{
+					name: "pandwind-runtime-pruner-test",
+					setup(build) {
+						build.onLoad({ filter: /runtime-css-pruned-(?:call|class|vars)\.ts$/ }, (args) => {
+							const source = readFileSync(args.path, "utf8");
+							const transformed = pruner.transform(source, args.path);
+							return { contents: transformed?.code ?? source, loader: "ts", resolveDir: ROOT };
+						});
+						build.onResolve({ filter: /^pandwind:runtime\/css/ }, (args) => ({
+							path: args.path,
+							namespace: "pandwind-runtime",
+						}));
+						build.onLoad({ filter: /.*/, namespace: "pandwind-runtime" }, (args) => ({
+							contents: pruner.load(String.fromCharCode(0) + args.path) ?? "",
+							loader: "ts",
+							resolveDir: ROOT,
+						}));
+					},
+				},
+			],
+		}),
+	);
 	const code = result.outputFiles[0]!.text;
 	return { min: code.length, gz: gzipSync(code).byteLength };
 };
@@ -92,6 +132,9 @@ test("runtime entries stay stylex-sized", async () => {
 		css: bundle("runtime-css.ts"),
 		"css, all static calls": bundleAfterCssExtraction("runtime-css-static.ts"),
 		"css, dynamic fallback": bundle("runtime-css-dynamic.ts"),
+		"css, compiler-pruned call": await bundleAfterRuntimePruning("runtime-css-pruned-call.ts"),
+		"css, compiler-pruned class": await bundleAfterRuntimePruning("runtime-css-pruned-class.ts"),
+		"css, compiler-pruned vars": await bundleAfterRuntimePruning("runtime-css-pruned-vars.ts"),
 		tw: bundle("runtime-tw.ts"),
 		cx: bundle("runtime-cx.ts"),
 		"all (css+tw+cx)": bundle("runtime-all.ts"),
@@ -117,6 +160,18 @@ test("runtime entries stay stylex-sized", async () => {
 		);
 		expect(size.gz, `${name}: gz ${size.gz} exceeds budget ${budget!.gz}`).toBeLessThanOrEqual(
 			budget!.gz,
+		);
+	}
+	for (const name of [
+		"css, compiler-pruned call",
+		"css, compiler-pruned class",
+		"css, compiler-pruned vars",
+	] as const) {
+		expect(sizes[name].min, `${name}: compiler pruning must reduce minified output`).toBeLessThan(
+			sizes.css.min,
+		);
+		expect(sizes[name].gz, `${name}: compiler pruning must reduce gzip output`).toBeLessThan(
+			sizes.css.gz,
 		);
 	}
 

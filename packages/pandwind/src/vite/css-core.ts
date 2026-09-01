@@ -11,6 +11,7 @@ import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createCssSourceWorkspace } from "./css-source-workspace.ts";
+import { createRuntimePruningTransform } from "./runtime-pruner.ts";
 
 export type { CssExtractorPreset };
 
@@ -49,6 +50,7 @@ export function createCssExtractorPluginCore(
 	}
 	const matchers = options.cssSources ?? ["css", "design"];
 	const sourceService = createCssSourceService();
+	const runtimePruner = createRuntimePruningTransform();
 	const virtualId = options.virtualId ?? "pandwind:css";
 	const className = options.engine?.className ?? options.className;
 	const strategy: ClassNameStrategy | undefined = className;
@@ -83,9 +85,11 @@ export function createCssExtractorPluginCore(
 		if (id.includes("node_modules")) return null;
 		if (!isScanned(id)) return null;
 		const names = sourceService.findCssImports(code, id, matchers);
-		if (names.size === 0) return null;
-		const result = sourceService.inline(code, id, names, preset, className);
-		return result.inlined === 0 ? null : { code: result.code, map: null };
+		const extracted =
+			names.size === 0 ? code : sourceService.inline(code, id, names, preset, className).code;
+		const optimized = runtimePruner.transform(extracted, id);
+		if (optimized !== null) return optimized;
+		return extracted === code ? null : { code: extracted, map: null };
 	};
 
 	/** Render the full single-sheet body (default mode / debug manifest). */
@@ -288,6 +292,8 @@ ${split.routes.get(route.name) ?? ""}`;
 		},
 		transform,
 		resolveId(source: string) {
+			const runtime = runtimePruner.resolveId(source);
+			if (runtime !== null) return runtime;
 			if (source === virtualId) return resolvedVirtualId;
 			if (source === `${virtualId}-manifest`) return resolvedManifestId;
 			if (routes.length > 0 && source.startsWith(`${virtualId}?route=`)) {
@@ -297,6 +303,8 @@ ${split.routes.get(route.name) ?? ""}`;
 			return null;
 		},
 		load(id: string) {
+			const runtime = runtimePruner.load(id);
+			if (runtime !== null) return runtime;
 			// External-compiler modes serve empty CSS; sheet-backed strategies
 			// still need the generated stylesheet (with their class names).
 			const emptyMode = className !== undefined && strategy?.sheetBacked !== true;

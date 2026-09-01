@@ -226,7 +226,7 @@ core never invents a target token path from a matching string alone.
 | Analyze/reporting      | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
 | Utility bridge         | Tailwind compilation, selector filtering, value resolution, and bridge emission                                                              | `tw/bridge.ts`, `tw/bridge-generator.ts`                                                                                                                                           |
 | Real repository proof  | pinned reference materialization, source migration lanes, SSR/browser checks, route failures, and CSS-size accounting                        | `scripts/migrate-chakra-docs.ts`, `scripts/verify-chakra-docs.ts`, `examples/chakra-ui-docs-migration/README.md`                                                                   |
-| Runtime specialization | static-call rewriting, factory-elision safety, and runtime-size regression proof                                                             | `vite/css-call-rewriter.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                                                      |
+| Runtime specialization | static-call rewriting, usage-aware factory pruning, factory-elision safety, virtual runtime modules, and runtime-size regression proof      | `vite/css-call-rewriter.ts`, `vite/runtime-pruner.ts`, `vite/css-core.ts`, `tests/runtime-size.test.ts`                                                                            |
 
 Generated-project metadata is a versioned artifact, `pandwind.interop.json`.
 Tailwind codegen writes its utility/type/variant/conflict/theme view there, and
@@ -256,10 +256,17 @@ pure so normal bundler tree shaking removes the factory and its implementation.
 
 Dynamic values, unsupported helpers, and partially representable expressions
 are left untouched. They retain the complete typed API and use the runtime
-fallback, so optimization never trades correctness for size. The contract is
-covered by the Vite integration test and the runtime-size fixture matrix:
-static CSS is expected to carry only its emitted literals, while the dynamic
-fixture must still retain the fallback engine.
+fallback, so optimization never trades correctness for size. For a locally
+contained `createCss()` factory, the Vite/unplugin optimizer analyzes the
+actual member accesses and rewrites the import to a virtual runtime module
+that imports only the required method attachments. `css()` needs only the
+callable core; `.class`, `.vars`, and other methods add their own attachments,
+with `.group` declaring its `.vars` dependency. Exported, returned, passed,
+computed, or otherwise escaped factories conservatively keep the complete
+runtime. This optimization exists only in emitted JavaScript: `CssFn` still
+exposes every method to TypeScript and the package entry remains fully capable
+without a plugin. The runtime-size matrix proves static extraction, fallback
+behavior, and the reduced call/class/vars bundles.
 
 `StyleProgram` is also the semantic AST construction boundary. Adapter authors
 and semantic tests may use the scoped `StyleProgramBuilder` from the codemod
