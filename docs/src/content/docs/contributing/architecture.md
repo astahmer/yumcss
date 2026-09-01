@@ -94,7 +94,7 @@ least one installed-package fixture covers each official integration.
 | Runtime CSS           | canonicalizer, ordering, serializer, store, sink                                                                                             | `css/runtime-sheet-contracts.ts`, `css/runtime-sheet-policies.ts`, `css/runtime-sheet-serializer.ts`, `css/runtime-sheet-sink.ts`                                                  |
 | Stylesheet lowering   | condition, ordering, decoder, serializer, and variable compiler policies                                                                     | `css/stylesheet-policies.ts`, `css/stylesheet-lowering.ts`                                                                                                                         |
 | Token formats         | one normalized token set plus format adapters                                                                                                | `codemod/swap/token-set.ts`, `codemod/swap/token-format-contracts.ts`                                                                                                              |
-| Source documents      | language scanner registry plus Node workspace expansion/read/scan                                                                            | `source-scanner.ts`, `source-workspace.ts`                                                                                                                                         |
+| Source documents      | language scanner registry plus Node workspace expansion/read/scan                                                                            | `source-scanner.ts`, `source-workspace.ts`; analyzer, Vite, codemod, and Tailwind collection consume this workspace                                                                 |
 | `cx()` compilation    | constant discovery, expression evaluation, imported merges, fold policy, and code emission                                                   | `vite/cx-static-evaluator.ts`, `vite/cx-import-scanner.ts`, `vite/cx-call-rewriter.ts`                                                                                             |
 | Design vocabulary     | module adapter registry                                                                                                                      | `design/resolve.ts`                                                                                                                                                                |
 | Analyze/reporting     | source analysis, residual policy, candidate scanning, artifact compilation, budget metrics, artifact inspection, workspace, and report ports | `analyze/analysis-service.ts`, `analyze/css-residual-collector.ts`, `analyze/css-budget-*.ts`, `analyze/css-artifact-inspection.ts`, `analyze/analysis-report.ts`                  |
@@ -116,6 +116,16 @@ exist.
 The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
+
+The source workspace owns filesystem expansion and document reads. Its default
+query returns only files claimed by a registered source-language adapter;
+callers that intentionally need non-script assets, such as CSS imports for
+theme crawling, opt into `includeUnsupported` at the workspace boundary. Vite
+CSS extraction uses the same workspace for its file set, and codemod host
+selection uses the scanner's language result instead of maintaining extension
+checks. Filesystem access in a CLI composition root or in the workspace
+provider is therefore infrastructure; parser and framework policy stays in
+the scanner or owning adapter.
 
 Function-valued style calls use the same shared parser port as the generic
 adapter runtime. `FunctionStyleCallParser` balances the actual invocation,

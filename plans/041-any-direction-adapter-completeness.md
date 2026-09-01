@@ -38,6 +38,13 @@ still fixture-only in browser/SSR proof remain explicit production-proof or
 semantic work. Those cases must continue to produce typed, source-preserving
 residuals until a target-owned representation and proof exist.
 
+The shared source workspace is now the discovery boundary for analyzer, Vite
+CSS extraction, Tailwind collection, and codemod host-language selection. A
+workspace query can explicitly include non-script assets for CSS/theme
+crawling, while source parsing remains owned by the scanner registry. This
+removes a duplicate analyzer glob and the codemod/Vite extension decisions
+without pretending that CSS assets are script documents.
+
 ## Completion boundary
 
 The complete matrix is the union of every adapter that can be selected as a
@@ -277,6 +284,14 @@ on an unsupported framework, or a custom component whose prop-forwarding
 contract is unknown. The next implementation must add those projections
 behind target-owned ports and prove them, rather than weakening the
 capability gate.
+
+The diagnostic is intentionally route-specific. `capability-blocked` means the
+target adapter's declared representations were exhausted after lowering and
+host negotiation; `lowering-residual` means the IR contains a semantic that no
+registered lowering can carry; `host-framework` means syntax or prop ownership
+cannot be rewritten safely. In each case the source remains intact. A target
+adapter becomes bidirectionally usable by adding a representation and its
+substitution proof, not by making the capability report permissive.
 
 ### Why the playground shows capability skips
 
