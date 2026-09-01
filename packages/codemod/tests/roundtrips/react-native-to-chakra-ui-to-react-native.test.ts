@@ -65,9 +65,10 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "16px" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "16px" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { StyleSheet } from "react-native";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 16 }) };
 		export const App = () => <View style={styles.card} />;",
@@ -301,9 +303,10 @@ test("react-native -> chakra-ui -> react-native: resolves token references acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "$colors.brand", padding: "16px" }) };
+		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "16px" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -324,8 +327,9 @@ test("react-native -> chakra-ui -> react-native: resolves token references acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { StyleSheet } from "react-native";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": StyleSheet.create({ "color": "$colors.brand", "padding": 16 }) };
 		export const App = () => <View style={styles.card} />;",

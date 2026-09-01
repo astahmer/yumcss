@@ -64,16 +64,15 @@ test("pandwind -> mantine: migrates concrete pandwind syntax to mantine", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-
+		  "code": "
 		const css = createCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -96,21 +95,24 @@ test("pandwind -> mantine: carries concrete pandwind dynamics or edge syntax exp
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
+		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
+		  "residuals": [
+		    {
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
+		    },
+		  ],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -144,21 +146,24 @@ test("pandwind -> mantine: lowers concrete theme and project context variants", 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -170,21 +175,24 @@ test("pandwind -> mantine: lowers concrete theme and project context variants", 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
+		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -211,26 +219,26 @@ test("pandwind -> mantine: resolves concrete token references with project conte
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
-
 		const css = createCss();
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });
+		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css.class({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <div className={card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -242,17 +250,16 @@ test("pandwind -> mantine: preserves malformed concrete pandwind input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-
+		  "code": "
 		const css = createCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],

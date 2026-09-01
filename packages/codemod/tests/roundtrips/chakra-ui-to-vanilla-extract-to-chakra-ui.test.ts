@@ -88,9 +88,10 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: preserves an actionable concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -147,9 +148,10 @@ test("chakra-ui -> vanilla-extract -> chakra-ui: retains edge semantics without 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [

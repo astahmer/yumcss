@@ -60,16 +60,14 @@ test("goober -> mantine: migrates concrete goober syntax to mantine", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		  "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -92,20 +90,23 @@ test("goober -> mantine: carries concrete goober dynamics or edge syntax explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		  "code": "import { css } from "goober";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
+		  "residuals": [
+		    {
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
+		    },
+		  ],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -139,20 +140,23 @@ test("goober -> mantine: lowers concrete theme and project context variants", ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "code": "import { css } from "goober";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -164,20 +168,23 @@ test("goober -> mantine: lowers concrete theme and project context variants", ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "code": "import { css } from "goober";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -203,16 +210,14 @@ test("goober -> mantine: resolves concrete token references with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		  "code": "
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -235,17 +240,15 @@ test("goober -> mantine: preserves malformed concrete goober input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;
+		  "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],

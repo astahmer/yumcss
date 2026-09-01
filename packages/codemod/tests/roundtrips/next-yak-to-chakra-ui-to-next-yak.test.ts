@@ -65,9 +65,10 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "next-yak";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css\`color: red; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
@@ -301,9 +303,10 @@ test("next-yak -> chakra-ui -> next-yak: resolves token references across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--colors-brand)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -324,10 +327,11 @@ test("next-yak -> chakra-ui -> next-yak: resolves token references across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = // pandwind:migrate-skip (route: chakra-ui -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "var(--colors-brand)", padding: "1rem" });
+		chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
 		    "outcomes": [

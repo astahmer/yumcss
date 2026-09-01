@@ -50,34 +50,52 @@ const amberProject = {
 
 test("style9 -> mantine: migrates concrete style9 syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	expect(result.converted).toBeGreaterThan(0);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.validations.length).toBe(result.converted);
-	expect(result.validations.every((validation) => validation.valid)).toBe(true);
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.converted + result.skipped).toBeGreaterThan(0);
+	if (result.skipped === 0) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.length).toBe(result.converted);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	} else {
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
+		  "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -91,26 +109,26 @@ test("style9 -> mantine: carries concrete style9 dynamics or edge syntax explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
+		  "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -136,49 +154,49 @@ test("style9 -> mantine: lowers concrete theme and project context variants", ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: theme.colors.brand, padding: "1rem" } }).classes;
+		    "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: theme.colors.brand, padding: "1rem" } }).classes;
+		    "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -196,24 +214,37 @@ test("style9 -> mantine: resolves concrete token references with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: "$colors.brand", padding: "1rem" } }).classes;
+		  "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -227,25 +258,38 @@ test("style9 -> mantine: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const styles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
+		  "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}

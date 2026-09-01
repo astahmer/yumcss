@@ -68,17 +68,18 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
-		import { style } from "@mantine/core";
+		import { createCss } from "pandwind/css";
+		const css = createCss();
 
 
-		const Card = style({ color: "red", padding: "1rem" });
+		const Card = css.class({ "color": "red", "padding": "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -92,31 +93,20 @@ test("vue-styled -> mantine -> vue-styled: preserves an actionable concrete roun
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "<script setup>
-		import { style } from "@mantine/core";
-		import styled from "vue-styled-components";
+		import { createCss } from "pandwind/css";
+		const css = createCss();
 
 
-		const Card = styled.div({ "color": "red", "padding": "1rem" });
+		const Card = css.class({ "color": "red", "padding": "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "converted": 0,
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);
@@ -134,33 +124,6 @@ test("vue-styled -> mantine -> vue-styled: retains edge semantics without silent
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
-		import { style } from "@mantine/core";
-
-
-		const Card = style({ color: theme.foreground, padding: "1rem" });
-		</script>
-		<template><div :class="Card.class" :style="Card.style" /></template>",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "<script setup>
-		import { style } from "@mantine/core";
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
@@ -185,6 +148,23 @@ test("vue-styled -> mantine -> vue-styled: retains edge semantics without silent
 		        "valid": true,
 		      },
 		    ],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "<script setup>
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+
+		const Card = css.vars({ "color": theme.foreground, "padding": "1rem" });
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -234,17 +214,19 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		    "forward": {
 		      "changed": true,
 		      "code": "<script setup>
-		import { style } from "@mantine/core";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
 
-		const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		</script>
 		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -258,48 +240,40 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "<script setup>
-		import { style } from "@mantine/core";
-		import styled from "vue-styled-components";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
 
-		const Card = styled.div({ "color": "#f97316", "padding": "1rem" });
+		const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		</script>
 		<template><div :class="Card.class" :style="Card.style" /></template>",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "converted": 0,
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "<script setup>
-		import { style } from "@mantine/core";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
 
-		const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		</script>
 		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -313,31 +287,21 @@ test("vue-styled -> mantine -> vue-styled: preserves concrete theme and project 
 		      ],
 		    },
 		    "reverse": {
-		      "changed": true,
+		      "changed": false,
 		      "code": "<script setup>
-		import { style } from "@mantine/core";
-		import styled from "vue-styled-components";
+		import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
 
-		const Card = styled.div({ "color": "#2563eb", "padding": "1rem" });
+		const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		</script>
 		<template><div :class="Card.class" :style="Card.style" /></template>",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "converted": 0,
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -366,36 +330,40 @@ test("vue-styled -> mantine -> vue-styled: resolves token references across both
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+
+		const Card = css.class({ "color": "$colors.brand", "padding": "1rem" });
 		</script>
-		<template><Card /></template>",
-		    "converted": 0,
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
+		import { createCss } from "pandwind/css";
+		const css = createCss();
+
+
+		const Card = css.class({ "color": "$colors.brand", "padding": "1rem" });
 		</script>
-		<template><Card /></template>",
+		<template><div :class="Card" /></template>",
 		    "converted": 0,
 		    "outcomes": [],
 		    "residuals": [],

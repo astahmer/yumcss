@@ -67,10 +67,9 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: "red", padding: "1rem" });
-		export const App = () => <div className={Card} />;",
+		    "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -90,27 +89,31 @@ test("styled-components -> mantine -> styled-components: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-		import styled from "styled-components";
-
-		export const Card = styled.div({ color: "red", padding: "1rem" });
-		export const App = () => <div className={Card} />;",
-		    "converted": 1,
+		    "code": "
+		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		<div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -127,9 +130,8 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.foreground, padding: "1rem" });
+		    "code": "import styled from "styled-components";
+		export const Card = { color: theme.foreground, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -138,7 +140,13 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "Mantine style-prop projection could not locate a simple className binding",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -150,17 +158,11 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-		import styled from "styled-components";
-
-		export const Card = styled.div({ color: theme.foreground, padding: "1rem" });
+		    "code": "import styled from "styled-components";
+		export const Card = { color: theme.foreground, padding: "1rem" };
 		export const App = () => styled.div({ style: Card.style });",
-		    "converted": 2,
+		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
 		      {
 		        "outcome": "host-runtime",
 		        "representation": "target-native",
@@ -169,11 +171,6 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
 		      {
 		        "differences": [],
 		        "lossiness": "lossless",
@@ -228,9 +225,8 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -239,7 +235,13 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "Mantine style-prop projection could not locate a simple className binding",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -251,17 +253,11 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-		import styled from "styled-components";
-
-		export const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => styled.div({ style: Card.style });",
-		      "converted": 2,
+		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
 		        {
 		          "outcome": "host-runtime",
 		          "representation": "target-native",
@@ -270,11 +266,6 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",
@@ -286,9 +277,8 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -297,7 +287,13 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "Mantine style-prop projection could not locate a simple className binding",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		      ],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -309,17 +305,11 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-		import styled from "styled-components";
-
-		export const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => styled.div({ style: Card.style });",
-		      "converted": 2,
+		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
 		        {
 		          "outcome": "host-runtime",
 		          "representation": "target-native",
@@ -328,11 +318,6 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
 		        {
 		          "differences": [],
 		          "lossiness": "lossless",

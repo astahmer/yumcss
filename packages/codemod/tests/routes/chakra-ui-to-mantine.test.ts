@@ -66,7 +66,7 @@ test("chakra-ui -> mantine: migrates concrete chakra-ui syntax to mantine", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
+		  "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
@@ -95,7 +95,7 @@ test("chakra-ui -> mantine: carries concrete chakra-ui dynamics or edge syntax e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
+		  "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
@@ -139,7 +139,7 @@ test("chakra-ui -> mantine: lowers concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
+		    "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -160,7 +160,7 @@ test("chakra-ui -> mantine: lowers concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
+		    "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -195,7 +195,7 @@ test("chakra-ui -> mantine: resolves concrete token references with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
+		  "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
@@ -224,7 +224,7 @@ test("chakra-ui -> mantine: preserves malformed concrete chakra-ui input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { Box } from "@chakra-ui/react";
+		  "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box  style={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,

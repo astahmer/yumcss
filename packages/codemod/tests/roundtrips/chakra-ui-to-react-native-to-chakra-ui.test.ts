@@ -86,9 +86,10 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const App = () => <View    style={{ "style": css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -143,9 +144,10 @@ test("chakra-ui -> react-native -> chakra-ui: retains edge semantics without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const App = () => <View    style={{ "style": css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;
+		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -334,9 +336,10 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const App = () => <View    style={{ "style": css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
+		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

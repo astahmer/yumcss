@@ -76,8 +76,9 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "red", padding: "16px" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -98,9 +99,10 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ color: "red", padding: "16px" })}/>;",
+		chakraSystem.css({ color: "red", padding: "16px" })}/>;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
@@ -134,8 +136,9 @@ test("mui -> chakra-ui -> mui: retains edge semantics without silent loss", () =
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -156,9 +159,10 @@ test("mui -> chakra-ui -> mui: retains edge semantics without silent loss", () =
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
@@ -224,8 +228,9 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -246,9 +251,10 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -276,8 +282,9 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -298,9 +305,10 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -350,8 +358,9 @@ test("mui -> chakra-ui -> mui: resolves token references across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -372,9 +381,10 @@ test("mui -> chakra-ui -> mui: resolves token references across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
+		chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
 		    "converted": 0,
 		    "outcomes": [
 		      {

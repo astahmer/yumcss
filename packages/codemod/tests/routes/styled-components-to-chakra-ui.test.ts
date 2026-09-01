@@ -62,9 +62,10 @@ test("styled-components -> chakra-ui: migrates concrete styled-components syntax
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -95,9 +96,10 @@ test("styled-components -> chakra-ui: carries concrete styled-components dynamic
 		  "changed": true,
 		  "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -142,9 +144,10 @@ test("styled-components -> chakra-ui: lowers concrete theme and project context 
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -167,9 +170,10 @@ test("styled-components -> chakra-ui: lowers concrete theme and project context 
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -235,9 +239,10 @@ test("styled-components -> chakra-ui: preserves malformed concrete styled-compon
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,

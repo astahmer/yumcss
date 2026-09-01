@@ -69,9 +69,10 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -92,8 +93,9 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import * as stylex from "@stylexjs/stylex";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": stylex.create({ style: { color: "red", padding: "1rem" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

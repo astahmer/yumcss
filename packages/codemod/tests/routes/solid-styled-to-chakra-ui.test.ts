@@ -62,9 +62,10 @@ test("solid-styled -> chakra-ui: migrates concrete solid-styled syntax to chakra
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -229,9 +230,10 @@ test("solid-styled -> chakra-ui: preserves malformed concrete solid-styled input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",
 		  "converted": 1,

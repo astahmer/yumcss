@@ -60,9 +60,10 @@ test("next-yak -> chakra-ui: migrates concrete next-yak syntax to chakra-ui", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -196,9 +197,10 @@ test("next-yak -> chakra-ui: resolves concrete token references with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--colors-brand)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -227,9 +229,10 @@ test("next-yak -> chakra-ui: preserves malformed concrete next-yak input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,

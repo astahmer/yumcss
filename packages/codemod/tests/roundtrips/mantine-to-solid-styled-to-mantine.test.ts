@@ -91,13 +91,13 @@ test("mantine -> solid-styled -> mantine: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { styled } from "solid-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
 		styled.div({ "color": "red", "padding": "var(--mantine-spacing-md)" });",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -149,13 +149,13 @@ test("mantine -> solid-styled -> mantine: retains edge semantics without silent 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { styled } from "solid-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
 		styled.div({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" });",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
@@ -239,18 +239,18 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { styled } from "solid-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
 		styled.div({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid",
+		          "hint": "components: component subject: styled.div; framework-semantics: solid",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -286,18 +286,18 @@ test("mantine -> solid-styled -> mantine: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { styled } from "solid-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
 		styled.div({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid",
+		          "hint": "components: component subject: styled.div; framework-semantics: solid",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -355,18 +355,18 @@ test("mantine -> solid-styled -> mantine: resolves token references across both 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { styled } from "solid-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual, portable-artifact)
 		styled.div({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: solid",
+		        "hint": "components: component subject: styled.div; framework-semantics: solid",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

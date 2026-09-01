@@ -64,10 +64,11 @@ test("pandwind -> chakra-ui: migrates concrete pandwind syntax to chakra-ui", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,10 +97,11 @@ test("pandwind -> chakra-ui: carries concrete pandwind dynamics or edge syntax e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -142,10 +144,11 @@ test("pandwind -> chakra-ui: lowers concrete theme and project context variants"
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -166,10 +169,11 @@ test("pandwind -> chakra-ui: lowers concrete theme and project context variants"
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -236,10 +240,11 @@ test("pandwind -> chakra-ui: preserves malformed concrete pandwind input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,

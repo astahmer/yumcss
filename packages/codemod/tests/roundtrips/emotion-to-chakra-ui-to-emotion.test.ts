@@ -69,9 +69,10 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -92,8 +93,9 @@ test("emotion -> chakra-ui -> emotion: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@emotion/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
@@ -129,9 +131,10 @@ test("emotion -> chakra-ui -> emotion: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -152,8 +155,9 @@ test("emotion -> chakra-ui -> emotion: retains edge semantics without silent los
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@emotion/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -221,9 +225,10 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -244,8 +249,9 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@emotion/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
@@ -270,9 +276,10 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -293,8 +300,9 @@ test("emotion -> chakra-ui -> emotion: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@emotion/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",

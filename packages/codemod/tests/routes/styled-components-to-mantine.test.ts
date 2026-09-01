@@ -62,10 +62,9 @@ test("styled-components -> mantine: migrates concrete styled-components syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: "red", padding: "1rem" });
-		export const App = () => <div className={Card} />;",
+		  "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -93,9 +92,8 @@ test("styled-components -> mantine: carries concrete styled-components dynamics 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.foreground, padding: "1rem" });
+		  "code": "import styled from "styled-components";
+		export const Card = { color: theme.foreground, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -104,7 +102,13 @@ test("styled-components -> mantine: carries concrete styled-components dynamics 
 		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
+		  "residuals": [
+		    {
+		      "hint": "Mantine style-prop projection could not locate a simple className binding",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		  ],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -138,9 +142,8 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		    "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -149,7 +152,13 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "Mantine style-prop projection could not locate a simple className binding",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -161,9 +170,8 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		    "code": "import styled from "styled-components";
+		export const Card = { color: theme.colors.brand, padding: "1rem" };
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -172,7 +180,13 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "Mantine style-prop projection could not locate a simple className binding",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -229,10 +243,9 @@ test("styled-components -> mantine: preserves malformed concrete styled-componen
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@mantine/core";
-
-		export const Card = style({ color: "red", padding: "1rem" });
-		export const App = () => <div className={Card} />;
+		  "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: "red", padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;
 		const unfinished = { /* unfinished styled-components */",
 		  "converted": 1,
 		  "outcomes": [

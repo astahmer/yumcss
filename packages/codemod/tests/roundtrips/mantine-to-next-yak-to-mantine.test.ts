@@ -88,24 +88,36 @@ test("mantine -> next-yak -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "red", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "next-yak";
+		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: red; padding: var(--mantine-spacing-md);\`;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -147,24 +159,36 @@ test("mantine -> next-yak -> mantine: retains edge semantics without silent loss
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "next-yak";
+		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: theme.foreground; padding: var(--mantine-spacing-md);\`;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -238,24 +262,36 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		import { css } from "next-yak";
+		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: theme.colors.brand; padding: var(--mantine-spacing-md);\`;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -286,24 +322,36 @@ test("mantine -> next-yak -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		import { css } from "next-yak";
+		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: theme.colors.brand; padding: var(--mantine-spacing-md);\`;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -356,24 +404,36 @@ test("mantine -> next-yak -> mantine: resolves token references across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "next-yak";
+		export const App = () => // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: brand.0; padding: var(--mantine-spacing-md);\`;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },

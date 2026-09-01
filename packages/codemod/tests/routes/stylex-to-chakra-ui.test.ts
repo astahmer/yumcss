@@ -64,9 +64,10 @@ test("stylex -> chakra-ui: migrates concrete stylex syntax to chakra-ui", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -231,9 +232,10 @@ test("stylex -> chakra-ui: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,

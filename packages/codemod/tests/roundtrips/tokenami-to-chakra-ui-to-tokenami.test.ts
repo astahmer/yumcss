@@ -69,9 +69,10 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -92,8 +93,9 @@ test("tokenami -> chakra-ui -> tokenami: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
@@ -129,9 +131,10 @@ test("tokenami -> chakra-ui -> tokenami: retains edge semantics without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -152,8 +155,9 @@ test("tokenami -> chakra-ui -> tokenami: retains edge semantics without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@tokenami/css";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -221,9 +225,10 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -244,10 +249,11 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = // pandwind:migrate-skip (route: chakra-ui -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 0,
 		      "outcomes": [
@@ -270,9 +276,10 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -293,10 +300,11 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@chakra-ui/react";
+		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = // pandwind:migrate-skip (route: chakra-ui -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
+		chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
 		      "converted": 0,
 		      "outcomes": [

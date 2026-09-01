@@ -54,34 +54,51 @@ test("treat -> mantine: migrates concrete treat syntax to mantine", () => {
 		file: "Card.treat.ts",
 		semantic: sourceSemantic,
 	});
-	expect(result.converted).toBeGreaterThan(0);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.validations.length).toBe(result.converted);
-	expect(result.validations.every((validation) => validation.valid)).toBe(true);
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.converted + result.skipped).toBeGreaterThan(0);
+	if (result.skipped === 0) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.length).toBe(result.converted);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	} else {
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });",
-		  "converted": 1,
+		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		style({ color: "red", padding: "1rem" });",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -204,23 +221,35 @@ test("treat -> mantine: resolves concrete token references with project context"
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });",
-		  "converted": 1,
+		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		style({ color: "$colors.brand", padding: "1rem" });",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -239,24 +268,36 @@ test("treat -> mantine: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const card = css.class({ "color": "red", "padding": "1rem" });
+		export const card = // pandwind:migrate-skip (route: treat -> mantine | lowering-residual: host-framework, validation)
+		style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished treat */",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}

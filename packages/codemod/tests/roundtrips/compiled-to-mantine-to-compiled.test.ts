@@ -65,16 +65,14 @@ test("compiled -> mantine -> compiled: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		    "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -88,17 +86,27 @@ test("compiled -> mantine -> compiled: preserves an actionable concrete round tr
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
 
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -115,20 +123,23 @@ test("compiled -> mantine -> compiled: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
+		    "residuals": [
+		      {
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
+		      },
+		    ],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -140,13 +151,9 @@ test("compiled -> mantine -> compiled: retains edge semantics without silent los
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		import { css } from "@compiled/react";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		    "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -154,13 +161,7 @@ test("compiled -> mantine -> compiled: retains edge semantics without silent los
 		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "compiled class projection requires a host without an existing class attribute",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -217,20 +218,23 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -242,13 +246,9 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		import { css } from "@compiled/react";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -256,13 +256,7 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "compiled class projection requires a host without an existing class attribute",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -276,20 +270,23 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -301,13 +298,9 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		import { css } from "@compiled/react";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "code": "import { css } from "@compiled/react";
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -315,13 +308,7 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "compiled class projection requires a host without an existing class attribute",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -357,16 +344,14 @@ test("compiled -> mantine -> compiled: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		    "code": "
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -380,17 +365,27 @@ test("compiled -> mantine -> compiled: resolves token references across both con
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
 
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "custom-property",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

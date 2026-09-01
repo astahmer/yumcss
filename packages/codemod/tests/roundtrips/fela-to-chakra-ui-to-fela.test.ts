@@ -65,10 +65,11 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const renderer = createRenderer();
-		export const card = css({ color: "red", padding: "1rem" });",
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -88,7 +89,8 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
@@ -312,10 +314,11 @@ test("fela -> chakra-ui -> fela: resolves token references across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const renderer = createRenderer();
-		export const card = css({ color: "$colors.brand", padding: "1rem" });",
+		export const card = chakraSystem.css({ color: "$colors.brand", padding: "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -335,7 +338,8 @@ test("fela -> chakra-ui -> fela: resolves token references across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "color": "$colors.brand", "padding": "1rem" });",

@@ -67,15 +67,16 @@ test("solid-styled -> mantine -> solid-styled: preserves an actionable concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const Card = style({ color: "red", padding: "1rem" });
+		export const Card = css.class({ "color": "red", "padding": "1rem" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -89,28 +90,17 @@ test("solid-styled -> mantine -> solid-styled: preserves an actionable concrete 
 		    ],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-		import { styled } from "solid-styled-components";
+		    "changed": false,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
 
-		export const Card = styled.div({ "color": "red", "padding": "1rem" });
+		export const Card = css.class({ "color": "red", "padding": "1rem" });
 		export const App = () => <div className={Card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "converted": 0,
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);
@@ -127,15 +117,17 @@ test("solid-styled -> mantine -> solid-styled: retains edge semantics without si
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = style({ color: theme.foreground, padding: "1rem" });
+		export const Card = css.vars({ "color": theme.foreground, "padding": "1rem" });
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
 		    "residuals": [],
@@ -150,20 +142,15 @@ test("solid-styled -> mantine -> solid-styled: retains edge semantics without si
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@mantine/core";
-		import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
 		export const Card = css.vars({ "color": theme.foreground, "padding": "1rem" });
 		export const App = () => // pandwind:migrate-skip (route: mantine -> solid-styled | lowering-residual: host-framework | available: named-map, target-native, residual)
 		<div className={Card.class} style={Card.style} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
 		      {
 		        "outcome": "residual",
 		        "representation": "target-native",
@@ -177,13 +164,7 @@ test("solid-styled -> mantine -> solid-styled: retains edge semantics without si
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);
@@ -232,15 +213,17 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		export const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -255,18 +238,15 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-		import { styled } from "solid-styled-components";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = styled.div({ "color": "#f97316", "padding": "1rem" });
+		export const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		export const App = () => // pandwind:migrate-skip (route: mantine -> solid-styled | lowering-residual: host-framework | available: named-map, target-native, residual)
 		<div className={Card.class} style={Card.style} />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
 		        {
 		          "outcome": "residual",
 		          "representation": "target-native",
@@ -280,27 +260,23 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = style({ color: theme.colors.brand, padding: "1rem" });
+		export const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
 		      "residuals": [],
@@ -315,18 +291,15 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@mantine/core";
-		import { styled } from "solid-styled-components";
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = styled.div({ "color": "#2563eb", "padding": "1rem" });
+		export const Card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
 		export const App = () => // pandwind:migrate-skip (route: mantine -> solid-styled | lowering-residual: host-framework | available: named-map, target-native, residual)
 		<div className={Card.class} style={Card.style} />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
 		        {
 		          "outcome": "residual",
 		          "representation": "target-native",
@@ -340,13 +313,7 @@ test("solid-styled -> mantine -> solid-styled: preserves concrete theme and proj
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -374,33 +341,35 @@ test("solid-styled -> mantine -> solid-styled: resolves token references across 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <Card />;",
-		    "converted": 0,
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const Card = css.class({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "static",
+		        "outcome": "portable-artifact",
+		        "representation": "portable-artifact",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <Card />;",
+		    "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const Card = css.class({ "color": "$colors.brand", "padding": "1rem" });
+		export const App = () => <div className={Card} />;",
 		    "converted": 0,
 		    "outcomes": [],
 		    "residuals": [],

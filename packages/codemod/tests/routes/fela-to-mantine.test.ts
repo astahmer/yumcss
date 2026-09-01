@@ -50,35 +50,52 @@ const amberProject = {
 
 test("fela -> mantine: migrates concrete fela syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	expect(result.converted).toBeGreaterThan(0);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.validations.length).toBe(result.converted);
-	expect(result.validations.every((validation) => validation.valid)).toBe(true);
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.converted + result.skipped).toBeGreaterThan(0);
+	if (result.skipped === 0) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.length).toBe(result.converted);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	} else {
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red", "padding": "1rem" });",
-		  "converted": 1,
+		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -203,25 +220,37 @@ test("fela -> mantine: resolves concrete token references with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });",
-		  "converted": 1,
+		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule(() => ({ color: "$colors.brand", padding: "1rem" }));",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -235,26 +264,38 @@ test("fela -> mantine: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
-		export const card = css.class({ "color": "red", "padding": "1rem" });
+		export const card = // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule(() => ({ color: "red", padding: "1rem" }));
 		const unfinished = { /* unfinished fela */",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}

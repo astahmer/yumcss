@@ -67,9 +67,10 @@ test("solid-styled -> chakra-ui -> solid-styled: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -90,8 +91,9 @@ test("solid-styled -> chakra-ui -> solid-styled: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { styled } from "solid-styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const Card = styled.div({ "color": "red", "padding": "1rem" });
 		export const App = () => <div className={Card} />;",

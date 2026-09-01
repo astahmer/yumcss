@@ -92,23 +92,36 @@ test("mantine -> stylex -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style;",
-		    "converted": 1,
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		stylex.create({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).style;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -150,23 +163,36 @@ test("mantine -> stylex -> mantine: retains edge semantics without silent loss",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style;",
-		    "converted": 1,
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
+		stylex.create({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).style;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -240,25 +266,25 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style;",
-		      "converted": 1,
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).style;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -287,25 +313,25 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style;",
-		      "converted": 1,
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).style;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -356,25 +382,25 @@ test("mantine -> stylex -> mantine: resolves token references across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => createStyles({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).classes.style;",
-		    "converted": 1,
+		import * as stylex from "@stylexjs/stylex";
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		stylex.create({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).style;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

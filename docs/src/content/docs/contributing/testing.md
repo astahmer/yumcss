@@ -133,6 +133,12 @@ with:
 pnpm --filter pandwind-codemod test:e2e
 ```
 
+This CLI/temp-directory matrix is CI-only. The command is intentionally skipped
+on local runs unless both `CI=true` and `PANDWIND_CLI_MATRIX_E2E=1` are set, so
+routine local adapter work does not create `.tmp-codemod-e2e-*` or
+`.tmp-codemod-full-matrix-*` directories. CI invokes the package script with
+the opt-in flag and therefore retains the real CLI proof.
+
 `packages/codemod/tests/adapter-cli-full-matrix.test.ts` adds the production
 CLI smoke gate for every ordered happy route: 26 × 26 = 676 source/target
 pairs. It runs as part of `test:e2e` (and is kept out of V8 coverage because it

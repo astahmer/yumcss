@@ -60,9 +60,10 @@ test("react-native -> chakra-ui: migrates concrete react-native syntax to chakra
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "16px" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "16px" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -196,9 +197,10 @@ test("react-native -> chakra-ui: resolves concrete token references with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "$colors.brand", padding: "16px" }) };
+		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "16px" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -227,9 +229,10 @@ test("react-native -> chakra-ui: preserves malformed concrete react-native input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "16px" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "16px" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,

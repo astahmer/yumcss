@@ -63,10 +63,11 @@ test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui"
 		{
 		  "changed": true,
 		  "code": "<script setup>
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 
-		const Card = css({ color: "red", padding: "1rem" });
+		const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
 		  "converted": 1,
@@ -241,10 +242,11 @@ test("vue-styled -> chakra-ui: preserves malformed concrete vue-styled input", (
 		{
 		  "changed": true,
 		  "code": "<script setup>
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 
-		const Card = css({ color: "red", padding: "1rem" });
+		const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>
 		const unfinished = { /* unfinished vue-styled */",

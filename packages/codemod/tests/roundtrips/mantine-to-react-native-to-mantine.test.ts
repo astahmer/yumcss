@@ -86,23 +86,36 @@ test("mantine -> react-native -> mantine: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const App = () => <View    style={createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ style: { "color": "red", "padding": "var(--mantine-spacing-md)" } }).style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -142,23 +155,36 @@ test("mantine -> react-native -> mantine: retains edge semantics without silent 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const App = () => <View    style={createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ style: { "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" } }).style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -230,23 +256,36 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createStyles } from "@mantine/core";
-
-		export const App = () => <View    style={createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
-		      "converted": 1,
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -275,23 +314,36 @@ test("mantine -> react-native -> mantine: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createStyles } from "@mantine/core";
-
-		export const App = () => <View    style={createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
-		      "converted": 1,
+		      "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -342,23 +394,36 @@ test("mantine -> react-native -> mantine: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const App = () => <View    style={createStyles({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).classes.style}/>;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> mantine | lowering-residual: host-framework, validation)
+		StyleSheet.create({ style: { "color": "brand.0", "padding": "var(--mantine-spacing-md)" } }).style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },

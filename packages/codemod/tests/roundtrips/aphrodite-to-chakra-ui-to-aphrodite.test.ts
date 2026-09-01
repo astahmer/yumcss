@@ -65,9 +65,10 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("aphrodite -> chakra-ui -> aphrodite: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { StyleSheet } from "aphrodite";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
@@ -301,9 +303,10 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token references across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "$colors.brand", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -324,8 +327,9 @@ test("aphrodite -> chakra-ui -> aphrodite: resolves token references across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { StyleSheet } from "aphrodite";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": StyleSheet.create({ "color": "$colors.brand", "padding": "1rem" }) };
 		export const App = () => <div className={styles.card} />;",

@@ -83,7 +83,8 @@ component shape and is therefore invalid. This projection is selected by
 registry normalization and covered for every built-in dynamic class carrier.
 
 Runtime-capable targets make the same distinction for scalar expressions. A
-target-owned runtime object such as Chakra's `css()` or MUI's `styled()` may
+target-owned runtime object such as Chakra's `system.css()` (created with
+`createSystem(defaultConfig)`) or MUI's `styled()` may
 preserve a scalar expression when the expression remains in the source lexical
 scope; the adapter marks that representation explicitly so validation does not
 count the preserved IR residual as a failed conversion. This does not bless
@@ -555,11 +556,14 @@ where the ecosystem has them. Run this isolated proof with
 vitest.route-matrix.config.ts run -u`; it does not invoke the slower CLI suite.
 
 Named-style targets must emit syntax that their own source adapter can parse
-again. For example, Mantine named maps use its `createStyles(...).classes`
-carrier, while Tailwind named maps use an assigned class-map representation.
-These are adapter-owned policies, not generic runner exceptions. The route
-corpus consequently catches invalid bare-object output and proves reversibility
-for JSS, Aphrodite, Style9, StyleX, and React Native named-style routes.
+again. Modern Mantine has no standalone class factory in `@mantine/core`, so
+the adapter uses a host `style` prop for component projections and reports a
+residual for hostless named maps; legacy Emotion-backed Mantine projects must
+declare and load `@mantine/emotion` explicitly. Tailwind named maps use an
+assigned class-map representation. These are adapter-owned policies, not
+generic runner exceptions. The route corpus consequently catches invalid
+bare-object output and proves reversibility for JSS, Aphrodite, Style9, StyleX,
+and React Native named-style routes.
 
 Backends follow the same rule. CSS, object, React Native, and OpenTUI are
 registered as `StyleBackendFactory` plugins and are exercised by the generic

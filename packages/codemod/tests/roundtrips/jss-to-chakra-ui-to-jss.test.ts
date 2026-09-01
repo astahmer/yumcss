@@ -65,9 +65,10 @@ test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const useStyles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("jss -> chakra-ui -> jss: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { createUseStyles } from "react-jss";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const useStyles = { "card": createUseStyles({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;",

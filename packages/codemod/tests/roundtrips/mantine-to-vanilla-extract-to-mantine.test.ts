@@ -88,15 +88,13 @@ test("mantine -> vanilla-extract -> mantine: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "red", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -147,15 +145,13 @@ test("mantine -> vanilla-extract -> mantine: retains edge semantics without sile
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "theme.foreground", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -238,26 +234,25 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box  className={css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" })}/>;",
-		      "converted": 1,
+		import { style } from "@vanilla-extract/css";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -286,26 +281,25 @@ test("mantine -> vanilla-extract -> mantine: preserves concrete theme and projec
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box  className={css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" })}/>;",
-		      "converted": 1,
+		import { style } from "@vanilla-extract/css";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -356,26 +350,25 @@ test("mantine -> vanilla-extract -> mantine: resolves token references across bo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box  className={css.class({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" })}/>;",
-		    "converted": 1,
+		import { style } from "@vanilla-extract/css";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "brand.0", padding: "var(--mantine-spacing-md)" })}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

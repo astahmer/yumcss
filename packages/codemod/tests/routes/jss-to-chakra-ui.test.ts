@@ -60,9 +60,10 @@ test("jss -> chakra-ui: migrates concrete jss syntax to chakra-ui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const useStyles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -227,9 +228,10 @@ test("jss -> chakra-ui: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const useStyles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

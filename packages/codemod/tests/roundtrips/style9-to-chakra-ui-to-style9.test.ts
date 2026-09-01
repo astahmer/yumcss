@@ -65,9 +65,10 @@ test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("style9 -> chakra-ui -> style9: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import style9 from "style9";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
@@ -301,9 +303,10 @@ test("style9 -> chakra-ui -> style9: resolves token references across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "$colors.brand", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -324,8 +327,9 @@ test("style9 -> chakra-ui -> style9: resolves token references across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import style9 from "style9";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const styles = { "card": style9.create({ "color": "$colors.brand", "padding": "1rem" }) };
 		export const App = () => <div className={styles.card} />;",

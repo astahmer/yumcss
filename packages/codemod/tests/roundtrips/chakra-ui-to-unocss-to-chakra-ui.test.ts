@@ -95,8 +95,9 @@ test("chakra-ui -> unocss -> chakra-ui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -152,8 +153,9 @@ test("chakra-ui -> unocss -> chakra-ui: retains edge semantics without silent lo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -241,7 +243,8 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={"[background-color:var(--pandwind-dynamic-bbwvz3)] [padding:var(--chakra-spacing-4)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -292,7 +295,8 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		export const App = () => <Box  className={"[background-color:var(--pandwind-dynamic-bbwvz3)] [padding:var(--chakra-spacing-4)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -365,8 +369,9 @@ test("chakra-ui -> unocss -> chakra-ui: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

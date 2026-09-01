@@ -68,10 +68,11 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
 
-		const Card = css({ color: "red", padding: "1rem" });
+		const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
 		    "converted": 1,
@@ -94,8 +95,9 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves an actionable concrete ro
 		  "reverse": {
 		    "changed": true,
 		    "code": "<script setup>
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import styled from "vue-styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 
 
 		const Card = styled.div({ "color": "red", "padding": "1rem" });

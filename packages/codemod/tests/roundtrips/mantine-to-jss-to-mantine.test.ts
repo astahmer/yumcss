@@ -88,14 +88,13 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
+		export const App = () => <Box  className={{ style: { color: "red", padding: "var(--mantine-spacing-md)" } }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [],
@@ -146,14 +145,13 @@ test("mantine -> jss -> mantine: retains edge semantics without silent loss", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
 
-		export const App = () => <Box  className={createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
+		export const App = () => <Box  className={{ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "target-native",
+		        "representation": "named-map",
 		      },
 		    ],
 		    "residuals": [],
@@ -236,25 +234,25 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
-		      "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).attach().classes.style}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -283,25 +281,25 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
-		      "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).attach().classes.style}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -352,25 +350,25 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={createStyles({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).classes.attach().classes.style}/>;",
-		    "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).attach().classes.style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

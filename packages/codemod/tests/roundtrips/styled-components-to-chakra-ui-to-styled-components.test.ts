@@ -73,9 +73,10 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const Card = css({ color: "red", padding: "1rem" });
+		export const Card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -96,8 +97,9 @@ test("styled-components -> chakra-ui -> styled-components: preserves an actionab
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import styled from "styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const Card = styled.div({ color: "red", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
@@ -135,9 +137,10 @@ test("styled-components -> chakra-ui -> styled-components: retains edge semantic
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -160,8 +163,9 @@ test("styled-components -> chakra-ui -> styled-components: retains edge semantic
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import styled from "styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -231,9 +235,10 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -256,8 +261,9 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import styled from "styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -284,9 +290,10 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <div {...props} className={cx(chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -309,8 +316,9 @@ test("styled-components -> chakra-ui -> styled-components: preserves concrete th
 		      "changed": true,
 		      "code": "
 		import { createCx } from "pandwind/cx";
-		import { css } from "@chakra-ui/react";
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import styled from "styled-components";
+		const chakraSystem = createSystem(defaultConfig);
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",

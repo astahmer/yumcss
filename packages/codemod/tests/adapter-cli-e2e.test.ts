@@ -16,6 +16,10 @@ const pandwindSource =
 const pandwindFixture = adapterContractFixtures.find(
 	(fixture) => fixture.adapter === CodemodAdapterId.Pandwind,
 );
+const cliE2e =
+	process.env.CI === "true" && process.env.PANDWIND_CLI_MATRIX_E2E === "1"
+		? describe
+		: describe.skip;
 
 function runCli(
 	directory: string,
@@ -61,7 +65,7 @@ function runCli(
 	};
 }
 
-describe("CLI adapter migration e2e matrix", () => {
+cliE2e("CLI adapter migration e2e matrix", () => {
 	test("writes a host-dialect conversion to the target extension", () => {
 		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
 		const file = join(directory, "App.vue");

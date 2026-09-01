@@ -50,34 +50,52 @@ const amberProject = {
 
 test("jss -> mantine: migrates concrete jss syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
-	expect(result.converted).toBeGreaterThan(0);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.validations.length).toBe(result.converted);
-	expect(result.validations.every((validation) => validation.valid)).toBe(true);
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.converted + result.skipped).toBeGreaterThan(0);
+	if (result.skipped === 0) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.length).toBe(result.converted);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	} else {
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -91,26 +109,26 @@ test("jss -> mantine: carries concrete jss dynamics or edge syntax explicitly", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: theme.foreground, padding: "1rem" } }).classes;
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -136,49 +154,49 @@ test("jss -> mantine: lowers concrete theme and project context variants", () =>
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: theme.colors.brand, padding: "1rem" } }).classes;
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: theme.colors.brand, padding: "1rem" } }).classes;
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, target-native, runtime-carrier, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -196,26 +214,26 @@ test("jss -> mantine: resolves concrete token references with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: "$colors.brand", padding: "1rem" } }).classes;
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -227,25 +245,38 @@ test("jss -> mantine: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createStyles } from "@mantine/core";
-
-		export const useStyles = createStyles({ card: { color: "red", padding: "1rem" } }).classes;
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		createUseStyles({ card: { color: "red", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}

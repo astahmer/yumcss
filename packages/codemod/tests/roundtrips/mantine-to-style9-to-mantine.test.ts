@@ -88,23 +88,36 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={style9(createStyles({ style: { color: "red", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
-		    "converted": 1,
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ style: { "color": "red", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -146,23 +159,36 @@ test("mantine -> style9 -> mantine: retains edge semantics without silent loss",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={style9(createStyles({ style: { color: "theme.foreground", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
-		    "converted": 1,
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ style: { "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -236,23 +262,36 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={style9(createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
-		      "converted": 1,
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -283,23 +322,36 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={style9(createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
-		      "converted": 1,
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -352,23 +404,36 @@ test("mantine -> style9 -> mantine: resolves token references across both concre
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createStyles } from "@mantine/core";
-
-		export const App = () => <Box  className={style9(createStyles({ style: { color: "brand.0", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
-		    "converted": 1,
+		import style9 from "style9";
+		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		style9.create({ style: { "color": "brand.0", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },

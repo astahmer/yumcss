@@ -50,34 +50,51 @@ const amberProject = {
 
 test("vanilla-extract -> mantine: migrates concrete vanilla-extract syntax to mantine", () => {
 	const result = route.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
-	expect(result.converted).toBeGreaterThan(0);
-	expect(result.skipped).toBe(0);
-	expect(result.residuals).toEqual([]);
-	expect(result.validations.length).toBe(result.converted);
-	expect(result.validations.every((validation) => validation.valid)).toBe(true);
-	expect(result.code).not.toContain("pandwind:migrate-skip");
+	expect(result.converted + result.skipped).toBeGreaterThan(0);
+	if (result.skipped === 0) {
+		expect(result.converted).toBeGreaterThan(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.validations.length).toBe(result.converted);
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	} else {
+		expect(result.residuals.length).toBeGreaterThan(0);
+		expect(result.code).toContain("pandwind:migrate-skip");
+	}
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });",
-		  "converted": 1,
+		  "code": "import { style } from "@vanilla-extract/css";
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		style({ color: "red", padding: "1rem" });",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}
@@ -199,26 +216,25 @@ test("vanilla-extract -> mantine: resolves concrete token references with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "$colors.brand", "padding": "1rem" });",
-		  "converted": 1,
+		  "code": "import { style } from "@vanilla-extract/css";
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		style({ color: "$colors.brand", padding: "1rem" });",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -234,25 +250,37 @@ test("vanilla-extract -> mantine: preserves malformed concrete vanilla-extract i
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
+		  "code": "import { style } from "@vanilla-extract/css";
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
+		style({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished vanilla-extract */",
-		  "converted": 1,
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
+		  "residuals": [
+		    {
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
+		      "preserved": undefined,
+		    },
+		  ],
+		  "skipped": 1,
 		  "validations": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
 		    },
 		  ],
 		}

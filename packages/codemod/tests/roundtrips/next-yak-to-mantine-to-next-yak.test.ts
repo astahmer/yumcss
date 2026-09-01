@@ -65,16 +65,14 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		    "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -88,17 +86,27 @@ test("next-yak -> mantine -> next-yak: preserves an actionable concrete round tr
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "changed": true,
+		    "code": "import { css } from "next-yak";
 
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => css\`style: \${card};\`;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -116,50 +124,52 @@ test("next-yak -> mantine -> next-yak: retains edge semantics without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "host-runtime",
 		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
+		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => css\`style: \${card};\`;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);
@@ -209,100 +219,104 @@ test("next-yak -> mantine -> next-yak: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "host-runtime",
 		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
-		      "outcomes": [],
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => css\`style: \${card};\`;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "host-runtime",
 		          "representation": "residual",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
 		          "preserved": undefined,
 		        },
 		      ],
-		      "skipped": 1,
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
 		    "reverse": {
-		      "changed": false,
+		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
-		      "outcomes": [],
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => css\`style: \${card};\`;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -330,16 +344,14 @@ test("next-yak -> mantine -> next-yak: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "var(--colors-brand)", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		    "code": "
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -353,17 +365,27 @@ test("next-yak -> mantine -> next-yak: resolves token references across both con
 		    ],
 		  },
 		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "changed": true,
+		    "code": "import { css } from "next-yak";
 
-		export const card = css.class({ "color": "var(--colors-brand)", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => css\`style: \${card};\`;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
+		      },
+		    ],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

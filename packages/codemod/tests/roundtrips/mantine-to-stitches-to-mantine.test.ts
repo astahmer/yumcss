@@ -92,24 +92,36 @@ test("mantine -> stitches -> mantine: preserves an actionable concrete round tri
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "red", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "@stitches/react";
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "red", padding: "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -151,24 +163,36 @@ test("mantine -> stitches -> mantine: retains edge semantics without silent loss
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "@stitches/react";
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
+		css({ color: "theme.foreground", padding: "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -242,26 +266,25 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		import { css } from "@stitches/react";
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" });",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -290,26 +313,25 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		import { css } from "@stitches/react";
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" });",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -360,26 +382,25 @@ test("mantine -> stitches -> mantine: resolves token references across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => css.class({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		import { css } from "@stitches/react";
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css({ color: "brand.0", padding: "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

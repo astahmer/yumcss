@@ -60,9 +60,10 @@ test("aphrodite -> chakra-ui: migrates concrete aphrodite syntax to chakra-ui", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -196,9 +197,10 @@ test("aphrodite -> chakra-ui: resolves concrete token references with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "$colors.brand", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -227,9 +229,10 @@ test("aphrodite -> chakra-ui: preserves malformed concrete aphrodite input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@chakra-ui/react";
+		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const styles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,

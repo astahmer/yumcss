@@ -92,15 +92,13 @@ test("mantine -> treat -> mantine: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "red", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -155,15 +153,13 @@ test("mantine -> treat -> mantine: retains edge semantics without silent loss", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "theme.foreground", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -246,15 +242,13 @@ test("mantine -> treat -> mantine: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -294,15 +288,13 @@ test("mantine -> treat -> mantine: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -364,15 +356,13 @@ test("mantine -> treat -> mantine: resolves token references across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" })}/>;",
+		export const App = () => <Box  className={{ color: "brand.0", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

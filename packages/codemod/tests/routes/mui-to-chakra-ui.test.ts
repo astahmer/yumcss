@@ -71,8 +71,9 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "red", padding: "16px" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -101,8 +102,9 @@ test("mui -> chakra-ui: carries concrete mui dynamics or edge syntax explicitly"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -145,8 +147,9 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -167,8 +170,9 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -203,8 +207,9 @@ test("mui -> chakra-ui: resolves concrete token references with project context"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -233,8 +238,9 @@ test("mui -> chakra-ui: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { css } from "@chakra-ui/react";
-		export const App = () => <Box  className={css({ color: "red", padding: "16px" })}/>;
+		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
+		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "outcomes": [

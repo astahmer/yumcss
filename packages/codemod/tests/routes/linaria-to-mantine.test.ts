@@ -60,16 +60,14 @@ test("linaria -> mantine: migrates concrete linaria syntax to mantine", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		  "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -93,36 +91,28 @@ test("linaria -> mantine: carries concrete linaria dynamics or edge syntax expli
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		  "converted": 0,
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "host-runtime",
 		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "1 residual conversion(s)",
-		      "kind": "validation",
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
 		      "preserved": undefined,
 		    },
 		  ],
-		  "skipped": 1,
+		  "skipped": 0,
 		  "validations": [
 		    {
-		      "differences": [
-		        "1 residual conversion(s)",
-		      ],
-		      "lossiness": "lossy",
-		      "valid": false,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
 		}
@@ -151,72 +141,56 @@ test("linaria -> mantine: lowers concrete theme and project context variants", (
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "host-runtime",
 		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> mantine | lowering-residual: host-framework, validation)
-		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		export const card = { color: theme.colors.brand, padding: "1rem" };
+		export const App = () => <div style={card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "host-runtime",
 		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
+		        "hint": "dynamic style binding 'card' has no supported host use",
+		        "kind": "dynamic-values",
 		        "preserved": undefined,
 		      },
 		    ],
-		    "skipped": 1,
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -236,16 +210,14 @@ test("linaria -> mantine: resolves concrete token references with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "var(--colors-brand)", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		  "code": "
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <div style={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -268,17 +240,15 @@ test("linaria -> mantine: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;
+		  "code": "
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <div style={card} />;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],

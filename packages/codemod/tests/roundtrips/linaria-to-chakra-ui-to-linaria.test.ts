@@ -65,9 +65,10 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -88,8 +89,9 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css\`color: red; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
@@ -301,9 +303,10 @@ test("linaria -> chakra-ui -> linaria: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "var(--colors-brand)", padding: "1rem" });
+		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -324,8 +327,9 @@ test("linaria -> chakra-ui -> linaria: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@chakra-ui/react";
+		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
+		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css\`color: var(--colors-brand); padding: 1rem;\`;
 		export const App = () => <div className={card} />;",

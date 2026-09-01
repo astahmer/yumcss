@@ -87,23 +87,35 @@ test("mantine -> fela -> mantine: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => css.class({ "color": "red", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule({ "color": "red", "padding": "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -144,23 +156,35 @@ test("mantine -> fela -> mantine: retains edge semantics without silent loss", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => css.class({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule({ "color": "theme.foreground", "padding": "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -233,23 +257,35 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -279,23 +315,35 @@ test("mantine -> fela -> mantine: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => css.class({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule({ "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" });",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -347,23 +395,35 @@ test("mantine -> fela -> mantine: resolves token references across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-		export const App = () => css.class({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: fela -> mantine | lowering-residual: host-framework, validation)
+		renderer.renderRule({ "color": "brand.0", "padding": "var(--mantine-spacing-md)" });",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
 		      },
 		    ],
 		  },
