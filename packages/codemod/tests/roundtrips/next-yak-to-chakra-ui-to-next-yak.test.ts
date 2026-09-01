@@ -65,11 +65,10 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -89,12 +88,11 @@ test("next-yak -> chakra-ui -> next-yak: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "next-yak";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css\`color: red; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => css\`color: red; padding: 1rem;\`;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -128,7 +126,7 @@ test("next-yak -> chakra-ui -> next-yak: retains edge semantics without silent l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -144,6 +142,11 @@ test("next-yak -> chakra-ui -> next-yak: retains edge semantics without silent l
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -151,7 +154,7 @@ test("next-yak -> chakra-ui -> next-yak: retains edge semantics without silent l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -208,7 +211,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -224,6 +227,11 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -231,7 +239,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -245,7 +253,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -261,6 +269,11 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -268,7 +281,7 @@ test("next-yak -> chakra-ui -> next-yak: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "next-yak";
-		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: next-yak -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -303,11 +316,10 @@ test("next-yak -> chakra-ui -> next-yak: resolves token references across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "var(--colors-brand)", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -327,28 +339,27 @@ test("next-yak -> chakra-ui -> next-yak: resolves token references across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
+		import { css } from "next-yak";
 
-		export const card = // pandwind:migrate-skip (route: chakra-ui -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => css\`color: var(--colors-brand); padding: 1rem;\`;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

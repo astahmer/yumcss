@@ -71,10 +71,8 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "var(--mantine-spacing-md)" })}/>;",
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  css={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -95,9 +93,7 @@ test("mantine -> chakra-ui -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
+		export const App = () => <Box  style={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,10 +126,8 @@ test("mantine -> chakra-ui -> mantine: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "theme.foreground", padding: "var(--mantine-spacing-md)" })}/>;",
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  css={{ color: "theme.foreground", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -154,9 +148,7 @@ test("mantine -> chakra-ui -> mantine: retains edge semantics without silent los
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={{ color: "var(--chakra-colors-theme-foreground)", padding: "var(--mantine-spacing-md)" }}/>;",
+		export const App = () => <Box  style={{ color: "var(--chakra-colors-theme-foreground)", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -221,10 +213,8 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
+		      "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  css={{ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -244,36 +234,31 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
-		      "converted": 0,
+		      "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  style={{ color: "var(--chakra-colors-theme-colors-brand)", padding: "var(--mantine-spacing-md)" }}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
+		      "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  css={{ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -293,27 +278,24 @@ test("mantine -> chakra-ui -> mantine: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" })}/>;",
-		      "converted": 0,
+		      "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  style={{ color: "var(--chakra-colors-theme-colors-brand)", padding: "var(--mantine-spacing-md)" }}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -341,10 +323,8 @@ test("mantine -> chakra-ui -> mantine: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "brand.0", padding: "var(--mantine-spacing-md)" })}/>;",
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  css={{ color: "brand.0", padding: "var(--mantine-spacing-md)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -364,27 +344,24 @@ test("mantine -> chakra-ui -> mantine: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "brand.0", padding: "var(--mantine-spacing-md)" })}/>;",
-		    "converted": 0,
+		    "code": "import { Box } from "@mantine/core";
+		export const App = () => <Box  style={{ color: "var(--chakra-colors-brand-0)", padding: "var(--mantine-spacing-md)" }}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

@@ -60,10 +60,9 @@ test("jss -> chakra-ui: migrates concrete jss syntax to chakra-ui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const useStyles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
+		export const useStyles = { "card": defaultSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -93,7 +92,7 @@ test("jss -> chakra-ui: carries concrete jss dynamics or edge syntax explicitly"
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
@@ -104,6 +103,11 @@ test("jss -> chakra-ui: carries concrete jss dynamics or edge syntax explicitly"
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -138,7 +142,7 @@ test("jss -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,
@@ -149,6 +153,11 @@ test("jss -> chakra-ui: lowers concrete theme and project context variants", () 
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -161,7 +170,7 @@ test("jss -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,
@@ -172,6 +181,11 @@ test("jss -> chakra-ui: lowers concrete theme and project context variants", () 
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -228,10 +242,9 @@ test("jss -> chakra-ui: preserves malformed concrete jss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const useStyles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
+		export const useStyles = { "card": defaultSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,

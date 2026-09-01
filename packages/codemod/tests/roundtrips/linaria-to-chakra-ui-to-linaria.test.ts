@@ -65,11 +65,10 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -89,12 +88,11 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css\`color: red; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div  className={css\`color: red; padding: 1rem;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -128,7 +126,7 @@ test("linaria -> chakra-ui -> linaria: retains edge semantics without silent los
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -144,6 +142,11 @@ test("linaria -> chakra-ui -> linaria: retains edge semantics without silent los
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -151,7 +154,7 @@ test("linaria -> chakra-ui -> linaria: retains edge semantics without silent los
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -208,7 +211,7 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -224,6 +227,11 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -231,7 +239,7 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -245,7 +253,7 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -261,6 +269,11 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		          "kind": "dynamic",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
@@ -268,7 +281,7 @@ test("linaria -> chakra-ui -> linaria: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -303,11 +316,10 @@ test("linaria -> chakra-ui -> linaria: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "var(--colors-brand)", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -327,12 +339,11 @@ test("linaria -> chakra-ui -> linaria: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css\`color: var(--colors-brand); padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <chakra.div  className={css\`color: var(--colors-brand); padding: 1rem;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

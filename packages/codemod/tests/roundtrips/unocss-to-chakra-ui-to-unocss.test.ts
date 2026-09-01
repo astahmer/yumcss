@@ -71,9 +71,8 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
+		    "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -93,9 +92,8 @@ test("unocss -> chakra-ui -> unocss: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <div  className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
+		    "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  className={"[display:flex] [align-items:center] [gap:1rem]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

@@ -69,11 +69,10 @@ test("panda -> chakra-ui -> panda: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -93,12 +92,11 @@ test("panda -> chakra-ui -> panda: preserves an actionable concrete round trip",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div  className={css({ color: "red", padding: "1rem" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -131,52 +129,43 @@ test("panda -> chakra-ui -> panda: retains edge semantics without silent loss", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
-		    "converted": 1,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "residual",
 		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "changed": false,
+		    "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);
@@ -225,92 +214,57 @@ test("panda -> chakra-ui -> panda: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = // pandwind:migrate-skip (route: chakra-ui -> panda | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		      "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "custom-property",
 		        },
 		      ],
 		      "residuals": [
 		        {
 		          "hint": "theme-context: 1 theme binding(s)",
 		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
 		      "validations": [],
 		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = // pandwind:migrate-skip (route: chakra-ui -> panda | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		      "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "custom-property",
 		        },
 		      ],
 		      "residuals": [
@@ -319,8 +273,25 @@ test("panda -> chakra-ui -> panda: preserves concrete theme and project context 
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "styled-system/css";
+		export const card = // pandwind:migrate-skip (route: panda -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },

@@ -60,10 +60,9 @@ test("vanilla-extract -> chakra-ui: migrates concrete vanilla-extract syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -233,10 +232,9 @@ test("vanilla-extract -> chakra-ui: preserves malformed concrete vanilla-extract
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "outcomes": [

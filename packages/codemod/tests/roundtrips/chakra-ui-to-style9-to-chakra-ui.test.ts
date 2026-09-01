@@ -88,10 +88,9 @@ test("chakra-ui -> style9 -> chakra-ui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={style9({ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style)}/>;",
+		export const App = () => <Box  className={style9({ "style": defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -148,10 +147,9 @@ test("chakra-ui -> style9 -> chakra-ui: retains edge semantics without silent lo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={style9({ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style)}/>;
+		export const App = () => <Box  className={style9({ "style": defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style)}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -240,10 +238,9 @@ test("chakra-ui -> style9 -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={style9({ "style": chakraSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box  className={style9({ "style": defaultSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -288,10 +285,9 @@ test("chakra-ui -> style9 -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={style9({ "style": chakraSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box  className={style9({ "style": defaultSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -358,10 +354,9 @@ test("chakra-ui -> style9 -> chakra-ui: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={style9({ "style": chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }) }.style)}/>;",
+		export const App = () => <Box  className={style9({ "style": defaultSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

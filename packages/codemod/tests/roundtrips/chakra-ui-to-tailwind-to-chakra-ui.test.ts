@@ -91,9 +91,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -149,9 +147,7 @@ test("chakra-ui -> tailwind -> chakra-ui: retains edge semantics without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -239,23 +235,15 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={"[background-color:var(--pandwind-dynamic-bbwvz3)] [padding:var(--chakra-spacing-4)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box  style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "chakra-ui class projection will not overwrite an existing style prop",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -291,23 +279,15 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={"[background-color:var(--pandwind-dynamic-bbwvz3)] [padding:var(--chakra-spacing-4)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box  style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "chakra-ui class projection will not overwrite an existing style prop",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -365,9 +345,7 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token references across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box  css={{ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

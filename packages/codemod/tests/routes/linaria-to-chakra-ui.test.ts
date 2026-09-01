@@ -60,11 +60,10 @@ test("linaria -> chakra-ui: migrates concrete linaria syntax to chakra-ui", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -93,7 +92,7 @@ test("linaria -> chakra-ui: carries concrete linaria dynamics or edge syntax exp
 		{
 		  "changed": true,
 		  "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.foreground}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		  "converted": 0,
@@ -107,6 +106,11 @@ test("linaria -> chakra-ui: carries concrete linaria dynamics or edge syntax exp
 		    {
 		      "hint": "template interpolation requires a runtime-aware lowering",
 		      "kind": "dynamic",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		      "kind": "dynamic-custom-property",
 		      "preserved": undefined,
 		    },
 		  ],
@@ -138,7 +142,7 @@ test("linaria -> chakra-ui: lowers concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -154,6 +158,11 @@ test("linaria -> chakra-ui: lowers concrete theme and project context variants",
 		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
 		    ],
 		    "skipped": 1,
 		    "validations": [],
@@ -161,7 +170,7 @@ test("linaria -> chakra-ui: lowers concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: linaria -> chakra-ui | parse-residual: dynamic | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -175,6 +184,11 @@ test("linaria -> chakra-ui: lowers concrete theme and project context variants",
 		      {
 		        "hint": "template interpolation requires a runtime-aware lowering",
 		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -197,11 +211,10 @@ test("linaria -> chakra-ui: resolves concrete token references with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "var(--colors-brand)", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "var(--colors-brand)", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "var(--colors-brand)", padding: "1rem" }} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -229,11 +242,10 @@ test("linaria -> chakra-ui: preserves malformed concrete linaria input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "outcomes": [

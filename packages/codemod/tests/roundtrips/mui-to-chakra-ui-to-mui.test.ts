@@ -76,9 +76,7 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;",
+		export const App = () => <Box  css={{ color: "red", padding: "16px" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -99,26 +97,23 @@ test("mui -> chakra-ui -> mui: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		chakraSystem.css({ color: "red", padding: "16px" })}/>;",
-		    "converted": 0,
+		export const App = () => <Box  sx={{ color: "red", padding: "16px" }}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);
@@ -136,48 +131,39 @@ test("mui -> chakra-ui -> mui: retains edge semantics without silent loss", () =
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | available: static, named-map, residual)
-		chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.foreground, p: 2 }} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "custom-property",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "reverse": {
+		    "changed": false,
+		    "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		    "converted": 0,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}
@@ -228,38 +214,13 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "custom-property",
 		        },
 		      ],
 		      "residuals": [
@@ -269,12 +230,23 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		          "kind": "host-framework",
+		          "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -282,38 +254,13 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
-		        },
-		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "static",
+		          "representation": "custom-property",
 		        },
 		      ],
 		      "residuals": [
@@ -323,12 +270,23 @@ test("mui -> chakra-ui -> mui: preserves concrete theme and project context vari
 		          "preserved": undefined,
 		        },
 		        {
-		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		          "kind": "host-framework",
+		          "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { Box } from "@mui/material";
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
@@ -358,9 +316,7 @@ test("mui -> chakra-ui -> mui: resolves token references across both concrete le
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
+		export const App = () => <Box  css={{ color: "var(--mui-primary-main)", padding: "16px" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -381,31 +337,23 @@ test("mui -> chakra-ui -> mui: resolves token references across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: chakra-ui -> mui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
-		    "converted": 0,
+		export const App = () => <Box  sx={{ color: "var(--mui-primary-main)", padding: "16px" }}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
-		        "kind": "host-framework",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

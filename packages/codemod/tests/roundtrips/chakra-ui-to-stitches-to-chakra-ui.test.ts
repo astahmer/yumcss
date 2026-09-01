@@ -92,10 +92,9 @@ test("chakra-ui -> stitches -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
+		export const App = () => defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -152,10 +151,9 @@ test("chakra-ui -> stitches -> chakra-ui: retains edge semantics without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
+		export const App = () => defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [

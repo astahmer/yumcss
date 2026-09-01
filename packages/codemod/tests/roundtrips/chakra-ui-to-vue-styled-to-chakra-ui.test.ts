@@ -91,7 +91,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "backgroundColor": "tomato", "padding": "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -104,6 +104,11 @@ test("chakra-ui -> vue-styled -> chakra-ui: preserves an actionable concrete rou
 		      {
 		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "chakra-ui has no host representation for vue",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -150,7 +155,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains edge semantics without silen
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "backgroundColor": "tomato", "padding": "var(--chakra-spacing-4)" });
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 0,
@@ -164,6 +169,11 @@ test("chakra-ui -> vue-styled -> chakra-ui: retains edge semantics without silen
 		      {
 		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "chakra-ui has no host representation for vue",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],
@@ -343,7 +353,7 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token references across bot
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "backgroundColor": "$colors.brand", "padding": "var(--chakra-spacing-4)" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -356,6 +366,11 @@ test("chakra-ui -> vue-styled -> chakra-ui: resolves token references across bot
 		      {
 		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue",
 		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "chakra-ui has no host representation for vue",
+		        "kind": "host-framework",
 		        "preserved": undefined,
 		      },
 		    ],

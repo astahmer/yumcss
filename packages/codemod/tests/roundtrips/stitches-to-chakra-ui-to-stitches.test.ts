@@ -69,10 +69,9 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card()} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -93,9 +92,8 @@ test("stitches -> chakra-ui -> stitches: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		import { css } from "@stitches/react";
-		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = css({ color: "red", padding: "1rem" });
 		export const App = () => <div className={card()} />;",

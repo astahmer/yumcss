@@ -69,10 +69,9 @@ test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;",
+		export const App = () => <chakra.div  css={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -92,10 +91,9 @@ test("tailwind -> chakra-ui -> tailwind: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;",
+		export const App = () => <chakra.div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -128,10 +126,9 @@ test("tailwind -> chakra-ui -> tailwind: retains edge semantics without silent l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;
+		export const App = () => <chakra.div  css={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -152,10 +149,9 @@ test("tailwind -> chakra-ui -> tailwind: retains edge semantics without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;
+		export const App = () => <chakra.div  className={"[display:flex] [gap:1rem] [padding:1rem] [color:#000]"}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [

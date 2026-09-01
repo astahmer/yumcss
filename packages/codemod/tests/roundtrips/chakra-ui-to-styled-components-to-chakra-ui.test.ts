@@ -247,7 +247,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: named-map, custom-property, residual)
 		styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -258,7 +258,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -299,7 +299,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: named-map, custom-property, residual)
 		styled.div({ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -310,7 +310,7 @@ test("chakra-ui -> styled-components -> chakra-ui: preserves concrete theme and 
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },

@@ -97,9 +97,7 @@ test("chakra-ui -> mui -> chakra-ui: preserves an actionable concrete round trip
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -155,9 +153,7 @@ test("chakra-ui -> mui -> chakra-ui: retains edge semantics without silent loss"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -245,25 +241,29 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box  sx={{ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" }}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -291,25 +291,29 @@ test("chakra-ui -> mui -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "var(--pandwind-dynamic-bbwvz3)", padding: "var(--chakra-spacing-4)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
-		      "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box  sx={{ backgroundColor: theme.colors.brand, padding: "var(--chakra-spacing-4)" }}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

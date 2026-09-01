@@ -60,10 +60,9 @@ test("style9 -> chakra-ui: migrates concrete style9 syntax to chakra-ui", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -93,7 +92,7 @@ test("style9 -> chakra-ui: carries concrete style9 dynamics or edge syntax expli
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
@@ -104,6 +103,11 @@ test("style9 -> chakra-ui: carries concrete style9 dynamics or edge syntax expli
 		    },
 		  ],
 		  "residuals": [
+		    {
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -138,7 +142,7 @@ test("style9 -> chakra-ui: lowers concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
@@ -149,6 +153,11 @@ test("style9 -> chakra-ui: lowers concrete theme and project context variants", 
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -161,7 +170,7 @@ test("style9 -> chakra-ui: lowers concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import style9 from "style9";
-		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: style9 -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
 		style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 0,
@@ -172,6 +181,11 @@ test("style9 -> chakra-ui: lowers concrete theme and project context variants", 
 		      },
 		    ],
 		    "residuals": [
+		      {
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -197,10 +211,9 @@ test("style9 -> chakra-ui: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const styles = { "card": chakraSystem.css({ color: "$colors.brand", padding: "1rem" }) };
+		export const styles = { "card": defaultSystem.css({ color: "$colors.brand", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -229,10 +242,9 @@ test("style9 -> chakra-ui: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const styles = { "card": chakraSystem.css({ color: "red", padding: "1rem" }) };
+		export const styles = { "card": defaultSystem.css({ color: "red", padding: "1rem" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

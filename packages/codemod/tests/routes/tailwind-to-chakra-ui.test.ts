@@ -64,10 +64,9 @@ test("tailwind -> chakra-ui: migrates concrete tailwind syntax to chakra-ui", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;",
+		export const App = () => <chakra.div  css={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -95,10 +94,9 @@ test("tailwind -> chakra-ui: carries concrete tailwind dynamics or edge syntax e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;
+		export const App = () => <chakra.div  css={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -229,10 +227,9 @@ test("tailwind -> chakra-ui: preserves malformed concrete tailwind input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { chakra } from "@chakra-ui/react";
 
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;
+		export const App = () => <chakra.div  css={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "outcomes": [

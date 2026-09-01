@@ -66,9 +66,8 @@ test("unocss -> chakra-ui: migrates concrete unocss syntax to chakra-ui", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
+		  "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -224,9 +223,8 @@ test("unocss -> chakra-ui: preserves malformed concrete unocss input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <div  className={chakraSystem.css({ display: "flex", alignItems: "center", gap: "1rem" })}/>;
+		  "code": "import { chakra } from "@chakra-ui/react";
+		export const App = () => <chakra.div  css={{ display: "flex", alignItems: "center", gap: "1rem" }}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "outcomes": [

@@ -86,26 +86,25 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "backgroundColor": "tomato", "padding": "var(--chakra-spacing-4)" } }).style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
+		        "outcome": "residual",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "chakra-ui has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -144,27 +143,26 @@ test("chakra-ui -> react-native -> chakra-ui: retains edge semantics without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }) }.style}/>;
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "backgroundColor": "tomato", "padding": "var(--chakra-spacing-4)" } }).style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
+		        "outcome": "residual",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "chakra-ui has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -336,26 +334,25 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const App = () => <View    style={{ "style": chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" }) }.style}/>;",
-		    "converted": 1,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const App = () => <View    style={// pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
+		StyleSheet.create({ style: { "backgroundColor": "$colors.brand", "padding": "var(--chakra-spacing-4)" } }).style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "target-native",
+		        "outcome": "residual",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "chakra-ui has no host representation for react-native",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

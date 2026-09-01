@@ -88,10 +88,9 @@ test("chakra-ui -> goober -> chakra-ui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
+		export const App = () => defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -148,10 +147,9 @@ test("chakra-ui -> goober -> chakra-ui: retains edge semantics without silent lo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
+		export const App = () => defaultSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" });
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -360,10 +358,9 @@ test("chakra-ui -> goober -> chakra-ui: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => chakraSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" });",
+		export const App = () => defaultSystem.css({ backgroundColor: "$colors.brand", padding: "var(--chakra-spacing-4)" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {

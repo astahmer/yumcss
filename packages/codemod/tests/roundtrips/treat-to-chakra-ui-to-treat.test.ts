@@ -70,9 +70,8 @@ test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip",
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
+		import { defaultSystem } from "@chakra-ui/react";
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -93,9 +92,8 @@ test("treat -> chakra-ui -> treat: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		import { style } from "@/styles.treat";
-		const chakraSystem = createSystem(defaultConfig);
 		export const card = style({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
@@ -316,9 +314,8 @@ test("treat -> chakra-ui -> treat: resolves token references across both concret
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const card = chakraSystem.css({ color: "$colors.brand", padding: "1rem" });",
+		import { defaultSystem } from "@chakra-ui/react";
+		export const card = defaultSystem.css({ color: "$colors.brand", padding: "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -339,9 +336,8 @@ test("treat -> chakra-ui -> treat: resolves token references across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
+		import { defaultSystem } from "@chakra-ui/react";
 		import { style } from "@/styles.treat";
-		const chakraSystem = createSystem(defaultConfig);
 		export const card = style({ "color": "$colors.brand", "padding": "1rem" });",
 		    "converted": 1,
 		    "outcomes": [

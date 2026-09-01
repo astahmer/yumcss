@@ -93,11 +93,9 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;",
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -155,11 +153,9 @@ test("chakra-ui -> pandwind -> chakra-ui: retains edge semantics without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
 
 		const css = createCss();
-		export const App = () => <Box  className={chakraSystem.css({ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" })}/>;
+		export const App = () => <Box  css={{ backgroundColor: "tomato", padding: "var(--chakra-spacing-4)" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [

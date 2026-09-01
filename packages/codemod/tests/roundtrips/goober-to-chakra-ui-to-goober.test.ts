@@ -65,11 +65,10 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "red", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -89,12 +88,11 @@ test("goober -> chakra-ui -> goober: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "goober";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => css({ "color": "red", "padding": "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -127,52 +125,43 @@ test("goober -> chakra-ui -> goober: retains edge semantics without silent loss"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
-		    "converted": 1,
+		    "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "residual",
 		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		import { css } from "goober";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = css({ "color": "var(--pandwind-dynamic-5qa8dh)", "padding": "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
+		    "changed": false,
+		    "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);
@@ -221,103 +210,85 @@ test("goober -> chakra-ui -> goober: preserves concrete theme and project contex
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
+		      "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		import { css } from "goober";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = css({ "color": "var(--pandwind-dynamic-bbwvz3)", "padding": "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "changed": false,
+		      "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = chakraSystem.css({ color: "var(--pandwind-dynamic-bbwvz3)", padding: "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
+		      "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "custom-property",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		    "reverse": {
-		      "changed": true,
-		      "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		import { css } from "goober";
-		const chakraSystem = createSystem(defaultConfig);
-
-		export const card = css({ "color": "var(--pandwind-dynamic-bbwvz3)", "padding": "1rem" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "static",
-		          "representation": "static",
-		        },
-		      ],
+		      "changed": false,
+		      "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
 		      "residuals": [],
 		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
+		      "validations": [],
 		    },
 		  },
 		}
@@ -345,11 +316,10 @@ test("goober -> chakra-ui -> goober: resolves token references across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { chakra } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => <chakra.div css={{ color: "$colors.brand", padding: "1rem" }} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -369,12 +339,11 @@ test("goober -> chakra-ui -> goober: resolves token references across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { chakra } from "@chakra-ui/react";
 		import { css } from "goober";
-		const chakraSystem = createSystem(defaultConfig);
 
-		export const card = css({ "color": "$colors.brand", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
+		export const card = { color: "$colors.brand", padding: "1rem" };
+		export const App = () => css({ "color": "$colors.brand", "padding": "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {

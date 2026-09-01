@@ -60,11 +60,10 @@ test("fela -> chakra-ui: migrates concrete fela syntax to chakra-ui", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const renderer = createRenderer();
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -203,11 +202,10 @@ test("fela -> chakra-ui: resolves concrete token references with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const renderer = createRenderer();
-		export const card = chakraSystem.css({ color: "$colors.brand", padding: "1rem" });",
+		export const card = defaultSystem.css({ color: "$colors.brand", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -235,11 +233,10 @@ test("fela -> chakra-ui: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
 
 		const renderer = createRenderer();
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "outcomes": [

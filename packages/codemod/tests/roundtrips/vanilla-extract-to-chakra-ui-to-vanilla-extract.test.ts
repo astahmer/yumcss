@@ -65,10 +65,9 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -88,9 +87,8 @@ test("vanilla-extract -> chakra-ui -> vanilla-extract: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createSystem, defaultConfig } from "@chakra-ui/react";
+		    "code": "import { defaultSystem } from "@chakra-ui/react";
 		import { style } from "@vanilla-extract/css";
-		const chakraSystem = createSystem(defaultConfig);
 
 		export const card = style({ color: "red", padding: "1rem" });",
 		    "converted": 1,

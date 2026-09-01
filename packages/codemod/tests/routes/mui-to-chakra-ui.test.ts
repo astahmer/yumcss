@@ -71,9 +71,7 @@ test("mui -> chakra-ui: migrates concrete mui syntax to chakra-ui", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;",
+		export const App = () => <Box  css={{ color: "red", padding: "16px" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -102,25 +100,29 @@ test("mui -> chakra-ui: carries concrete mui dynamics or edge syntax explicitly"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-5qa8dh)", padding: "16px" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
-		  "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.foreground, p: 2 }} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "host-runtime",
+		      "outcome": "residual",
 		      "representation": "custom-property",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "theme-context: 1 theme binding(s)",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
+		      "kind": "dynamic-custom-property",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
@@ -147,48 +149,56 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "residual",
 		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--pandwind-dynamic-d9jp16)", padding: "16px" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		    "converted": 1,
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "residual",
 		        "representation": "custom-property",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "theme-context: 1 theme binding(s)",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -207,9 +217,7 @@ test("mui -> chakra-ui: resolves concrete token references with project context"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "var(--mui-primary-main)", padding: "16px" })}/>;",
+		export const App = () => <Box  css={{ color: "var(--mui-primary-main)", padding: "16px" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -238,9 +246,7 @@ test("mui -> chakra-ui: preserves malformed concrete mui input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const App = () => <Box  className={chakraSystem.css({ color: "red", padding: "16px" })}/>;
+		export const App = () => <Box  css={{ color: "red", padding: "16px" }}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "outcomes": [

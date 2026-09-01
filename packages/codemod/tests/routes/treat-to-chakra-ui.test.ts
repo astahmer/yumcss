@@ -65,9 +65,8 @@ test("treat -> chakra-ui: migrates concrete treat syntax to chakra-ui", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });",
+		import { defaultSystem } from "@chakra-ui/react";
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -204,9 +203,8 @@ test("treat -> chakra-ui: resolves concrete token references with project contex
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const card = chakraSystem.css({ color: "$colors.brand", padding: "1rem" });",
+		import { defaultSystem } from "@chakra-ui/react";
+		export const card = defaultSystem.css({ color: "$colors.brand", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -239,9 +237,8 @@ test("treat -> chakra-ui: preserves malformed concrete treat input", () => {
 		{
 		  "changed": true,
 		  "code": "import { style } from "@treatjs/treat";
-		import { createSystem, defaultConfig } from "@chakra-ui/react";
-		const chakraSystem = createSystem(defaultConfig);
-		export const card = chakraSystem.css({ color: "red", padding: "1rem" });
+		import { defaultSystem } from "@chakra-ui/react";
+		export const card = defaultSystem.css({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "outcomes": [
