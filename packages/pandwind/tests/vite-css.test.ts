@@ -63,6 +63,30 @@ test("findCssCallSites reports extraction coverage with provenance", () => {
 		staticArguments: 0,
 		dynamicArguments: 1,
 	});
+	expect(sites).toMatchInlineSnapshot(`
+		[
+		  {
+		    "callKind": "css.class",
+		    "column": 13,
+		    "dynamicArguments": 0,
+		    "end": 120,
+		    "file": "src/card.tsx",
+		    "line": 4,
+		    "start": 76,
+		    "staticArguments": 1,
+		  },
+		  {
+		    "callKind": "css",
+		    "column": 13,
+		    "dynamicArguments": 1,
+		    "end": 159,
+		    "file": "src/card.tsx",
+		    "line": 5,
+		    "start": 134,
+		    "staticArguments": 0,
+		  },
+		]
+	`);
 });
 
 test("diagnoseCssSources reports unsupported constructs and missed extraction", () => {
@@ -87,6 +111,30 @@ test("diagnoseCssSources reports unsupported constructs and missed extraction", 
 		message: expect.stringContaining("dynamic"),
 		suggestion: expect.stringContaining("css.vars"),
 	});
+	expect(diagnostics).toMatchInlineSnapshot(`
+		[
+		  {
+		    "column": 3,
+		    "end": 105,
+		    "file": "src/card.tsx",
+		    "kind": "unsupported-construct",
+		    "line": 4,
+		    "message": "Authored keyframes are not extracted yet.",
+		    "start": 66,
+		    "suggestion": "Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+		  },
+		  {
+		    "column": 3,
+		    "end": 140,
+		    "file": "src/card.tsx",
+		    "kind": "missing-extraction",
+		    "line": 5,
+		    "message": "css.class has dynamic argument(s); only literal style objects enter the generated stylesheet.",
+		    "start": 109,
+		    "suggestion": "Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+		  },
+		]
+	`);
 });
 
 test("extractCssSources records stable call provenance without changing styles", () => {
@@ -104,6 +152,23 @@ test("extractCssSources records stable call provenance without changing styles",
 		},
 	});
 	expect(sources[0]!.provenance.end).toBeGreaterThan(sources[0]!.provenance.start);
+	expect(sources).toMatchInlineSnapshot(`
+		[
+		  {
+		    "provenance": {
+		      "callKind": "css.class",
+		      "column": 11,
+		      "end": 101,
+		      "file": "/src/card.tsx",
+		      "line": 4,
+		      "start": 54,
+		    },
+		    "style": {
+		      "color": "#3182ce",
+		    },
+		  },
+		]
+	`);
 });
 
 test("extractCssFile keeps styles and var keys equivalent in one parse", () => {
@@ -228,11 +293,28 @@ test("extractCssStyles resolves design modules in literal calls", () => {
 		const b = css.class({ $layout: { flow: "stackY", gap: "16" } });
 		const c = css.raw({ $text: { color: "$red-300" } });
 	`;
-	expect(extract().extractStyles(code, "app.ts", new Set(["css"]))).toEqual([
+	const styles = extract().extractStyles(code, "app.ts", new Set(["css"]));
+	expect(styles).toEqual([
 		{ width: "20px", backgroundColor: "#3182ce" },
 		{ display: "flex", flexDirection: "column", gap: "16px" },
 		{ color: "#FC8181" },
 	]);
+	expect(styles).toMatchInlineSnapshot(`
+		[
+		  {
+		    "backgroundColor": "#3182ce",
+		    "width": "20px",
+		  },
+		  {
+		    "display": "flex",
+		    "flexDirection": "column",
+		    "gap": "16px",
+		  },
+		  {
+		    "color": "#FC8181",
+		  },
+		]
+	`);
 });
 
 test("extractCssStyles skips dynamic calls and processes each argument", () => {
@@ -277,6 +359,16 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 	expect(result.inlined).toBe(2);
 	expect(result.code).toContain('const a = "text-blue-500";');
 	expect(result.code).toContain('const b = {"backgroundColor":"bg-red-500"};');
+	expect(result).toMatchInlineSnapshot(`
+		{
+		  "code": "
+				import { css } from "./design";
+				const a = "text-blue-500";
+				const b = {"backgroundColor":"bg-red-500"};
+			",
+		  "inlined": 2,
+		}
+	`);
 });
 
 test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => {
@@ -295,6 +387,19 @@ test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => 
 	expect(result.code).toContain("const c = css.props({});");
 	// Multi-arg class calls are still inlined (merged).
 	expect(result.code).toContain('const d = "text-blue-500 bg-red-500";');
+	expect(result).toMatchInlineSnapshot(`
+		{
+		  "code": "
+				import { css } from "./design";
+				const color = "$blue-500";
+				const a = css.class({ $text: { color } });
+				const b = css.raw({ $text: { color: "$blue-500" } });
+				const c = css.props({});
+				const d = "text-blue-500 bg-red-500";
+			",
+		  "inlined": 1,
+		}
+	`);
 });
 
 test("pandwindCssVite with className serves empty CSS and inlines calls", () => {
@@ -333,6 +438,12 @@ const makeProject = (files: Record<string, string>): string => {
 const loadGenerated = (plugin: ReturnType<typeof pandwindCssVite>): string =>
 	plugin.load("\0pandwind:css.css") as string;
 
+const relevantCss = (css: string, markers: readonly string[]): string =>
+	css
+		.split("\n")
+		.filter((line) => markers.some((marker) => line.includes(marker)))
+		.join("\n");
+
 test("pandwindCssVite generates the stylesheet from scanned files", () => {
 	const dir = makeProject({
 		"src/design.ts": "export const css = (x: unknown) => x; // module that imports stay valid",
@@ -366,6 +477,25 @@ test("pandwindCssVite generates the stylesheet from scanned files", () => {
 		expect(generated).toContain("border-radius:0.5rem");
 		// node_modules is never scanned
 		expect(generated).not.toContain("background-color:#60A3BC");
+		expect(
+			relevantCss(generated, [
+				"width:20px",
+				"background-color:#3182ce",
+				"flex-direction:column",
+				"border-radius:0.5rem",
+			]),
+		).toMatchInlineSnapshot(`
+			".\\31 ugydhi{border-radius:0.5rem}
+			.\\31 xccw59{background-color:#3182ce}
+			.lh3u0m{flex-direction:column}
+			.try5ud{width:20px}"
+		`);
+		/*
+		 * The full stylesheet is intentionally not snapshotted here: the default
+		 * preset contributes a large token catalog. The rule-level snapshot above
+		 * keeps this test focused on scanned source and the assertions above still
+		 * verify the complete artifact's inclusion/exclusion behavior.
+		 */
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
@@ -456,6 +586,10 @@ test("pandwindCssVite serves conditions and semantic tokens", () => {
 		const generated = loadGenerated(plugin);
 		expect(generated).toContain(":hover");
 		expect(generated).toContain("padding:20px");
+		expect(relevantCss(generated, ["padding:20px", ":hover"])).toMatchInlineSnapshot(`
+			".\\31 e60pra{padding:20px}
+			.\\31 qx89tq:hover{color:#60A3BC}"
+		`);
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}
