@@ -36,6 +36,7 @@ import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
 import { StyleNamedRuleStrategy } from "./identifiers.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
+import { projectStaticSubjectMigration } from "./adapter-projections.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -1070,7 +1071,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		capabilities,
 		dependencies: spec.packages,
 		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
-		migration: spec.migration,
+		migration: projectStaticSubjectMigration(spec.migration),
 		detect: (context) =>
 			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??
 			detectBy(spec.detectPatterns, context),
