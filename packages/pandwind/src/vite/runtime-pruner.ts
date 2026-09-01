@@ -226,36 +226,47 @@ export interface RuntimePruningTransform {
 }
 
 /** Select the smallest safe CSS runtime for each local factory usage. */
-export const createRuntimePruningTransform = (): RuntimePruningTransform => ({
-	transform(code, id) {
-		if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return null;
-		const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
-			.program as unknown as OxcNode;
-		const imports = collectImports(program);
-		if (imports.length === 0) return null;
-		const replacements = new Map<string, { start: number; end: number; text: string }>();
-		for (const runtimeImport of imports) {
-			const methods = methodsFor(program, runtimeImport.local);
-			if (methods === undefined || methods.size === ALL_METHODS.length) continue;
-			const replacement = {
-				start: runtimeImport.sourceStart,
-				end: runtimeImport.sourceEnd,
-				text: JSON.stringify(virtualIdFor(methods)),
-			};
-			replacements.set(`${replacement.start}:${replacement.end}`, replacement);
-		}
-		if (replacements.size === 0) return null;
-		let output = code;
-		for (const replacement of [...replacements.values()].toReversed()) {
-			output =
-				output.slice(0, replacement.start) + replacement.text + output.slice(replacement.end);
-		}
-		return { code: output, map: null };
-	},
-	resolveId(source) {
-		return source.startsWith(VIRTUAL_PREFIX) ? `\0${source}` : null;
-	},
-	load(id) {
-		return id.startsWith(VIRTUAL_ID_PREFIX) ? runtimeModule(parseMethods(id)) : null;
-	},
-});
+export const createRuntimePruningTransform = (): RuntimePruningTransform => {
+	const runtimeModuleCache = new Map<string, string>();
+	const runtimeModuleCacheLimit = 64;
+
+	return {
+		transform(code, id) {
+			if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return null;
+			const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
+				.program as unknown as OxcNode;
+			const imports = collectImports(program);
+			if (imports.length === 0) return null;
+			const replacements = new Map<string, { start: number; end: number; text: string }>();
+			for (const runtimeImport of imports) {
+				const methods = methodsFor(program, runtimeImport.local);
+				if (methods === undefined || methods.size === ALL_METHODS.length) continue;
+				const replacement = {
+					start: runtimeImport.sourceStart,
+					end: runtimeImport.sourceEnd,
+					text: JSON.stringify(virtualIdFor(methods)),
+				};
+				replacements.set(`${replacement.start}:${replacement.end}`, replacement);
+			}
+			if (replacements.size === 0) return null;
+			let output = code;
+			for (const replacement of [...replacements.values()].toReversed()) {
+				output =
+					output.slice(0, replacement.start) + replacement.text + output.slice(replacement.end);
+			}
+			return { code: output, map: null };
+		},
+		resolveId(source) {
+			return source.startsWith(VIRTUAL_PREFIX) ? `\0${source}` : null;
+		},
+		load(id) {
+			if (!id.startsWith(VIRTUAL_ID_PREFIX)) return null;
+			const cached = runtimeModuleCache.get(id);
+			if (cached !== undefined) return cached;
+			if (runtimeModuleCache.size >= runtimeModuleCacheLimit) runtimeModuleCache.clear();
+			const module = runtimeModule(parseMethods(id));
+			runtimeModuleCache.set(id, module);
+			return module;
+		},
+	};
+};

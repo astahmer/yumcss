@@ -167,6 +167,7 @@ export const createStylesheet = (
 	 * of which values a given element sets inline.
 	 */
 	const varCache = new Map<string, Rule>();
+	let tokensCache: string | undefined;
 	const processVarKey = (flatKey: string): void => {
 		const rawParts = pairs.split(flatKey).filter((part) => part !== emptyCondition && part !== "");
 		const first = rawParts[0]!;
@@ -198,14 +199,18 @@ export const createStylesheet = (
 
 	const gen = {
 		tokens: () => {
-			return Array.from(cssVars.values())
+			// Token declarations are derived entirely from the immutable preset;
+			// unlike atomic and var rules, this map never changes after creation.
+			// Keep the serialized form so runtime `css()` calls do not repeatedly
+			// allocate, sort, and join the same root declarations.
+			return (tokensCache ??= Array.from(cssVars.values())
 				.toSorted((a, b) => {
 					const prio = a.priority - b.priority;
 					if (prio === 0) return a.declaration.localeCompare(b.declaration);
 					return prio;
 				})
 				.map((token) => token.declaration)
-				.join("\n");
+				.join("\n"));
 		},
 		atomic: () => {
 			return ordering
