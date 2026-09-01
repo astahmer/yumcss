@@ -29,6 +29,17 @@ lowering could represent it for that target. The source is preserved in all
 three cases. A generic `adapter capability mismatch` marker is not a valid
 diagnosis.
 
+An HIR cannot by itself make every route native. It preserves the source
+meaning, provenance, conditions, and runtime context; the target adapter still
+has to own a legal representation for that meaning in the target API and host
+framework. The route contract is therefore bidirectional and lossless rather
+than naively native in every case: choose a static target representation when
+possible, then a target-owned portable or runtime carrier when it is proven,
+otherwise preserve the source and report the exact typed residual. A skip is a
+real capability gap only when that negotiation has exhausted the target's
+declared representations; it is not a license for the runner to drop a style
+or silently coerce a component into a class string.
+
 The migration result also exposes one typed outcome per matched program. The
 outcome is `static`, `target-native`, `host-runtime`, `portable-artifact`, or
 `residual`, alongside the selected representation. This is deliberately
@@ -368,8 +379,11 @@ and scenario fixtures are shared by the Vitest suites and the offline proof
 composition root, so the two gates cannot silently use different corpora. The
 complete matrix covers every ordered adapter pair in safe and partial modes
 for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
-the real binary in both directions for every adapter. A route is accepted only
-when it converts or preserves the source with a typed residual.
+the real binary for all 676 ordered pairs, passing the three scenarios through
+each pair in both directions. A route is accepted only when it converts or
+preserves the source with a typed residual. Run the expensive public-boundary
+proof with `pnpm --filter pandwind-codemod test:e2e`; the normal coverage gate
+runs the same route corpus in-process.
 `createAdapterConformanceSuite()` adds the direct adapter-owned gate before the
 route matrix: each registered adapter must independently pass detection,
 configuration, parsing, emission, and validation against its happy fixture.

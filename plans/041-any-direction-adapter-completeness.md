@@ -171,8 +171,11 @@ matrix:
   capability modes, and all three proof scenarios (26 × 26 × 2 × 3).
 - 104 per-adapter CLI end-to-end cases spawn the real command, write temporary
   files, parse JSON reports, and cover every adapter in both `adapter →
-Pandwind` and `Pandwind → adapter` directions, including edge inputs. A
-  separate 676-case CLI matrix covers every ordered happy source/target pair.
+Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
+  public-boundary suite runs all 676 ordered source/target pairs through the
+  real CLI, passing happy, edge, and malformed files together for every pair.
+  The expensive suite is invoked with `pnpm --filter pandwind-codemod test:e2e`;
+  the default coverage suite runs the same corpus in-process.
 - The same proof corpus is owned by `packages/codemod/proof` and consumed by
   both Vitest and `pnpm pivot:proof`; the proof command reports the same 4,056
   route cases as the test suite.
