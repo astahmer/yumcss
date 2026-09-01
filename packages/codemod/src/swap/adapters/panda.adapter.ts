@@ -14,7 +14,36 @@ import {
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Panda,
-	patterns: [{ name: "css", regex: /\bcss\s*\(\s*\{/g }],
+	patterns: [
+		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+		{
+			name: "cva",
+			regex: /\bcva\s*\(\s*\{/g,
+			form: "residual",
+			residual: {
+				kind: "composition",
+				hint: "Panda cva recipes require variant-aware target lowering",
+			},
+		},
+		{
+			name: "sva",
+			regex: /\bsva\s*\(\s*\{/g,
+			form: "residual",
+			residual: {
+				kind: "composition",
+				hint: "Panda sva slot recipes require slot-aware target lowering",
+			},
+		},
+		{
+			name: "generated-styled",
+			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "component",
+				hint: "Panda generated styled components require host/component lowering",
+			},
+		},
+	],
 	packages: {
 		packages: [dependency("@pandacss/dev", "development").packages[0]!],
 		files: ["panda.config.ts", "panda.config.js", "styled-system"],
@@ -44,10 +73,15 @@ export default defineCodemodAdapter({
 		components: "partial",
 	}),
 	detectPatterns: [
-		/from\s+["'](?:@pandacss\/dev|styled-system\/css)["']/,
+		/from\s+["'](?:@pandacss\/dev|styled-system\/(?:css|jsx|recipes))["']/,
 		/\b(?:cva|sva|css)\s*\(\s*\{/,
 	],
-	sourceModules: ["@pandacss/dev", "styled-system/css", "styled-system/recipes"],
+	sourceModules: [
+		"@pandacss/dev",
+		"styled-system/css",
+		"styled-system/jsx",
+		"styled-system/recipes",
+	],
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,

@@ -15,6 +15,26 @@ const compiled = makeExtraAdapter({
 	],
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
+	residualPatterns: [
+		{
+			name: "cssMap",
+			regex: /\bcssMap\s*\(\s*\{/g,
+			kind: "composition",
+			hint: "Compiled cssMap requires a named target map lowering",
+		},
+		{
+			name: "keyframes",
+			regex: /\bkeyframes\s*\(/g,
+			kind: "keyframes",
+			hint: "Compiled keyframes require rule-level target lowering",
+		},
+		{
+			name: "styled-template",
+			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*`(?:\\.|[^`])*`/g,
+			kind: "component",
+			hint: "Compiled styled subjects require host/component lowering",
+		},
+	],
 	targetImports: ['import { css } from "@compiled/react";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	targetPolicy: {

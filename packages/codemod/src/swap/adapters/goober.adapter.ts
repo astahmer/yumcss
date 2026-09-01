@@ -12,6 +12,14 @@ const goober = makeExtraAdapter({
 	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],
 	call: /\bcss\s*\(\s*\{/g,
 	prefix: "css(",
+	residualPatterns: [
+		{
+			name: "styled-template",
+			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*`(?:\\.|[^`])*`/g,
+			kind: "component",
+			hint: "Goober styled subjects require host/component lowering",
+		},
+	],
 	targetImports: ['import { css } from "goober";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	// Goober's object carrier evaluates scalar expressions at runtime, so a

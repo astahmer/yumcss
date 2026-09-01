@@ -16,6 +16,24 @@ export default defineCodemodAdapter({
 		{ name: "globalStyle", kind: "global", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "fontFace", kind: "font-face", regex: /\bfontFace\s*\(\s*\{/g },
+		{
+			name: "styleVariants",
+			regex: /\bstyleVariants\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "composition",
+				hint: "Vanilla Extract styleVariants require variant-aware target lowering",
+			},
+		},
+		{
+			name: "recipe",
+			regex: /\b(?:recipe|createRecipe)\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "composition",
+				hint: "Vanilla Extract recipes require variant-aware target lowering",
+			},
+		},
 	],
 	packages: dependency("@vanilla-extract/css", "runtime"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.VanillaExtract, "unsupported", {

@@ -253,6 +253,15 @@ export default defineCodemodAdapter({
 			sourceObjectOptions: { namedRuleObjects: true },
 			suffix: /\.classes\b/u,
 		},
+		{
+			name: "mantine-style-api",
+			regex: /\b(?:styles|classNames|vars)\s*=/g,
+			form: "residual",
+			residual: {
+				kind: "host-framework",
+				hint: "Mantine styles, classNames, and vars require component-aware host lowering",
+			},
+		},
 	],
 	packages: dependency("@mantine/core", "peer"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {

@@ -17,6 +17,14 @@ const fela = makeExtraAdapter({
 	detect: [/from\s+["'](?:fela|react-fela)["']/g, /\brenderer\.renderRule\s*\(\s*\{/g],
 	call: /\brenderer\.renderRule\s*\(\s*(?:\(\)\s*=>\s*)?\(?\{/g,
 	prefix: "renderer.renderRule(",
+	residualPatterns: [
+		{
+			name: "createComponent",
+			regex: /\bcreateComponent\s*\(/g,
+			kind: "component",
+			hint: "Fela createComponent requires a host/component lowering",
+		},
+	],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	// Fela's renderRule object is a runtime carrier for scalar expressions.
 	capabilityOverrides: { "dynamic-values": "exact" },

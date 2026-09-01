@@ -49,6 +49,8 @@ export interface ExtraAdapterOptions {
 	/** Target imports required when this adapter is used as an emitter. */
 	readonly targetImports?: readonly string[];
 	readonly namedObjects?: boolean;
+	/** Public source forms that the adapter recognizes but cannot safely lower. */
+	readonly residualPatterns?: readonly ExtraAdapterResidualPattern[];
 	readonly sourceObjectOptions?: Pick<
 		StyleProgramOptions,
 		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
@@ -68,6 +70,13 @@ export interface ExtraAdapterOptions {
 	) => AdapterEmitResult | undefined;
 	/** How a target preserves named style maps when it has no native map API. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
+}
+
+export interface ExtraAdapterResidualPattern {
+	readonly name: string;
+	readonly regex: RegExp;
+	readonly kind: StyleProgramResidual["kind"];
+	readonly hint: string;
 }
 
 const capabilities = (
@@ -236,6 +245,40 @@ function parseObjectCalls(
 	return { matches, residuals };
 }
 
+function parseResidualPatterns(
+	source: string,
+	context: AdapterParseContext,
+	patterns: readonly ExtraAdapterResidualPattern[] | undefined,
+): AdapterParseResult {
+	if (patterns === undefined || patterns.length === 0) return { matches: [], residuals: [] };
+	const excluded = context.document?.isExcluded ?? (() => false);
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	for (const pattern of patterns) {
+		for (const match of source.matchAll(pattern.regex)) {
+			const start = match.index ?? 0;
+			if (excluded(start)) continue;
+			const text = match[0];
+			matches.push({
+				start,
+				end: start + text.length,
+				sourceText: text,
+				program: {
+					...styleProgramFromSourceObject("", {
+						source: {
+							file: context.file,
+							start,
+							end: start + text.length,
+							adapter: context.config.adapter,
+						},
+					}),
+					residuals: [{ kind: pattern.kind, text, hint: pattern.hint }],
+				},
+			});
+		}
+	}
+	return { matches, residuals: [] };
+}
+
 function parseTemplateCalls(
 	id: string,
 	source: string,
@@ -341,11 +384,12 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 					? parseTemplateCalls(options.id, source, context, options)
 					: parseObjectCalls(options.id, source, context, options);
 			const functionParsed = parseFunctionCalls(options.id, source, context, options);
+			const residualParsed = parseResidualPatterns(source, context, options.residualPatterns);
 			return {
-				matches: [...parsed.matches, ...functionParsed.matches].toSorted(
+				matches: [...parsed.matches, ...functionParsed.matches, ...residualParsed.matches].toSorted(
 					(a, b) => a.start - b.start,
 				),
-				residuals: [...parsed.residuals, ...functionParsed.residuals],
+				residuals: [...parsed.residuals, ...functionParsed.residuals, ...residualParsed.residuals],
 			};
 		},
 		emit: (program, context) => {
