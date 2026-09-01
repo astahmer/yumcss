@@ -20,6 +20,24 @@ host does not provide. Therefore every semantic must end in exactly one of:
 No route may silently discard semantics, and no route may expose the obsolete
 generic `adapter capability mismatch` diagnosis.
 
+## Current status
+
+The route contract, target-owned representation negotiation, static class
+projection, typed residuals, and complete registered matrix are implemented.
+Static styled subjects now receive a shared class-target component projection
+when the target declares a class host and the source host can be rewritten;
+the projection is supplied by the adapter factory and is covered by the
+registry-derived target suite. This closes the common false capability skip
+for static `styled.div`-style subjects without making the runner know any
+ecosystem-specific syntax.
+
+The plan is not yet a universal-compatibility claim. Dynamic values without a
+host carrier, custom subjects whose prop-forwarding contract is unknown,
+framework-specific components, plugin-generated output, and adapters that are
+still fixture-only in browser/SSR proof remain explicit production-proof or
+semantic work. Those cases must continue to produce typed, source-preserving
+residuals until a target-owned representation and proof exist.
+
 ## Completion boundary
 
 The complete matrix is the union of every adapter that can be selected as a
@@ -237,11 +255,12 @@ diagnostic is a contract failure. Tailwind and UnoCSS arbitrary utility
 literals, named lookup maps, and standalone projections are parsed by their
 own adapters, while comment literals remain excluded.
 
-The most important unresolved families are:
+The remaining production-proof and semantic families are:
 
 - runtime interpolations, themes, and function-valued styles;
 - composition, recipes, and variant systems;
-- styled-component subjects, `attrs`, polymorphism, and use-site rewrites;
+- custom styled-component subjects, `attrs`, polymorphism, and complex
+  use-site rewrites (static intrinsic class subjects are now covered);
 - JSS imperative rule application and plugin-generated styles;
 - globals, keyframes, font-face, layers, supports, selectors, nesting, and
   ordering;
@@ -252,21 +271,22 @@ The most important unresolved families are:
 - SSR, hydration, streaming/RSC, injection order, and dependency changes.
 
 The remaining skips are therefore not evidence that the HIR is missing. They
-identify target projections that still need an implementation: for example,
-MUI's `sx` object prop or cross-framework component rewrites. The next
-implementation must add those projections behind target-owned ports and prove
-them, rather than weakening the capability gate.
+identify target projections or host facts that still need an implementation:
+for example, a dynamic value without a host binding, MUI's `sx` object prop
+on an unsupported framework, or a custom component whose prop-forwarding
+contract is unknown. The next implementation must add those projections
+behind target-owned ports and prove them, rather than weakening the
+capability gate.
 
 ### Why the playground shows capability skips
 
 The playground currently invokes the semantic runner in `safe` mode. In that
 mode, an adapter capability marked `partial` is intentionally treated as a
 blocker, even when the adapter can emit a useful projection for a narrower
-host shape. This is correct for source-preserving migration, but the user
-experience must not stop at an opaque skip. The route planner must first ask
-the target-owned lowering and host ports for a static or target-native
-representation, then expose the exact missing host/configuration input when
-none exists.
+host shape. The route planner now asks target-owned lowering and host ports for
+a static or target-native representation first. A remaining skip therefore
+means that negotiation found no proven carrier for the actual program and
+exposes the exact missing host/configuration input.
 
 In particular, a bare Pandwind style binding cannot be rewritten to MUI's
 `sx` prop without knowing its host component. Inventing a component or

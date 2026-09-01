@@ -325,7 +325,9 @@ function classComponentProjection(
 }
 
 export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
-	const targetPolicy = classComponentProjection(options.targetPolicy ?? options.migration?.targetPolicy);
+	const targetPolicy = classComponentProjection(
+		options.targetPolicy ?? options.migration?.targetPolicy,
+	);
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: options.id,
