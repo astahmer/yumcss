@@ -177,7 +177,11 @@ const Card = styled.div\`
 	color: red;
 	padding: 1rem;
 \`;
-</script>`,
+</script>
+
+<template>
+	<Card />
+</template>`,
 	[CodemodAdapterId.Tokenami]: `import { css } from "@tokenami/css";
 
 const card = css({
