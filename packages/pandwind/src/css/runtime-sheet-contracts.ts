@@ -82,6 +82,7 @@ export interface RuntimeRuleStore {
 }
 
 export interface RuntimeOrderingPolicy {
+	/** Deterministic for an unchanged rule map; the sheet memoizes this result. */
 	order(rules: ReadonlyMap<string, RuntimeRule>): RuntimeRule[];
 }
 

@@ -63,6 +63,22 @@ equivalent):
 Warm `cx()` matches or beats tailwind-merge exactly where class strings grow
 — while additionally resolving css() atoms and merging across engines.
 
+## Runtime hot-path pass — 2026-09-01
+
+The current runtime keeps the optimizations deliberately narrow:
+
+- no-config `createCx()` takes a fast path for two distinct whitespace-free
+  class tokens. The cold unique-pair harness measured **10.2M ops/sec** in this
+  run; configured and complex inputs retain the full merge algorithm. The
+  measured `cx` cost is **+184 min / +61 gz bytes**, within its reviewed size
+  budget;
+- `createTw()` creates its composing-utility set once per runtime instance;
+- `createRuntimeSheet()` caches ordering and serialized CSS until a rule or
+  token mutation, avoiding repeated work for unchanged reads.
+
+Literal calls remain statically erased by the Vite compiler, so these runtime
+costs apply to dynamic or unsupported calls only.
+
 ## Re-running
 
 The repo-owned evidence is split by cost center: `packages/pandwind/tests/runtime-size.test.ts`

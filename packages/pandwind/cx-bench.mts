@@ -17,6 +17,7 @@ const cx = createCx({
 	conflicts: meta.conflicts,
 	compose: meta.compose,
 });
+const plainCx = createCx();
 
 // 4+3 short pair
 const SHORT_A = "flex items-center gap-2 bg-red-500";
@@ -122,6 +123,19 @@ measure(
 	"cx(coldA[i], coldB[i])",
 	() => {
 		cx(COLD_A[cold % COLD_N], COLD_B[cold++ % COLD_N]);
+	},
+	9,
+);
+
+const PLAIN_N = 30_000;
+const PLAIN_A = Array.from({ length: PLAIN_N }, (_, i) => `plain-a-${i}`);
+const PLAIN_B = Array.from({ length: PLAIN_N }, (_, i) => `plain-b-${i}`);
+let plain = 0;
+console.log("== cold: plain no-config pairs (fast path)");
+measure(
+	"plainCx(PLAIN_A[i], PLAIN_B[i])",
+	() => {
+		plainCx(PLAIN_A[plain % PLAIN_N], PLAIN_B[plain++ % PLAIN_N]);
 	},
 	9,
 );

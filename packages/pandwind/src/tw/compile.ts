@@ -136,7 +136,8 @@ function visit(
 	prefix: string,
 	parentName: string | undefined,
 ): void {
-	for (const [key, value] of Object.entries(styles)) {
+	for (const key of Object.keys(styles)) {
+		const value = styles[key]!;
 		if (isNestedStyles(value)) {
 			// A nested object is a variant stack. The child is joined to the
 			// parent with the parent's join separator (e.g. `group` -> `-`).
@@ -282,10 +283,10 @@ export function compileStyles(
 	styles: TwNestedStyles,
 	variants: TwVariantsMeta,
 	conflicts?: TwConflictsMeta,
-	compose?: TwComposeMeta,
+	compose?: TwComposeMeta | ReadonlySet<string>,
 ): string {
 	const classes: Emitted[] = [];
-	const composeSet = compose === undefined ? undefined : new Set(compose);
+	const composeSet = compose === undefined || compose instanceof Set ? compose : new Set(compose);
 	visit(styles, variants, conflicts, composeSet, classes, new Map(), "", undefined);
 	return classes
 		.map((emitted) => emitted.className)

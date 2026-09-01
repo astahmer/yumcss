@@ -649,6 +649,25 @@ export function createCx(options: CxOptions = {}): CxFn {
 	};
 
 	const cx = (...inputs: Array<CxInput | CxInput[]>): string => {
+		// The no-config path is also used for plain class composition. Two
+		// already-separated tokens need neither tokenization nor deduplication;
+		// keep this branch deliberately narrow so every other shape retains the
+		// exact merge implementation below.
+		if (conflicts === undefined && atoms === undefined && inputs.length === 2) {
+			const first = inputs[0];
+			const second = inputs[1];
+			if (
+				typeof first === "string" &&
+				typeof second === "string" &&
+				first.length > 0 &&
+				second.length > 0 &&
+				first !== second &&
+				/^\S+$/.test(first) &&
+				/^\S+$/.test(second)
+			) {
+				return `${first} ${second}`;
+			}
+		}
 		// Whole-input cache: only when every top-level input is a string (no
 		// arrays to flatten, no css-atom objects whose resolution depends on
 		// live registry state beyond the generation guard).

@@ -28,7 +28,7 @@ function runBench(): { output: string; shapes: Array<Shape> } {
 		timeout: 180_000,
 	});
 	const shapes: Array<Shape> = [];
-	for (const match of output.matchAll(/cx\(([^)]*)\): median ([0-9,]+) ops\/sec/g)) {
+	for (const match of output.matchAll(/(?:cx|plainCx)\(([^)]*)\): median ([0-9,]+) ops\/sec/g)) {
 		shapes.push({ label: match[1]!.trim(), opsPerSec: Number(match[2]!.replace(/,/g, "")) });
 	}
 	return { output, shapes };
@@ -36,7 +36,7 @@ function runBench(): { output: string; shapes: Array<Shape> } {
 
 describe("cx-bench smoke", () => {
 	test(
-		"bench runs, reports all four shapes, and clears the sanity floor",
+		"bench runs, reports all five shapes, and clears the sanity floor",
 		{ timeout: 200_000 },
 		() => {
 			const { output, shapes } = runBench();
@@ -45,8 +45,9 @@ describe("cx-bench smoke", () => {
 			expect(output).toContain("== long pair (13+9 tokens)");
 			expect(output).toContain("== long single string");
 			expect(output).toContain("== cold: unique-token long pairs");
+			expect(output).toContain("== cold: plain no-config pairs (fast path)");
 
-			expect(shapes.length).toBe(4);
+			expect(shapes.length).toBe(5);
 			for (const shape of shapes) {
 				expect(shape.opsPerSec, `${shape.label} reported NaN/garbage`).toBeGreaterThan(0);
 				expect(shape.opsPerSec, `${shape.label} collapsed below sanity floor`).toBeGreaterThan(

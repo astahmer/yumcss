@@ -30,6 +30,35 @@ test("runtime contract surface remains type-addressable", () => {
 	expect(surface).toBeUndefined();
 });
 
+test("runtime sheet caches ordering and serialization until its state changes", () => {
+	let orderCalls = 0;
+	const sheet = createRuntimeSheet(
+		{ autoMount: false },
+		{
+			ordering: {
+				order: (rules) => {
+					orderCalls++;
+					return Array.from(rules.values());
+				},
+			},
+		},
+	);
+
+	sheet.register([{ id: "a", css: ".a{color:red}", priority: 1 }]);
+	expect(sheet.css()).toBe(".a{color:red}");
+	expect(sheet.css()).toBe(".a{color:red}");
+	expect(sheet.snapshot().rules).toHaveLength(1);
+	expect(orderCalls).toBe(1);
+
+	sheet.register([{ id: "a", css: ".a{color:red}", priority: 1 }]);
+	expect(sheet.css()).toBe(".a{color:red}");
+	expect(orderCalls).toBe(1);
+
+	sheet.register([{ id: "b", css: ".b{color:blue}", priority: 2 }]);
+	expect(sheet.css()).toContain(".b{color:blue}");
+	expect(orderCalls).toBe(2);
+});
+
 describe("runtime CSS-in-JS sheet", () => {
 	test("collects preset-bound css() rules for SSR without a DOM", () => {
 		const sheet = createRuntimeSheet({ autoMount: false });

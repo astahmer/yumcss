@@ -42,14 +42,31 @@ export function createRuntimeSheet(
 	const canonicalizer = ports.canonicalizer ?? new SemanticRuleCanonicalizer(serializer);
 	const sink = ports.sink ?? new DomStyleElementSink(options);
 	let tokens = "";
+	let generation = 0;
+	let renderedGeneration = -1;
+	let rendered = "";
+	let orderedGeneration = -1;
+	let ordered: RuntimeRule[] = [];
+	const invalidate = (): void => {
+		generation++;
+	};
+	const orderedRules = (): RuntimeRule[] => {
+		if (orderedGeneration !== generation) {
+			ordered = ordering.order(store.rules);
+			orderedGeneration = generation;
+		}
+		return ordered;
+	};
 
 	const css = (): string => {
-		const body = ordering
-			.order(store.rules)
+		if (renderedGeneration === generation) return rendered;
+		const body = orderedRules()
 			.map((rule) => rule.css)
 			.filter(Boolean)
 			.join("\n");
-		return [tokens, body].filter(Boolean).join("\n");
+		rendered = [tokens, body].filter(Boolean).join("\n");
+		renderedGeneration = generation;
+		return rendered;
 	};
 	const render = (): void => sink.update(css());
 	const refresh = (): void => {
@@ -57,17 +74,22 @@ export function createRuntimeSheet(
 		else render();
 	};
 	const register = (rules: readonly RuntimeRule[]): void => {
-		if (store.register(rules)) refresh();
+		if (store.register(rules)) {
+			invalidate();
+			refresh();
+		}
 	};
 	const setTokens = (value: string): void => {
 		if (tokens === value) return;
 		tokens = value;
+		invalidate();
 		refresh();
 	};
-	const snapshot = (): RuntimeSheetSnapshot => ({ tokens, rules: ordering.order(store.rules) });
+	const snapshot = (): RuntimeSheetSnapshot => ({ tokens, rules: orderedRules().slice() });
 	const hydrate = (value: RuntimeSheetSnapshot): void => {
 		tokens = value.tokens;
 		store.replace(value.rules);
+		invalidate();
 		refresh();
 	};
 	const registerSemanticRules = (rules: readonly RuntimeSemanticRule[]): void => {

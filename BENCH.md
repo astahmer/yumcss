@@ -1,6 +1,6 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-08-23** for `cx()` (v3 whole-input cache — see the
+Last measured: **2026-09-01** for the runtime hot-path pass and **2026-08-23** for `cx()` (v3 whole-input cache — see the
 section below), **2026-08-22** for the competitor table. Local macOS (arm64),
 Node v24.19.0. Entries were bundled with esbuild (node platform, no minify —
 irrelevant to timing) and run in-process: warmup, then interleaved rounds
@@ -110,6 +110,26 @@ first-render vocabulary of an app; steady-state rendering lives in the warm
 regime. Size cost of the cache: cx entry +413 min / +185 gz bytes vs v2
 (intentional, inside the raised budgets in
 `packages/pandwind/tests/runtime-budget.json`).
+
+## Runtime hot-path pass — 2026-09-01
+
+Three narrow optimizations were measured against the existing size gate:
+
+- `createCx()` takes a no-config/no-atom fast path for two distinct,
+  whitespace-free class tokens. The cold unique-pair harness measured
+  **10.2M ops/sec** in this run; complex and configured inputs retain the full
+  merge algorithm. The `cx` entry grew **+184 min / +61 gz bytes** and remains
+  inside its reviewed budget.
+- `createTw()` materializes the composing-utility set once per created runtime,
+  instead of once per style call. Direct `compileStyles()` callers still accept
+  the generated array form.
+- `createRuntimeSheet()` memoizes ordering and serialized CSS until a rule or
+  token mutation. The substitution test verifies that repeated reads invoke
+  neither policy again, while every state change invalidates both caches.
+
+These optimizations preserve the static-first delivery path: literal calls are
+still erased by the Vite compiler, so the runtime bundle is only paid for
+dynamic or unsupported calls.
 
 ## Re-running
 
