@@ -65,6 +65,15 @@ Tailwind and UnoCSS retain their own utility-token emitters. A registry
 substitution test proves that a new class adapter receives the projection
 without adding a central adapter branch.
 
+The same contract applies to a dynamic styled subject such as
+`const Card = styled.div({ color: theme.foreground })`. When the target is a
+class carrier, the generated CSS remains static (`var(--pandwind-dynamic-*)`),
+and the subject becomes a small host wrapper that binds the original
+expression. The JSX use stays `<Card />`; assigning the generated class string
+to `Card` or rewriting the use to `className={Card}` would change the public
+component shape and is therefore invalid. This projection is selected by
+registry normalization and covered for every built-in dynamic class carrier.
+
 Cross-framework and cross-backend migration uses an explicit host-conversion
 port. A target declares native host frameworks separately from
 `hostFrameworkConversions`; the latter describes a source host dialect that it
