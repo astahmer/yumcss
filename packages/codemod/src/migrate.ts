@@ -12,6 +12,7 @@
  */
 import type { PandwindMeta } from "./meta.ts";
 import { mapClassList, type MappedToken } from "./map.ts";
+import { SourcePass, type SourceEdit } from "./source-pass-utils.ts";
 import { tokenizeClassList } from "./tokens.ts";
 import { runSourcePasses, type SourceId } from "./sources.ts";
 import {
@@ -55,20 +56,6 @@ export interface TransformOptions {
 	metaDir?: string;
 	/** Source-library detectors to run before the mode pass (default none). */
 	sources?: ReadonlyArray<SourceId>;
-}
-
-interface Edit {
-	start: number;
-	end: number;
-	text: string;
-}
-
-export function applyEdits(source: string, edits: Array<Edit>): string {
-	let output = source;
-	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
-		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
-	}
-	return output;
 }
 
 function hasSkipMarker(source: string, index: number, marker: string): boolean {
@@ -243,7 +230,7 @@ function transformTw(
 		unmappedTokens: [],
 		skippedByMarker: 0,
 	};
-	const edits: Array<Edit> = [];
+	const edits: Array<SourceEdit> = [];
 	let needsCx = false;
 
 	for (const match of classNameMatches(source)) {
@@ -277,7 +264,10 @@ function transformTw(
 			options.metaDir !== undefined
 				? relativeModuleImport(options.file, options.metaDir, "tw")
 				: "pandwind/tw";
-		let code = ensureImport(applyEdits(source, edits), `import { tw } from "${twSource}";`);
+		let code = ensureImport(
+			SourcePass.applyEdits(source, edits),
+			`import { tw } from "${twSource}";`,
+		);
 		if (needsCx) {
 			const cxSource =
 				options.metaDir !== undefined
@@ -400,7 +390,7 @@ function transformCss(
 
 	const cssBinding = options.cssBinding ?? "css";
 	const canEmit = hasCssBinding(source, cssBinding);
-	const edits: Array<Edit> = [];
+	const edits: Array<SourceEdit> = [];
 
 	for (const match of classNameMatches(source)) {
 		if (hasSkipMarker(source, match.start, marker)) {
@@ -449,7 +439,7 @@ function transformCss(
 	}
 
 	if (edits.length === 0) return result;
-	const code = applyEdits(source, edits);
+	const code = SourcePass.applyEdits(source, edits);
 	return { ...result, code, changed: code !== source };
 }
 

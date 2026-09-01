@@ -16,7 +16,7 @@ import { SwapResidualKindTag } from "../../semantic-ir.ts";
  */
 import { basename, dirname, join, relative } from "node:path";
 import type { PandwindMeta } from "../../../meta.ts";
-import { computeExcludedRanges, matchBlock } from "../../../sources.ts";
+import { SourcePass } from "../../../source-pass-utils.ts";
 import { ensureImport } from "../../../shared.ts";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import {
@@ -149,7 +149,9 @@ function integrateNextApp(
 			// comma when the existing final property does not have one.
 			const configOpen = nextConfig.search(/(?:const|let|var)\s+config\s*=\s*\{/);
 			const configBlock =
-				configOpen === -1 ? null : matchBlock(nextConfig, nextConfig.indexOf("{", configOpen));
+				configOpen === -1
+					? null
+					: SourcePass.matchBlock(nextConfig, nextConfig.indexOf("{", configOpen));
 			if (configBlock !== null) {
 				const close = configBlock.end - 1;
 				const prefix = nextConfig.slice(0, close).replace(/\s+$/, "");
@@ -292,7 +294,7 @@ function defineTextStylesEdits(
 	for (const match of source.matchAll(/\bdefineTextStyles\s*\(\s*\{/g)) {
 		const callStart = match.index ?? 0;
 		const open = source.indexOf("{", callStart);
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		let end = block.end;
 		while (/\s/.test(source[end] ?? "")) end++;
@@ -342,14 +344,14 @@ interface RecipeDef {
 
 /** Parse `const X = cva|defineRecipe|sva|defineSlotRecipe({...})` spans. */
 function parseRecipeDefs(file: FileEntry): Array<RecipeDef> {
-	const excluded = computeExcludedRanges(file.source, file.path);
+	const excluded = SourcePass.computeExcludedRanges(file.source, file.path);
 	const defs: Array<RecipeDef> = [];
 	for (const m of file.source.matchAll(
 		/(?:const|let|var)\s+([\w$]+)\s*=\s*(?:(cva|defineRecipe)|(sva|defineSlotRecipe))\s*\(\s*\{/g,
 	)) {
 		if (excluded.isExcluded(m.index ?? -1)) continue;
 		const open = (m.index ?? 0) + m[0].length - 1;
-		const block = matchBlock(file.source, open);
+		const block = SourcePass.matchBlock(file.source, open);
 		if (block === null) continue;
 		let end = block.end;
 		while (/\s/.test(file.source[end] ?? "")) end++;
@@ -1104,7 +1106,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 		const edits: Array<{ start: number; end: number; text: string }> = [
 			...(fileExtras.get(file.path) ?? []),
 		];
-		const mask = computeExcludedRanges(file.source, file.path);
+		const mask = SourcePass.computeExcludedRanges(file.source, file.path);
 		const masked = (start: number): boolean => mask.isExcluded(start);
 
 		// css({...}) -> css.class({...}) / marker
@@ -1295,7 +1297,7 @@ function hasCssBinding(source: string): boolean {
 
 function removeUnusedVariantImports(source: string, cssImportPath: string): string {
 	const unsupported = new Set(["cva", "sva", "defineRecipe", "defineSlotRecipe"]);
-	const excluded = computeExcludedRanges(source, "migration.tsx");
+	const excluded = SourcePass.computeExcludedRanges(source, "migration.tsx");
 	const hasCall = (name: string): boolean => {
 		const re = new RegExp(`\\b${name}\\s*\\(`, "g");
 		return [...source.matchAll(re)].some((match) => !excluded.isExcluded(match.index ?? -1));
@@ -1321,7 +1323,7 @@ function removeUnusedVariantImports(source: string, cssImportPath: string): stri
 }
 
 function removeUnusedFactoryImports(source: string): string {
-	const excluded = computeExcludedRanges(source, "migration.tsx");
+	const excluded = SourcePass.computeExcludedRanges(source, "migration.tsx");
 	const hasFactoryUse = [...source.matchAll(/<panda\.|\bpanda\s*\(/g)].some(
 		(match) => !excluded.isExcluded(match.index ?? -1),
 	);

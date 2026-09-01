@@ -14,7 +14,7 @@ import {
 } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { matchBlock } from "../../sources.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
 import { TokenCatalog } from "../tokens.ts";
 
@@ -543,7 +543,7 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 		const name = match[1];
 		const start = (match.index ?? 0) + match[0].lastIndexOf("{");
 		if (name === undefined) continue;
-		const block = matchBlock(source, start);
+		const block = SourcePass.matchBlock(source, start);
 		if (block !== null) references[name] = block.body;
 	}
 	return references;
@@ -617,7 +617,7 @@ function replaceChakraClassAttribute(
 	const match = /\sclassName\s*=\s*\{/u.exec(code);
 	if (match === null) return undefined;
 	const open = match.index + match[0].lastIndexOf("{");
-	const block = matchBlock(code, open);
+	const block = SourcePass.matchBlock(code, open);
 	if (block === null) return undefined;
 	return `${code.slice(0, match.index)} css={${emittedExpression}}${code.slice(block.end)}`;
 }

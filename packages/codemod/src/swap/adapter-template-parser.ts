@@ -1,4 +1,4 @@
-import { matchBlock } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import {
 	styleProgramFromRules,
@@ -13,7 +13,7 @@ const camelProperty = (property: string): string =>
 function templateDynamicExpression(rawValue: string): string {
 	const normalized = rawValue.trim();
 	if (normalized.startsWith("${")) {
-		const interpolation = matchBlock(normalized, 1);
+		const interpolation = SourcePass.matchBlock(normalized, 1);
 		if (interpolation?.end === normalized.length) return interpolation.body.trim();
 	}
 	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
@@ -28,7 +28,7 @@ export function findTemplateLiteralEnd(source: string, openTick: number): number
 			continue;
 		}
 		if (character === "$" && source[index + 1] === "{") {
-			const interpolation = matchBlock(source, index + 1);
+			const interpolation = SourcePass.matchBlock(source, index + 1);
 			if (interpolation !== null) {
 				index = interpolation.end - 1;
 				continue;
@@ -112,7 +112,7 @@ export function parseAdapterTemplate(
 				if (character === "(") parens++;
 				if (character === ")") parens--;
 				if (character === "$" && input[index + 1] === "{") {
-					const interpolation = matchBlock(input, index + 1);
+					const interpolation = SourcePass.matchBlock(input, index + 1);
 					if (interpolation !== null) {
 						index = interpolation.end - 1;
 						continue;
@@ -125,7 +125,7 @@ export function parseAdapterTemplate(
 			}
 			if (delimiter === "{") {
 				const selector = input.slice(cursor, index).trim();
-				const block = matchBlock(input, index);
+				const block = SourcePass.matchBlock(input, index);
 				if (block === null || selector === "") {
 					residuals.push({
 						kind: "parse",

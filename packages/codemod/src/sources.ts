@@ -15,11 +15,11 @@
  * - idempotent: converted output no longer matches any detector, flagged
  *   regions are skipped via the marker.
  */
-import { computeExcludedRanges as scanExcludedRanges } from "pandwind/source";
 import type { PandwindMeta } from "./meta.ts";
 import { mapToken } from "./map.ts";
 import type { MappedToken } from "./map.ts";
 import type { TransformResult } from "./migrate.ts";
+import { SourcePass, type SourceEdit } from "./source-pass-utils.ts";
 import { ensureImport, hasCssBinding } from "./shared.ts";
 import { CodemodAdapterId } from "./swap/identifiers.ts";
 
@@ -45,35 +45,7 @@ export function parseSourceList(value: string): SourceId[] {
 /* Shared helpers                                                      */
 /* ------------------------------------------------------------------ */
 
-interface Edit {
-	start: number;
-	end: number;
-	text: string;
-}
-
-function applyEdits(source: string, edits: Array<Edit>): string {
-	let output = source;
-	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
-		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
-	}
-	return output;
-}
-
 /** Insert a skip-marker comment line above the line containing `index`. */
-export function insertSkipMarker(
-	source: string,
-	index: number,
-	reason: string,
-	marker: string,
-): string {
-	const lineStart = source.lastIndexOf("\n", Math.max(0, index - 1)) + 1;
-	const indentMatch = /^\s*/.exec(source.slice(lineStart));
-	const indent = indentMatch ? indentMatch[0] : "";
-	return (
-		source.slice(0, lineStart) + `${indent}// ${marker} (${reason})\n` + source.slice(lineStart)
-	);
-}
-
 /** property+value -> utility class, built once per meta (WeakMap-cached). */
 const pvIndexCache = new WeakMap<PandwindMeta, Map<string, string>>();
 function propertyValueIndex(meta: PandwindMeta): Map<string, string> {
@@ -93,18 +65,6 @@ const camelProperty = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
 /** Brace-matched extraction of the balanced block starting at `open`. */
-export function matchBlock(source: string, open: number): { body: string; end: number } | null {
-	let depth = 0;
-	for (let i = open; i < source.length; i++) {
-		if (source[i] === "{") depth++;
-		else if (source[i] === "}") {
-			depth--;
-			if (depth === 0) return { body: source.slice(open + 1, i), end: i + 1 };
-		}
-	}
-	return null;
-}
-
 interface Decl {
 	/** camelCase object key for css() emission. */
 	prop: string;
@@ -200,22 +160,15 @@ const STYLED_TEMPLATE_REGEX = /\bstyled\s*(?:\.\s*(\w+)|\(\s*(\w+)\s*\))\s*(`(?:
  * test. Parsed once per file with oxc — the same parser the vite passes
  * use, so ranges are exact.
  */
-export function computeExcludedRanges(
-	source: string,
-	file: string,
-): { excluded: Array<[number, number]>; isExcluded(start: number): boolean } {
-	return scanExcludedRanges(source, file);
-}
-
 function transformStyledComponents(
 	source: string,
 	meta: PandwindMeta,
 	options: { marker: string; file: string },
 	result: TransformResult,
 ): string {
-	const edits: Array<Edit> = [];
+	const edits: Array<SourceEdit> = [];
 	const needsCx = { value: false };
-	const mask = computeExcludedRanges(source, options.file);
+	const mask = SourcePass.computeExcludedRanges(source, options.file);
 
 	// Flags are EDITS (line insertions at the original offset), not immediate
 	// mutations — otherwise a flag that follows a conversion in the same file
@@ -290,7 +243,7 @@ function transformStyledComponents(
 	// The hasCssBinding gate guarantees the file already binds a pandwind
 	// css factory — no import is injected, only the styled-components one is
 	// dropped.
-	let code = applyEdits(source, edits);
+	let code = SourcePass.applyEdits(source, edits);
 	code = code.replace(/\n?import\s+\w+\s+from\s+["']styled-components["'];?\n/g, "\n");
 	if (needsCx.value) {
 		code = ensureImport(code, 'import { createCx } from "pandwind/cx";');
@@ -306,8 +259,8 @@ function jsxUsageEdits(
 	tag: string,
 	needsCxRef: { value: boolean },
 	mask: { isExcluded(start: number): boolean },
-): Array<Edit> {
-	const edits: Array<Edit> = [];
+): Array<SourceEdit> {
+	const edits: Array<SourceEdit> = [];
 	const tagRegex = new RegExp(`<(\\/?)\\s*${name}\\b([^>]*)>`, "g");
 	for (const match of source.matchAll(tagRegex)) {
 		const start = match.index ?? 0;
@@ -360,7 +313,7 @@ function transformStylex(
 	if (!hasCssBinding(working)) {
 		const firstCreate = working.search(/\bstylex\.create\s*\(/);
 		if (firstCreate !== -1) {
-			working = insertSkipMarker(
+			working = SourcePass.insertSkipMarker(
 				working,
 				firstCreate,
 				"stylex->css conversion needs an existing pandwind css binding",
@@ -381,11 +334,11 @@ function transformStylex(
 		// entry parser sees `name: { ... }` pairs directly.
 		const trimmedArg = arg.body.trim();
 		if (trimmedArg.startsWith("{") === false) continue;
-		const unwrapped = matchBlock(trimmedArg, 0);
+		const unwrapped = SourcePass.matchBlock(trimmedArg, 0);
 		if (unwrapped === null) continue;
 		const parsed = parseStylexEntries(unwrapped.body);
 		if (parsed === null) {
-			working = insertSkipMarker(
+			working = SourcePass.insertSkipMarker(
 				working,
 				match.index ?? 0,
 				"stylex.create with pseudo/media/non-literal styles is flagged, not converted",
@@ -478,7 +431,7 @@ function parseStylexEntries(body: string): Array<[string, Array<[string, string]
 		i++;
 		while (i < body.length && /[\s]/.test(body[i]!)) i++;
 		if (body[i] !== "{") return null;
-		const block = matchBlock(body, i);
+		const block = SourcePass.matchBlock(body, i);
 		if (block === null) return null;
 		const decls: Array<[string, string]> = [];
 		for (const statement of splitTopLevel(block.body, ",")) {

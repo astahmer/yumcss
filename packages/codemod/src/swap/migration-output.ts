@@ -1,5 +1,4 @@
-import { applyEdits } from "../migrate.ts";
-import { computeExcludedRanges } from "pandwind/source";
+import { SourcePass } from "../source-pass-utils.ts";
 import { StyleRuleKindTag, type StyleProgram } from "./semantic-ir.ts";
 
 /** Output mechanics shared by migration and differential proof use cases. */
@@ -63,9 +62,9 @@ export class MigrationOutput {
 	}
 
 	private static removeExcludedMatches(source: string, pattern: RegExp): string {
-		let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+		let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 		try {
-			mask = computeExcludedRanges(source, "pandwind-migration-output.ts");
+			mask = SourcePass.computeExcludedRanges(source, "pandwind-migration-output.ts");
 		} catch {
 			// Cleanup is best-effort for incomplete source snippets.
 		}
@@ -75,6 +74,6 @@ export class MigrationOutput {
 			if (mask?.isExcluded(start)) continue;
 			edits.push({ start, end: start + match[0].length, text: "" });
 		}
-		return applyEdits(source, edits);
+		return SourcePass.applyEdits(source, edits);
 	}
 }

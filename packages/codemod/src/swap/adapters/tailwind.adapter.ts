@@ -30,7 +30,7 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { matchBlock } from "../../sources.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
@@ -255,7 +255,7 @@ function assignedClassMap(
 	for (const match of source.matchAll(/\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*\{/g)) {
 		const open = source.indexOf("{", match.index ?? 0);
 		if (open < 0) continue;
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const entries = [
 			...block.body.matchAll(/(["'])([A-Za-z_$][\w$-]*)\1\s*:\s*(["'])([^"']*\[[^"']*)\3/g),

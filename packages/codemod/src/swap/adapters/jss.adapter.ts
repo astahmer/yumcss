@@ -1,4 +1,4 @@
-import { applyEdits } from "../../migrate.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -24,7 +24,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 			text: `${element}.classList.add(${sheet}.${rule})`,
 		});
 	}
-	return { code: applyEdits(context.code, edits), residuals: [] };
+	return { code: SourcePass.applyEdits(context.code, edits), residuals: [] };
 }
 
 export default defineCodemodAdapter({

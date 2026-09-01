@@ -24,7 +24,7 @@ import type { SwapEntry, SwapIR, SwapResidual } from "../../ir.ts";
 import { parseObjectLiteral, type LiteralObject, type LitValue } from "../../parse.ts";
 import type { PandaTheme } from "./theme.ts";
 import { emptyPandaTheme } from "./theme.ts";
-import { matchBlock } from "../../../sources.ts";
+import { SourcePass } from "../../../source-pass-utils.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 
 // Re-exported for tests/consumers that only import this module.
@@ -654,7 +654,7 @@ function scanCalls(
 		const start = match.index;
 		if (excluded(start)) continue;
 		const open = start + match[0].length - 1;
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const call = handle(match, block);
 		if (call !== null) calls.push(call);

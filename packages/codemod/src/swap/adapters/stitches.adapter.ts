@@ -12,8 +12,7 @@ import {
 	StyleNamedRuleStrategy,
 	StyleProgramCompositionKind,
 } from "../identifiers.ts";
-import { matchBlock } from "../../sources.ts";
-import { applyEdits } from "../../source-pass-utils.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import { parseObjectLiteral, type LitValue } from "../parse.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { TokenCatalog } from "../tokens.ts";
@@ -28,7 +27,7 @@ function stitchesTheme(source: string): TokenCatalog | undefined {
 	for (const match of source.matchAll(/\bcreateStitches\s*\(/g)) {
 		const open = source.indexOf("{", (match.index ?? 0) + match[0].length);
 		if (open < 0) continue;
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const config = parseObjectLiteral(block.body);
 		const theme = config?.keys.find((entry) => entry.key === "theme")?.value;
@@ -104,7 +103,7 @@ function removeStitchesBootstrap(code: string): string {
 		if (code[cursor] === ")") {
 			end = cursor + 1;
 		} else if (code[cursor] === "{") {
-			const block = matchBlock(code, cursor);
+			const block = SourcePass.matchBlock(code, cursor);
 			if (block === null) continue;
 			end = block.end;
 		} else {
@@ -115,7 +114,7 @@ function removeStitchesBootstrap(code: string): string {
 		if (code[end] === ";") end++;
 		edits.push({ start, end, text: "" });
 	}
-	let rewritten = applyEdits(code, edits);
+	let rewritten = SourcePass.applyEdits(code, edits);
 	if (!/\bcreateStitches\s*\(/.test(rewritten))
 		rewritten = rewritten.replace(
 			/import\s*\{\s*createStitches\s*\}\s*from\s*["']@stitches\/(?:react|core)["'];?\s*/g,

@@ -1,7 +1,7 @@
 /** Replaceable, independently testable stages used by Panda migration. */
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { PandwindMeta } from "../../../meta.ts";
-import { applyEdits } from "../../../migrate.ts";
+import { SourcePass } from "../../../source-pass-utils.ts";
 import { emitCssClass } from "../../emit.ts";
 import { parseObjectLiteral } from "../../parse.ts";
 import type { PandaTheme } from "./theme.ts";
@@ -26,7 +26,7 @@ export function rewritePandaSource(
 	source: string,
 	edits: Array<{ start: number; end: number; text: string }>,
 ): string {
-	return applyEdits(source, edits);
+	return SourcePass.applyEdits(source, edits);
 }
 
 export function validatePandaSource(

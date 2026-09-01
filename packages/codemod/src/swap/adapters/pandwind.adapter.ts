@@ -9,7 +9,7 @@ import {
 	defineCodemodAdapter,
 	type AdapterRenderers,
 } from "../external-adapters.ts";
-import { matchBlock } from "../../source-pass-utils.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import type {
 	AdapterConfigContext,
 	AdapterEmitContext,
@@ -391,7 +391,7 @@ function lowerComposedBaseProgram(
 function hasUnsafeTemplateDynamic(template: string, source?: string): boolean {
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
-		const block = matchBlock(template, index + 1);
+		const block = SourcePass.matchBlock(template, index + 1);
 		if (block === null) continue;
 		const expression = block.body.trim();
 		if (
@@ -418,7 +418,7 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 	};
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
-		const block = matchBlock(template, index + 1);
+		const block = SourcePass.matchBlock(template, index + 1);
 		if (block === null) continue;
 		if (isSelectorPosition(block.end)) return true;
 		index = block.end - 1;
@@ -430,7 +430,7 @@ function cssBlockEnd(source: string, open: number): number | undefined {
 	let depth = 1;
 	for (let index = open + 1; index < source.length; index++) {
 		if (source[index] === "$" && source[index + 1] === "{") {
-			const interpolation = matchBlock(source, index + 1);
+			const interpolation = SourcePass.matchBlock(source, index + 1);
 			if (interpolation !== null) {
 				index = interpolation.end - 1;
 				continue;
@@ -512,7 +512,7 @@ function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgr
 		let cursor = 0;
 		for (let index = 0; index < expression.length; index++) {
 			if (expression[index] !== "$" || expression[index + 1] !== "{") continue;
-			const block = matchBlock(expression, index + 1);
+			const block = SourcePass.matchBlock(expression, index + 1);
 			if (block === null) continue;
 			output += expression.slice(cursor, index) + "${";
 			const value = block.body.trim();
@@ -911,7 +911,7 @@ function runtimeTemplateExpression(template: string, file?: string, parameter = 
 	let cursor = 0;
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
-		const block = matchBlock(template, index + 1);
+		const block = SourcePass.matchBlock(template, index + 1);
 		if (block === null) continue;
 		const staticPart = template.slice(cursor, index);
 		if (staticPart !== "") pieces.push(JSON.stringify(staticPart));
@@ -991,7 +991,7 @@ function runtimeStaticTemplateExpression(template: string, file?: string, source
 	let cursor = 0;
 	for (let index = 0; index < template.length; index++) {
 		if (template[index] !== "$" || template[index + 1] !== "{") continue;
-		const block = matchBlock(template, index + 1);
+		const block = SourcePass.matchBlock(template, index + 1);
 		if (block === null) continue;
 		const staticPart = template.slice(cursor, index);
 		if (staticPart !== "") pieces.push(JSON.stringify(staticPart));

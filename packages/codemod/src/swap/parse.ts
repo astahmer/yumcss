@@ -20,7 +20,7 @@ import { UTILITY_SUBKEYS } from "pandwind/tw/compile";
 import { flattenStyle } from "pandwind/lib/utils";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import type { AnyTokens } from "pandwind/types/typings";
-import { matchBlock } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import type { SwapIR } from "./ir.ts";
 import { resolvedAuthoredToken } from "./tokens.ts";
 
@@ -332,7 +332,7 @@ export function parseTwCalls(
 		const start = match.index ?? 0;
 		if (excluded(start)) continue;
 		const open = start + match[0].length - 1;
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const parsed = parseObjectLiteral(block.body);
 		if (parsed === null) {
@@ -402,7 +402,7 @@ export function parseCssLiterals(
 			const start = match.index ?? 0;
 			if (excluded(start)) continue;
 			const open = start + match[0].length - 1;
-			const block = matchBlock(source, open);
+			const block = SourcePass.matchBlock(source, open);
 			if (block === null) continue;
 			const parsed = parseObjectLiteral(block.body);
 			const bindingName = bare ? "css" : match[1]!;

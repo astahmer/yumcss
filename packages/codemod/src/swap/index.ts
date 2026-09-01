@@ -16,8 +16,7 @@ import {
  */
 import type { PandwindMeta } from "../meta.ts";
 import type { TransformOptions, TransformResult } from "../migrate.ts";
-import { applyEdits } from "../migrate.ts";
-import { insertSkipMarker, matchBlock } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import { hasCssBinding, relativeModuleImport, ensureImport } from "../shared.ts";
 import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
@@ -624,7 +623,7 @@ export function runSwap(
 				const details = capabilityReport.blockers
 					.map((issue) => `${issue.capability}: ${issue.detail}`)
 					.join("; ");
-				code = insertSkipMarker(
+				code = SourcePass.insertSkipMarker(
 					code,
 					match.start,
 					`${MigrationSkipReason.CapabilityBlocked}: ${details}`,
@@ -645,7 +644,7 @@ export function runSwap(
 		const hasDssBinding =
 			/\b(?:const|let|var)\s+dss\b/.test(code) || /import\s*\{[^}]*\bdss\b[^}]*}\s*from/.test(code);
 		if ((needsCssTarget && !hasCssBinding(code)) || (needsDssTarget && !hasDssBinding)) {
-			code = insertSkipMarker(
+			code = SourcePass.insertSkipMarker(
 				code,
 				match.start,
 				`${MigrationSkipReason.HostRewriteRequired}: no local ${needsDssTarget ? "dss" : "pandwind css"} instance to swap into (${options.to})`,
@@ -668,7 +667,7 @@ export function runSwap(
 			// Nothing representable — document why, keep the original.
 			const emissionResiduals = [...ir.residuals, ...result.residuals];
 			const hints = emissionResiduals.map((r) => r.hint ?? r.kind).join("; ");
-			code = insertSkipMarker(
+			code = SourcePass.insertSkipMarker(
 				code,
 				match.start,
 				`${MigrationSkipReason.LoweringResidual}: ${hints || "unconvertible"}`,
@@ -685,7 +684,7 @@ export function runSwap(
 		const blockingResiduals = emissionResiduals.filter((residual) => residual.preserved !== true);
 		if (blockingResiduals.length > 0) {
 			const hints = blockingResiduals.map((residual) => residual.hint ?? residual.kind).join("; ");
-			code = insertSkipMarker(
+			code = SourcePass.insertSkipMarker(
 				code,
 				match.start,
 				`${MigrationSkipReason.LoweringResidual}: ${hints || "unrepresentable semantics"}`,
@@ -713,7 +712,7 @@ export function runSwap(
 	}
 
 	if (edits.length > 0) {
-		code = applyEdits(code, edits);
+		code = SourcePass.applyEdits(code, edits);
 		for (const statement of imports) code = ensureImport(code, statement);
 		if (headers.length > 0) {
 			// Structural blocks (stylex.create) go after the import section.
@@ -769,7 +768,7 @@ function semanticProgramForMatch(
 	);
 	if (hasDynamicSource) {
 		const open = source.indexOf("{", match.start);
-		const block = open === -1 ? null : matchBlock(source, open);
+		const block = open === -1 ? null : SourcePass.matchBlock(source, open);
 		if (block !== null) {
 			return styleProgramFromSourceObject(block.body, {
 				...programOptions,

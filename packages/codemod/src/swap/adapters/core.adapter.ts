@@ -1,5 +1,5 @@
 import type { PandwindMeta } from "../../meta.ts";
-import { matchBlock } from "../../sources.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import { SWAP_EMITTERS, type Emitter } from "../emit.ts";
 import { OUTBOUND_EMITTERS } from "./outbound/plugin.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA, type AdapterCapabilities } from "../capabilities.ts";
@@ -73,7 +73,7 @@ function parseDss(source: string, context: AdapterParseContext): AdapterParseRes
 		const start = match.index ?? 0;
 		if (mask(start)) continue;
 		const open = source.indexOf("{", start);
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) {
 			residuals.push({ kind: "parse", text: source.slice(start), hint: "unbalanced dss object" });
 			continue;

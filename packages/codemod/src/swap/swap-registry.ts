@@ -1,5 +1,5 @@
 import type { PandwindMeta } from "../meta.ts";
-import { computeExcludedRanges } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
 import { type EmitterContext, type EmitterResult } from "./emit.ts";
 import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";
@@ -124,7 +124,7 @@ export function createSwapRegistry(
 		scanSource(id, context) {
 			const adapter = sources.get(id);
 			if (adapter === undefined) throw new Error(`unknown swap source: ${id}`);
-			const mask = computeExcludedRanges(context.source, context.file);
+			const mask = SourcePass.computeExcludedRanges(context.source, context.file);
 			return adapter
 				.parse(context, mask.isExcluded)
 				.toSorted((a, b) => a.start - b.start)

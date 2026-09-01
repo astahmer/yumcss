@@ -5,7 +5,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
-import { applyEdits } from "../migrate.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import { ensureImport } from "../shared.ts";
 import {
 	SOURCE_SCANNER_SERVICE,
@@ -1417,7 +1417,7 @@ function runAdapterMigrationInternal(
 			representation: successfulRepresentation,
 		});
 	}
-	const edited = applyEdits(source, edits);
+	const edited = SourcePass.applyEdits(source, edits);
 	let runtimeEdited = edited;
 	let needsCx = false;
 	for (const request of targetHostRewrites) {

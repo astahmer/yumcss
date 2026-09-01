@@ -17,7 +17,7 @@
  */
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { matchBlock } from "../../../sources.ts";
+import { SourcePass } from "../../../source-pass-utils.ts";
 import { parseObjectLiteral, literalToPlain } from "./parse.ts";
 import {
 	NODE_PROJECT_MODULE_LOADER,
@@ -350,7 +350,7 @@ function loadPandaThemeFromSource(configSource: string, extraSources: Array<stri
 		)) {
 			const section = /^(\w+)/.exec(m[0].trim())?.[1] ?? "";
 			const open = (m.index ?? 0) + m[0].length - 1;
-			const block = matchBlock(chunk, open);
+			const block = SourcePass.matchBlock(chunk, open);
 			if (block === null) continue;
 			const parsed = parseObjectLiteral(block.body);
 			if (parsed === null) continue;

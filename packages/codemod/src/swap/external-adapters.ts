@@ -12,13 +12,9 @@ import {
 	type StyleProgramResidual,
 	type StyleProgramSource,
 } from "./semantic-ir.ts";
-import { matchBlock } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import { joinDocumentPath } from "../path-utils.ts";
-import {
-	computeExcludedRanges,
-	SourceBindingKind,
-	type SourceBinding,
-} from "pandwind/source";
+import { SourceBindingKind, type SourceBinding } from "pandwind/source";
 import {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	AdapterCapabilityLevelTag,
@@ -537,7 +533,7 @@ function camelProperty(property: string): string {
 function templateDynamicExpression(rawValue: string): string {
 	const normalized = rawValue.trim();
 	if (normalized.startsWith("${")) {
-		const interpolation = matchBlock(normalized, 1);
+		const interpolation = SourcePass.matchBlock(normalized, 1);
 		if (interpolation?.end === normalized.length) return interpolation.body.trim();
 	}
 	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
@@ -614,7 +610,7 @@ function parseTemplateProgram(
 				if (character === "(") parens++;
 				if (character === ")") parens--;
 				if (character === "$" && input[index + 1] === "{") {
-					const interpolation = matchBlock(input, index + 1);
+					const interpolation = SourcePass.matchBlock(input, index + 1);
 					if (interpolation !== null) {
 						index = interpolation.end - 1;
 						continue;
@@ -627,7 +623,7 @@ function parseTemplateProgram(
 			}
 			if (delimiter === "{") {
 				const selector = input.slice(cursor, index).trim();
-				const block = matchBlock(input, index);
+				const block = SourcePass.matchBlock(input, index);
 				if (block === null || selector === "") {
 					residuals.push({
 						kind: "parse",
@@ -831,9 +827,9 @@ function parseCalls(
 		if (bindings.length === 0) return [];
 		return bindings.map((binding) => pattern.regexForBinding?.(binding) ?? pattern.regex);
 	};
-	let mask: ReturnType<typeof computeExcludedRanges> | undefined;
+	let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 	try {
-		mask = computeExcludedRanges(source, context.file);
+		mask = SourcePass.computeExcludedRanges(source, context.file);
 	} catch {
 		// Source parsers are allowed to operate on snippets that are not complete
 		// modules; the adapter remains conservative through its balanced matcher.
@@ -843,16 +839,16 @@ function parseCalls(
 		return regexesFor(pattern)
 			.flatMap((regex) => [...source.matchAll(regex)])
 			.flatMap((match) => {
-			const start = match.index ?? 0;
-			if (mask?.isExcluded(start)) return [];
-			const tag = JsxStyleHost.parse(
-				source,
-				start,
-				context,
-				pattern.styleProps ?? [],
-				adapterSource(context, start),
-			);
-			return tag === undefined ? [] : [{ start, end: tag.end }];
+				const start = match.index ?? 0;
+				if (mask?.isExcluded(start)) return [];
+				const tag = JsxStyleHost.parse(
+					source,
+					start,
+					context,
+					pattern.styleProps ?? [],
+					adapterSource(context, start),
+				);
+				return tag === undefined ? [] : [{ start, end: tag.end }];
 			});
 	});
 	const isInsideHostRange = (start: number): boolean =>
@@ -874,248 +870,248 @@ function parseCalls(
 		}
 		for (const regex of regexesFor(pattern))
 			for (const match of source.matchAll(regex)) {
-			const start = match.index ?? 0;
-			if (mask?.isExcluded(start)) continue;
-			if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
-				const initialTag = JsxStyleHost.parse(
-					source,
-					start,
-					context,
-					pattern.styleProps ?? [],
-					adapterSource(context, start),
-				);
-				if (initialTag !== undefined) {
-					const preserved = new Set(pattern.preserveHostStyleProps?.(initialTag) ?? []);
-					const tag =
-						preserved.size === 0
-							? initialTag
-							: JsxStyleHost.parse(
-									source,
-									start,
-									context,
-									(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
-									adapterSource(context, start),
-								);
-					if (tag === undefined) continue;
-					const program =
-						tag.template === undefined
-							? styleProgramFromSourceObject(tag.body, {
-									...resolvedObjectOptions,
-									...patternObjectOptions,
-									source: tag.source,
-									sourceOffset: start,
-								})
-							: parseTemplateProgram(tag.template, context, start);
-					const hostProgram = {
-						...program,
-						source: {
-							...program.source,
-							...tag.source,
-							...(tag.template === undefined ? {} : { template: tag.template }),
-						},
-					};
-					matches.push({
+				const start = match.index ?? 0;
+				if (mask?.isExcluded(start)) continue;
+				if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
+					const initialTag = JsxStyleHost.parse(
+						source,
 						start,
-						end: tag.end,
-						program: pattern.transform?.(hostProgram, context) ?? hostProgram,
-						sourceText: tag.openingTag,
-					});
-				}
-				continue;
-			}
-			if (pattern.form === CodemodCallPatternFormTag.Residual) {
-				const residual = pattern.residual;
-				if (residual === undefined) continue;
-				const sourceMap: StyleProgramSource = {
-					file: context.file,
-					start,
-					end: start + match[0].length,
-					adapter: context.config.adapter,
-					...context.semantic?.source,
-				};
-				matches.push({
-					start,
-					end: start + match[0].length,
-					sourceText: match[0],
-					program: styleProgramFromRules([], {
-						source: sourceMap,
-						residuals: [
-							{
-								kind: residual.kind,
-								text: match[0],
-								hint: residual.hint,
+						context,
+						pattern.styleProps ?? [],
+						adapterSource(context, start),
+					);
+					if (initialTag !== undefined) {
+						const preserved = new Set(pattern.preserveHostStyleProps?.(initialTag) ?? []);
+						const tag =
+							preserved.size === 0
+								? initialTag
+								: JsxStyleHost.parse(
+										source,
+										start,
+										context,
+										(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
+										adapterSource(context, start),
+									);
+						if (tag === undefined) continue;
+						const program =
+							tag.template === undefined
+								? styleProgramFromSourceObject(tag.body, {
+										...resolvedObjectOptions,
+										...patternObjectOptions,
+										source: tag.source,
+										sourceOffset: start,
+									})
+								: parseTemplateProgram(tag.template, context, start);
+						const hostProgram = {
+							...program,
+							source: {
+								...program.source,
+								...tag.source,
+								...(tag.template === undefined ? {} : { template: tag.template }),
 							},
-						],
-					}),
-				});
-				continue;
-			}
-			if (pattern.form === CodemodCallPatternFormTag.Reference) {
-				const reference = match[1];
-				if (reference === undefined) continue;
-				const escaped = reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-				const binding = new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=\\s*\\{`, "g").exec(
-					source,
-				);
-				if (binding === null) {
-					residuals.push({
-						kind: "parse",
-						text: match[0],
-						hint: `JSS style binding '${reference}' was not found`,
-					});
+						};
+						matches.push({
+							start,
+							end: tag.end,
+							program: pattern.transform?.(hostProgram, context) ?? hostProgram,
+							sourceText: tag.openingTag,
+						});
+					}
 					continue;
 				}
-				const open = binding.index + binding[0].lastIndexOf("{");
-				const block = matchBlock(source, open);
-				if (block === null) {
-					residuals.push({
-						kind: "parse",
-						text: match[0],
-						hint: `JSS style binding '${reference}' is unbalanced`,
-					});
-					continue;
-				}
-				const program = styleProgramFromSourceObject(block.body, {
-					source: {
+				if (pattern.form === CodemodCallPatternFormTag.Residual) {
+					const residual = pattern.residual;
+					if (residual === undefined) continue;
+					const sourceMap: StyleProgramSource = {
 						file: context.file,
 						start,
 						end: start + match[0].length,
 						adapter: context.config.adapter,
-					},
-					sourceOffset: open + 1,
-					nestedObjectKind: "named",
-				});
-				matches.push({
-					start,
-					end: start + match[0].length,
-					program,
-					sourceText: match[0],
-				});
-				continue;
-			}
-			if (pattern.form === CodemodCallPatternFormTag.Template) {
-				const firstTick = source.indexOf("`", start);
-				const lastTick = findTemplateLiteralEnd(source, firstTick);
-				if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
-				// A JSX style host owns the complete tagged template. Do not parse the
-				// nested `css\`...\`` again: doing so creates residuals for the same
-				// source site and makes a valid host migration look incomplete.
-				if (isInsideHostRange(start)) continue;
-				if (source.slice(start, firstTick).includes("=>")) {
-					residuals.push({
-						kind: "capability",
-						text: source.slice(start, lastTick + 1),
-						hint: `${pattern.name} function-valued styles require a host-specific lowering`,
+						...context.semantic?.source,
+					};
+					matches.push({
+						start,
+						end: start + match[0].length,
+						sourceText: match[0],
+						program: styleProgramFromRules([], {
+							source: sourceMap,
+							residuals: [
+								{
+									kind: residual.kind,
+									text: match[0],
+									hint: residual.hint,
+								},
+							],
+						}),
 					});
 					continue;
 				}
-				const templateBody = source.slice(firstTick + 1, lastTick);
-				if (/\$\{[^`]*`/u.test(templateBody)) {
-					residuals.push({
-						kind: "dynamic",
-						text: source.slice(start, lastTick + 1),
-						hint: `${pattern.name} nested template interpolation requires a host-specific lowering`,
+				if (pattern.form === CodemodCallPatternFormTag.Reference) {
+					const reference = match[1];
+					if (reference === undefined) continue;
+					const escaped = reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+					const binding = new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=\\s*\\{`, "g").exec(
+						source,
+					);
+					if (binding === null) {
+						residuals.push({
+							kind: "parse",
+							text: match[0],
+							hint: `JSS style binding '${reference}' was not found`,
+						});
+						continue;
+					}
+					const open = binding.index + binding[0].lastIndexOf("{");
+					const block = SourcePass.matchBlock(source, open);
+					if (block === null) {
+						residuals.push({
+							kind: "parse",
+							text: match[0],
+							hint: `JSS style binding '${reference}' is unbalanced`,
+						});
+						continue;
+					}
+					const program = styleProgramFromSourceObject(block.body, {
+						source: {
+							file: context.file,
+							start,
+							end: start + match[0].length,
+							adapter: context.config.adapter,
+						},
+						sourceOffset: open + 1,
+						nestedObjectKind: "named",
+					});
+					matches.push({
+						start,
+						end: start + match[0].length,
+						program,
+						sourceText: match[0],
 					});
 					continue;
 				}
-				const template = source.slice(start, lastTick + 1);
-				let program =
-					pattern.kind === CodemodCallPatternKindTag.Keyframes
-						? parseKeyframeTemplateProgram(
-								templateBody,
-								context,
-								start,
-								sourceName(source, start, `${pattern.name}${matches.length + 1}`),
-							)
-						: parseTemplateProgram(templateBody, context, start);
+				if (pattern.form === CodemodCallPatternFormTag.Template) {
+					const firstTick = source.indexOf("`", start);
+					const lastTick = findTemplateLiteralEnd(source, firstTick);
+					if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
+					// A JSX style host owns the complete tagged template. Do not parse the
+					// nested `css\`...\`` again: doing so creates residuals for the same
+					// source site and makes a valid host migration look incomplete.
+					if (isInsideHostRange(start)) continue;
+					if (source.slice(start, firstTick).includes("=>")) {
+						residuals.push({
+							kind: "capability",
+							text: source.slice(start, lastTick + 1),
+							hint: `${pattern.name} function-valued styles require a host-specific lowering`,
+						});
+						continue;
+					}
+					const templateBody = source.slice(firstTick + 1, lastTick);
+					if (/\$\{[^`]*`/u.test(templateBody)) {
+						residuals.push({
+							kind: "dynamic",
+							text: source.slice(start, lastTick + 1),
+							hint: `${pattern.name} nested template interpolation requires a host-specific lowering`,
+						});
+						continue;
+					}
+					const template = source.slice(start, lastTick + 1);
+					let program =
+						pattern.kind === CodemodCallPatternKindTag.Keyframes
+							? parseKeyframeTemplateProgram(
+									templateBody,
+									context,
+									start,
+									sourceName(source, start, `${pattern.name}${matches.length + 1}`),
+								)
+							: parseTemplateProgram(templateBody, context, start);
+					program = {
+						...program,
+						source: {
+							...program.source,
+							...(pattern.kind === CodemodCallPatternKindTag.Styled
+								? styledSubject(source, start)
+								: {}),
+							...(context.document?.framework ? { framework: context.document.framework } : {}),
+							...context.semantic?.source,
+						},
+					};
+					program = pattern.transform?.(program, context) ?? program;
+					matches.push({ start, end: start + template.length, program, sourceText: template });
+					continue;
+				}
+				const open = source.indexOf("{", start);
+				if (open === -1) continue;
+				const block = SourcePass.matchBlock(source, open);
+				if (block === null) {
+					residuals.push({
+						kind: "parse",
+						text: source.slice(start),
+						hint: "unbalanced style object",
+					});
+					continue;
+				}
+				const end = source[block.end] === ")" ? block.end + 1 : block.end;
+				const suffixMatch = pattern.suffix?.exec(source.slice(end));
+				const fullEnd = suffixMatch?.index === 0 ? end + suffixMatch[0].length : end;
+				const fallbackName = `${pattern.name}Style${matches.length + 1}`;
+				let program: StyleProgram;
+				if (pattern.kind === CodemodCallPatternKindTag.Keyframes) {
+					program = parseKeyframeProgram(
+						block.body,
+						context,
+						start,
+						sourceName(source, start, fallbackName),
+						{ ...resolvedObjectOptions, ...patternObjectOptions },
+					);
+				} else if (pattern.kind === CodemodCallPatternKindTag.Global) {
+					const selector = source.slice(start, open).match(/\(\s*(["'])([^"']+)\1\s*,\s*$/)?.[2];
+					program = parseGlobalProgram(block.body, context, start, selector);
+				} else {
+					const base = styleProgramFromSourceObject(block.body, {
+						source: {
+							file: context.file,
+							start,
+							end: fullEnd,
+							adapter: context.config.adapter,
+							...(context.document?.framework ? { framework: context.document.framework } : {}),
+							...(pattern.name === "styled" ? styledSubject(source, start) : {}),
+							...context.semantic?.source,
+						},
+						sourceOffset: open + 1,
+						...(context.semantic?.themes ? { themes: context.semantic.themes } : {}),
+						...(context.semantic?.compositions
+							? { compositions: context.semantic.compositions }
+							: {}),
+						...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
+						...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
+						...resolvedObjectOptions,
+						...patternObjectOptions,
+						...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
+					});
+					if (pattern.kind === CodemodCallPatternKindTag.FontFace) {
+						program = styleProgramFromRules(
+							[
+								{
+									kind: "font-face",
+									conditions: [],
+									declarations: base.declarations,
+									children: [],
+									order: 0,
+								},
+							],
+							{ source: base.source, residuals: base.residuals },
+						);
+					} else {
+						program = base;
+					}
+				}
+				program = pattern.transform?.(program, context) ?? program;
 				program = {
 					...program,
-					source: {
-						...program.source,
-						...(pattern.kind === CodemodCallPatternKindTag.Styled
-							? styledSubject(source, start)
-							: {}),
-						...(context.document?.framework ? { framework: context.document.framework } : {}),
-						...context.semantic?.source,
-					},
+					source: { ...program.source, pattern: pattern.name },
 				};
-				program = pattern.transform?.(program, context) ?? program;
-				matches.push({ start, end: start + template.length, program, sourceText: template });
-				continue;
+				matches.push({ start, end: fullEnd, program, sourceText: source.slice(start, fullEnd) });
 			}
-			const open = source.indexOf("{", start);
-			if (open === -1) continue;
-			const block = matchBlock(source, open);
-			if (block === null) {
-				residuals.push({
-					kind: "parse",
-					text: source.slice(start),
-					hint: "unbalanced style object",
-				});
-				continue;
-			}
-			const end = source[block.end] === ")" ? block.end + 1 : block.end;
-			const suffixMatch = pattern.suffix?.exec(source.slice(end));
-			const fullEnd = suffixMatch?.index === 0 ? end + suffixMatch[0].length : end;
-			const fallbackName = `${pattern.name}Style${matches.length + 1}`;
-			let program: StyleProgram;
-			if (pattern.kind === CodemodCallPatternKindTag.Keyframes) {
-				program = parseKeyframeProgram(
-					block.body,
-					context,
-					start,
-					sourceName(source, start, fallbackName),
-					{ ...resolvedObjectOptions, ...patternObjectOptions },
-				);
-			} else if (pattern.kind === CodemodCallPatternKindTag.Global) {
-				const selector = source.slice(start, open).match(/\(\s*(["'])([^"']+)\1\s*,\s*$/)?.[2];
-				program = parseGlobalProgram(block.body, context, start, selector);
-			} else {
-				const base = styleProgramFromSourceObject(block.body, {
-					source: {
-						file: context.file,
-						start,
-						end: fullEnd,
-						adapter: context.config.adapter,
-						...(context.document?.framework ? { framework: context.document.framework } : {}),
-						...(pattern.name === "styled" ? styledSubject(source, start) : {}),
-						...context.semantic?.source,
-					},
-					sourceOffset: open + 1,
-					...(context.semantic?.themes ? { themes: context.semantic.themes } : {}),
-					...(context.semantic?.compositions
-						? { compositions: context.semantic.compositions }
-						: {}),
-					...(context.semantic?.runtime ? { runtime: context.semantic.runtime } : {}),
-					...(context.semantic?.plugins ? { plugins: context.semantic.plugins } : {}),
-					...resolvedObjectOptions,
-					...patternObjectOptions,
-					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
-				});
-				if (pattern.kind === CodemodCallPatternKindTag.FontFace) {
-					program = styleProgramFromRules(
-						[
-							{
-								kind: "font-face",
-								conditions: [],
-								declarations: base.declarations,
-								children: [],
-								order: 0,
-							},
-						],
-						{ source: base.source, residuals: base.residuals },
-					);
-				} else {
-					program = base;
-				}
-			}
-			program = pattern.transform?.(program, context) ?? program;
-			program = {
-				...program,
-				source: { ...program.source, pattern: pattern.name },
-			};
-			matches.push({ start, end: fullEnd, program, sourceText: source.slice(start, fullEnd) });
-		}
 	}
 	matches.sort((a, b) => a.start - b.start);
 	return { matches, residuals };

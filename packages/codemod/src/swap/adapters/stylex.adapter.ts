@@ -5,7 +5,7 @@ import type { StyleLowering } from "../lowering.ts";
 import { STYLE_LOWERING_SCHEMA } from "../lowering.ts";
 import type { AdapterParseContext } from "../adapter-contract.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { applyEdits, computeExcludedRanges, matchBlock } from "../../source-pass-utils.ts";
+import { SourcePass } from "../../source-pass-utils.ts";
 import type { OxcNode } from "pandwind/tw/literal";
 import { parseObjectLiteral } from "../parse.ts";
 import {
@@ -44,14 +44,14 @@ function moveStyleAfterPropsSpread(code: string, binding: string): string {
 	for (const match of code.matchAll(styleAttribute)) {
 		const styleStart = match.index ?? 0;
 		const open = styleStart + match[0].lastIndexOf("{");
-		const styleBlock = matchBlock(code, open);
+		const styleBlock = SourcePass.matchBlock(code, open);
 		if (styleBlock === null) continue;
 		const spreadSearch = new RegExp(propsSpread.source, "g");
 		spreadSearch.lastIndex = styleBlock.end;
 		const spreadMatch = spreadSearch.exec(code);
 		if (spreadMatch === null) continue;
 		const spreadStart = spreadMatch.index;
-		const spreadBlock = matchBlock(code, spreadStart);
+		const spreadBlock = SourcePass.matchBlock(code, spreadStart);
 		if (spreadBlock === null) continue;
 		const between = code.slice(styleBlock.end, spreadStart);
 		if (between.trim() !== "") continue;
@@ -78,7 +78,7 @@ function mergeClassNameAfterPropsSpread(code: string, binding: string): string {
 	const spread = new RegExp(`\\{\\s*\\.\\.\\.${binding}\\.props\\(`, "g");
 	for (const match of code.matchAll(spread)) {
 		const spreadStart = match.index ?? 0;
-		const spreadBlock = matchBlock(code, spreadStart);
+		const spreadBlock = SourcePass.matchBlock(code, spreadStart);
 		if (spreadBlock === null) continue;
 		const tagEnd = code.indexOf(">", spreadBlock.end);
 		if (tagEnd < 0) continue;
@@ -86,7 +86,7 @@ function mergeClassNameAfterPropsSpread(code: string, binding: string): string {
 		classNameMatch.lastIndex = spreadBlock.end;
 		const className = classNameMatch.exec(code);
 		if (className === null || className.index >= tagEnd) continue;
-		const classBlock = matchBlock(code, className.index + className[0].lastIndexOf("{"));
+		const classBlock = SourcePass.matchBlock(code, className.index + className[0].lastIndexOf("{"));
 		if (classBlock === null || classBlock.end > tagEnd) continue;
 		const classBodyStart = className.index + className[0].lastIndexOf("{") + 1;
 		const spreadText = code.slice(spreadStart, spreadBlock.end);
@@ -138,13 +138,13 @@ function isRuntimeStyleXCarrier(expression: string): boolean {
 }
 
 function rewriteStaticXstyleHosts(source: string, binding: string): string {
-	const excluded = computeExcludedRanges(source, "pandwind-stylex-hosts.tsx");
+	const excluded = SourcePass.computeExcludedRanges(source, "pandwind-stylex-hosts.tsx");
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	for (const match of source.matchAll(/\bxstyle\s*=\s*\{/g)) {
 		const attributeStart = match.index ?? 0;
 		if (excluded.isExcluded(attributeStart)) continue;
 		const open = attributeStart + match[0].lastIndexOf("{");
-		const value = matchBlock(source, open);
+		const value = SourcePass.matchBlock(source, open);
 		if (value === null || isRuntimeStyleXCarrier(value.body)) continue;
 		const tagStart = source.lastIndexOf("<", attributeStart);
 		if (tagStart < 0 || source.slice(tagStart, attributeStart).includes(">")) continue;
@@ -158,7 +158,7 @@ function rewriteStaticXstyleHosts(source: string, binding: string): string {
 		const className = /\bclassName\s*=\s*(\{)/.exec(tag);
 		if (className !== null) {
 			const classOpen = tagStart + className.index + className[0].lastIndexOf("{");
-			const classBlock = matchBlock(source, classOpen);
+			const classBlock = SourcePass.matchBlock(source, classOpen);
 			if (classBlock === null || classBlock.end > tagEnd) continue;
 			const classExpression = classBlock.body.trim();
 			if (classExpression === "") continue;
@@ -196,7 +196,7 @@ function rewriteStaticXstyleHosts(source: string, binding: string): string {
 			text: `className={${binding}.props(${expression}).className}`,
 		});
 	}
-	return applyEdits(source, edits);
+	return SourcePass.applyEdits(source, edits);
 }
 
 function stylexWhenCondition(expression: string): string | undefined {
@@ -321,7 +321,7 @@ function stylexVariableReferences(source: string): Readonly<Record<string, strin
 		if (binding === undefined) continue;
 		const open = source.indexOf("{", (match.index ?? 0) + match[0].length);
 		if (open < 0) continue;
-		const block = matchBlock(source, open);
+		const block = SourcePass.matchBlock(source, open);
 		if (block === null) continue;
 		const variables = parseObjectLiteral(block.body);
 		for (const entry of variables?.keys ?? [])

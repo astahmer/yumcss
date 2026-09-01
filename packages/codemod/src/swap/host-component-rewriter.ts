@@ -1,4 +1,4 @@
-import { computeExcludedRanges } from "../sources.ts";
+import { SourcePass } from "../source-pass-utils.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -106,7 +106,7 @@ export function isDiscardedExpressionStatement(
 
 const excluded = (source: string, file: string, index: number): boolean => {
 	try {
-		return computeExcludedRanges(source, file).isExcluded(index);
+		return SourcePass.computeExcludedRanges(source, file).isExcluded(index);
 	} catch {
 		return false;
 	}
@@ -159,7 +159,10 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let needsCx = false;
 	let found = false;
-	const mask = computeExcludedRanges(request.source, request.file ?? "pandwind-component.tsx");
+	const mask = SourcePass.computeExcludedRanges(
+		request.source,
+		request.file ?? "pandwind-component.tsx",
+	);
 	const tag = request.tag;
 	const binding = request.binding;
 	for (const match of tagMatches(request.source, binding)) {
