@@ -6,6 +6,7 @@ import {
 } from "./adapter-matrix.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
+import { AdapterConformanceContext } from "./adapter-conformance-context.ts";
 
 /** Versioned contract for direct adapter and ordered-route evidence. */
 export const ADAPTER_CONFORMANCE_SCHEMA = "pandwind.adapter-conformance/1" as const;
@@ -138,13 +139,17 @@ function directEvidence(
 					);
 					// Capabilities are target-side. Source adapters may preserve
 					// semantics they cannot lower for another target.
-					const emission = adapter.emit(match.program, {
-						file: fixture.file,
-						config,
-						mode: "partial",
-						capability,
-						index,
-					});
+					const emission = adapter.emit(
+						match.program,
+						AdapterConformanceContext.emit(
+							adapter,
+							fixture,
+							match.program,
+							config,
+							capability,
+							index,
+						),
+					);
 					emitted++;
 					if (scenario !== "happy") continue;
 					const validation = adapter.validate(match.program, match.program, emission.residuals);

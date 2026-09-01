@@ -218,7 +218,7 @@ export default defineCodemodAdapter({
 					: [],
 		},
 	},
-	detectPatterns: [/@mantine\/core/, /\b(?:sx|maw|fz|c|bg)\s*=/],
+	detectPatterns: [/@mantine\/core/, /\b(?:style|sx|maw|fz|c|bg)\s*=/],
 	// Mantine components remain imported; only the style-prop layer is lowered.
 	sourceModules: [],
 	configFiles: ["package.json", "src/theme.ts", "src/theme.js"],

@@ -8,6 +8,7 @@ import type {
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import type { AdapterCapabilityReport } from "./capabilities.ts";
 import { inspectAdapterCapabilities } from "./capabilities.ts";
+import { AdapterConformanceContext } from "./adapter-conformance-context.ts";
 
 export interface AdapterContractFixture {
 	readonly adapter: string;
@@ -206,13 +207,17 @@ export function createAdapterContractSuite(): AdapterContractSuite {
 					for (const [index, match] of matches.entries()) {
 						let emittedResult: ReturnType<typeof sourceAdapter.emit>;
 						try {
-							emittedResult = sourceAdapter.emit(match.program, {
-								file: fixture.file,
-								config: adapterConfig,
-								mode: "partial",
-								capability: capabilities[index],
-								index,
-							});
+							emittedResult = sourceAdapter.emit(
+								match.program,
+								AdapterConformanceContext.emit(
+									sourceAdapter,
+									fixture,
+									match.program,
+									adapterConfig,
+									capabilities[index],
+									index,
+								),
+							);
 							emitted++;
 						} catch (error) {
 							failures.push(
