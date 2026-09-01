@@ -77,6 +77,57 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test.each([CodemodAdapterId.NextYak, CodemodAdapterId.SolidStyled] as const)(
+		"projects a standalone static %s subject to a React Native component",
+		(sourceAdapter) => {
+			const source =
+				sourceAdapter === CodemodAdapterId.NextYak
+					? 'import { styled } from "next-yak";\n' +
+						"const Card = styled.div`color: red; padding: 1rem;`;"
+					: 'import { styled } from "solid-styled-components";\n' +
+						'const Card = styled.div({ color: "red", padding: "1rem" });';
+			const result = runAdapterMigration(source, {
+				from: sourceAdapter,
+				to: CodemodAdapterId.ReactNative,
+				file: "Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			});
+
+			expect(result.skipped, `${sourceAdapter} -> ${CodemodAdapterId.ReactNative}`).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain("(props) => <View");
+			expect(result.code).toContain("StyleSheet.create");
+			expect(result.code).not.toContain(sourceAdapter);
+		},
+	);
+
+	test("projects a static Solid host document into a Vue SFC", () => {
+		const result = runAdapterMigration(
+			'import { styled } from "solid-styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				'export function App() { return <Card className="extra" />; }',
+			{
+				from: CodemodAdapterId.SolidStyled,
+				to: CodemodAdapterId.VueStyled,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.outputExtension).toBe(".vue");
+		expect(result.code).toContain("<script setup>");
+		expect(result.code).toContain("<template>");
+		expect(result.code).toContain('<Card class="extra" />');
+		expect(result.code).not.toContain("solid-styled-components");
+	});
+
 	test("keeps a dynamic styled subject as an explicit React Native residual", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +

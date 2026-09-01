@@ -406,6 +406,10 @@ export {
 	HOST_FRAMEWORK_CONTRACT_SCHEMA,
 	createHostFrameworkRegistry,
 	createHostFrameworkContractSuite,
+	canConvertStaticSolidJsx,
+	rewriteSolidJsxToVue,
+	canConvertStaticVueSfc,
+	rewriteVueSfcToJsx,
 } from "./host-adapters.ts";
 export type {
 	HostFramework,

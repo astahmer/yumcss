@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { canConvertStaticSolidJsx, rewriteSolidJsxToVue } from "../host-adapters.ts";
 import type { AdapterEmitContext, AdapterEmitResult } from "../adapter-contract.ts";
 import {
 	CodemodAdapterId,
@@ -108,7 +109,16 @@ const vueStyled = makeExtraAdapter({
 		handlesHostRewrites: true,
 		handlesFrameworkSemantics: true,
 		hostFrameworks: [BuiltinHostFramework.Vue],
-		hostFrameworkConversions: [{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.Vue }],
+		hostFrameworkConversions: [
+			{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.Vue },
+			{
+				from: BuiltinHostFramework.Solid,
+				to: BuiltinHostFramework.Vue,
+				canConvert: ({ file, source }) => canConvertStaticSolidJsx(file, source),
+				rewriteDocument: ({ code, file, targetFramework }) =>
+					rewriteSolidJsxToVue(code, file, targetFramework),
+			},
+		],
 		hostRepresentation: StyleHostRepresentationKind.Component,
 		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 		resolveHostRepresentation: ({ framework, program }) =>

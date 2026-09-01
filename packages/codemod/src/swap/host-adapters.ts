@@ -82,6 +82,51 @@ export function rewriteVueSfcToJsx(
 	};
 }
 
+/**
+ * Conservative Solid JSX projection for static files. The target Vue adapter
+ * receives a real SFC so its template compiler owns the resulting host
+ * dialect; reactive Solid primitives and directives remain residuals.
+ */
+export function canConvertStaticSolidJsx(file: string, source: string): boolean {
+	if (!/\.(?:jsx|tsx)$/u.test(file)) return false;
+	return !(
+		/\b(?:createSignal|createMemo|createEffect|createResource|onMount)\s*\(/u.test(source) ||
+		/\b(?:on|use|ref)\s*:/u.test(source) ||
+		/\b(?:Show|For|Switch|Match)\b/.test(source)
+	);
+}
+
+export function rewriteSolidJsxToVue(
+	code: string,
+	_file: string,
+	_targetFramework: HostFramework,
+): HostDialectRewriteResult {
+	if (!canConvertStaticSolidJsx("App.tsx", code))
+		return {
+			code,
+			residuals: [
+				vueDialectResidual(
+					code,
+					"Solid-to-Vue projection requires static JSX without reactive primitives or directives",
+				),
+			],
+		};
+	const app = /export\s+function\s+App\s*\(\s*\)\s*\{\s*return\s+([\s\S]*?);?\s*\}/u.exec(code);
+	if (app === null)
+		return {
+			code: `<script setup>\n${code.trim()}\n</script>\n`,
+			residuals: [],
+			outputExtension: ".vue",
+		};
+	const template = app[1]!.trim().replace(/\bclassName\s*=/gu, "class=");
+	const script = code.slice(0, app.index).trim();
+	return {
+		code: `<script setup>\n${script}\n</script>\n\n<template>\n\t${template}\n</template>\n`,
+		residuals: [],
+		outputExtension: ".vue",
+	};
+}
+
 export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
 export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;
 

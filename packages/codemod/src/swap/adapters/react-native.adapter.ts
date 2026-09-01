@@ -380,6 +380,7 @@ const reactNative = makeExtraAdapter({
 		hostFrameworkConversions: reactToReactNative,
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
+		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 		resolveHostRepresentation: ({
 			framework,
 			sourceFramework,
@@ -411,6 +412,16 @@ const reactNative = makeExtraAdapter({
 				canRewriteReactHost(program, source, binding)
 			)
 				return StyleHostRepresentationKind.StyleProp;
+			if (
+				(sourceHostFramework === BuiltinHostFramework.React ||
+					sourceHostFramework === BuiltinHostFramework.Solid) &&
+				framework === BuiltinHostFramework.ReactNative &&
+				program.source?.subject !== undefined &&
+				!hasHostContext &&
+				intrinsicTagForSubject(program.source.subject) !== undefined &&
+				hasOnlyStaticDeclarations(program)
+			)
+				return StyleHostRepresentationKind.Component;
 			return undefined;
 		},
 		rewriteComponent: ({
@@ -489,6 +500,19 @@ const reactNative = makeExtraAdapter({
 		},
 	},
 	targetEmit: (program, context, programObject) => {
+		const subject = program.source?.subject ?? context?.host?.subject;
+		if (
+			context?.host?.representation === StyleHostRepresentationKind.Component &&
+			subject?.startsWith("styled.") === true &&
+			hasOnlyStaticDeclarations(program)
+		) {
+			const style = `StyleSheet.create({ style: ${programObject(reactNativeProgram(program))} }).style`;
+			return {
+				text: `(props) => <View {...props} style={${style}} />`,
+				imports: ['import { StyleSheet, View } from "react-native";'],
+				residuals: [],
+			};
+		}
 		if (context?.host?.representation !== StyleHostRepresentationKind.StyleProp) return undefined;
 		if (program.rules.some((rule) => rule.name !== undefined)) return undefined;
 		return {
