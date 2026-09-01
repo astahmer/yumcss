@@ -140,7 +140,11 @@ function openingTagForAttribute(
 }
 
 function staticClassAttributes(source: string): readonly RegExpExecArray[] {
-	return [...source.matchAll(/\b(className|class)\s*=\s*(["'])([^"']*)\2/g)];
+	return [
+		...source.matchAll(
+			/\b(className|class)\s*=\s*(?:(['"])([^'"]*)\2|\{\s*(['"])([^'"]*)\4\s*\})/g,
+		),
+	];
 }
 
 function classBindingAttributes(source: string): readonly RegExpExecArray[] {
@@ -298,7 +302,7 @@ function parseTailwind(
 		const attributeStart = attribute.index ?? 0;
 		if (excluded(attributeStart)) continue;
 		const name = attribute[1];
-		const value = attribute[3] ?? "";
+		const value = attribute[3] ?? attribute[5] ?? "";
 		const openingTag = openingTagForAttribute(source, attributeStart);
 		if (name === undefined || openingTag === undefined || value.trim() === "") continue;
 		const declarations: StyleDeclaration[] = [];
@@ -425,6 +429,20 @@ function utilityCondition(conditionValue: StyleCondition): string {
 		return `[&${selector.startsWith("&") ? selector.slice(1) : selector}]:`;
 	}
 	return `${conditionValue.name}:`;
+}
+
+function renderTailwindHost(program: StyleProgram, classExpression: string): string | undefined {
+	const opening = program.source?.hostOpenTag;
+	if (opening === undefined) return undefined;
+	let host = opening;
+	for (const attribute of program.source.hostStyleAttributes ?? []) {
+		const index = host.indexOf(attribute);
+		if (index < 0) continue;
+		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
+		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
+	}
+	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
+	return `${host.slice(0, insertion)} className={${classExpression}}${host.slice(insertion)}`;
 }
 
 function emitTailwind(program: StyleProgram): {
@@ -626,7 +644,15 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				};
 			}
 			const emitted = emitTailwind(program);
-			return { ...emitted, semantic: program };
+			const host =
+				emitted.residuals.length === 0
+					? renderTailwindHost(program, emitted.text)
+					: undefined;
+			return {
+				...emitted,
+				text: host ?? emitted.text,
+				semantic: program,
+			};
 		},
 		migration: {
 			targetPolicy: {

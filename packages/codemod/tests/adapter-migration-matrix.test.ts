@@ -379,4 +379,37 @@ describe("composed cross-ecosystem routes", () => {
 		expect(chakra.code).toContain("@chakra-ui/react");
 		expect(chakra.code).toContain('backgroundColor: "#3182ce"');
 	});
+
+	test("Chakra UI -> Tailwind preserves the JSX host while lowering style props", () => {
+		const result = migrateTo(
+			'import { Box } from "@chakra-ui/react";\n' +
+				'export const Card = () => <Box color="red" padding="1rem" />;',
+			CodemodAdapterId.ChakraUi,
+			CodemodAdapterId.Tailwind,
+			"Card.tsx",
+			sourceSemantic(CodemodAdapterId.ChakraUi),
+		);
+
+		expect(result.residuals).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toMatch(/<Box\s+className=\{/u);
+		expect(result.code).toContain("[color:red]");
+		expect(result.code).not.toContain('color="red"');
+		expect(result.code).not.toMatch(/=>\s*"\[/u);
+	});
+
+	test("Tailwind -> Chakra preserves the JSX host while lowering class utilities", () => {
+		const result = migrateTo(
+			'<div className="[color:red] [padding:1rem]" />',
+			CodemodAdapterId.Tailwind,
+			CodemodAdapterId.ChakraUi,
+			"Card.tsx",
+		);
+
+		expect(result.residuals).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).toContain("<div");
+		expect(result.code).toContain('className={css({ color: "red", padding: "1rem" })}');
+		expect(result.code).not.toMatch(/^\s*css\(\{/u);
+	});
 });

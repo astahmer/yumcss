@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterHostRewriteResult,
+	AdapterParseContext,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -86,6 +90,16 @@ const styleProps = [
 	"shadow",
 	"boxShadow",
 	"position",
+	"padding",
+	"paddingTop",
+	"paddingRight",
+	"paddingBottom",
+	"paddingLeft",
+	"margin",
+	"marginTop",
+	"marginRight",
+	"marginBottom",
+	"marginLeft",
 	"top",
 	"right",
 	"bottom",
@@ -481,6 +495,26 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 	return references;
 }
 
+function renderChakraHost(
+	program: StyleProgram,
+	expression: string,
+): AdapterHostRewriteResult | undefined {
+	const opening = program.source?.hostOpenTag;
+	if (opening === undefined) return undefined;
+	let host = opening;
+	for (const attribute of program.source.hostStyleAttributes ?? []) {
+		const index = host.indexOf(attribute);
+		if (index < 0) continue;
+		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
+		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
+	}
+	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
+	return {
+		code: `${host.slice(0, insertion)} className={${expression}}${host.slice(insertion)}`,
+		residuals: [],
+	};
+}
+
 export function createChakraAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
@@ -575,9 +609,12 @@ export function createChakraAdapter(
 						},
 					],
 				};
+			const expression = `css(${programObject(program)})`;
+			const host = renderChakraHost(program, expression);
 			return {
-				text: `css(${programObject(program)})`,
+				text: host?.code ?? expression,
 				imports: ['import { css } from "@chakra-ui/react";'],
+				...(host === undefined ? {} : { residuals: host.residuals }),
 			};
 		},
 	});
