@@ -1,5 +1,5 @@
 import type { OxcNode } from "../tw/literal.ts";
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type {
 	AnyCssConfig,
 	AnyTokens,
@@ -119,5 +119,5 @@ export interface CssExtractionService {
 export type CssExtractorOptions = {
 	readonly matchers: readonly (string | RegExp)[];
 	readonly preset: CssPreset;
-	readonly className?: AnyClassNameStrategy;
+	readonly className?: ClassNameStrategy;
 };

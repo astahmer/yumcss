@@ -83,7 +83,7 @@ export interface StyleDynamicValue {
 	readonly source?: StyleProgramSource;
 	/** Optional names extracted by a source adapter for dependency analysis. */
 	readonly dependencies?: readonly string[];
-	/** Adapter hint; `residual` is the safe default for legacy targets. */
+	/** Adapter hint; `residual` is the safe default for flat targets. */
 	readonly lowering?: StyleDynamicLowering;
 }
 
@@ -1221,7 +1221,7 @@ export function styleProgramFromSourceObject(
 }
 
 /**
- * Lower a semantic program for legacy emitters. Dynamic declarations become
+ * Lower a semantic program for flat emitters. Dynamic declarations become
  * explicit residuals; they are never silently discarded by this bridge.
  */
 export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {

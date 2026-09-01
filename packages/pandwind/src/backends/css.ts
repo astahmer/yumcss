@@ -1,9 +1,5 @@
 import type { AtomRegistry } from "../css/atoms.ts";
-import {
-	normalizeStrategy,
-	type AnyClassNameStrategy,
-	type ClassNameStrategy,
-} from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
 import {
 	STYLE_BACKEND_SCHEMA,
@@ -17,7 +13,7 @@ import { normalizeCssValue } from "../css/value-normalization.ts";
 export interface CssBackendOptions {
 	debug?: boolean;
 	hashFn?: (key: string, value: string | true) => string;
-	className?: AnyClassNameStrategy;
+	className?: ClassNameStrategy;
 	/** Preset conditions used to canonicalize responsive var paths. */
 	conditions?: Record<string, string | string[]>;
 }
@@ -59,7 +55,7 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 	atoms: AtomRegistry;
 } {
 	const hashFn = options.hashFn ?? createHashFn(options.debug ?? false);
-	const strategy: ClassNameStrategy | undefined = normalizeStrategy(options.className);
+	const strategy: ClassNameStrategy | undefined = options.className;
 	const sheetBacked = strategy?.sheetBacked === true;
 	const atoms: AtomRegistry = new Map();
 

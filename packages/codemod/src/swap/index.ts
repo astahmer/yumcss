@@ -508,7 +508,7 @@ export interface SwapOptions {
 	conditionRaw?: StyleProgramOptions["conditionRaw"];
 	/** Contract override for a custom target adapter. */
 	adapterCapabilities?: AdapterCapabilities;
-	/** Enforce the declared contract; omitted preserves legacy behavior. */
+	/** Enforce the declared contract when supplied. */
 	capabilityMode?: AdapterCapabilityMode;
 }
 

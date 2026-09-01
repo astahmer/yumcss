@@ -47,7 +47,7 @@ function migrate(source: string, from: SwapSourceId, to: string) {
 }
 
 describe("flat SwapIR source/target matrix", () => {
-	test("exercises every legacy source-to-target route", () => {
+	test("exercises every flat source-to-target route", () => {
 		const outcomes: string[] = [];
 		for (const fixture of sourceFixtures) {
 			for (const target of targets) {

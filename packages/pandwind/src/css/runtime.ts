@@ -19,7 +19,7 @@ export type {
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
 import { VARS_ATOMS } from "./vars.ts";
-import { normalizeStrategy, type ClassNameStrategy } from "./class-name-strategy.ts";
+import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";
 import type {
 	AnyCssConfig,
@@ -71,7 +71,7 @@ function runtimeOptions(preset: CssConfigReturn, options: RuntimeCssOptions): Ru
 		sheet.setTokens(stylesheet.gen.tokens());
 		sheet.register([...stylesheet.gen.atomicEntries(), ...stylesheet.gen.varEntries()]);
 	};
-	const authoredStrategy = normalizeStrategy(cssOptions.className);
+	const authoredStrategy = cssOptions.className;
 	const runtimeStrategy: ClassNameStrategy = {
 		name: authoredStrategy?.name ?? "runtime",
 		sheetBacked: authoredStrategy?.sheetBacked,

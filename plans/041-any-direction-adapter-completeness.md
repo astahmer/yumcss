@@ -73,7 +73,7 @@ execution paths:
 
 - the versioned `StyleAdapterRegistry`, containing the modern ecosystem
   adapters plus the modern `panda` and `pandwind` endpoints; and
-- the legacy `SwapIR` registry, containing the `tw`, `css`, `design`, and
+- the flat `SwapIR` registry, containing the `tw`, `css`, `design`, and
   `dss` source dialects plus the Panda, Tailwind, StyleX, and Pandwind target
   lanes.
 
@@ -83,13 +83,13 @@ ordered `StyleSystemRegistry`: `panda/tw|dss|css` and
 `pandwind` adapters. The flat path remains a separate cheap `SwapIR`
 compatibility projection; it is not a second semantic route registry. Callers
 that need rich conversion use the unified style-system route registry, while
-the legacy CLI path keeps its low-cost parser/emitter.
+the flat CLI path keeps its low-cost parser/emitter.
 
 ## Current evidence and known gap
 
 The current versioned registry and route matrix exercise all 26 registered
 modern adapters and retain the flat `SwapIR` fast path. The route catalog also
-exposes the legacy Panda/Pandwind dialects through the same style-system
+exposes the flat Panda/Pandwind dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
@@ -341,7 +341,7 @@ Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
   React Native target also owns static intrinsic styled-subject conversion to
   `View`/`style`, while rejecting dynamic declarations and conflicting
   `style`, `className`, `class`, or `as` props with typed residuals.
-- The flat `SwapIR` matrix also covers every legacy source-to-target route,
+- The flat `SwapIR` matrix also covers every flat source-to-target route,
   including unknown utilities and malformed calls. The runner is fail-closed
   when an emitter reports a residual alongside non-empty output; only a
   residual explicitly marked as preserved by a target carrier (for example
@@ -503,7 +503,7 @@ selected.
 - Make capability and representation IDs typed and registry-owned.
 - Add substitution tests proving that a fake source/target/lowering/host can be
   registered without editing the orchestrator.
-- Promote Panda, Tailwind, and the core Pandwind dialects from the legacy
+- Promote Panda, Tailwind, and the core Pandwind dialects from the flat
   `SwapIR` registry into this same adapter registry. Keep `SwapIR` behind a
   source/target compatibility projection so the fast path remains cheap.
 - Derive CLI, playground, conformance, and differential route lists from the
@@ -557,7 +557,7 @@ capability modes:
 - canonical CSS and size comparison;
 - structured residual and lossiness assertions.
 
-The matrix must include legacy `SwapIR` endpoints after promotion, not merely
+The matrix must include flat `SwapIR` endpoints after promotion, not merely
 the modern external-adapter subset. Every route must have a source fixture and
 a target fixture; source-only or target-only adapters are incomplete unless
 their declared role explicitly excludes that direction and the exclusion is

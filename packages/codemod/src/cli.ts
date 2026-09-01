@@ -404,7 +404,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 			JSON.stringify({
 				from: args.from,
 				to: args.to,
-				mode: args.capabilityMode ?? "legacy",
+				...(args.capabilityMode === undefined ? {} : { mode: args.capabilityMode }),
 				files: reportEntries,
 			}),
 		);
@@ -416,12 +416,12 @@ function isExternalAdapterId(value: string): value is import("./swap/index.ts").
 }
 
 /**
- * Keep the flat SwapIR path as the cheap compatibility projection for its
+ * Keep the flat SwapIR path as the cheap projection for its
  * native source dialects. Those target names are also registered as v2
  * adapters, but selecting them from a flat source must not silently switch
- * token-aware legacy semantics to the generic object renderer.
+ * token-aware semantics to the generic object renderer.
  */
-function isLegacyFlatRoute(args: swapImport.SwapCliArgs): boolean {
+function isFlatRoute(args: swapImport.SwapCliArgs): boolean {
 	const flatSources: readonly string[] = [
 		SwapSourceId.Auto,
 		SwapSourceId.Tw,
@@ -437,7 +437,7 @@ function isLegacyFlatRoute(args: swapImport.SwapCliArgs): boolean {
 }
 
 function isExternalSwap(args: swapImport.SwapCliArgs): boolean {
-	if (isLegacyFlatRoute(args)) return false;
+	if (isFlatRoute(args)) return false;
 	return isExternalAdapterId(args.from) || isExternalAdapterId(args.to);
 }
 

@@ -26,7 +26,7 @@ export interface EmitterContext {
 	tokenRefs?: TokenRefMode;
 	/** Canonical CSS property-order sorting inside emitted scopes. */
 	sort?: boolean;
-	/** Versioned semantic view for adapters; legacy emitters may use `SwapIR`. */
+	/** Versioned semantic view for adapters; flat emitters may use `SwapIR`. */
 	program?: StyleProgram;
 	/** Declared target contract and its check for the current program. */
 	capabilities?: AdapterCapabilities;

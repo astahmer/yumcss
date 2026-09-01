@@ -148,7 +148,7 @@ describe("tw semantic sub-keys (overloaded utilities)", () => {
 		expect(merged({ textColor: "gray-900", textSize: "lg" })).toBe("text-gray-900 text-lg");
 	});
 
-	test("legacy overloaded spelling is untouched", () => {
+	test("overloaded spelling is untouched", () => {
 		expect(tw({ text: "2xl" })).toBe("text-2xl");
 		expect(tw({ text: "center" })).toBe("text-center");
 		expect(tw({ text: ["2xl", "gray-900"] })).toBe("text-2xl text-gray-900");
@@ -250,7 +250,7 @@ describe("tw semantic sub-keys — bg / border / outline / decoration families",
 		);
 	});
 
-	test("legacy overloaded spellings stay untouched", () => {
+	test("overloaded spellings stay untouched", () => {
 		expect(tw({ bg: "cover" })).toBe("bg-cover");
 		expect(tw({ bg: ["red-500", "no-repeat"] })).toBe("bg-red-500 bg-no-repeat");
 		expect(tw({ border: "2" })).toBe("border-2");

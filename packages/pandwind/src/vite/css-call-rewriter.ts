@@ -1,7 +1,7 @@
 import { createCss } from "../css/create-css.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 
@@ -15,9 +15,9 @@ interface CallNode extends OxcNode {
 
 export class TailwindCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
-	private readonly className: AnyClassNameStrategy;
+	private readonly className: ClassNameStrategy;
 
-	constructor(preset: CssPreset, className: AnyClassNameStrategy) {
+	constructor(preset: CssPreset, className: ClassNameStrategy) {
 		this.preset = preset;
 		this.className = className;
 	}

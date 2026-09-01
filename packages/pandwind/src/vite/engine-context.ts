@@ -27,20 +27,20 @@
  * generated sheet is the shipped truth, and its selectors are what folded
  * atoms must resolve to.
  */
-import { normalizeStrategy, type AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createLiteralStyleCompiler } from "./literal-style-compiler.ts";
 
 import type { CssPreset } from "./css-extract.ts";
 
 export interface PandwindEngineContextOptions {
 	preset: CssPreset;
-	className?: AnyClassNameStrategy;
+	className?: ClassNameStrategy;
 	debug?: boolean;
 }
 
 export interface PandwindEngineContext {
 	readonly preset: CssPreset;
-	readonly className?: AnyClassNameStrategy;
+	readonly className?: ClassNameStrategy;
 	/**
 	 * Atom registry populated by {@link foldLiteralStyle}: class name ->
 	 * flattened style key. Handing this to `createCx({ css })` lets the
@@ -62,7 +62,7 @@ export function createPandwindEngineContext(
 	options: PandwindEngineContextOptions,
 ): PandwindEngineContext {
 	const { preset } = options;
-	const className = normalizeStrategy(options.className);
+	const className = options.className;
 	const compiler = createLiteralStyleCompiler({
 		preset,
 		...(className === undefined ? {} : { className }),

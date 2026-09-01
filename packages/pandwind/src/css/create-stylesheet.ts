@@ -2,7 +2,6 @@ import { assign, type FlatStyles, flattenStyle, pairs } from "../lib/utils.ts";
 import type { CssConfigReturn, StyleObject, TokenDeclaration } from "../types/typings.ts";
 import { createVarCompiler } from "./var-compiler.ts";
 import type { CreateCssOptions } from "./create-css.ts";
-import { normalizeStrategy } from "./class-name-strategy.ts";
 import { createHashFn, dashCase, escapeIdentifier, hashCssVar } from "./hash.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
 import { buildTokenMaps, resolveTokenValue } from "./tokens.ts";
@@ -52,7 +51,7 @@ export const createStylesheet = (
 	// Sheet-backed strategies own the class names of the declarations they
 	// map — the generated selectors must match what the runtime emits.
 	// Non-sheet-backed strategies (tailwind) keep the sheet untouched.
-	const sheetStrategy = normalizeStrategy(options.className);
+	const sheetStrategy = options.className;
 	const classNameFor = (orderedKey: string, rawValue: string): string => {
 		if (sheetStrategy?.sheetBacked === true) {
 			const named = sheetStrategy.toClassName(orderedKey, rawValue);

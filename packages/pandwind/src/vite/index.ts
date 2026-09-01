@@ -26,7 +26,7 @@ import { createCrossModuleConstResolver } from "./cross-module-consts.ts";
 import { type OxcNode } from "../tw/literal.ts";
 import { createCssSourceService } from "./css-source-service.ts";
 import { createPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssPreset } from "./css-extract.ts";
 import { extractTwConfig, inlineTwCalls, type OnUnresolved, type TwConfig } from "./inline.ts";
 import type { UnresolvedToken } from "./unresolved.ts";
@@ -62,7 +62,7 @@ export interface PandwindViteOptions {
 	 */
 	css?: {
 		preset: CssPreset;
-		className?: AnyClassNameStrategy;
+		className?: ClassNameStrategy;
 		/** Shared engine context — see createPandwindEngineContext. */
 		engine?: PandwindEngineContext;
 		/**
@@ -78,7 +78,7 @@ export interface PandwindViteOptions {
 	 * (they render unstyled). Only fully-folded cx()/tw() call sites are
 	 * checked; custom/foreign classes passed through cx() will false-positive.
 	 *
-	 * - "off" (default, backwards compatible): do nothing;
+	 * - "off" (default): do nothing;
 	 * - "warn": report each site via console.warn and keep building;
 	 * - "error": throw — the build fails on the offending module.
 	 */

@@ -47,7 +47,7 @@ ${presetImport}
 export const css = createDesignCss(${hasPresetFile ? "preset" : "({} as any)"}) as any;
 export const cx = createCx({ css });
 
-// Compatibility for literal Panda slot recipes whose anatomy list is dynamic
+// Support literal Panda slot recipes whose anatomy list is dynamic
 // (for example Ark UI's dialog). The codemod still owns their style objects;
 // this small generated resolver only preserves the existing call shape.
 const merge = (target: Record<string, unknown>, source: unknown): void => {

@@ -1006,7 +1006,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			const n = def.name;
 			const exportName = recipeExportNames.get(n) ?? n;
 			const moduleName = recipeModuleNames.get(`${def.file.path}#${def.start}`) ?? n;
-			// modules export both spellings so every historical import keeps resolving
+			// Keep the authored binding available when export-name normalization changes it.
 			return exportName === n
 				? `export { ${n} } from "./${moduleName}";`
 				: `export { ${exportName}, ${exportName} as ${n} } from "./${moduleName}";`;

@@ -41,7 +41,7 @@ export enum CodemodPatternId {
 	StyleXDefineVars = "stylex-define-vars",
 }
 
-/** Built-in source dialects accepted by the legacy flat SwapIR path. */
+/** Built-in source dialects accepted by the flat SwapIR path. */
 export enum SwapSourceId {
 	Auto = "auto",
 	Css = "css",

@@ -241,7 +241,7 @@ function stylexConditionValues(source: string): Readonly<Record<string, string>>
 }
 
 export interface StyleXImportedReferenceResolver {
-	importedLiteralScope(file: string, program: OxcNode): ReadonlyMap<string, unknown>;
+	importedScope(file: string, program: OxcNode): ReadonlyMap<string, unknown>;
 }
 
 function importedStyleReferences(
@@ -256,7 +256,7 @@ function importedStyleReferences(
 			source: context.source,
 			language: SOURCE_SCANNER_SERVICE.languageForFile(context.file),
 		});
-		const scope = resolver.importedLiteralScope(context.file, parsed.program as unknown as OxcNode);
+		const scope = resolver.importedScope(context.file, parsed.program as unknown as OxcNode);
 		const references: Record<string, string> = {};
 		for (const [binding, value] of scope) {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) continue;

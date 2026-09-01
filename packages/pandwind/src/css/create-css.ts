@@ -9,16 +9,10 @@ import type {
 } from "../types/typings.ts";
 import { createCssBackend, type CssBackendOptions } from "../backends/css.ts";
 import { ATOM_REGISTRY, type AtomRegistry } from "./atoms.ts";
-import type {
-	AnyClassNameStrategy,
-	ClassNameFn,
-	ClassNameStrategy,
-} from "./class-name-strategy.ts";
+import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { encodeVars, VARS_ATOMS, type VarAtom, type VarsOutput } from "./vars.ts";
 
-/** @deprecated Legacy callable form — see `ClassNameStrategy` in class-name-strategy.ts. */
-export type { ClassNameFn };
-export type { AnyClassNameStrategy, ClassNameStrategy };
+export type { ClassNameStrategy };
 
 type TypedPreset = CssConfigReturn<DefinePresetOptions<AnyCssConfig, AnyTokens>>;
 

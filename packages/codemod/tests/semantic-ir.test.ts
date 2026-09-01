@@ -58,7 +58,7 @@ describe("versioned semantic style-program IR", () => {
 		expect(swapIRFromStyleProgram(program)).toEqual(ir);
 	});
 
-	test("keeps dynamic semantic declarations as explicit residuals for legacy emitters", () => {
+	test("keeps dynamic semantic declarations as explicit residuals for flat emitters", () => {
 		const program = styleProgramFromSwapIR({ entries: [], residuals: [] });
 		const dynamic = {
 			...program,
@@ -257,7 +257,7 @@ describe("versioned semantic style-program IR", () => {
 		);
 	});
 
-	test("does not flatten selectors or nested rules through the legacy bridge", () => {
+	test("does not flatten selectors or nested rules through the flat bridge", () => {
 		const program = styleProgramFromRules([
 			{
 				kind: "style",

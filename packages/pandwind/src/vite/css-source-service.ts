@@ -1,4 +1,4 @@
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createCssExtractionService } from "./css-extract.ts";
 import type {
 	AuthoredCssImport,
@@ -40,7 +40,7 @@ export interface CssSourceService {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-		className: AnyClassNameStrategy,
+		className: ClassNameStrategy,
 	): InlineCssResult;
 }
 
@@ -66,7 +66,7 @@ class DefaultCssSourceService implements CssSourceService {
 	private extraction(
 		matchers: readonly (string | RegExp)[],
 		preset: CssPreset,
-		className?: AnyClassNameStrategy,
+		className?: ClassNameStrategy,
 	): CssExtractionService {
 		return createCssExtractionService({
 			matchers,
@@ -126,7 +126,7 @@ class DefaultCssSourceService implements CssSourceService {
 		id: string,
 		cssNames: ReadonlySet<string>,
 		preset: CssPreset,
-		className: AnyClassNameStrategy,
+		className: ClassNameStrategy,
 	): InlineCssResult {
 		return this.extraction([], preset, className).inline(code, id, cssNames);
 	}

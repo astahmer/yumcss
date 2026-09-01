@@ -364,7 +364,7 @@ the valid carrier and attribute syntax.
 
 `StyleProgram.sourceMap` is the provenance projection for a semantic program:
 it aggregates the program, rule, theme/composition, and dynamic-value source
-locations without forcing legacy `SwapIR` callers to pay for rich nodes.
+locations without forcing flat `SwapIR` callers to pay for rich nodes.
 Recipe and component semantics live in the separate versioned recipe IR and
 host adapter contracts; they are not represented as unstructured residual
 strings.
@@ -570,7 +570,7 @@ vitest.route-matrix.config.ts run -u`; it does not invoke the slower CLI suite.
 Named-style targets must emit syntax that their own source adapter can parse
 again. Modern Mantine has no standalone class factory in `@mantine/core`, so
 the adapter uses a host `style` prop for component projections and reports a
-residual for hostless named maps; legacy Emotion-backed Mantine projects must
+residual for hostless named maps; Emotion-backed Mantine projects must
 declare and load `@mantine/emotion` explicitly. Tailwind named maps use an
 assigned class-map representation. These are adapter-owned policies, not
 generic runner exceptions. The route corpus consequently catches invalid

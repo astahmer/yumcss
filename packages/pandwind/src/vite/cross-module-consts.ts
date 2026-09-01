@@ -154,8 +154,9 @@ export function collectImportBindings(program: OxcNode): ImportBinding[] {
  * its own import specifier — such a binding must not propagate (the runtime
  * value could differ from the exported constant).
  *
- * Implementation lives in `./ast-walk.ts` (pure, browser-safe); re-exported
- * here for backwards compatibility.
+ * Implementation lives in `./ast-walk.ts` (pure, browser-safe); this module
+ * re-exports it because analyzer consumers use this service boundary for the
+ * same binding safety check.
  */
 export { bindingIsShadowedOrWritten };
 
@@ -167,8 +168,6 @@ export interface CrossModuleResolver {
 	 * (imports are live for the whole module — no TDZ guard applies).
 	 */
 	importedScope(id: string, program: OxcNode): ConstantScope;
-	/** Compatibility projection for consumers that name the literal payload explicitly. */
-	importedLiteralScope(id: string, program: OxcNode): ConstantScope;
 	/** Drop the cached analysis of one file (HMR invalidation). */
 	invalidate(absPath: string): void;
 }
@@ -251,7 +250,6 @@ export function createCrossModuleConstResolver(
 
 	return {
 		importedScope,
-		importedLiteralScope: importedScope,
 		invalidate(absPath: string): void {
 			cache.delete(absPath);
 		},

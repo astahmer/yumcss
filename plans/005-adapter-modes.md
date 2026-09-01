@@ -43,9 +43,8 @@ new-mode feat / docs separately). Never touch `/Users/astahmer/dev/pandwind`.
 ## Outcomes
 
 - Final interface: `ClassNameStrategy { name, sheetBacked?, toClassName(key, value) }`
-  in `src/css/class-name-strategy.ts`, accepted anywhere via
-  `AnyClassNameStrategy` (object or legacy callable; `normalizeStrategy` wraps).
-  The legacy callable form keeps working — `create-css.ts` re-exports it as deprecated.
+  in `src/css/class-name-strategy.ts`, accepted anywhere a strategy is
+  configured. The object contract is the only strategy shape.
 - Engine split: strategies either back onto an external compiler (tailwind —
   classes stay out of the registry/sheet) or declare `sheetBacked: true`
   (classes join the atom registry and the generated stylesheet selectors).

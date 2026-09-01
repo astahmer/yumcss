@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createStylesheet } from "../css/create-stylesheet.ts";
-import { normalizeStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { renderCriticalHtml } from "./critical-css.ts";
 import type { CssExtractorPreset, PandwindCssViteOptions } from "./css.ts";
 import { createCssSourceService } from "./css-source-service.ts";
@@ -51,7 +51,7 @@ export function createCssExtractorPluginCore(
 	const sourceService = createCssSourceService();
 	const virtualId = options.virtualId ?? "pandwind:css";
 	const className = options.engine?.className ?? options.className;
-	const strategy = normalizeStrategy(className);
+	const strategy: ClassNameStrategy | undefined = className;
 	// External-compiler modes (tailwind): the sheet stays empty. Sheet-backed
 	// strategies still get the generated stylesheet — with their class names.
 	// The `.css` suffix makes vite's CSS pipeline (and its dev injection)

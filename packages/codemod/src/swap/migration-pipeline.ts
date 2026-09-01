@@ -22,7 +22,7 @@ export interface AdapterMigrationPipeline {
 }
 
 /**
- * A scoped pipeline domain leaves the legacy adapter implementations free to
+ * A scoped pipeline domain leaves concrete adapter implementations free to
  * evolve independently. New migration policies can add a stage or construct a
  * fresh pipeline without editing every concrete adapter.
  */

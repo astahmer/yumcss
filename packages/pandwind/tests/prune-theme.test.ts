@@ -12,7 +12,7 @@ const APP = resolve(import.meta.dirname, "../../../apps/example");
 const BRIDGE = `@theme {
 	--color-surface: #101014;
 	--color-ocean: #0055ff;
-	--color-legacy: #999999;
+	--color-unused: #999999;
 	--font-display: "Inter", sans-serif;
 }
 
@@ -72,8 +72,8 @@ describe("usedBridgeVars — real Tailwind compilation", () => {
 		walk(sourceDir);
 		const used = await usedBridgeVars({ themeBlock: BRIDGE, files, twEntry, base: APP });
 		// The example dogfoods surface tokens; whatever it uses must be a
-		// subset of the bridge, and legacy/ocean are unused by construction.
-		expect(used.has("--color-legacy")).toBe(false);
+		// subset of the bridge, and unused/ocean are unused by construction.
+		expect(used.has("--color-unused")).toBe(false);
 		expect(used.has("--color-ocean")).toBe(false);
 	}, 30_000);
 });

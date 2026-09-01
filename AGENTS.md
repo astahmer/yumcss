@@ -25,6 +25,12 @@ Current approved-but-not-built examples of the bar: var-inline strategy
 (`splitByRoute` / `inlineCritical` on `pandwindCssVite`) — treat it as part of
 the frozen surface now.
 
+Do not retain deprecated aliases, overloads, or compatibility projections for
+our own APIs. When an internal contract is replaced, update its callers and
+tests in the same revision and delete the superseded name. The flat `SwapIR`
+path is an intentional current fast path, not a deprecated API, and must be
+preserved as such.
+
 ## Interface-first architecture policy
 
 Pandwind is a pivot library, so extensibility is a product requirement, not a
@@ -107,9 +113,10 @@ which concrete module to import or grow a switch statement in a central runner.
   representation when the simple path is sufficient.
 - Generated design-system context is exchanged through the versioned
   `pandwind.interop.json` artifact. Codegen owns its contents; bridge generation
-  refreshes the bridge section; migration tooling may fall back to legacy
-  generated files only for pre-artifact projects. Never hardcode an example
-  preset or application-specific metadata in a generic migration path.
+  refreshes the bridge section; migration tooling may consume pre-artifact
+  generated files only when a project has not produced the versioned artifact.
+  Never hardcode an example preset or application-specific metadata in a
+  generic migration path.
 - Token catalogs normalize only statically resolved scalar values (strings and
   numbers). Conditional/theme-dependent token objects must remain outside the
   static catalog unless an active theme context is explicitly carried in the

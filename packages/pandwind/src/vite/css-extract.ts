@@ -1,5 +1,4 @@
 /** CSS extraction composition root. Concrete policies live in sibling modules. */
-import { normalizeStrategy } from "../css/class-name-strategy.ts";
 import type { StyleObject } from "../types/typings.ts";
 import { DesignCssArtifactExtractor } from "./css-artifact-extractor.ts";
 import { CssDiagnosticScanner, CssSourceScannerService } from "./css-source-scanner.ts";
@@ -110,7 +109,7 @@ export function createCssExtractionService(
 		options.rewriter ??
 		(options.className === undefined
 			? new NoopCssCallRewriter()
-			: new TailwindCssCallRewriter(options.preset, normalizeStrategy(options.className)!));
+			: new TailwindCssCallRewriter(options.preset, options.className!));
 	return new ComposedCssExtractionService(scanner, artifacts, diagnostics, rewriter);
 }
 

@@ -226,7 +226,7 @@ function resolveValue(
 	if (theme.tokenVars.has(bare) && (bare.includes(".") || SIMPLE_TOKEN_PROPS.has(prop))) {
 		resolved = { value: authoredRefForPath(bare) };
 	} else if (TOKEN_PATH_RE.test(bare)) {
-		// Dotted candidate the theme does not know — transitional var() fallback
+		// Dotted candidate the theme does not know — CSS-variable fallback
 		// into panda's generated custom properties + explicit residual.
 		const fallback = fallbackVarForPath(bare);
 		resolved = {

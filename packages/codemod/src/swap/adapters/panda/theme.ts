@@ -7,7 +7,7 @@
  *
  * - semanticTokens / tokens -> known token PATHS (`fg.muted`, `neutral.700`)
  *   plus the generated CSS-var name each maps to (`--colors-fg-muted`) for
- *   the transitional var() fallback;
+ *   the CSS-variable fallback;
  * - textStyles -> name -> plain declaration object, expanded inline by the
  *   parser (a textStyle is bundled utilities).
  *

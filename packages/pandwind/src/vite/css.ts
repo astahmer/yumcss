@@ -40,7 +40,7 @@ import type {
 import type { ModuleNode } from "vite";
 import { createCssExtractorPluginCore } from "./css-core.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 
 export interface PandwindCssViteOptions {
 	/**
@@ -90,7 +90,7 @@ export interface PandwindCssViteOptions {
 	 * the emitted class names, but their classes are compiled by this
 	 * plugin's own generated stylesheet — the virtual module serves it.
 	 */
-	className?: AnyClassNameStrategy;
+	className?: ClassNameStrategy;
 	/**
 	 * Shared engine context (createPandwindEngineContext). When supplied it
 	 * must carry the same preset, and its class-name strategy wins over

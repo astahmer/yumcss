@@ -1,5 +1,4 @@
-import type { AnyClassNameStrategy } from "../css/class-name-strategy.ts";
-import { normalizeStrategy } from "../css/class-name-strategy.ts";
+import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import { createHashFn } from "../css/hash.ts";
 import type { AtomRegistry } from "../css/atoms.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
@@ -13,7 +12,7 @@ export interface LiteralStyleCompiler {
 
 export interface LiteralStyleCompilerOptions {
 	readonly preset: CssPreset;
-	readonly className?: AnyClassNameStrategy;
+	readonly className?: ClassNameStrategy;
 	readonly debug?: boolean;
 }
 
@@ -26,7 +25,7 @@ class PandwindLiteralStyleCompiler implements LiteralStyleCompiler {
 
 	constructor(options: LiteralStyleCompilerOptions) {
 		this.options = options;
-		this.className = normalizeStrategy(options.className);
+		this.className = options.className;
 		this.hashFn = createHashFn(options.debug === true);
 		this.emptyCondition = Object.keys(options.preset.conditions).find(
 			(key) => !options.preset.conditions[key],

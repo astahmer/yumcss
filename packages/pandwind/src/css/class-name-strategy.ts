@@ -28,9 +28,6 @@
  *   registered and the stylesheet stays byte-identical to no-strategy use.
  */
 
-/** Legacy callable form — kept working; prefer the object interface. */
-export type ClassNameFn = (key: string, value: string) => string | null;
-
 export interface ClassNameStrategy {
 	/** Mode id, e.g. `"tailwind"` or `"named-atoms"` (docs/debug). */
 	readonly name: string;
@@ -41,17 +38,4 @@ export interface ClassNameStrategy {
 	 */
 	readonly sheetBacked?: boolean;
 	toClassName(key: string, value: string): string | null;
-}
-
-/** Either strategy form — accepted anywhere a class-name strategy is configured. */
-export type AnyClassNameStrategy = ClassNameStrategy | ClassNameFn;
-
-export function normalizeStrategy(
-	strategy: AnyClassNameStrategy | undefined,
-): ClassNameStrategy | undefined {
-	if (strategy === undefined) return undefined;
-	if (typeof strategy === "function") {
-		return { name: "custom", toClassName: strategy };
-	}
-	return strategy;
 }
