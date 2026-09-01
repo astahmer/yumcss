@@ -140,6 +140,35 @@ which concrete module to import or grow a switch statement in a central runner.
   suppressed because it is required by those public stylesheet/bridge
   subpaths, while Knip's production dependency graph does not follow them.
 
+## Codemod output quality and issue-driven tests
+
+- A migration is successful only when the generated source is the idiomatic
+  form a staff-level engineer who knows the target ecosystem would author by
+  hand. Preserving equivalent CSS is necessary but insufficient: use the
+  target's documented carrier, component shape, theme/token mechanism,
+  composition primitive, host conventions, and framework semantics. Adapter
+  emitters own these target-specific choices; the route runner must not invent
+  generic target syntax.
+- Prefer a self-contained inline emission when it remains readable and has no
+  reusable state. When correctness or expert target style requires a shared
+  helper, theme constant, generated recipe, or runtime bridge, an adapter may
+  return generated file artifacts in addition to the rewritten source. Artifact
+  paths are project-relative, identical `(path, content)` artifacts are
+  deduplicated, and conflicting content for one path is a safe residual rather
+  than an overwrite. CLI composition roots are responsible for creating
+  directories and writing these files only in `--write` mode.
+- Every codemod bug or missing semantic begins as a source-specific issue
+  fixture: write the exact input and the expert expected output in an inline
+  snapshot, add ordinary `expect` assertions for conversion, residuals,
+  imports, and output shape, then implement the fix. Inline snapshots are for
+  fast inspection, not the safety contract; a snapshot update must never be
+  enough to make a failing migration green.
+- Output tests must cover both the happy path and the conservative path. The
+  latter must prove source preservation and a typed residual for unsupported,
+  ambiguous, or conflicting target semantics. For reusable generated files,
+  tests must cover one occurrence, repeated occurrences that deduplicate, and
+  conflicting artifacts that fail closed.
+
 ## Architecture definition of done
 
 A façade alone is not considered a decomposition. The implementation is done
