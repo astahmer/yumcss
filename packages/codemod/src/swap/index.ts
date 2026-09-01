@@ -169,6 +169,14 @@ export {
 	SEMANTIC_CONTRACT_SUITE_SCHEMA,
 	createSemanticContractSuite,
 } from "./semantic-contract-suite.ts";
+export { StyleProgramBuilder } from "./style-program-builder.ts";
+export type {
+	StyleProgramChildInput,
+	StyleProgramBuilderOptions,
+	StyleProgramKeyframe,
+	StyleProgramRuleOptions,
+	StyleProgramValueInput,
+} from "./style-program-builder.ts";
 export { SemanticContractOutcomeTag } from "./semantic-contract-suite.ts";
 export type {
 	SemanticContractCase,

@@ -9,6 +9,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
+import { StyleProgramBuilder } from "../style-program-builder.ts";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
@@ -209,33 +210,24 @@ function parseClassValue(
 	return {
 		start,
 		end,
-		program: styleProgramFromRules(
-			[
-				{
-					kind: "style",
-					conditions: [],
-					declarations,
-					children: [],
-					order: 0,
-				},
-			],
-			{
-				source: {
-					file: context.file,
-					start,
-					end,
-					adapter: CodemodAdapterId.Tailwind,
-				},
-				residuals: [
-					...residuals,
-					...unknown.map((token) => ({
-						kind: "unknown-utility" as const,
-						text: token,
-						hint: "Tailwind utility requires the project engine or a custom preset",
-					})),
-				],
+		program: StyleProgramBuilder.create({
+			source: {
+				file: context.file,
+				start,
+				end,
+				adapter: CodemodAdapterId.Tailwind,
 			},
-		),
+			residuals: [
+				...residuals,
+				...unknown.map((token) => ({
+					kind: "unknown-utility" as const,
+					text: token,
+					hint: "Tailwind utility requires the project engine or a custom preset",
+				})),
+			],
+		})
+			.style(declarations)
+			.build(),
 		sourceText: value,
 	};
 }

@@ -32,6 +32,14 @@ The useful form is a scoped builder/factory, not a mutable user-facing
 `StyleNode` object and not one renderer function per target. A builder creates
 the existing `StyleProgram`; registered target adapters still render it.
 
+## Current status
+
+The first vertical slice is implemented in focused JJ revisions. The builder
+is exported from the codemod `swap` surface, Tailwind's class parser uses it
+for one real semantic construction path, and the focused contract test feeds
+builder output to the real Tailwind target emitter. The full target matrix and
+slow CLI workflows remain intentionally untouched.
+
 ## What
 
 Add an internal/SDK-level `StyleProgramBuilder` with a small rule-node API for
@@ -92,8 +100,8 @@ The first vertical slice should provide:
 1. `StyleProgramBuilder.create(options?)` and `StyleProgramBuilder.from(program)`.
 2. `style`, `global`, `keyframes`, `fontFace`, `layer`, `supports`, and
    `property` rule methods.
-3. A nested rule operation that accepts either child builders or normalized
-   rule inputs without exposing mutable internal arrays.
+3. A nested rule operation that accepts normalized child rule inputs with
+   optional child orders, without exposing mutable internal arrays.
 4. Typed value helpers for literal, token, and dynamic values, including an
    explicit fallback/lowering option for dynamic values.
 5. Program metadata operations for themes, compositions, runtime context,
@@ -112,14 +120,14 @@ adapters already provide that port.
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Second AST hierarchy vs façade over `StyleProgram` | Façade over the existing IR | Avoids duplicate schemas, visitors, provenance rules, and adapter contracts. |
-| `new StyleNode().withStyle(...)` vs scoped program builder | `StyleProgramBuilder.create()` with scoped rule operations | A style migration is a program, and the builder can preserve program-level metadata and ordering. |
-| Mutable fluent builder vs immutable IR | Build-time mutable accumulator returning an immutable `StyleProgram` snapshot | Keeps adapter construction simple and cheap while preventing callers from mutating the emitted IR. |
-| Target renderer helpers vs adapter `emit` | Existing target adapter `emit` port | Keeps ecosystem policy local and makes one new adapter a registry addition. |
-| Rich builder vs `SwapIR` | Separate paths | Literal swaps should retain their existing low-cost behavior. |
-| Runtime public API | No change | The frozen `tw`/`css`/`cx`/design API is unaffected. |
+| Choice                                                     | Decision                                                                      | Rationale                                                                                          |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Second AST hierarchy vs façade over `StyleProgram`         | Façade over the existing IR                                                   | Avoids duplicate schemas, visitors, provenance rules, and adapter contracts.                       |
+| `new StyleNode().withStyle(...)` vs scoped program builder | `StyleProgramBuilder.create()` with scoped rule operations                    | A style migration is a program, and the builder can preserve program-level metadata and ordering.  |
+| Mutable fluent builder vs immutable IR                     | Build-time mutable accumulator returning an immutable `StyleProgram` snapshot | Keeps adapter construction simple and cheap while preventing callers from mutating the emitted IR. |
+| Target renderer helpers vs adapter `emit`                  | Existing target adapter `emit` port                                           | Keeps ecosystem policy local and makes one new adapter a registry addition.                        |
+| Rich builder vs `SwapIR`                                   | Separate paths                                                                | Literal swaps should retain their existing low-cost behavior.                                      |
+| Runtime public API                                         | No change                                                                     | The frozen `tw`/`css`/`cx`/design API is unaffected.                                               |
 
 ### Architecture
 
@@ -170,13 +178,12 @@ product UI. The developer experience should read as a small semantic program:
 
 ```ts
 const program = StyleProgramBuilder.create({ source })
-	.style({ color: StyleValue.token("color.foreground", "$color.foreground") })
-	.global("body", { margin: StyleValue.literal(0) })
+	.style({ color: StyleProgramBuilder.token("color.foreground", { resolved: "#2563eb" }) })
+	.global("body", { margin: 0 })
 	.build();
 ```
 
-The exact value helper spelling is subject to the implementation review, but
-the resulting object must be the existing `StyleProgram` rather than a custom
+The resulting object is the existing `StyleProgram`, rather than a custom
 builder AST.
 
 ## Data model
@@ -219,37 +226,39 @@ documented.
 
 ## Open questions
 
-1. Should the builder be exported from the codemod `swap` subpath immediately,
-   or remain internal until two independently owned adapters use it?
-2. Which minimal value-helper spelling gives good type inference without
-   creating a second value model beside `StyleValue`?
-3. Should composition accept nested `StyleProgramBuilder` instances directly,
-   or only finalized `StyleProgram` values to keep lifecycle boundaries clear?
+There are no blockers for the first vertical slice. The builder is exported
+from the codemod `swap` subpath because adapter authors are its immediate
+consumers; composition continues to accept finalized semantic values, and
+nested rules use normalized rule inputs rather than introducing another node
+builder type. A nested-builder convenience can be considered only if a real
+adapter needs it.
 
 ## Acceptance criteria
 
-- [ ] The plan is implemented in focused JJ revisions with no changes to the
+- [x] The plan is implemented in focused JJ revisions with no changes to the
       frozen runtime styling API.
-- [ ] A builder-created program is byte/schema compatible with the existing
+- [x] A builder-created program is byte/schema compatible with the existing
       `StyleProgram` consumers and keeps `STYLE_PROGRAM_SCHEMA` unchanged.
-- [ ] Rule-level semantics, conditions, ordering, values, provenance, metadata,
+- [x] Rule-level semantics, conditions, ordering, values, provenance, metadata,
       and residuals are preserved in focused inline-snapshot tests.
-- [ ] At least one source adapter and one target adapter use the builder without
-      ecosystem logic leaking into the semantic module.
-- [ ] Canonical CSS, valid flat `SwapIR` projection, and target validation remain
+- [x] At least one source adapter uses the builder, and a real target adapter
+      consumes builder output, without ecosystem logic leaking into the
+      semantic module.
+- [x] Canonical CSS, valid flat `SwapIR` projection, and target validation remain
       correct for supported builder-created programs.
-- [ ] Invalid or unsupported builder inputs fail explicitly or produce typed
+- [x] Invalid or unsupported builder inputs fail explicitly or produce typed
       residuals; nothing is silently omitted.
-- [ ] Architecture documentation explains the builder boundary and the reason
+- [x] Architecture documentation explains the builder boundary and the reason
       target renderers remain adapter-owned.
-- [ ] Focused typecheck, tests, and lint pass; slow full-matrix workflows are
+- [x] Focused typecheck, tests, and lint pass; slow full-matrix workflows are
       not required for this development slice.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-09-01 | Treat `StyleProgram` as the AST and add a construction façade over it | A second node hierarchy would duplicate the versioned semantic contract. |
-| 2026-09-01 | Use a scoped build-time program builder rather than a runtime `StyleNode` API | The current need is adapter/test construction, while the application runtime API is frozen. |
-| 2026-09-01 | Keep target emission in registered adapters | Target ownership is the core hexagonal boundary; generic `styleNodeToX` functions would recreate a central switchboard. |
-| 2026-09-01 | Preserve `SwapIR` as an independent fast path | Rich semantic construction must not tax simple literal migrations. |
+| Date       | Decision                                                                               | Rationale                                                                                                                    |
+| ---------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-01 | Treat `StyleProgram` as the AST and add a construction façade over it                  | A second node hierarchy would duplicate the versioned semantic contract.                                                     |
+| 2026-09-01 | Use a scoped build-time program builder rather than a runtime `StyleNode` API          | The current need is adapter/test construction, while the application runtime API is frozen.                                  |
+| 2026-09-01 | Keep target emission in registered adapters                                            | Target ownership is the core hexagonal boundary; generic `styleNodeToX` functions would recreate a central switchboard.      |
+| 2026-09-01 | Preserve `SwapIR` as an independent fast path                                          | Rich semantic construction must not tax simple literal migrations.                                                           |
+| 2026-09-01 | Export the builder from `pandwind-codemod/swap` and adopt it first in Tailwind parsing | Adapter authors are the current consumers, and the real parser adoption proves the façade removes object-literal repetition. |

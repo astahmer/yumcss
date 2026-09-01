@@ -82,3 +82,24 @@ the SDK.
 The semantic style-program IR is the complete interop model. `SwapIR` remains
 the intentionally small, fast projection for literal utility swaps and is not
 required to represent rule-level or runtime semantics.
+
+When an adapter needs to construct a rich program rather than parse directly
+into low-level object literals, use `StyleProgramBuilder` from the `swap`
+surface:
+
+```ts
+import { StyleProgramBuilder } from "pandwind-codemod/swap";
+
+const program = StyleProgramBuilder.create({ source })
+	.style({
+		color: "red",
+		padding: StyleProgramBuilder.token("space.2", { resolved: "0.5rem" }),
+	})
+	.build();
+```
+
+The builder is a construction façade over the existing
+`pandwind.style-program/4` schema. It owns rule ordering, value classification,
+dynamic normalization, metadata, provenance, and residual accumulation; it
+does not own target emission. Keep target syntax in the adapter's `emit`
+implementation, and keep simple literal paths on `SwapIR`.

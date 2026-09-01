@@ -243,6 +243,35 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+`StyleProgram` is also the semantic AST construction boundary. Adapter authors
+and semantic tests may use the scoped `StyleProgramBuilder` from the codemod
+`swap` surface when low-level rule object literals would repeat invariants:
+
+```ts
+const program = StyleProgramBuilder.create({ source })
+	.style({
+		color: "red",
+		padding: StyleProgramBuilder.token("space.2", { resolved: "0.5rem" }),
+	})
+	.global(":root", { "--brand": "#2563eb" })
+	.build();
+```
+
+The builder is a build-time construction façade over the existing
+`pandwind.style-program/4` value. It centralizes deterministic rule ordering,
+value classification, dynamic normalization, program metadata, provenance,
+and residual accumulation, then delegates final normalization to the same
+semantic factory used by existing adapters. `StyleProgramBuilder.from()` can
+seed a new program without sharing the source program's rule array.
+
+This is intentionally not a second `StyleNode` hierarchy and not a target
+renderer API. Tailwind, Panda, StyleX, CSS, React Native, and OpenTUI remain
+owners of their own `emit` ports; the core never grows
+`styleProgramToTailwindCss`-style switches. The builder does not make an
+unsupported target semantic representable and it does not replace `SwapIR`
+for simple literal migrations. A builder-created program must pass the same
+canonical, lowering, adapter, and residual validation as a parsed program.
+
 Generic semantic traversal is owned by `StyleProgramAnalysis`. Its rule and
 declaration queries preserve the rule-less root projection used by the cheap
 path, while dynamic-value queries provide one neutral policy for lowering,
