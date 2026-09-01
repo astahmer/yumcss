@@ -268,6 +268,26 @@ describe("target adapter emission contract", () => {
 		]);
 	});
 
+	test.each([CodemodAdapterId.Emotion, CodemodAdapterId.Jss, CodemodAdapterId.Aphrodite] as const)(
+		"preserves CSS-origin numeric spacing when targeting Chakra UI from %s",
+		(sourceAdapter) => {
+			const sourceByAdapter = {
+				[CodemodAdapterId.Emotion]:
+					'import { css } from "@emotion/css";\nconst card = css({ padding: 16 });',
+				[CodemodAdapterId.Jss]:
+					'import { createUseStyles } from "react-jss";\nconst card = createUseStyles({ padding: 16 });',
+				[CodemodAdapterId.Aphrodite]:
+					'import { StyleSheet } from "aphrodite";\nconst card = StyleSheet.create({ padding: 16 });',
+			}[sourceAdapter];
+			const result = migrate(sourceByAdapter, sourceAdapter, CodemodAdapterId.ChakraUi);
+
+			expect(result.skipped, `${sourceAdapter} -> ${CodemodAdapterId.ChakraUi}`).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain('padding: "16px"');
+			expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		},
+	);
+
 	test.each([
 		[CodemodAdapterId.Jss, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
 		[

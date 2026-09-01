@@ -1206,7 +1206,7 @@ function runAdapterMigrationInternal(
 							canonicalization: program.canonicalization,
 						},
 					));
-		const validation = targetAdapter.validate(program, targetProgram, [
+		const validation = targetAdapter.validate(emitted.semantic ?? program, targetProgram, [
 			...emitted.residuals,
 			...reparsed.residuals,
 		]);

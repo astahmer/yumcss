@@ -181,6 +181,16 @@ function hasDynamicValues(program: StyleProgram): boolean {
 	});
 }
 
+function isSpacingProperty(property: string): boolean {
+	return (
+		/^(?:p|p[trblxyse]|m|m[trblxyse]|gap|rowGap|columnGap)$/.test(property) ||
+		property === "padding" ||
+		property.startsWith("padding") ||
+		property === "margin" ||
+		property.startsWith("margin")
+	);
+}
+
 const propertyAliases = {
 	bg: "backgroundColor",
 	bgColor: "backgroundColor",
@@ -237,17 +247,7 @@ const propertyAliases = {
 
 function chakraValue(property: string, value: StyleValue): StyleValue {
 	if (value.kind !== "literal") return value;
-	const isSpacingProperty =
-		/^(?:p|p[trblxysexy]|m|m[trblxysexy]|gap|rowGap|columnGap)$/.test(property) ||
-		property === "padding" ||
-		property.startsWith("padding") ||
-		property === "margin" ||
-		property.startsWith("margin") ||
-		property === "paddingX" ||
-		property === "paddingY" ||
-		property === "marginX" ||
-		property === "marginY";
-	if (typeof value.value === "number" && isSpacingProperty) {
+	if (typeof value.value === "number" && isSpacingProperty(property)) {
 		if (value.value === 0) return { kind: "literal", value: 0 };
 		const absolute = Math.abs(value.value);
 		const variable = `var(--chakra-spacing-${absolute})`;
@@ -306,6 +306,37 @@ function chakraValue(property: string, value: StyleValue): StyleValue {
 			};
 	}
 	return value;
+}
+
+function chakraTokenSource(adapter: string | undefined): boolean {
+	return [CodemodAdapterId.ChakraUi, CodemodAdapterId.Mantine, CodemodAdapterId.Panda].includes(
+		adapter as CodemodAdapterId,
+	);
+}
+
+/** Preserve CSS-in-JS numeric dimensions before Chakra's token normalizer runs. */
+function normalizeChakraEmissionProgram(program: StyleProgram): StyleProgram {
+	if (chakraTokenSource(program.source?.adapter)) return program;
+	const normalizeDeclaration = (declaration: StyleProgram["declarations"][number]) =>
+		declaration.value.kind === "literal" &&
+		typeof declaration.value.value === "number" &&
+		declaration.value.value !== 0 &&
+		isSpacingProperty(declaration.property)
+			? {
+					...declaration,
+					value: { kind: "literal" as const, value: `${declaration.value.value}px` },
+				}
+			: declaration;
+	const normalizeRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...rule,
+		declarations: rule.declarations.map(normalizeDeclaration),
+		children: rule.children.map(normalizeRule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map(normalizeDeclaration),
+		rules: program.rules.map(normalizeRule),
+	};
 }
 
 function valueTransformProperty(property: string): string {
@@ -599,9 +630,10 @@ export function createChakraAdapter(
 			),
 		}),
 		emit(program, { programObject }) {
+			const outputProgram = normalizeChakraEmissionProgram(program);
 			if (program.rules.some((rule) => rule.kind !== "style"))
 				return {
-					text: programObject(program),
+					text: programObject(outputProgram),
 					residuals: [
 						{
 							kind: "rule-level",
@@ -610,11 +642,12 @@ export function createChakraAdapter(
 						},
 					],
 				};
-			const expression = `css(${programObject(program)})`;
-			const host = renderChakraHost(program, expression);
+			const expression = `css(${programObject(outputProgram)})`;
+			const host = renderChakraHost(outputProgram, expression);
 			return {
 				text: host?.code ?? expression,
 				imports: ['import { css } from "@chakra-ui/react";'],
+				semantic: outputProgram,
 				...(host === undefined ? {} : { residuals: host.residuals }),
 			};
 		},
