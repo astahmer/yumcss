@@ -16,16 +16,10 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
-import {
-	CodemodAdapterId,
-	StyleHostRepresentationKind,
-	StyleRepresentationKind,
-} from "../identifiers.ts";
+import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
-import { DynamicClassHost } from "./class-target-dynamic.ts";
-import { BuiltinHostFramework } from "../host-adapters.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -570,7 +564,6 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				"container-conditions": "exact",
 				"supports-conditions": "exact",
 				"dynamic-values": "unsupported",
-				"custom-properties": "exact",
 				"function-values": "unsupported",
 				"framework-semantics": "exact",
 				components: "unsupported",
@@ -634,32 +627,6 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
-				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) =>
-					DynamicClassHost.hasCarrier(program) &&
-						hasHostContext &&
-						(binding !== undefined &&
-							(framework === undefined ||
-								[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
-									framework as BuiltinHostFramework,
-								))) &&
-						DynamicClassHost.canRewrite(source ?? "", binding)
-						? StyleRepresentationKind.CustomProperty
-						: undefined,
-				capabilitiesForRepresentation: ({ representation }) =>
-					representation === StyleRepresentationKind.CustomProperty
-						? ["custom-properties"]
-						: [],
-				preservesResidualKindsForRepresentation: ({ representation }) =>
-					representation === StyleRepresentationKind.CustomProperty
-						? ["dynamic-custom-property"]
-						: [],
-				rewriteHost: ({ code, binding, framework, representationKind, residuals }) =>
-					DynamicClassHost.rewrite("Tailwind", code, {
-						binding,
-						framework,
-						representationKind,
-						residuals,
-					}),
 			},
 		},
 		validate: (source, target, residuals = []): AdapterValidationResult => {

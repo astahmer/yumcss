@@ -44,7 +44,7 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 				"--safe",
 				"--write",
 				"--report=json",
-			...files,
+				...files,
 			],
 			{ cwd: codemodRoot, encoding: "utf8" },
 		);
