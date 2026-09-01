@@ -24,8 +24,9 @@ import {
 	type StyleProgramOptions,
 } from "../semantic-ir.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
-import { StyleNamedRuleStrategy } from "../identifiers.ts";
+import { StyleHostRepresentationKind, StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
+import { getHostComponentRewriter } from "../host-component-rewriter.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -274,7 +275,57 @@ function parseTemplateCalls(
 	return { matches, residuals };
 }
 
+/**
+ * Class-valued targets can preserve a styled subject by lowering the
+ * declaration to their normal class carrier and rewriting the host use to the
+ * intrinsic subject. Keep this projection in the generic target factory so a
+ * new class adapter gets the safe component path by implementing its normal
+ * emitter, without adding another runner branch.
+ */
+function classComponentProjection(
+	policy: AdapterTargetMigrationPolicy | undefined,
+): AdapterTargetMigrationPolicy | undefined {
+	if (
+		policy === undefined ||
+		policy.handlesHostRewrites !== true ||
+		policy.hostRepresentation !== StyleHostRepresentationKind.Class ||
+		policy.rewriteComponent !== undefined
+	)
+		return policy;
+	return {
+		...policy,
+		rewriteComponent: (context) => {
+			const rewriter = getHostComponentRewriter(context.framework);
+			if (rewriter === undefined)
+				return {
+					code: context.code,
+					imports: [],
+					residuals: [
+						{
+							kind: "host-framework",
+							text: context.binding,
+							hint: `${context.targetId} has no host component rewriter for ${context.framework}`,
+						},
+					],
+				};
+			return rewriter.rewrite({
+				// Component rewrites run after the style expression replacement;
+				// use the current code so nested edits cannot target stale offsets.
+				source: context.code,
+				file: context.file,
+				binding: context.binding,
+				tag: context.tag,
+				framework: context.framework,
+				// The declaration already owns the target carrier. Reuse its binding at
+				// the host site instead of duplicating the emitted style expression.
+				classExpression: context.binding,
+			});
+		},
+	};
+}
+
 export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
+	const targetPolicy = classComponentProjection(options.targetPolicy ?? options.migration?.targetPolicy);
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: options.id,
@@ -288,11 +339,11 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		),
 		dependencies: options.packages,
 		migration:
-			options.migration === undefined && options.targetPolicy === undefined
+			options.migration === undefined && targetPolicy === undefined
 				? undefined
 				: {
 						...options.migration,
-						targetPolicy: options.targetPolicy ?? options.migration?.targetPolicy,
+						targetPolicy: targetPolicy,
 					},
 		detect: (context) => {
 			const evidence = options.detect.flatMap((pattern) => {

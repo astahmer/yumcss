@@ -9,6 +9,7 @@ import {
 	runSwap,
 } from "../src/swap/index.ts";
 import type { AdapterParseContext } from "../src/swap/adapter-contract.ts";
+import { StyleHostRepresentationKind } from "../src/swap/identifiers.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
@@ -261,15 +262,13 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.code).toContain('"button"');
 	});
 
-	const classTargets = [
-		CodemodAdapterId.Compiled,
-		CodemodAdapterId.Fela,
-		CodemodAdapterId.Goober,
-		CodemodAdapterId.Linaria,
-		CodemodAdapterId.Tokenami,
-		CodemodAdapterId.Treat,
-		CodemodAdapterId.VanillaExtract,
-	] as const;
+	const classTargets = catalog.adapters
+		.filter(
+			(adapter) =>
+				adapter.migration?.targetPolicy?.handlesHostRewrites === true &&
+				adapter.migration.targetPolicy.hostRepresentation === StyleHostRepresentationKind.Class,
+		)
+		.map((adapter) => adapter.id);
 
 	test.each(classTargets)("rewrites a styled subject to a static class in %s", (targetId) => {
 		const result = migrateTo(
