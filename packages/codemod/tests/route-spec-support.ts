@@ -9,7 +9,7 @@ import {
 
 const catalog = createBuiltinCodemodCatalog();
 
-export interface AdapterRouteInput {
+interface AdapterRouteInput {
 	readonly source: string;
 	readonly file: string;
 	readonly semantic?: AdapterMigrationOptions["semantic"];
@@ -17,7 +17,7 @@ export interface AdapterRouteInput {
 }
 
 /** Virtual project context used by route specs to exercise config-aware adapters. */
-export interface AdapterRouteProject {
+interface AdapterRouteProject {
 	readonly root: string;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly files: Readonly<Record<string, string>>;

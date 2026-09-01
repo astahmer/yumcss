@@ -72,7 +72,7 @@ export interface ExtraAdapterOptions {
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 }
 
-export interface ExtraAdapterResidualPattern {
+interface ExtraAdapterResidualPattern {
 	readonly name: string;
 	readonly regex: RegExp;
 	readonly kind: StyleProgramResidual["kind"];
