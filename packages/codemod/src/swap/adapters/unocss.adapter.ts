@@ -759,6 +759,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 		migration: {
 			targetPolicy: {
 				handlesHostRewrites: true,
+				dynamicClassCarrier: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,

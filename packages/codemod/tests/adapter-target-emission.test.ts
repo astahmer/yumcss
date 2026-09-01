@@ -77,6 +77,62 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("adapter capability mismatch");
 	});
 
+	test.each([
+		CodemodAdapterId.Bamboo,
+		CodemodAdapterId.VanillaExtract,
+		CodemodAdapterId.Tailwind,
+		CodemodAdapterId.UnoCSS,
+	] as const)("projects a scalar dynamic styled subject through %s's class carrier", (target) => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: target,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("const Card = (props) => <div");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("<Card />");
+		expect(result.code).not.toContain("styled-components");
+	});
+
+	test.each(
+		catalog.adapters
+			.filter((adapter) => adapter.migration?.targetPolicy?.dynamicClassCarrier === true)
+			.map((adapter) => adapter.id),
+	)("uses the shared dynamic subject projection for %s", (target) => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: target,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped, `${CodemodAdapterId.StyledComponents} -> ${target}`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("const Card = (props) =>");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("<Card />");
+	});
+
 	test("normalizes a registered substitute through the shared class-host port", () => {
 		const bamboo = catalog.registry.get(CodemodAdapterId.Bamboo)!;
 		const substituteId = externalIdentifier("test-class-target");

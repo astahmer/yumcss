@@ -670,6 +670,12 @@ function runAdapterMigrationInternal(
 				: [],
 		);
 		const carrierResiduals = loweringResiduals;
+		const hasDynamicCarrier = carrierResiduals.some(
+			(residual) =>
+				residual.kind === "dynamic-custom-property" ||
+				residual.kind === "dynamic" ||
+				residual.kind === "dynamic-values",
+		);
 		if (preservedResidualKinds.size > 0)
 			program = {
 				...program,
@@ -925,9 +931,43 @@ function runAdapterMigrationInternal(
 					residual.kind === "dynamic" ||
 					(residual.kind === "function-dynamic" && hasFunctionDynamic),
 			);
+			const dynamicClassSubjectProjection =
+				(hasDynamic || hasDynamicCarrier) &&
+				!hasFunctionDynamic &&
+				program.source?.subject !== undefined &&
+				binding !== undefined &&
+				tag !== undefined &&
+				framework !== undefined &&
+				hostRepresentation === StyleHostRepresentationKind.Class &&
+				targetRepresentationKind === StyleRepresentationKind.CustomProperty &&
+				DynamicClassHost.styleExpression(carrierResiduals) !== undefined &&
+				getHostComponentRewriter(framework)?.rewriteDeclaration !== undefined;
+			if (dynamicClassSubjectProjection) {
+				// A scalar dynamic value can still be static CSS: the target class
+				// contains var(--pandwind-dynamic-*), while the generated wrapper
+				// binds that variable from the original lexical expression. Keep the
+				// component value a component; never assign a class string to Card.
+				emittedHostRepresentation = hostRepresentation;
+				targetHostProjection = true;
+				program = {
+					...program,
+					source: {
+						...program.source,
+						subject: undefined,
+						...(targetPolicy?.handlesFrameworkSemantics === true ? { framework: undefined } : {}),
+					},
+				};
+				pendingComponentDeclarationRewrites.set(index, {
+					binding,
+					tag,
+					framework,
+					styleExpression: DynamicClassHost.styleExpression(carrierResiduals),
+				});
+			}
 			if (
 				hasTargetComponentUsage &&
 				!hasDynamic &&
+				!hasDynamicCarrier &&
 				!hasFunctionDynamic &&
 				residualsCanUseHostLowering
 			) {
@@ -961,7 +1001,12 @@ function runAdapterMigrationInternal(
 					classExpression: binding,
 				});
 				const rewriteKey = `${binding}:${tag}:${framework}`;
-				if (preview.residuals.length === 0 && residualsCanUseHostLowering && !hasFunctionDynamic) {
+				if (
+					!dynamicClassSubjectProjection &&
+					preview.residuals.length === 0 &&
+					residualsCanUseHostLowering &&
+					!hasFunctionDynamic
+				) {
 					program = {
 						...program,
 						residuals: hasDynamic
@@ -1320,7 +1365,7 @@ function runAdapterMigrationInternal(
 			outcome:
 				successfulRepresentation === StyleRepresentationKind.PortableArtifact
 					? StyleMigrationOutcome.PortableArtifact
-					: programHasDynamic(program) || dynamicCarrier !== undefined
+					: programHasDynamic(program) || hasDynamicCarrier || dynamicCarrier !== undefined
 						? StyleMigrationOutcome.HostRuntime
 						: successfulRepresentation === StyleRepresentationKind.Static
 							? StyleMigrationOutcome.Static

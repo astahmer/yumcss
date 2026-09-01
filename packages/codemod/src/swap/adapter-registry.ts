@@ -20,7 +20,11 @@ import {
 } from "./capabilities.ts";
 import { PANDA_STYLE_SYSTEM, PANDWIND_STYLE_SYSTEM } from "./adapters/core.adapter.ts";
 import { CodemodAdapterId } from "./identifiers.ts";
-import { projectPortableDynamicMigration } from "./adapter-projections.ts";
+import {
+	projectDynamicClassMigration,
+	projectPortableDynamicMigration,
+	projectStaticSubjectMigration,
+} from "./adapter-projections.ts";
 import { PortableStyleArtifact } from "./portable-artifact.ts";
 import { StyleRepresentationKind } from "./identifiers.ts";
 
@@ -106,7 +110,13 @@ function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
 		true
 	)
 		return adapter;
-	const migration = projectPortableDynamicMigration(adapter.migration, adapter.capabilities);
+	// Common host projections are composed at the registry boundary so a target
+	// adapter only declares its carrier contract. The migration runner remains
+	// unaware of which concrete ecosystem implements that carrier.
+	const migration = projectPortableDynamicMigration(
+		projectDynamicClassMigration(adapter.id, projectStaticSubjectMigration(adapter.migration)),
+		adapter.capabilities,
+	);
 	const normalized: StyleAdapter = {
 		...adapter,
 		migration,

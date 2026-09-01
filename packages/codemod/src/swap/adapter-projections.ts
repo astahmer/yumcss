@@ -101,6 +101,10 @@ export function projectDynamicClassMigration(
 			const sourceHostAttributes =
 				context.program.source?.hostOpenTag !== undefined &&
 				(context.program.source.hostStyleAttributes?.length ?? 0) > 0;
+			const styledSubjectUse =
+				context.program.source?.subject !== undefined &&
+				context.hasHostContext &&
+				context.binding !== undefined;
 			if (
 				!context.hasHostContext ||
 				(context.binding === undefined && !sourceHostAttributes) ||
@@ -110,6 +114,7 @@ export function projectDynamicClassMigration(
 					)) ||
 				!DynamicClassHost.hasCarrier(context.program) ||
 				(!sourceHostAttributes &&
+					!styledSubjectUse &&
 					!DynamicClassHost.canRewrite(context.source ?? "", context.binding))
 			)
 				return undefined;

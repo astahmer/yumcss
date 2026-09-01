@@ -239,6 +239,24 @@ perform explicit declaration/use-site rewrites. This removes a class/component
 shape mismatch that previously could pass canonical-CSS validation while
 emitting an invalid `className={component}` value.
 
+Scalar dynamic styled subjects now use the same shared class-target projection
+as dynamic style-prop hosts. When a React/Preact class target advertises
+`dynamicClassCarrier`, registry normalization selects the custom-property
+representation, keeps the generated CSS static, and rewrites
+`const Card = ...; <Card />` into a component wrapper that binds the original
+theme expression through an inline custom-property style object. The original
+component use remains `<Card />`; it is never rewritten to `className={Card}`.
+This is intentionally implemented by the registry projection and target
+carrier contract, so Tailwind, UnoCSS, and extra class adapters receive the
+same behavior without target branches in the migration runner.
+
+The old diagnostic text `adapter capability mismatch` is not a current
+production diagnostic. Capability failures are now typed (`capability-blocked`,
+`lowering-residual`, `host-rewrite-required`, or `configuration-residual`) and
+include the selected/available representations. If that exact text appears in
+a running playground, the loaded bundle is stale or the output is a historical
+artifact; current source and the browser-safe matrix assert that it is absent.
+
 ## Completed codemod verification slice
 
 The bidirectional codemod proof work is complete for the registered adapter
