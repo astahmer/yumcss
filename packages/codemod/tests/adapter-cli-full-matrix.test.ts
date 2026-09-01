@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { createBuiltinCodemodCatalog } from "../src/swap/index.ts";
@@ -10,10 +10,10 @@ const codemodRoot = resolve(import.meta.dirname, "..");
 const catalog = createBuiltinCodemodCatalog();
 
 interface CliFileResult {
+	readonly file: string;
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
-	readonly source: string;
 }
 
 function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly CliFileResult[] {
@@ -49,15 +49,13 @@ function runCliMatrix(sourceAdapter: string, targetAdapter: string): readonly Cl
 		);
 		const report = JSON.parse(output) as {
 			readonly files: readonly {
+				readonly file: string;
 				readonly converted: number;
 				readonly skipped: number;
 				readonly residuals: number;
 			}[];
 		};
-		return report.files.map((result, index) => ({
-			...result,
-			source: readFileSync(files[index]!, "utf8"),
-		}));
+		return report.files;
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
 	}
@@ -71,13 +69,17 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 			for (const target of catalog.adapters) {
 				const results = runCliMatrix(source.id, target.id);
 				expect(results).toHaveLength(3);
-				for (const [index, result] of results.entries()) {
-					const scenario = completeAdapterMatrixFixtures.find(
-						(fixture) =>
-							fixture.sourceAdapter === source.id &&
-							fixture.scenario === (["happy", "edge", "malformed"] as const)[index],
-					);
-					expect(scenario, `${source.id} fixture ${index}`).toBeDefined();
+				const scenarios = results.map((result) =>
+					(["happy", "edge", "malformed"] as const).find((scenario) =>
+						result.file.includes(`-${scenario}-`),
+					),
+				);
+				expect(scenarios.toSorted(), `${source.id} -> ${target.id}`).toEqual([
+					"edge",
+					"happy",
+					"malformed",
+				]);
+				for (const result of results) {
 					if (source.id === target.id) {
 						expect(result.converted, `${source.id} -> ${target.id}`).toBe(0);
 						expect(result.skipped, `${source.id} -> ${target.id}`).toBe(0);
