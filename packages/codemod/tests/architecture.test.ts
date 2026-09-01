@@ -11,6 +11,16 @@ import {
 const swapRoot = resolve(import.meta.dirname, "../src/swap");
 const readSwap = (name: string): string => readFileSync(resolve(swapRoot, name), "utf8");
 
+function sourceFiles(root: string): string[] {
+	const files: string[] = [];
+	for (const entry of readdirSync(root, { withFileTypes: true })) {
+		const path = resolve(root, entry.name);
+		if (entry.isDirectory()) files.push(...sourceFiles(path));
+		else if (entry.isFile() && path.endsWith(".ts")) files.push(path);
+	}
+	return files;
+}
+
 describe("codemod architecture boundaries", () => {
 	test("keeps ecosystem policy behind adapter family boundaries", () => {
 		const migration = readSwap("adapter-migration.ts");
@@ -61,5 +71,12 @@ describe("codemod architecture boundaries", () => {
 		expect(cli).not.toContain("runPandaMigration");
 		expect(cli).not.toContain("inferCommonRoot");
 		expect(cli).toContain("getProjectMigrationCommand");
+	});
+
+	test("keeps pinned corpus knowledge out of production adapters", () => {
+		const corpusNames =
+			/astryx|posthog\.com|tailwindcss\.com|styled-components-website|chakra-ui\/chakra-ui/iu;
+		for (const file of sourceFiles(resolve(swapRoot, "adapters")))
+			expect(readFileSync(file, "utf8"), file).not.toMatch(corpusNames);
 	});
 });

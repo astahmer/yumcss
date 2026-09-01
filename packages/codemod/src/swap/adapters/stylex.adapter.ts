@@ -953,7 +953,7 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				rewritten = rewritten.replaceAll("stylex.props(", `${cssBinding}.props(`);
 				rewritten = moveStyleAfterPropsSpread(rewritten, cssBinding);
 				rewritten = mergeClassNameAfterPropsSpread(rewritten, cssBinding);
-				// Astryx's host components pass `xstyle` through StyleX's runtime
+				// Some StyleX host components pass `xstyle` through StyleX's runtime
 				// `stylex.props` implementation. A compiled Pandwind group is static,
 				// but that host port does not know how to consume its class map. Move
 				// static carriers to the universal React className port at the adapter
