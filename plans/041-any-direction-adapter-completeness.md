@@ -131,7 +131,8 @@ options used by callers, so theme and token assertions exercise configuration
 loading rather than only changing metadata. Tailwind and UnoCSS use project
 utility/token forms; object-style adapters use token references; Chakra, MUI,
 and Mantine use their native token spellings. Blue and amber project values
-prove that the result is driven by context rather than a hardcoded fixture.
+let snapshots and assertions observe each adapter under distinct context
+values rather than only a single hardcoded fixture.
 This keeps inline snapshots useful for debugging without making them the only
 safety mechanism. A canonical target is allowed to remain byte-stable on the
 reverse leg only when its adapter parsed and converted the program, which is
