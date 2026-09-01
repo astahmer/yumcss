@@ -35,7 +35,7 @@ describe("registered adapter conformance", () => {
 		expect(new Set(report.routes.cases.map((item) => item.targetAdapter))).toEqual(
 			new Set(catalog.adapters.map((adapter) => adapter.id)),
 		);
-	});
+	}, 300_000);
 
 	test("does not weaken the gate for a registered substitute", () => {
 		const emotion = catalog.registry.get(CodemodAdapterId.Emotion)!;

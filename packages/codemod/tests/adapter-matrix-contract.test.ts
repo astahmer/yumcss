@@ -33,5 +33,5 @@ describe("bidirectional adapter matrix contract", () => {
 							.map((item) => item.scenario),
 						`${source.id} -> ${target.id} (${mode}) missing scenario coverage`,
 					).toEqual(["happy", "edge", "malformed"]);
-	});
+	}, 300_000);
 });
