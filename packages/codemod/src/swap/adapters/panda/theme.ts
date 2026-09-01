@@ -1,5 +1,5 @@
 /**
- * Host-app panda theme ingestion (plan 024 step 2).
+ * Host-app Panda theme ingestion.
  *
  * Loads a panda.config.ts via dynamic import (same mechanism as the
  * definePreset importer in token-set.ts) and flattens the pieces the

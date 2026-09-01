@@ -1,5 +1,5 @@
 /**
- * Panda host-project scanning (plan 024 steps 4-5).
+ * Panda host-project scanning.
  *
  * Two responsibilities:
  * - usage scan: whole-codebase inventory of recipes / patterns / jsx

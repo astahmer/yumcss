@@ -1,5 +1,5 @@
 /**
- * Panda inbound parser (plan 024): literal panda `css({})` / `cva({})` /
+ * Panda inbound parser: literal Panda `css({})` / `cva({})` /
  * `sva({})` / `defineRecipe({})` call sites -> SwapIR.
  *
  * Follows the parse.ts conventions: object literals are parsed with
@@ -16,7 +16,7 @@
  *   verbatim (never dropped);
  * - semantic token references resolve to authored `$token` refs when the
  *   ingested host theme knows them; otherwise they fall back to panda's
- *   generated CSS var + an explicit residual (plan 024 two-pass token flow);
+ *   generated CSS var + an explicit residual;
  * - `textStyle: '<name>'` expands inline from the ingested theme (a
  *   textStyle is bundled utilities); unknown names are residuals.
  */

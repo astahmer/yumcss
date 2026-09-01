@@ -1,5 +1,5 @@
 /**
- * Built-in panda pattern tables (plan 024 step 6).
+ * Built-in Panda pattern tables.
  *
  * Each builtin expands its pattern-specific props into canonical
  * declarations; every OTHER key passes through the normal style pipeline
