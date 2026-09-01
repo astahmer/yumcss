@@ -235,6 +235,16 @@ Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
   route cases as the test suite.
 - Every skipped route must preserve its source and carry a typed residual;
   the obsolete generic `adapter capability mismatch` marker is rejected.
+- Every clean route now has one target validation per conversion and must prove
+  canonical source/target CSS equality. The direct conformance suite invokes
+  every registered adapter's representation negotiation, dynamic preparation,
+  host rewrite, component rewrite, and final rewrite hooks, so a green route
+  count cannot hide an untested adapter-owned policy port.
+- Class-producing JSS, Aphrodite, and Style9 targets accept static JSX and
+  template hosts without requiring React-specific component semantics. The
+  React Native target also owns static intrinsic styled-subject conversion to
+  `View`/`style`, while rejecting dynamic declarations and conflicting
+  `style`, `className`, `class`, or `as` props with typed residuals.
 - The flat `SwapIR` matrix also covers every legacy source-to-target route,
   including unknown utilities and malformed calls. The runner is fail-closed
   when an emitter reports a residual alongside non-empty output; only a
@@ -244,6 +254,12 @@ Pandwind` and `Pandwind → adapter` directions, including edge inputs. The full
 This slice proves route orchestration and no-silent-loss behavior. It does not
 turn fixture evidence into a browser/SSR promotion claim; those dimensions
 remain governed by the real-repository proof matrix below.
+
+The package-level coverage gate also requires a V8 entry for every source
+module and every concrete adapter implementation. The current run covers all
+31 adapter implementation files with at least 50% lines and 30% branches, in
+addition to the route and direct-hook contracts. This is a code/test ownership
+gate, not a claim that an unpromoted ecosystem has universal runtime parity.
 
 The named-map projection slice is now implemented for target adapters that
 declare `native-map` or `class-map`. The generic adapter emitters only apply

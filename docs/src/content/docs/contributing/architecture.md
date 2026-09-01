@@ -427,6 +427,13 @@ route matrix: each registered adapter must independently pass detection,
 configuration, parsing, emission, and validation against its happy fixture.
 Source-side semantic metadata is not judged as a target capability; that
 negotiation remains an ordered-route concern.
+Clean conversions additionally require one validation per converted program
+and exact canonical source/target CSS equality. The direct hook sweep invokes
+each adapter's representation negotiation, dynamic preparation, host rewrite,
+component rewrite, and final rewrite ports with both valid and residual-shaped
+inputs. The per-adapter V8 gate currently covers all 31 concrete adapter
+implementation files, while the production promotion matrix remains the
+separate authority for browser/SSR claims.
 The pinned real-repository report adds a typed promotion object with explicit
 `source-static`, `source-mismatch`, `runtime-pending`, and `pipeline-unpaired`
 states. A pending dimension is never counted as a passing real-repository
