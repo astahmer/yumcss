@@ -525,6 +525,18 @@ The pinned real-repository report adds a typed promotion object with explicit
 states. A pending dimension is never counted as a passing real-repository
 promotion.
 
+Directional route behavior has a dedicated fast proof layer in
+`packages/codemod/tests/routes`. The generator creates one file for every
+distinct ordered pair of registered adapters (650 files for the current 26
+adapters). Each file covers a static happy path, a dynamic or otherwise
+non-happy edge path, and malformed input, with inline snapshots of emitted
+code, selected representation, outcome, validation, and typed residuals.
+Assertions additionally require clean routes to validate, malformed routes to
+retain their source marker, and every route to avoid invalid nested hosts such
+as `className={<Box ... />}`. This suite runs directly against the registry and
+runner, so a new adapter route is cheap to select and review; the CLI matrix
+remains the separate public-boundary proof.
+
 Backends follow the same rule. CSS, object, React Native, and OpenTUI are
 registered as `StyleBackendFactory` plugins and are exercised by the generic
 `StyleBackendContractSuite`. The suite checks construction, capability

@@ -93,9 +93,22 @@ exposes the legacy Panda/Pandwind dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
-in safe and partial modes. The codemod suite currently passes 52 test files
-and 786 tests including the adapter coverage gate; the CLI e2e matrix passes
-106 tests across the ordered routes, and the route proof passes 4,056 cases.
+in safe and partial modes. The codemod suite currently passes 702 test files
+(one intentionally skipped) and 2,739 tests (one intentionally skipped),
+including the adapter coverage gate and generated directional route specs. The
+CLI e2e matrix passes 106 tests across the ordered routes, and the route proof
+passes 4,056 cases.
+
+The fast directional suite lives in `packages/codemod/tests/routes`. It has one
+generated file for every distinct ordered adapter pair (650 files for the 26
+registered adapters), with happy, edge, and malformed scenarios in each file.
+Every scenario records an inline snapshot of complete migration evidence:
+changed code, selected representation, outcome, validation, and typed
+residuals. The tests also assert conversion counts, validation success for
+clean cases, source preservation for malformed cases, and that no target
+emitter leaks a second host into a JSX attribute expression. This gives every
+route an independently selectable in-process proof while the slower CLI matrix
+remains the public-boundary proof.
 
 Function-valued object calls now share `FunctionStyleCallParser` across the
 normal adapter-definition path and the generic extra-adapter runtime. The
