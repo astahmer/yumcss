@@ -3,7 +3,6 @@
  * entry points (runCli / createCssBudgetService / loadTwConfig) — no duplicated analysis
  * logic — plus pure parsers over the generated artifacts.
  */
-import { globSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadTwConfig } from "../analyze.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
@@ -168,10 +167,11 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// (e.g. styles.css does `@import 'shadcn/tailwind.css'`).
 	let entryCss: string[] = [];
 	try {
-		// collectFiles filters to .ts/.tsx by design — glob css directly.
-		entryCss = globSync("**/*.css", { cwd: resolve(root, APP, "src") }).map((f) =>
-			resolve(root, APP, "src", f),
-		);
+		entryCss = [
+			...sourceWorkspace.files(["**/*.css"], resolve(root, APP, "src"), {
+				includeUnsupported: true,
+			}),
+		];
 	} catch {
 		entryCss = [];
 	}

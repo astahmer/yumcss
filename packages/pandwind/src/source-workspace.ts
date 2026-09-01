@@ -16,9 +16,14 @@ export interface SourceWorkspaceFile {
 	readonly scan: SourceScanResult;
 }
 
+export interface SourceWorkspaceQuery {
+	/** Include regular files whose language is not supported by source scanning. */
+	readonly includeUnsupported?: boolean;
+}
+
 export interface SourceWorkspace {
 	readonly schema: typeof SOURCE_WORKSPACE_SCHEMA;
-	files(patterns: readonly string[], root: string): readonly string[];
+	files(patterns: readonly string[], root: string, query?: SourceWorkspaceQuery): readonly string[];
 	read(paths: readonly string[]): readonly SourceWorkspaceFile[];
 	collect(patterns: readonly string[], root: string): readonly SourceWorkspaceFile[];
 }
@@ -55,13 +60,20 @@ const isIgnoredPath = (file: string): boolean =>
 class NodeSourceWorkspace implements SourceWorkspace {
 	readonly schema = SOURCE_WORKSPACE_SCHEMA;
 
-	files(patterns: readonly string[], root: string): readonly string[] {
+	files(
+		patterns: readonly string[],
+		root: string,
+		query: SourceWorkspaceQuery = {},
+	): readonly string[] {
 		const files = new Set<string>();
 		for (const pattern of patterns)
 			for (const file of expandPattern(pattern, root)) {
 				if (isIgnoredPath(file)) continue;
 				try {
-					if (statSync(file).isFile() && SOURCE_SCANNER_SERVICE.isSupportedFile(file))
+					if (
+						statSync(file).isFile() &&
+						(query.includeUnsupported === true || SOURCE_SCANNER_SERVICE.isSupportedFile(file))
+					)
 						files.add(file);
 				} catch {
 					// Unreadable or concurrently removed entries are omitted consistently.

@@ -1,3 +1,5 @@
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
 export enum BuiltinHostFramework {
 	React = "react",
@@ -192,7 +194,8 @@ const builtin = {
 		true,
 		true,
 		["vue"],
-		(file, source) => file.endsWith(".vue") || /from\s+["']vue["']/.test(source),
+		(file, source) =>
+			SOURCE_SCANNER_SERVICE.languageForFile(file) === "vue" || /from\s+["']vue["']/.test(source),
 	),
 	svelte: makeAdapter(
 		"svelte",
@@ -201,10 +204,18 @@ const builtin = {
 		true,
 		true,
 		["svelte"],
-		(file, source) => file.endsWith(".svelte") || /from\s+["']svelte["']/.test(source),
+		(file, source) =>
+			SOURCE_SCANNER_SERVICE.languageForFile(file) === "svelte" ||
+			/from\s+["']svelte["']/.test(source),
 	),
-	astro: makeAdapter("astro", [".astro"], "class", true, true, ["astro"], (file) =>
-		file.endsWith(".astro"),
+	astro: makeAdapter(
+		"astro",
+		[".astro"],
+		"class",
+		true,
+		true,
+		["astro"],
+		(file) => SOURCE_SCANNER_SERVICE.languageForFile(file) === "astro",
 	),
 } satisfies Record<BuiltinHostFramework, HostFrameworkAdapter>;
 

@@ -96,15 +96,15 @@ function frameworkForHost(
 		detectHostFramework(document.document.source, document.document.file)?.id ??
 		document.framework ??
 		program.source?.framework ??
-		(/\.(?:jsx|tsx)$/.test(file)
-			? BuiltinHostFramework.React
-			: file.endsWith(".vue")
-				? BuiltinHostFramework.Vue
-				: file.endsWith(".svelte")
-					? BuiltinHostFramework.Svelte
-					: file.endsWith(".astro")
-						? BuiltinHostFramework.Astro
-						: undefined)
+		(
+			{
+				tsx: BuiltinHostFramework.React,
+				jsx: BuiltinHostFramework.React,
+				vue: BuiltinHostFramework.Vue,
+				svelte: BuiltinHostFramework.Svelte,
+				astro: BuiltinHostFramework.Astro,
+			} as Partial<Record<string, BuiltinHostFramework>>
+		)[document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(file)]
 	);
 }
 
@@ -127,7 +127,8 @@ function classExpressionFromEmission(emitted: string): string | undefined {
 
 /** Keep generated module statements inside the executable block of an SFC. */
 function ensureGeneratedStatement(code: string, statement: string, file: string): string {
-	if (!file.endsWith(".vue") || code.includes(statement)) return ensureImport(code, statement);
+	if (SOURCE_SCANNER_SERVICE.languageForFile(file) !== "vue" || code.includes(statement))
+		return ensureImport(code, statement);
 	const script = /<script(?:\s+setup)?(?:\s[^>]*)?>/i.exec(code);
 	if (script === null) return `<script setup>\n${statement}\n</script>\n${code}`;
 	const contentStart = script.index + script[0].length;

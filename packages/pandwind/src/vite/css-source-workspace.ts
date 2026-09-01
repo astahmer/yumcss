@@ -1,7 +1,7 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, statSync } from "node:fs";
 import type { CssPreset } from "./css-extract.ts";
 import type { CssSourceService } from "./css-source-service.ts";
+import { createSourceWorkspace } from "../source-workspace.ts";
 
 interface CssSourceWorkspaceEntry {
 	readonly mtimeMs: number;
@@ -30,6 +30,7 @@ export interface CssSourceWorkspaceOptions {
 class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	private readonly cache = new Map<string, CssSourceWorkspaceEntry>();
 	private readonly options: CssSourceWorkspaceOptions;
+	private readonly sourceWorkspace = createSourceWorkspace();
 
 	constructor(options: CssSourceWorkspaceOptions) {
 		this.options = options;
@@ -43,13 +44,11 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 	}
 
 	files(dir = this.options.root, acc: string[] = []): string[] {
-		for (const entry of readdirSync(dir, { withFileTypes: true })) {
-			if (entry.name.startsWith(".")) continue;
-			const path = join(dir, entry.name);
-			if (entry.isDirectory()) {
-				if (!this.options.exclude.some((pattern) => pattern.test(path))) this.files(path, acc);
-			} else if (entry.isFile() && this.isScanned(path)) acc.push(path);
-		}
+		acc.push(
+			...this.sourceWorkspace
+				.files(["**/*"], dir, { includeUnsupported: true })
+				.filter((path) => this.isScanned(path)),
+		);
 		return acc;
 	}
 
