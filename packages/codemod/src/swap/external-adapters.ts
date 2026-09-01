@@ -63,6 +63,8 @@ export type ExternalAdapterId = string;
 type CallPattern = {
 	readonly name: string;
 	readonly regex: RegExp;
+	/** Restrict residual or syntax patterns to source files using this adapter. */
+	readonly sourceGuard?: (source: string, context: AdapterParseContext) => boolean;
 	/** Resolve authored aliases through the shared AST binding index. */
 	readonly semanticBindings?: readonly { source: string; imported: string }[];
 	readonly regexForBinding?: (binding: SourceBinding) => RegExp;
@@ -826,7 +828,7 @@ function parseCalls(
 								site.property === candidate.imported)),
 				),
 		);
-		return sites.flatMap((callSite) => {
+		const astCandidates = sites.flatMap((callSite) => {
 			const binding = callSite.binding;
 			if (binding === undefined) return [];
 			const regex = pattern.regexForBinding?.(binding) ?? pattern.regex;
@@ -834,6 +836,57 @@ function parseCalls(
 			const localSource = context.source.slice(callSite.start, callSite.end);
 			if (regex.test(localSource) === false) return [];
 			return [{ regex, binding, callSite }];
+		});
+		if (astCandidates.length > 0) return astCandidates;
+
+		// Embedded documents (for example a Vue script block passed through a
+		// generic reverse route) can be intentionally unparsable as the selected
+		// file language. Recover only explicit named or namespace imports here;
+		// an unbound identifier must never become an adapter match.
+		const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const sourceText = context.source;
+		return pattern.semanticBindings.flatMap(({ source: moduleSource, imported }) => {
+			const sourcePattern = escapeRegExp(moduleSource);
+			const namedImport = new RegExp(
+				`import\\s*\\{([^}]*)\\}\\s*from\\s*["']${sourcePattern}["']`,
+				"g",
+			);
+			const namespaceImport = new RegExp(
+				`import\\s*\\*\\s*as\\s+([A-Za-z_$][\\w$]*)\\s*from\\s*["']${sourcePattern}["']`,
+				"g",
+			);
+			const fallback: RegexCandidate[] = [];
+			for (const match of sourceText.matchAll(namedImport)) {
+				const clause = match[1] ?? "";
+				for (const specifier of clause.split(",")) {
+					const parts = specifier.trim().split(/\s+as\s+/u);
+					if (parts[0] !== imported) continue;
+					const localName = parts[1] ?? parts[0];
+					if (localName === undefined) continue;
+					const binding: SourceBinding = {
+						localName,
+						importedName: imported,
+						source: moduleSource,
+						kind: SourceBindingKind.Named,
+						range: { start: match.index ?? 0, end: (match.index ?? 0) + match[0].length },
+					};
+					fallback.push({ regex: pattern.regexForBinding?.(binding) ?? pattern.regex, binding });
+				}
+			}
+			if (imported !== "default")
+				for (const match of sourceText.matchAll(namespaceImport)) {
+					const localName = match[1];
+					if (localName === undefined) continue;
+					const binding: SourceBinding = {
+						localName,
+						importedName: imported,
+						source: moduleSource,
+						kind: SourceBindingKind.Namespace,
+						range: { start: match.index ?? 0, end: (match.index ?? 0) + match[0].length },
+					};
+					fallback.push({ regex: pattern.regexForBinding?.(binding) ?? pattern.regex, binding });
+				}
+			return fallback;
 		});
 	};
 	const matchesFor = (
@@ -859,6 +912,7 @@ function parseCalls(
 	}
 	const hostRanges = patterns.flatMap((pattern) => {
 		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
+		if (pattern.sourceGuard !== undefined && !pattern.sourceGuard(source, context)) return [];
 		return regexesFor(pattern)
 			.flatMap(matchesFor)
 			.flatMap((match) => {
@@ -882,6 +936,7 @@ function parseCalls(
 	const isInsideHostRange = (start: number): boolean =>
 		hostRanges.some((range) => start >= range.start && start < range.end);
 	for (const pattern of patterns) {
+		if (pattern.sourceGuard !== undefined && !pattern.sourceGuard(source, context)) continue;
 		const patternObjectOptions =
 			typeof pattern.sourceObjectOptions === "function"
 				? pattern.sourceObjectOptions(context.source, context)

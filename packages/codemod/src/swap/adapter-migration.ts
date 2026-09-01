@@ -1008,7 +1008,7 @@ function runAdapterMigrationInternal(
 			}
 			if (
 				hasTargetComponentUsage &&
-				!hasDynamic &&
+				(!hasDynamic || targetPolicy?.handlesDynamicComponentValues === true) &&
 				!hasDynamicCarrier &&
 				!hasFunctionDynamic &&
 				residualsCanUseHostLowering

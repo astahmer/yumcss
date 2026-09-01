@@ -1377,7 +1377,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(config.values.packageJson).toMatchObject({ dependencies: { "@emotion/css": "1.0.0" } });
 
 		const result = runAdapterMigration(
-			'import "@emotion/css";\nconst card = css`color: red; background-color: blue;`;',
+			'import { css } from "@emotion/css";\nconst card = css`color: red; background-color: blue;`;',
 			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);

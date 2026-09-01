@@ -130,37 +130,9 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { color: theme.foreground, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style-prop projection could not locate a simple className binding",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { color: theme.foreground, padding: "1rem" };
-		export const App = () => styled.div({ style: Card.style });",
+		    "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.foreground, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -177,6 +149,34 @@ test("styled-components -> mantine -> styled-components: retains edge semantics 
 		        "valid": true,
 		      },
 		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		<div {...props} style={{ ...{ color: theme.foreground, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -225,37 +225,9 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style-prop projection could not locate a simple className binding",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => styled.div({ style: Card.style });",
+		      "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -272,42 +244,42 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		          "valid": true,
 		        },
 		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "
+		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		<div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		      "converted": 1,
-		      "outcomes": [
-		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
-		        },
-		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style-prop projection could not locate a simple className binding",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 0,
-		      "validations": [
-		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
-		        },
-		      ],
-		    },
-		    "reverse": {
-		      "changed": true,
-		      "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => styled.div({ style: Card.style });",
+		      "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -324,6 +296,34 @@ test("styled-components -> mantine -> styled-components: preserves concrete them
 		          "valid": true,
 		        },
 		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "
+		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		<div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "object spread requires a source adapter",
+		          "kind": "dynamic",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

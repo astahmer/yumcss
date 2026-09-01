@@ -122,4 +122,18 @@ describe("source binding index", () => {
 			},
 		]);
 	});
+
+	test("recovers the valid prefix when a later statement is malformed", () => {
+		const source = [
+			'import { css } from "@emotion/css";',
+			'const card = css({ color: "red" });',
+			"const unfinished = {",
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "malformed.tsx", source });
+
+		expect(index.isImportedFrom("css", "@emotion/css", "css")).toBe(true);
+		expect(index.callSites.map(({ start, end }) => source.slice(start, end))).toEqual([
+			'css({ color: "red" })',
+		]);
+	});
 });

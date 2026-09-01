@@ -151,6 +151,39 @@ const bindingNames = (node: unknown, names: string[]): void => {
 
 const isImportNode = (node: AstNode): boolean => node.type === "ImportDeclaration";
 
+const recoverableParse = (document: SourceDocument): ParseResult => {
+	const parsed = SOURCE_SCANNER_SERVICE.parse({
+		...document,
+		language: document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file),
+	});
+	const errors = (
+		parsed as unknown as {
+			errors?: readonly { labels?: readonly { start?: number }[] }[];
+		}
+	).errors;
+	if (errors === undefined || errors.length === 0 || parsed.program.body.length > 0) return parsed;
+	const recoveryEnd = Math.min(
+		...errors.flatMap((error) =>
+			(error.labels ?? [])
+				.map((label) => label.start)
+				.filter((start): start is number => typeof start === "number"),
+		),
+	);
+	if (!Number.isFinite(recoveryEnd) || recoveryEnd <= 0) return parsed;
+	let candidateEnd = recoveryEnd;
+	while (candidateEnd > 0) {
+		const recovered = SOURCE_SCANNER_SERVICE.parse({
+			...document,
+			source: document.source.slice(0, candidateEnd),
+			language: document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file),
+		});
+		const recoveredErrors = (recovered as unknown as { errors?: readonly unknown[] }).errors;
+		if (recovered.program.body.length > 0 && (recoveredErrors?.length ?? 0) === 0) return recovered;
+		candidateEnd = document.source.lastIndexOf("\n", candidateEnd - 1);
+	}
+	return parsed;
+};
+
 function collectBindings(program: OxcNode): {
 	bindings: SourceBinding[];
 	reexports: SourceReexport[];
@@ -343,16 +376,11 @@ export class SourceBindings {
 	}
 
 	static fromDocument(document: SourceDocument): SourceBindingIndex {
-		return SourceBindings.fromParseResult(
-			SOURCE_SCANNER_SERVICE.parse({
-				...document,
-				language: document.language ?? SOURCE_SCANNER_SERVICE.languageForFile(document.file),
-			}),
-		);
+		return SourceBindings.fromParseResult(recoverableParse(document));
 	}
 
 	static parse(document: SourceDocument): SourceBindingIndex {
-		return SourceBindings.fromParseResult(parseSourceProgram(document));
+		return SourceBindings.fromParseResult(recoverableParse(document));
 	}
 
 	get bindings(): readonly SourceBinding[] {

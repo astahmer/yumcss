@@ -92,9 +92,9 @@ test("styled-components -> mantine: carries concrete styled-components dynamics 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		export const Card = { color: theme.foreground, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		  "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.foreground, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -102,13 +102,7 @@ test("styled-components -> mantine: carries concrete styled-components dynamics 
 		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [
-		    {
-		      "hint": "Mantine style-prop projection could not locate a simple className binding",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		  ],
+		  "residuals": [],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -142,9 +136,9 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		    "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -152,13 +146,7 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style-prop projection could not locate a simple className binding",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {
@@ -170,9 +158,9 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = { color: theme.colors.brand, padding: "1rem" };
-		export const App = () => <div className={Card.class} style={Card.style} />;",
+		    "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ color: theme.colors.brand, padding: "1rem" }, ...props.style }} />;
+		export const App = () => <Card />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -180,13 +168,7 @@ test("styled-components -> mantine: lowers concrete theme and project context va
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style-prop projection could not locate a simple className binding",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
+		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [
 		      {

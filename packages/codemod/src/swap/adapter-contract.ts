@@ -356,6 +356,8 @@ export interface AdapterTargetMigrationPolicy {
 	readonly handlesSourceHostAttributes?: boolean;
 	/** Whether this target can preserve scalar runtime expressions in its native style carrier. */
 	readonly handlesDynamicValues?: boolean;
+	/** Whether its component rewrite can preserve scalar runtime expressions. */
+	readonly handlesDynamicComponentValues?: boolean;
 	/** Target-owned rewrite for representations attached to a host prop. */
 	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
 	/** Optional target-owned finalization after a shared class-host projection. */

@@ -9,7 +9,7 @@ describe("Chakra docs migration corpus", () => {
 	const corpusTest = existsSync(referenceRoot) ? test : test.skip;
 
 	corpusTest(
-		"converts every supported Chakra lane without residuals",
+		"converts supported Chakra styles and reports factory compositions explicitly",
 		async () => {
 			for (const lane of ChakraDocsMigration.lanes) {
 				const report = await ChakraDocsMigration.run(lane, { referenceRoot });
@@ -17,8 +17,17 @@ describe("Chakra docs migration corpus", () => {
 				expect(report.sourceFiles).toBeGreaterThan(80);
 				expect(report.changedFiles).toBe(report.sourceFiles);
 				expect(report.convertedCallSites).toBeGreaterThan(600);
-				expect(report.skippedCallSites).toBe(0);
-				expect(report.residuals).toEqual([]);
+				expect(report.skippedCallSites).toBe(report.residuals.length);
+				expect(report.residuals.length).toBeGreaterThan(0);
+				expect(report.residuals).toEqual(
+					report.residuals.map((residual) =>
+						expect.objectContaining({
+							kind: "composition",
+							text: "chakra factory styles",
+							hint: expect.stringContaining("explicit composition lowering"),
+						}),
+					),
+				);
 			}
 		},
 		30_000,

@@ -246,6 +246,7 @@ export default defineCodemodAdapter({
 			name: "mantine-style-api",
 			regex: /\b(?:styles|classNames|vars)\s*=/g,
 			form: "residual",
+			sourceGuard: (source) => /\bfrom\s*["']@mantine\/core["']/u.test(source),
 			residual: {
 				kind: "host-framework",
 				hint: "Mantine styles, classNames, and vars require component-aware host lowering",
@@ -264,6 +265,7 @@ export default defineCodemodAdapter({
 		targetPolicy: {
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
+			handlesDynamicComponentValues: true,
 			handlesSourceHostAttributes: true,
 			hostRepresentation: StyleHostRepresentationKind.StyleProp,
 			resolveHostRepresentation: ({ program, framework }) => {
