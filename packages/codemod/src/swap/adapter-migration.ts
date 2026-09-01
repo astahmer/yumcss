@@ -536,7 +536,7 @@ function runAdapterMigrationInternal(
 				path === "" ||
 				path.startsWith("/") ||
 				/^[A-Za-z]:\//u.test(path) ||
-				segments.some((segment) => segment === "" || segment === "." || segment === "..")
+				segments.some((segment) => segment === "..")
 			) {
 				generatedFileResiduals.push({
 					kind: "generated-file",
@@ -545,15 +545,26 @@ function runAdapterMigrationInternal(
 				});
 				continue;
 			}
-			const existing = generatedFiles.get(path);
+			const normalizedPath = segments
+				.filter((segment) => segment !== "" && segment !== ".")
+				.join("/");
+			if (normalizedPath === "") {
+				generatedFileResiduals.push({
+					kind: "generated-file",
+					text: file.path,
+					hint: "generated file paths must be non-empty project-relative paths",
+				});
+				continue;
+			}
+			const existing = generatedFiles.get(normalizedPath);
 			if (existing === undefined) {
-				generatedFiles.set(path, { ...file, path });
+				generatedFiles.set(normalizedPath, { ...file, path: normalizedPath });
 				continue;
 			}
 			if (existing.content !== file.content) {
 				generatedFileResiduals.push({
 					kind: "generated-file",
-					text: path,
+					text: normalizedPath,
 					hint: "multiple target emissions produced conflicting content for one generated file",
 				});
 			}
