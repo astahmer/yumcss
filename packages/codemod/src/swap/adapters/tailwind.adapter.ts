@@ -452,7 +452,74 @@ function utilityCondition(conditionValue: StyleCondition): string {
 	return `${conditionValue.name}:`;
 }
 
-function emitTailwind(program: StyleProgram): {
+function tailwindTokenUtility(
+	declaration: StyleDeclaration,
+	catalog: TokenCatalog | undefined,
+): string | undefined {
+	if (catalog === undefined || declaration.value.kind !== "literal") return undefined;
+	const property = declaration.property;
+	const groups: Readonly<Record<string, string>> = {
+		color: "colors",
+		backgroundColor: "colors",
+		borderColor: "colors",
+		borderRadius: "radii",
+		fontSize: "fontSizes",
+		fontWeight: "fontWeights",
+		lineHeight: "lineHeights",
+		letterSpacing: "letterSpacings",
+		fontFamily: "fonts",
+		boxShadow: "shadows",
+		padding: "spacing",
+		paddingInline: "spacing",
+		paddingBlock: "spacing",
+		margin: "spacing",
+		marginInline: "spacing",
+		marginBlock: "spacing",
+		gap: "spacing",
+		width: "sizes",
+		height: "sizes",
+		minWidth: "sizes",
+		maxWidth: "sizes",
+		minHeight: "sizes",
+		maxHeight: "sizes",
+	};
+	const group = groups[property];
+	const match =
+		group === undefined ? undefined : catalog.findUnique([group], String(declaration.value.value));
+	if (match === undefined) return undefined;
+	const key = match.ref.replaceAll(".", "-");
+	const prefixes: Readonly<Record<string, string>> = {
+		color: "text",
+		backgroundColor: "bg",
+		borderColor: "border",
+		borderRadius: "rounded",
+		fontSize: "text",
+		fontWeight: "font",
+		lineHeight: "leading",
+		letterSpacing: "tracking",
+		fontFamily: "font",
+		boxShadow: "shadow",
+		padding: "p",
+		paddingInline: "px",
+		paddingBlock: "py",
+		margin: "m",
+		marginInline: "mx",
+		marginBlock: "my",
+		gap: "gap",
+		width: "w",
+		height: "h",
+		minWidth: "min-w",
+		maxWidth: "max-w",
+		minHeight: "min-h",
+		maxHeight: "max-h",
+	};
+	return `${prefixes[property]}-${key}`;
+}
+
+function emitTailwind(
+	program: StyleProgram,
+	catalog?: TokenCatalog,
+): {
 	text: string;
 	residuals: readonly StyleProgramResidual[];
 } {
@@ -478,6 +545,11 @@ function emitTailwind(program: StyleProgram): {
 			continue;
 		}
 		const prefix = declaration.conditions.map(utilityCondition).join("");
+		const named = tailwindTokenUtility(declaration, catalog);
+		if (named !== undefined) {
+			tokens.push(`${prefix}${named}`);
+			continue;
+		}
 		tokens.push(
 			`${prefix}[${declaration.property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:${utilityValue(declaration.value.value)}]`,
 		);
@@ -660,18 +732,22 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				(context.config.values.tailwindResolver as TailwindUtilityResolver | undefined) ??
 					fallbackResolver,
 			),
-		emit: (program) => {
+		emit: (program, context) => {
+			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 			const namedRules = program.rules.filter(
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
 			if (namedRules.length > 0) {
 				const residuals: StyleProgramResidual[] = [];
 				const entries = namedRules.map((rule) => {
-					const emitted = emitTailwind({
-						...program,
-						rules: [{ ...rule, name: undefined }],
-						declarations: rule.declarations,
-					});
+					const emitted = emitTailwind(
+						{
+							...program,
+							rules: [{ ...rule, name: undefined }],
+							declarations: rule.declarations,
+						},
+						tokenCatalog,
+					);
 					residuals.push(...emitted.residuals);
 					return `${JSON.stringify(rule.name)}: ${emitted.text}`;
 				});
@@ -682,7 +758,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				};
 			}
 			return {
-				...emitTailwind(program),
+				...emitTailwind(program, tokenCatalog),
 				semantic: program,
 			};
 		},

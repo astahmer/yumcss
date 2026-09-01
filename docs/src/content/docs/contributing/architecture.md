@@ -681,7 +681,9 @@ Panda, and Tokenami normalize discovered custom values into the versioned
 `AdapterTokenCatalog`. The target adapter owns the property mapping and native
 spelling: the Pandwind target can emit `$...` references, while object-oriented
 targets may emit their own token path. Class-oriented targets remain literal or
-utility-based unless their own resolver proves a named utility is equivalent.
+utility-based unless their own catalog/policy proves a named utility is
+equivalent. Tailwind and UnoCSS now use this rule for verified custom utility
+names; arbitrary utilities remain the safe fallback.
 The semantic node retains the resolved value, so canonical CSS validation still
 compares concrete browser meaning while generated source uses the idiomatic
 token spelling.

@@ -9,6 +9,7 @@ import {
 } from "../src/swap/index.ts";
 import { TokenCatalog } from "../src/swap/tokens.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import type { StyleAdapter } from "../src/swap/adapter-contract.ts";
 import { styleProgramFromRules } from "../src/swap/semantic-ir.ts";
 
 const context = {
@@ -189,5 +190,25 @@ describe("official custom-token loaders", () => {
 		expect(emit(CodemodAdapterId.Panda)).toMatchInlineSnapshot(`
 			"css({ color: "brand.500" })"
 		`);
+	});
+
+	test("lets class targets preserve verified custom utility names", () => {
+		const tokenCatalog = TokenCatalog.fromGroups({
+			colors: { "brand.500": "#123456" },
+		})?.contract;
+		const emit = (adapter: StyleAdapter) =>
+			adapter.emit(literalProgram, {
+				...context,
+				config: { adapter: adapter.id, files: [], values: {}, tokenCatalog },
+				mode: "safe",
+				index: 0,
+			}).text;
+
+		const tailwind = emit(createTailwindAdapter({ moduleLoader: null }));
+		const uno = emit(createUnoCssAdapter({ moduleLoader: null }));
+		expect(tailwind).toBe('"text-brand-500"');
+		expect(uno).toBe('"text-brand-500"');
+		expect(JSON.parse(tailwind)).toMatchInlineSnapshot(`"text-brand-500"`);
+		expect(JSON.parse(uno)).toMatchInlineSnapshot(`"text-brand-500"`);
 	});
 });

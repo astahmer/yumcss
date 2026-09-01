@@ -228,7 +228,72 @@ function unoToken(declaration: StyleDeclaration): string | undefined {
 	return `${declaration.conditions.map(unoCondition).join("")}${property}`;
 }
 
-function emitUnoClassTokens(program: StyleProgram): {
+function unoNamedToken(
+	declaration: StyleDeclaration,
+	catalog: TokenCatalog | undefined,
+): string | undefined {
+	if (catalog === undefined || declaration.value.kind !== "literal") return undefined;
+	const groups: Readonly<Record<string, string>> = {
+		color: "colors",
+		backgroundColor: "colors",
+		borderColor: "colors",
+		borderRadius: "radii",
+		fontSize: "fontSizes",
+		fontWeight: "fontWeights",
+		lineHeight: "lineHeights",
+		letterSpacing: "letterSpacings",
+		fontFamily: "fonts",
+		boxShadow: "shadows",
+		padding: "spacing",
+		paddingInline: "spacing",
+		paddingBlock: "spacing",
+		margin: "spacing",
+		marginInline: "spacing",
+		marginBlock: "spacing",
+		gap: "spacing",
+		width: "width",
+		height: "height",
+		minWidth: "width",
+		maxWidth: "width",
+		minHeight: "height",
+		maxHeight: "height",
+	};
+	const group = groups[declaration.property];
+	const match =
+		group === undefined ? undefined : catalog.findUnique([group], String(declaration.value.value));
+	if (match === undefined) return undefined;
+	const prefixes: Readonly<Record<string, string>> = {
+		color: "text",
+		backgroundColor: "bg",
+		borderColor: "border",
+		borderRadius: "rounded",
+		fontSize: "text",
+		fontWeight: "font",
+		lineHeight: "leading",
+		letterSpacing: "tracking",
+		fontFamily: "font",
+		boxShadow: "shadow",
+		padding: "p",
+		paddingInline: "px",
+		paddingBlock: "py",
+		margin: "m",
+		marginInline: "mx",
+		marginBlock: "my",
+		gap: "gap",
+		width: "w",
+		height: "h",
+		minWidth: "min-w",
+		maxWidth: "max-w",
+		minHeight: "min-h",
+		maxHeight: "max-h",
+	};
+	return `${prefixes[declaration.property]}-${match.ref.replaceAll(".", "-")}`;
+}
+
+function emitUnoClassTokens(
+	program: StyleProgram,
+	catalog?: TokenCatalog,
+): {
 	readonly text: string;
 	readonly residuals: readonly StyleProgramResidual[];
 } {
@@ -238,6 +303,11 @@ function emitUnoClassTokens(program: StyleProgram): {
 		rules.length > 0 ? rules.flatMap((rule) => rule.declarations) : program.declarations;
 	const tokens: string[] = [];
 	for (const declaration of declarations) {
+		const named = unoNamedToken(declaration, catalog);
+		if (named !== undefined) {
+			tokens.push(`${declaration.conditions.map(unoCondition).join("")}${named}`);
+			continue;
+		}
 		const token = unoToken(declaration);
 		if (token === undefined) {
 			residuals.push({
@@ -252,7 +322,10 @@ function emitUnoClassTokens(program: StyleProgram): {
 	return { text: JSON.stringify([...new Set(tokens)].join(" ")), residuals };
 }
 
-function emitUnoNamedMap(program: StyleProgram): {
+function emitUnoNamedMap(
+	program: StyleProgram,
+	catalog?: TokenCatalog,
+): {
 	readonly text: string;
 	readonly residuals: readonly StyleProgramResidual[];
 } {
@@ -260,11 +333,14 @@ function emitUnoNamedMap(program: StyleProgram): {
 	const residuals: StyleProgramResidual[] = [];
 	for (const rule of program.rules.filter((candidate) => candidate.kind === "style")) {
 		if (rule.name === undefined) continue;
-		const emitted = emitUnoClassTokens({
-			...program,
-			rules: [rule],
-			declarations: rule.declarations,
-		});
+		const emitted = emitUnoClassTokens(
+			{
+				...program,
+				rules: [rule],
+				declarations: rule.declarations,
+			},
+			catalog,
+		);
 		entries.push(`${JSON.stringify(rule.name)}: ${emitted.text}`);
 		residuals.push(...emitted.residuals);
 	}
@@ -730,11 +806,14 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				context,
 				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver,
 			),
-		emit: (program) => {
+		emit: (program, context) => {
+			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 			const namedRules = program.rules.some(
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
-			return namedRules ? emitUnoNamedMap(program) : emitUnoClassTokens(program);
+			return namedRules
+				? emitUnoNamedMap(program, tokenCatalog)
+				: emitUnoClassTokens(program, tokenCatalog);
 		},
 		migration: {
 			targetPolicy: {
