@@ -36,7 +36,10 @@ import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
 import { StyleNamedRuleStrategy } from "./identifiers.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
-import { projectStaticSubjectMigration } from "./adapter-projections.ts";
+import {
+	projectDynamicClassMigration,
+	projectStaticSubjectMigration,
+} from "./adapter-projections.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -1063,15 +1066,29 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 						"named-rules": "exact" as const,
 					},
 				};
+	const migration = projectDynamicClassMigration(
+		spec.id,
+		projectStaticSubjectMigration(spec.migration),
+	);
+	const capabilitiesWithRepresentations =
+		migration?.targetPolicy?.dynamicClassCarrier === true
+			? {
+					...capabilities,
+					capabilities: {
+						...capabilities.capabilities,
+						"custom-properties": "exact" as const,
+					},
+				}
+			: capabilities;
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: spec.id,
 		version: "2",
 		sourceModules: spec.sourceModules,
-		capabilities,
+		capabilities: capabilitiesWithRepresentations,
 		dependencies: spec.packages,
 		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
-		migration: projectStaticSubjectMigration(spec.migration),
+		migration,
 		detect: (context) =>
 			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??
 			detectBy(spec.detectPatterns, context),

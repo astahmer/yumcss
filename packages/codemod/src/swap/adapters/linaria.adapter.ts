@@ -37,6 +37,7 @@ export default defineCodemodAdapter({
 	migration: {
 		targetPolicy: {
 			handlesHostRewrites: true,
+			dynamicClassCarrier: true,
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,

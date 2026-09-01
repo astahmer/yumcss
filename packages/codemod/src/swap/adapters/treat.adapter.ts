@@ -29,6 +29,7 @@ const treat = makeExtraAdapter({
 	sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.RuntimeClass] },
 	targetPolicy: {
 		handlesHostRewrites: true,
+		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
 		hostRepresentation: StyleHostRepresentationKind.Class,
 	},

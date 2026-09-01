@@ -110,7 +110,7 @@ function dynamicVariableName(expression: string): string {
 const dynamicAndThemes: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
 	id: StyleLoweringId.DynamicAndTheme,
-	apply: ({ program, target }) => {
+	apply: ({ program, target, mode }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let changed = false;
 		const resolvedDynamicCapabilities = new Set<AdapterCapability>();
@@ -138,7 +138,12 @@ const dynamicAndThemes: StyleLowering = {
 				changed = true;
 				return { ...declaration, value: { kind: "literal", value: resolved.value } };
 			}
-			if (level(target, "dynamic-values") !== "unsupported") {
+			const nativeDynamicLevel = level(target, "dynamic-values");
+			const preferStaticCustomProperty =
+				mode === "safe" &&
+				nativeDynamicLevel === "partial" &&
+				level(target, "custom-properties") === "exact";
+			if (nativeDynamicLevel !== "unsupported" && !preferStaticCustomProperty) {
 				const themeExpression = /^(?:theme|tokens)\./.test(value.expression.trim());
 				if (!themeExpression || level(target, "theme-context") !== "unsupported")
 					resolvedDynamicCapabilities.add("dynamic-values");

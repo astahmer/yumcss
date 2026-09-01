@@ -201,6 +201,13 @@ export interface AdapterMigrationHooks {
 
 export interface AdapterTargetMigrationPolicy {
 	readonly handlesHostRewrites?: boolean;
+	/**
+	 * Opt into the shared static CSS-variable carrier for scalar dynamic values
+	 * attached to a React/Preact class host. The adapter factory composes the
+	 * representation and host rewrite; adapters still own whether this carrier
+	 * is valid for their emitted class API.
+	 */
+	readonly dynamicClassCarrier?: boolean;
 	/** Target cannot represent a standalone style value without a host use. */
 	readonly requiresHostContext?: boolean;
 	/** Target-owned explanation for a missing required host use. */

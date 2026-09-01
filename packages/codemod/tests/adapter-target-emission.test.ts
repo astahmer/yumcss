@@ -165,6 +165,32 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("theme.foreground");
 	});
 
+	test.each([
+		CodemodAdapterId.Bamboo,
+		CodemodAdapterId.VanillaExtract,
+		CodemodAdapterId.Jss,
+		CodemodAdapterId.Aphrodite,
+		CodemodAdapterId.Style9,
+		CodemodAdapterId.Compiled,
+		CodemodAdapterId.Treat,
+		CodemodAdapterId.Linaria,
+	] as const)("uses the shared dynamic class carrier for %s", (target) => {
+		const result = migrate(
+			'import { css } from "pandwind/css";\n' +
+				"const card = css.class({ color: theme.foreground });\n" +
+				"export const App = () => <Box className={card} />;",
+			CodemodAdapterId.Pandwind,
+			target,
+		);
+
+		expect(result.converted, `${CodemodAdapterId.Pandwind} -> ${target}`).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("var(--pandwind-dynamic-");
+		expect(result.code).toContain('style={{ "--pandwind-dynamic-');
+		expect(result.code).toContain("String(theme.foreground)");
+	});
+
 	test("does not overwrite an existing host style while lowering a dynamic class", () => {
 		const result = migrate(
 			'import { css } from "pandwind/css";\n' +

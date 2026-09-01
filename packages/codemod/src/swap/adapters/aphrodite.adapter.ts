@@ -18,6 +18,7 @@ const aphrodite = makeExtraAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.NativeMap,
 	targetPolicy: {
 		handlesHostRewrites: true,
+		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
 		hostFrameworks: [BuiltinHostFramework.React],
 		hostRepresentation: StyleHostRepresentationKind.Class,

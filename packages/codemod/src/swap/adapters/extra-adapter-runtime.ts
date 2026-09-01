@@ -26,7 +26,10 @@ import {
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
-import { projectStaticSubjectMigration } from "../adapter-projections.ts";
+import {
+	projectDynamicClassMigration,
+	projectStaticSubjectMigration,
+} from "../adapter-projections.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -293,11 +296,19 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			options.id,
 			options.namedObjects === true,
 			options.namedRuleStrategy,
-			options.capabilityOverrides,
+			{
+				...options.capabilityOverrides,
+				...(targetPolicy?.dynamicClassCarrier === true
+					? { "custom-properties": "exact" as const }
+					: {}),
+			},
 		),
 		dependencies: options.packages,
-		migration: projectStaticSubjectMigration(
-			targetPolicy === undefined ? options.migration : { ...options.migration, targetPolicy },
+		migration: projectDynamicClassMigration(
+			options.id,
+			projectStaticSubjectMigration(
+				targetPolicy === undefined ? options.migration : { ...options.migration, targetPolicy },
+			),
 		),
 		detect: (context) => {
 			const evidence = options.detect.flatMap((pattern) => {

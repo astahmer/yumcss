@@ -19,6 +19,7 @@ const compiled = makeExtraAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	targetPolicy: {
 		handlesHostRewrites: true,
+		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
 		hostRepresentation: StyleHostRepresentationKind.Class,
 	},

@@ -70,6 +70,7 @@ export default defineCodemodAdapter({
 		rewrite: rewriteImperativeApplications,
 		targetPolicy: {
 			handlesHostRewrites: true,
+			dynamicClassCarrier: true,
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostRepresentation: StyleHostRepresentationKind.Class,

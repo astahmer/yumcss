@@ -19,6 +19,7 @@ const style9 = makeExtraAdapter({
 	sourceObjectOptions: { namedRuleObjects: true },
 	targetPolicy: {
 		handlesHostRewrites: true,
+		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
 		hostFrameworks: [BuiltinHostFramework.React],
 		hostRepresentation: StyleHostRepresentationKind.Class,

@@ -832,6 +832,20 @@ describe("CSS-in-JS adapter contract v2", () => {
 		},
 	);
 
+	test("uses the shared static custom-property carrier for Bamboo theme values", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				"const card = css.class({ color: theme.foreground });\n" +
+				"export const App = () => <Box className={card} />;",
+			{ from: "pandwind", to: "bamboo", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("var(--pandwind-dynamic-");
+		expect(result.code).toContain("String(theme.foreground)");
+	});
+
 	test("does not discard a static styled subject passed as a value", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components"; const result = use(styled.div({ color: "red" }));',
