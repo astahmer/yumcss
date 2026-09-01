@@ -8,6 +8,7 @@ import {
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 function isStaticProgram(program: StyleProgram): boolean {
 	return program.rules.every(
@@ -27,9 +28,7 @@ function functionStyleEmission(
 	_context: AdapterEmitContext | undefined,
 	programObject: (program: StyleProgram) => string,
 ): AdapterEmitResult | undefined {
-	const declarations = program.rules.flatMap(function collect(rule): StyleProgram["declarations"] {
-		return [...rule.declarations, ...rule.children.flatMap(collect)];
-	});
+	const declarations = StyleProgramAnalysis.declarations(program);
 	const dynamic = declarations.flatMap((declaration) =>
 		declaration.value.kind === "dynamic" ? [declaration] : [],
 	);
@@ -68,9 +67,7 @@ function functionStyleEmission(
 
 function supportsStaticOrFunctionProgram(program: StyleProgram): boolean {
 	if (isStaticProgram(program)) return true;
-	const declarations = program.rules.flatMap(function collect(rule): StyleProgram["declarations"] {
-		return [...rule.declarations, ...rule.children.flatMap(collect)];
-	});
+	const declarations = StyleProgramAnalysis.declarations(program);
 	const dynamic = declarations.flatMap((declaration) =>
 		declaration.value.kind === "dynamic" ? [declaration] : [],
 	);

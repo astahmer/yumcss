@@ -1123,9 +1123,7 @@ function runtimeRawComponent(
 }
 
 function runtimeFontFaces(program: StyleProgram): string {
-	const rules = program.rules.flatMap(function collect(rule): StyleProgram["rules"] {
-		return [rule, ...rule.children.flatMap(collect)];
-	});
+	const rules = StyleProgramAnalysis.rules(program);
 	return rules
 		.filter((rule) => rule.kind === "font-face")
 		.map(

@@ -441,9 +441,7 @@ function representationFor(
 	context: StyleLoweringContext,
 	result: StyleLoweringResult,
 ): StyleRepresentationKind {
-	const declarations = result.program.rules.flatMap(function collect(rule): StyleDeclaration[] {
-		return [...rule.declarations, ...rule.children.flatMap(collect)];
-	});
+	const declarations = StyleProgramAnalysis.declarations(result.program);
 	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
 	if (result.residuals.length > 0 || result.program.residuals.length > 0) {
 		if (

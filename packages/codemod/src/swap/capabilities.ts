@@ -1,6 +1,7 @@
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
 import type { AdapterDependencies } from "./adapter-contract.ts";
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 /** Versioned contract between the semantic program and a target adapter. */
 export const ADAPTER_CAPABILITIES_SCHEMA = "pandwind.adapter-capabilities/2" as const;
@@ -162,12 +163,9 @@ export function requiredAdapterCapabilities(
 		requirements.push({ capability, detail });
 	};
 
-	const hasDeclarations = program.rules.some(function containsDeclarations(
-		rule: StyleProgram["rules"][number],
-	): boolean {
-		return rule.declarations.length > 0 || rule.children.some(containsDeclarations);
-	});
-	if (program.declarations.length > 0 || hasDeclarations) add("declarations", "style declarations");
+	if (StyleProgramAnalysis.declarations(program).length > 0) {
+		add("declarations", "style declarations");
+	}
 	if (program.source?.subject !== undefined)
 		add("components", `component subject: ${program.source.subject}`);
 	for (const rule of program.rules) {
@@ -190,12 +188,7 @@ export function requiredAdapterCapabilities(
 		if (rule.selector !== undefined) add("selectors", `selector: ${rule.selector}`);
 		if (rule.children.length > 0) add("nesting", `${rule.kind} nested rules`);
 	}
-	const declarations =
-		program.rules.length === 0
-			? program.declarations
-			: program.rules.flatMap(function collect(rule): StyleProgram["declarations"] {
-					return [...rule.declarations, ...rule.children.flatMap(collect)];
-				});
+	const declarations = StyleProgramAnalysis.declarations(program);
 	for (const declaration of declarations) {
 		for (const condition of declaration.conditions) {
 			add(conditionCapability(condition.kind), `${condition.kind}: ${condition.name}`);
@@ -240,7 +233,8 @@ export function inspectAdapterCapabilities(
 	program: StyleProgram,
 	mode: AdapterCapabilityMode = "safe",
 ): AdapterCapabilityReport {
-	const issues = requiredAdapterCapabilities(program).map((requirement) => {
+	const requirements = requiredAdapterCapabilities(program);
+	const issues = requirements.map((requirement) => {
 		const level = capabilities.capabilities[requirement.capability] ?? "unsupported";
 		return {
 			...requirement,
@@ -255,7 +249,7 @@ export function inspectAdapterCapabilities(
 	return {
 		adapter: capabilities.adapter,
 		mode,
-		requirements: requiredAdapterCapabilities(program),
+		requirements,
 		exact,
 		partial,
 		unsupported,

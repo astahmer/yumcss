@@ -28,6 +28,7 @@ import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { matchBlock } from "../../sources.ts";
 import { TokenCatalog } from "../tokens.ts";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -527,7 +528,7 @@ function emitTailwind(
 	residuals: readonly StyleProgramResidual[];
 } {
 	const residuals: StyleProgramResidual[] = [];
-	const declarations = program.rules.flatMap(function collect(rule): StyleDeclaration[] {
+	for (const rule of StyleProgramAnalysis.rules(program)) {
 		if (rule.kind !== "style") {
 			residuals.push({
 				kind: "rule-level",
@@ -535,8 +536,8 @@ function emitTailwind(
 				hint: "Tailwind class output supports style declarations and nested conditions only",
 			});
 		}
-		return [...rule.declarations, ...rule.children.flatMap(collect)];
-	});
+	}
+	const declarations = StyleProgramAnalysis.declarations(program);
 	const tokens: string[] = [];
 	for (const declaration of declarations) {
 		if (declaration.value.kind !== "literal") {

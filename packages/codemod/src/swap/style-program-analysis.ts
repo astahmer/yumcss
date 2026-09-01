@@ -3,13 +3,25 @@ import { StyleDynamicExpressionKind } from "./identifiers.ts";
 
 /** Read-only semantic queries shared by lowering and adapter projections. */
 export class StyleProgramAnalysis {
+	static rules(program: StyleProgram): readonly StyleRule[] {
+		return program.rules.flatMap(function flatten(rule): StyleRule[] {
+			return [rule, ...rule.children.flatMap(flatten)];
+		});
+	}
+
 	static declarations(program: StyleProgram): readonly StyleDeclaration[] {
-		return program.rules.flatMap(function collect(rule): StyleDeclaration[] {
-			return [...rule.declarations, ...rule.children.flatMap(collect)];
+		if (program.rules.length === 0) return program.declarations;
+		return StyleProgramAnalysis.rules(program).flatMap((rule) => {
+			return rule.declarations;
 		});
 	}
 
 	static hasDynamic(program: StyleProgram): boolean {
+		if (program.rules.length === 0) {
+			return StyleProgramAnalysis.declarations(program).some(
+				({ value }) => value.kind === "dynamic",
+			);
+		}
 		return program.rules.some(function containsDynamic(rule: StyleRule): boolean {
 			return (
 				(rule.selector?.includes("${") ?? false) ||
