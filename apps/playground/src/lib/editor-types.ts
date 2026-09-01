@@ -3,169 +3,102 @@ const generatedWindTypes = String(
 		"../types.d.ts"
 	] ?? "",
 );
-
-/**
- * Monaco's TypeScript worker is separate from the Vite/TypeScript compiler.
- * Keep its design-system vocabulary sourced from the same generated artifact
- * that types the real playground module, then add only the browser-facing
- * ambient modules needed by migration examples.
- */
 const windTypes = generatedWindTypes.replace("export type WindVariants", "type WindVariants");
 
-const sharedDeclarations = String.raw`
-type PlaygroundStylePrimitive = string | number | boolean | null | undefined;
-type PlaygroundStyleObject = Record<string, PlaygroundStylePrimitive | PlaygroundStyleObject>;
-type PlaygroundClassInput =
-  | string
-  | Record<string, string>
-  | false
-  | null
-  | undefined
-  | PlaygroundClassInput[];
+const generatedPandwindTypes = import.meta.glob("../generated/pandwind/**/*.d.ts", {
+	eager: true,
+	import: "default",
+	query: "?raw",
+});
 
-interface PlaygroundCss {
-  (style: PlaygroundStyleObject): string;
-  class(...styles: PlaygroundStyleObject[]): string;
-  raw(...styles: PlaygroundStyleObject[]): PlaygroundStyleObject;
-  props(...styles: PlaygroundStyleObject[]): { className?: string; style?: Record<string, string> };
+const generatedDependencyTypes = import.meta.glob("../generated/dependencies/**/*.d.ts", {
+	eager: true,
+	import: "default",
+	query: "?raw",
+});
+
+const packageTypeLibraries = Object.entries(generatedPandwindTypes).map(([path, content]) => ({
+	filePath: `file:///pandwind/playground/generated/pandwind/${path.replace("../generated/pandwind/", "")}`,
+	content: String(content),
+}));
+
+const dependencyTypeLibraries = Object.entries(generatedDependencyTypes).map(([path, content]) => ({
+	filePath: `file:///pandwind/playground/generated/dependencies/${path.replace("../generated/dependencies/", "")}`,
+	content: String(content),
+}));
+
+/**
+ * Monaco's TypeScript worker has no access to the host filesystem. The
+ * declaration graph is generated from the workspace-linked `pandwind`
+ * package before dev/build, then mounted under a virtual package tree here.
+ * Relative imports are redirected to emitted declarations so the editor uses
+ * the same `CssFn`, `CxFn`, design types, and option contracts as the package.
+ */
+const pandwindModules = String.raw`
+declare module "pandwind" {
+  export * from "./generated/pandwind/index.d.ts";
 }
-
-declare const tw: (styles: WindVariants) => string;
-declare const css: PlaygroundCss;
-declare const cx: (...inputs: PlaygroundClassInput[]) => string;
-
-declare namespace JSX {
-  interface Element {}
-  type ElementType = string | ((props?: Record<string, unknown>) => Element);
-  interface ElementClass {}
-  interface IntrinsicElements {
-    [elementName: string]: Record<string, unknown>;
-  }
+declare module "pandwind/css" {
+  export * from "./generated/pandwind/css/index.d.ts";
 }
-
-declare namespace React {
-  namespace JSX {
-    interface Element {}
-    type ElementType = string | ((props?: Record<string, unknown>) => Element);
-    interface IntrinsicElements {
-      [elementName: string]: Record<string, unknown>;
-    }
-  }
+declare module "pandwind/design" {
+  export * from "./generated/pandwind/design/index.d.ts";
 }
-
-type PlaygroundComponent<Props extends Record<string, unknown> = Record<string, unknown>> =
-  (props?: Props) => JSX.Element;
-
-declare const renderer: {
-  renderRule(rule: (...args: readonly unknown[]) => PlaygroundStyleObject): string;
-};
+declare module "pandwind/tw" {
+  export * from "./generated/pandwind/tw/index.d.ts";
+}
+declare module "pandwind/cx" {
+  export * from "./generated/pandwind/cx/index.d.ts";
+}
+declare module "pandwind/types/typings" {
+  export * from "./generated/pandwind/types/typings.d.ts";
+}
 `;
 
-const moduleDeclarations = String.raw`
-declare module "pandwind/tw" {
-  export interface TwOptions {
-    variants?: Record<string, { join?: string }>;
-    conflicts?: Record<string, unknown>;
-    compose?: readonly string[];
-  }
-  export function createTw<T = WindVariants>(options?: TwOptions): (styles: T) => string;
-  export function tw(styles: WindVariants): string;
-}
-
-declare module "pandwind/css" {
-  export function createCss<T extends PlaygroundStyleObject = PlaygroundStyleObject>(): PlaygroundCss;
-}
-
-declare module "pandwind/design" {
-  export function createDesignCss<T extends PlaygroundStyleObject = PlaygroundStyleObject>(
-    preset?: unknown,
-  ): PlaygroundCss;
-}
+/** These are browser-only shims for migration examples whose packages are not playground dependencies. */
+const migrationExampleModules = String.raw`
+type PlaygroundStyleObject = import("pandwind/types/typings").StyleObject;
+type PlaygroundComponent<Props extends Record<string, unknown> = Record<string, unknown>> =
+  (props?: Props) => JSX.Element;
 
 declare module "react/jsx-runtime" {
   export function jsx(type: unknown, props: unknown): JSX.Element;
   export function jsxs(type: unknown, props: unknown): JSX.Element;
   export const Fragment: unknown;
-  export namespace JSX {
-    interface Element {}
-    type ElementType = string | ((props?: Record<string, unknown>) => Element);
-    interface IntrinsicElements {
-      [elementName: string]: Record<string, unknown>;
-    }
-  }
 }
 
-declare module "@pandacss/dev" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
-declare module "@emotion/css" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
-declare module "@emotion/react" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
-declare module "@compiled/react" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
-declare module "@vanilla-extract/css" {
-  export function style(style: PlaygroundStyleObject): string;
-}
-
-declare module "@treat/webpack" {
-  export function style(style: PlaygroundStyleObject): string;
-}
-
-declare module "@tokenami/css" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
-declare module "goober" {
-  export function css(style: PlaygroundStyleObject): string;
-}
-
+declare module "@pandacss/dev" { export function css(style: PlaygroundStyleObject): string; }
+declare module "@emotion/css" { export function css(style: PlaygroundStyleObject): string; }
+declare module "@emotion/react" { export function css(style: PlaygroundStyleObject): string; }
+declare module "@compiled/react" { export function css(style: PlaygroundStyleObject): string; }
+declare module "@vanilla-extract/css" { export function style(style: PlaygroundStyleObject): string; }
+declare module "@treat/webpack" { export function style(style: PlaygroundStyleObject): string; }
+declare module "@tokenami/css" { export function css(style: PlaygroundStyleObject): string; }
+declare module "goober" { export function css(style: PlaygroundStyleObject): string; }
 declare module "@stitches/react" {
   export function css(style: PlaygroundStyleObject): PlaygroundComponent;
 }
-
 declare module "react-jss" {
-  export function createUseStyles<T extends Record<string, PlaygroundStyleObject>>(
-    styles: T,
-  ): () => T;
+  export function createUseStyles<T extends Record<string, PlaygroundStyleObject>>(styles: T): () => T;
 }
-
 declare module "aphrodite" {
   export const StyleSheet: {
     create<T extends Record<string, PlaygroundStyleObject>>(styles: T): T;
   };
 }
-
 declare module "style9" {
   const style9: {
     create<T extends Record<string, PlaygroundStyleObject>>(styles: T): T;
   };
   export default style9;
 }
-
 declare module "stylex" {
   export function create<T extends Record<string, PlaygroundStyleObject>>(styles: T): T;
   export function props(...styles: readonly unknown[]): { className?: string };
 }
-
-declare module "@chakra-ui/react" {
-  export const Box: PlaygroundComponent;
-}
-
-declare module "@mui/material" {
-  export const Box: PlaygroundComponent;
-}
-
-declare module "@mantine/core" {
-  export const Box: PlaygroundComponent;
-}
+declare module "@chakra-ui/react" { export const Box: PlaygroundComponent; }
+declare module "@mui/material" { export const Box: PlaygroundComponent; }
+declare module "@mantine/core" { export const Box: PlaygroundComponent; }
 
 interface PlaygroundStyledFactory {
   <Props extends Record<string, unknown> = Record<string, unknown>>(
@@ -177,7 +110,6 @@ interface PlaygroundStyledFactory {
   ): PlaygroundStyledFactory;
   [tag: string]: PlaygroundStyledFactory;
 }
-
 declare module "styled-components" {
   const styled: PlaygroundStyledFactory;
   export default styled;
@@ -185,22 +117,35 @@ declare module "styled-components" {
   export const keyframes: PlaygroundStyledFactory;
   export const ThemeProvider: PlaygroundComponent;
 }
-
-declare module "next-yak" {
-  export const styled: PlaygroundStyledFactory;
-}
-
-declare module "solid-styled-components" {
-  export const styled: PlaygroundStyledFactory;
-}
-
+declare module "next-yak" { export const styled: PlaygroundStyledFactory; }
+declare module "solid-styled-components" { export const styled: PlaygroundStyledFactory; }
 declare module "vue3-styled-components" {
   const styled: PlaygroundStyledFactory;
   export default styled;
 }
+declare module "react-fela" { export const RendererProvider: PlaygroundComponent; }
+`;
 
-declare module "react-fela" {
-  export const RendererProvider: PlaygroundComponent;
+const globalEditorDeclarations = String.raw`
+declare const tw: (styles: WindVariants) => string;
+declare const css: import("pandwind/css").CssFn;
+declare const cx: import("pandwind").CxFn;
+declare const renderer: {
+  renderRule(rule: (...args: readonly unknown[]) => PlaygroundStyleObject): string;
+};
+
+declare namespace JSX {
+  interface Element {}
+  type ElementType = string | ((props?: Record<string, unknown>) => Element);
+  interface ElementClass {}
+  interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
+}
+declare namespace React {
+  namespace JSX {
+    interface Element {}
+    type ElementType = string | ((props?: Record<string, unknown>) => Element);
+    interface IntrinsicElements { [elementName: string]: Record<string, unknown>; }
+  }
 }
 `;
 
@@ -211,12 +156,14 @@ export interface EditorTypeLibrary {
 
 /** Type libraries installed into Monaco's TypeScript worker before mount. */
 export const EDITOR_TYPE_LIBRARIES: readonly EditorTypeLibrary[] = [
+	...packageTypeLibraries,
+	...dependencyTypeLibraries,
 	{
 		filePath: "file:///pandwind/playground/generated-types.d.ts",
-		content: `${windTypes}\n${sharedDeclarations}`,
+		content: `${windTypes}\n${globalEditorDeclarations}`,
 	},
 	{
 		filePath: "file:///pandwind/playground/modules.d.ts",
-		content: moduleDeclarations,
+		content: `${pandwindModules}\n${migrationExampleModules}`,
 	},
 ];

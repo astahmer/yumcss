@@ -3,11 +3,13 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"predev": "pnpm tw:codegen && pnpm tw:bridge",
+		"editor:types": "tsx scripts/generate-editor-types.ts",
+		"editor:types:check": "tsx scripts/generate-editor-types.ts --check",
+		"predev": "pnpm editor:types && pnpm tw:codegen && pnpm tw:bridge",
 		"dev": "vite",
-		"prebuild": "pnpm tw:codegen && pnpm tw:bridge",
+		"prebuild": "pnpm editor:types && pnpm tw:codegen && pnpm tw:bridge",
 		"build": "tsc --noEmit && vite build",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "pnpm editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
 		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
 		"tw:bridge": "tsx ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"

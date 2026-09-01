@@ -117,6 +117,11 @@ which concrete module to import or grow a switch statement in a central runner.
   generated files only when a project has not produced the versioned artifact.
   Never hardcode an example preset or application-specific metadata in a
   generic migration path.
+- Playground Monaco declarations are generated from the workspace-linked
+  `pandwind` package exports. From `apps/playground`, run `pnpm editor:types`.
+  Do not hand-maintain a second `CssFn`, `CxFn`, design, or option signature in
+  the editor. Keep third-party migration-example shims explicitly separate and
+  label them as shims when the package is not a playground dependency.
 - Token catalogs normalize only statically resolved scalar values (strings and
   numbers). Conditional/theme-dependent token objects must remain outside the
   static catalog unless an active theme context is explicitly carried in the

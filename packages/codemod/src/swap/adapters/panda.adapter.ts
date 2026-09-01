@@ -13,7 +13,7 @@ import {
 import { TokenCatalog } from "../tokens.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { loadPandaTheme, type PandaTheme } from "./panda/index.ts";
+import type { PandaTheme } from "./panda/index.ts";
 
 /**
  * Panda's generated `styled-system/css` object dialect is a normal pivot
@@ -92,6 +92,10 @@ async function officialPandaConfig(
 ): Promise<AdapterProjectConfig> {
 	const fallback = pandaConfig(context);
 	if (context.root === undefined || context.readFile === undefined) return fallback;
+	// The official Panda loader is Node-only. Keep it behind the project-aware
+	// async path so the browser catalog can still ship the same adapter without
+	// pulling Panda's filesystem/config implementation into the client bundle.
+	const { loadPandaTheme } = await import(/* @vite-ignore */ "./panda/theme.ts");
 	for (const candidate of ["panda.config.ts", "panda.config.js", "panda.config.mjs"]) {
 		const path = joinDocumentPath(context.root, candidate);
 		if (context.readFile(path) === undefined) continue;

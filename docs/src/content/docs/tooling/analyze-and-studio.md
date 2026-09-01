@@ -12,6 +12,17 @@ the merged class string, fold verdict (full/partial/runtime) and
 conflict-merge visualization instantly. Per-example routes, URL-hash sharing,
 Monaco + Shiki. Styled with pandwind itself.
 
+The editor's Pandwind declarations are not copied API typings. The playground
+predev/prebuild hook runs `pnpm editor:types`, which resolves the workspace
+package through `node_modules/pandwind`, emits its public declaration graph and
+the transitive declaration dependencies it references, and mounts that graph
+into Monaco's virtual filesystem. `pnpm editor:types:check`
+regenerates into a temporary directory and fails if the checked-in graph is
+stale. This keeps `tw`, `css`, `cx`, design presets, and option contracts tied
+to the package exports; the small declarations for unavailable migration
+libraries are clearly isolated browser shims, not claims about their installed
+package APIs.
+
 ## Migration lab
 
 Open `/migrate` in the playground to exercise the same registry-backed

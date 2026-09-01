@@ -8,5 +8,6 @@
 		"moduleResolution": "bundler",
 		"noEmit": true
 	},
-	"include": ["src", "vite.config.ts"]
+	"include": ["src", "vite.config.ts"],
+	"exclude": ["src/generated/dependencies/modules.d.ts"]
 }
