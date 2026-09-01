@@ -10,6 +10,7 @@ import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
 import { getHostComponentRewriter } from "./host-component-rewriter.ts";
 import { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
 import { PortableStyleArtifact } from "./portable-artifact.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 /**
  * Preserve a static styled intrinsic on targets whose normal carrier is a
@@ -190,17 +191,19 @@ export function projectDynamicClassMigration(
 }
 
 function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgram): boolean {
-	return program.rules.some(function containsDynamic(rule): boolean {
-		return (
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" ||
-					(declaration.value.kind === "literal" &&
-						typeof declaration.value.value === "string" &&
-						declaration.value.value.startsWith("var(--pandwind-dynamic-")),
-			) || rule.children.some(containsDynamic)
-		);
-	});
+	return (
+		StyleProgramAnalysis.hasDynamic(program) ||
+		program.rules.some(function containsCarrier(rule): boolean {
+			return (
+				rule.declarations.some(
+					({ value }) =>
+						value.kind === "literal" &&
+						typeof value.value === "string" &&
+						value.value.startsWith("var(--pandwind-dynamic-"),
+				) || rule.children.some(containsCarrier)
+			);
+		})
+	);
 }
 
 function hasPortableDynamicResiduals(program: import("./semantic-ir.ts").StyleProgram): boolean {

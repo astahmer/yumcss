@@ -1,4 +1,5 @@
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 /**
  * Portable runtime carrier shared by targets that cannot express a dynamic
@@ -51,12 +52,7 @@ export class PortableStyleArtifact {
 	}
 
 	static containsDynamicValues(program: StyleProgram): boolean {
-		return program.rules.some(function containsDynamic(rule): boolean {
-			return (
-				rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-				rule.children.some(containsDynamic)
-			);
-		});
+		return StyleProgramAnalysis.hasDynamic(program);
 	}
 
 	static objectText(program: StyleProgram): string {

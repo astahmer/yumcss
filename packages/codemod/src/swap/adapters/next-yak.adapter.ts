@@ -6,15 +6,7 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
-
-function hasDynamicValues(program: StyleProgram): boolean {
-	return program.rules.some(function containsDynamic(rule): boolean {
-		return (
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some(containsDynamic)
-		);
-	});
-}
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 /** Next-yak's extracted css and styled template dialects share one adapter. */
 export default defineCodemodAdapter({
@@ -58,25 +50,29 @@ export default defineCodemodAdapter({
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			resolveHostRepresentation: ({ program, hasHostContext }) =>
-				program.source?.subject !== undefined && hasHostContext && hasDynamicValues(program)
+				program.source?.subject !== undefined &&
+				hasHostContext &&
+				StyleProgramAnalysis.hasDynamic(program)
 					? StyleHostRepresentationKind.Component
 					: StyleHostRepresentationKind.Class,
 			resolveRepresentation: ({ program, hasHostContext }) =>
-				program.source?.subject !== undefined && hasDynamicValues(program)
+				program.source?.subject !== undefined && StyleProgramAnalysis.hasDynamic(program)
 					? StyleRepresentationKind.TargetNative
-					: !hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
+					: !hasHostContext &&
+						  program.source?.subject === undefined &&
+						  StyleProgramAnalysis.hasDynamic(program)
 						? StyleRepresentationKind.RuntimeCarrier
 						: undefined,
 			capabilitiesForRepresentation: ({ program, representation }) =>
 				[StyleRepresentationKind.RuntimeCarrier, StyleRepresentationKind.TargetNative].includes(
 					representation,
-				) && hasDynamicValues(program)
+				) && StyleProgramAnalysis.hasDynamic(program)
 					? ["dynamic-values", "theme-context", "runtime-context"]
 					: [],
 			preservesResidualKindsForRepresentation: ({ program, representation }) =>
 				[StyleRepresentationKind.RuntimeCarrier, StyleRepresentationKind.TargetNative].includes(
 					representation,
-				) && hasDynamicValues(program)
+				) && StyleProgramAnalysis.hasDynamic(program)
 					? ["dynamic"]
 					: [],
 		},

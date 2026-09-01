@@ -48,31 +48,10 @@ import {
 	StyleMigrationOutcome,
 	StyleRepresentationKind,
 } from "./identifiers.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
-function programHasDynamic(program: StyleProgram): boolean {
-	return program.rules.some(function containsDynamic(rule): boolean {
-		return (
-			(rule.selector?.includes("${") ?? false) ||
-			rule.conditions.some(
-				(condition) => condition.name.includes("${") || condition.value?.includes("${"),
-			) ||
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some(containsDynamic)
-		);
-	});
-}
-
-function programHasFunctionDynamic(program: StyleProgram): boolean {
-	return program.rules.some(function containsFunction(rule): boolean {
-		return (
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					/=>|^function\b/.test(declaration.value.expression.trim()),
-			) || rule.children.some(containsFunction)
-		);
-	});
-}
+const programHasDynamic = StyleProgramAnalysis.hasDynamic;
+const programHasFunctionDynamic = StyleProgramAnalysis.hasFunctionDynamic;
 
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source

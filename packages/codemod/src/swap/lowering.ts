@@ -14,6 +14,7 @@ import {
 	StyleLoweringId,
 	StyleRepresentationKind,
 } from "./identifiers.ts";
+import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
 export const STYLE_LOWERING_SCHEMA = "pandwind.style-lowering/1" as const;
 export const STYLE_LOWERING_PLUGIN_SCHEMA = "pandwind.style-lowering-plugin/1" as const;
@@ -75,10 +76,8 @@ const isFunctionDynamic = (value: StyleDeclaration["value"]): boolean =>
 	(value.expressionKind === StyleDynamicExpressionKind.Function ||
 		/=>|^function\b/.test(value.expression.trim()));
 
-const allDeclarations = (program: StyleProgram): StyleDeclaration[] =>
-	program.rules.flatMap(function collect(rule): StyleDeclaration[] {
-		return [...rule.declarations, ...rule.children.flatMap(collect)];
-	});
+const allDeclarations = (program: StyleProgram): readonly StyleDeclaration[] =>
+	StyleProgramAnalysis.declarations(program);
 
 function replaceDeclarations(
 	rule: StyleRule,

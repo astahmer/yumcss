@@ -12,6 +12,7 @@ import type {
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
+import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 import {
 	CodemodAdapterId,
 	CodemodPatternId,
@@ -274,25 +275,6 @@ function renameGeneratedCssBinding(
 	const rename = (value: string) =>
 		value.replace(/\bcss(?=\s*[.({,;}])/g, binding).replace(/\bcss(?=\s*=)/g, binding);
 	return { text: rename(emission.text), imports: emission.imports.map(rename) };
-}
-
-function hasDynamicValues(program: StyleProgram): boolean {
-	return program.rules.some(
-		(rule) =>
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			hasDynamicValues({ ...program, rules: rule.children }),
-	);
-}
-
-function hasFunctionDynamicValues(program: StyleProgram): boolean {
-	return program.rules.some(
-		(rule) =>
-			rule.declarations.some(
-				(declaration) =>
-					declaration.value.kind === "dynamic" &&
-					/=>|^function\b/.test(declaration.value.expression.trim()),
-			) || hasFunctionDynamicValues({ ...program, rules: rule.children }),
-	);
 }
 
 function hasThemeContextValues(program: StyleProgram, source: string | undefined): boolean {
@@ -1088,7 +1070,7 @@ function runtimeRawComponent(
 	const defaultComponent = tag === undefined ? `(${base})` : JSON.stringify(tag);
 	const priority = tag === undefined && base !== undefined ? 2 : 0;
 	const dynamic =
-		hasFunctionDynamicValues(program) ||
+		StyleProgramAnalysis.hasFunctionDynamic(program) ||
 		hasUnsafeTemplateDynamic(template, source) ||
 		hasComponentSelectorInterpolation(template) ||
 		liveEditorHost;
@@ -1341,7 +1323,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					host.framework ??
 					context?.document?.framework ??
 					(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
-				const dynamicHost = hasDynamicValues(program);
+				const dynamicHost = StyleProgramAnalysis.hasDynamic(program);
 				const programObjectText = renderProgramObject(
 					hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
 				);
