@@ -1264,7 +1264,7 @@ function runAdapterMigrationInternal(
 					));
 		const validation = targetAdapter.validate(emitted.semantic ?? program, targetProgram, [
 			...emitted.residuals,
-			...reparsed.residuals,
+			...reparsed.residuals.filter((residual) => !preservedResidualKinds.has(residual.kind)),
 		]);
 		validations.push(validation);
 		if (!validation.valid) {

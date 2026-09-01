@@ -697,7 +697,7 @@ function kebabProperty(property: string): string {
 
 /** Emit the static subset as authored CSS for template-based adapters. */
 const templateValue = (value: StyleProgram["declarations"][number]["value"]): string => {
-	if (value.kind === "dynamic") return value.expression;
+	if (value.kind === "dynamic") return `\${${value.expression}}`;
 	if (value.kind === "token") return value.authored;
 	return String(value.value);
 };

@@ -177,6 +177,27 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("<Card />");
 	});
 
+	test("preserves scalar template interpolation in Next-yak's runtime template", () => {
+		const result = runAdapterMigration(
+			'import { css } from "@linaria/core";\nconst card = css`color: ${theme.foreground};`;',
+			{
+				from: CodemodAdapterId.Linaria,
+				to: CodemodAdapterId.NextYak,
+				file: "Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css } from "next-yak";');
+		expect(result.code).toContain("${theme.foreground}");
+		expect(result.code).not.toContain("pandwind:migrate-skip");
+	});
+
 	test.each(
 		catalog.adapters
 			.filter((adapter) => adapter.migration?.targetPolicy?.dynamicClassCarrier === true)

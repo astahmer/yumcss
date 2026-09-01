@@ -65,6 +65,8 @@ export default defineCodemodAdapter({
 				representation === StyleRepresentationKind.RuntimeCarrier
 					? ["dynamic-values", "theme-context", "runtime-context"]
 					: [],
+			preservesResidualKindsForRepresentation: ({ representation }) =>
+				representation === StyleRepresentationKind.RuntimeCarrier ? ["dynamic"] : [],
 		},
 		prepareDynamic: ({ program }) => ({
 			handled:
