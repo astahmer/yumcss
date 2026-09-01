@@ -1,5 +1,19 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { CodemodAdapterId, StyleNamedRuleStrategy } from "../identifiers.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
+import type { StyleProgram } from "../semantic-ir.ts";
+
+function isStaticProgram(program: StyleProgram): boolean {
+	return program.rules.every(
+		(rule) =>
+			rule.declarations.every((declaration) => declaration.value.kind !== "dynamic") &&
+			rule.children.every((child) => isStaticProgram({ ...program, rules: [child] })),
+	);
+}
 
 const solidStyled = makeExtraAdapter({
 	id: CodemodAdapterId.SolidStyled,
@@ -15,6 +29,27 @@ const solidStyled = makeExtraAdapter({
 	prefix: "styled.div(",
 	targetImports: ['import { styled } from "solid-styled-components";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+	capabilityOverrides: {
+		components: "exact",
+		"framework-semantics": "exact",
+	},
+	targetPolicy: {
+		handlesHostRewrites: true,
+		handlesFrameworkSemantics: true,
+		hostFrameworks: [BuiltinHostFramework.Solid],
+		hostFrameworkConversions: [
+			{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.Solid },
+		],
+		hostRepresentation: StyleHostRepresentationKind.Component,
+		standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+		resolveHostRepresentation: ({ framework, program }) =>
+			isStaticProgram(program) &&
+			(framework === undefined ||
+				framework === BuiltinHostFramework.Solid ||
+				framework === BuiltinHostFramework.React)
+				? StyleHostRepresentationKind.Component
+				: undefined,
+	},
 	functionCall:
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))(?:<[^>]*>)?(?:\.props\s*\([^)]*\))?\s*\(/g,
 });

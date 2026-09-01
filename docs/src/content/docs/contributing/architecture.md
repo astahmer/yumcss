@@ -66,6 +66,13 @@ declarations, and other DOM behavior remain typed `host-framework` residuals.
 This keeps host portability target-owned and prevents the semantic runner from
 pretending that a CSS declaration alone proves runtime or platform parity.
 
+Solid-styled owns the corresponding static React component projection. A React
+`styled.div` subject with only static declarations can be emitted as a
+`solid-styled-components` subject while preserving its JSX component use.
+Function-valued declarations remain source-preserving until a Solid runtime
+carrier and prop/theme semantics are proven; parseability alone is not enough
+to claim that a React component's dynamic host behavior is portable.
+
 Framework metadata is only a capability requirement when the program carries
 host or component semantics. Standalone style carriers retain framework
 provenance in the IR but do not need a framework-specific target rewrite. Each

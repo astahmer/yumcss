@@ -308,10 +308,11 @@ identify target projections or host facts that still need an implementation:
 for example, a dynamic value without a host binding, MUI's `sx` object prop
 on an unsupported framework, or a custom component whose prop-forwarding
 contract is unknown. The current representative static fixture audit now has
-only two framework-boundary skips: styled-components → Solid-styled and
-styled-components → Vue-styled. The next implementation must add those projections
-behind target-owned ports and prove them, rather than weakening the
-capability gate.
+only one framework-boundary skip: styled-components → Vue-styled. Static
+styled-components → Solid-styled is handled by Solid's target-owned component
+projection; dynamic/function-valued subjects remain explicitly residual. The
+next implementation must add the Vue projection behind a target-owned port and
+prove it, rather than weakening the capability gate.
 
 The diagnostic is intentionally route-specific. `capability-blocked` means the
 target adapter's declared representations were exhausted after lowering and
