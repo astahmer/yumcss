@@ -149,6 +149,8 @@ export interface AdapterHostRewriteContext {
 	readonly emittedExpression: string;
 	readonly binding?: string;
 	readonly framework?: string;
+	/** Source host dialect before a target-owned host conversion. */
+	readonly sourceFramework?: HostFramework;
 	readonly representation: StyleHostRepresentationKind;
 	/** Semantic carrier selected for the emitted style value. */
 	readonly representationKind?: StyleRepresentationKind;
@@ -161,6 +163,12 @@ export interface AdapterHostFrameworkConversion {
 	readonly from: HostFramework;
 	/** Target host dialect produced by the rewrite. */
 	readonly to: HostFramework;
+	/** Guard the conversion when source syntax contains framework-only behavior. */
+	readonly canConvert?: (context: {
+		readonly file: string;
+		readonly source: string;
+		readonly program: StyleProgram;
+	}) => boolean;
 }
 
 export interface AdapterHostRewriteResult {
@@ -180,6 +188,8 @@ export interface AdapterComponentRewriteContext {
 	readonly binding: string;
 	readonly tag: string;
 	readonly framework: string;
+	/** Source host dialect before a target-owned host conversion. */
+	readonly sourceFramework?: HostFramework;
 	readonly emittedExpression: string;
 	readonly representation: StyleHostRepresentationKind;
 }
@@ -231,6 +241,8 @@ export interface AdapterTargetMigrationPolicy {
 		readonly program: StyleProgram;
 		readonly hasHostContext: boolean;
 		readonly framework?: string;
+		/** Source host dialect before a target-owned host conversion. */
+		readonly sourceFramework?: HostFramework;
 		/** Source text used by the target adapter to validate host ownership. */
 		readonly source?: string;
 		/** Source binding whose host use is being projected. */
@@ -245,6 +257,8 @@ export interface AdapterTargetMigrationPolicy {
 		readonly program: StyleProgram;
 		readonly hasHostContext: boolean;
 		readonly framework?: string;
+		/** Source host dialect before a target-owned host conversion. */
+		readonly sourceFramework?: HostFramework;
 		readonly binding?: string;
 		readonly hostRepresentation?: StyleHostRepresentationKind;
 		/** Original source used to preflight host rewrites before lowering. */
@@ -265,7 +279,7 @@ export interface AdapterTargetMigrationPolicy {
 	/** Host rewrites consume framework metadata when emitting an intrinsic host. */
 	readonly handlesFrameworkSemantics?: boolean;
 	/** Frameworks whose component syntax the target adapter can preserve natively. */
-	readonly hostFrameworks?: readonly string[];
+	readonly hostFrameworks?: readonly HostFramework[];
 	/** Explicit source-to-target host dialect rewrites owned by this target. */
 	readonly hostFrameworkConversions?: readonly AdapterHostFrameworkConversion[];
 	/** Whether rewriteHost consumes source host style attributes in addition to the carrier. */

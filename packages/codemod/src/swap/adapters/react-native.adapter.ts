@@ -363,24 +363,47 @@ const reactNative = makeExtraAdapter({
 		hostFrameworkConversions: reactToReactNative,
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
-		resolveHostRepresentation: ({ framework, program, source, binding, hasHostContext }) => {
-			if (framework === undefined || framework === BuiltinHostFramework.ReactNative)
+		resolveHostRepresentation: ({
+			framework,
+			sourceFramework,
+			program,
+			source,
+			binding,
+			hasHostContext,
+		}) => {
+			const sourceHostFramework = sourceFramework ?? framework;
+			if (
+				sourceHostFramework === undefined ||
+				sourceHostFramework === BuiltinHostFramework.ReactNative
+			)
 				return StyleHostRepresentationKind.StyleProp;
 			if (
-				framework === BuiltinHostFramework.React &&
+				sourceHostFramework === BuiltinHostFramework.React &&
+				framework === BuiltinHostFramework.ReactNative &&
 				program.source?.subject !== undefined &&
 				hasHostContext &&
 				binding !== undefined &&
 				canRewriteReactStyledSubject(program, source, binding)
 			)
 				return StyleHostRepresentationKind.StyleProp;
-			if (framework === BuiltinHostFramework.React && canRewriteReactHost(program, source, binding))
+			if (
+				sourceHostFramework === BuiltinHostFramework.React &&
+				framework === BuiltinHostFramework.ReactNative &&
+				canRewriteReactHost(program, source, binding)
+			)
 				return StyleHostRepresentationKind.StyleProp;
 			return undefined;
 		},
-		rewriteComponent: ({ code, binding, framework, emittedExpression, representation }) => {
+		rewriteComponent: ({
+			code,
+			binding,
+			framework,
+			sourceFramework,
+			emittedExpression,
+			representation,
+		}) => {
 			if (representation !== StyleHostRepresentationKind.StyleProp) return { code, residuals: [] };
-			if (framework !== BuiltinHostFramework.React)
+			if ((sourceFramework ?? framework) !== BuiltinHostFramework.React)
 				return {
 					code,
 					residuals: [
@@ -397,14 +420,19 @@ const reactNative = makeExtraAdapter({
 			emittedExpression,
 			binding,
 			framework,
+			sourceFramework,
 			representation,
 			program,
 			sourceModules,
 		}) => {
 			if (representation !== StyleHostRepresentationKind.StyleProp) return { code, residuals: [] };
-			if (framework === BuiltinHostFramework.React)
+			const sourceHostFramework = sourceFramework ?? framework;
+			if (sourceHostFramework === BuiltinHostFramework.React)
 				return rewriteReactHost(code, program, emittedExpression, sourceModules, binding);
-			if (framework !== undefined && framework !== BuiltinHostFramework.ReactNative)
+			if (
+				sourceHostFramework !== undefined &&
+				sourceHostFramework !== BuiltinHostFramework.ReactNative
+			)
 				return {
 					code,
 					residuals: [

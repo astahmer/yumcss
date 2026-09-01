@@ -30,6 +30,17 @@ export default defineCodemodAdapter({
 			hostRepresentation: StyleHostRepresentationKind.Component,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
 			hostFrameworks: [BuiltinHostFramework.React],
+			hostFrameworkConversions: [
+				{
+					from: BuiltinHostFramework.Solid,
+					to: BuiltinHostFramework.React,
+					canConvert: ({ file, source }) =>
+						/\.(?:jsx|tsx)$/.test(file) &&
+						!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
+							source,
+						),
+				},
+			],
 		},
 	},
 	detectPatterns: [/@stitches\/(?:react|core)/, /\bcreateStitches\s*\(/],

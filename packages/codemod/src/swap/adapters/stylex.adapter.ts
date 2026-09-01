@@ -758,6 +758,17 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
+				hostFrameworkConversions: [
+					{
+						from: BuiltinHostFramework.Solid,
+						to: BuiltinHostFramework.React,
+						canConvert: ({ file, source }) =>
+							/\.(?:jsx|tsx)$/.test(file) &&
+							!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
+								source,
+							),
+					},
+				],
 				hostRepresentation: StyleHostRepresentationKind.Component,
 				resolveHostRepresentation: ({ program, hasHostContext, framework }) => {
 					if (framework !== undefined && framework !== BuiltinHostFramework.React) return undefined;

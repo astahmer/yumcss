@@ -340,6 +340,17 @@ export default defineCodemodAdapter({
 				representation === StyleRepresentationKind.PortableArtifact ? ["theme-context"] : [],
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
+			hostFrameworkConversions: [
+				{
+					from: BuiltinHostFramework.Solid,
+					to: BuiltinHostFramework.React,
+					canConvert: ({ file, source }) =>
+						/\.(?:jsx|tsx)$/.test(file) &&
+						!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
+							source,
+						),
+				},
+			],
 			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
 				if (representation !== StyleHostRepresentationKind.StyleProp)
 					return { code, residuals: [] };

@@ -11,6 +11,7 @@ import type {
 	AdapterDependencies,
 	AdapterParseContext,
 	AdapterValidationResult,
+	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "./adapter-contract.ts";
 import {
@@ -39,7 +40,7 @@ import {
 	type StandaloneHostComponentRewriteRequest,
 } from "./host-component-rewriter.ts";
 import { DynamicClassHost } from "./adapters/class-target-dynamic.ts";
-import { BuiltinHostFramework, detectHostFramework } from "./host-adapters.ts";
+import { BuiltinHostFramework, detectHostFramework, type HostFramework } from "./host-adapters.ts";
 import {
 	StyleHostRepresentationKind,
 	StyleMigrationOutcome,
@@ -276,6 +277,41 @@ function hasTargetHostPort(adapter: StyleAdapter): boolean {
 	return adapter.migration?.targetPolicy?.handlesHostRewrites === true;
 }
 
+function targetHostFramework(
+	policy: AdapterTargetMigrationPolicy | undefined,
+	sourceFramework: HostFramework | undefined,
+	context: { readonly file: string; readonly source: string; readonly program: StyleProgram },
+): HostFramework | undefined {
+	if (sourceFramework === undefined) return undefined;
+	if (policy?.hostFrameworks?.includes(sourceFramework)) return sourceFramework;
+	if (policy?.hostFrameworks === undefined && policy?.hostFrameworkConversions === undefined)
+		return sourceFramework;
+	const conversion = policy?.hostFrameworkConversions?.find(
+		(candidate) =>
+			candidate.from === sourceFramework &&
+			(candidate.canConvert === undefined || candidate.canConvert(context)),
+	);
+	return conversion?.to ?? sourceFramework;
+}
+
+function targetAcceptsSourceFramework(
+	policy: AdapterTargetMigrationPolicy | undefined,
+	sourceFramework: HostFramework | undefined,
+	context: { readonly file: string; readonly source: string; readonly program: StyleProgram },
+): boolean {
+	if (sourceFramework === undefined) return false;
+	if (policy?.hostFrameworks?.includes(sourceFramework)) return true;
+	if (policy?.hostFrameworks === undefined && policy?.hostFrameworkConversions === undefined)
+		return true;
+	return (
+		policy?.hostFrameworkConversions?.some(
+			(candidate) =>
+				candidate.from === sourceFramework &&
+				(candidate.canConvert === undefined || candidate.canConvert(context)),
+		) === true
+	);
+}
+
 function loweringRegistryForRoute(
 	base: StyleLoweringRegistry,
 	source: StyleAdapter,
@@ -492,6 +528,7 @@ function runAdapterMigrationInternal(
 		readonly sourceModules: readonly string[];
 		readonly binding?: string;
 		readonly framework?: string;
+		readonly sourceFramework?: HostFramework;
 		readonly representation: StyleHostRepresentationKind;
 		readonly representationKind: StyleRepresentationKind;
 		readonly residuals: readonly StyleProgramResidual[];
@@ -501,6 +538,7 @@ function runAdapterMigrationInternal(
 		readonly binding: string;
 		readonly tag: string;
 		readonly framework: string;
+		readonly sourceFramework?: HostFramework;
 		readonly emittedExpression: string;
 		readonly representation: StyleHostRepresentationKind;
 	}> = [];
@@ -544,10 +582,12 @@ function runAdapterMigrationInternal(
 		const sourceSubject = program.source?.subject;
 		const targetPolicy = targetAdapter.migration?.targetPolicy;
 		let hostRepresentation = targetPolicy?.hostRepresentation;
+		const sourceHostFramework = frameworkForHost(options.file, document, options.semantic, program);
+		const hostConversionContext = { file: options.file, source, program };
 		if (
 			program.source?.framework !== undefined &&
 			hostRepresentation === StyleHostRepresentationKind.Component &&
-			targetPolicy?.hostFrameworks?.includes(program.source.framework)
+			targetAcceptsSourceFramework(targetPolicy, sourceHostFramework, hostConversionContext)
 		) {
 			program = { ...program, source: { ...program.source, framework: undefined } };
 		}
@@ -573,7 +613,10 @@ function runAdapterMigrationInternal(
 				...program,
 				source: { ...program.source, subject: undefined },
 			};
-		const hostFramework = frameworkForHost(options.file, document, options.semantic, program);
+		const hostFramework = targetHostFramework(targetPolicy, sourceHostFramework, {
+			...hostConversionContext,
+			program,
+		});
 		const resolvedHostRepresentation = targetPolicy?.resolveHostRepresentation;
 		hostRepresentation =
 			resolvedHostRepresentation === undefined
@@ -582,6 +625,7 @@ function runAdapterMigrationInternal(
 						program,
 						hasHostContext,
 						...(hostFramework === undefined ? {} : { framework: hostFramework }),
+						...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
 						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 						source,
 					});
@@ -589,6 +633,7 @@ function runAdapterMigrationInternal(
 			program,
 			hasHostContext,
 			...(hostFramework === undefined ? {} : { framework: hostFramework }),
+			...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
 			...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
 			source,
@@ -755,6 +800,7 @@ function runAdapterMigrationInternal(
 							binding,
 							tag,
 							framework,
+							sourceFramework: sourceHostFramework,
 							emittedExpression: binding,
 							representation: hostRepresentation ?? StyleHostRepresentationKind.Component,
 						})
@@ -1091,6 +1137,7 @@ function runAdapterMigrationInternal(
 					binding: bindingBeforeMatch,
 					tag,
 					framework,
+					sourceFramework: sourceHostFramework,
 					emittedExpression: emitted.text,
 					representation: hostRepresentation,
 				});
@@ -1120,6 +1167,7 @@ function runAdapterMigrationInternal(
 					? {}
 					: { binding: bindingForMatch(source, match.start) }),
 				...(hostFramework === undefined ? {} : { framework: hostFramework }),
+				...(sourceHostFramework === undefined ? {} : { sourceFramework: sourceHostFramework }),
 			});
 		}
 		const reparsed = targetAdapter.parse(emittedForValidation, {

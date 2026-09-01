@@ -95,11 +95,79 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBeGreaterThan(0);
 		expect(result.residuals).toEqual(
-			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+			expect.arrayContaining([expect.objectContaining({ kind: "function-dynamic" })]),
 		);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain("styled.div");
 	});
+
+	test.each([
+		[
+			CodemodAdapterId.Stitches,
+			'import { css } from "@stitches/react";',
+			'const Card = css({ color: "red" });',
+		],
+		[
+			CodemodAdapterId.Mui,
+			'import { styled } from "@mui/system";',
+			'const Card = styled("div")({ color: "red" });',
+		],
+		[
+			CodemodAdapterId.StyleX,
+			'import * as stylex from "@stylexjs/stylex";',
+			'const Card = stylex.create({ style: { color: "red" } }).style;',
+		],
+	] as const)(
+		"projects a static Solid host into %s's React-compatible target",
+		(target, targetImport, declaration) => {
+			const result = runAdapterMigration(
+				'import { styled } from "solid-styled-components";\n' +
+					'const Card = styled.div({ color: "red" });\n' +
+					"export const App = () => <Card />;",
+				{
+					from: CodemodAdapterId.SolidStyled,
+					to: target,
+					file: "App.tsx",
+					mode: "safe",
+					readFile: () => undefined,
+					adapterRegistry: catalog.registry,
+					semantic: { source: { framework: BuiltinHostFramework.Solid } },
+				},
+			);
+
+			expect(result.skipped, `${CodemodAdapterId.SolidStyled} -> ${target}`).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain(targetImport);
+			expect(result.code).toContain(declaration);
+			expect(result.code).not.toContain("solid-styled-components");
+		},
+	);
+
+	test.each([CodemodAdapterId.Stitches, CodemodAdapterId.Mui, CodemodAdapterId.StyleX] as const)(
+		"preserves Solid-only host semantics as a typed residual for %s",
+		(target) => {
+			const result = runAdapterMigration(
+				'import { createSignal } from "solid-js";\n' +
+					'import { styled } from "solid-styled-components";\n' +
+					'const Card = styled.div({ color: "red" });\n' +
+					'export const App = () => <Card class="extra" />;',
+				{
+					from: CodemodAdapterId.SolidStyled,
+					to: target,
+					file: "App.tsx",
+					mode: "safe",
+					readFile: () => undefined,
+					adapterRegistry: catalog.registry,
+					semantic: { source: { framework: BuiltinHostFramework.Solid } },
+				},
+			);
+
+			expect(result.skipped, `${CodemodAdapterId.SolidStyled} -> ${target}`).toBeGreaterThan(0);
+			expect(result.residuals.length).toBeGreaterThan(0);
+			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain("solid-styled-components");
+		},
+	);
 
 	test("uses a portable static artifact for an unknown custom component", () => {
 		const result = migrate(
