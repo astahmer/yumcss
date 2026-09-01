@@ -248,7 +248,10 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 	const declarationWithStyle =
 		request.styleExpression === undefined
 			? declaration
-			: declaration.replace(" />;", ` style={${request.styleExpression}} />;`);
+			: declaration.replace(
+					" />;",
+					` style={{ ...${request.styleExpression}, ...props.style }} />;`,
+				);
 	return {
 		code:
 			request.source.slice(0, start) +

@@ -860,6 +860,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("(props) => props.color");
 		expect(result.code).toContain("style={{");
 		expect(result.code).toContain("props.color)(props)");
+		expect(result.code).toContain("...props.style");
 	});
 
 	test("keeps a function-valued subject residual on a target without a function carrier", () => {
