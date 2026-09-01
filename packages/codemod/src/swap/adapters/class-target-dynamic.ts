@@ -11,6 +11,26 @@ export interface DynamicClassHostContext {
 
 /** Shared host projection for class compilers that support CSS custom properties. */
 export class DynamicClassHost {
+	private static sourceHost(program: StyleProgram):
+		| {
+				readonly openingTag: string;
+				readonly styleAttributes: readonly string[];
+		  }
+		| undefined {
+		const source = program.source;
+		const openingTag = source?.hostOpenTag;
+		if (
+			source === undefined ||
+			openingTag === undefined ||
+			(source.hostStyleAttributes?.length ?? 0) === 0
+		)
+			return undefined;
+		return {
+			openingTag,
+			styleAttributes: source.hostStyleAttributes ?? [],
+		};
+	}
+
 	static canRewrite(code: string, binding: string | undefined): boolean {
 		if (binding === undefined) return false;
 		const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -149,5 +169,91 @@ export class DynamicClassHost {
 			};
 		const style = ` style={${styleExpression}}`;
 		return { code: code.replace(match[0], `${match[0]}${style}`), residuals: [] };
+	}
+
+	/**
+	 * Project a source framework's style props onto a target class carrier. The
+	 * source match is often the whole opening tag (Chakra/Mantine/MUI style
+	 * props), so this operation deliberately owns the tag edit rather than
+	 * asking the route runner to replace the style call first.
+	 */
+	static rewriteSourceHost(
+		target: string,
+		code: string,
+		context: DynamicClassHostContext & {
+			readonly emittedExpression: string;
+			readonly program: StyleProgram;
+		},
+	): { code: string; residuals: readonly StyleProgramResidual[] } {
+		if (
+			context.framework !== undefined &&
+			![BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
+				context.framework as BuiltinHostFramework,
+			)
+		)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: context.program.source?.hostOpenTag ?? "style host",
+						hint: `${target} class projection currently requires a JSX host`,
+					},
+				],
+			};
+		const host = DynamicClassHost.sourceHost(context.program);
+		if (host === undefined) return DynamicClassHost.rewrite(target, code, context);
+		const start = code.indexOf(host.openingTag);
+		if (start === -1)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: host.openingTag,
+						hint: `${target} class projection could not locate the source host`,
+					},
+				],
+			};
+		let projected = host.openingTag;
+		for (const attribute of host.styleAttributes) {
+			const index = projected.indexOf(attribute);
+			if (index < 0) continue;
+			const whitespace = index > 0 && /[ \t]/u.test(projected[index - 1]!) ? 1 : 0;
+			projected = `${projected.slice(0, index - whitespace)}${projected.slice(index + attribute.length)}`;
+		}
+		if (/\bstyle\s*=\s*/u.test(projected))
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: host.openingTag,
+						hint: `${target} class projection will not overwrite an existing style prop`,
+					},
+				],
+			};
+		const classAttribute = /\b(?:className|class)\s*=\s*(?:\{[^{}]*\}|"[^"]*"|'[^']*')/u.exec(
+			projected,
+		);
+		if (classAttribute !== null)
+			return {
+				code,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: host.openingTag,
+						hint: `${target} class projection requires a host without an existing class attribute`,
+					},
+				],
+			};
+		const insertion = /\/\s*>$/u.test(projected) ? projected.length - 2 : projected.length - 1;
+		const styleExpression = DynamicClassHost.styleExpression(context.residuals);
+		const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
+		projected = `${projected.slice(0, insertion)} className={${context.emittedExpression}}${style}${projected.slice(insertion)}`;
+		return {
+			code: `${code.slice(0, start)}${projected}${code.slice(start + host.openingTag.length)}`,
+			residuals: [],
+		};
 	}
 }

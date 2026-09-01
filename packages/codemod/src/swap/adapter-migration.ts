@@ -1305,7 +1305,13 @@ function runAdapterMigrationInternal(
 		}
 		const emittedBinding = bindingForMatch(source, match.start);
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
-		edits.push({ start: match.start, end: match.end, text: emitted.text });
+		const deferSourceHostReplacement =
+			targetAdapter.migration?.targetPolicy?.handlesSourceHostAttributes === true &&
+			targetAdapter.migration.targetPolicy.rewriteHost !== undefined &&
+			program.source?.hostOpenTag === match.sourceText &&
+			(program.source.hostStyleAttributes?.length ?? 0) > 0;
+		if (!deferSourceHostReplacement)
+			edits.push({ start: match.start, end: match.end, text: emitted.text });
 		converted++;
 		const successfulRepresentation = targetRepresentationKind;
 		outcomes.push({

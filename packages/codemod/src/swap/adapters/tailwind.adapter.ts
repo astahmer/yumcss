@@ -431,7 +431,11 @@ function utilityCondition(conditionValue: StyleCondition): string {
 	return `${conditionValue.name}:`;
 }
 
-function renderTailwindHost(program: StyleProgram, classExpression: string): string | undefined {
+function renderTailwindHost(
+	program: StyleProgram,
+	classExpression: string,
+	residuals: readonly StyleProgramResidual[] = [],
+): string | undefined {
 	const source = program.source;
 	if (source === undefined || source.hostOpenTag === undefined) return undefined;
 	const opening = source.hostOpenTag;
@@ -443,7 +447,9 @@ function renderTailwindHost(program: StyleProgram, classExpression: string): str
 		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
 	}
 	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
-	return `${host.slice(0, insertion)} className={${classExpression}}${host.slice(insertion)}`;
+	const styleExpression = DynamicClassHost.styleExpression(residuals);
+	const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
+	return `${host.slice(0, insertion)} className={${classExpression}}${style}${host.slice(insertion)}`;
 }
 
 function emitTailwind(program: StyleProgram): {
@@ -623,7 +629,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				(context.config.values.tailwindResolver as TailwindUtilityResolver | undefined) ??
 					fallbackResolver,
 			),
-		emit: (program) => {
+		emit: (program, context) => {
 			const namedRules = program.rules.filter(
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
@@ -646,7 +652,9 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			}
 			const emitted = emitTailwind(program);
 			const host =
-				emitted.residuals.length === 0 ? renderTailwindHost(program, emitted.text) : undefined;
+				emitted.residuals.length === 0
+					? renderTailwindHost(program, emitted.text, context.loweringResiduals)
+					: undefined;
 			return {
 				...emitted,
 				text: host ?? emitted.text,
@@ -659,17 +667,21 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				standaloneHostRepresentation: StyleHostRepresentationKind.Class,
-				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) =>
-					DynamicClassHost.hasCarrier(program) &&
-					hasHostContext &&
-					binding !== undefined &&
-					(framework === undefined ||
-						[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
-							framework as BuiltinHostFramework,
-						)) &&
-					DynamicClassHost.canRewrite(source ?? "", binding)
+				resolveRepresentation: ({ program, hasHostContext, binding, framework, source }) => {
+					const sourceHostAttributes =
+						program.source?.hostOpenTag !== undefined &&
+						(program.source.hostStyleAttributes?.length ?? 0) > 0;
+					return DynamicClassHost.hasCarrier(program) &&
+						hasHostContext &&
+						(binding !== undefined || sourceHostAttributes) &&
+						(framework === undefined ||
+							[BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
+								framework as BuiltinHostFramework,
+							)) &&
+						(sourceHostAttributes || DynamicClassHost.canRewrite(source ?? "", binding))
 						? StyleRepresentationKind.CustomProperty
-						: undefined,
+						: undefined;
+				},
 				capabilitiesForRepresentation: ({ representation }) =>
 					representation === StyleRepresentationKind.CustomProperty ? ["custom-properties"] : [],
 				preservesResidualKindsForRepresentation: ({ representation }) =>

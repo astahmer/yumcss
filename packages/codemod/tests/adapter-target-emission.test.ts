@@ -3,6 +3,8 @@ import {
 	BuiltinHostFramework,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	createStyleAdapterRegistry,
+	externalIdentifier,
 	runAdapterMigration,
 } from "../src/swap/index.ts";
 
@@ -51,6 +53,60 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain('import { Box } from "@mui/material";');
 		expect(result.code).not.toContain("<div sx={card}");
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
+	});
+
+	test.each([
+		CodemodAdapterId.Bamboo,
+		CodemodAdapterId.VanillaExtract,
+		CodemodAdapterId.Tailwind,
+		CodemodAdapterId.UnoCSS,
+	] as const)("projects a dynamic JSX style prop onto %s's class carrier", (target) => {
+		const result = migrate(
+			'import { Box } from "@chakra-ui/react";\n' +
+				"export const App = () => <Box bg={theme.foreground} />;",
+			CodemodAdapterId.ChakraUi,
+			target,
+		);
+
+		expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("className");
+		expect(result.code).toContain("style=");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).not.toContain("bg={theme.foreground}");
+		expect(result.code).not.toContain("adapter capability mismatch");
+	});
+
+	test("normalizes a registered substitute through the shared class-host port", () => {
+		const bamboo = catalog.registry.get(CodemodAdapterId.Bamboo)!;
+		const substituteId = externalIdentifier("test-class-target");
+		const substitute = {
+			...bamboo,
+			id: substituteId,
+			capabilities: { ...bamboo.capabilities, adapter: substituteId },
+			emit: () => ({ text: "targetClass", residuals: [] }),
+		};
+		const registry = createStyleAdapterRegistry([
+			catalog.registry.get(CodemodAdapterId.ChakraUi)!,
+			substitute,
+		]);
+		const result = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				"export const App = () => <Box bg={theme.foreground} />;",
+			{
+				from: CodemodAdapterId.ChakraUi,
+				to: substituteId,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: registry,
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("className={targetClass}");
+		expect(result.code).toContain("theme.foreground");
 	});
 
 	test("projects a static styled intrinsic subject to a React Native View", () => {

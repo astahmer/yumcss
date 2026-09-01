@@ -94,18 +94,23 @@ export function projectDynamicClassMigration(
 	const rewriteHost = policy.rewriteHost;
 	const composed: AdapterTargetMigrationPolicy = {
 		...policy,
+		handlesSourceHostAttributes: true,
 		resolveRepresentation: (context) => {
 			const selected = resolveRepresentation?.(context);
 			if (selected !== undefined) return selected;
+			const sourceHostAttributes =
+				context.program.source?.hostOpenTag !== undefined &&
+				(context.program.source.hostStyleAttributes?.length ?? 0) > 0;
 			if (
 				!context.hasHostContext ||
-				context.binding === undefined ||
+				(context.binding === undefined && !sourceHostAttributes) ||
 				(context.framework !== undefined &&
 					![BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
 						context.framework as BuiltinHostFramework,
 					)) ||
 				!DynamicClassHost.hasCarrier(context.program) ||
-				!DynamicClassHost.canRewrite(context.source ?? "", context.binding)
+				(!sourceHostAttributes &&
+					!DynamicClassHost.canRewrite(context.source ?? "", context.binding))
 			)
 				return undefined;
 			return StyleRepresentationKind.CustomProperty;
@@ -131,6 +136,18 @@ export function projectDynamicClassMigration(
 				: residuals;
 		},
 		rewriteHost: (context) => {
+			if (
+				context.program.source?.hostOpenTag !== undefined &&
+				(context.program.source.hostStyleAttributes?.length ?? 0) > 0
+			)
+				return DynamicClassHost.rewriteSourceHost(targetId, context.code, {
+					binding: context.binding,
+					framework: context.framework,
+					representationKind: context.representationKind,
+					residuals: context.residuals,
+					emittedExpression: context.emittedExpression,
+					program: context.program,
+				});
 			if (context.representationKind !== StyleRepresentationKind.CustomProperty)
 				return rewriteHost?.(context) ?? { code: context.code, residuals: [] };
 			return DynamicClassHost.rewrite(targetId, context.code, {
@@ -172,8 +189,8 @@ function hasPortableDynamicResiduals(program: import("./semantic-ir.ts").StylePr
  * target has no equivalent carrier and no host rewrite is required.
  */
 export function projectPortableDynamicMigration(
-	 migration: AdapterMigrationHooks | undefined,
-	 targetCapabilities?: AdapterCapabilities,
+	migration: AdapterMigrationHooks | undefined,
+	targetCapabilities?: AdapterCapabilities,
 ): AdapterMigrationHooks {
 	const policy = migration?.targetPolicy;
 	const resolveRepresentation = policy?.resolveRepresentation;
@@ -190,8 +207,8 @@ export function projectPortableDynamicMigration(
 				const themeLevel = targetCapabilities?.capabilities["theme-context"];
 				const partialNativeRepresentation =
 					context.representation === StyleRepresentationKind.TargetNative &&
-					(dynamicLevel !== undefined && dynamicLevel !== "exact" ||
-						themeLevel !== undefined && themeLevel !== "exact");
+					((dynamicLevel !== undefined && dynamicLevel !== "exact") ||
+						(themeLevel !== undefined && themeLevel !== "exact"));
 				if (
 					(!partialNativeRepresentation &&
 						context.representation !== StyleRepresentationKind.Residual &&
