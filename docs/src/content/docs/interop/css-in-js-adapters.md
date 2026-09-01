@@ -131,6 +131,13 @@ host adapter can merge the binding safely. UnoCSS uses the same custom-property
 carrier and host port, while preserving the same fail-closed behavior for
 unsupported host shapes.
 
+There is one additional safe static case: a styled intrinsic used as a
+discarded expression statement has no component value to preserve. The shared
+host boundary detects that shape and lets class-valued targets lower it in
+place. Assignments, returns, calls, exports, and actual host uses still require
+the component/host projection contract; this distinction prevents both false
+skips and accidental class-for-component coercion.
+
 Target representation negotiation is also fail-closed. When a target
 explicitly refuses the detected framework or host shape, the runner does not
 reuse its default representation and hope that a later validator catches the

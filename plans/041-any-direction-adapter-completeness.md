@@ -293,6 +293,13 @@ cannot be rewritten safely. In each case the source remains intact. A target
 adapter becomes bidirectionally usable by adding a representation and its
 substitution proof, not by making the capability report permissive.
 
+The shared host boundary also distinguishes a discarded static styled
+expression from a component-valued subject. The former can be lowered directly
+to a class carrier because no component value escapes; the latter remains
+subject to host/component negotiation. This removes a common false-positive
+`components` blocker without weakening safety for assignments, calls, returns,
+exports, or JSX/template uses.
+
 ### Why the playground shows capability skips
 
 The playground currently invokes the semantic runner in `safe` mode. In that
