@@ -224,17 +224,21 @@ tests and are documented in the SDK reference.
 
 - [ ] Semantic adapter matching is AST-backed for imports, bindings, calls,
       and rewrite ranges; regex remains only in documented bounded roles.
-- [ ] Aliased, namespace, default, and re-exported imports are tested, and
-      shadowed locals do not produce false positives.
+      Imports, bindings, and semantic call-site ranges are now AST-backed;
+      host rewrite ownership and the remaining adapter forms are still open.
+- [x] Aliased, namespace, and default imports are tested, and nested shadowed
+      locals do not produce false positives.
+- [ ] Cross-file re-export resolution is implemented and exercised by adapter
+      parsing tests.
 - [ ] Official config loaders are attempted first where supported, with
       explicit evidence and residuals for fallback/unavailable paths.
 - [ ] Custom themes/tokens/presets/plugins are preserved or reported for
       every adapter that declares those capabilities.
-- [ ] No production adapter contains corpus-name branches or imports proof
+- [x] No production adapter contains corpus-name branches or imports proof
       fixture data; generic purity checks enforce this.
 - [ ] Every new port has an injectable default and a substitution test.
-- [ ] Focused unit/integration tests, typecheck, lint, and Knip pass without
-      running the full codemod corpus or generating `.tmp-codemod-e2e`.
+- [x] Focused unit/integration tests, targeted lint, typecheck, and Knip pass
+      without running the full codemod corpus or generating `.tmp-codemod-e2e`.
 
 ## Decisions log
 
@@ -247,17 +251,20 @@ tests and are documented in the SDK reference.
 ## Progress — 2026-09-02
 
 The shared binding service now records nested function and catch-parameter
-shadow scopes and exposes `isShadowedAt(localName, offset)`. The generic
-adapter parser uses that offset-aware result for semantic-binding candidates,
-so a nested parameter no longer suppresses a valid imported call outside its
-scope. Focused tests cover aliases, namespace imports, re-exports, nested
-shadowing, and the outer-call regression.
+shadow scopes and exposes `isShadowedAt(localName, offset)`. It also indexes
+imported call expressions and tagged templates with exact AST ranges. The
+generic adapter parser uses those ranges for semantic-binding candidates and
+retains a regex only as a bounded local syntax prefilter, so a nested parameter
+no longer suppresses a valid imported call outside its scope. Focused tests
+cover aliases, namespace imports, re-exports, nested shadowing, exact call
+ranges, and the outer-call regression.
 
 The production adapter tree also has a purity guard that rejects pinned corpus
 names and repository URLs. The one corpus-specific StyleX comment was
 rephrased around the generic `xstyle` host contract. This closes the
 corpus-independence enforcement gap without moving proof data into adapters.
 
-The plan remains open for true AST call-site/range ownership, cross-file
-re-export resolution, and broader official-loader coverage. Those are not
-marked complete by the current binding-index improvement.
+The plan remains open for AST ownership of every adapter's host rewrite range,
+cross-file re-export resolution, and broader official-loader/custom-context
+coverage. Those are not marked complete by the current binding-index
+improvement.

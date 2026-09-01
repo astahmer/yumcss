@@ -136,17 +136,13 @@ the status notes below as evidence, not as runtime architecture.
 2. Are `createCx()` and runtime-sheet instances numerous enough to justify the
    same pattern without making their hot paths harder to reason about?
 
-## Acceptance criteria
+## Acceptance criteria — superseded
 
-- [ ] All `CssFn` methods remain available with unchanged TypeScript types.
-- [ ] Unused optional methods are accessors before first use and are memoized
-      as direct properties after first use.
-- [ ] Every method factory runs at most once per `createCss()` instance.
-- [ ] Existing focused CSS behavior tests pass unchanged.
-- [ ] Root callable steady-state behavior has no new per-call branch.
-- [ ] Runtime bundle budgets and snapshots do not regress unexpectedly.
-- [ ] Additional factory optimizations are either measured and accepted or
-      explicitly rejected with evidence.
+This runtime-only implementation checklist is not applicable. The plan is
+explicitly rejected: compiler-aware pruning is the accepted delivery
+mechanism, and the current implementation preserves eager methods. The
+re-evaluation below records the measured memory opportunity and the evidence
+for not imposing a universal accessor and first-use tax.
 
 ## Current implementation status
 
@@ -170,10 +166,10 @@ method pruning and the runtime hot-path pass.
 
 With 20,000 instances on Node 24.19.0:
 
-| shape | retained bytes/instance | own methods |
-| --- | ---: | --- |
-| root compiler only | ~1,345 | none |
-| current `createCss()` | ~2,490 | `vars`, `class`, `raw`, `props`, `group`, `input` |
+| shape                 | retained bytes/instance | own methods                                       |
+| --------------------- | ----------------------: | ------------------------------------------------- |
+| root compiler only    |                  ~1,345 | none                                              |
+| current `createCss()` |                  ~2,490 | `vars`, `class`, `raw`, `props`, `group`, `input` |
 
 The eager attached methods therefore retain roughly **1.15 KB per instance**.
 That is a genuine memory opportunity when a host creates thousands of
@@ -195,9 +191,9 @@ a retained-heap budget that justifies a compatibility-preserving design.
 
 ## Decisions log
 
-| Date       | Decision                                                                    | Rationale                                                                          |
-| ---------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 2026-09-01 | Evaluate Zod’s method memoization idea for `createCss()` attached methods | It has several optional closures while preserving a callable root hot path         |
-| 2026-09-01 | Do not change the public `CssFn` type                                       | The frozen API must remain fully discoverable even when implementations are lazy   |
-| 2026-09-01 | Reject the first lazy-method implementations                                | They violated the runtime-size contract without sufficient measured memory benefit |
-| 2026-09-01 | Keep eager methods after retained-heap remeasurement                         | The ~1.15 KB/instance saving is real but memory-only, instance-count dependent, and compiler pruning already handles bundle delivery |
+| Date       | Decision                                                                  | Rationale                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-09-01 | Evaluate Zod’s method memoization idea for `createCss()` attached methods | It has several optional closures while preserving a callable root hot path                                                           |
+| 2026-09-01 | Do not change the public `CssFn` type                                     | The frozen API must remain fully discoverable even when implementations are lazy                                                     |
+| 2026-09-01 | Reject the first lazy-method implementations                              | They violated the runtime-size contract without sufficient measured memory benefit                                                   |
+| 2026-09-01 | Keep eager methods after retained-heap remeasurement                      | The ~1.15 KB/instance saving is real but memory-only, instance-count dependent, and compiler pruning already handles bundle delivery |

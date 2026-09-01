@@ -781,6 +781,39 @@ then checks the pinned baseline and migrated applications in the browser and
 records route, hydration, screenshot, and CSS-size evidence. This proof is
 kept as a script and a pinned reference rather than as a vendored website.
 
+## Plan inventory and remaining claims
+
+Every Markdown file under `plans/` was reviewed against the current source,
+tests, and recorded evidence on 2026-09-02. Plans marked complete describe
+shipped behavior; they are not reopened because an older design sketch still
+contains an unchecked example. The remaining implementation boundaries are
+deliberate:
+
+- `plans/040-pivot-any-to-any-lowering.md` and
+  `plans/041-any-direction-adapter-completeness.md` remain open for semantic
+  lowerings and production browser/SSR/RSC proof beyond the registered static
+  subset. A residual matrix is safety evidence, not universal-compatibility
+  proof.
+- `plans/044-ast-config-and-project-context.md` remains open for AST ownership
+  of every host rewrite range, cross-file re-export resolution, and broader
+  official-loader/custom-context coverage. The shared binding service now
+  owns imports, shadow scopes, and semantic call-site ranges.
+- `plans/024-panda-inbound-codemod.md` is complete for the automated product
+  scope; dependency-installed typecheck and visual acceptance belong to the
+  external pinned Panda host repository.
+- `plans/021-multi-target-backends.md` keeps canvas and build-time Metro
+  intentionally deferred until a concrete consumer requires them, and
+  `plans/028-define-preset-web-notes.md` remains decision notes rather than an
+  implementation commitment.
+- `plans/045-lazy-runtime-methods.md` is superseded by the shipped
+  compiler-aware runtime pruning. Its runtime-only accessor checklist is not
+  pending work.
+
+No other reviewed plan currently identifies an actionable, unimplemented
+product change separate from those boundaries. New work should first add a
+capability contract and proof to one of the open plans rather than create a
+parallel architecture or duplicate an already-shipped plan.
+
 ## Expert target emission and generated files
 
 An adapter is responsible for producing the code a staff engineer would
