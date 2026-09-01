@@ -1,5 +1,8 @@
 # Lazy runtime methods plan
 
+Status: rejected for the runtime-only implementation; compiler-aware pruning
+is the accepted delivery mechanism.
+
 ## Context
 
 Pandwind’s callable runtime factories are deliberately small at the API
@@ -160,10 +163,41 @@ slice must combine compiler-aware method pruning with a measured retained-heap
 benchmark; a runtime-only accessor change is not accepted merely because it
 resembles Zod’s technique.
 
+## Re-evaluation — 2026-09-01
+
+The idea was remeasured against the current runtime after compiler-aware CSS
+method pruning and the runtime hot-path pass.
+
+With 20,000 instances on Node 24.19.0:
+
+| shape | retained bytes/instance | own methods |
+| --- | ---: | --- |
+| root compiler only | ~1,345 | none |
+| current `createCss()` | ~2,490 | `vars`, `class`, `raw`, `props`, `group`, `input` |
+
+The eager attached methods therefore retain roughly **1.15 KB per instance**.
+That is a genuine memory opportunity when a host creates thousands of
+independent CSS factories. It does not improve the hot path: the root callable
+is unchanged, and every first method read would pay an accessor/materialization
+step before steady-state direct property access. A runtime-only lazy layer also
+does not remove method implementations from the browser bundle; compiler-aware
+pruning already does that for factories whose usage is known.
+
+The shared-prototype variant additionally changes the observable own-property
+shape (`Object.keys(createCss())` no longer lists the methods) unless it adds
+per-instance descriptors, which gives back much of the retained-memory win.
+
+Decision: **do not add runtime-only lazy method accessors now**. The measured
+benefit is memory-only and instance-count dependent, while the cost is a
+universal implementation/complexity tax and a first-use slowdown. Revisit only
+if a real host demonstrates many independently-created factories and provides
+a retained-heap budget that justifies a compatibility-preserving design.
+
 ## Decisions log
 
 | Date       | Decision                                                                    | Rationale                                                                          |
 | ---------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| 2026-09-01 | Apply Zod’s method memoization idea first to `createCss()` attached methods | It has several optional closures while preserving a callable root hot path         |
+| 2026-09-01 | Evaluate Zod’s method memoization idea for `createCss()` attached methods | It has several optional closures while preserving a callable root hot path         |
 | 2026-09-01 | Do not change the public `CssFn` type                                       | The frozen API must remain fully discoverable even when implementations are lazy   |
 | 2026-09-01 | Reject the first lazy-method implementations                                | They violated the runtime-size contract without sufficient measured memory benefit |
+| 2026-09-01 | Keep eager methods after retained-heap remeasurement                         | The ~1.15 KB/instance saving is real but memory-only, instance-count dependent, and compiler pruning already handles bundle delivery |
