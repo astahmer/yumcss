@@ -65,6 +65,14 @@ Tailwind and UnoCSS retain their own utility-token emitters. A registry
 substitution test proves that a new class adapter receives the projection
 without adding a central adapter branch.
 
+Panda and Tokenami also advertise this carrier. Their object-style class
+emitters accept the static `var(--pandwind-dynamic-*)` declaration, allowing a
+styled-components or Emotion subject with a scalar theme expression to move to
+either target without a capability skip. The generated host wrapper evaluates
+the original expression while the target stylesheet remains statically
+extractable. Function-valued styles, unresolved project configuration, and
+framework-specific host behavior still require their own target contracts.
+
 The same contract applies to a dynamic styled subject such as
 `const Card = styled.div({ color: theme.foreground })`. When the target is a
 class carrier, the generated CSS remains static (`var(--pandwind-dynamic-*)`),

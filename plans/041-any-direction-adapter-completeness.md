@@ -250,6 +250,14 @@ This is intentionally implemented by the registry projection and target
 carrier contract, so Tailwind, UnoCSS, and extra class adapters receive the
 same behavior without target branches in the migration runner.
 
+Panda and Tokenami now advertise this carrier as well. Their object-style
+class emitters accept the static `var(--pandwind-dynamic-*)` declaration, so a
+styled-components or Emotion subject with a scalar theme expression can move
+to either target without a capability skip. The host wrapper evaluates the
+original expression while the target stylesheet remains statically
+extractable. Function-valued styles, unresolved project configuration, and
+framework-specific host behavior still require their own target contracts.
+
 The old diagnostic text `adapter capability mismatch` is not a current
 production diagnostic. Capability failures are now typed (`capability-blocked`,
 `lowering-residual`, `host-rewrite-required`, or `configuration-residual`) and
