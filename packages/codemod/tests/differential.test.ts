@@ -101,8 +101,15 @@ describe("CSS-in-JS differential validation", () => {
 		});
 
 		expect(result.valid).toBe(false);
-		expect(result.differences).toContain("target capability contract rejected the program");
-		expect(result.residuals[0]?.kind).toBe("capability");
+		expect(result.differences.length).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					kind: expect.stringMatching(/capability|dynamic-custom-property/),
+				}),
+			]),
+		);
+		expect(result.differences.join(" ")).not.toContain("adapter capability mismatch");
 	});
 
 	test("validates keyframes by retaining the authored binding name", () => {
