@@ -30,4 +30,18 @@ describe("source workspace", () => {
 		expect(files).toEqual([join(root, "Card.tsx"), join(root, "nested", "Card.vue")]);
 		expect(documents.map((document) => document.scan.framework)).toEqual(["react", "vue"]);
 	});
+
+	test("can discover non-script assets without changing the default source query", () => {
+		const root = mkdtempSync(join(tmpdir(), "pandwind-source-workspace-assets-"));
+		roots.push(root);
+		writeFileSync(join(root, "theme.css"), ":root { --brand: red; }");
+		writeFileSync(join(root, "Card.tsx"), "export const Card = () => null;");
+
+		const workspace = createSourceWorkspace();
+
+		expect(workspace.files(["**/*"], root)).toEqual([join(root, "Card.tsx")]);
+		expect(workspace.files(["**/*.css"], root, { includeUnsupported: true })).toEqual([
+			join(root, "theme.css"),
+		]);
+	});
 });
