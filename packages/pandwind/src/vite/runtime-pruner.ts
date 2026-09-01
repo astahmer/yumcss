@@ -64,7 +64,7 @@ const walkWithParent = (
 	node: unknown,
 	visit: (node: OxcNode, parent: OxcNode | undefined, ancestors: readonly OxcNode[]) => void,
 	parent?: OxcNode,
-	ancestors: readonly OxcNode[] = [],
+	ancestors: OxcNode[] = [],
 ): void => {
 	if (Array.isArray(node)) {
 		for (const item of node) walkWithParent(item, visit, parent, ancestors);
@@ -77,8 +77,9 @@ const walkWithParent = (
 		return;
 	}
 	visit(current, parent, ancestors);
-	for (const value of Object.values(current))
-		walkWithParent(value, visit, current, [...ancestors, current]);
+	ancestors.push(current);
+	for (const value of Object.values(current)) walkWithParent(value, visit, current, ancestors);
+	ancestors.pop();
 };
 
 const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNode): boolean =>

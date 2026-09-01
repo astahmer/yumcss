@@ -186,6 +186,7 @@ export function createCrossModuleConstResolver(
 	options: CrossModuleResolverOptions = {},
 ): CrossModuleResolver {
 	const cache = new Map<string, CacheEntry>();
+	const cacheLimit = 2048;
 	const sourceReader = options.sourceReader ?? new NodeModuleSourceReader();
 	const pathResolver = options.pathResolver ?? new NodeModulePathResolver();
 
@@ -196,9 +197,11 @@ export function createCrossModuleConstResolver(
 			if (cached !== undefined && cached.mtimeMs === mtimeMs) return cached.analysis;
 			const code = sourceReader.read(absPath);
 			const analysis = analyzeModuleExports(parseProgram(code, absPath));
+			if (cache.size >= cacheLimit) cache.clear();
 			cache.set(absPath, { mtimeMs, analysis });
 			return analysis;
 		} catch {
+			if (cache.size >= cacheLimit) cache.clear();
 			cache.set(absPath, { mtimeMs: -1, analysis: null });
 			return null;
 		}
