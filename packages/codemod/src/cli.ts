@@ -255,7 +255,27 @@ async function mainSwap(argv: string[]): Promise<void> {
 	const root = findRepoRoot();
 	const filePaths = expandPatterns(args.patterns, root);
 	if (isExternalSwap(args)) {
-		await runExternalAdapterSwap(args, filePaths, root);
+		let meta: PandwindMeta | undefined;
+		if (args.metaDir !== "") {
+			const metaDir = resolve(root, args.metaDir);
+			try {
+				const bridgePath = resolve(metaDir, "bridge.ts");
+				meta = await loadMetaFromSourcesAsync({
+					typesDtsPath: resolve(metaDir, "types.d.ts"),
+					twTsPath: resolve(metaDir, "tw.ts"),
+					bridgePath: existsSync(bridgePath) ? bridgePath : undefined,
+				});
+			} catch (error) {
+				console.error(
+					`codemod swap: failed to load generated metadata from ${metaDir}\n` +
+						"  remove --meta for literal-safe output, or regenerate the target metadata\n" +
+						`  (${(error as Error).message})`,
+				);
+				process.exitCode = 1;
+				return;
+			}
+		}
+		await runExternalAdapterSwap(args, filePaths, root, meta);
 		return;
 	}
 	const metaDirRelative = args.metaDir !== "" ? args.metaDir : "apps/example/src";
@@ -441,6 +461,7 @@ async function runExternalAdapterSwap(
 	args: swapImport.SwapCliArgs,
 	filePaths: Array<string>,
 	root: string,
+	meta?: PandwindMeta,
 ): Promise<void> {
 	if (filePaths.length === 0) {
 		console.error("codemod swap: no matching files");
@@ -509,6 +530,7 @@ async function runExternalAdapterSwap(
 			},
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
+			meta,
 		});
 		const outputFile =
 			result.outputExtension === undefined

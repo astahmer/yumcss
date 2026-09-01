@@ -479,7 +479,7 @@ function cssCondition(condition: StyleCondition): string {
 }
 
 function cssValue(value: StyleValue): string {
-	if (value.kind === "token") return value.authored;
+	if (value.kind === "token") return value.resolved ?? value.authored;
 	if (value.kind === "dynamic") return value.expression;
 	return typeof value.value === "string" ? value.value : String(value.value);
 }

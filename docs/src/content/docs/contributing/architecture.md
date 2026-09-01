@@ -672,3 +672,23 @@ the same artifact. The regression contract lives in
 show the expert target expression, the generated module, repeated-artifact
 deduplication, and source-preserving conflict behavior, with ordinary
 assertions guarding the snapshots.
+
+### Token-preserving output
+
+Target emitters should preserve design-system vocabulary when that vocabulary
+is actually available. The Pandwind target uses the project metadata passed to
+the emitter to recover a target token reference (including a `$...` sigil when
+required) only when the token's resolved value is an exact match for the source
+literal. The semantic node retains that resolved value, so canonical CSS
+validation still compares concrete browser meaning while generated source uses
+the idiomatic token spelling.
+
+This is deliberately conservative. Without a target preset or generated
+interop metadata, the adapter keeps the literal; with ambiguous or conflicting
+token matches, it also keeps the literal. Migration tooling must not guess a
+token from a familiar value, because the same literal can have different
+design-system roles or different runtime behavior. External adapter CLI runs
+load this context only when the user supplies `--meta=<dir>`; they never borrow
+the repository's example preset implicitly. The focused regression in
+`packages/codemod/tests/token-preservation.test.ts` proves both the verified
+`$blue-500` emission and the literal fallback.

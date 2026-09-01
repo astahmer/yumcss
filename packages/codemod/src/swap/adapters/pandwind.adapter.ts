@@ -92,6 +92,80 @@ function runtimeValue(value: StyleProgram["declarations"][number]["value"]): str
 	return JSON.stringify(value.value);
 }
 
+const PANDWIND_TOKEN_GROUPS: ReadonlyArray<readonly [RegExp, string]> = [
+	[/color$/i, "colors"],
+	[/^(?:background|border|outline|text)Color$/i, "colors"],
+	[/^(?:fill|stroke)$/i, "colors"],
+	[/radius$/i, "radii"],
+	[/^(?:font)?size$/i, "fontSizes"],
+	[/^fontWeight$/i, "fontWeights"],
+	[/^lineHeight$/i, "lineHeights"],
+	[/^letterSpacing$/i, "letterSpacings"],
+	[/^fontFamily$/i, "fonts"],
+	[/shadow$/i, "shadows"],
+	[/^(?:zIndex)$/i, "zIndices"],
+	[/^(?:padding|margin|gap|inset)/i, "spacing"],
+	[/^(?:width|height|minWidth|maxWidth|minHeight|maxHeight)$/i, "sizes"],
+];
+
+function pandwindTokenGroup(property: string): string | undefined {
+	return PANDWIND_TOKEN_GROUPS.find(([pattern]) => pattern.test(property))?.[1];
+}
+
+/**
+ * Prefer a known Pandwind preset token over repeating its resolved literal.
+ * The lookup is property-aware: a color may only recover a color token, not a
+ * coincidentally equal spacing token. The resolved value stays on the
+ * semantic node so validation still compares CSS meaning; the authored token
+ * spelling is what the target source receives. Unknown values remain
+ * untouched rather than being guessed.
+ */
+function preserveKnownPresetTokens(
+	program: StyleProgram,
+	context: AdapterEmitContext | undefined,
+): StyleProgram {
+	const tokens = context?.meta?.tokens;
+	if (tokens === undefined) return program;
+	const value = (
+		input: StyleProgram["declarations"][number]["value"],
+		property: string,
+	): typeof input => {
+		if (input.kind !== "literal" || typeof input.value !== "string") return input;
+		const literal = input.value;
+		const group = pandwindTokenGroup(property);
+		if (group === undefined || tokens[group] === undefined) return input;
+		const matches = Object.entries(tokens[group]!).filter(
+			([, tokenValue]) =>
+				typeof tokenValue === "string" && tokenValue.toLowerCase() === literal.toLowerCase(),
+		);
+		if (matches.length !== 1) return input;
+		const authored = matches[0]![0];
+		if (!/^[A-Za-z0-9_$][A-Za-z0-9_$.\-]*$/u.test(authored)) return input;
+		return {
+			kind: "token",
+			ref: authored.startsWith("$") ? authored.slice(1) : authored,
+			authored,
+			resolved: literal,
+		};
+	};
+	const rule = (input: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+		...input,
+		declarations: input.declarations.map((declaration) => ({
+			...declaration,
+			value: value(declaration.value, declaration.property),
+		})),
+		children: input.children.map(rule),
+	});
+	return {
+		...program,
+		declarations: program.declarations.map((declaration) => ({
+			...declaration,
+			value: value(declaration.value, declaration.property),
+		})),
+		rules: program.rules.map(rule),
+	};
+}
+
 function generatedCssBinding(source: string | undefined): string {
 	const input = source ?? "";
 	if (/\bimport\s+css\s+from\b/.test(input)) return "pandwindCss";
@@ -1070,13 +1144,16 @@ export default defineCodemodAdapter({
 				) || rule.children.some(containsFunction)
 			);
 		});
+		const outputProgram = preserveKnownPresetTokens(program, context);
+		const renderProgramObject = (value: StyleProgram): string =>
+			programObject(preserveKnownPresetTokens(value, context));
 		const finalize = (emission: { text: string; imports: readonly string[] }) => ({
 			...renameGeneratedCssBinding(emission, cssBinding),
 			// The target object syntax is intentionally a projection of the
 			// versioned program. Keep the program attached for validation and
 			// downstream tools so nested conditions, rule kinds, and provenance are
 			// never inferred back from generated JavaScript.
-			semantic: program,
+			semantic: outputProgram,
 		});
 		if (
 			program.source?.pattern === CodemodPatternId.CssTemplate &&
@@ -1096,7 +1173,7 @@ export default defineCodemodAdapter({
 				})
 			) {
 				return finalize({
-					text: `css.class(${programObject(program)})`,
+					text: `css.class(${renderProgramObject(outputProgram)})`,
 					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 				});
 			}
@@ -1107,7 +1184,7 @@ export default defineCodemodAdapter({
 		}
 		if (program.emissionHints?.includes(StyleProgramEmissionHint.GlobalVariables)) {
 			return finalize({
-				text: runtimeGlobalVars(program),
+				text: runtimeGlobalVars(outputProgram),
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
 					'import { pandwindPreset } from "pandwind/preset";',
@@ -1123,7 +1200,7 @@ export default defineCodemodAdapter({
 			return finalize({
 				text:
 					template === undefined
-						? `() => (css.sheet.registerSemanticRules([${runtimeGlobalRules(program)}]), null)`
+						? `() => (css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}]), null)`
 						: `() => ${template}`,
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
@@ -1140,9 +1217,9 @@ export default defineCodemodAdapter({
 			if (component !== undefined) return finalize(component);
 		}
 		if (context?.host?.representation === StyleHostRepresentationKind.Component) {
-			const component = staticComponent(program, programObject, context);
+			const component = staticComponent(outputProgram, renderProgramObject, context);
 			if (component !== undefined) return finalize(component);
-			const hybrid = hybridComponent(program, programObject, context);
+			const hybrid = hybridComponent(outputProgram, renderProgramObject, context);
 			if (hybrid !== undefined) return finalize(hybrid);
 		}
 		const host = program.source;
@@ -1157,8 +1234,8 @@ export default defineCodemodAdapter({
 				context?.document?.framework ??
 				(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
 			const dynamicHost = hasDynamicValues(program);
-			const programObjectText = programObject(
-				hasFunctionDynamic ? mapRuntimeProps(program, "undefined") : program,
+			const programObjectText = renderProgramObject(
+				hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
 			);
 			const rendered = JsxStyleHost.render(
 				host.hostOpenTag,
@@ -1192,7 +1269,7 @@ export default defineCodemodAdapter({
 				hasFunctionDynamic) &&
 			!stylexDynamicGroup
 		) {
-			const component = runtimeComponent(program, programObject, context);
+			const component = runtimeComponent(outputProgram, renderProgramObject, context);
 			if (component !== undefined) return finalize(component);
 		}
 		const hasFontFaces = program.rules.some(function containsFontFace(
@@ -1212,7 +1289,7 @@ export default defineCodemodAdapter({
 				rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),
 			};
 			return finalize({
-				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(program)}]), css.group(${programObject(styleProgram)}))`,
+				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), css.group(${renderProgramObject(styleProgram)}))`,
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
 					'import { pandwindPreset } from "pandwind/preset";',
@@ -1222,7 +1299,7 @@ export default defineCodemodAdapter({
 		}
 		if (kind === "keyframes")
 			return finalize({
-				text: runtimeKeyframes(program, context),
+				text: runtimeKeyframes(outputProgram, context),
 				imports: [
 					'import { createRuntimeCss } from "pandwind/css/runtime";',
 					'import { pandwindPreset } from "pandwind/preset";',
@@ -1264,16 +1341,16 @@ export default defineCodemodAdapter({
 				functionDynamic);
 		return finalize({
 			text: stitchesVariants
-				? `createRecipe(css, ${stitchesRecipeObject(program, declarationsObject)})`
+				? `createRecipe(css, ${stitchesRecipeObject(outputProgram, declarationsObject)})`
 				: named
-					? `css.group(${programObject(program)})`
+					? `css.group(${renderProgramObject(outputProgram)})`
 					: functionDynamic
-						? `css.group(${programObject(program)})`
+						? `css.group(${renderProgramObject(outputProgram)})`
 						: runtimeStandalone
-							? `css.class(${programObject(program)})`
+							? `css.class(${renderProgramObject(outputProgram)})`
 							: dynamic
-								? `css.vars(${programObject(program)})`
-								: `css.class(${programObject(program)})`,
+								? `css.vars(${renderProgramObject(outputProgram)})`
+								: `css.class(${renderProgramObject(outputProgram)})`,
 			imports: stitchesVariants
 				? [
 						'import { createCss } from "pandwind/css";',

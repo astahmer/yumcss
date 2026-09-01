@@ -149,6 +149,13 @@ which concrete module to import or grow a switch statement in a central runner.
   composition primitive, host conventions, and framework semantics. Adapter
   emitters own these target-specific choices; the route runner must not invent
   generic target syntax.
+- Prefer target-native design-token references and reusable variables over
+  repeated literals when the target project exposes verified metadata for
+  them. A target adapter may recover a token only when the target token's
+  resolved value is an exact match and its spelling is legal for that
+  property; retain the literal when metadata is absent, ambiguous, or from a
+  different preset. Never invent a token name merely because it looks
+  plausible: semantic equivalence takes priority over stylistic preference.
 - Prefer a self-contained inline emission when it remains readable and has no
   reusable state. When correctness or expert target style requires a shared
   helper, theme constant, generated recipe, or runtime bridge, an adapter may
