@@ -74,6 +74,14 @@ signals, directives, or `class=` syntax is not mislabeled as React-compatible.
 The route remains source-preserving with a typed residual until a real dialect
 rewrite exists.
 
+The static Vue projection is now implemented by target adapters that can
+consume a React-compatible host shape. A valid `.vue` document is rewritten to
+the target host dialect and reports a target `.tsx` extension; the CLI writes
+that result beside the source and removes the old SFC only after the output is
+created successfully. Vue `script setup` reactivity, directives, slots, extra
+blocks, and malformed trailing source fail the guard and keep the original
+`.vue` source intact.
+
 Solid-styled and Vue-styled own the corresponding static React component
 projection. A React `styled.div` subject with only static declarations can be
 emitted as the target's styled component subject while preserving its simple
@@ -430,6 +438,14 @@ each pair in both directions. A route is accepted only when it converts or
 preserves the source with a typed residual. Run the expensive public-boundary
 proof with `pnpm --filter pandwind-codemod test:e2e`; the normal coverage gate
 runs the same route corpus in-process.
+
+The playground uses this same registry-backed runner in `safe` mode. Its Vue
+sample includes a `<template>` host so the static SFC projection is exercised;
+reactive or directive-bearing examples correctly display a typed residual. If
+a stale generated comment literally says `adapter capability mismatch`, it is
+from an older build or migration artifact: current semantic migrations emit
+the ordered route and a typed cause (`capability-blocked`, `parse-residual`,
+`lowering-residual`, `host-rewrite-required`, or `configuration-residual`).
 `createAdapterConformanceSuite()` adds the direct adapter-owned gate before the
 route matrix: each registered adapter must independently pass detection,
 configuration, parsing, emission, and validation against its happy fixture.
