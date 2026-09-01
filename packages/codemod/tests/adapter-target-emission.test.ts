@@ -177,6 +177,27 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("<Card />");
 	});
 
+	test("uses Mantine's host style prop for dynamic JSX styles", () => {
+		const result = runAdapterMigration(
+			'import { Box } from "@chakra-ui/react";\n' +
+				"export const App = () => <Box bg={theme.foreground} />;",
+			{
+				from: CodemodAdapterId.ChakraUi,
+				to: CodemodAdapterId.Mantine,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("style={{ backgroundColor: theme.foreground }}");
+		expect(result.code).not.toContain("bg={theme.foreground}");
+	});
+
 	test("preserves scalar template interpolation in Next-yak's runtime template", () => {
 		const result = runAdapterMigration(
 			'import { css } from "@linaria/core";\nconst card = css`color: ${theme.foreground};`;',

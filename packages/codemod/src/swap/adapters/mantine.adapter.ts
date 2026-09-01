@@ -1,10 +1,43 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
+import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
+	StyleDynamicExpressionKind,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
+	StyleRepresentationKind,
 } from "../identifiers.ts";
+
+function hasScalarDynamicProgram(program: import("../semantic-ir.ts").StyleProgram): boolean {
+	return program.rules.some(function containsScalarDynamic(rule): boolean {
+		return (
+			rule.declarations.some(
+				(declaration) =>
+					declaration.value.kind === "dynamic" &&
+					declaration.value.expressionKind !== StyleDynamicExpressionKind.Function &&
+					!/=>|^function\b/.test(declaration.value.expression.trim()),
+			) || rule.children.some(containsScalarDynamic)
+		);
+	});
+}
+
+function renderMantineHost(
+	program: import("../semantic-ir.ts").StyleProgram,
+	styleObject: string,
+): string | undefined {
+	const source = program.source;
+	if (source?.hostOpenTag === undefined) return undefined;
+	let host = source.hostOpenTag;
+	for (const attribute of source.hostStyleAttributes ?? []) {
+		const index = host.indexOf(attribute);
+		if (index < 0) continue;
+		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
+		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
+	}
+	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
+	return `${host.slice(0, insertion)} style={${styleObject}}${host.slice(insertion)}`;
+}
 
 const styleProps = [
 	"style",
@@ -153,6 +186,36 @@ export default defineCodemodAdapter({
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
+			resolveHostRepresentation: ({ program, hasHostContext, framework }) =>
+				program.source?.subject === undefined &&
+				program.source?.hostOpenTag !== undefined &&
+				hasHostContext &&
+				(framework === undefined || framework === BuiltinHostFramework.React) &&
+				!program.rules.some(function containsFunction(rule): boolean {
+					return (
+						rule.declarations.some(
+							(declaration) =>
+								declaration.value.kind === "dynamic" &&
+								declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
+						) || rule.children.some(containsFunction)
+					);
+				})
+					? StyleHostRepresentationKind.StyleProp
+					: StyleHostRepresentationKind.Class,
+			resolveRepresentation: ({ program, hostRepresentation }) =>
+				hostRepresentation === StyleHostRepresentationKind.Class &&
+				program.source?.subject === undefined &&
+				program.residuals.length === 0
+					? StyleRepresentationKind.PortableArtifact
+					: undefined,
+			capabilitiesForRepresentation: ({ program, representation }) =>
+				representation === StyleRepresentationKind.TargetNative && hasScalarDynamicProgram(program)
+					? ["dynamic-values", "theme-context"]
+					: [],
+			preservesResidualKindsForRepresentation: ({ program, representation }) =>
+				representation === StyleRepresentationKind.TargetNative && hasScalarDynamicProgram(program)
+					? ["dynamic"]
+					: [],
 		},
 	},
 	detectPatterns: [/@mantine\/core/, /\b(?:sx|maw|fz|c|bg)\s*=/],
@@ -168,7 +231,7 @@ export default defineCodemodAdapter({
 			]),
 		),
 	},
-	emit(program, { programObject }) {
+	emit(program, { programObject }, context) {
 		if (program.rules.some((rule) => rule.kind !== "style"))
 			return {
 				text: programObject(program),
@@ -180,9 +243,25 @@ export default defineCodemodAdapter({
 					},
 				],
 			};
+		const styleObject = programObject(program);
+		if (context?.host?.subject !== undefined)
+			return {
+				text: `style(${styleObject})`,
+				imports: ['import { style } from "@mantine/core";'],
+			};
+		if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
+			const host = renderMantineHost(program, styleObject);
+			if (host !== undefined) return { text: host, semantic: program };
+		}
 		return {
-			text: `style(${programObject(program)})`,
-			imports: ['import { style } from "@mantine/core";'],
+			text: styleObject,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: styleObject,
+					hint: "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+				},
+			],
 		};
 	},
 });
