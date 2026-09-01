@@ -329,7 +329,11 @@ function staticUnoTokens(source: string): readonly string[] {
 }
 
 function staticClassAssignments(source: string): readonly RegExpExecArray[] {
-	return [...source.matchAll(/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'])([^"']*)\2/g)];
+	return [
+		...source.matchAll(
+			/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:("|')([^"']*)\2|\{\s*("|')([^"']*)\4\s*\})/g,
+		),
+	];
 }
 
 function standaloneClassLiteral(
@@ -453,12 +457,12 @@ function parseUnoCss(
 	const matches: Array<AdapterParseResult["matches"][number]> = [];
 	const residuals: StyleProgramResidual[] = [...(context.config.residuals ?? [])];
 	const excluded = context.document?.isExcluded ?? (() => false);
-	const attribute = /\b(className|class)\s*=\s*(["'])([^"']*)\2/g;
+	const attribute = /\b(className|class)\s*=\s*(?:("|')([^"']*)\2|\{\s*("|')([^"']*)\4\s*\})/g;
 	for (const match of source.matchAll(attribute)) {
 		const attributeStart = match.index ?? 0;
 		if (excluded(attributeStart)) continue;
 		const attributeName = match[1];
-		const value = match[3] ?? "";
+		const value = match[3] ?? match[5] ?? "";
 		if (attributeName === undefined || value.trim() === "") continue;
 		const openingTag = openingTagForAttribute(source, attributeStart);
 		if (openingTag === undefined) continue;
@@ -506,8 +510,8 @@ function parseUnoCss(
 	}
 	for (const assignment of staticClassAssignments(source)) {
 		const binding = assignment[1];
-		const quote = assignment[2];
-		const value = assignment[3];
+		const quote = assignment[2] ?? assignment[4];
+		const value = assignment[3] ?? assignment[5];
 		if (binding === undefined || value === undefined || !value.includes("[")) continue;
 		const start = (assignment.index ?? 0) + assignment[0].lastIndexOf(`${quote ?? '"'}${value}`);
 		const declarations: StyleDeclaration[] = [];
@@ -590,7 +594,9 @@ function parseUnoCss(
 		staticClassAssignments(source).map(
 			(assignment) =>
 				(assignment.index ?? 0) +
-				assignment[0].lastIndexOf(`${assignment[2] ?? '"'}${assignment[3] ?? ""}`),
+				assignment[0].lastIndexOf(
+					`${assignment[2] ?? assignment[4] ?? '"'}${assignment[3] ?? assignment[5] ?? ""}`,
+				),
 		),
 	);
 	for (const literal of classLiteralExpressions(source)) {

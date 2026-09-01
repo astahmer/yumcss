@@ -67,6 +67,8 @@ export interface StyleAdapterRegistry {
 	): Promise<readonly AdapterDiscoveryResult[]>;
 }
 
+const NORMALIZED_ADAPTER = Symbol("pandwind.normalized-adapter");
+
 function asPlugin(value: unknown, specifier: string): StyleAdapterPlugin {
 	const candidate = (value as { default?: unknown }).default ?? value;
 	if (isStyleAdapter(candidate)) {
@@ -99,8 +101,13 @@ function isStyleAdapter(value: unknown): value is StyleAdapter {
 }
 
 function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
+	if (
+		(adapter as StyleAdapter & { readonly [NORMALIZED_ADAPTER]?: true })[NORMALIZED_ADAPTER] ===
+		true
+	)
+		return adapter;
 	const migration = projectPortableDynamicMigration(adapter.migration, adapter.capabilities);
-	return {
+	const normalized: StyleAdapter = {
 		...adapter,
 		migration,
 		emit: (program, context) => {
@@ -132,6 +139,8 @@ function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
 			return adapter.emit(program, context);
 		},
 	};
+	Object.defineProperty(normalized, NORMALIZED_ADAPTER, { value: true });
+	return normalized;
 }
 
 export function createStyleAdapterPlugin(
