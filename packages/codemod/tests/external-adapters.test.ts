@@ -1218,26 +1218,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain('from "pandwind/css"');
 	});
 
-	test("does not emit a React DOM style carrier for a React Native target", () => {
+	test("projects a static styled intrinsic into a React Native style carrier", () => {
 		const result = runAdapterMigration(
 			'import styled from "styled-components";\n' +
 				'const Card = styled.div({ color: "red" });\n' +
 				"export const App = () => <Card />;",
 			{ from: "styled-components", to: "react-native", file: "Card.tsx", mode: "safe" },
 		);
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual(
-			expect.arrayContaining([
-				expect.objectContaining({
-					kind: "host-framework",
-					hint: expect.stringContaining("no host representation"),
-				}),
-			]),
-		);
-		expect(result.code).toContain('from "styled-components"');
-		expect(result.code).toContain("pandwind:migrate-skip");
-		expect(result.code).not.toContain("StyleSheet.create");
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("StyleSheet.create");
+		expect(result.code).toContain("<View");
+		expect(result.code).toContain("style={Card}");
+		expect(result.code).not.toContain('from "styled-components"');
+		expect(result.code).not.toContain("className={Card}");
 	});
 
 	test("lowers a static styled intrinsic into a Style9 class host", () => {
