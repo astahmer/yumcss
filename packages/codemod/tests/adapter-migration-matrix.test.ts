@@ -237,6 +237,28 @@ describe("bidirectional registered adapter matrix", () => {
 		}
 		expect(outcomes).toHaveLength(catalog.adapters.length ** 2);
 	});
+
+	test("preserves malformed source tails for every ordered route", () => {
+		for (const sourceAdapter of catalog.adapters) {
+			const fixture = fixtureFor(sourceAdapter.id);
+			const malformed = `${fixture.source}\nconst unfinished = { /* unfinished ${sourceAdapter.id} */`;
+			for (const targetAdapter of catalog.adapters) {
+				const result = migrateTo(
+					malformed,
+					sourceAdapter.id,
+					targetAdapter.id,
+					fixture.file,
+					sourceSemantic(sourceAdapter.id),
+				);
+				expect(
+					result.code.includes(`/* unfinished ${sourceAdapter.id} */`) ||
+						result.residuals.some((residual) => residual.text.includes(sourceAdapter.id)) ||
+						result.skipped > 0,
+					`${sourceAdapter.id} -> ${targetAdapter.id} discarded malformed source`,
+				).toBe(true);
+			}
+		}
+	});
 });
 
 describe("composed cross-ecosystem routes", () => {

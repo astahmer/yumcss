@@ -432,10 +432,11 @@ function utilityCondition(conditionValue: StyleCondition): string {
 }
 
 function renderTailwindHost(program: StyleProgram, classExpression: string): string | undefined {
-	const opening = program.source?.hostOpenTag;
-	if (opening === undefined) return undefined;
+	const source = program.source;
+	if (source === undefined || source.hostOpenTag === undefined) return undefined;
+	const opening = source.hostOpenTag;
 	let host = opening;
-	for (const attribute of program.source.hostStyleAttributes ?? []) {
+	for (const attribute of source.hostStyleAttributes ?? []) {
 		const index = host.indexOf(attribute);
 		if (index < 0) continue;
 		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
@@ -645,9 +646,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			}
 			const emitted = emitTailwind(program);
 			const host =
-				emitted.residuals.length === 0
-					? renderTailwindHost(program, emitted.text)
-					: undefined;
+				emitted.residuals.length === 0 ? renderTailwindHost(program, emitted.text) : undefined;
 			return {
 				...emitted,
 				text: host ?? emitted.text,

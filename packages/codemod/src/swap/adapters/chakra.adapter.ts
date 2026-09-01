@@ -499,10 +499,11 @@ function renderChakraHost(
 	program: StyleProgram,
 	expression: string,
 ): AdapterHostRewriteResult | undefined {
-	const opening = program.source?.hostOpenTag;
-	if (opening === undefined) return undefined;
+	const source = program.source;
+	if (source === undefined || source.hostOpenTag === undefined) return undefined;
+	const opening = source.hostOpenTag;
 	let host = opening;
-	for (const attribute of program.source.hostStyleAttributes ?? []) {
+	for (const attribute of source.hostStyleAttributes ?? []) {
 		const index = host.indexOf(attribute);
 		if (index < 0) continue;
 		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;

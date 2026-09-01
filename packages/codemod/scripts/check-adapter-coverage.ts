@@ -15,6 +15,14 @@ const sourceAdapterFiles = readdirSync(resolve("src/swap/adapters"), {
 })
 	.filter((file) => file.endsWith(".adapter.ts"))
 	.map((file) => resolve("src/swap/adapters", file));
+const typeOnlySourceFiles = new Set(
+	["src/swap/ir.ts", "src/swap/outbound.ts", "src/swap/project-command.ts"].map((file) =>
+		resolve(file),
+	),
+);
+const sourceFiles = readdirSync(resolve("src"), { recursive: true })
+	.filter((file) => file.endsWith(".ts"))
+	.map((file) => resolve("src", file));
 const adapterFiles = Object.entries(summary).filter(
 	([file]) => file.includes("/src/swap/adapters/") && basename(file).endsWith(".adapter.ts"),
 );
@@ -30,6 +38,9 @@ const failures = adapterFiles.flatMap(([file, metrics]) => {
 });
 for (const file of sourceAdapterFiles)
 	if (summary[file] === undefined) failures.push(`${file}: no V8 coverage entry`);
+for (const file of sourceFiles)
+	if (summary[file] === undefined && !typeOnlySourceFiles.has(file))
+		failures.push(`${file}: no V8 coverage entry`);
 
 if (failures.length > 0)
 	throw new Error(["adapter-specific coverage gate failed", ...failures].join("\n"));

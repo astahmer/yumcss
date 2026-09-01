@@ -87,7 +87,7 @@ export const completeAdapterMatrixFixtures: readonly AdapterMatrixFixture[] =
 			{
 				sourceAdapter: fixture.adapter,
 				file: happy.file,
-				source: `${happy.source}\n/* unfinished ${fixture.adapter} */`,
+				source: `${happy.source}\nconst unfinished = { /* unfinished ${fixture.adapter} */`,
 				scenario: "malformed" as const,
 				semantic: semanticFor(fixture.adapter),
 			},

@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, test } from "vitest";
@@ -16,6 +16,7 @@ interface CliFileResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
+	readonly source: string;
 }
 
 async function runCliMatrix(
@@ -60,7 +61,10 @@ async function runCliMatrix(
 				readonly residuals: number;
 			}[];
 		};
-		return report.files;
+		return report.files.map((result) => ({
+			...result,
+			source: readFileSync(resolve(repoRoot, result.file), "utf8"),
+		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });
 	}
@@ -90,20 +94,27 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 						"malformed",
 					]);
 					for (const result of results) {
+						const isMalformed = result.file.includes("-malformed-");
 						if (source.id === target.id) {
 							expect(result.converted, `${source.id} -> ${target.id}`).toBe(0);
 							expect(result.skipped, `${source.id} -> ${target.id}`).toBe(0);
+							if (isMalformed) expect(result.source).toContain(`/* unfinished ${source.id} */`);
 							continue;
 						}
 						expect(
 							result.converted > 0 || result.skipped > 0 || result.residuals > 0,
 							`${source.id} -> ${target.id} produced no conversion or residual evidence`,
 						).toBe(true);
-						if (result.skipped > 0)
+						if (result.skipped > 0) {
 							expect(
 								result.residuals,
 								`${source.id} -> ${target.id} skipped without residual evidence`,
 							).toBeGreaterThan(0);
+							expect(result.source).toContain("pandwind:migrate-skip");
+						}
+						if (result.residuals > 0) expect(result.source).toContain("pandwind:migrate-skip");
+						expect(result.source).not.toContain("adapter capability mismatch");
+						if (isMalformed) expect(result.source).toContain(`/* unfinished ${source.id} */`);
 					}
 				}),
 			);

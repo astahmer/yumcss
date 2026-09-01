@@ -64,6 +64,16 @@ function routeFailures(caseResult: AdapterMatrixCase): readonly AdapterMatrixFai
 		failures.push({ ...route, reason: "converted route exposed no lowering plan" });
 	if (result.skipped > 0 && result.residuals.length === 0)
 		failures.push({ ...route, reason: "skipped route exposed no residual" });
+	const unpreservedResiduals = result.residuals.filter((residual) => residual.preserved !== true);
+	if (
+		result.skipped > 0 &&
+		unpreservedResiduals.length > 0 &&
+		!result.code.includes("pandwind:migrate-skip")
+	)
+		failures.push({
+			...route,
+			reason: "unpreserved residual was not source-marked",
+		});
 	if (
 		result.converted > 0 &&
 		result.residuals.length === 0 &&
