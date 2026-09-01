@@ -243,6 +243,18 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+Generic semantic traversal is owned by `StyleProgramAnalysis`. Its rule and
+declaration queries preserve the rule-less root projection used by the cheap
+path, while dynamic-value queries provide one neutral policy for lowering,
+capability inspection, and adapters. An adapter may still keep a local query
+when it encodes target policy—for example, which dynamic representation a
+framework host can accept—but it must not reimplement generic IR traversal.
+
+The CSS variable compiler is likewise the single owner of variable atoms,
+custom-property naming, condition encoding, and inline-value normalization.
+The CSS surface consumes `createVarCompiler` directly; an unexported façade or
+parallel `encodeVars` helper is intentionally not maintained.
+
 The source workspace owns filesystem expansion and document reads. Its default
 query returns only files claimed by a registered source-language adapter;
 callers that intentionally need non-script assets, such as CSS imports for
