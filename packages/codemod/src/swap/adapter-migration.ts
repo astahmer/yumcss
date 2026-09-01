@@ -476,13 +476,12 @@ function runAdapterMigrationInternal(
 		});
 	}
 	for (const [index, match] of selectNonOverlappingMatches(parsed.matches).entries()) {
-		const lowering = loweringRegistry.plan({
+		let lowering = loweringRegistry.plan({
 			program: match.program,
 			target: targetAdapter.capabilities,
 			mode,
 			hostFramework: targetAdapter.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 		});
-		loweringPlans.push(lowering);
 		let loweringResiduals = lowering.residuals;
 		let program = lowering.program;
 		const sourceSubject = program.source?.subject;
@@ -516,6 +515,49 @@ function runAdapterMigrationInternal(
 						...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
 						source,
 					});
+		const resolvedRepresentation = targetPolicy?.resolveRepresentation?.({
+			program,
+			hasHostContext,
+			...(hostFramework === undefined ? {} : { framework: hostFramework }),
+			...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
+			...(hostRepresentation === undefined ? {} : { hostRepresentation }),
+			source,
+		});
+		const representationNegotiated = resolvedRepresentation !== undefined;
+		const targetRepresentationKind = resolvedRepresentation ?? lowering.representation;
+		const representationCapabilities =
+			targetPolicy?.capabilitiesForRepresentation?.({
+				program,
+				representation: targetRepresentationKind,
+			}) ?? [];
+		const preservedResidualKinds = new Set(
+			representationNegotiated
+				? (targetPolicy?.preservesResidualKindsForRepresentation?.({
+						program,
+						representation: targetRepresentationKind,
+					}) ?? [])
+				: [],
+		);
+		if (preservedResidualKinds.size > 0)
+			loweringResiduals = loweringResiduals.filter(
+				(residual) => !preservedResidualKinds.has(residual.kind),
+			);
+		if (representationCapabilities.length > 0) {
+			const resolved = new Set(lowering.resolvedCapabilities ?? []);
+			for (const capability of representationCapabilities) resolved.add(capability);
+			lowering = { ...lowering, resolvedCapabilities: [...resolved] };
+		}
+		if (!lowering.availableRepresentations.includes(targetRepresentationKind))
+			lowering = {
+				...lowering,
+				availableRepresentations: [...lowering.availableRepresentations, targetRepresentationKind],
+			};
+		loweringPlans.push(lowering);
+		if (
+			targetRepresentationKind === StyleRepresentationKind.PortableArtifact &&
+			hostRepresentation !== undefined
+		)
+			emittedHostRepresentation = hostRepresentation;
 		if (
 			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&
 			resolvedHostRepresentation !== undefined &&
@@ -576,6 +618,13 @@ function runAdapterMigrationInternal(
 					!dynamicStandalone
 				) {
 					skipped++;
+					outcomes.push({
+						sourceStart: match.start,
+						sourceText: match.sourceText,
+						outcome: StyleMigrationOutcome.Residual,
+						representation: targetRepresentationKind,
+						detail: "dynamic value has no validated host carrier",
+					});
 					residuals.push({
 						kind: "dynamic-values",
 						text: match.sourceText,
@@ -880,6 +929,7 @@ function runAdapterMigrationInternal(
 				...(emittedHostRepresentation === undefined
 					? {}
 					: { representation: emittedHostRepresentation }),
+				representationKind: targetRepresentationKind,
 			},
 		});
 		if (emitted.text.trim() === "") {
@@ -889,6 +939,13 @@ function runAdapterMigrationInternal(
 				hint: "target adapter produced no representable output",
 			} as const;
 			skipped++;
+			outcomes.push({
+				sourceStart: match.start,
+				sourceText: match.sourceText,
+				outcome: StyleMigrationOutcome.Residual,
+				representation: targetRepresentationKind,
+				detail: emptyEmission.hint,
+			});
 			residuals.push(emptyEmission, ...emitted.residuals);
 			edits.push({
 				start: match.start,
@@ -1050,6 +1107,20 @@ function runAdapterMigrationInternal(
 		if (emittedBinding !== undefined) convertedBindings.add(emittedBinding);
 		edits.push({ start: match.start, end: match.end, text: emitted.text });
 		converted++;
+		const successfulRepresentation = targetRepresentationKind;
+		outcomes.push({
+			sourceStart: match.start,
+			sourceText: match.sourceText,
+			outcome:
+				successfulRepresentation === StyleRepresentationKind.PortableArtifact
+					? StyleMigrationOutcome.PortableArtifact
+					: programHasDynamic(program) || dynamicCarrier !== undefined
+					? StyleMigrationOutcome.HostRuntime
+					: successfulRepresentation === StyleRepresentationKind.Static
+						? StyleMigrationOutcome.Static
+						: StyleMigrationOutcome.TargetNative,
+			representation: successfulRepresentation,
+		});
 	}
 	const edited = applyEdits(source, edits);
 	let runtimeEdited = edited;
