@@ -741,4 +741,27 @@ describe("target adapter emission contract", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain(expectedImport);
 	});
+
+	test("keeps scalar dynamic styled subjects in Next-yak's component template", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: CodemodAdapterId.NextYak,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { styled } from "next-yak";');
+		expect(result.code).toContain("styled.div`color: ${theme.foreground};`");
+		expect(result.code).toContain("<Card />");
+	});
 });

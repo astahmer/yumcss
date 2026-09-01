@@ -57,16 +57,28 @@ export default defineCodemodAdapter({
 			handlesFrameworkSemantics: true,
 			hostRepresentation: StyleHostRepresentationKind.Class,
 			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+			resolveHostRepresentation: ({ program, hasHostContext }) =>
+				program.source?.subject !== undefined && hasHostContext && hasDynamicValues(program)
+					? StyleHostRepresentationKind.Component
+					: StyleHostRepresentationKind.Class,
 			resolveRepresentation: ({ program, hasHostContext }) =>
-				!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
-					? StyleRepresentationKind.RuntimeCarrier
-					: undefined,
-			capabilitiesForRepresentation: ({ representation }) =>
-				representation === StyleRepresentationKind.RuntimeCarrier
+				program.source?.subject !== undefined && hasDynamicValues(program)
+					? StyleRepresentationKind.TargetNative
+					: !hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
+						? StyleRepresentationKind.RuntimeCarrier
+						: undefined,
+			capabilitiesForRepresentation: ({ program, representation }) =>
+				[StyleRepresentationKind.RuntimeCarrier, StyleRepresentationKind.TargetNative].includes(
+					representation,
+				) && hasDynamicValues(program)
 					? ["dynamic-values", "theme-context", "runtime-context"]
 					: [],
-			preservesResidualKindsForRepresentation: ({ representation }) =>
-				representation === StyleRepresentationKind.RuntimeCarrier ? ["dynamic"] : [],
+			preservesResidualKindsForRepresentation: ({ program, representation }) =>
+				[StyleRepresentationKind.RuntimeCarrier, StyleRepresentationKind.TargetNative].includes(
+					representation,
+				) && hasDynamicValues(program)
+					? ["dynamic"]
+					: [],
 		},
 		prepareDynamic: ({ program }) => ({
 			handled:
