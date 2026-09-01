@@ -18,7 +18,7 @@ export interface MissDeclaration {
 	value: string;
 }
 
-export type TwMissResolver = (utilityClass: string) => MissDeclaration[] | null;
+export type TwMissResolver = (utilityClass: string) => readonly MissDeclaration[] | null;
 
 interface EngineSystem {
 	candidatesToCss: (candidates: string[]) => Array<string | null>;
@@ -69,14 +69,22 @@ export async function createEngineMissResolver(
 	const system = (await __unstable__loadDesignSystem(css, {
 		base: options.base,
 	})) as unknown as EngineSystem;
+	const resolved = new Map<string, readonly MissDeclaration[] | null>();
+	const cacheLimit = 2048;
 
-	return (utilityClass: string): MissDeclaration[] | null => {
+	return (utilityClass: string): readonly MissDeclaration[] | null => {
+		const cached = resolved.get(utilityClass);
+		if (cached !== undefined) return cached;
+		if (resolved.size >= cacheLimit) resolved.clear();
 		try {
 			const results = system.candidatesToCss([utilityClass]);
 			const rule = results[0];
-			if (typeof rule !== "string" || !rule.includes("{")) return null;
-			return parseRuleDeclarations(rule);
+			const declarations =
+				typeof rule !== "string" || !rule.includes("{") ? null : parseRuleDeclarations(rule);
+			resolved.set(utilityClass, declarations);
+			return declarations;
 		} catch {
+			resolved.set(utilityClass, null);
 			return null;
 		}
 	};

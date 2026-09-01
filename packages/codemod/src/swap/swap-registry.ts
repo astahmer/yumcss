@@ -19,7 +19,9 @@ export interface SwapSourceContext {
 	readonly source: string;
 	readonly file: string;
 	readonly meta: PandwindMeta;
-	readonly engineResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null;
+	readonly engineResolver?: (
+		utilityClass: string,
+	) => readonly { prop: string; value: string }[] | null;
 	readonly tokenize?: boolean;
 }
 

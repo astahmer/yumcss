@@ -526,7 +526,7 @@ export interface SwapOptions {
 	/** Token-reference emission for value-capable targets (default "bare"). */
 	tokenRefs?: TokenRefMode;
 	/** Resolve bridge misses through the real Tailwind engine. */
-	engineResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null;
+	engineResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null;
 	/** Tokenize-this: rewrite raw values to authored $tokens (css sources). */
 	tokenize?: boolean;
 	/** Canonical property-order sorting in emitted scopes. */
@@ -555,7 +555,7 @@ interface Match {
 	shape: "tw" | "css" | "design";
 }
 
-type MissResolver = (utilityClass: string) => Array<{ prop: string; value: string }> | null;
+type MissResolver = (utilityClass: string) => readonly { prop: string; value: string }[] | null;
 
 function collectMatches(
 	source: string,

@@ -259,7 +259,7 @@ function walkTwEntries(
 	obj: LiteralObject,
 	conditions: string[],
 	ir: SwapIR,
-	_missResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null,
+	_missResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null,
 ): void {
 	for (const { key, value } of obj.keys) {
 		if (isVariantKey(meta, key)) {
@@ -325,7 +325,7 @@ export function parseTwCalls(
 	source: string,
 	meta: PandwindMeta,
 	excluded: (start: number) => boolean,
-	_missResolver?: (utilityClass: string) => Array<{ prop: string; value: string }> | null,
+	_missResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null,
 ): Array<{ start: number; end: number; ir: SwapIR }> {
 	const out: Array<{ start: number; end: number; ir: SwapIR }> = [];
 	for (const match of source.matchAll(TW_CALL_REGEX)) {
