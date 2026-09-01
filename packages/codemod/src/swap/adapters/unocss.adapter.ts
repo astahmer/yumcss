@@ -270,27 +270,6 @@ function emitUnoNamedMap(program: StyleProgram): {
 	return { text: `{ ${entries.join(", ")} }`, residuals };
 }
 
-function renderUnoHost(
-	program: StyleProgram,
-	classExpression: string,
-	residuals: readonly StyleProgramResidual[] = [],
-): string | undefined {
-	const source = program.source;
-	if (source?.hostOpenTag === undefined) return undefined;
-	let host = source.hostOpenTag;
-	for (const attribute of source.hostStyleAttributes ?? []) {
-		const index = host.indexOf(attribute);
-		if (index < 0) continue;
-		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
-		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
-	}
-	if (/\bstyle\s*=\s*/u.test(host)) return undefined;
-	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
-	const styleExpression = DynamicClassHost.styleExpression(residuals);
-	const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
-	return `${host.slice(0, insertion)} className={${classExpression}}${style}${host.slice(insertion)}`;
-}
-
 function config(context: AdapterConfigContext): AdapterProjectConfig {
 	return {
 		adapter: CodemodAdapterId.UnoCSS,
@@ -745,16 +724,11 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				context,
 				(context.config.values.unoResolver as UnoCssTokenResolver | undefined) ?? fallbackResolver,
 			),
-		emit: (program, context) => {
+		emit: (program) => {
 			const namedRules = program.rules.some(
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
-			const emitted = namedRules ? emitUnoNamedMap(program) : emitUnoClassTokens(program);
-			const host =
-				emitted.residuals.length === 0
-					? renderUnoHost(program, emitted.text, context.loweringResiduals)
-					: undefined;
-			return host === undefined ? emitted : { ...emitted, text: host };
+			return namedRules ? emitUnoNamedMap(program) : emitUnoClassTokens(program);
 		},
 		migration: {
 			targetPolicy: {

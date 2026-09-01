@@ -1,11 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { AdapterEmitContext } from "../adapter-contract.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import type { StyleProgram } from "../semantic-ir.ts";
 
 /**
  * Panda's generated `styled-system/css` object dialect is a normal pivot
@@ -13,24 +11,6 @@ import type { StyleProgram } from "../semantic-ir.ts";
  * component factories; this adapter owns the source/target expression used by
  * ordinary `css({...})` call sites.
  */
-
-function renderedCss(
-	program: StyleProgram,
-	context: AdapterEmitContext | undefined,
-	object: string,
-) {
-	const expression = `css(${object})`;
-	const host = context?.host;
-	if (host?.subject === undefined && program.source?.hostOpenTag !== undefined) {
-		const attribute = /\b(?:className|class)\s*=\s*(?:"[^"]*"|'[^']*'|\{[^{}]*\})/u;
-		const openingTag = program.source.hostOpenTag;
-		const replaced = attribute.test(openingTag)
-			? openingTag.replace(attribute, `className={${expression}}`)
-			: openingTag.replace(/\s*\/?>$/u, ` className={${expression}}$&`);
-		return { text: replaced, imports: ['import { css } from "styled-system/css";'] };
-	}
-	return { text: expression, imports: ['import { css } from "styled-system/css";'] };
-}
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Panda,
@@ -77,7 +57,11 @@ export default defineCodemodAdapter({
 		},
 	},
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	emit(program, renderers, context) {
-		return renderedCss(program, context, renderers.programObject(program));
+	emit(program, renderers) {
+		return {
+			text: `css(${renderers.programObject(program)})`,
+			imports: ['import { css } from "styled-system/css";'],
+			semantic: program,
+		};
 	},
 });

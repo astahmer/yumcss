@@ -1,9 +1,5 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type {
-	AdapterConfigContext,
-	AdapterHostRewriteResult,
-	AdapterParseContext,
-} from "../adapter-contract.ts";
+import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -526,27 +522,6 @@ function objectReferences(source: string): Readonly<Record<string, string>> {
 	return references;
 }
 
-function renderChakraHost(
-	program: StyleProgram,
-	expression: string,
-): AdapterHostRewriteResult | undefined {
-	const source = program.source;
-	if (source === undefined || source.hostOpenTag === undefined) return undefined;
-	const opening = source.hostOpenTag;
-	let host = opening;
-	for (const attribute of source.hostStyleAttributes ?? []) {
-		const index = host.indexOf(attribute);
-		if (index < 0) continue;
-		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
-		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
-	}
-	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
-	return {
-		code: `${host.slice(0, insertion)} className={${expression}}${host.slice(insertion)}`,
-		residuals: [],
-	};
-}
-
 export function createChakraAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
@@ -645,12 +620,10 @@ export function createChakraAdapter(
 					],
 				};
 			const expression = `css(${programObject(outputProgram)})`;
-			const host = renderChakraHost(outputProgram, expression);
 			return {
-				text: host?.code ?? expression,
+				text: expression,
 				imports: ['import { css } from "@chakra-ui/react";'],
 				semantic: outputProgram,
-				...(host === undefined ? {} : { residuals: host.residuals }),
 			};
 		},
 	});

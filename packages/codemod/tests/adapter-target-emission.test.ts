@@ -55,6 +55,23 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
+	test.each([CodemodAdapterId.Tailwind, CodemodAdapterId.UnoCSS] as const)(
+		"projects JSX style-prop hosts through the shared %s host port exactly once",
+		(target) => {
+			const result = migrate(
+				'import { Box } from "@chakra-ui/react";\n' +
+					'export const App = () => <Box bg="tomato" />;',
+				CodemodAdapterId.ChakraUi,
+				target,
+			);
+
+			expect(result.skipped, `${CodemodAdapterId.ChakraUi} -> ${target}`).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain('className={"[background-color:tomato]"}');
+			expect(result.code).not.toMatch(/\bclassName\s*=\s*\{\s*<Box/u);
+		},
+	);
+
 	test.each([
 		CodemodAdapterId.Bamboo,
 		CodemodAdapterId.VanillaExtract,

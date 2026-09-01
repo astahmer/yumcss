@@ -431,27 +431,6 @@ function utilityCondition(conditionValue: StyleCondition): string {
 	return `${conditionValue.name}:`;
 }
 
-function renderTailwindHost(
-	program: StyleProgram,
-	classExpression: string,
-	residuals: readonly StyleProgramResidual[] = [],
-): string | undefined {
-	const source = program.source;
-	if (source === undefined || source.hostOpenTag === undefined) return undefined;
-	const opening = source.hostOpenTag;
-	let host = opening;
-	for (const attribute of source.hostStyleAttributes ?? []) {
-		const index = host.indexOf(attribute);
-		if (index < 0) continue;
-		const whitespace = index > 0 && /[ \t]/u.test(host[index - 1]!) ? 1 : 0;
-		host = `${host.slice(0, index - whitespace)}${host.slice(index + attribute.length)}`;
-	}
-	const insertion = /\/\s*>$/u.test(host) ? host.length - 2 : host.length - 1;
-	const styleExpression = DynamicClassHost.styleExpression(residuals);
-	const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
-	return `${host.slice(0, insertion)} className={${classExpression}}${style}${host.slice(insertion)}`;
-}
-
 function emitTailwind(program: StyleProgram): {
 	text: string;
 	residuals: readonly StyleProgramResidual[];
@@ -629,7 +608,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				(context.config.values.tailwindResolver as TailwindUtilityResolver | undefined) ??
 					fallbackResolver,
 			),
-		emit: (program, context) => {
+		emit: (program) => {
 			const namedRules = program.rules.filter(
 				(rule) => rule.kind === "style" && rule.name !== undefined,
 			);
@@ -650,14 +629,8 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 					residuals,
 				};
 			}
-			const emitted = emitTailwind(program);
-			const host =
-				emitted.residuals.length === 0
-					? renderTailwindHost(program, emitted.text, context.loweringResiduals)
-					: undefined;
 			return {
-				...emitted,
-				text: host ?? emitted.text,
+				...emitTailwind(program),
 				semantic: program,
 			};
 		},
