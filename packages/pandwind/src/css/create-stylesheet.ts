@@ -61,6 +61,14 @@ export const createStylesheet = (
 	};
 
 	const emptyCondition = Object.keys(preset.conditions).find((key) => !preset.conditions[key]);
+	const pathParts = (key: string, omitEmptyParts: boolean, sort: boolean): string[] => {
+		const parts: string[] = [];
+		for (const part of pairs.split(key)) {
+			if (part === emptyCondition || (omitEmptyParts && part === "")) continue;
+			parts.push(part);
+		}
+		return sort ? parts.sort() : parts;
+	};
 
 	const cssVars = new Map<string, TokenDeclaration>();
 
@@ -127,13 +135,9 @@ export const createStylesheet = (
 			// By sorting the atomic path, we ensure different atomic paths leading to the same CSS
 			// will always have the same hash
 			// ex: `css({ _hover: { color: "red" } })` === `css({ color: { _hover: "red" }  })`
-			const orderedKey = pairs.join(
-				pairs
-					.split(key)
-					.filter((part) => part !== emptyCondition)
-					.toSorted(),
-			);
-			const property = key.split("__").at(-1) ?? key;
+			const orderedKey = pairs.join(pathParts(key, false, true));
+			const propertySeparator = key.lastIndexOf("__");
+			const property = propertySeparator === -1 ? key : key.slice(propertySeparator + 2);
 			const normalizedValue = normalizeCssValue(property, style[key]! as string | number);
 			const pairId = pairs.concat(orderedKey, normalizedValue);
 			if (cache.has(pairId)) continue;
@@ -169,7 +173,7 @@ export const createStylesheet = (
 	const varCache = new Map<string, Rule>();
 	let tokensCache: string | undefined;
 	const processVarKey = (flatKey: string): void => {
-		const rawParts = pairs.split(flatKey).filter((part) => part !== emptyCondition && part !== "");
+		const rawParts = pathParts(flatKey, true, false);
 		const first = rawParts[0]!;
 		const last = rawParts[rawParts.length - 1]!;
 		const isCondition = (part: string): boolean =>
@@ -177,7 +181,7 @@ export const createStylesheet = (
 		const propertyFirst = rawParts.length > 1 && !isCondition(first) && isCondition(last);
 		const propPart = propertyFirst ? first : last;
 		const conditionParts = propertyFirst ? rawParts.slice(1) : rawParts.slice(0, -1);
-		const orderedConditions = conditionParts.toSorted();
+		const orderedConditions = conditionParts.sort();
 		const orderedKey = pairs.join([...orderedConditions, propPart]);
 		if (orderedKey === "" || varCache.has(orderedKey)) return;
 		// The canonical key always stores conditions before the property.
