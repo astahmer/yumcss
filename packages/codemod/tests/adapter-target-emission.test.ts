@@ -53,6 +53,54 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([{ outcome: "static", representation: "static" }]);
 	});
 
+	test("projects a static styled intrinsic subject to a React Native View", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red", padding: "1rem" });\n' +
+				'export const App = () => <Card data-testid="card" />;',
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: CodemodAdapterId.ReactNative,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('<View data-testid="card" style={Card} />');
+		expect(result.code).toContain("View");
+		expect(result.code).toContain('from "react-native"');
+		expect(result.code).not.toContain("styled-components");
+	});
+
+	test("keeps a dynamic styled subject as an explicit React Native residual", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: (props) => props.color });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: CodemodAdapterId.ReactNative,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("styled.div");
+	});
+
 	test("uses a portable static artifact for an unknown custom component", () => {
 		const result = migrate(
 			'import { createCss } from "pandwind/css";\n' +
@@ -94,39 +142,49 @@ describe("target adapter emission contract", () => {
 
 	test.each([
 		[CodemodAdapterId.Jss, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
-		[CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
+		[
+			CodemodAdapterId.Aphrodite,
+			CodemodAdapterId.SolidStyled,
+			BuiltinHostFramework.Solid,
+			"App.tsx",
+		],
 		[CodemodAdapterId.Style9, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
 		[CodemodAdapterId.Jss, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
 		[CodemodAdapterId.Aphrodite, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
 		[CodemodAdapterId.Style9, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
-	] as const)("projects a static %s class carrier across %s hosts", (target, sourceAdapter, framework, file) => {
-		const source =
-			sourceAdapter === CodemodAdapterId.SolidStyled
-				? 'import { styled } from "solid-styled-components";\n' +
-				  'const Card = styled.div({ color: "red" });\n' +
-				  "export const App = () => <Card />;"
-				: "<script setup>\n" +
-				  'import styled from "vue-styled-components";\n' +
-				  'const Card = styled.div({ color: "red" });\n' +
-				  "</script>\n<template><Card /></template>";
-		const result = runAdapterMigration(source, {
-			from: sourceAdapter,
-			to: target,
-			file,
-			mode: "safe",
-			readFile: () => undefined,
-			adapterRegistry: catalog.registry,
-			semantic: { source: { framework } },
-		});
+	] as const)(
+		"projects a static %s class carrier across %s hosts",
+		(target, sourceAdapter, framework, file) => {
+			const source =
+				sourceAdapter === CodemodAdapterId.SolidStyled
+					? 'import { styled } from "solid-styled-components";\n' +
+						'const Card = styled.div({ color: "red" });\n' +
+						"export const App = () => <Card />;"
+					: "<script setup>\n" +
+						'import styled from "vue-styled-components";\n' +
+						'const Card = styled.div({ color: "red" });\n' +
+						"</script>\n<template><Card /></template>";
+			const result = runAdapterMigration(source, {
+				from: sourceAdapter,
+				to: target,
+				file,
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework } },
+			});
 
-		expect(result.skipped, `${sourceAdapter} -> ${target}`).toBe(0);
-		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain(
-			framework === BuiltinHostFramework.Vue ? '<div :class="Card" />' : '<div className={Card} />',
-		);
-		expect(result.code).not.toContain("solid-styled-components");
-		expect(result.code).not.toContain("vue-styled-components");
-	});
+			expect(result.skipped, `${sourceAdapter} -> ${target}`).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).toContain(
+				framework === BuiltinHostFramework.Vue
+					? '<div :class="Card" />'
+					: "<div className={Card} />",
+			);
+			expect(result.code).not.toContain("solid-styled-components");
+			expect(result.code).not.toContain("vue-styled-components");
+		},
+	);
 
 	test("uses the runtime portable artifact for a hostless dynamic MUI value", () => {
 		const result = migrate(

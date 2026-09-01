@@ -4,6 +4,7 @@ import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind, StyleLoweringId } from "../identifiers.ts";
 import { STYLE_LOWERING_SCHEMA, type StyleLowering } from "../lowering.ts";
 import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
+import { intrinsicTagForSubject } from "../host-component-rewriter.ts";
 
 const reactLayoutHosts = new Set([
 	"article",
@@ -162,6 +163,82 @@ function canRewriteReactHost(
 	);
 }
 
+function canRewriteReactStyledSubject(
+	program: StyleProgram,
+	source: string | undefined,
+	binding: string | undefined,
+): boolean {
+	if (source === undefined || binding === undefined || !hasOnlyStaticDeclarations(program))
+		return false;
+	if (
+		program.source?.subject === undefined ||
+		intrinsicTagForSubject(program.source.subject) === undefined
+	)
+		return false;
+	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const use = source.match(new RegExp(`<${escaped}\\b([^>]*)>`, "u"));
+	if (use === null) return false;
+	return !/\b(?:style|className|class|as)\s*=/.test(use[1] ?? "");
+}
+
+function rewriteReactStyledSubject(
+	code: string,
+	binding: string,
+	tag: string,
+	styleExpression: string,
+): {
+	code: string;
+	imports: readonly string[];
+	residuals: readonly StyleProgramResidual[];
+} {
+	const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const openingPattern = new RegExp(`<${escapedBinding}\\b([^>]*)>`, "g");
+	const selfClosingPattern = new RegExp(`<${escapedBinding}\\b([^>]*)\\/\\s*>`, "g");
+	const closingPattern = new RegExp(`</${escapedBinding}\\s*>`, "g");
+	const invalid = (text: string): boolean => /\b(?:style|className|class|as)\s*=/.test(text);
+	if ([...code.matchAll(openingPattern)].some((match) => invalid(match[1] ?? "")))
+		return {
+			code,
+			imports: [],
+			residuals: [
+				hostResidual(
+					binding,
+					"React Native styled subject conversion requires explicit style/class/as props to be migrated first",
+				),
+			],
+		};
+	if ([...code.matchAll(selfClosingPattern)].some((match) => invalid(match[1] ?? "")))
+		return {
+			code,
+			imports: [],
+			residuals: [
+				hostResidual(
+					binding,
+					"React Native styled subject conversion requires explicit style/class/as props to be migrated first",
+				),
+			],
+		};
+	const next = code
+		.replace(
+			selfClosingPattern,
+			(_match, attributes: string) =>
+				`<${tag}${attributes.trim() === "" ? "" : ` ${attributes.trim()}`} style={${styleExpression}} />`,
+		)
+		.replace(
+			openingPattern,
+			(_match, attributes: string) =>
+				`<${tag}${attributes.trim() === "" ? "" : ` ${attributes.trim()}`} style={${styleExpression}}>`,
+		)
+		.replace(closingPattern, `</${tag}>`);
+	if (next === code)
+		return {
+			code,
+			imports: [],
+			residuals: [hostResidual(binding, `no rewritable ${binding} JSX usage found`)],
+		};
+	return { code: next, imports: ['import { View } from "react-native";'], residuals: [] };
+}
+
 function removeUnusedNamedHostImport(code: string, tag: string): string {
 	const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const importPattern = new RegExp(
@@ -286,12 +363,35 @@ const reactNative = makeExtraAdapter({
 		hostFrameworkConversions: reactToReactNative,
 		handlesSourceHostAttributes: true,
 		hostRepresentation: StyleHostRepresentationKind.StyleProp,
-		resolveHostRepresentation: ({ framework, program, source, binding }) =>
-			framework === undefined ||
-			framework === BuiltinHostFramework.ReactNative ||
-			(framework === BuiltinHostFramework.React && canRewriteReactHost(program, source, binding))
-				? StyleHostRepresentationKind.StyleProp
-				: undefined,
+		resolveHostRepresentation: ({ framework, program, source, binding, hasHostContext }) => {
+			if (framework === undefined || framework === BuiltinHostFramework.ReactNative)
+				return StyleHostRepresentationKind.StyleProp;
+			if (
+				framework === BuiltinHostFramework.React &&
+				program.source?.subject !== undefined &&
+				hasHostContext &&
+				binding !== undefined &&
+				canRewriteReactStyledSubject(program, source, binding)
+			)
+				return StyleHostRepresentationKind.StyleProp;
+			if (framework === BuiltinHostFramework.React && canRewriteReactHost(program, source, binding))
+				return StyleHostRepresentationKind.StyleProp;
+			return undefined;
+		},
+		rewriteComponent: ({ code, binding, framework, emittedExpression, representation }) => {
+			if (representation !== StyleHostRepresentationKind.StyleProp) return { code, residuals: [] };
+			if (framework !== BuiltinHostFramework.React)
+				return {
+					code,
+					residuals: [
+						hostResidual(
+							emittedExpression,
+							`React Native styled subject projection requires ${BuiltinHostFramework.React}`,
+						),
+					],
+				};
+			return rewriteReactStyledSubject(code, binding, "View", binding);
+		},
 		rewriteHost: ({
 			code,
 			emittedExpression,
