@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+	BuiltinHostFramework,
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
@@ -89,6 +90,42 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
+	});
+
+	test.each([
+		[CodemodAdapterId.Jss, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
+		[CodemodAdapterId.Aphrodite, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
+		[CodemodAdapterId.Style9, CodemodAdapterId.SolidStyled, BuiltinHostFramework.Solid, "App.tsx"],
+		[CodemodAdapterId.Jss, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
+		[CodemodAdapterId.Aphrodite, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
+		[CodemodAdapterId.Style9, CodemodAdapterId.VueStyled, BuiltinHostFramework.Vue, "App.vue"],
+	] as const)("projects a static %s class carrier across %s hosts", (target, sourceAdapter, framework, file) => {
+		const source =
+			sourceAdapter === CodemodAdapterId.SolidStyled
+				? 'import { styled } from "solid-styled-components";\n' +
+				  'const Card = styled.div({ color: "red" });\n' +
+				  "export const App = () => <Card />;"
+				: "<script setup>\n" +
+				  'import styled from "vue-styled-components";\n' +
+				  'const Card = styled.div({ color: "red" });\n' +
+				  "</script>\n<template><Card /></template>";
+		const result = runAdapterMigration(source, {
+			from: sourceAdapter,
+			to: target,
+			file,
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: catalog.registry,
+			semantic: { source: { framework } },
+		});
+
+		expect(result.skipped, `${sourceAdapter} -> ${target}`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(
+			framework === BuiltinHostFramework.Vue ? '<div :class="Card" />' : '<div className={Card} />',
+		);
+		expect(result.code).not.toContain("solid-styled-components");
+		expect(result.code).not.toContain("vue-styled-components");
 	});
 
 	test("uses the runtime portable artifact for a hostless dynamic MUI value", () => {

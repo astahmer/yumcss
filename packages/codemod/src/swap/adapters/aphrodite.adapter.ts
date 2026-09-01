@@ -20,12 +20,16 @@ const aphrodite = makeExtraAdapter({
 		handlesHostRewrites: true,
 		dynamicClassCarrier: true,
 		handlesFrameworkSemantics: true,
-		hostFrameworks: [BuiltinHostFramework.React],
+		hostFrameworks: [
+			BuiltinHostFramework.React,
+			BuiltinHostFramework.Preact,
+			BuiltinHostFramework.Solid,
+			BuiltinHostFramework.Vue,
+			BuiltinHostFramework.Svelte,
+			BuiltinHostFramework.Astro,
+		],
 		hostRepresentation: StyleHostRepresentationKind.Class,
-		resolveHostRepresentation: ({ framework }) =>
-			framework === undefined || framework === BuiltinHostFramework.React
-				? StyleHostRepresentationKind.Class
-				: undefined,
+		resolveHostRepresentation: () => StyleHostRepresentationKind.Class,
 	},
 	sourceObjectOptions: {
 		namedRuleObjects: true,
