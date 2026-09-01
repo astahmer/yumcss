@@ -5,6 +5,7 @@ import {
 } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
+	AdapterTokenPolicy,
 	AdapterProjectConfig,
 	AdapterParseContext,
 } from "../adapter-contract.ts";
@@ -109,6 +110,30 @@ function configModuleValue(value: unknown): TokenamiConfigShape | undefined {
 		return undefined;
 	return candidate as TokenamiConfigShape;
 }
+
+function tokenamiTokenGroup(property: string): string | undefined {
+	if (property === "color" || property.endsWith("Color")) return "colors";
+	if (property === "borderRadius") return "radii";
+	if (/^(?:padding|margin|gap|inset)/u.test(property)) return "spacing";
+	if (/^(?:width|height|minWidth|maxWidth|minHeight|maxHeight)$/u.test(property)) return "sizes";
+	if (property === "fontSize") return "fontSizes";
+	if (property === "fontWeight") return "fontWeights";
+	if (property === "lineHeight") return "lineHeights";
+	if (property === "letterSpacing") return "letterSpacings";
+	if (property === "fontFamily") return "fonts";
+	if (property === "boxShadow") return "shadows";
+	return undefined;
+}
+
+const TOKENAMI_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
+			program,
+			tokenamiTokenGroup,
+			(match) => `$${match.group}.${match.ref}`,
+		) ?? program,
+};
 
 async function officialTokenamiConfig(
 	context: AdapterConfigContext,
@@ -270,6 +295,7 @@ export function createTokenamiAdapter(
 						officialTokenamiConfig(context, moduleLoader),
 				}),
 		sourceObjectOptions: sourceOptions,
+		tokenPolicy: TOKENAMI_TOKEN_POLICY,
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
 			{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
@@ -286,6 +312,7 @@ export function createTokenamiAdapter(
 			return {
 				text: `css(${programObject(program)})`,
 				imports: ['import { css } from "@tokenami/css";'],
+				semantic: program,
 			};
 		},
 	});

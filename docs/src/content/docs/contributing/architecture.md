@@ -202,6 +202,15 @@ configuration residual so a migration cannot claim that custom semantics were
 fully handled. Loader tests use `ProjectModuleLoader` substitutions, and at
 least one installed-package fixture covers each official integration.
 
+Custom-context proof lives in
+`packages/codemod/tests/custom-design-system-resolution.test.ts`. It exercises
+real adapter syntax for custom Chakra/Panda tokens, custom Tailwind/UnoCSS
+utilities and theme values in both directions, and Tokenami authored token refs.
+The assertions require conversion, no residuals, target-native spelling, and
+absence of the replaced raw value. Adapters without an official design-system
+loader must preserve authored expressions or report a structured residual; the
+core never invents a target token path from a matching string alone.
+
 ## Boundaries
 
 | Domain                | Port boundary                                                                                                                                | Default implementation                                                                                                                                                             |

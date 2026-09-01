@@ -126,24 +126,28 @@ contract.
 
 ## Tokenami
 
-There is no dedicated Tokenami semantic adapter in the built-in catalog yet.
-Use the shared token bridge to import Tokenami tokens into a Pandwind preset,
-then migrate style calls through the closest source shape:
+The built-in Tokenami adapter loads the project's official config when
+`@tokenami/config` is available. It preserves aliases and resolves scalar
+custom tokens into Tokenami's native authored references, such as
+`$colors.brand`, instead of replacing them with their raw values. Use the
+shared token bridge when the project has no loadable config:
 
 ```ts
 // token bridge direction
 Tokenami tokens → normalized token set → Pandwind preset → tw/css/design target
 ```
 
-This is a supported interoperability workflow, not a claim of zero-touch
-codemod coverage. Validate alias resolution, mode/theme selection, and runtime
-token reads manually until a dedicated adapter exists.
+Composition, mode-dependent values, and runtime token reads still produce
+explicit residuals when no equivalent target contract is available.
 
 ## UnoCSS
 
-There is no dedicated UnoCSS semantic adapter in the built-in catalog yet.
-Move the shared theme/token data through the token bridge, then use the
-Tailwind-compatible `tw()` path for stable utility usage:
+The built-in UnoCSS adapter asks `@unocss/config` and `@unocss/core` to load
+the project's presets, theme, shortcuts, rules, and generated utility CSS.
+Custom utilities are resolved from that generator output; custom theme values
+are emitted as named utilities when the property/value match is exact and
+unique. Move shared theme data through the token bridge only when the official
+project loader is unavailable:
 
 ```tsx
 // before
@@ -153,9 +157,10 @@ Tailwind-compatible `tw()` path for stable utility usage:
 <div className={tw({ grid: true, place: "center", gap: "2" })} />
 ```
 
-Preserve UnoCSS shortcuts, variant groups, transformer syntax, and generated
-utilities as explicit review items. A shortcut is not necessarily equivalent
-to one Pandwind utility object.
+Preserve UnoCSS variant groups and transformer-only syntax as explicit review
+items. If a custom utility cannot be resolved from the project's generator,
+the adapter keeps the source and reports an `unknown-utility` residual rather
+than guessing.
 
 ## Emotion
 
