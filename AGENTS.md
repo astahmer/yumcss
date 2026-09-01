@@ -95,6 +95,13 @@ which concrete module to import or grow a switch statement in a central runner.
   structured diagnostics/residuals; never silently treat an unevaluated
   custom preset as the complete project configuration. Do not bundle optional
   ecosystem packages into Pandwind's runtime dependencies.
+- Official config loaders should expose custom design values through the
+  neutral `AdapterTokenCatalog` contract when the ecosystem provides them.
+  Target policies consume that catalog only after exact, property-aware,
+  unique matching; source-specific aliases, presets, CSS variables, and
+  runtime theme behavior remain owned by the source adapter. A catalog is
+  evidence, not permission to guess: absent or ambiguous values stay literal
+  and must remain visible to validation.
 - Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.

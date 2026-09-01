@@ -9,13 +9,149 @@
  */
 
 import type { AnyTokens } from "pandwind/types/typings";
+import { ADAPTER_TOKEN_CATALOG_SCHEMA, type AdapterTokenCatalog } from "./adapter-contract.ts";
+import type { StyleProgram } from "./semantic-ir.ts";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
 
+export interface TokenCatalogMatch {
+	readonly group: string;
+	readonly key: string;
+	readonly authored: string;
+	readonly ref: string;
+	readonly resolved: string;
+}
+
+export type TokenGroupForProperty = (property: string) => string | undefined;
+export type TokenReferenceFormatter = (match: TokenCatalogMatch) => string;
+
 /** Normalize a preset token key (`$blue-500`, `4`, `lg`) to a ref (`blue.500`, `4`, `lg`). */
 function normalizeTokenKey(key: string): string {
 	return key.replace(/^\$/, "").replace(/-/g, ".");
+}
+
+/**
+ * Neutral token catalog used by config-loading adapters. It intentionally
+ * knows nothing about Tailwind, Chakra, Panda, UnoCSS, or a target emitter.
+ * Those adapters choose their own groups and native spelling after this
+ * infrastructure has established an exact, unique value match.
+ */
+export class TokenCatalog {
+	private constructor(private readonly catalog: AdapterTokenCatalog) {}
+
+	static fromAnyTokens(tokens: AnyTokens | undefined): TokenCatalog | undefined {
+		if (tokens === undefined) return undefined;
+		const groups: Record<string, Record<string, string>> = {};
+		for (const [group, values] of Object.entries(tokens)) {
+			const normalized: Record<string, string> = {};
+			for (const [key, value] of Object.entries(values)) {
+				if (typeof value === "string") normalized[key] = value;
+			}
+			if (Object.keys(normalized).length > 0) groups[group] = normalized;
+		}
+		return TokenCatalog.fromGroups(groups);
+	}
+
+	static fromContract(catalog: AdapterTokenCatalog | undefined): TokenCatalog | undefined {
+		return catalog === undefined || catalog.schema !== ADAPTER_TOKEN_CATALOG_SCHEMA
+			? undefined
+			: new TokenCatalog(catalog);
+	}
+
+	static fromGroups(
+		groups: Readonly<Record<string, Readonly<Record<string, string>>>>,
+	): TokenCatalog | undefined {
+		if (Object.keys(groups).length === 0) return undefined;
+		return new TokenCatalog({
+			schema: ADAPTER_TOKEN_CATALOG_SCHEMA,
+			groups,
+		});
+	}
+
+	static fromNested(
+		groups: Readonly<Record<string, unknown>> | undefined,
+	): TokenCatalog | undefined {
+		if (groups === undefined) return undefined;
+		const flattened: Record<string, Record<string, string>> = {};
+		const visit = (group: string, value: unknown, path: string[]): void => {
+			if (typeof value === "string") {
+				(flattened[group] ??= {})[path.join(".")] = value;
+				return;
+			}
+			if (typeof value !== "object" || value === null || Array.isArray(value)) return;
+			const record = value as Record<string, unknown>;
+			if (typeof record.value === "string") {
+				(flattened[group] ??= {})[path.join(".")] = record.value;
+				return;
+			}
+			for (const [key, child] of Object.entries(record)) visit(group, child, [...path, key]);
+		};
+		for (const [group, values] of Object.entries(groups)) visit(group, values, []);
+		return TokenCatalog.fromGroups(flattened);
+	}
+
+	get contract(): AdapterTokenCatalog {
+		return this.catalog;
+	}
+
+	findUnique(groups: readonly string[], value: string): TokenCatalogMatch | undefined {
+		const matches: TokenCatalogMatch[] = [];
+		const lower = value.toLowerCase();
+		for (const group of groups) {
+			for (const [key, resolved] of Object.entries(this.catalog.groups[group] ?? {})) {
+				if (resolved.toLowerCase() !== lower) continue;
+				matches.push({
+					group,
+					key,
+					authored: key,
+					ref: normalizeTokenKey(key),
+					resolved,
+				});
+			}
+		}
+		return matches.length === 1 ? matches[0] : undefined;
+	}
+
+	preserveProgram(
+		program: StyleProgram,
+		groupForProperty: TokenGroupForProperty,
+		formatReference: TokenReferenceFormatter = (match) => match.authored,
+	): StyleProgram {
+		const preserveValue = (
+			value: StyleProgram["declarations"][number]["value"],
+			property: string,
+		): typeof value => {
+			if (value.kind !== "literal" || typeof value.value !== "string") return value;
+			const group = groupForProperty(property);
+			if (group === undefined) return value;
+			const match = this.findUnique([group], value.value);
+			if (match === undefined || !/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(formatReference(match)))
+				return value;
+			return {
+				kind: "token",
+				ref: match.ref,
+				authored: formatReference(match),
+				resolved: match.resolved,
+			};
+		};
+		const preserveRule = (rule: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
+			...rule,
+			declarations: rule.declarations.map((declaration) => ({
+				...declaration,
+				value: preserveValue(declaration.value, declaration.property),
+			})),
+			children: rule.children.map(preserveRule),
+		});
+		return {
+			...program,
+			declarations: program.declarations.map((declaration) => ({
+				...declaration,
+				value: preserveValue(declaration.value, declaration.property),
+			})),
+			rules: program.rules.map(preserveRule),
+		};
+	}
 }
 
 /** group -> lowercase resolved value -> normalized ref (WeakMap-cached). */

@@ -4,7 +4,11 @@ import {
 	type AdapterRenderers,
 } from "../external-adapters.ts";
 import { matchBlock } from "../../source-pass-utils.ts";
-import type { AdapterEmitContext, AdapterTargetMigrationPolicy } from "../adapter-contract.ts";
+import type {
+	AdapterEmitContext,
+	AdapterTargetMigrationPolicy,
+	AdapterTokenPolicy,
+} from "../adapter-contract.ts";
 import type { StyleProgram } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
@@ -21,6 +25,7 @@ import {
 	componentExpressionForSubject,
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
+import { TokenCatalog } from "../tokens.ts";
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
@@ -124,47 +129,17 @@ function preserveKnownPresetTokens(
 	program: StyleProgram,
 	context: AdapterEmitContext | undefined,
 ): StyleProgram {
-	const tokens = context?.meta?.tokens;
-	if (tokens === undefined) return program;
-	const value = (
-		input: StyleProgram["declarations"][number]["value"],
-		property: string,
-	): typeof input => {
-		if (input.kind !== "literal" || typeof input.value !== "string") return input;
-		const literal = input.value;
-		const group = pandwindTokenGroup(property);
-		if (group === undefined || tokens[group] === undefined) return input;
-		const matches = Object.entries(tokens[group]!).filter(
-			([, tokenValue]) =>
-				typeof tokenValue === "string" && tokenValue.toLowerCase() === literal.toLowerCase(),
-		);
-		if (matches.length !== 1) return input;
-		const authored = matches[0]![0];
-		if (!/^[A-Za-z0-9_$][A-Za-z0-9_$.\-]*$/u.test(authored)) return input;
-		return {
-			kind: "token",
-			ref: authored.startsWith("$") ? authored.slice(1) : authored,
-			authored,
-			resolved: literal,
-		};
-	};
-	const rule = (input: StyleProgram["rules"][number]): StyleProgram["rules"][number] => ({
-		...input,
-		declarations: input.declarations.map((declaration) => ({
-			...declaration,
-			value: value(declaration.value, declaration.property),
-		})),
-		children: input.children.map(rule),
-	});
-	return {
-		...program,
-		declarations: program.declarations.map((declaration) => ({
-			...declaration,
-			value: value(declaration.value, declaration.property),
-		})),
-		rules: program.rules.map(rule),
-	};
+	const catalog =
+		TokenCatalog.fromContract(context?.config.tokenCatalog) ??
+		TokenCatalog.fromAnyTokens(context?.meta?.tokens);
+	if (catalog === undefined) return program;
+	return catalog.preserveProgram(program, pandwindTokenGroup);
 }
+
+const PANDWIND_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) => preserveKnownPresetTokens(program, context),
+};
 
 function generatedCssBinding(source: string | undefined): string {
 	const input = source ?? "";
@@ -1132,6 +1107,7 @@ export default defineCodemodAdapter({
 	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 	configFiles: ["pandwind.config.ts", "package.json"],
+	tokenPolicy: PANDWIND_TOKEN_POLICY,
 	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 	emit(program, { programObject, declarationsObject }, context) {
 		const cssBinding = generatedCssBinding(context?.document?.document.source);

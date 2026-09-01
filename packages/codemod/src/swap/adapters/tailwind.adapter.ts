@@ -27,6 +27,7 @@ import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { matchBlock } from "../../sources.ts";
+import { TokenCatalog } from "../tokens.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -499,8 +500,38 @@ type TailwindEnginePackage = {
 		options: { readonly base: string },
 	) => Promise<{
 		candidatesToCss(candidates: readonly string[]): readonly (string | null)[];
+		theme?: {
+			entries(): Iterable<readonly [string, { readonly value?: string }]>;
+		};
 	}>;
 };
+
+function tailwindTokenCatalog(
+	system: Awaited<ReturnType<NonNullable<TailwindEnginePackage["__unstable__loadDesignSystem"]>>>,
+) {
+	const groups: Record<string, Record<string, string>> = {};
+	const groupNames: Readonly<Record<string, string>> = {
+		color: "colors",
+		spacing: "spacing",
+		radius: "radii",
+		"font-size": "fontSizes",
+		"font-weight": "fontWeights",
+		leading: "lineHeights",
+		tracking: "letterSpacings",
+		font: "fonts",
+		shadow: "shadows",
+	};
+	for (const [variable, entry] of system.theme?.entries() ?? []) {
+		const match =
+			/^--(color|spacing|radius|font-size|font-weight|leading|tracking|font|shadow)-(.+)$/u.exec(
+				variable,
+			);
+		const group = match?.[1] === undefined ? undefined : groupNames[match[1]];
+		if (group === undefined || match?.[2] === undefined || entry.value === undefined) continue;
+		(groups[group] ??= {})[match[2]] = entry.value;
+	}
+	return TokenCatalog.fromGroups(groups);
+}
 
 function parseEngineCss(css: string): readonly StyleDeclaration[] | undefined {
 	const body = css.slice(css.indexOf("{") + 1, css.lastIndexOf("}"));
@@ -545,6 +576,7 @@ async function officialConfig(
 		return {
 			...fallback,
 			files: [joinDocumentPath(context.root, cssFile.file)],
+			tokenCatalog: tailwindTokenCatalog(system)?.contract,
 			values: {
 				...fallback.values,
 				tailwindResolver: resolver,

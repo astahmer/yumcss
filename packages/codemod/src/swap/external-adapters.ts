@@ -18,6 +18,7 @@ import {
 	type AdapterParseContext,
 	type AdapterParseResult,
 	type AdapterProjectConfig,
+	type AdapterTokenPolicy,
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
@@ -133,6 +134,8 @@ export interface CodemodAdapterSpec {
 	) => CodemodAdapterEmission;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
+	/** Target-owned policy for verified custom-token recovery. */
+	readonly tokenPolicy?: AdapterTokenPolicy;
 	/** Target-owned policy for preserving named style maps without source branches. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
 	emit(
@@ -1130,6 +1133,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		sourceModules: spec.sourceModules,
 		capabilities: capabilitiesWithRepresentations,
 		dependencies: spec.packages,
+		...(spec.tokenPolicy === undefined ? {} : { tokenPolicy: spec.tokenPolicy }),
 		...(spec.lowerings === undefined ? {} : { lowerings: spec.lowerings }),
 		migration,
 		detect: (context) =>

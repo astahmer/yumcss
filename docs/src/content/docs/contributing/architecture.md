@@ -676,12 +676,15 @@ assertions guarding the snapshots.
 ### Token-preserving output
 
 Target emitters should preserve design-system vocabulary when that vocabulary
-is actually available. The Pandwind target uses the project metadata passed to
-the emitter to recover a target token reference (including a `$...` sigil when
-required) only when the token's resolved value is an exact match for the source
-literal. The semantic node retains that resolved value, so canonical CSS
-validation still compares concrete browser meaning while generated source uses
-the idiomatic token spelling.
+is actually available. Official config loaders for Tailwind, UnoCSS, Chakra,
+Panda, and Tokenami normalize discovered custom values into the versioned
+`AdapterTokenCatalog`. The target adapter owns the property mapping and native
+spelling: the Pandwind target can emit `$...` references, while object-oriented
+targets may emit their own token path. Class-oriented targets remain literal or
+utility-based unless their own resolver proves a named utility is equivalent.
+The semantic node retains the resolved value, so canonical CSS validation still
+compares concrete browser meaning while generated source uses the idiomatic
+token spelling.
 
 This is deliberately conservative. Without a target preset or generated
 interop metadata, the adapter keeps the literal; with ambiguous or conflicting
@@ -689,6 +692,8 @@ token matches, it also keeps the literal. Migration tooling must not guess a
 token from a familiar value, because the same literal can have different
 design-system roles or different runtime behavior. External adapter CLI runs
 load this context only when the user supplies `--meta=<dir>`; they never borrow
-the repository's example preset implicitly. The focused regression in
-`packages/codemod/tests/token-preservation.test.ts` proves both the verified
-`$blue-500` emission and the literal fallback.
+the repository's example preset implicitly. The focused regressions in
+`packages/codemod/tests/token-preservation.test.ts` and
+`packages/codemod/tests/official-token-catalog.test.ts` prove verified
+emission, official custom-config loading, ambiguity rejection, and literal
+fallback.

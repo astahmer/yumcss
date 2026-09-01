@@ -62,8 +62,23 @@ export interface AdapterProjectConfig {
 	readonly root?: string;
 	readonly files: readonly string[];
 	readonly values: Readonly<Record<string, unknown>>;
+	/**
+	 * Normalized design-token values discovered by the owning config loader.
+	 * The catalog is deliberately neutral; each target adapter decides whether
+	 * a verified match can be emitted in its native token syntax.
+	 */
+	readonly tokenCatalog?: AdapterTokenCatalog;
 	/** Configuration-loading failures are semantic residuals, never silent fallback. */
 	readonly residuals?: readonly StyleProgramResidual[];
+}
+
+export const ADAPTER_TOKEN_CATALOG_SCHEMA = "pandwind.adapter-token-catalog/1" as const;
+export const ADAPTER_TOKEN_POLICY_SCHEMA = "pandwind.adapter-token-policy/1" as const;
+
+export interface AdapterTokenCatalog {
+	readonly schema: typeof ADAPTER_TOKEN_CATALOG_SCHEMA;
+	/** group -> authored token key -> resolved value */
+	readonly groups: Readonly<Record<string, Readonly<Record<string, string>>>>;
 }
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
@@ -122,6 +137,16 @@ export interface AdapterEmitContext {
 		/** Target-owned semantic carrier selected for this emission. */
 		readonly representationKind?: StyleRepresentationKind;
 	};
+}
+
+/**
+ * Target-owned token preservation. Source adapters only provide semantic
+ * values; this port decides if a target's verified config can recover a
+ * native token reference without changing CSS meaning.
+ */
+export interface AdapterTokenPolicy {
+	readonly schema: typeof ADAPTER_TOKEN_POLICY_SCHEMA;
+	preserve(program: StyleProgram, context: AdapterEmitContext): StyleProgram;
 }
 
 export interface AdapterEmitResult {
@@ -354,6 +379,8 @@ export interface StyleAdapter {
 	readonly sourceModules: readonly string[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
+	/** Optional target-owned policy for verified custom-token recovery. */
+	readonly tokenPolicy?: AdapterTokenPolicy;
 	/** Adapter-owned semantic strategies; the runner only composes these ports. */
 	readonly lowerings?: readonly StyleLowering[];
 	readonly migration?: AdapterMigrationHooks;

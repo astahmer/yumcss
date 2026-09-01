@@ -1205,7 +1205,7 @@ function runAdapterMigrationInternal(
 			continue;
 		}
 		residuals.push(...loweringResiduals);
-		const emitted = targetAdapter.emit(program, {
+		const emitContext = {
 			file: options.file,
 			config: targetConfig,
 			mode,
@@ -1227,7 +1227,9 @@ function runAdapterMigrationInternal(
 					? {}
 					: { representationKind: targetRepresentationKind }),
 			},
-		});
+		};
+		const emissionProgram = targetAdapter.tokenPolicy?.preserve(program, emitContext) ?? program;
+		const emitted = targetAdapter.emit(emissionProgram, emitContext);
 		if (emitted.text.trim() === "") {
 			const emptyEmission = {
 				kind: "emission-empty",

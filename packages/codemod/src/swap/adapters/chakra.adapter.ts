@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import type { AdapterConfigContext, AdapterParseContext } from "../adapter-contract.ts";
+import type {
+	AdapterConfigContext,
+	AdapterParseContext,
+	AdapterTokenPolicy,
+} from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
@@ -11,6 +15,7 @@ import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project
 import { joinDocumentPath } from "../../path-utils.ts";
 import { matchBlock } from "../../sources.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
+import { TokenCatalog } from "../tokens.ts";
 
 const styleProps = [
 	"css",
@@ -367,6 +372,16 @@ function chakraTokenGroup(property: string): string | undefined {
 	return undefined;
 }
 
+const CHAKRA_TOKEN_POLICY: AdapterTokenPolicy = {
+	schema: "pandwind.adapter-token-policy/1",
+	preserve: (program, context) =>
+		TokenCatalog.fromContract(context.config.tokenCatalog)?.preserveProgram(
+			program,
+			chakraTokenGroup,
+			(match) => match.ref,
+		) ?? program,
+};
+
 function hasConfigToken(config: unknown, group: string, token: string): boolean {
 	if (typeof config !== "object" || config === null) return false;
 	const root = config as Record<string, unknown>;
@@ -470,6 +485,14 @@ async function officialChakraConfig(
 		return {
 			...fallback,
 			files: [...fallback.files, path],
+			tokenCatalog: TokenCatalog.fromNested({
+				...((config.theme as Record<string, unknown> | undefined)?.tokens as
+					| Record<string, unknown>
+					| undefined),
+				...((config.theme as Record<string, unknown> | undefined)?.semanticTokens as
+					| Record<string, unknown>
+					| undefined),
+			})?.contract,
 			values: {
 				chakraConfig: config,
 				...(system === undefined ? {} : { chakraSystem: system }),
@@ -845,6 +868,7 @@ export function createChakraAdapter(
 		// Component imports remain in place because the host element still uses Chakra's component.
 		sourceModules: [],
 		configFiles: ["package.json", "chakra.config.ts", "theme.ts"],
+		tokenPolicy: CHAKRA_TOKEN_POLICY,
 		...(moduleLoader === undefined
 			? {}
 			: {

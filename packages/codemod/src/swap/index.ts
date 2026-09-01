@@ -207,6 +207,8 @@ export type {
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterProjectConfig,
+	AdapterTokenCatalog,
+	AdapterTokenPolicy,
 	AdapterValidationResult,
 	AdapterLossiness,
 	AdapterDynamicPreparationContext,
@@ -223,6 +225,13 @@ export type {
 	StyleAdapter,
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
+export { ADAPTER_TOKEN_CATALOG_SCHEMA, ADAPTER_TOKEN_POLICY_SCHEMA } from "./adapter-contract.ts";
+export { TokenCatalog } from "./tokens.ts";
+export type {
+	TokenCatalogMatch,
+	TokenGroupForProperty,
+	TokenReferenceFormatter,
+} from "./tokens.ts";
 export {
 	STYLE_LOWERING_REGISTRY,
 	STYLE_LOWERING_SCHEMA,

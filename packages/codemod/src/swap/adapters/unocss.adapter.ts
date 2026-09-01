@@ -25,6 +25,7 @@ import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { TokenCatalog } from "../tokens.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -409,6 +410,11 @@ async function officialConfig(
 				unoGeneratedCss: generated.css,
 				officialConfigPackages: ["@unocss/config", "@unocss/core"],
 			},
+			tokenCatalog: TokenCatalog.fromNested(
+				(loaded.config as Record<string, unknown> | undefined)?.theme as
+					| Record<string, unknown>
+					| undefined,
+			)?.contract,
 		};
 	} catch (error) {
 		return {

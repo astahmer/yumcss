@@ -21,6 +21,7 @@ import {
 } from "../identifiers.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
+import { TokenCatalog } from "../tokens.ts";
 
 /** Tokenami property aliases that are part of its standard design-system vocabulary. */
 const STANDARD_ALIASES: Readonly<Record<string, string | readonly string[]>> = {
@@ -93,6 +94,7 @@ interface TokenamiConfigShape {
 	readonly aliases?: Readonly<Record<string, string | readonly string[]>>;
 	readonly selectors?: Readonly<Record<string, string | readonly string[]>>;
 	readonly responsive?: Readonly<Record<string, string>>;
+	readonly tokens?: Readonly<Record<string, unknown>>;
 }
 
 function configModuleValue(value: unknown): TokenamiConfigShape | undefined {
@@ -101,7 +103,8 @@ function configModuleValue(value: unknown): TokenamiConfigShape | undefined {
 	if (
 		candidate.aliases === undefined &&
 		candidate.selectors === undefined &&
-		candidate.responsive === undefined
+		candidate.responsive === undefined &&
+		candidate.tokens === undefined
 	)
 		return undefined;
 	return candidate as TokenamiConfigShape;
@@ -141,6 +144,7 @@ async function officialTokenamiConfig(
 		return {
 			...fallback,
 			files: [...fallback.files, path],
+			tokenCatalog: TokenCatalog.fromNested(normalized.tokens)?.contract,
 			values: {
 				...fallback.values,
 				tokenamiAliases: normalized.aliases ?? STANDARD_ALIASES,

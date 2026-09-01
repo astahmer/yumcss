@@ -24,6 +24,8 @@ import {
 	type ProjectModuleLoader,
 } from "../../project-module-loader.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
+import { TokenCatalog } from "../../tokens.ts";
+import type { AdapterTokenCatalog } from "../../adapter-contract.ts";
 
 const sourceWorkspace = createSourceWorkspace();
 
@@ -47,6 +49,8 @@ export interface PandaTheme {
 	textStyles: ReadonlyMap<string, Record<string, unknown>>;
 	/** Custom pattern definitions loaded from panda.config.ts. */
 	customPatterns: ReadonlyMap<string, PandaCustomPattern>;
+	/** Normalized string-valued tokens for downstream target policies. */
+	readonly tokenCatalog?: AdapterTokenCatalog;
 }
 
 interface ValueBox {
@@ -283,7 +287,14 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 			}
 		}
 	}
-	return { tokens, conditions, tokenVars, textStyles, customPatterns };
+	return {
+		tokens,
+		conditions,
+		tokenVars,
+		textStyles,
+		customPatterns,
+		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
+	};
 }
 
 /**
@@ -359,5 +370,12 @@ function loadPandaThemeFromSource(configSource: string, extraSources: Array<stri
 	}
 	resolveTokenReferences(tokens);
 	addDefaultTextStyles(textStyles);
-	return { tokens, conditions: {}, tokenVars, textStyles, customPatterns: new Map() };
+	return {
+		tokens,
+		conditions: {},
+		tokenVars,
+		textStyles,
+		customPatterns: new Map(),
+		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
+	};
 }
