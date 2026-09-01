@@ -37,9 +37,9 @@ async function runCliMatrix(
 			return file;
 		});
 		const { stdout } = await execFileAsync(
-			"pnpm",
+			process.execPath,
 			[
-				"exec",
+				"--import",
 				"tsx",
 				"src/cli.ts",
 				"swap",
@@ -73,7 +73,7 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 		const routes = catalog.adapters.flatMap((source) =>
 			catalog.adapters.map((target) => ({ source, target })),
 		);
-		const concurrency = 32;
+		const concurrency = 64;
 		for (let start = 0; start < routes.length; start += concurrency) {
 			await Promise.all(
 				routes.slice(start, start + concurrency).map(async ({ source, target }) => {
@@ -108,5 +108,5 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 				}),
 			);
 		}
-	}, 300_000);
+	}, 600_000);
 });

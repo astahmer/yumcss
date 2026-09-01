@@ -1,0 +1,1 @@
+import { css } from '@compiled/react'; css({ color: theme.foreground })
