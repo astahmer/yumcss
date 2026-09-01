@@ -8,19 +8,31 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.VueStyled);
+const happySource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished pandwind */';
+const sourceSemantic = undefined;
 
-test("pandwind -> vue-styled: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("pandwind -> vue-styled: migrates concrete pandwind syntax to vue-styled", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		styled.div({ "color": "red" })",
+
+		const css = createCss();
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +53,50 @@ test("pandwind -> vue-styled: statically migrates the happy path", () => {
 	`);
 });
 
-test("pandwind -> vue-styled: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("pandwind -> vue-styled: carries concrete pandwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		css.vars({ "color": theme.foreground })",
-		  "converted": 1,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css.class({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("pandwind -> vue-styled: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("pandwind -> vue-styled: preserves malformed concrete pandwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		styled.div({ "color": "red" })
+
+		const css = createCss();
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +117,3 @@ test("pandwind -> vue-styled: preserves malformed input and reports the boundary
 		}
 	`);
 });
-

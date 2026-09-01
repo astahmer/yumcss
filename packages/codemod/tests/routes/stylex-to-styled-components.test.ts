@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.StyledComponents);
+const happySource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const edgeSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const malformedSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */';
+const sourceSemantic = undefined;
 
-test("stylex -> styled-components: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("stylex -> styled-components: migrates concrete stylex syntax to styled-components", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		 { "card": styled.div({ color: "red" }) }",
+
+		export const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +52,17 @@ test("stylex -> styled-components: statically migrates the happy path", () => {
 	`);
 });
 
-test("stylex -> styled-components: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("stylex -> styled-components: carries concrete stylex dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		 { "card": styled.div({ color: theme.foreground }) }",
+
+		export const styles = { "card": styled.div({ color: theme.foreground, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -70,15 +83,17 @@ test("stylex -> styled-components: reports edge semantics without silent loss", 
 	`);
 });
 
-test("stylex -> styled-components: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("stylex -> styled-components: preserves malformed concrete stylex input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "styled-components";
-		 { "card": styled.div({ color: "red" }) }
+
+		export const styles = { "card": styled.div({ color: "red", padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +114,3 @@ test("stylex -> styled-components: preserves malformed input and reports the bou
 		}
 	`);
 });
-

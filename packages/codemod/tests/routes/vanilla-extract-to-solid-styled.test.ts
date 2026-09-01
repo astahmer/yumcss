@@ -8,19 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.VanillaExtract, CodemodAdapterId.SolidStyled);
+const happySource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: "1rem" });';
+const edgeSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: theme.foreground, padding: "1rem" });';
+const malformedSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished vanilla-extract */';
+const sourceSemantic = undefined;
 
-test("vanilla-extract -> solid-styled: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("vanilla-extract -> solid-styled: migrates concrete vanilla-extract syntax to solid-styled", () => {
+	const result = route.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		 styled.div({ "color": "red" })",
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,8 +51,8 @@ test("vanilla-extract -> solid-styled: statically migrates the happy path", () =
 	`);
 });
 
-test("vanilla-extract -> solid-styled: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("vanilla-extract -> solid-styled: carries concrete vanilla-extract dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -51,7 +61,8 @@ test("vanilla-extract -> solid-styled: reports edge semantics without silent los
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+
+		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -72,15 +83,20 @@ test("vanilla-extract -> solid-styled: reports edge semantics without silent los
 	`);
 });
 
-test("vanilla-extract -> solid-styled: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("vanilla-extract -> solid-styled: preserves malformed concrete vanilla-extract input", () => {
+	const result = route.run({
+		source: malformedSource,
+		file: "Card.css.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		 styled.div({ "color": "red" })
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +117,3 @@ test("vanilla-extract -> solid-styled: preserves malformed input and reports the
 		}
 	`);
 });
-

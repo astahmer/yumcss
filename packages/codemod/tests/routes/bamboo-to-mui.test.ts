@@ -8,25 +8,35 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Bamboo, CodemodAdapterId.Mui);
+const happySource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished bamboo */';
+const sourceSemantic = undefined;
 
-test("bamboo -> mui: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("bamboo -> mui: migrates concrete bamboo syntax to mui", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		 css.class({ "color": "red" })",
+		  "code": "import { Box } from "@mui/material";
+
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -42,25 +52,31 @@ test("bamboo -> mui: statically migrates the happy path", () => {
 	`);
 });
 
-test("bamboo -> mui: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("bamboo -> mui: carries concrete bamboo dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+		  "code": "import { css } from "styled-system/css";
+		import { Box } from "@mui/material";
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
+		  "residuals": [
+		    {
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
+		    },
+		  ],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -73,22 +89,23 @@ test("bamboo -> mui: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("bamboo -> mui: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("bamboo -> mui: preserves malformed concrete bamboo input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished bamboo */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-		 css.class({ "color": "red" })
+		  "code": "import { Box } from "@mui/material";
+
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;
 		const unfinished = { /* unfinished bamboo */",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -103,4 +120,3 @@ test("bamboo -> mui: preserves malformed input and reports the boundary", () => 
 		}
 	`);
 });
-

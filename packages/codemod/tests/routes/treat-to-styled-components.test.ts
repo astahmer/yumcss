@@ -8,19 +8,33 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.StyledComponents);
+const happySource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });';
+const edgeSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.foreground, padding: "1rem" });';
+const malformedSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished treat */';
+const sourceSemantic = undefined;
 
-test("treat -> styled-components: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("treat -> styled-components: migrates concrete treat syntax to styled-components", () => {
+	const result = route.run({
+		source: happySource,
+		file: "Card.treat.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		import { style } from './styles.treat'; styled.div({ color: "red" })",
+		  "code": "import { style } from "@treatjs/treat";
+		import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +55,16 @@ test("treat -> styled-components: statically migrates the happy path", () => {
 	`);
 });
 
-test("treat -> styled-components: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("treat -> styled-components: carries concrete treat dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		import { style } from './styles.treat'; styled.div({ color: theme.foreground })",
+		  "code": "import { style } from "@treatjs/treat";
+		import styled from "styled-components";
+		export const card = styled.div({ color: theme.foreground, padding: "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -70,15 +85,20 @@ test("treat -> styled-components: reports edge semantics without silent loss", (
 	`);
 });
 
-test("treat -> styled-components: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("treat -> styled-components: preserves malformed concrete treat input", () => {
+	const result = route.run({
+		source: malformedSource,
+		file: "Card.treat.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.code).toContain("/* unfinished treat */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-		import { style } from './styles.treat'; styled.div({ color: "red" })
+		  "code": "import { style } from "@treatjs/treat";
+		import styled from "styled-components";
+		export const card = styled.div({ color: "red", padding: "1rem" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +119,3 @@ test("treat -> styled-components: preserves malformed input and reports the boun
 		}
 	`);
 });
-

@@ -8,25 +8,36 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.Mui);
+const happySource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished pandwind */';
+const sourceSemantic = undefined;
 
-test("pandwind -> mui: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("pandwind -> mui: migrates concrete pandwind syntax to mui", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { Box } from "@mui/material";
+
 		const css = createCss();
-		css.class({ "color": "red" })",
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -42,25 +53,32 @@ test("pandwind -> mui: statically migrates the happy path", () => {
 	`);
 });
 
-test("pandwind -> mui: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("pandwind -> mui: carries concrete pandwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		css.vars({ "color": theme.foreground })",
+		  "code": "import { createCss } from "pandwind/css";
+		import { Box } from "@mui/material";
+		const css = createCss();
+		export const card = { color: theme.foreground, padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
+		  "residuals": [
+		    {
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
+		    },
+		  ],
 		  "skipped": 0,
 		  "validations": [
 		    {
@@ -73,22 +91,24 @@ test("pandwind -> mui: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("pandwind -> mui: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("pandwind -> mui: preserves malformed concrete pandwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { Box } from "@mui/material";
+
 		const css = createCss();
-		css.class({ "color": "red" })
+		export const card = { color: "red", padding: "1rem" };
+		export const App = () => <Box component="div" sx={card} />;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "static",
+		      "representation": "static",
 		    },
 		  ],
 		  "residuals": [],
@@ -103,4 +123,3 @@ test("pandwind -> mui: preserves malformed input and reports the boundary", () =
 		}
 	`);
 });
-

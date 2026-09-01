@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Linaria, CodemodAdapterId.Fela);
+const happySource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished linaria */';
+const sourceSemantic = undefined;
 
-test("linaria -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("linaria -> fela: migrates concrete linaria syntax to fela", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,22 +51,21 @@ test("linaria -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("linaria -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("linaria -> fela: carries concrete linaria dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [],
@@ -71,14 +81,16 @@ test("linaria -> fela: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("linaria -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("linaria -> fela: preserves malformed concrete linaria input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished linaria */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +111,3 @@ test("linaria -> fela: preserves malformed input and reports the boundary", () =
 		}
 	`);
 });
-

@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.Style9);
+const happySource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red", padding: "1rem" }));';
+const edgeSource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.foreground, padding: "1rem" }));';
+const malformedSource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red", padding: "1rem" }));\nconst unfinished = { /* unfinished fela */';
+const sourceSemantic = undefined;
 
-test("fela -> style9: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("fela -> style9: migrates concrete fela syntax to style9", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 style9.create({ "color": "red" })",
+
+		const renderer = createRenderer();
+		export const card = style9.create({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,8 +52,8 @@ test("fela -> style9: statically migrates the happy path", () => {
 	`);
 });
 
-test("fela -> style9: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("fela -> style9: carries concrete fela dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -51,7 +62,9 @@ test("fela -> style9: reports edge semantics without silent loss", () => {
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+
+		const renderer = createRenderer();
+		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -72,15 +85,17 @@ test("fela -> style9: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("fela -> style9: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("fela -> style9: preserves malformed concrete fela input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished fela */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 style9.create({ "color": "red" })
+
+		const renderer = createRenderer();
+		export const card = style9.create({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +116,3 @@ test("fela -> style9: preserves malformed input and reports the boundary", () =>
 		}
 	`);
 });
-

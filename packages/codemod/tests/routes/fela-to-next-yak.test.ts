@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Fela, CodemodAdapterId.NextYak);
+const happySource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red", padding: "1rem" }));';
+const edgeSource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: theme.foreground, padding: "1rem" }));';
+const malformedSource =
+	'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red", padding: "1rem" }));\nconst unfinished = { /* unfinished fela */';
+const sourceSemantic = undefined;
 
-test("fela -> next-yak: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("fela -> next-yak: migrates concrete fela syntax to next-yak", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		 css\`color: red;\`",
+
+		const renderer = createRenderer();
+		export const card = css\`color: red; padding: 1rem;\`;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +52,17 @@ test("fela -> next-yak: statically migrates the happy path", () => {
 	`);
 });
 
-test("fela -> next-yak: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("fela -> next-yak: carries concrete fela dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		 css\`color: \${theme.foreground};\`",
+
+		const renderer = createRenderer();
+		export const card = css\`color: \${theme.foreground}; padding: 1rem;\`;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -70,15 +83,17 @@ test("fela -> next-yak: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("fela -> next-yak: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("fela -> next-yak: preserves malformed concrete fela input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished fela */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "next-yak";
-		 css\`color: red;\`
+
+		const renderer = createRenderer();
+		export const card = css\`color: red; padding: 1rem;\`;
 		const unfinished = { /* unfinished fela */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +114,3 @@ test("fela -> next-yak: preserves malformed input and reports the boundary", () 
 		}
 	`);
 });
-

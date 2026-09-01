@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Compiled, CodemodAdapterId.VueStyled);
+const happySource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished compiled */';
+const sourceSemantic = undefined;
 
-test("compiled -> vue-styled: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("compiled -> vue-styled: migrates concrete compiled syntax to vue-styled", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		 styled.div({ "color": "red" })",
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +52,48 @@ test("compiled -> vue-styled: statically migrates the happy path", () => {
 	`);
 });
 
-test("compiled -> vue-styled: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("compiled -> vue-styled: carries concrete compiled dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
-		  "converted": 1,
+		  "code": "import { css } from "@compiled/react";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("compiled -> vue-styled: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("compiled -> vue-styled: preserves malformed concrete compiled input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished compiled */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		 styled.div({ "color": "red" })
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +114,3 @@ test("compiled -> vue-styled: preserves malformed input and reports the boundary
 		}
 	`);
 });
-

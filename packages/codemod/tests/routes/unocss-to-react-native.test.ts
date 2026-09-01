@@ -8,19 +8,26 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.UnoCSS, CodemodAdapterId.ReactNative);
+const happySource = 'export const App = () => <div className="flex items-center gap-4" />;';
+const edgeSource = '<div className="flex unknown-project-utility" />';
+const malformedSource =
+	'export const App = () => <div className="flex items-center gap-4" />;\nconst unfinished = { /* unfinished unocss */';
+const sourceSemantic = undefined;
 
-test("unocss -> react-native: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("unocss -> react-native: migrates concrete unocss syntax to react-native", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		<View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center" } }).style}/>",
+		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,8 +48,8 @@ test("unocss -> react-native: statically migrates the happy path", () => {
 	`);
 });
 
-test("unocss -> react-native: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("unocss -> react-native: carries concrete unocss dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -70,15 +77,15 @@ test("unocss -> react-native: reports edge semantics without silent loss", () =>
 	`);
 });
 
-test("unocss -> react-native: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("unocss -> react-native: preserves malformed concrete unocss input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished unocss */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { StyleSheet, View } from "react-native";
-		<View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center" } }).style}/>
+		export const App = () => <View   style={StyleSheet.create({ style: { "display": "flex", "alignItems": "center", "gap": 16 } }).style}/>;
 		const unfinished = { /* unfinished unocss */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +106,3 @@ test("unocss -> react-native: preserves malformed input and reports the boundary
 		}
 	`);
 });
-

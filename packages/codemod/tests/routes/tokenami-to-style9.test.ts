@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Style9);
+const happySource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished tokenami */';
+const sourceSemantic = undefined;
 
-test("tokenami -> style9: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tokenami -> style9: migrates concrete tokenami syntax to style9", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 style9.create({ "hover": { "color": "red" } })",
+
+		export const card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,22 +52,22 @@ test("tokenami -> style9: statically migrates the happy path", () => {
 	`);
 });
 
-test("tokenami -> style9: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tokenami -> style9: carries concrete tokenami dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "hover": { "color": theme.foreground } })",
+		  "code": "import style9 from "style9";
+
+		export const card = style9(style9.create({ style: { "color": "var(--pandwind-dynamic-5qa8dh)", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "custom-property",
 		    },
 		  ],
 		  "residuals": [],
@@ -72,15 +83,17 @@ test("tokenami -> style9: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("tokenami -> style9: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tokenami -> style9: preserves malformed concrete tokenami input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tokenami */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 style9.create({ "hover": { "color": "red" } })
+
+		export const card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +114,3 @@ test("tokenami -> style9: preserves malformed input and reports the boundary", (
 		}
 	`);
 });
-

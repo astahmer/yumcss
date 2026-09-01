@@ -8,19 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.ChakraUi);
+const happySource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;';
+const edgeSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unresolvedStyle = runtimeTheme.foreground;';
+const malformedSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unfinished = { /* unfinished tailwind */';
+const sourceSemantic = undefined;
 
-test("tailwind -> chakra-ui: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tailwind -> chakra-ui: migrates concrete tailwind syntax to chakra-ui", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@chakra-ui/react";
-		 <div  className={css({ display: "flex", padding: "1rem" })}/>",
+
+		export const App = () => <div  className={css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +51,16 @@ test("tailwind -> chakra-ui: statically migrates the happy path", () => {
 	`);
 });
 
-test("tailwind -> chakra-ui: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tailwind -> chakra-ui: carries concrete tailwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@chakra-ui/react";
-		 <div  className={css({ display: "flex", padding: "1rem" })}/>
+
+		export const App = () => <div  className={css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -71,15 +82,16 @@ test("tailwind -> chakra-ui: reports edge semantics without silent loss", () => 
 	`);
 });
 
-test("tailwind -> chakra-ui: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tailwind -> chakra-ui: preserves malformed concrete tailwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tailwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "@chakra-ui/react";
-		 <div  className={css({ display: "flex", padding: "1rem" })}/>
+
+		export const App = () => <div  className={css({ display: "flex", gap: "1rem", padding: "1rem", color: "#000" })}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "outcomes": [
@@ -100,4 +112,3 @@ test("tailwind -> chakra-ui: preserves malformed input and reports the boundary"
 		}
 	`);
 });
-

@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Linaria, CodemodAdapterId.SolidStyled);
+const happySource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished linaria */';
+const sourceSemantic = undefined;
 
-test("linaria -> solid-styled: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("linaria -> solid-styled: migrates concrete linaria syntax to solid-styled", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		 styled.div({ "color": "red" })",
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +52,53 @@ test("linaria -> solid-styled: statically migrates the happy path", () => {
 	`);
 });
 
-test("linaria -> solid-styled: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("linaria -> solid-styled: carries concrete linaria dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
-		  "converted": 1,
+		  "code": "import { css } from "@linaria/core";
+		export const card = // pandwind:migrate-skip (route: linaria -> solid-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		css\`color: \${theme.foreground}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "residual",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "solid-styled has no host representation for solid",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("linaria -> solid-styled: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("linaria -> solid-styled: preserves malformed concrete linaria input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished linaria */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		 styled.div({ "color": "red" })
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished linaria */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +119,3 @@ test("linaria -> solid-styled: preserves malformed input and reports the boundar
 		}
 	`);
 });
-

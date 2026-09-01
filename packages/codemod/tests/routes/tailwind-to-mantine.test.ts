@@ -8,18 +8,28 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Mantine);
+const happySource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;';
+const edgeSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unresolvedStyle = runtimeTheme.foreground;';
+const malformedSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unfinished = { /* unfinished tailwind */';
+const sourceSemantic = undefined;
 
-test("tailwind -> mantine: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tailwind -> mantine: migrates concrete tailwind syntax to mantine", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " <div  style={{ display: "flex", padding: "1rem" }}/>",
+		  "code": "
+		export const App = () => <div  style={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +50,15 @@ test("tailwind -> mantine: statically migrates the happy path", () => {
 	`);
 });
 
-test("tailwind -> mantine: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tailwind -> mantine: carries concrete tailwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " <div  style={{ display: "flex", padding: "1rem" }}/>
+		  "code": "
+		export const App = () => <div  style={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -69,14 +80,15 @@ test("tailwind -> mantine: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("tailwind -> mantine: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tailwind -> mantine: preserves malformed concrete tailwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tailwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " <div  style={{ display: "flex", padding: "1rem" }}/>
+		  "code": "
+		export const App = () => <div  style={{ display: "flex", gap: "1rem", padding: "1rem", color: "#000" }}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "outcomes": [
@@ -97,4 +109,3 @@ test("tailwind -> mantine: preserves malformed input and reports the boundary", 
 		}
 	`);
 });
-

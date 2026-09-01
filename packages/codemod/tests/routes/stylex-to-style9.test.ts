@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Style9);
+const happySource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const edgeSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const malformedSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */';
+const sourceSemantic = undefined;
 
-test("stylex -> style9: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("stylex -> style9: migrates concrete stylex syntax to style9", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 { "card": style9.create({ "color": "red" }) }",
+
+		export const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +52,17 @@ test("stylex -> style9: statically migrates the happy path", () => {
 	`);
 });
 
-test("stylex -> style9: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("stylex -> style9: carries concrete stylex dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from '@stylexjs/stylex'; // pandwind:migrate-skip (route: stylex -> style9 | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		stylex.create({ card: { color: theme.foreground } })",
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> style9 | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
@@ -70,15 +83,17 @@ test("stylex -> style9: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("stylex -> style9: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("stylex -> style9: preserves malformed concrete stylex input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 { "card": style9.create({ "color": "red" }) }
+
+		export const styles = { "card": style9.create({ "color": "red", "padding": "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +114,3 @@ test("stylex -> style9: preserves malformed input and reports the boundary", () 
 		}
 	`);
 });
-

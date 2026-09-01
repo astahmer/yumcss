@@ -8,18 +8,28 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.VanillaExtract, CodemodAdapterId.Fela);
+const happySource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: "1rem" });';
+const edgeSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: theme.foreground, padding: "1rem" });';
+const malformedSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished vanilla-extract */';
+const sourceSemantic = undefined;
 
-test("vanilla-extract -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("vanilla-extract -> fela: migrates concrete vanilla-extract syntax to fela", () => {
+	const result = route.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +50,15 @@ test("vanilla-extract -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("vanilla-extract -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("vanilla-extract -> fela: carries concrete vanilla-extract dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": theme.foreground })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -68,14 +79,19 @@ test("vanilla-extract -> fela: reports edge semantics without silent loss", () =
 	`);
 });
 
-test("vanilla-extract -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("vanilla-extract -> fela: preserves malformed concrete vanilla-extract input", () => {
+	const result = route.run({
+		source: malformedSource,
+		file: "Card.css.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,4 +112,3 @@ test("vanilla-extract -> fela: preserves malformed input and reports the boundar
 		}
 	`);
 });
-

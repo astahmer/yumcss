@@ -8,20 +8,31 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Pandwind);
+const happySource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const edgeSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const malformedSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */';
+const sourceSemantic = undefined;
 
-test("jss -> pandwind: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("jss -> pandwind: migrates concrete jss syntax to pandwind", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		 css.group({ button: { color: "red" } })",
+
+		export const useStyles = css.group({ card: { color: "red", padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -42,8 +53,8 @@ test("jss -> pandwind: statically migrates the happy path", () => {
 	`);
 });
 
-test("jss -> pandwind: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("jss -> pandwind: carries concrete jss dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -51,7 +62,9 @@ test("jss -> pandwind: reports edge semantics without silent loss", () => {
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		 css.group({ button: { color: theme.foreground } })",
+
+		export const useStyles = css.group({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -72,8 +85,8 @@ test("jss -> pandwind: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("jss -> pandwind: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("jss -> pandwind: preserves malformed concrete jss input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -81,7 +94,9 @@ test("jss -> pandwind: preserves malformed input and reports the boundary", () =
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		 css.group({ button: { color: "red" } })
+
+		export const useStyles = css.group({ card: { color: "red", padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "outcomes": [
@@ -102,4 +117,3 @@ test("jss -> pandwind: preserves malformed input and reports the boundary", () =
 		}
 	`);
 });
-

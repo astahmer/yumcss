@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Goober, CodemodAdapterId.ReactNative);
+const happySource =
+	'import { css } from "goober";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "goober";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "goober";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished goober */';
+const sourceSemantic = undefined;
 
-test("goober -> react-native: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("goober -> react-native: migrates concrete goober syntax to react-native", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		 StyleSheet.create({ "color": "red" })",
+		  "code": "import { StyleSheet, View } from "react-native";
+
+		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View   style={card}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +52,53 @@ test("goober -> react-native: statically migrates the happy path", () => {
 	`);
 });
 
-test("goober -> react-native: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("goober -> react-native: carries concrete goober dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
-		  "converted": 1,
+		  "code": "import { css } from "goober";
+		export const card = // pandwind:migrate-skip (route: goober -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "react-native has no host representation for react-native",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("goober -> react-native: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("goober -> react-native: preserves malformed concrete goober input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished goober */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		 StyleSheet.create({ "color": "red" })
+		  "code": "import { StyleSheet, View } from "react-native";
+
+		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View   style={card}/>;
 		const unfinished = { /* unfinished goober */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +119,3 @@ test("goober -> react-native: preserves malformed input and reports the boundary
 		}
 	`);
 });
-

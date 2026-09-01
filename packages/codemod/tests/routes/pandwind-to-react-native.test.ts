@@ -8,19 +8,31 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Pandwind, CodemodAdapterId.ReactNative);
+const happySource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished pandwind */';
+const sourceSemantic = undefined;
 
-test("pandwind -> react-native: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("pandwind -> react-native: migrates concrete pandwind syntax to react-native", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		StyleSheet.create({ "color": "red" })",
+		  "code": "import { StyleSheet, View } from "react-native";
+
+		const css = createCss();
+		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View   style={card}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +53,55 @@ test("pandwind -> react-native: statically migrates the happy path", () => {
 	`);
 });
 
-test("pandwind -> react-native: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("pandwind -> react-native: carries concrete pandwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		css.vars({ "color": theme.foreground })",
-		  "converted": 1,
+		  "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+		export const card = // pandwind:migrate-skip (route: pandwind -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
+		css.class({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic-values: dynamic: theme.foreground",
+		      "kind": "capability",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "react-native has no host representation for react-native",
+		      "kind": "host-framework",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("pandwind -> react-native: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("pandwind -> react-native: preserves malformed concrete pandwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished pandwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-		StyleSheet.create({ "color": "red" })
+		  "code": "import { StyleSheet, View } from "react-native";
+
+		const css = createCss();
+		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
+		export const App = () => <View   style={card}/>;
 		const unfinished = { /* unfinished pandwind */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +122,3 @@ test("pandwind -> react-native: preserves malformed input and reports the bounda
 		}
 	`);
 });
-

@@ -8,19 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tailwind, CodemodAdapterId.Style9);
+const happySource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;';
+const edgeSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unresolvedStyle = runtimeTheme.foreground;';
+const malformedSource =
+	'import "tailwindcss";\nexport const App = () => <div className="flex gap-4 p-4 text-black" />;\nconst unfinished = { /* unfinished tailwind */';
+const sourceSemantic = undefined;
 
-test("tailwind -> style9: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tailwind -> style9: migrates concrete tailwind syntax to style9", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 <div  className={style9(style9.create({ style: { "display": "flex", "padding": "1rem" } }).style)}/>",
+
+		export const App = () => <div  className={style9(style9.create({ style: { "display": "flex", "gap": "1rem", "padding": "1rem", "color": "#000" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +51,16 @@ test("tailwind -> style9: statically migrates the happy path", () => {
 	`);
 });
 
-test("tailwind -> style9: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tailwind -> style9: carries concrete tailwind dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 <div  className={style9(style9.create({ style: { "display": "flex", "padding": "1rem" } }).style)}/>
+
+		export const App = () => <div  className={style9(style9.create({ style: { "display": "flex", "gap": "1rem", "padding": "1rem", "color": "#000" } }).style)}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -71,15 +82,16 @@ test("tailwind -> style9: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("tailwind -> style9: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tailwind -> style9: preserves malformed concrete tailwind input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tailwind */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import style9 from "style9";
-		 <div  className={style9(style9.create({ style: { "display": "flex", "padding": "1rem" } }).style)}/>
+
+		export const App = () => <div  className={style9(style9.create({ style: { "display": "flex", "gap": "1rem", "padding": "1rem", "color": "#000" } }).style)}/>;
 		const unfinished = { /* unfinished tailwind */",
 		  "converted": 1,
 		  "outcomes": [
@@ -100,4 +112,3 @@ test("tailwind -> style9: preserves malformed input and reports the boundary", (
 		}
 	`);
 });
-

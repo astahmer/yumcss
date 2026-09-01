@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.VueStyled);
+const happySource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished tokenami */';
+const sourceSemantic = undefined;
 
-test("tokenami -> vue-styled: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tokenami -> vue-styled: migrates concrete tokenami syntax to vue-styled", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		 styled.div({ "hover": { "color": "red" } })",
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,46 +52,48 @@ test("tokenami -> vue-styled: statically migrates the happy path", () => {
 	`);
 });
 
-test("tokenami -> vue-styled: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tokenami -> vue-styled: carries concrete tokenami dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "hover": { "color": theme.foreground } })",
-		  "converted": 1,
+		  "code": "import { css } from "@tokenami/css";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css({ color: theme.foreground, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		  "converted": 0,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "residual",
+		      "representation": "target-native",
 		    },
 		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
+		  "residuals": [
 		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
+		      "hint": "dynamic style binding 'card' has no supported host use",
+		      "kind": "dynamic-values",
+		      "preserved": undefined,
 		    },
 		  ],
+		  "skipped": 1,
+		  "validations": [],
 		}
 	`);
 });
 
-test("tokenami -> vue-styled: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tokenami -> vue-styled: preserves malformed concrete tokenami input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tokenami */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import styled from "vue-styled-components";
-		 styled.div({ "hover": { "color": "red" } })
+
+		export const card = styled.div({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +114,3 @@ test("tokenami -> vue-styled: preserves malformed input and reports the boundary
 		}
 	`);
 });
-

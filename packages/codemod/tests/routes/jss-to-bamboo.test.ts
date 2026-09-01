@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Bamboo);
+const happySource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const edgeSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const malformedSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */';
+const sourceSemantic = undefined;
 
-test("jss -> bamboo: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("jss -> bamboo: migrates concrete jss syntax to bamboo", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		 { "button": css({ color: "red" }) }",
+
+		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +52,17 @@ test("jss -> bamboo: statically migrates the happy path", () => {
 	`);
 });
 
-test("jss -> bamboo: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("jss -> bamboo: carries concrete jss dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from 'react-jss'; // pandwind:migrate-skip (route: jss -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		createUseStyles({ button: { color: theme.foreground } })",
+		  "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
@@ -70,15 +83,17 @@ test("jss -> bamboo: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("jss -> bamboo: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("jss -> bamboo: preserves malformed concrete jss input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished jss */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { css } from "styled-system/css";
-		 { "button": css({ color: "red" }) }
+
+		export const useStyles = { "card": css({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={useStyles().card} />;
 		const unfinished = { /* unfinished jss */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +114,3 @@ test("jss -> bamboo: preserves malformed input and reports the boundary", () => 
 		}
 	`);
 });
-

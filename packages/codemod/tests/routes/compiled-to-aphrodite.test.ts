@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Compiled, CodemodAdapterId.Aphrodite);
+const happySource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished compiled */';
+const sourceSemantic = undefined;
 
-test("compiled -> aphrodite: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("compiled -> aphrodite: migrates concrete compiled syntax to aphrodite", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		 StyleSheet.create({ "color": "red" })",
+		  "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const card = css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,22 +52,22 @@ test("compiled -> aphrodite: statically migrates the happy path", () => {
 	`);
 });
 
-test("compiled -> aphrodite: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("compiled -> aphrodite: carries concrete compiled dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+		  "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const card = css(StyleSheet.create({ style: { "color": "var(--pandwind-dynamic-5qa8dh)", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "custom-property",
 		    },
 		  ],
 		  "residuals": [],
@@ -72,15 +83,17 @@ test("compiled -> aphrodite: reports edge semantics without silent loss", () => 
 	`);
 });
 
-test("compiled -> aphrodite: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("compiled -> aphrodite: preserves malformed concrete compiled input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished compiled */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-		 StyleSheet.create({ "color": "red" })
+		  "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const card = css(StyleSheet.create({ style: { "color": "red", "padding": "1rem" } }).style);
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished compiled */",
 		  "converted": 1,
 		  "outcomes": [
@@ -101,4 +114,3 @@ test("compiled -> aphrodite: preserves malformed input and reports the boundary"
 		}
 	`);
 });
-

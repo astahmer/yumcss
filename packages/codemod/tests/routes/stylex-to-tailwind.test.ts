@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.StyleX, CodemodAdapterId.Tailwind);
+const happySource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const edgeSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const malformedSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */';
+const sourceSemantic = undefined;
 
-test("stylex -> tailwind: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("stylex -> tailwind: migrates concrete stylex syntax to tailwind", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "card": "[color:red]" }",
+		  "code": "
+		export const styles = { "card": "[color:red] [padding:1rem]" };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,15 +51,17 @@ test("stylex -> tailwind: statically migrates the happy path", () => {
 	`);
 });
 
-test("stylex -> tailwind: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("stylex -> tailwind: carries concrete stylex dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import stylex from '@stylexjs/stylex'; // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		stylex.create({ card: { color: theme.foreground } })",
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		export const styles = // pandwind:migrate-skip (route: stylex -> tailwind | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		stylex.create({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
@@ -69,14 +82,16 @@ test("stylex -> tailwind: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("stylex -> tailwind: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("stylex -> tailwind: preserves malformed concrete stylex input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished stylex */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "card": "[color:red]" }
+		  "code": "
+		export const styles = { "card": "[color:red] [padding:1rem]" };
+		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",
 		  "converted": 1,
 		  "outcomes": [
@@ -97,4 +112,3 @@ test("stylex -> tailwind: preserves malformed input and reports the boundary", (
 		}
 	`);
 });
-

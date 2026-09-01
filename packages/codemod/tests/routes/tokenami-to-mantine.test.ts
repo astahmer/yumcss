@@ -8,20 +8,31 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Tokenami, CodemodAdapterId.Mantine);
+const happySource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished tokenami */';
+const sourceSemantic = undefined;
 
-test("tokenami -> mantine: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("tokenami -> mantine: migrates concrete tokenami syntax to mantine", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		 css.class({ "hover": { "color": "red" } })",
+
+		export const card = css.class({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -42,8 +53,8 @@ test("tokenami -> mantine: statically migrates the happy path", () => {
 	`);
 });
 
-test("tokenami -> mantine: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("tokenami -> mantine: carries concrete tokenami dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -52,7 +63,9 @@ test("tokenami -> mantine: reports edge semantics without silent loss", () => {
 		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "hover": { "color": theme.foreground } })",
+
+		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,8 +86,8 @@ test("tokenami -> mantine: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("tokenami -> mantine: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("tokenami -> mantine: preserves malformed concrete tokenami input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished tokenami */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
@@ -82,7 +95,9 @@ test("tokenami -> mantine: preserves malformed input and reports the boundary", 
 		  "changed": true,
 		  "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
-		 css.class({ "hover": { "color": "red" } })
+
+		export const card = css.class({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished tokenami */",
 		  "converted": 1,
 		  "outcomes": [
@@ -103,4 +118,3 @@ test("tokenami -> mantine: preserves malformed input and reports the boundary", 
 		}
 	`);
 });
-

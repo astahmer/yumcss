@@ -8,19 +8,30 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Style9, CodemodAdapterId.VanillaExtract);
+const happySource =
+	'import style9 from "style9";\nexport const styles = style9.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const edgeSource =
+	'import style9 from "style9";\nexport const styles = style9.create({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const malformedSource =
+	'import style9 from "style9";\nexport const styles = style9.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished style9 */';
+const sourceSemantic = undefined;
 
-test("style9 -> vanilla-extract: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("style9 -> vanilla-extract: migrates concrete style9 syntax to vanilla-extract", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		 { "button": style({ color: "red" }) }",
+
+		export const styles = { "card": style({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -41,15 +52,17 @@ test("style9 -> vanilla-extract: statically migrates the happy path", () => {
 	`);
 });
 
-test("style9 -> vanilla-extract: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("style9 -> vanilla-extract: carries concrete style9 dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from 'style9'; // pandwind:migrate-skip (route: style9 -> vanilla-extract | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		style9.create({ button: { color: theme.foreground } })",
+		  "code": "import style9 from "style9";
+		export const styles = // pandwind:migrate-skip (route: style9 -> vanilla-extract | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		style9.create({ card: { color: theme.foreground, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
 		  "converted": 0,
 		  "outcomes": [
 		    {
@@ -70,15 +83,17 @@ test("style9 -> vanilla-extract: reports edge semantics without silent loss", ()
 	`);
 });
 
-test("style9 -> vanilla-extract: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("style9 -> vanilla-extract: preserves malformed concrete style9 input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished style9 */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
 		  "code": "import { style } from "@vanilla-extract/css";
-		 { "button": style({ color: "red" }) }
+
+		export const styles = { "card": style({ color: "red", padding: "1rem" }) };
+		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +114,3 @@ test("style9 -> vanilla-extract: preserves malformed input and reports the bound
 		}
 	`);
 });
-

@@ -8,18 +8,32 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Fela);
+const happySource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });';
+const edgeSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.foreground, padding: "1rem" });';
+const malformedSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished treat */';
+const sourceSemantic = undefined;
 
-test("treat -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("treat -> fela: migrates concrete treat syntax to fela", () => {
+	const result = route.run({
+		source: happySource,
+		file: "Card.treat.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from './styles.treat'; renderer.renderRule({ "color": "red" })",
+		  "code": "import { style } from "@treatjs/treat";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +54,15 @@ test("treat -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("treat -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("treat -> fela: carries concrete treat dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from './styles.treat'; renderer.renderRule({ "color": theme.foreground })",
+		  "code": "import { style } from "@treatjs/treat";
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -68,14 +83,19 @@ test("treat -> fela: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("treat -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("treat -> fela: preserves malformed concrete treat input", () => {
+	const result = route.run({
+		source: malformedSource,
+		file: "Card.treat.ts",
+		semantic: sourceSemantic,
+	});
 	expect(result.code).toContain("/* unfinished treat */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from './styles.treat'; renderer.renderRule({ "color": "red" })
+		  "code": "import { style } from "@treatjs/treat";
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
 		const unfinished = { /* unfinished treat */",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,4 +116,3 @@ test("treat -> fela: preserves malformed input and reports the boundary", () => 
 		}
 	`);
 });
-

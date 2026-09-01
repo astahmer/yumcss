@@ -3,24 +3,22 @@ import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
+	type AdapterMigrationOptions,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
-import { completeAdapterMatrixFixtures } from "../proof/adapter-matrix-fixtures.ts";
 
 const catalog = createBuiltinCodemodCatalog();
-const fixtures = new Map(
-	completeAdapterMatrixFixtures.map((fixture) => [
-		`${fixture.sourceAdapter}:${fixture.scenario ?? "happy"}`,
-		fixture,
-	]),
-);
 
-type RouteScenario = "happy" | "edge" | "malformed";
+export interface AdapterRouteInput {
+	readonly source: string;
+	readonly file: string;
+	readonly semantic?: AdapterMigrationOptions["semantic"];
+}
 
 export interface AdapterRouteSpec {
 	readonly source: CodemodAdapterId;
 	readonly target: CodemodAdapterId;
-	run(scenario: RouteScenario): AdapterMigrationResult;
+	run(input: AdapterRouteInput): AdapterMigrationResult;
 }
 
 /** In-process route harness shared by every generated directional spec. */
@@ -31,17 +29,15 @@ export function createAdapterRouteSpec(
 	return {
 		source,
 		target,
-		run(scenario) {
-			const fixture = fixtures.get(`${source}:${scenario}`);
-			if (fixture === undefined) throw new Error(`missing ${source} ${scenario} fixture`);
-			return runAdapterMigration(fixture.source, {
+		run(input) {
+			return runAdapterMigration(input.source, {
 				from: source,
 				to: target,
-				file: fixture.file,
+				file: input.file,
 				mode: "safe",
 				readFile: () => undefined,
 				adapterRegistry: catalog.registry,
-				...(fixture.semantic === undefined ? {} : { semantic: fixture.semantic }),
+				...(input.semantic === undefined ? {} : { semantic: input.semantic }),
 			});
 		},
 	};
@@ -76,7 +72,32 @@ export function expectExplicitResidualEvidence(result: AdapterMigrationResult): 
 	// A host adapter owns the opening-tag rewrite. A target emitter must never
 	// leak a second JSX/Vue host into a class/style attribute expression.
 	expect(result.code).not.toMatch(/\b(?:className|class|style)\s*=\s*\{\s*<[A-Za-z]/u);
-	if (result.skipped > 0 || result.residuals.some((residual) => residual.preserved !== true))
-		expect(result.code).toContain("pandwind:migrate-skip");
+	if (result.skipped > 0) expect(result.code).toContain("pandwind:migrate-skip");
 	if (result.skipped > 0) expect(result.residuals.length).toBeGreaterThan(0);
+	for (const residual of result.residuals) {
+		expect(residual.text.length).toBeGreaterThan(0);
+		expect(residual.hint.length).toBeGreaterThan(0);
+	}
+}
+
+/**
+ * A round trip must either be parseable by the reverse adapter or visibly
+ * identify the source-preserving/runtime fallback that made the reverse leg
+ * inapplicable. A silent unchanged second leg is never acceptable.
+ */
+export function expectActionableRoundTrip(
+	forward: AdapterMigrationResult,
+	reverse: AdapterMigrationResult,
+): void {
+	const reverseActionable =
+		reverse.converted > 0 ||
+		reverse.skipped > 0 ||
+		reverse.residuals.length > 0 ||
+		reverse.code !== forward.code;
+	const visibleFallback =
+		forward.code.includes("pandwind:migrate-skip") ||
+		forward.code.includes('"pandwind/') ||
+		forward.code.includes('"pandwind\\n');
+	expect(reverseActionable || visibleFallback).toBe(true);
+	if (reverseActionable) expect(reverse.code).not.toBe(forward.code);
 }

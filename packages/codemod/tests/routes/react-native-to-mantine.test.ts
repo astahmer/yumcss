@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine);
+const happySource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
+const edgeSource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
+const malformedSource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */';
+const sourceSemantic = undefined;
 
-test("react-native -> mantine: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("react-native -> mantine: migrates concrete react-native syntax to mantine", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": { color: "red" } }",
+		  "code": "
+		export const styles = { "card": { color: "red", padding: 16 } };
+		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +51,16 @@ test("react-native -> mantine: statically migrates the happy path", () => {
 	`);
 });
 
-test("react-native -> mantine: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("react-native -> mantine: carries concrete react-native dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": { color: theme.foreground } }",
+		  "code": "
+		export const styles = { "card": { color: theme.foreground, padding: 16 } };
+		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -68,14 +81,16 @@ test("react-native -> mantine: reports edge semantics without silent loss", () =
 	`);
 });
 
-test("react-native -> mantine: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("react-native -> mantine: preserves malformed concrete react-native input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished react-native */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": { color: "red" } }
+		  "code": "
+		export const styles = { "card": { color: "red", padding: 16 } };
+		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,4 +111,3 @@ test("react-native -> mantine: preserves malformed input and reports the boundar
 		}
 	`);
 });
-

@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Emotion, CodemodAdapterId.Fela);
+const happySource =
+	'import { css } from "@emotion/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "@emotion/css";\nexport const card = css({ color: theme.foreground, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "@emotion/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished emotion */';
+const sourceSemantic = undefined;
 
-test("emotion -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("emotion -> fela: migrates concrete emotion syntax to fela", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +51,16 @@ test("emotion -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("emotion -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("emotion -> fela: carries concrete emotion dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": theme.foreground })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -68,14 +81,16 @@ test("emotion -> fela: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("emotion -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("emotion -> fela: preserves malformed concrete emotion input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished emotion */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished emotion */",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,4 +111,3 @@ test("emotion -> fela: preserves malformed input and reports the boundary", () =
 		}
 	`);
 });
-

@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.Aphrodite, CodemodAdapterId.Fela);
+const happySource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const edgeSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const malformedSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */';
+const sourceSemantic = undefined;
 
-test("aphrodite -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("aphrodite -> fela: migrates concrete aphrodite syntax to fela", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": renderer.renderRule({ "color": "red" }) }",
+		  "code": "
+		export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,14 +51,16 @@ test("aphrodite -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("aphrodite -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("aphrodite -> fela: carries concrete aphrodite dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": renderer.renderRule({ "color": theme.foreground }) }",
+		  "code": "
+		export const styles = { "card": renderer.renderRule({ "color": theme.foreground, "padding": "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -68,14 +81,16 @@ test("aphrodite -> fela: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("aphrodite -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("aphrodite -> fela: preserves malformed concrete aphrodite input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished aphrodite */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " { "button": renderer.renderRule({ "color": "red" }) }
+		  "code": "
+		export const styles = { "card": renderer.renderRule({ "color": "red", "padding": "1rem" }) };
+		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished aphrodite */",
 		  "converted": 1,
 		  "outcomes": [
@@ -96,4 +111,3 @@ test("aphrodite -> fela: preserves malformed input and reports the boundary", ()
 		}
 	`);
 });
-

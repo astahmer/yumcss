@@ -8,18 +8,29 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(CodemodAdapterId.NextYak, CodemodAdapterId.Fela);
+const happySource =
+	'import { css } from "next-yak";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const edgeSource =
+	'import { css } from "next-yak";\nexport const card = css`color: ${theme.foreground}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const malformedSource =
+	'import { css } from "next-yak";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */';
+const sourceSemantic = undefined;
 
-test("next-yak -> fela: statically migrates the happy path", () => {
-	const result = route.run("happy");
+test("next-yak -> fela: migrates concrete next-yak syntax to fela", () => {
+	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted).toBeGreaterThan(0);
 	expect(result.skipped).toBe(0);
 	expect(result.residuals).toEqual([]);
+	expect(result.validations.length).toBe(result.converted);
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
+	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -40,22 +51,21 @@ test("next-yak -> fela: statically migrates the happy path", () => {
 	`);
 });
 
-test("next-yak -> fela: reports edge semantics without silent loss", () => {
-	const result = route.run("edge");
+test("next-yak -> fela: carries concrete next-yak dynamics or edge syntax explicitly", () => {
+	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		 css.vars({ "color": theme.foreground })",
+		  "code": "
+		export const card = renderer.renderRule({ "color": theme.foreground, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
+		      "outcome": "host-runtime",
+		      "representation": "residual",
 		    },
 		  ],
 		  "residuals": [],
@@ -71,14 +81,16 @@ test("next-yak -> fela: reports edge semantics without silent loss", () => {
 	`);
 });
 
-test("next-yak -> fela: preserves malformed input and reports the boundary", () => {
-	const result = route.run("malformed");
+test("next-yak -> fela: preserves malformed concrete next-yak input", () => {
+	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished next-yak */");
 	expectExplicitResidualEvidence(result);
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": " renderer.renderRule({ "color": "red" })
+		  "code": "
+		export const card = renderer.renderRule({ "color": "red", "padding": "1rem" });
+		export const App = () => <div className={card} />;
 		const unfinished = { /* unfinished next-yak */",
 		  "converted": 1,
 		  "outcomes": [
@@ -99,4 +111,3 @@ test("next-yak -> fela: preserves malformed input and reports the boundary", () 
 		}
 	`);
 });
-
