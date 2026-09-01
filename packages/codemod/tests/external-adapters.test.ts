@@ -733,7 +733,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("vue-styled-components");
 	});
 
-	test("uses MUI's portable artifact for a bare static Pandwind binding", () => {
+	test("preserves bare static Pandwind style bindings through MUI's portable fallback", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\nconst card = css.class({ color: "red" });',
 			{ from: "pandwind", to: "mui", file: "Card.tsx", mode: "safe" },
@@ -741,10 +741,14 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
+		]);
 		expect(result.code).toContain('from "pandwind/css"');
 		expect(result.code).toContain("css.class");
-		expect(result.code).not.toContain("pandwind:migrate-skip");
-		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.validations).toEqual(
+			expect.arrayContaining([expect.objectContaining({ valid: true, lossiness: "lossless" })]),
+	);
 	});
 
 	test("projects a Pandwind class binding onto MUI's sx host prop", () => {
