@@ -57,6 +57,7 @@ async function runCliMatrix(
 		const report = JSON.parse(stdout) as {
 			readonly files: readonly {
 				readonly file: string;
+				readonly outputFile?: string;
 				readonly converted: number;
 				readonly skipped: number;
 				readonly residuals: number;

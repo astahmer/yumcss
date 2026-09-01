@@ -259,7 +259,7 @@ function chakraValue(property: string, value: StyleValue): StyleValue {
 	if (typeof value.value !== "string") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw|svh|svw)$/.test(value.value)) return value;
 	const tokenName = /^(?:[A-Za-z][A-Za-z0-9_.-]*|\d+[A-Za-z][A-Za-z0-9_.-]*)$/.test(value.value);
-	if (isSpacingProperty) {
+	if (isSpacingProperty(property)) {
 		if (/^-?\d+(?:\.\d+)?$/.test(value.value)) {
 			const absolute = value.value.replace(/^-/, "");
 			const variable = `var(--chakra-spacing-${absolute})`;
