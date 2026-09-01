@@ -49,15 +49,15 @@ residuals rather than being guessed away.
 
 ## Current status
 
-The first vertical slice is implemented in the focused core revision. The
-builder and shared migration runner now pass frontend output through
-`StyleProgramCore`, which provides deterministic structural serialization, a
-stable fingerprint, basic schema/rule validation, and a versioned portable
-artifact envelope. The runner boundary is substitution-tested with a source
-adapter that returns stale metadata and a target adapter that only accepts the
-normalized core shape. The `SwapIR` path and frozen runtime API are unchanged.
-Compatibility profiles, plugin negotiation, and downstream proof-artifact
-integration remain the next waves.
+Complete. The builder, shared migration runner, and differential proof runner
+pass frontend output through `StyleProgramCore`, which provides deterministic
+structural serialization, a stable fingerprint, schema/rule validation, and a
+versioned portable artifact envelope. Plugin manifests declare and negotiate
+the core compatibility range, and registration rejects capability drift. The
+runner boundary is substitution-tested with a source adapter that returns
+stale metadata and a target adapter that only accepts the normalized core
+shape. Differential results record the core version and normalized program
+fingerprint. The `SwapIR` path and frozen runtime API are unchanged.
 
 ## What
 
@@ -243,10 +243,10 @@ boundary. A later schema change requires an explicit artifact migration.
       target-owned emission or the `SwapIR` fast path.
 - [x] Core conformance tests include happy, malformed, edge, residual, and
       substitution cases.
-- [ ] Plugin manifests negotiate core versions and capabilities without
+- [x] Plugin manifests negotiate core versions and capabilities without
       central ecosystem branches.
-- [ ] Differential evidence records the core fingerprint used for a proof.
-- [ ] Documentation states the actual compatibility boundary and preserves
+- [x] Differential evidence records the core fingerprint used for a proof.
+- [x] Documentation states the actual compatibility boundary and preserves
       the article’s “reliable core, many frontends” architecture.
 
 ## Decisions log

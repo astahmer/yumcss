@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import {
 	runDifferentialFixture,
 	runDifferentialSuite,
+	STYLE_PROGRAM_CORE_VERSION,
 	type DifferentialRender,
 } from "../src/swap/index.ts";
 import { SemanticConditionKindTag } from "../src/swap/semantic-ir.ts";
@@ -94,6 +95,8 @@ describe("CSS-in-JS differential validation", () => {
 			expect(result.browser[0]?.valid).toBe(true);
 			expect(result.ssr?.valid).toBe(true);
 			expect(result.residuals).toEqual([]);
+			expect(result.coreVersion).toBe(STYLE_PROGRAM_CORE_VERSION);
+			expect(result.coreFingerprint).toMatch(/^sp-[a-z0-9]+$/u);
 		}
 	});
 

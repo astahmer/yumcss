@@ -290,6 +290,26 @@ unsupported target semantic representable and it does not replace `SwapIR`
 for simple literal migrations. A builder-created program must pass the same
 canonical, lowering, adapter, and residual validation as a parsed program.
 
+`StyleProgramCore` is the single invariant boundary around that value. It
+normalizes frontend output, validates the rule/value shape, serializes a
+stable structural form, and computes a deterministic non-cryptographic
+fingerprint. `StyleProgramCore.encode()` can wrap the normalized value in a
+versioned `pandwind.style-program-artifact/1` envelope; `decode()` verifies the
+artifact schema, core version, and fingerprint before returning a program.
+Portable artifacts are intended for caches, proof reports, and explicit
+out-of-process tooling—not for the browser runtime. A plugin manifest carries
+the matching `pandwind.style-program-core-compatibility/1` requirement, and
+the registry rejects a plugin whose range does not include the current core or
+whose declared capabilities drift from its implementation. This makes the
+“one reliable core, many frontends” boundary enforceable without adding a
+second bytecode VM or changing the frozen author API.
+
+Differential evidence records both the core version and the normalized
+program fingerprint used by the proof. Consequently, a changed core can be
+distinguished from a changed adapter, while malformed source/target programs
+remain explicit failures. The fingerprint is an identity/cache key rather than
+a cryptographic integrity primitive.
+
 Generic semantic traversal is owned by `StyleProgramAnalysis`. Its rule and
 declaration queries preserve the rule-less root projection used by the cheap
 path, while dynamic-value queries provide one neutral policy for lowering,

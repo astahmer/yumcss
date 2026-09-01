@@ -50,8 +50,12 @@ The package may advertise the same entry points in `package.json`:
 
 The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
 ID, implementation version, contract version, capabilities, and dependencies.
-Hosts can inspect it before loading code and the registry verifies it again at
-registration time.
+It also carries a `pandwind.style-program-core-compatibility/1` requirement,
+for example `{ schema: "pandwind.style-program-core-compatibility/1",
+versionRange: "^1" }`. Hosts can inspect it before loading code and the
+registry verifies the core range and capability declarations again at
+registration time. A plugin built for an incompatible core is rejected before
+its adapter participates in a migration.
 
 Discovery is deliberately explicit. The host decides how package names are
 resolved, which makes the same registry safe for CLIs, bundlers, tests, and
@@ -82,6 +86,11 @@ the SDK.
 The semantic style-program IR is the complete interop model. `SwapIR` remains
 the intentionally small, fast projection for literal utility swaps and is not
 required to represent rule-level or runtime semantics.
+
+`StyleProgramCore` is the invariant boundary for the semantic IR. Source
+adapters and builders enter through its normalization contract; differential
+proofs record its core version and fingerprint. Portable artifact encoding is
+available to proof/cache tooling, while target emitters remain adapter-owned.
 
 When an adapter needs to construct a rich program rather than parse directly
 into low-level object literals, use `StyleProgramBuilder` from the `swap`

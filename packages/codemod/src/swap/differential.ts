@@ -20,6 +20,7 @@ import {
 import { STYLE_VALIDATORS, type StyleValidatorRegistry } from "./validator-registry.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringRegistry } from "./lowering.ts";
 import { MigrationOutput } from "./migration-output.ts";
+import { STYLE_PROGRAM_CORE_VERSION, StyleProgramCore } from "./style-program-core.ts";
 
 export interface DifferentialBrowserState {
 	readonly name: string;
@@ -102,6 +103,9 @@ export interface DifferentialStreamingResult {
 export interface DifferentialResult {
 	readonly fixture: string;
 	readonly valid: boolean;
+	/** Core identity used to normalize and compare this proof. */
+	readonly coreVersion: typeof STYLE_PROGRAM_CORE_VERSION;
+	readonly coreFingerprint: string;
 	readonly sourceProgram?: StyleProgram;
 	readonly targetProgram?: StyleProgram;
 	readonly canonicalSource: string;
@@ -178,7 +182,10 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		config: sourceConfig,
 		semantic: fixture.semantic,
 	});
-	const sourceProgram = parsed.matches[0]?.program;
+	const sourceProgram =
+		parsed.matches[0]?.program === undefined
+			? undefined
+			: StyleProgramCore.normalize(parsed.matches[0].program);
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const dependencies: AdapterDependencies[] = [
 		sourceAdapter.dependencies,
@@ -188,6 +195,8 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		return {
 			fixture: fixture.name,
 			valid: false,
+			coreVersion: STYLE_PROGRAM_CORE_VERSION,
+			coreFingerprint: "",
 			canonicalSource: "",
 			canonicalTarget: "",
 			differences: ["source adapter did not produce a match"],
@@ -221,6 +230,8 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 			fixture: fixture.name,
 			sourceProgram,
 			valid: false,
+			coreVersion: STYLE_PROGRAM_CORE_VERSION,
+			coreFingerprint: StyleProgramCore.fingerprint(loweredProgram),
 			canonicalSource: styleProgramToCanonicalCss(loweredProgram),
 			canonicalTarget: "",
 			differences: ["target capability contract rejected the program"],
@@ -253,12 +264,14 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		config: targetConfig,
 		semantic: fixture.semantic,
 	});
-	const targetProgram =
+	const targetProgramValue =
 		emitted.semantic ??
 		mergeParsedPrograms(
-			targetParsed.matches.map((match) => match.program),
+			targetParsed.matches.map((match) => StyleProgramCore.normalize(match.program)),
 			targetParsed.residuals,
 		);
+	const targetProgram =
+		targetProgramValue === undefined ? undefined : StyleProgramCore.normalize(targetProgramValue);
 	const differences: string[] = [];
 	if (targetProgram === undefined)
 		differences.push("target emission is not parseable by its adapter");
@@ -348,6 +361,8 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 		sourceProgram,
 		targetProgram,
 		valid: differences.length === 0,
+		coreVersion: STYLE_PROGRAM_CORE_VERSION,
+		coreFingerprint: StyleProgramCore.fingerprint(loweredProgram),
 		canonicalSource,
 		canonicalTarget,
 		differences,

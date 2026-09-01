@@ -29,6 +29,9 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
   retained whenever a translation is not proven safe;
 - differential fixtures for canonical CSS, browser state, SSR/hydration,
   streaming, dependency changes, and residual reports;
+- a deterministic `StyleProgramCore` boundary with versioned artifact
+  encoding, stable fingerprints, plugin core-version negotiation, and proof
+  evidence that records the normalized core identity;
 - a typed real-repository promotion report that distinguishes source-static
   evidence from runtime-pending, source-mismatch, and pipeline-unpaired
   entries across canonical CSS, browser, SSR/hydration, streaming,
@@ -59,6 +62,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 035–036      | Complete                                                                                                                                                            | This page and the repository's contributor guidance                                                                                    |
 | 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence                       | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/)                                        |
 | 038–039      | Complete for the reproducible offline pivot gate, pinned-reference adapter browser proof, explicit per-adapter coverage evidence, and the final history/proof audit | [Testing](/contributing/testing/), [Architecture](/contributing/architecture/), [Shipped plans](/reference/shipped-plans/)             |
+| 043          | Complete for the deterministic semantic core, compatibility negotiation, proof fingerprints, conformance tests, and architecture documentation | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/), [Testing](/contributing/testing/) |
 
 ## What remains intentionally bounded
 
