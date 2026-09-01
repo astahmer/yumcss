@@ -94,12 +94,18 @@ export default defineCodemodAdapter({
 			};
 		}
 		const subject = program.source?.subject ?? "createUseStyles";
+		const jssInstanceMethod = /^(?:jss\.)?create(?:StyleSheet|Rule)$/.test(subject);
+		const expression =
+			subject === "createStyleSheet"
+				? `jss.createStyleSheet(${programObject(program)})`
+				: subject === "createRule"
+					? `jss.createRule(${programObject(program)})`
+					: `${subject}(${programObject(program)})`;
 		return {
-			text: `${subject}(${programObject(program)})`,
-			imports:
-				subject === "createStyleSheet"
-					? ['import { createStyleSheet } from "jss";']
-					: ['import { createUseStyles } from "react-jss";'],
+			text: expression,
+			imports: jssInstanceMethod
+				? ['import jss from "jss";']
+				: ['import { createUseStyles } from "react-jss";'],
 		};
 	},
 });

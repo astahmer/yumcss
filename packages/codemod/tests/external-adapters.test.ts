@@ -1063,8 +1063,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 
 	test.each([
 		["aphrodite", "StyleSheet.create", 'import { StyleSheet, css } from "aphrodite";'],
-		["chakra-ui", "css", 'import { css } from "@chakra-ui/react";'],
-		["mantine", "style", 'import { style } from "@mantine/core";'],
+		[
+			"chakra-ui",
+			"chakraSystem.css",
+			'import { createSystem, defaultConfig } from "@chakra-ui/react";',
+		],
 		["goober", "css", 'import { css } from "goober";'],
 		["vanilla-extract", "style", 'import { style } from "@vanilla-extract/css";'],
 	] as const)(
@@ -1084,6 +1087,23 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.code).not.toContain("styled-components");
 		},
 	);
+
+	test("projects a styled subject to Mantine's valid React style prop", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"export const App = () => <Card />;",
+			{ from: "styled-components", to: "mantine", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(
+			'const Card = (props) => <div {...props} style={{ ...{ color: "red" }, ...props.style }} />;',
+		);
+		expect(result.code).not.toContain('from "@mantine/core"');
+		expect(result.code).not.toContain("style({");
+	});
 
 	test("emits Style9's class carrier for a static Pandwind React host", () => {
 		const result = runAdapterMigration(

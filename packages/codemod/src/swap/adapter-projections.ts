@@ -92,6 +92,23 @@ export function projectDynamicClassMigration(
 	const capabilitiesForRepresentation = policy.capabilitiesForRepresentation;
 	const preservesResidualKinds = policy.preservesResidualKindsForRepresentation;
 	const rewriteHost = policy.rewriteHost;
+	const postRewriteHost = policy.postRewriteHost;
+	const finalize = (
+		context: Parameters<NonNullable<AdapterTargetMigrationPolicy["rewriteHost"]>>[0],
+		result: ReturnType<NonNullable<AdapterTargetMigrationPolicy["rewriteHost"]>>,
+	) => {
+		if (postRewriteHost === undefined) return result;
+		const finalized = postRewriteHost({ ...context, code: result.code });
+		return {
+			code: finalized.code,
+			imports: [...(result.imports ?? []), ...(finalized.imports ?? [])],
+			removeSourceModules: [
+				...(result.removeSourceModules ?? []),
+				...(finalized.removeSourceModules ?? []),
+			],
+			residuals: [...result.residuals, ...finalized.residuals],
+		};
+	};
 	const composed: AdapterTargetMigrationPolicy = {
 		...policy,
 		handlesSourceHostAttributes: true,
@@ -145,22 +162,28 @@ export function projectDynamicClassMigration(
 				context.program.source?.hostOpenTag !== undefined &&
 				(context.program.source.hostStyleAttributes?.length ?? 0) > 0
 			)
-				return DynamicClassHost.rewriteSourceHost(targetId, context.code, {
+				return finalize(
+					context,
+					DynamicClassHost.rewriteSourceHost(targetId, context.code, {
+						binding: context.binding,
+						framework: context.framework,
+						representationKind: context.representationKind,
+						residuals: context.residuals,
+						emittedExpression: context.emittedExpression,
+						program: context.program,
+					}),
+				);
+			if (context.representationKind !== StyleRepresentationKind.CustomProperty)
+				return finalize(context, rewriteHost?.(context) ?? { code: context.code, residuals: [] });
+			return finalize(
+				context,
+				DynamicClassHost.rewrite(targetId, context.code, {
 					binding: context.binding,
 					framework: context.framework,
 					representationKind: context.representationKind,
 					residuals: context.residuals,
-					emittedExpression: context.emittedExpression,
-					program: context.program,
-				});
-			if (context.representationKind !== StyleRepresentationKind.CustomProperty)
-				return rewriteHost?.(context) ?? { code: context.code, residuals: [] };
-			return DynamicClassHost.rewrite(targetId, context.code, {
-				binding: context.binding,
-				framework: context.framework,
-				representationKind: context.representationKind,
-				residuals: context.residuals,
-			});
+				}),
+			);
 		},
 	};
 	return { ...migration, targetPolicy: composed };

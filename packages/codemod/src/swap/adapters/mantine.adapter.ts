@@ -39,6 +39,87 @@ function renderMantineHost(
 	return `${host.slice(0, insertion)} style={${styleObject}}${host.slice(insertion)}`;
 }
 
+function rewriteMantineClassHost({
+	code,
+	binding,
+	representation,
+}: {
+	readonly code: string;
+	readonly binding?: string;
+	readonly representation: StyleHostRepresentationKind;
+}): { code: string; residuals: readonly import("../semantic-ir.ts").StyleProgramResidual[] } {
+	if (representation !== StyleHostRepresentationKind.StyleProp || binding === undefined)
+		return { code, residuals: [] };
+	const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const classAttribute = new RegExp(`className\\s*=\\{\\s*${escapedBinding}\\s*\\}`, "g");
+	if (!classAttribute.test(code))
+		return {
+			code,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: binding,
+					hint: "Mantine style-prop projection could not locate a simple className binding",
+				},
+			],
+		};
+	return { code: code.replace(classAttribute, `style={${binding}}`), residuals: [] };
+}
+
+function rewriteMantineSourceHost({
+	code,
+	program,
+	emittedExpression,
+}: {
+	readonly code: string;
+	readonly program: import("../semantic-ir.ts").StyleProgram;
+	readonly emittedExpression: string;
+}): { code: string; residuals: readonly import("../semantic-ir.ts").StyleProgramResidual[] } {
+	const openingTag = program.source?.hostOpenTag;
+	if (openingTag === undefined || (program.source?.hostStyleAttributes?.length ?? 0) === 0)
+		return { code, residuals: [] };
+	const rendered = renderMantineHost(program, emittedExpression);
+	if (rendered === undefined)
+		return {
+			code,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: openingTag,
+					hint: "Mantine style-prop projection could not render the source host",
+				},
+			],
+		};
+	const index = code.indexOf(openingTag);
+	if (index < 0)
+		return {
+			code,
+			residuals: [
+				{
+					kind: "host-framework",
+					text: openingTag,
+					hint: "Mantine style-prop projection could not locate the source host",
+				},
+			],
+		};
+	return {
+		code: `${code.slice(0, index)}${rendered}${code.slice(index + openingTag.length)}`,
+		residuals: [],
+	};
+}
+
+function rewriteChakraBoxImport(code: string): string {
+	const match = /import\s*\{\s*([^}]+?)\s*\}\s*from\s*["']@chakra-ui\/react["'];?/u.exec(code);
+	if (match === null) return code;
+	const imported =
+		match[1]
+			?.split(",")
+			.map((name) => name.trim())
+			.filter(Boolean) ?? [];
+	if (imported.length !== 1 || imported[0] !== "Box") return code;
+	return code.replace(match[0], 'import { Box } from "@mantine/core";');
+}
+
 const styleProps = [
 	"style",
 	"sx",
@@ -165,13 +246,6 @@ export default defineCodemodAdapter({
 			form: "jsx-style",
 			styleProps,
 		},
-		// Mantine's standalone target projection must also be parseable when a
-		// later migration starts from the emitted file.
-		{
-			name: "mantine-style",
-			regex: /\bstyle\s*\(\s*\{/g,
-			form: "object",
-		},
 		{
 			name: "mantine-createStyles",
 			regex: /\bcreateStyles\s*\(\s*\{/g,
@@ -192,26 +266,78 @@ export default defineCodemodAdapter({
 		targetPolicy: {
 			handlesHostRewrites: true,
 			handlesFrameworkSemantics: true,
-			hostRepresentation: StyleHostRepresentationKind.Class,
-			resolveHostRepresentation: ({ program, hasHostContext, framework }) =>
-				program.source?.subject === undefined &&
-				program.source?.hostOpenTag !== undefined &&
-				hasHostContext &&
-				(framework === undefined || framework === BuiltinHostFramework.React) &&
-				!program.rules.some(function containsFunction(rule): boolean {
-					return (
-						rule.declarations.some(
-							(declaration) =>
-								declaration.value.kind === "dynamic" &&
-								declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
-						) || rule.children.some(containsFunction)
-					);
-				})
+			handlesSourceHostAttributes: true,
+			hostRepresentation: StyleHostRepresentationKind.StyleProp,
+			resolveHostRepresentation: ({ program, framework }) => {
+				if (
+					program.rules.some(function containsFunction(rule): boolean {
+						return (
+							rule.declarations.some(
+								(declaration) =>
+									declaration.value.kind === "dynamic" &&
+									declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
+							) || rule.children.some(containsFunction)
+						);
+					})
+				)
+					return undefined;
+				return framework === undefined || framework === BuiltinHostFramework.React
 					? StyleHostRepresentationKind.StyleProp
-					: StyleHostRepresentationKind.Class,
+					: StyleHostRepresentationKind.Class;
+			},
+			rewriteComponent: ({ code, binding, tag, framework, emittedExpression }) => {
+				if (framework !== BuiltinHostFramework.React)
+					return {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: binding,
+								hint: `Mantine style-prop projection requires ${BuiltinHostFramework.React}`,
+							},
+						],
+					};
+				const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+				const assignment = new RegExp(
+					`\\b(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*[^;]+;`,
+				).exec(code);
+				if (assignment === null)
+					return {
+						code,
+						residuals: [
+							{
+								kind: "host-framework",
+								text: binding,
+								hint: "Mantine style-prop component declaration could not be located",
+							},
+						],
+					};
+				const declaration =
+					`${binding} = (props) => <${tag} {...props} ` +
+					`style={{ ...${emittedExpression}, ...props.style }} />;`;
+				const bindingOffset = assignment[0].indexOf(binding);
+				return {
+					code:
+						code.slice(0, assignment.index + bindingOffset) +
+						declaration +
+						code.slice(assignment.index + assignment[0].length),
+					residuals: [],
+				};
+			},
+			rewriteHost: ({ code, binding, representation, program, emittedExpression }) => {
+				const sourceHost = rewriteMantineSourceHost({ code, program, emittedExpression });
+				if (sourceHost.residuals.length > 0) return sourceHost;
+				const host = rewriteMantineClassHost({
+					code: sourceHost.code,
+					binding,
+					representation,
+				});
+				return { ...host, code: rewriteChakraBoxImport(host.code) };
+			},
 			resolveRepresentation: ({ program, hostRepresentation }) =>
 				hostRepresentation === StyleHostRepresentationKind.Class &&
-				program.source?.subject === undefined &&
+				program.rules.every((rule) => rule.kind === "style") &&
+				program.rules.every((rule) => rule.name === undefined) &&
 				program.residuals.length === 0
 					? StyleRepresentationKind.PortableArtifact
 					: undefined,
@@ -252,24 +378,21 @@ export default defineCodemodAdapter({
 			};
 		const styleObject = programObject(program);
 		if (
-			program.rules.some((rule) => rule.name !== undefined) &&
-			context?.host?.subject === undefined &&
-			context?.host?.representation !== StyleHostRepresentationKind.StyleProp
+			context?.host?.subject !== undefined ||
+			context?.host?.representation === StyleHostRepresentationKind.StyleProp
 		)
+			return { text: styleObject, semantic: program };
+		if (program.rules.some((rule) => rule.name !== undefined))
 			return {
-				text: `createStyles(${styleObject}).classes`,
-				imports: ['import { createStyles } from "@mantine/core";'],
-				semantic: program,
+				text: styleObject,
+				residuals: [
+					{
+						kind: "host-framework",
+						text: styleObject,
+						hint: "Mantine style maps require a host component style prop or an explicit CSS module",
+					},
+				],
 			};
-		if (context?.host?.subject !== undefined)
-			return {
-				text: `style(${styleObject})`,
-				imports: ['import { style } from "@mantine/core";'],
-			};
-		if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
-			const host = renderMantineHost(program, styleObject);
-			if (host !== undefined) return { text: host, semantic: program };
-		}
 		return {
 			text: styleObject,
 			residuals: [

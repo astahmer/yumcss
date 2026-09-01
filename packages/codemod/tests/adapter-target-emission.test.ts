@@ -165,7 +165,10 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { css } from "@chakra-ui/react";');
+		expect(result.code).toContain(
+			'import { createSystem, defaultConfig } from "@chakra-ui/react";',
+		);
+		expect(result.code).toContain("const chakraSystem = createSystem(defaultConfig);");
 		expect(result.code).toContain("const Card = (props) => <div");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");

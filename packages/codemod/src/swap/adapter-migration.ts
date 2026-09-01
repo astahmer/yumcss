@@ -704,6 +704,18 @@ function runAdapterMigrationInternal(
 			hasHostContext
 		)
 			emittedHostRepresentation = hostRepresentation;
+		// Host-aware native emitters may return a plain object (for example a
+		// Mantine style prop) instead of a portable artifact or custom-property
+		// carrier. The host rewrite still has to replace the source style props;
+		// otherwise the object is left in the expression position of the source
+		// JSX and can become invalid JavaScript.
+		if (
+			targetPolicy?.handlesHostRewrites === true &&
+			hostRepresentation !== undefined &&
+			hasHostContext &&
+			program.source?.subject === undefined
+		)
+			emittedHostRepresentation = hostRepresentation;
 		if (
 			(targetPolicy?.requiresHostContext === true || targetPolicy?.handlesHostRewrites === true) &&
 			resolvedHostRepresentation !== undefined &&

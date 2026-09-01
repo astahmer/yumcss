@@ -314,6 +314,8 @@ export interface AdapterTargetMigrationPolicy {
 	readonly handlesSourceHostAttributes?: boolean;
 	/** Target-owned rewrite for representations attached to a host prop. */
 	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
+	/** Optional target-owned finalization after a shared class-host projection. */
+	readonly postRewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
 	/** Target-owned rewrite for styled subjects that become intrinsic hosts. */
 	readonly rewriteComponent?: (
 		context: AdapterComponentRewriteContext,

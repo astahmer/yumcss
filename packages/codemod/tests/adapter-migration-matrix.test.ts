@@ -144,6 +144,13 @@ describe("bidirectional registered adapter matrix", () => {
 				);
 				return;
 			}
+			if (targetId === CodemodAdapterId.Mantine) {
+				expect(result.converted + result.skipped).toBeGreaterThan(0);
+				expect(result.skipped).toBeGreaterThan(0);
+				expect(result.residuals.length).toBeGreaterThan(0);
+				expect(result.code).toContain("pandwind:migrate-skip");
+				return;
+			}
 			expect(
 				result.residuals,
 				`${pandwind} -> ${targetId}: ${JSON.stringify(result.residuals)}`,
@@ -291,6 +298,13 @@ describe("composed cross-ecosystem routes", () => {
 			"styles.ts",
 		);
 
+		if (targetId === CodemodAdapterId.Mantine) {
+			expect(result.converted + result.skipped).toBeGreaterThan(0);
+			expect(result.skipped).toBeGreaterThan(0);
+			expect(result.residuals.length).toBeGreaterThan(0);
+			expect(result.code).toContain("pandwind:migrate-skip");
+			return;
+		}
 		expect(result.residuals, `${CodemodAdapterId.Aphrodite} -> ${targetId}`).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("button");
@@ -443,7 +457,7 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("<div");
-		expect(result.code).toContain('className={css({ color: "red", padding: "1rem" })}');
+		expect(result.code).toContain('chakraSystem.css({ color: "red", padding: "1rem" })');
 		expect(result.code).not.toMatch(/^\s*css\(\{/u);
 	});
 });

@@ -546,8 +546,8 @@ export function createChakraAdapter(
 			// the source pattern set makes a Chakra emission a valid source for the
 			// reverse route instead of creating a one-way pseudo target.
 			{
-				name: "chakra-css",
-				regex: /\bcss\s*\(\s*\{/g,
+				name: "chakra-system-css",
+				regex: /\b(?:system|chakraSystem)\.css\s*\(\s*\{/g,
 				form: "object",
 			},
 		],
@@ -565,6 +565,20 @@ export function createChakraAdapter(
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
+				postRewriteHost: ({ code }) => {
+					const match = /import\s*\{\s*([^}]+?)\s*\}\s*from\s*["']@mantine\/core["'];?/u.exec(code);
+					if (match === null) return { code, residuals: [] };
+					const imported =
+						match[1]
+							?.split(",")
+							.map((name) => name.trim())
+							.filter(Boolean) ?? [];
+					if (imported.length !== 1 || imported[0] !== "Box") return { code, residuals: [] };
+					return {
+						code: code.replace(match[0], 'import { Box } from "@chakra-ui/react";'),
+						residuals: [],
+					};
+				},
 				dynamicClassCarrier: true,
 				resolveRepresentation: ({ program, hasHostContext }) =>
 					!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
@@ -619,10 +633,13 @@ export function createChakraAdapter(
 						},
 					],
 				};
-			const expression = `css(${programObject(outputProgram)})`;
+			const expression = `chakraSystem.css(${programObject(outputProgram)})`;
 			return {
 				text: expression,
-				imports: ['import { css } from "@chakra-ui/react";'],
+				imports: [
+					'import { createSystem, defaultConfig } from "@chakra-ui/react";',
+					"const chakraSystem = createSystem(defaultConfig);",
+				],
 				semantic: outputProgram,
 			};
 		},
