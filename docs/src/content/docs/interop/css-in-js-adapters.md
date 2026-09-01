@@ -131,6 +131,15 @@ host adapter can merge the binding safely. UnoCSS uses the same custom-property
 carrier and host port, while preserving the same fail-closed behavior for
 unsupported host shapes.
 
+The same carrier is available to class-oriented CSS-in-JS targets that opt in
+through their adapter contract: Bamboo, Vanilla Extract, JSS, Aphrodite,
+Style9, Compiled, Treat, and Linaria. In safe mode, a scalar dynamic value
+whose target declares only partial native dynamic support is lowered to a
+static `var(--pandwind-dynamic-...)` declaration and an inline React/Preact
+binding. This keeps the generated stylesheet static; only the value lookup is
+runtime code. Targets that cannot prove this carrier, or hosts whose existing
+style binding cannot be merged, remain residuals.
+
 There is one additional safe static case: a styled intrinsic used as a
 discarded expression statement has no component value to preserve. The shared
 host boundary detects that shape and lets class-valued targets lower it in

@@ -131,6 +131,14 @@ diagnostic from advertising a representation that the current program cannot
 use. Tailwind also accepts static named maps and UnoCSS parses bracketed
 conditional arbitrary utilities without splitting inside their brackets.
 
+Scalar dynamic values now have a reusable static custom-property projection for
+opt-in class targets. Bamboo, Vanilla Extract, JSS, Aphrodite, Style9,
+Compiled, Treat, and Linaria declare that their emitted class carriers preserve
+`var(...)`; the shared lowering binds the original expression on a React/Preact
+host. This is target-owned through the adapter factory and is still
+fail-closed for hostless values, existing style props, and function-valued
+expressions.
+
 StyleX now demonstrates a target-owned component-to-host projection. For a
 static React intrinsic subject, the target emits a StyleX style object and
 rewrites `<Card />` to `<div {...stylex.props(Card)} />`; StyleX is never

@@ -48,6 +48,13 @@ capability and still resolve it through a target-owned host or lowering port.
 Tooling should display the outcome and residual detail, not collapse the
 decision into a generic capability mismatch.
 
+Class-valued targets may opt into the shared `dynamicClassCarrier` target
+contract when their emitted stylesheet can preserve `var(...)`. In safe mode
+this lowers scalar dynamic values to static CSS custom properties and asks the
+host adapter to bind the original expression. The opt-in is adapter-owned and
+requires a substitution test; it is not a blanket permission for the runner to
+reinterpret function-valued styles or overwrite an existing style prop.
+
 Framework metadata is only a capability requirement when the program carries
 host or component semantics. Standalone style carriers retain framework
 provenance in the IR but do not need a framework-specific target rewrite. Each
