@@ -116,15 +116,26 @@ real, adapter-specific source programs—not scenario labels—through both legs
 and snapshots each leg independently. Assertions require the reverse leg to
 convert, report an explicit residual, or preserve a visible fallback; they
 reject an unreported silent no-op. The fast proof currently passes 650
-directional files / 1,950 tests and 650 round-trip files / 1,300 tests.
+directional files / 3,250 tests and 650 round-trip files / 2,600 tests. Each
+file includes happy, edge, malformed, theme/config, and token-context
+scenarios; round-trip files exercise the same contexts across both legs. The
+snapshots remain diagnostic, while executable assertions independently require
+conversion-or-residual accounting, explicit residual hints, valid validations
+for clean cases, and actionable reverse-leg behavior.
 
 The generated source corpus intentionally uses each adapter's actual syntax:
 CSS-in-JS calls, tagged templates, named style maps, host bindings, and
-framework-specific forms where supported. This keeps inline snapshots useful
-for debugging without making them the only safety mechanism. A canonical
-target is allowed to remain byte-stable on the reverse leg only when its
-adapter parsed and converted the program, which is important for equivalent
-Tailwind and UnoCSS output.
+framework-specific forms where supported. Every context-aware case supplies a
+virtual project root and adapter-owned config files to the same migration
+options used by callers, so theme and token assertions exercise configuration
+loading rather than only changing metadata. Tailwind and UnoCSS use project
+utility/token forms; object-style adapters use token references; Chakra, MUI,
+and Mantine use their native token spellings. Blue and amber project values
+prove that the result is driven by context rather than a hardcoded fixture.
+This keeps inline snapshots useful for debugging without making them the only
+safety mechanism. A canonical target is allowed to remain byte-stable on the
+reverse leg only when its adapter parsed and converted the program, which is
+important for equivalent Tailwind and UnoCSS output.
 
 Function-valued object calls now share `FunctionStyleCallParser` across the
 normal adapter-definition path and the generic extra-adapter runtime. The

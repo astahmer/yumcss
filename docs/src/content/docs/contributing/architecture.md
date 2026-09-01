@@ -529,8 +529,9 @@ Directional route behavior has a dedicated fast proof layer in
 `packages/codemod/tests/routes`. The generator creates one file for every
 distinct ordered pair of registered adapters (650 files for the current 26
 adapters). Each file covers a static happy path, a dynamic or otherwise
-non-happy edge path, and malformed input, with inline snapshots of emitted
-code, selected representation, outcome, validation, and typed residuals.
+non-happy edge path, malformed input, theme/config variants, and token
+references, with inline snapshots of emitted code, selected representation,
+outcome, validation, and typed residuals.
 Assertions additionally require clean routes to validate, malformed routes to
 retain their source marker, and every route to avoid invalid nested hosts such
 as `className={<Box ... />}`. This suite runs directly against the registry and
@@ -540,14 +541,18 @@ remains the separate public-boundary proof.
 Every ordered pair also has a matching
 `packages/codemod/tests/roundtrips/*-to-*-to-*.test.ts` specification. These
 tests run concrete source syntax through the forward adapter and feed the
-emitted result back through the reverse adapter, covering static and dynamic
-cases with inline snapshots for both legs. The snapshots are deliberately
-paired with executable assertions: reverse conversion, an explicit residual,
-or a visible source-preserving fallback is required. A byte-stable second leg
-is valid only when the reverse adapter actually parsed and converted it; a
-silent no-op is rejected. The current fast corpus is 650 directional files
-(1,950 tests) plus 650 round-trip files (1,300 tests), and it can be run by
-directory without invoking the slower CLI suite.
+emitted result back through the reverse adapter, covering static, dynamic,
+theme/config, token, and malformed cases with inline snapshots for both legs.
+The snapshots are deliberately paired with executable assertions: reverse
+conversion, an explicit residual, or a visible source-preserving fallback is
+required. A byte-stable second leg is valid only when the reverse adapter
+actually parsed and converted it; a silent no-op is rejected. The current fast
+corpus is 650 directional files (3,250 tests) plus 650 round-trip files (2,600
+tests). Context cases provide a virtual project root and adapter-owned config
+files, use blue and amber token values, and exercise native token spellings
+where the ecosystem has them. Run this isolated proof with
+`pnpm --dir packages/codemod exec vitest --config
+vitest.route-matrix.config.ts run -u`; it does not invoke the slower CLI suite.
 
 Named-style targets must emit syntax that their own source adapter can parse
 again. For example, Mantine named maps use its `createStyles(...).classes`
