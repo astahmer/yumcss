@@ -34,6 +34,33 @@ export default defineCodemodAdapter({
 				hint: "Vanilla Extract recipes require variant-aware target lowering",
 			},
 		},
+		{
+			name: "theme-contract",
+			regex: /\b(?:createThemeContract|createGlobalThemeContract)\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "configuration",
+				hint: "Vanilla Extract theme contracts require contract-aware variable lowering",
+			},
+		},
+		{
+			name: "theme-creation",
+			regex: /\b(?:createTheme|createGlobalTheme)\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "configuration",
+				hint: "Vanilla Extract themes require static contract/config lowering",
+			},
+		},
+		{
+			name: "assign-vars",
+			regex: /\bassignVars\s*\(/g,
+			form: "residual",
+			residual: {
+				kind: "configuration",
+				hint: "Vanilla Extract assignVars requires contract-aware variable lowering",
+			},
+		},
 	],
 	packages: dependency("@vanilla-extract/css", "runtime"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.VanillaExtract, "unsupported", {

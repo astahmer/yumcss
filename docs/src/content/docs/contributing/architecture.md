@@ -392,6 +392,25 @@ Concrete ecosystem policy belongs in its adapter module. CLI files only parse
 arguments, assemble registries/providers, and render reports. Generic AST,
 filesystem, CSS, and serialization mechanics belong in infrastructure ports.
 
+Custom ecosystem configuration follows the same safety boundary. Stitches
+inline `createStitches({ theme })` objects are parsed by the Stitches adapter
+and its `$scale$key` references are resolved to concrete values before a
+target adapter has a chance to re-tokenize them. StyleX `defineVars` is
+lowered to registered `--custom-properties` and `var(--custom-property)`
+references. Vanilla Extract `createVar` remains static, while theme
+contracts, theme creation, and `assignVars` currently produce configuration
+residuals until a contract-aware lowering exists. Treat themes, Fela renderer
+configuration/plugins, Goober setup, and Emotion/styled-components runtime
+providers are likewise retained as explicit residuals when their runtime
+semantics cannot be proven for the target. MUI and Mantine theme expressions
+remain in their native runtime context while their style props are lowered.
+
+This distinction is intentional: a custom value that can be proven from
+authored static configuration is resolved; a runtime provider or plugin that
+could change the generated CSS is never guessed away. Every such boundary has
+an adapter-specific inline-snapshot test covering the converted style and the
+non-happy residual path.
+
 Built-in registry identities are enum-backed. Codemod adapter/source/target
 ids, pattern ids, plugin ids, token-format ids, validator/lowering ids, and
 pipeline stage ids are defined once in the owning identity module and reused

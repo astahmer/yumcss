@@ -229,10 +229,13 @@ pnpm exec pandwind-codemod swap --from=stitches --to=css.class \
   --diff --report 'src/**/*.{ts,tsx}'
 ```
 
-Map `styled()`/variants to a component recipe and map `$` tokens to preset
-tokens. Validate compound variants, responsive variants, `css` prop merging,
-and theme switching; these are semantic behaviors rather than simple object
-renames.
+Inline static `createStitches({ theme })` configuration is read by the adapter,
+and verified `$scale$key` references are resolved before the target decides
+whether a native token exists. An unresolved or externally configured token is
+reported instead of being guessed. Map `styled()`/variants to a component
+recipe and validate compound variants, responsive variants, `css` prop
+merging, and theme switching; these are semantic behaviors rather than simple
+object renames.
 
 ## Linaria
 
@@ -254,8 +257,8 @@ pnpm exec pandwind-codemod swap --from=jss --to=css.class --diff --report \
 
 JSS imperative rule application (`sheet.addRule`, dynamic rule updates, and
 runtime plugin behavior) needs an explicit runtime target or a component
-rewrite. Do not pretend that a static `css.class` call preserves imperative
-updates.
+rewrite. Function-valued theme rules remain runtime code. Do not pretend that a
+static `css.class` call preserves imperative updates.
 
 ## Fela and Goober
 
@@ -264,10 +267,11 @@ pnpm exec pandwind-codemod swap --from=fela --to=css.class --diff --report 'src/
 pnpm exec pandwind-codemod swap --from=goober --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```
 
-These adapters cover common object-style declarations. Validate renderer
-ordering, keyframes, media queries, hydration IDs, and dynamic interpolation
-functions. Use `css.vars()` for values that change without changing rule
-shape.
+These adapters cover common object-style declarations. Renderer configuration,
+Fela plugins, and Goober `setup()` are explicit configuration residuals until
+their target semantics are proven. Validate renderer ordering, keyframes, media
+queries, hydration IDs, and dynamic interpolation functions. Use `css.vars()`
+for values that change without changing rule shape.
 
 ## Aphrodite
 

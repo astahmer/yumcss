@@ -14,6 +14,12 @@ const goober = makeExtraAdapter({
 	prefix: "css(",
 	residualPatterns: [
 		{
+			name: "setup",
+			regex: /\bsetup\s*\(/g,
+			kind: "configuration",
+			hint: "Goober setup changes runtime rendering and requires target-aware lowering",
+		},
+		{
 			name: "styled-template",
 			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*`(?:\\.|[^`])*`/g,
 			kind: "component",

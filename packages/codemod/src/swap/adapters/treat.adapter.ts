@@ -13,6 +13,14 @@ const treat = makeExtraAdapter({
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],
 	call: /\bstyle\s*\(\s*\{/g,
 	prefix: "style(",
+	residualPatterns: [
+		{
+			name: "createTheme",
+			regex: /\bcreateTheme\s*\(/g,
+			kind: "configuration",
+			hint: "Treat createTheme requires theme-aware target lowering",
+		},
+	],
 	targetImports: ['import { style } from "@/styles.treat";'],
 	migration: {
 		prepareDynamic: ({ targetId, program }) => ({

@@ -19,6 +19,12 @@ const fela = makeExtraAdapter({
 	prefix: "renderer.renderRule(",
 	residualPatterns: [
 		{
+			name: "createRenderer",
+			regex: /\bcreateRenderer\s*\(/g,
+			kind: "configuration",
+			hint: "Fela renderer configuration and plugins require target-aware lowering",
+		},
+		{
 			name: "createComponent",
 			regex: /\bcreateComponent\s*\(/g,
 			kind: "component",

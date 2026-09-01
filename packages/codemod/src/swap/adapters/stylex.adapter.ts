@@ -6,6 +6,7 @@ import type { AdapterParseContext } from "../adapter-contract.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { applyEdits, computeExcludedRanges, matchBlock } from "../../source-pass-utils.ts";
 import type { OxcNode } from "pandwind/tw/literal";
+import { parseObjectLiteral } from "../parse.ts";
 import {
 	CodemodAdapterId,
 	CodemodPatternId,
@@ -289,6 +290,10 @@ function sourceObjectOptions(
 			match[3],
 		]),
 	]);
+	const dynamicReferences: Record<string, string> = {
+		...stylexVariableReferences(source),
+		...importedStyleReferences(context, resolver),
+	};
 	return {
 		conditionValues,
 		namedRuleObjects: true,
@@ -302,8 +307,26 @@ function sourceObjectOptions(
 			conditionalOrder: StyleProgramConditionOrder.Depth,
 		},
 		valueTransforms: { "*": stylexNumericValue },
-		dynamicReferences: importedStyleReferences(context, resolver),
+		dynamicReferences,
 	};
+}
+
+function stylexVariableReferences(source: string): Readonly<Record<string, string>> {
+	const references: Record<string, string> = {};
+	for (const match of source.matchAll(
+		/\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*stylex\.defineVars\s*\(/g,
+	)) {
+		const binding = match[1];
+		if (binding === undefined) continue;
+		const open = source.indexOf("{", (match.index ?? 0) + match[0].length);
+		if (open < 0) continue;
+		const block = matchBlock(source, open);
+		if (block === null) continue;
+		const variables = parseObjectLiteral(block.body);
+		for (const entry of variables?.keys ?? [])
+			references[`${binding}.${entry.key}`] = `var(--${entry.key})`;
+	}
+	return references;
 }
 
 export interface StyleXAdapterOptions {
@@ -712,12 +735,25 @@ function evaluateNumericExpression(expression: string): number | undefined {
 
 function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 	const root = program.rules[0];
+	const variableProperty = (property: string): string =>
+		property.startsWith("--") ? property : `--${property}`;
 	return {
 		...program,
 		rules:
 			root === undefined
 				? program.rules
-				: [{ ...root, kind: "global", selector: ":root" }, ...program.rules.slice(1)],
+				: [
+						{
+							...root,
+							kind: "global",
+							selector: ":root",
+							declarations: root.declarations.map((declaration) => ({
+								...declaration,
+								property: variableProperty(declaration.property),
+							})),
+						},
+						...program.rules.slice(1),
+					],
 		emissionHints: [...(program.emissionHints ?? []), StyleProgramEmissionHint.GlobalVariables],
 	};
 }

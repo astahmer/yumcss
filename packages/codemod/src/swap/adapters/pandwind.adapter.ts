@@ -1169,7 +1169,9 @@ function runtimeGlobalVars(program: StyleProgram): string {
 	const references = program.declarations
 		.map(
 			(declaration) =>
-				`${JSON.stringify(declaration.property)}: ${JSON.stringify(`var(${declaration.property})`)}`,
+				`${JSON.stringify(declaration.property)}: ${JSON.stringify(
+					`var(${declaration.property.startsWith("--") ? declaration.property : `--${declaration.property}`})`,
+				)}`,
 		)
 		.join(", ");
 	return `(css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [${declarations}] }]), { ${references} })`;

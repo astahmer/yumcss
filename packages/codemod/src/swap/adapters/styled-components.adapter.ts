@@ -49,6 +49,16 @@ export default defineCodemodAdapter({
 		},
 		{ name: "createGlobalStyle", kind: "global", regex: /\bcreateGlobalStyle\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
+		{
+			name: "runtime-context",
+			regex:
+				/(?:import[^;\n]*\b(?:ThemeProvider|StyleSheetManager|ServerStyleSheet)\b[^;\n]*;|<(?:ThemeProvider|StyleSheetManager|ServerStyleSheet)\b[^>]*>)/g,
+			form: "residual",
+			residual: {
+				kind: "runtime-context",
+				hint: "styled-components runtime providers require target-aware context lowering",
+			},
+		},
 	],
 	packages: dependency("styled-components", "peer"),
 	capabilities: allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {

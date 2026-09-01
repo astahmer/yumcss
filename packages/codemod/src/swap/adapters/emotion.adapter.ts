@@ -136,6 +136,16 @@ export default defineCodemodAdapter({
 		},
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "global", kind: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
+		{
+			name: "runtime-context",
+			regex:
+				/(?:import[^;\n]*\b(?:ThemeProvider|CacheProvider)\b[^;\n]*;|<(?:ThemeProvider|CacheProvider)\b[^>]*>)/g,
+			form: "residual",
+			residual: {
+				kind: "runtime-context",
+				hint: "Emotion runtime providers require target-aware theme/cache lowering",
+			},
+		},
 	],
 	packages: {
 		packages: [
