@@ -5,6 +5,11 @@ export type SourceEdit = { readonly start: number; readonly end: number; readonl
 /** Shared, syntax-agnostic primitives used by source transformation passes. */
 export class SourcePass {
 	static applyEdits(source: string, edits: readonly SourceEdit[]): string {
+		if (edits.length === 0) return source;
+		if (edits.length === 1) {
+			const edit = edits[0]!;
+			return source.slice(0, edit.start) + edit.text + source.slice(edit.end);
+		}
 		let output = source;
 		for (const edit of [...edits].toSorted((left, right) => right.start - left.start)) {
 			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);

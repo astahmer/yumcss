@@ -2,6 +2,17 @@ import { describe, expect, test } from "vitest";
 import { SourcePass } from "../src/source-pass-utils.ts";
 
 describe("SourcePass", () => {
+	test("returns the original source for no edits and avoids sorting one edit", () => {
+		const source = "const value = old;";
+
+		expect(SourcePass.applyEdits(source, [])).toBe(source);
+		expect(
+			SourcePass.applyEdits(source, [
+				{ start: source.indexOf("old"), end: source.indexOf("old") + 3, text: "new" },
+			]),
+		).toBe("const value = new;");
+	});
+
 	test("applies edits from right to left without shifting offsets", () => {
 		const source = "const value = old;";
 		expect(
