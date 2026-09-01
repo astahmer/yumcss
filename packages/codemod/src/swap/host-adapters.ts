@@ -45,7 +45,7 @@ function staticVueSfcParts(
  * semantic transform rather than a text substitution.
  */
 export function canConvertStaticVueSfc(file: string, source: string): boolean {
-	if (!/\.vue$/u.test(file)) return false;
+	if (!file.endsWith(".vue")) return false;
 	const parts = staticVueSfcParts(source);
 	if (parts === undefined || parts.script.trim() === "" || parts.template.trim() === "")
 		return false;

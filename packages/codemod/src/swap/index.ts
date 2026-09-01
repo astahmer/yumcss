@@ -214,6 +214,8 @@ export type {
 	AdapterComponentRewriteResult,
 	AdapterHostRewriteContext,
 	AdapterHostRewriteResult,
+	AdapterHostDocumentRewriteContext,
+	AdapterHostDocumentRewriteResult,
 	AdapterRewriteContext,
 	AdapterRewriteResult,
 	AdapterMigrationHooks,
