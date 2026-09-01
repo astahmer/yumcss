@@ -36,6 +36,10 @@ spelling; external targets can be selected directly too:
 pandwind-codemod swap --from=styled-components --to=emotion --write "src/**/*.tsx"
 ```
 
+See the [official API matrix](/interop/official-api-matrix/) for the
+documented syntax families each adapter recognizes, the forms that remain
+explicit residuals, and the evidence source for every claim.
+
 With `--from=auto`, the CLI uses adapter detection evidence from imports and
 known authoring calls. Pass `--meta` only for the existing pandwind/Tailwind
 swap path or other migrations that need generated project metadata.
