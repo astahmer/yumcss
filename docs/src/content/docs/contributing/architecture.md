@@ -66,6 +66,21 @@ declarations, and other DOM behavior remain typed `host-framework` residuals.
 This keeps host portability target-owned and prevents the semantic runner from
 pretending that a CSS declaration alone proves runtime or platform parity.
 
+Standalone static Next-yak and Solid-styled intrinsic subjects use the same
+React Native component representation: the target emits a `View` wrapper with
+a `StyleSheet.create` carrier, so a declaration without a local JSX use does
+not become an unusable style object. The Vue-styled target also owns a
+conservative static Solid JSX-to-Vue SFC projection. Reactive Solid
+primitives, control-flow components, and framework directives remain guarded
+residual cases rather than being rewritten as ordinary JSX.
+
+Target semantic projections are retained through named-map emission as well as
+single-value emission. This matters for token-oriented targets such as Chakra:
+CSS-origin numeric dimensions are normalized to pixel literals before Chakra's
+token normalizer runs, while values originating in Chakra/Mantine/Panda retain
+their token semantics. Validation compares the target semantic projection, so
+this is a real equivalence proof rather than a canonical-CSS exception.
+
 The host rewrite contract carries both facts when they differ: `framework` is
 the target dialect used to validate emitted code, while `sourceFramework` is
 the original dialect used by the target-owned source rewrite. A conversion may

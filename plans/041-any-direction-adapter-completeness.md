@@ -31,6 +31,14 @@ registry-derived target suite. This closes the common false capability skip
 for static `styled.div`-style subjects without making the runner know any
 ecosystem-specific syntax.
 
+The current playground matrix is clean for its 26 registered endpoints (676
+ordered routes). Chakra target emission preserves CSS-origin numeric dimensions
+(`16` means `16px` in CSS-in-JS) and named-map semantic projections are retained
+through the generic adapter wrapper. Standalone static Next-yak and
+Solid-styled intrinsic subjects now lower to React Native `View` components,
+and static Solid JSX can project into a Vue SFC. These are target-owned
+representations with focused substitution tests, not validator exemptions.
+
 The plan is not yet a universal-compatibility claim. Free dynamic values
 without a target runtime context, custom subjects whose prop-forwarding
 contract is unknown, framework-specific components, plugin-generated output,
@@ -101,7 +109,8 @@ Host conversion is executable rather than descriptive metadata. Target
 policies may guard a source-to-target dialect conversion with `canConvert`; the
 runner passes the target framework and original `sourceFramework` separately
 to representation selectors and host rewrites. Static Solid JSX can therefore
-project into React-bound Stitches, MUI, and StyleX targets, while Solid-only
+project into React-bound Stitches, MUI, and StyleX targets and static
+Vue-compatible Solid JSX can project into a Vue SFC, while Solid-only
 signals/directives/attributes remain source-preserving capability residuals.
 React-to-React Native rewrites use the same split for intrinsic hosts and
 styled subjects. The focused target suite covers both classes of outcome.
