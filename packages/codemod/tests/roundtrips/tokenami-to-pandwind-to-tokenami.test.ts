@@ -17,6 +17,38 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished tokenami */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "@tokenami/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":
+			'export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: "#2563eb" } };',
+		"/virtual/pandwind-route-project/pandwind.config.ts":
+			'export default { tokens: { colors: { brand: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":
+			'export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: "#f97316" } };',
+		"/virtual/pandwind-route-project/pandwind.config.ts":
+			'export default { tokens: { colors: { brand: "#f97316" } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("tokenami -> pandwind -> tokenami: preserves an actionable concrete round trip", () => {
@@ -143,6 +175,152 @@ test("tokenami -> pandwind -> tokenami: retains edge semantics without silent lo
 		        "valid": true,
 		      },
 		    ],
+		  },
+		}
+	`);
+});
+
+test("tokenami -> pandwind -> tokenami: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ color: "#f97316", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = // pandwind:migrate-skip (route: pandwind -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css.class({ color: "#f97316", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = css.class({ color: "#2563eb", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createCss } from "pandwind/css";
+		const css = createCss();
+
+		export const card = // pandwind:migrate-skip (route: pandwind -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		css.class({ color: "#2563eb", padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "theme-context: 1 theme binding(s)",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

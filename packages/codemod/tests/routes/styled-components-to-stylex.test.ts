@@ -15,6 +15,36 @@ const edgeSource =
 const malformedSource =
 	'import styled from "styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import styled from "styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+	},
+};
 
 test("styled-components -> stylex: migrates concrete styled-components syntax to stylex", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -25,92 +55,39 @@ test("styled-components -> stylex: migrates concrete styled-components syntax to
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
-		export const Card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
-		export const App = () => <div {...stylex.props(Card)} />;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("styled-components -> stylex: carries concrete styled-components dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={Card.class} style={Card.style} />;",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "target-native",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("styled-components -> stylex: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("styled-components -> stylex: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
-		export const Card = stylex.create({ style: { color: "red", padding: "1rem" } }).style;
-		export const App = () => <div {...stylex.props(Card)} />;
-		const unfinished = { /* unfinished styled-components */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

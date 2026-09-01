@@ -15,6 +15,40 @@ const edgeSource =
 const malformedSource =
 	'import { Box } from "@mantine/core";\nexport const App = () => <Box c="red" p="md" />;\nconst unfinished = { /* unfinished mantine */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import { Box } from "@mantine/core";\nexport const App = () => <Box c=theme.colors.brand p="md" />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#f97316" } } };',
+	},
+};
 
 test("mantine -> emotion: migrates concrete mantine syntax to emotion", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -77,6 +111,73 @@ test("mantine -> emotion: carries concrete mantine dynamics or edge syntax expli
 		      "valid": true,
 		    },
 		  ],
+		}
+	`);
+});
+
+test("mantine -> emotion: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import { css } from "@emotion/css";
+		export const App = () => css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { Box } from "@mantine/core";
+		import { css } from "@emotion/css";
+		export const App = () => css({ color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" });",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
 		}
 	`);
 });

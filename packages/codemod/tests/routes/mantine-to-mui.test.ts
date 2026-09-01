@@ -15,6 +15,42 @@ const edgeSource =
 const malformedSource =
 	'import { Box } from "@mantine/core";\nexport const App = () => <Box c="red" p="md" />;\nconst unfinished = { /* unfinished mantine */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import { Box } from "@mantine/core";\nexport const App = () => <Box c=theme.colors.brand p="md" />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [
+		{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" },
+	],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [
+		{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" },
+	],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };\nexport const muiTheme = { palette: { primary: { main: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };\nexport const muiTheme = { palette: { primary: { main: "#f97316" } } };',
+	},
+};
 
 test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -25,95 +61,39 @@ test("mantine -> mui: migrates concrete mantine syntax to mui", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  sx={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("mantine -> mui: carries concrete mantine dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> mui | lowering-residual: validation)
-		<Box c=theme.foreground p="md" />;",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "canonical CSS differs",
-		      "kind": "validation",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [
-		    {
-		      "differences": [
-		        "canonical CSS differs",
-		      ],
-		      "lossiness": "unsupported",
-		      "valid": false,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("mantine -> mui: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("mantine -> mui: preserves malformed concrete mantine input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished mantine */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  sx={{ color: "red", padding: "var(--mantine-spacing-md)" }}/>;
-		const unfinished = { /* unfinished mantine */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

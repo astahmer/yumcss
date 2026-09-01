@@ -15,6 +15,22 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "styled-system/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished bamboo */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("bamboo -> compiled: migrates concrete bamboo syntax to compiled", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +95,75 @@ test("bamboo -> compiled: carries concrete bamboo dynamics or edge syntax explic
 		      "valid": true,
 		    },
 		  ],
+		}
+	`);
+});
+
+test("bamboo -> compiled: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+
+		export const card = css({ "color": "#f97316", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+
+		export const card = css({ "color": "#2563eb", "padding": "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
 		}
 	`);
 });

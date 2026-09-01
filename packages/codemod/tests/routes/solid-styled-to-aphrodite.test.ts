@@ -15,6 +15,24 @@ const edgeSource =
 const malformedSource =
 	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const themedSource =
+	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("solid-styled -> aphrodite: migrates concrete solid-styled syntax to aphrodite", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +97,75 @@ test("solid-styled -> aphrodite: carries concrete solid-styled dynamics or edge 
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("solid-styled -> aphrodite: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const Card = css(StyleSheet.create({ style: { "color": "#f97316", "padding": "1rem" } }).style);
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { StyleSheet, css } from "aphrodite";
+
+		export const Card = css(StyleSheet.create({ style: { "color": "#2563eb", "padding": "1rem" } }).style);
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
 		}
 	`);
 });

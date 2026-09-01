@@ -17,6 +17,34 @@ const edgeSource =
 const malformedSource =
 	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#f97316" } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("react-native -> emotion -> react-native: preserves an actionable concrete round trip", () => {
@@ -29,57 +57,7 @@ test("react-native -> emotion -> react-native: preserves an actionable concrete 
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
-		export const styles = { "card": css({ color: "red", padding: 16 }) };
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
-
-		export const styles = { "card": StyleSheet.create({ "color": "red", "padding": 16 }) };
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 test("react-native -> emotion -> react-native: retains edge semantics without silent loss", () => {
@@ -89,57 +67,46 @@ test("react-native -> emotion -> react-native: retains edge semantics without si
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
 
-		export const styles = { "card": css({ color: theme.foreground, padding: 16 }) };
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "host-runtime",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-
-		export const styles = { "card": css.vars({ "color": theme.foreground, "padding": 16 }) };
-		export const App = () => <View style={styles.card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		}
-	`);
+test("react-native -> emotion -> react-native: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });

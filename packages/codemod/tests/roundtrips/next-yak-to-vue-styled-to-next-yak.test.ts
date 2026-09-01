@@ -17,6 +17,24 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "next-yak";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "next-yak";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 const targetSemantic = { source: { framework: BuiltinHostFramework.Vue } };
 
 test("next-yak -> vue-styled -> next-yak: preserves an actionable concrete round trip", () => {
@@ -127,6 +145,124 @@ test("next-yak -> vue-styled -> next-yak: retains edge semantics without silent 
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("next-yak -> vue-styled -> next-yak: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.vue",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.vue",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "dynamic style binding 'card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

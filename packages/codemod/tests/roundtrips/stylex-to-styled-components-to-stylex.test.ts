@@ -17,6 +17,36 @@ const edgeSource =
 const malformedSource =
 	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;\nconst unfinished = { /* unfinished stylex */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import * as stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div {...stylex.props(styles.card)} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+	},
+};
 const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("stylex -> styled-components -> stylex: preserves an actionable concrete round trip", () => {
@@ -137,6 +167,148 @@ test("stylex -> styled-components -> stylex: retains edge semantics without sile
 		    ],
 		    "skipped": 1,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("stylex -> styled-components -> stylex: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const styles = { "card": styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "named-map",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" }) };
+		export const App = () => <div {...stylex.props(styles.card)} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
+		          "kind": "capability",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

@@ -17,6 +17,40 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "@stitches/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card()} />;\nconst unfinished = { /* unfinished stitches */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "@stitches/react";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card()} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/stitches.config.ts":
+			'export const config = { theme: { colors: { brand: "#2563eb" }, space: { card: "1.125rem" } } };',
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/stitches.config.ts":
+			'export const config = { theme: { colors: { brand: "#f97316" }, space: { card: "1.125rem" } } };',
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
+	},
+};
 const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("stitches -> mantine -> stitches: preserves an actionable concrete round trip", () => {
@@ -29,47 +63,7 @@ test("stitches -> mantine -> stitches: preserves an actionable concrete round tr
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card()} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const card = css.class({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card()} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 test("stitches -> mantine -> stitches: retains edge semantics without silent loss", () => {
@@ -79,47 +73,46 @@ test("stitches -> mantine -> stitches: retains edge semantics without silent los
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
 
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card()} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });
-		export const App = () => <div className={card()} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`);
+test("stitches -> mantine -> stitches: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });

@@ -25,20 +25,133 @@ function roundTripFileName(source: CodemodAdapterId, target: CodemodAdapterId): 
 	return `${source}-to-${target}-to-${source}.test.ts`;
 }
 
-function semanticFor(adapter: CodemodAdapterId): string {
+const virtualProjectRoot = "/virtual/pandwind-route-project";
+
+function semanticFor(
+	adapter: CodemodAdapterId,
+	theme?: { readonly path: string; readonly resolved: string },
+): string {
+	const fields: string[] = [];
 	if (adapter === CodemodAdapterId.StyledComponents)
-		return "{ source: { framework: BuiltinHostFramework.React } }";
+		fields.push("source: { framework: BuiltinHostFramework.React }");
 	if (adapter === CodemodAdapterId.SolidStyled)
-		return "{ source: { framework: BuiltinHostFramework.Solid } }";
+		fields.push("source: { framework: BuiltinHostFramework.Solid }");
 	if (adapter === CodemodAdapterId.VueStyled)
-		return "{ source: { framework: BuiltinHostFramework.Vue } }";
+		fields.push("source: { framework: BuiltinHostFramework.Vue }");
 	if (
 		adapter === CodemodAdapterId.ChakraUi ||
 		adapter === CodemodAdapterId.Mui ||
 		adapter === CodemodAdapterId.Mantine
 	)
-		return "{ source: { framework: BuiltinHostFramework.React } }";
-	return "undefined";
+		fields.push("source: { framework: BuiltinHostFramework.React }");
+	if (theme !== undefined) {
+		fields.push(
+			`themes: [{ path: ${JSON.stringify(theme.path)}, authored: "theme.${theme.path}", resolved: ${JSON.stringify(theme.resolved)} }]`,
+		);
+	}
+	return fields.length === 0 ? "undefined" : `{ ${fields.join(", ")} }`;
+}
+
+function usesBuiltinHostFramework(adapter: CodemodAdapterId): boolean {
+	return (
+		adapter === CodemodAdapterId.StyledComponents ||
+		adapter === CodemodAdapterId.SolidStyled ||
+		adapter === CodemodAdapterId.VueStyled ||
+		adapter === CodemodAdapterId.ChakraUi ||
+		adapter === CodemodAdapterId.Mui ||
+		adapter === CodemodAdapterId.Mantine
+	);
+}
+
+function themePathFor(adapter: CodemodAdapterId): string {
+	return adapter === CodemodAdapterId.Mui ? "palette.primary.main" : "colors.brand";
+}
+
+function projectFilesFor(
+	adapter: CodemodAdapterId,
+	color: string,
+): Readonly<Record<string, string>> {
+	const value = JSON.stringify(color);
+	switch (adapter) {
+		case CodemodAdapterId.Panda:
+			return {
+				[`${virtualProjectRoot}/panda.config.ts`]: `export default { theme: { extend: { tokens: { colors: { brand: { value: ${value} } } } } } };`,
+			};
+		case CodemodAdapterId.Pandwind:
+			return {
+				[`${virtualProjectRoot}/pandwind.config.ts`]: `export default { tokens: { colors: { brand: ${value} } } };`,
+			};
+		case CodemodAdapterId.ChakraUi:
+			return {
+				[`${virtualProjectRoot}/theme.ts`]: `export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: ${value} } } } } } };`,
+			};
+		case CodemodAdapterId.Mui:
+			return {
+				[`${virtualProjectRoot}/src/theme.ts`]: `export const muiTheme = { palette: { primary: { main: ${value} } } };`,
+			};
+		case CodemodAdapterId.Mantine:
+			return {
+				[`${virtualProjectRoot}/src/theme.ts`]: `export const mantineTheme = { colors: { brand: [${value}] } };`,
+			};
+		case CodemodAdapterId.Tailwind:
+			return {
+				[`${virtualProjectRoot}/tailwind.css`]: `@import "tailwindcss"; @theme { --color-brand: ${color}; --spacing-card: 1.125rem; }`,
+			};
+		case CodemodAdapterId.UnoCSS:
+			return {
+				[`${virtualProjectRoot}/uno.config.ts`]: `export default defineConfig({ theme: { colors: { brand: ${value} } } });`,
+				[`${virtualProjectRoot}/app/globals.css`]: `@theme { --color-brand: ${color}; --spacing-card: 1.125rem; }`,
+			};
+		case CodemodAdapterId.Tokenami:
+			return {
+				[`${virtualProjectRoot}/.tokenami/tokenami.config.ts`]: `export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: ${value} } };`,
+			};
+		case CodemodAdapterId.Stitches:
+			return {
+				[`${virtualProjectRoot}/stitches.config.ts`]: `export const config = { theme: { colors: { brand: ${value} }, space: { card: "1.125rem" } } };`,
+			};
+		case CodemodAdapterId.StyleX:
+			return {
+				[`${virtualProjectRoot}/package.json`]: `{"name":"stylex-fixture","stylex":{"aliases":{"brand":${value}}}}`,
+			};
+		case CodemodAdapterId.Emotion:
+			return {
+				[`${virtualProjectRoot}/emotion.config.js`]: `module.exports = { theme: { colors: { brand: ${value} } } };`,
+			};
+		default:
+			return {};
+	}
+}
+
+function projectFor(source: CodemodAdapterId, target: CodemodAdapterId, color: string): string {
+	const files: Record<string, string> = {};
+	for (const entries of [projectFilesFor(source, color), projectFilesFor(target, color)])
+		for (const [file, contents] of Object.entries(entries))
+			files[file] = files[file] === undefined ? contents : `${files[file]}\n${contents}`;
+	return `{ root: ${JSON.stringify(virtualProjectRoot)}, files: ${JSON.stringify(files)} }`;
+}
+
+function themedSource(adapter: CodemodAdapterId, source: string): string {
+	const themeExpression =
+		adapter === CodemodAdapterId.Mui ? "theme.palette.primary.main" : "theme.colors.brand";
+	if (adapter === CodemodAdapterId.Tailwind)
+		return source.replace(
+			'className="flex gap-4 p-4 text-black"',
+			'className="flex gap-4 p-4 text-brand"',
+		);
+	if (adapter === CodemodAdapterId.UnoCSS)
+		return source.replace(
+			'className="flex items-center gap-4"',
+			'className="flex items-center gap-4 text-brand"',
+		);
+	if (source.includes("color: red"))
+		return source.replace("color: red", `color: \${${themeExpression}}`);
+	if (source.includes('"red"')) return source.replaceAll('"red"', themeExpression);
+	if (source.includes("'red'")) return source.replaceAll("'red'", themeExpression);
+	if (source.includes('bg="tomato"'))
+		return source.replace('bg="tomato"', `bg={${themeExpression}}`);
+	if (source.includes('c="red"')) return source.replace('c="red"', `c={${themeExpression}}`);
+	return `${source}\nconst themedValue = ${themeExpression};`;
 }
 
 function edgeSource(adapter: CodemodAdapterId, source: string): string {
@@ -273,18 +386,34 @@ function sourceExample(adapter: CodemodAdapterId) {
 	};
 }
 
-function sourceConstants(example: ReturnType<typeof sourceExample>): string {
+function sourceConstants(
+	example: ReturnType<typeof sourceExample>,
+	source: CodemodAdapterId,
+	target: CodemodAdapterId,
+): string {
+	const sourceThemePath = themePathFor(source);
+	const targetThemePath = themePathFor(target);
 	return [
 		`const happySource = ${JSON.stringify(example.happy)};`,
 		`const edgeSource = ${JSON.stringify(example.edge)};`,
 		`const malformedSource = ${JSON.stringify(example.malformed)};`,
 		`const sourceSemantic = ${example.semantic};`,
+		`const themedSource = ${JSON.stringify(themedSource(source, example.happy))};`,
+		`const blueSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#2563eb" })};`,
+		`const amberSemantic = ${semanticFor(source, { path: sourceThemePath, resolved: "#f97316" })};`,
+		`const blueTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#2563eb" })};`,
+		`const amberTargetSemantic = ${semanticFor(target, { path: targetThemePath, resolved: "#f97316" })};`,
+		`const blueProject = ${projectFor(source, target, "#2563eb")};`,
+		`const amberProject = ${projectFor(source, target, "#f97316")};`,
 	].join("\n");
 }
 
 function routeSource(source: CodemodAdapterId, target: CodemodAdapterId): string {
 	const example = sourceExample(source);
-	const frameworkImport = example.semantic === "undefined" ? "" : "BuiltinHostFramework, ";
+	const frameworkImport =
+		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
+			? "BuiltinHostFramework, "
+			: "";
 	return `${generatedHeader}
 import { expect, test } from "vitest";
 import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
@@ -295,7 +424,7 @@ import {
 } from "../route-spec-support.ts";
 
 const route = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
-${sourceConstants(example)}
+	${sourceConstants(example, source, target)}
 
 test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", () => {
 	const result = route.run({ source: happySource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
@@ -316,6 +445,16 @@ test("${source} -> ${target}: carries concrete ${source} dynamics or edge syntax
 	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
+test("${source} -> ${target}: lowers concrete theme and project context variants", () => {
+	const blue = route.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const amber = route.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
+});
+
 test("${source} -> ${target}: preserves malformed concrete ${source} input", () => {
 	const result = route.run({ source: malformedSource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished ${source} */");
@@ -330,9 +469,9 @@ function roundTripSource(source: CodemodAdapterId, target: CodemodAdapterId): st
 	const example = sourceExample(source);
 	const targetExample = sourceExample(target);
 	const frameworkImport =
-		example.semantic === "undefined" && targetExample.semantic === "undefined"
-			? ""
-			: "BuiltinHostFramework, ";
+		usesBuiltinHostFramework(source) || usesBuiltinHostFramework(target)
+			? "BuiltinHostFramework, "
+			: "";
 	return `${generatedHeader}
 import { expect, test } from "vitest";
 import { ${frameworkImport}CodemodAdapterId } from "../../src/swap/index.ts";
@@ -345,8 +484,8 @@ import {
 
 const forward = createAdapterRouteSpec(${identifier(source)}, ${identifier(target)});
 const reverse = createAdapterRouteSpec(${identifier(target)}, ${identifier(source)});
-${sourceConstants(example)}
-const targetSemantic = ${targetExample.semantic};
+	${sourceConstants(example, source, target)}
+	const targetSemantic = ${targetExample.semantic};
 
 test("${source} -> ${target} -> ${source}: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: ${JSON.stringify(example.file)}, semantic: sourceSemantic });
@@ -369,6 +508,25 @@ test("${source} -> ${target} -> ${source}: retains edge semantics without silent
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
 	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
+
+test("${source} -> ${target} -> ${source}: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: blueSemantic, project: blueProject });
+	const secondBlue = reverse.run({ source: firstBlue.code, file: ${JSON.stringify(targetExample.file)}, semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = forward.run({ source: themedSource, file: ${JSON.stringify(example.file)}, semantic: amberSemantic, project: amberProject });
+	const secondAmber = reverse.run({ source: firstAmber.code, file: ${JSON.stringify(targetExample.file)}, semantic: amberTargetSemantic, project: amberProject });
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });
 
 `;

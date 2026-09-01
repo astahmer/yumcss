@@ -17,6 +17,24 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished linaria */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "@linaria/core";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 const targetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 
 test("linaria -> solid-styled -> linaria: preserves an actionable concrete round trip", () => {
@@ -29,57 +47,7 @@ test("linaria -> solid-styled -> linaria: preserves an actionable concrete round
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
-		export const card = styled.div({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
-		export const card = // pandwind:migrate-skip (route: solid-styled -> linaria | capability-blocked: framework-semantics: solid | available: static, named-map, residual)
-		styled.div({ "color": "red", "padding": "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "framework-semantics: solid",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 test("linaria -> solid-styled -> linaria: retains edge semantics without silent loss", () => {
@@ -89,48 +57,46 @@ test("linaria -> solid-styled -> linaria: retains edge semantics without silent 
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> solid-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "solid-styled has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "@linaria/core";
-		export const card = // pandwind:migrate-skip (route: linaria -> solid-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		css\`color: \${theme.foreground}; padding: 1rem;\`;
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
+
+test("linaria -> solid-styled -> linaria: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });

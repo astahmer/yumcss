@@ -15,6 +15,24 @@ const edgeSource =
 const malformedSource =
 	'import styled from "styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished styled-components */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import styled from "styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("styled-components -> style9: migrates concrete styled-components syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -25,94 +43,39 @@ test("styled-components -> style9: migrates concrete styled-components syntax to
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const Card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
-		export const App = () => <div className={Card} />;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("styled-components -> style9: carries concrete styled-components dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "
-		import { createCx } from "pandwind/cx";
-		import style9 from "style9";
-		const cx = createCx();
-		export const Card = (props) => <div {...props} className={cx(style9(style9.create({ style: { "color": "var(--pandwind-dynamic-5qa8dh)", "padding": "1rem" } }).style), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
-		export const App = () => <Card />;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "host-runtime",
-		      "representation": "custom-property",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("styled-components -> style9: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("styled-components -> style9: preserves malformed concrete styled-components input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished styled-components */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const Card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
-		export const App = () => <div className={Card} />;
-		const unfinished = { /* unfinished styled-components */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

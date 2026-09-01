@@ -15,6 +15,24 @@ const edgeSource =
 const malformedSource =
 	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const themedSource =
+	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("solid-styled -> style9: migrates concrete solid-styled syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -25,92 +43,39 @@ test("solid-styled -> style9: migrates concrete solid-styled syntax to style9", 
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const Card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
-		export const App = () => <div className={Card} />;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("solid-styled -> style9: carries concrete solid-styled dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> style9 | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <Card />;",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "custom-property",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target style9",
-		      "kind": "dynamic-custom-property",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("solid-styled -> style9: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("solid-styled -> style9: preserves malformed concrete solid-styled input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished solid-styled */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const Card = style9(style9.create({ style: { "color": "red", "padding": "1rem" } }).style);
-		export const App = () => <div className={Card} />;
-		const unfinished = { /* unfinished solid-styled */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

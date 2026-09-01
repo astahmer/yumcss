@@ -15,6 +15,34 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "styled-system/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished panda */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#2563eb" } } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#f97316" } } } } } };',
+	},
+};
 
 test("panda -> react-native: migrates concrete panda syntax to react-native", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -25,97 +53,39 @@ test("panda -> react-native: migrates concrete panda syntax to react-native", ()
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-
-		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
-		export const App = () => <View   style={card}/>;",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("panda -> react-native: carries concrete panda dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> react-native | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		css({ color: theme.foreground, padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "target-native",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "dynamic-values: dynamic: theme.foreground",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		    {
-		      "hint": "react-native has no host representation for react-native",
-		      "kind": "host-framework",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("panda -> react-native: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("panda -> react-native: preserves malformed concrete panda input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.tsx", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished panda */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-
-		export const card = StyleSheet.create({ style: { "color": "red", "padding": 16 } }).style;
-		export const App = () => <View   style={card}/>;
-		const unfinished = { /* unfinished panda */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

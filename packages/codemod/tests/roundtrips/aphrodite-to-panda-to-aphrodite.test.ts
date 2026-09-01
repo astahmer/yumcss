@@ -17,6 +17,34 @@ const edgeSource =
 const malformedSource =
 	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#2563eb" } } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#f97316" } } } } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("aphrodite -> panda -> aphrodite: preserves an actionable concrete round trip", () => {
@@ -125,6 +153,124 @@ test("aphrodite -> panda -> aphrodite: retains edge semantics without silent los
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("aphrodite -> panda -> aphrodite: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> panda | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target panda",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> panda | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> panda | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target panda",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> panda | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

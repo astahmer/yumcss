@@ -15,6 +15,34 @@ const edgeSource =
 const malformedSource =
 	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+	},
+};
 
 test("react-native -> stylex: migrates concrete react-native syntax to stylex", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +107,75 @@ test("react-native -> stylex: carries concrete react-native dynamics or edge syn
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("react-native -> stylex: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
+		export const App = () => <View style={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.colors.brand",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
+		export const App = () => <View style={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.colors.brand",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });

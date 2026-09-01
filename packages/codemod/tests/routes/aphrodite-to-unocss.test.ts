@@ -15,6 +15,38 @@ const edgeSource =
 const malformedSource =
 	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished aphrodite */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#2563eb" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }",
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#f97316" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }",
+	},
+};
 
 test("aphrodite -> unocss: migrates concrete aphrodite syntax to unocss", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -78,6 +110,75 @@ test("aphrodite -> unocss: carries concrete aphrodite dynamics or edge syntax ex
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("aphrodite -> unocss: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target unocss",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { StyleSheet } from "aphrodite";
+		export const styles = // pandwind:migrate-skip (route: aphrodite -> unocss | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target unocss",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });

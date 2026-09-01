@@ -17,6 +17,24 @@ const edgeSource =
 const malformedSource =
 	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });\nexport const App = () => <Card />;\nconst unfinished = { /* unfinished solid-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Solid } };
+const themedSource =
+	'import { styled } from "solid-styled-components";\nexport const Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <Card />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 const targetSemantic = undefined;
 
 test("solid-styled -> bamboo -> solid-styled: preserves an actionable concrete round trip", () => {
@@ -125,6 +143,124 @@ test("solid-styled -> bamboo -> solid-styled: retains edge semantics without sil
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("solid-styled -> bamboo -> solid-styled: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { styled } from "solid-styled-components";
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <Card />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

@@ -17,6 +17,36 @@ const edgeSource =
 const malformedSource =
 	'import { Box } from "@mantine/core";\nexport const App = () => <Box c="red" p="md" />;\nconst unfinished = { /* unfinished mantine */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import { Box } from "@mantine/core";\nexport const App = () => <Box c=theme.colors.brand p="md" />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("mantine -> aphrodite -> mantine: preserves an actionable concrete round trip", () => {
@@ -133,6 +163,144 @@ test("mantine -> aphrodite -> mantine: retains edge semantics without silent los
 		        "valid": true,
 		      },
 		    ],
+		  },
+		}
+	`);
+});
+
+test("mantine -> aphrodite -> mantine: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@mantine/core";
+		import { StyleSheet, css } from "aphrodite";
+		export const App = () => <Box  className={css(StyleSheet.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
+
+		export const App = () => <Box  className={css(createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { Box } from "@mantine/core";
+		import { StyleSheet, css } from "aphrodite";
+		export const App = () => <Box  className={css(StyleSheet.create({ style: { "color": "theme.colors.brand", "padding": "var(--mantine-spacing-md)" } }).style)}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { Box } from "@mantine/core";
+		import { createStyles } from "@mantine/core";
+
+		export const App = () => <Box  className={css(createStyles({ style: { color: "theme.colors.brand", padding: "var(--mantine-spacing-md)" } }).classes.style)}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
 		  },
 		}
 	`);

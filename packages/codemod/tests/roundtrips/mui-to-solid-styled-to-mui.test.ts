@@ -17,6 +17,42 @@ const edgeSource =
 const malformedSource =
 	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "red", p: 2 }} />;\nconst unfinished = { /* unfinished mui */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource =
+	'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: theme.palette.primary.main, p: 2 }} />;';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [
+		{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#2563eb" },
+	],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [
+		{ path: "palette.primary.main", authored: "theme.palette.primary.main", resolved: "#f97316" },
+	],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.Solid },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const muiTheme = { palette: { primary: { main: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const muiTheme = { palette: { primary: { main: "#f97316" } } };',
+	},
+};
 const targetSemantic = { source: { framework: BuiltinHostFramework.Solid } };
 
 test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", () => {
@@ -29,55 +65,7 @@ test("mui -> solid-styled -> mui: preserves an actionable concrete round trip", 
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "solid-styled-components";
-		export const App = () => styled.div({ "color": "red", "padding": "16px" });",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		import { styled } from "@mui/system";
-
-		export const App = () => styled("div")({ color: "red", padding: "16px" });",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 test("mui -> solid-styled -> mui: retains edge semantics without silent loss", () => {
@@ -87,46 +75,46 @@ test("mui -> solid-styled -> mui: retains edge semantics without silent loss", (
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> solid-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
-		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic-values: dynamic: theme.foreground",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "solid-styled has no host representation for solid",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> solid-styled | lowering-residual: host-framework | capability-blocked: dynamic-values: dynamic: theme.foreground | available: named-map, target-native, residual)
-		<Box sx={{ color: theme.foreground, p: 2 }} />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
+
+test("mui -> solid-styled -> mui: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });

@@ -17,6 +17,40 @@ const edgeSource =
 const malformedSource =
 	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished pandwind */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/pandwind.config.ts":
+			'export default { tokens: { colors: { brand: "#2563eb" } } };',
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/pandwind.config.ts":
+			'export default { tokens: { colors: { brand: "#f97316" } } };',
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
+	},
+};
 const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("pandwind -> mantine -> pandwind: preserves an actionable concrete round trip", () => {
@@ -135,6 +169,164 @@ test("pandwind -> mantine -> pandwind: retains edge semantics without silent los
 		        "valid": true,
 		      },
 		    ],
+		  },
+		}
+	`);
+});
+
+test("pandwind -> mantine -> pandwind: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		const css = createCss();
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const pandwindCss = createRuntimeCss(pandwindPreset);
+		const css = createRuntimeCss(pandwindPreset);
+
+		const css = createCss();
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
+		export const App = () => <div className={cx(pandwindCss.vars({ style: card.style }).class, card.class)}  style={pandwindCss.vars({ style: card.style }).style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		const css = createCss();
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		import { createCx } from "pandwind/cx";
+		const cx = createCx();
+		const pandwindCss = createRuntimeCss(pandwindPreset);
+		const css = createRuntimeCss(pandwindPreset);
+
+		const css = createCss();
+		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });
+		export const App = () => <div className={cx(pandwindCss.vars({ style: card.style }).class, card.class)}  style={pandwindCss.vars({ style: card.style }).style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
 		  },
 		}
 	`);

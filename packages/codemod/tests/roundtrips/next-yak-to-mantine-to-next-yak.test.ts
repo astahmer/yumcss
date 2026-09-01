@@ -17,6 +17,36 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "next-yak";\nexport const card = css`color: red; padding: 1rem;`;\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished next-yak */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "next-yak";\nexport const card = css`color: ${theme.colors.brand}; padding: 1rem;`;\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/src/theme.ts":
+			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
+	},
+};
 const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("next-yak -> mantine -> next-yak: preserves an actionable concrete round trip", () => {
@@ -128,6 +158,150 @@ test("next-yak -> mantine -> next-yak: retains edge semantics without silent los
 		    "residuals": [],
 		    "skipped": 0,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("next-yak -> mantine -> next-yak: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "residual",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": false,
+		      "code": "import { css } from "next-yak";
+		export const card = // pandwind:migrate-skip (route: next-yak -> mantine | lowering-residual: host-framework, validation)
+		css\`color: \${theme.colors.brand}; padding: 1rem;\`;
+		export const App = () => <div className={card} />;",
+		      "converted": 0,
+		      "outcomes": [],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

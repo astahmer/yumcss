@@ -15,6 +15,22 @@ const edgeSource =
 const malformedSource =
 	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished vanilla-extract */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("vanilla-extract -> style9: migrates concrete vanilla-extract syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "Card.css.ts", semantic: sourceSemantic });
@@ -25,62 +41,34 @@ test("vanilla-extract -> style9: migrates concrete vanilla-extract syntax to sty
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const card = style9.create({ "color": "red", "padding": "1rem" });",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("vanilla-extract -> style9: carries concrete vanilla-extract dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.css.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
 
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+test("vanilla-extract -> style9: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.css.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.css.ts",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("vanilla-extract -> style9: preserves malformed concrete vanilla-extract input", () => {
@@ -91,29 +79,5 @@ test("vanilla-extract -> style9: preserves malformed concrete vanilla-extract in
 	});
 	expect(result.code).toContain("/* unfinished vanilla-extract */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import style9 from "style9";
-
-		export const card = style9.create({ "color": "red", "padding": "1rem" });
-		const unfinished = { /* unfinished vanilla-extract */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

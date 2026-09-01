@@ -17,6 +17,24 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "styled-system/css";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished bamboo */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "styled-system/css";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("bamboo -> styled-components -> bamboo: preserves an actionable concrete round trip", () => {
@@ -139,6 +157,148 @@ test("bamboo -> styled-components -> bamboo: retains edge semantics without sile
 		    ],
 		    "skipped": 1,
 		    "validations": [],
+		  },
+		}
+	`);
+});
+
+test("bamboo -> styled-components -> bamboo: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = // pandwind:migrate-skip (route: styled-components -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "styled-components";
+
+		export const card = // pandwind:migrate-skip (route: styled-components -> bamboo | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		styled.div({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 0,
+		      "outcomes": [
+		        {
+		          "outcome": "residual",
+		          "representation": "custom-property",
+		        },
+		      ],
+		      "residuals": [
+		        {
+		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target bamboo",
+		          "kind": "dynamic-custom-property",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
+		      "validations": [],
+		    },
 		  },
 		}
 	`);

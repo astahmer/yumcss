@@ -13,6 +13,14 @@ export interface AdapterRouteInput {
 	readonly source: string;
 	readonly file: string;
 	readonly semantic?: AdapterMigrationOptions["semantic"];
+	readonly project?: AdapterRouteProject;
+}
+
+/** Virtual project context used by route specs to exercise config-aware adapters. */
+export interface AdapterRouteProject {
+	readonly root: string;
+	readonly packageJson?: Readonly<Record<string, unknown>>;
+	readonly files: Readonly<Record<string, string>>;
 }
 
 export interface AdapterRouteSpec {
@@ -30,12 +38,19 @@ export function createAdapterRouteSpec(
 		source,
 		target,
 		run(input) {
+			const project = input.project;
 			return runAdapterMigration(input.source, {
 				from: source,
 				to: target,
 				file: input.file,
+				...(project === undefined
+					? {}
+					: {
+							root: project.root,
+							packageJson: project.packageJson,
+							readFile: (file: string) => project.files[file],
+						}),
 				mode: "safe",
-				readFile: () => undefined,
 				adapterRegistry: catalog.registry,
 				...(input.semantic === undefined ? {} : { semantic: input.semantic }),
 			});

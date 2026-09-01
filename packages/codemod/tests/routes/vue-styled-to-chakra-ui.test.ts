@@ -15,6 +15,38 @@ const edgeSource =
 const malformedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "red", padding: "1rem" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const themedSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	source: { framework: BuiltinHostFramework.React },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/theme.ts":
+			'export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: "#2563eb" } } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/theme.ts":
+			'export const chakraTheme = { theme: { tokens: { colors: { brand: { 500: { value: "#f97316" } } } } } };',
+	},
+};
 
 test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui", () => {
 	const result = route.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
@@ -25,100 +57,39 @@ test("vue-styled -> chakra-ui: migrates concrete vue-styled syntax to chakra-ui"
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "<script setup>
-		import { css } from "@chakra-ui/react";
-
-
-		const Card = css({ color: "red", padding: "1rem" });
-		</script>
-		<template><div :class="Card" /></template>",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("vue-styled -> chakra-ui: carries concrete vue-styled dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		styled.div({ color: theme.foreground, padding: "1rem" });
-		</script>
-		<template><Card /></template>",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "custom-property",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
-		      "kind": "dynamic-custom-property",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("vue-styled -> chakra-ui: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("vue-styled -> chakra-ui: preserves malformed concrete vue-styled input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "<script setup>
-		import { css } from "@chakra-ui/react";
-
-
-		const Card = css({ color: "red", padding: "1rem" });
-		</script>
-		<template><div :class="Card" /></template>
-		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

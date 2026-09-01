@@ -17,6 +17,36 @@ const edgeSource =
 const malformedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "red", padding: "1rem" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const themedSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#2563eb" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/emotion.config.js":
+			'module.exports = { theme: { colors: { brand: "#f97316" } } };',
+	},
+};
 const targetSemantic = undefined;
 
 test("vue-styled -> emotion -> vue-styled: preserves an actionable concrete round trip", () => {
@@ -151,6 +181,160 @@ test("vue-styled -> emotion -> vue-styled: retains edge semantics without silent
 		        "valid": true,
 		      },
 		    ],
+		  },
+		}
+	`);
+});
+
+test("vue-styled -> emotion -> vue-styled: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { css } from "@emotion/css";
+
+
+		const Card = css({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "vue-styled-components";
+		<script setup>
+
+
+
+		const Card = styled.div({ "color": "#f97316", "padding": "1rem" });
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		  },
+		  "blue": {
+		    "forward": {
+		      "changed": true,
+		      "code": "<script setup>
+		import { css } from "@emotion/css";
+
+
+		const Card = css({ color: theme.colors.brand, padding: "1rem" });
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "vue-styled-components";
+		<script setup>
+
+
+
+		const Card = styled.div({ "color": "#2563eb", "padding": "1rem" });
+		</script>
+		<template><div :class="Card.class" :style="Card.style" /></template>",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
 		  },
 		}
 	`);

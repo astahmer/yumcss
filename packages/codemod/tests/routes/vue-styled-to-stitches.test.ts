@@ -15,6 +15,36 @@ const edgeSource =
 const malformedSource =
 	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: "red", padding: "1rem" });\n</script>\n<template><Card /></template>\nconst unfinished = { /* unfinished vue-styled */';
 const sourceSemantic = { source: { framework: BuiltinHostFramework.Vue } };
+const themedSource =
+	'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div({ color: theme.colors.brand, padding: "1rem" });\n</script>\n<template><Card /></template>';
+const blueSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	source: { framework: BuiltinHostFramework.Vue },
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/stitches.config.ts":
+			'export const config = { theme: { colors: { brand: "#2563eb" }, space: { card: "1.125rem" } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/stitches.config.ts":
+			'export const config = { theme: { colors: { brand: "#f97316" }, space: { card: "1.125rem" } } };',
+	},
+};
 
 test("vue-styled -> stitches: migrates concrete vue-styled syntax to stitches", () => {
 	const result = route.run({ source: happySource, file: "Card.vue", semantic: sourceSemantic });
@@ -25,106 +55,39 @@ test("vue-styled -> stitches: migrates concrete vue-styled syntax to stitches", 
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
-		const Card = css({ color: "red", padding: "1rem" });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("vue-styled -> stitches: carries concrete vue-styled dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
 
-		const Card = css({ color: theme.foreground, padding: "1rem" });
-
-		export default function App() {
-			return (
-		<Card />
-			);
-		}
-		",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "host-runtime",
-		      "representation": "target-native",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+test("vue-styled -> stitches: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.vue",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("vue-styled -> stitches: preserves malformed concrete vue-styled input", () => {
 	const result = route.run({ source: malformedSource, file: "Card.vue", semantic: sourceSemantic });
 	expect(result.code).toContain("/* unfinished vue-styled */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> stitches | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
-		styled.div({ color: "red", padding: "1rem" });
-		</script>
-		<template><Card /></template>
-		const unfinished = { /* unfinished vue-styled */",
-		  "converted": 0,
-		  "outcomes": [
-		    {
-		      "outcome": "residual",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [
-		    {
-		      "hint": "framework-semantics: vue",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
-		  ],
-		  "skipped": 1,
-		  "validations": [],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

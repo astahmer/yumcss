@@ -15,6 +15,38 @@ const edgeSource =
 const malformedSource =
 	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished treat */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#2563eb" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }",
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#f97316" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }",
+	},
+};
 
 test("treat -> unocss: migrates concrete treat syntax to unocss", () => {
 	const result = route.run({
@@ -29,61 +61,34 @@ test("treat -> unocss: migrates concrete treat syntax to unocss", () => {
 	expect(result.validations.every((validation) => validation.valid)).toBe(true);
 	expect(result.code).not.toContain("pandwind:migrate-skip");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = "[color:red] [padding:1rem]";",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });
 
 test("treat -> unocss: carries concrete treat dynamics or edge syntax explicitly", () => {
 	const result = route.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
 	expect(result.converted + result.skipped + result.residuals.length).toBeGreaterThan(0);
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "portable-artifact",
-		      "representation": "portable-artifact",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
+});
+
+test("treat -> unocss: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.treat.ts",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.treat.ts",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot();
 });
 
 test("treat -> unocss: preserves malformed concrete treat input", () => {
@@ -94,28 +99,5 @@ test("treat -> unocss: preserves malformed concrete treat input", () => {
 	});
 	expect(result.code).toContain("/* unfinished treat */");
 	expectExplicitResidualEvidence(result);
-	expect(routeEvidence(result)).toMatchInlineSnapshot(`
-		{
-		  "changed": true,
-		  "code": "import { style } from "@treatjs/treat";
-		export const card = "[color:red] [padding:1rem]";
-		const unfinished = { /* unfinished treat */",
-		  "converted": 1,
-		  "outcomes": [
-		    {
-		      "outcome": "static",
-		      "representation": "static",
-		    },
-		  ],
-		  "residuals": [],
-		  "skipped": 0,
-		  "validations": [
-		    {
-		      "differences": [],
-		      "lossiness": "lossless",
-		      "valid": true,
-		    },
-		  ],
-		}
-	`);
+	expect(routeEvidence(result)).toMatchInlineSnapshot();
 });

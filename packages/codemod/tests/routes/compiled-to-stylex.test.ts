@@ -15,6 +15,34 @@ const edgeSource =
 const malformedSource =
 	'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: "1rem" });\nexport const App = () => <div className={card} />;\nconst unfinished = { /* unfinished compiled */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { css } from "@compiled/react";\nexport const card = css({ color: theme.colors.brand, padding: "1rem" });\nexport const App = () => <div className={card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+	},
+};
 
 test("compiled -> stylex: migrates concrete compiled syntax to stylex", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +107,75 @@ test("compiled -> stylex: carries concrete compiled dynamics or edge syntax expl
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("compiled -> stylex: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+		export const card = // pandwind:migrate-skip (route: compiled -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.colors.brand",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { css } from "@compiled/react";
+		export const card = // pandwind:migrate-skip (route: compiled -> stylex | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: named-map, target-native, residual)
+		css({ color: theme.colors.brand, padding: "1rem" });
+		export const App = () => <div className={card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "target-native",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "dynamic-values: dynamic: theme.colors.brand",
+		        "kind": "capability",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });

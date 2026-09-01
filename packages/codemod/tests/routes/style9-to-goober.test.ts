@@ -15,6 +15,22 @@ const edgeSource =
 const malformedSource =
 	'import style9 from "style9";\nexport const styles = style9.create({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;\nconst unfinished = { /* unfinished style9 */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import style9 from "style9";\nexport const styles = style9.create({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("style9 -> goober: migrates concrete style9 syntax to goober", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +95,75 @@ test("style9 -> goober: carries concrete style9 dynamics or edge syntax explicit
 		      "valid": true,
 		    },
 		  ],
+		}
+	`);
+});
+
+test("style9 -> goober: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { css } from "goober";
+
+		export const styles = { "card": css({ "color": theme.colors.brand, "padding": "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { css } from "goober";
+
+		export const styles = { "card": css({ "color": theme.colors.brand, "padding": "1rem" }) };
+		export const App = () => <div className={styles.card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "host-runtime",
+		        "representation": "named-map",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
 		}
 	`);
 });

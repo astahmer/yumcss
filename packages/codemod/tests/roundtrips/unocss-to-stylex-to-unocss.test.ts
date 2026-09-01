@@ -15,6 +15,42 @@ const edgeSource = '<div className="flex unknown-project-utility" />';
 const malformedSource =
 	'export const App = () => <div className="flex items-center gap-4" />;\nconst unfinished = { /* unfinished unocss */';
 const sourceSemantic = undefined;
+const themedSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#2563eb" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#2563eb"}}}',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#f97316" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/package.json":
+			'{"name":"stylex-fixture","stylex":{"aliases":{"brand":"#f97316"}}}',
+	},
+};
 const targetSemantic = undefined;
 
 test("unocss -> stylex -> unocss: preserves an actionable concrete round trip", () => {
@@ -27,52 +63,7 @@ test("unocss -> stylex -> unocss: preserves an actionable concrete round trip", 
 	expectExplicitResidualEvidence(first);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-		export const App = () => stylex.create({ style: { display: "flex", alignItems: "center", gap: "1rem" } }).style;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "static",
-		        "representation": "static",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		  "reverse": {
-		    "changed": true,
-		    "code": "
-		export const App = () => { "style": "[display:flex] [align-items:center] [gap:1rem]" }.style;",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "target-native",
-		        "representation": "named-map",
-		      },
-		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
 });
 
 test("unocss -> stylex -> unocss: retains edge semantics without silent loss", () => {
@@ -82,39 +73,46 @@ test("unocss -> stylex -> unocss: retains edge semantics without silent loss", (
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
 	expectExplicitResidualEvidence(second);
-	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot(`
-		{
-		  "forward": {
-		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex unknown-project-utility" />",
-		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
-		        "kind": "unknown-utility",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "// pandwind:migrate-skip (route: unocss -> stylex | parse-residual: unknown-utility | available: named-map, residual)
-		<div className="flex unknown-project-utility" />",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [],
-		  },
-		}
-	`);
+	expect({ forward: routeEvidence(first), reverse: routeEvidence(second) }).toMatchInlineSnapshot();
+});
+
+test("unocss -> stylex -> unocss: preserves concrete theme and project context variants", () => {
+	const firstBlue = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const secondBlue = reverse.run({
+		source: firstBlue.code,
+		file: "Card.tsx",
+		semantic: blueTargetSemantic,
+		project: blueProject,
+	});
+	const firstAmber = forward.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	const secondAmber = reverse.run({
+		source: firstAmber.code,
+		file: "Card.tsx",
+		semantic: amberTargetSemantic,
+		project: amberProject,
+	});
+	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
+		0,
+	);
+	expectActionableRoundTrip(firstBlue, secondBlue);
+	expectActionableRoundTrip(firstAmber, secondAmber);
+	expectExplicitResidualEvidence(firstBlue);
+	expectExplicitResidualEvidence(secondBlue);
+	expectExplicitResidualEvidence(firstAmber);
+	expectExplicitResidualEvidence(secondAmber);
+	expect({
+		blue: { forward: routeEvidence(firstBlue), reverse: routeEvidence(secondBlue) },
+		amber: { forward: routeEvidence(firstAmber), reverse: routeEvidence(secondAmber) },
+	}).toMatchInlineSnapshot();
 });

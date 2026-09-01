@@ -15,6 +15,22 @@ const edgeSource =
 const malformedSource =
 	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = { root: "/virtual/pandwind-route-project", files: {} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {} };
 
 test("react-native -> style9: migrates concrete react-native syntax to style9", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +95,75 @@ test("react-native -> style9: carries concrete react-native dynamics or edge syn
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("react-native -> style9: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> style9 | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
+		export const App = () => <View style={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target style9",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { StyleSheet, View } from "react-native";
+		export const styles = // pandwind:migrate-skip (route: react-native -> style9 | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
+		export const App = () => <View style={styles.card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target style9",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });

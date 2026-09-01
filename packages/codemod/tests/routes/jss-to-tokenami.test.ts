@@ -15,6 +15,34 @@ const edgeSource =
 const malformedSource =
 	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */';
 const sourceSemantic = undefined;
+const themedSource =
+	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":
+			'export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: "#2563eb" } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/.tokenami/tokenami.config.ts":
+			'export default { aliases: { ink: "color", pad: "padding" }, tokens: { brand: "#f97316" } };',
+	},
+};
 
 test("jss -> tokenami: migrates concrete jss syntax to tokenami", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -79,6 +107,75 @@ test("jss -> tokenami: carries concrete jss dynamics or edge syntax explicitly",
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("jss -> tokenami: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> tokenami | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target tokenami",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+		export const useStyles = // pandwind:migrate-skip (route: jss -> tokenami | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
+		createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "custom-property",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target tokenami",
+		        "kind": "dynamic-custom-property",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });

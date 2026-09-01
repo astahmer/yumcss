@@ -13,6 +13,42 @@ const edgeSource = '<div className="flex unknown-project-utility" />';
 const malformedSource =
 	'export const App = () => <div className="flex items-center gap-4" />;\nconst unfinished = { /* unfinished unocss */';
 const sourceSemantic = undefined;
+const themedSource =
+	'export const App = () => <div className="flex items-center gap-4 text-brand" />;';
+const blueSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
+};
+const amberTargetSemantic = {
+	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
+};
+const blueProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#2563eb" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #2563eb; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#2563eb" } } } } } };',
+	},
+};
+const amberProject = {
+	root: "/virtual/pandwind-route-project",
+	files: {
+		"/virtual/pandwind-route-project/uno.config.ts":
+			'export default defineConfig({ theme: { colors: { brand: "#f97316" } } });',
+		"/virtual/pandwind-route-project/app/globals.css":
+			"@theme { --color-brand: #f97316; --spacing-card: 1.125rem; }",
+		"/virtual/pandwind-route-project/panda.config.ts":
+			'export default { theme: { extend: { tokens: { colors: { brand: { value: "#f97316" } } } } } };',
+	},
+};
 
 test("unocss -> panda: migrates concrete unocss syntax to panda", () => {
 	const result = route.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -73,6 +109,71 @@ test("unocss -> panda: carries concrete unocss dynamics or edge syntax explicitl
 		  ],
 		  "skipped": 1,
 		  "validations": [],
+		}
+	`);
+});
+
+test("unocss -> panda: lowers concrete theme and project context variants", () => {
+	const blue = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: blueSemantic,
+		project: blueProject,
+	});
+	const amber = route.run({
+		source: themedSource,
+		file: "Card.tsx",
+		semantic: amberSemantic,
+		project: amberProject,
+	});
+	expect(blue.converted + blue.skipped + blue.residuals.length).toBeGreaterThan(0);
+	expect(amber.converted + amber.skipped + amber.residuals.length).toBeGreaterThan(0);
+	expectExplicitResidualEvidence(blue);
+	expectExplicitResidualEvidence(amber);
+	expect({ blue: routeEvidence(blue), amber: routeEvidence(amber) }).toMatchInlineSnapshot(`
+		{
+		  "amber": {
+		    "changed": true,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
+		  "blue": {
+		    "changed": true,
+		    "code": "export const App = () => // pandwind:migrate-skip (route: unocss -> panda | parse-residual: unknown-utility | available: named-map, residual)
+		<div className="flex items-center gap-4 text-brand" />;",
+		    "converted": 0,
+		    "outcomes": [
+		      {
+		        "outcome": "residual",
+		        "representation": "residual",
+		      },
+		    ],
+		    "residuals": [
+		      {
+		        "hint": "UnoCSS utility requires the project resolver/preset to be loaded",
+		        "kind": "unknown-utility",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
+		    "validations": [],
+		  },
 		}
 	`);
 });
