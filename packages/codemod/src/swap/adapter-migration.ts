@@ -211,6 +211,32 @@ export interface AdapterMigrationOutcome {
 	readonly detail?: string;
 }
 
+function migrationContext(source: string, options: AdapterMigrationOptions) {
+	return {
+		file: options.file,
+		source,
+		root: options.root,
+		packageJson: options.packageJson,
+		readFile: options.readFile,
+	};
+}
+
+function noOpMigration(source: string): AdapterMigrationResult {
+	return {
+		code: source,
+		changed: false,
+		converted: 0,
+		skipped: 0,
+		reports: [],
+		validations: [],
+		dependencies: [],
+		generatedFiles: [],
+		residuals: [],
+		loweringPlans: [],
+		outcomes: [],
+	};
+}
+
 interface LoadedAdapterConfigs {
 	readonly source: ReturnType<StyleAdapter["loadConfig"]>;
 	readonly target: ReturnType<StyleAdapter["loadConfig"]>;
@@ -344,14 +370,7 @@ export async function runAdapterMigrationAsync(
 		options.from,
 		options.to,
 	);
-	const readFile = options.readFile;
-	const context = {
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile,
-	};
+	const context = migrationContext(source, options);
 	const detection = route.source.detect(context);
 	if (!detection.matched)
 		return runAdapterMigrationInternal(source, { ...options, adapterRegistry });
@@ -395,61 +414,13 @@ function runAdapterMigrationInternal(
 	// source re-enter target capability negotiation: that can turn a valid
 	// source construct into a false mismatch merely because the adapter marks
 	// its cross-framework component contract as partial.
-	if (sourceAdapter.id === targetAdapter.id)
-		return {
-			code: source,
-			changed: false,
-			converted: 0,
-			skipped: 0,
-			reports: [],
-			validations: [],
-			dependencies: [],
-			generatedFiles: [],
-			residuals: [],
-			loweringPlans: [],
-			outcomes: [],
-		};
-	const readFile = options.readFile;
-	const detection = sourceAdapter.detect({
-		file: options.file,
-		source,
-		root: options.root,
-		packageJson: options.packageJson,
-		readFile,
-	});
-	if (!detection.matched) {
-		return {
-			code: source,
-			changed: false,
-			converted: 0,
-			skipped: 0,
-			reports: [],
-			validations: [],
-			dependencies: [],
-			generatedFiles: [],
-			residuals: [],
-			loweringPlans: [],
-			outcomes: [],
-		};
-	}
-	const config =
-		loadedConfigs?.source ??
-		sourceAdapter.loadConfig({
-			file: options.file,
-			source,
-			root: options.root,
-			packageJson: options.packageJson,
-			readFile,
-		});
-	const targetConfig =
-		loadedConfigs?.target ??
-		targetAdapter.loadConfig({
-			file: options.file,
-			source,
-			root: options.root,
-			packageJson: options.packageJson,
-			readFile,
-		});
+	if (sourceAdapter.id === targetAdapter.id) return noOpMigration(source);
+	const context = migrationContext(source, options);
+	const readFile = context.readFile;
+	const detection = sourceAdapter.detect(context);
+	if (!detection.matched) return noOpMigration(source);
+	const config = loadedConfigs?.source ?? sourceAdapter.loadConfig(context);
+	const targetConfig = loadedConfigs?.target ?? targetAdapter.loadConfig(context);
 	const configurationResiduals = [...(config.residuals ?? []), ...(targetConfig.residuals ?? [])];
 	if (configurationResiduals.length > 0) {
 		const marker = options.skipMarker ?? "pandwind:migrate-skip";
