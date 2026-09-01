@@ -115,7 +115,7 @@ function dynamicVariableName(expression: string): string {
 const dynamicAndThemes: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
 	id: StyleLoweringId.DynamicAndTheme,
-	apply: ({ program, target, mode }) => {
+	apply: ({ program, target, mode, hostFramework }) => {
 		const residuals: StyleProgramResidual[] = [];
 		let changed = false;
 		const resolvedDynamicCapabilities = new Set<AdapterCapability>();
@@ -131,7 +131,7 @@ const dynamicAndThemes: StyleLowering = {
 					resolvedDynamicCapabilities.add("function-values");
 					return declaration;
 				}
-				if (level(target, "custom-properties") === "exact") {
+				if (hostFramework === true && level(target, "custom-properties") === "exact") {
 					changed = true;
 					const variable = dynamicVariableName(value.expression);
 					residuals.push({
