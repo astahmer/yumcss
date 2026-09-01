@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../src/swap/semantic-ir.ts";
 import { describe, expect, test } from "vitest";
 import {
 	STYLE_VALIDATORS,
@@ -28,7 +29,7 @@ describe("semantic metadata and validator domains", () => {
 			plugins: [{ id: "emotion/serialize", input: "theme.colors.foreground" }],
 		});
 		const dynamic = program.declarations.find(
-			(declaration) => declaration.value.kind === "dynamic",
+			(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
 		);
 		expect(dynamic?.value).toMatchObject({
 			kind: "dynamic",

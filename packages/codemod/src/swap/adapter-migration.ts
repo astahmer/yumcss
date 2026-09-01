@@ -1,9 +1,17 @@
+import {
+	StyleProgramResidualKindTag,
+	SwapResidualKindTag,
+	styleProgramFromRules,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "./semantic-ir.ts";
 import { applyEdits } from "../migrate.ts";
 import { ensureImport } from "../shared.ts";
 import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
 import {
 	inspectAdapterCapabilities,
+	AdapterCapabilityLevelTag,
 	type AdapterCapabilityMode,
 	type AdapterCapabilityReport,
 } from "./capabilities.ts";
@@ -16,11 +24,6 @@ import type {
 	AdapterTargetMigrationPolicy,
 	StyleAdapter,
 } from "./adapter-contract.ts";
-import {
-	styleProgramFromRules,
-	type StyleProgram,
-	type StyleProgramResidual,
-} from "./semantic-ir.ts";
 import {
 	STYLE_LOWERING_REGISTRY,
 	type StyleLoweringPlan,
@@ -702,9 +705,9 @@ function runAdapterMigrationInternal(
 		const carrierResiduals = loweringResiduals;
 		const hasDynamicCarrier = carrierResiduals.some(
 			(residual) =>
-				residual.kind === "dynamic-custom-property" ||
-				residual.kind === "dynamic" ||
-				residual.kind === "dynamic-values",
+				residual.kind === StyleProgramResidualKindTag.DynamicCustomProperty ||
+				residual.kind === SwapResidualKindTag.Dynamic ||
+				residual.kind === StyleProgramResidualKindTag.DynamicValues,
 		);
 		if (preservedResidualKinds.size > 0)
 			program = {
@@ -796,7 +799,8 @@ function runAdapterMigrationInternal(
 				const nativeFunctionHandled =
 					hasFunctionDynamic &&
 					program.source?.hostOpenTag === undefined &&
-					targetAdapter.capabilities.capabilities["function-values"] !== "unsupported";
+					targetAdapter.capabilities.capabilities["function-values"] !==
+						AdapterCapabilityLevelTag.Unsupported;
 				const dynamicHandled =
 					hostDynamicHandled ||
 					dynamicPolicy?.handled === true ||
@@ -842,7 +846,9 @@ function runAdapterMigrationInternal(
 				if (dynamicHandledWithTarget || preview?.residuals.length === 0) {
 					program = {
 						...program,
-						residuals: program.residuals.filter((residual) => residual.kind !== "dynamic"),
+						residuals: program.residuals.filter(
+							(residual) => residual.kind !== SwapResidualKindTag.Dynamic,
+						),
 					};
 				}
 				if (framework !== undefined && !dynamicStandalone && !dynamicHandledWithTarget)
@@ -902,7 +908,7 @@ function runAdapterMigrationInternal(
 				!hasHostUsage &&
 				program.source?.subject !== undefined &&
 				targetPolicy?.standaloneHostRepresentation !== undefined &&
-				targetAdapter.capabilities.capabilities.components !== "unsupported"
+				targetAdapter.capabilities.capabilities.components !== AdapterCapabilityLevelTag.Unsupported
 			) {
 				// A target may preserve an unused styled subject as its own component
 				// factory even when its host-bound representation is a class. Select the
@@ -938,18 +944,18 @@ function runAdapterMigrationInternal(
 				if (frameworkWrapper)
 					loweringResiduals = loweringResiduals.filter(
 						(residual) =>
-							residual.kind !== "dynamic" &&
-							residual.kind !== "function-dynamic" &&
-							residual.kind !== "dynamic-custom-property",
+							residual.kind !== SwapResidualKindTag.Dynamic &&
+							residual.kind !== SwapResidualKindTag.FunctionDynamic &&
+							residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty,
 					);
 				if (frameworkWrapper)
 					program = {
 						...program,
 						residuals: program.residuals.filter(
 							(residual) =>
-								residual.kind !== "dynamic" &&
-								residual.kind !== "function-dynamic" &&
-								residual.kind !== "dynamic-custom-property",
+								residual.kind !== SwapResidualKindTag.Dynamic &&
+								residual.kind !== SwapResidualKindTag.FunctionDynamic &&
+								residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty,
 						),
 					};
 				if (
@@ -973,8 +979,8 @@ function runAdapterMigrationInternal(
 			}
 			const residualsCanUseHostLowering = program.residuals.every(
 				(residual) =>
-					residual.kind === "dynamic" ||
-					(residual.kind === "function-dynamic" && hasFunctionDynamic),
+					residual.kind === SwapResidualKindTag.Dynamic ||
+					(residual.kind === SwapResidualKindTag.FunctionDynamic && hasFunctionDynamic),
 			);
 			const dynamicClassSubjectProjection =
 				(hasDynamic || hasDynamicCarrier) &&
@@ -1056,7 +1062,9 @@ function runAdapterMigrationInternal(
 						...program,
 						residuals: hasDynamic
 							? program.residuals.filter(
-									(residual) => residual.kind !== "dynamic" && residual.kind !== "function-dynamic",
+									(residual) =>
+										residual.kind !== SwapResidualKindTag.Dynamic &&
+										residual.kind !== SwapResidualKindTag.FunctionDynamic,
 								)
 							: program.residuals,
 						source: {

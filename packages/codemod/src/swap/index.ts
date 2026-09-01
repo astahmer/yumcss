@@ -1,3 +1,10 @@
+import {
+	SwapResidualKindTag,
+	styleProgramFromSourceObject,
+	styleProgramFromSwapIR,
+	type StyleProgram,
+	type StyleProgramOptions,
+} from "./semantic-ir.ts";
 /**
  * Swap orchestration (plans/022): parse source-API call sites -> SwapIR ->
  * emit target API. One pass per (from, to) pair over one file's text.
@@ -16,12 +23,6 @@ import { SWAP_REGISTRY } from "./swap-registry.ts";
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { ExternalAdapterId } from "./external-adapters.ts";
 import type { TokenRefMode } from "./tokens.ts";
-import {
-	styleProgramFromSourceObject,
-	styleProgramFromSwapIR,
-	type StyleProgram,
-	type StyleProgramOptions,
-} from "./semantic-ir.ts";
 import {
 	inspectAdapterCapabilities,
 	type AdapterCapabilities,
@@ -95,6 +96,12 @@ export { inferCommonRoot } from "./adapters/panda/index.ts";
 export type { TwMissResolver } from "./engine.ts";
 export {
 	STYLE_PROGRAM_SCHEMA,
+	SemanticConditionKindTag,
+	StyleConditionOperatorTag,
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	SwapResidualKindTag,
 	inferSemanticConditionKind,
 	orderStyleRules,
 	styleProgramFromRules,
@@ -127,6 +134,9 @@ export {
 	MigrationStageId,
 	HostComponentRewriterId,
 	PandaMigrationStageId,
+	CodemodCallPatternFormTag,
+	CodemodCallPatternKindTag,
+	DifferentialExpectedTag,
 	externalIdentifier,
 } from "./identifiers.ts";
 export { MigrationDiagnostics } from "./migration-diagnostics.ts";
@@ -159,6 +169,7 @@ export {
 	SEMANTIC_CONTRACT_SUITE_SCHEMA,
 	createSemanticContractSuite,
 } from "./semantic-contract-suite.ts";
+export { SemanticContractOutcomeTag } from "./semantic-contract-suite.ts";
 export type {
 	SemanticContractCase,
 	SemanticContractFailure,
@@ -168,6 +179,7 @@ export type {
 	SemanticContractSuite,
 } from "./semantic-contract-suite.ts";
 export { TokenFormatId } from "./token-format-contracts.ts";
+export { BUILTIN_CODEMOD_ADAPTER_IDS, BUILTIN_STYLE_VALIDATOR_IDS } from "./identifiers.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
 	createAdapterCapabilityMatrix,
@@ -228,6 +240,9 @@ export type {
 } from "./adapter-contract.ts";
 export { ADAPTER_CONTRACT_SCHEMA } from "./adapter-contract.ts";
 export { ADAPTER_TOKEN_CATALOG_SCHEMA, ADAPTER_TOKEN_POLICY_SCHEMA } from "./adapter-contract.ts";
+export { AdapterDependencyKindTag } from "./adapter-contract.ts";
+export { AdapterCoverageEvidenceKindTag } from "./coverage-gate.ts";
+export { StyleDialectRoleTag } from "./style-systems.ts";
 export { TokenCatalog } from "./tokens.ts";
 export type {
 	TokenCatalogMatch,
@@ -732,7 +747,9 @@ function semanticProgramForMatch(
 		conditionValues: options.conditionValues,
 		conditionRaw: options.conditionRaw,
 	};
-	const hasDynamicSource = match.ir.residuals.some((residual) => residual.kind === "dynamic");
+	const hasDynamicSource = match.ir.residuals.some(
+		(residual) => residual.kind === SwapResidualKindTag.Dynamic,
+	);
 	if (hasDynamicSource) {
 		const open = source.indexOf("{", match.start);
 		const block = open === -1 ? null : matchBlock(source, open);

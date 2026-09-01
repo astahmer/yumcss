@@ -4,6 +4,11 @@ import type { StyleAdapter } from "./adapter-contract.ts";
 /** Versioned registry contract for style systems and their dialects. */
 export const STYLE_SYSTEM_SCHEMA = "pandwind.style-system/1" as const;
 
+export const enum StyleDialectRoleTag {
+	Source = "source",
+	Target = "target",
+	Both = "both",
+}
 export type StyleDialectRole = "source" | "target" | "both";
 
 /** A dialect is one concrete syntax/semantic adapter within a style system. */
@@ -132,8 +137,10 @@ export function createStyleSystemRegistry(
 			if (source === undefined)
 				throw new Error(`unknown source style dialect: ${dialectKey(from)}`);
 			if (target === undefined) throw new Error(`unknown target style dialect: ${dialectKey(to)}`);
-			if (source.role === "target") throw new Error(`style dialect is not a source: ${source.id}`);
-			if (target.role === "source") throw new Error(`style dialect is not a target: ${target.id}`);
+			if (source.role === StyleDialectRoleTag.Target)
+				throw new Error(`style dialect is not a source: ${source.id}`);
+			if (target.role === StyleDialectRoleTag.Source)
+				throw new Error(`style dialect is not a target: ${target.id}`);
 			return { source, target };
 		},
 	};

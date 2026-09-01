@@ -108,6 +108,12 @@ export interface InlineResult {
  */
 export type OnUnresolved = "warn" | "error" | "off";
 
+export const enum OnUnresolvedTag {
+	Warn = "warn",
+	Error = "error",
+	Off = "off",
+}
+
 export interface UnresolvedOptions {
 	/** Collect unresolved tokens for the plugin's onUnresolved lane. */
 	onUnresolved?: OnUnresolved;
@@ -142,7 +148,8 @@ export function inlineTwCalls(
 	]);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
-	const checkUnresolved = options?.onUnresolved !== undefined && options.onUnresolved !== "off";
+	const checkUnresolved =
+		options?.onUnresolved !== undefined && options.onUnresolved !== OnUnresolvedTag.Off;
 	const lines = checkUnresolved ? createLineIndex(code) : undefined;
 	const unresolved: UnresolvedToken[] = [];
 

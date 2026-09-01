@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "./semantic-ir.ts";
 import { type StyleDeclaration, type StyleProgram, type StyleRule } from "./semantic-ir.ts";
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
 
@@ -19,7 +20,7 @@ export class StyleProgramAnalysis {
 	static hasDynamic(program: StyleProgram): boolean {
 		if (program.rules.length === 0) {
 			return StyleProgramAnalysis.declarations(program).some(
-				({ value }) => value.kind === "dynamic",
+				({ value }) => value.kind === StyleValueKindTag.Dynamic,
 			);
 		}
 		return StyleProgramAnalysis.rules(program).some((rule) => {
@@ -28,20 +29,20 @@ export class StyleProgramAnalysis {
 				rule.conditions.some(
 					(condition) => condition.name.includes("${") || condition.value?.includes("${"),
 				) ||
-				rule.declarations.some(({ value }) => value.kind === "dynamic")
+				rule.declarations.some(({ value }) => value.kind === StyleValueKindTag.Dynamic)
 			);
 		});
 	}
 
 	static hasFunctionDynamic(program: StyleProgram): boolean {
 		return StyleProgramAnalysis.declarations(program).some(
-			({ value }) => value.kind === "dynamic" && isFunctionDynamic(value),
+			({ value }) => value.kind === StyleValueKindTag.Dynamic && isFunctionDynamic(value),
 		);
 	}
 
 	static hasScalarDynamic(program: StyleProgram): boolean {
 		return StyleProgramAnalysis.declarations(program).some(
-			({ value }) => value.kind === "dynamic" && !isFunctionDynamic(value),
+			({ value }) => value.kind === StyleValueKindTag.Dynamic && !isFunctionDynamic(value),
 		);
 	}
 }

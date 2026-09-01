@@ -17,6 +17,12 @@ import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
 export const CX_NOT_STATIC = Symbol("pandwind.cx-not-static");
 const NOT_STATIC: typeof CX_NOT_STATIC = CX_NOT_STATIC;
 
+const enum FoldSkeletonKindTag {
+	Leaf = "leaf",
+	Conditional = "cond",
+	And = "and",
+}
+
 /** `undefined` must remain distinguishable from an expression we cannot fold. */
 export type StaticEval = CxInput | true | typeof CX_NOT_STATIC;
 
@@ -354,7 +360,7 @@ export const renderFoldSkeleton = (
 	// Each leaf is merged through the same callback used for a full fold, so
 	// partial folding cannot invent a different conflict-resolution result.
 	const render = (current: FoldSkeleton): string | null => {
-		if (current.kind === "leaf") {
+		if (current.kind === FoldSkeletonKindTag.Leaf) {
 			const merged = merge(
 				staticInputs.map((value, index) =>
 					index === dynamicIndex ? current.value : value,
@@ -362,7 +368,7 @@ export const renderFoldSkeleton = (
 			);
 			return merged === undefined ? null : JSON.stringify(merged);
 		}
-		if (current.kind === "cond") {
+		if (current.kind === FoldSkeletonKindTag.Conditional) {
 			const consequent = render(current.consequent);
 			const alternate = render(current.alternate);
 			return consequent === null || alternate === null

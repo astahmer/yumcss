@@ -22,6 +22,13 @@ export interface SwapEntry {
 	value: string | true | number;
 }
 
+export const enum SwapResidualKindTag {
+	Dynamic = "dynamic",
+	FunctionDynamic = "function-dynamic",
+	UnknownValue = "unknown-value",
+	Unrepresentable = "unrepresentable",
+}
+
 export type SwapResidualKind =
 	/** A non-literal value (identifier, template literal, spread). */
 	| "dynamic"

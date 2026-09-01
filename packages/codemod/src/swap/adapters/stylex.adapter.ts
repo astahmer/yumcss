@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
@@ -655,9 +656,9 @@ const STYLEX_PROPERTY_NAMES = new Set([
 
 function stylexNumericValue(value: StyleValue, property?: string): StyleValue {
 	const numeric =
-		value.kind === "literal" && typeof value.value === "number"
+		value.kind === StyleValueKindTag.Literal && typeof value.value === "number"
 			? value.value
-			: value.kind === "dynamic"
+			: value.kind === StyleValueKindTag.Dynamic
 				? evaluateNumericExpression(value.expression)
 				: undefined;
 	if (numeric === undefined || !Number.isFinite(numeric)) return value;

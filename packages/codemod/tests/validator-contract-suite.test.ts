@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	STYLE_VALIDATORS,
+	BUILTIN_STYLE_VALIDATOR_IDS,
 	StyleValidatorId,
 	createStyleValidatorRegistry,
 	createValidatorContractSuite,
@@ -32,9 +33,9 @@ const fixture = (validator: StyleValidatorId): ValidatorContractFixture => ({
 
 describe("validator contract suite", () => {
 	test("proves every built-in validator has executable, well-formed evidence", () => {
-		const fixtures = Object.values(StyleValidatorId)
-			.filter((id) => id !== StyleValidatorId.Builtin)
-			.map((id) => fixture(id as StyleValidatorId));
+		const fixtures = BUILTIN_STYLE_VALIDATOR_IDS.filter(
+			(id) => id !== StyleValidatorId.Builtin,
+		).map((id) => fixture(id as StyleValidatorId));
 		const result = createValidatorContractSuite().run(STYLE_VALIDATORS, fixtures);
 
 		expect(result.valid).toBe(true);

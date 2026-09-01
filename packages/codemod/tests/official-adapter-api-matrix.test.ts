@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
 	runAdapterMigration,
 	type AdapterMigrationResult,
@@ -256,7 +257,7 @@ describe("official primary API forms", () => {
 		const results = cases.map((api) => ({ api, result: migrate(api) }));
 
 		expect(new Set(results.map(({ api }) => api.adapter))).toEqual(
-			new Set(Object.values(CodemodAdapterId)),
+			new Set(BUILTIN_CODEMOD_ADAPTER_IDS),
 		);
 		for (const { api, result } of results) {
 			if (api.adapter === CodemodAdapterId.Pandwind) {

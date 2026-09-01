@@ -1,3 +1,4 @@
+import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -193,7 +194,7 @@ const propertyAliases = {
 } as const;
 
 function mantineValue(property: string, value: StyleValue): StyleValue {
-	if (value.kind !== "literal" || typeof value.value !== "string") return value;
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
 	if (/^(?:-?\d+(?:\.\d+)?)(?:px|rem|em|%|vh|vw)$/.test(value.value)) return value;
 	if (
 		(/^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
@@ -322,7 +323,7 @@ export default defineCodemodAdapter({
 			},
 			resolveRepresentation: ({ program, hostRepresentation }) =>
 				hostRepresentation === StyleHostRepresentationKind.Class &&
-				program.rules.every((rule) => rule.kind === "style") &&
+				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style) &&
 				program.rules.every((rule) => rule.name === undefined) &&
 				program.residuals.length === 0
 					? StyleRepresentationKind.PortableArtifact
@@ -351,7 +352,7 @@ export default defineCodemodAdapter({
 		),
 	},
 	emit(program, { programObject }, context) {
-		if (program.rules.some((rule) => rule.kind !== "style"))
+		if (program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style))
 			return {
 				text: programObject(program),
 				residuals: [

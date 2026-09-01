@@ -14,6 +14,7 @@ import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
+	StyleRuleKindTag,
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
@@ -152,7 +153,7 @@ function renderAdapterProgram(
 
 function validationSource(text: string, program: StyleProgram): string {
 	const rule = program.rules[0];
-	return rule?.kind === "keyframes" && rule.name !== undefined
+	return rule?.kind === StyleRuleKindTag.Keyframes && rule.name !== undefined
 		? `const ${rule.name} = ${text}`
 		: text;
 }

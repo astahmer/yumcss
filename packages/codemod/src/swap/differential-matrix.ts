@@ -1,3 +1,4 @@
+import { SemanticConditionKindTag, StyleValueKindTag } from "./semantic-ir.ts";
 import {
 	runDifferentialSuite,
 	type DifferentialFixture,
@@ -6,7 +7,7 @@ import {
 } from "./differential.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import { createRuntimeSheet, type RuntimeSemanticRule } from "pandwind/css/runtime";
-import { DifferentialProofMode } from "./identifiers.ts";
+import { DifferentialExpectedTag, DifferentialProofMode } from "./identifiers.ts";
 
 /** Versioned acceptance matrix for adapter-pair proof, not just unit fixtures. */
 export const DIFFERENTIAL_MATRIX_SCHEMA = "pandwind.differential-matrix/1" as const;
@@ -37,13 +38,15 @@ export interface DifferentialMatrixResult {
 const runtimeCssValue = (
 	input: StyleProgram["declarations"][number]["value"],
 ): string | number | boolean => {
-	if (input.kind === "token") return input.authored;
-	if (input.kind === "dynamic") return input.expression;
+	if (input.kind === StyleValueKindTag.Token) return input.authored;
+	if (input.kind === StyleValueKindTag.Dynamic) return input.expression;
 	return input.value;
 };
 
 const runtimeCssCondition = (input: StyleProgram["rules"][number]["conditions"][number]): string =>
-	input.kind === "media" || input.kind === "container" || input.kind === "supports"
+	input.kind === SemanticConditionKindTag.Media ||
+	input.kind === SemanticConditionKindTag.Container ||
+	input.kind === SemanticConditionKindTag.Supports
 		? `@${input.kind} ${input.value ?? input.name}`
 		: (input.value ?? input.raw ?? input.name);
 
@@ -120,10 +123,14 @@ export function runDifferentialMatrix(
 		proofMode: provider.mode,
 		cases: results,
 		passed: results.filter((result, index) =>
-			catalog.cases[index]?.expected === "residual" ? !result.valid : result.valid,
+			catalog.cases[index]?.expected === DifferentialExpectedTag.Residual
+				? !result.valid
+				: result.valid,
 		).length,
 		failed: results.filter((result, index) =>
-			catalog.cases[index]?.expected === "residual" ? result.valid : !result.valid,
+			catalog.cases[index]?.expected === DifferentialExpectedTag.Residual
+				? result.valid
+				: !result.valid,
 		).length,
 		residuals: results.reduce((total, result) => total + result.residuals.length, 0),
 	};

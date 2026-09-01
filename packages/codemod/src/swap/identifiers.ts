@@ -5,7 +5,7 @@
  * plugin, but built-ins must use these values everywhere. This keeps the
  * composition root and adapter contracts independent from spelling mistakes.
  */
-export enum CodemodAdapterId {
+export const enum CodemodAdapterId {
 	Pandwind = "pandwind",
 	Panda = "panda",
 	StyleX = "stylex",
@@ -34,15 +34,60 @@ export enum CodemodAdapterId {
 	UnoCSS = "unocss",
 }
 
-export enum CodemodPatternId {
+export const BUILTIN_CODEMOD_ADAPTER_IDS = [
+	CodemodAdapterId.Pandwind,
+	CodemodAdapterId.Panda,
+	CodemodAdapterId.StyleX,
+	CodemodAdapterId.Emotion,
+	CodemodAdapterId.StyledComponents,
+	CodemodAdapterId.VanillaExtract,
+	CodemodAdapterId.Stitches,
+	CodemodAdapterId.Linaria,
+	CodemodAdapterId.Jss,
+	CodemodAdapterId.Fela,
+	CodemodAdapterId.Goober,
+	CodemodAdapterId.Aphrodite,
+	CodemodAdapterId.Treat,
+	CodemodAdapterId.Compiled,
+	CodemodAdapterId.ChakraUi,
+	CodemodAdapterId.Mui,
+	CodemodAdapterId.Mantine,
+	CodemodAdapterId.NextYak,
+	CodemodAdapterId.Bamboo,
+	CodemodAdapterId.Style9,
+	CodemodAdapterId.SolidStyled,
+	CodemodAdapterId.VueStyled,
+	CodemodAdapterId.ReactNative,
+	CodemodAdapterId.Tailwind,
+	CodemodAdapterId.Tokenami,
+	CodemodAdapterId.UnoCSS,
+] as const;
+
+export const enum CodemodPatternId {
 	CssTemplate = "css-template",
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
 }
 
+export const enum CodemodCallPatternKindTag {
+	Style = "style",
+	Styled = "styled",
+	Keyframes = "keyframes",
+	Global = "global",
+	FontFace = "font-face",
+}
+
+export const enum CodemodCallPatternFormTag {
+	Object = "object",
+	Template = "template",
+	Reference = "reference",
+	JsxStyle = "jsx-style",
+	Residual = "residual",
+}
+
 /** Built-in source dialects accepted by the flat SwapIR path. */
-export enum SwapSourceId {
+export const enum SwapSourceId {
 	Auto = "auto",
 	Css = "css",
 	Design = "design",
@@ -50,7 +95,7 @@ export enum SwapSourceId {
 	Tw = "tw",
 }
 
-export enum SwapTargetId {
+export const enum SwapTargetId {
 	CssClass = "css.class",
 	Design = "design",
 	Dss = "dss",
@@ -58,11 +103,11 @@ export enum SwapTargetId {
 	Tailwind = "tailwind",
 }
 
-export enum CodemodPluginId {
+export const enum CodemodPluginId {
 	BuiltinAdapters = "pandwind-builtin-adapters",
 }
 
-export enum StyleProgramEmissionHint {
+export const enum StyleProgramEmissionHint {
 	GlobalVariables = "global-variables",
 	RuntimeClass = "runtime-class",
 	RuntimeFunction = "runtime-function",
@@ -79,13 +124,13 @@ export class CodemodStyleIdentity {
 	}
 }
 
-export enum StyleProgramConditionOrder {
+export const enum StyleProgramConditionOrder {
 	Authored = "authored",
 	Depth = "depth",
 }
 
 /** Syntax shape retained for dynamic lowering and host-specific rewrites. */
-export enum StyleDynamicExpressionKind {
+export const enum StyleDynamicExpressionKind {
 	Identifier = "identifier",
 	Member = "member",
 	Call = "call",
@@ -99,14 +144,14 @@ export enum StyleDynamicExpressionKind {
 }
 
 /** Semantic composition kinds shared by source and target adapters. */
-export enum StyleProgramCompositionKind {
+export const enum StyleProgramCompositionKind {
 	Mixin = "mixin",
 	Extends = "extends",
 	Recipe = "recipe",
 	Slot = "slot",
 }
 
-export enum StyleValidatorId {
+export const enum StyleValidatorId {
 	CanonicalCss = "canonical-css",
 	Residuals = "residuals",
 	BrowserStates = "browser-states",
@@ -116,7 +161,17 @@ export enum StyleValidatorId {
 	Builtin = "pandwind-core-validators",
 }
 
-export enum StyleLoweringId {
+export const BUILTIN_STYLE_VALIDATOR_IDS = [
+	StyleValidatorId.CanonicalCss,
+	StyleValidatorId.Residuals,
+	StyleValidatorId.BrowserStates,
+	StyleValidatorId.SsrHydration,
+	StyleValidatorId.Dependencies,
+	StyleValidatorId.RscStreaming,
+	StyleValidatorId.Builtin,
+] as const;
+
+export const enum StyleLoweringId {
 	DynamicAndTheme = "dynamic-and-theme",
 	CompositionFlatten = "composition-flatten",
 	RuntimeAndPlugin = "runtime-and-plugin",
@@ -126,7 +181,7 @@ export enum StyleLoweringId {
 }
 
 /** Typed causes used by the source-preserving migration diagnostics. */
-export enum MigrationSkipReason {
+export const enum MigrationSkipReason {
 	CapabilityBlocked = "capability-blocked",
 	ParseResidual = "parse-residual",
 	LoweringResidual = "lowering-residual",
@@ -135,7 +190,7 @@ export enum MigrationSkipReason {
 }
 
 /** Ordered semantic representations negotiated by the lowering planner. */
-export enum StyleRepresentationKind {
+export const enum StyleRepresentationKind {
 	Static = "static",
 	NamedMap = "named-map",
 	TargetNative = "target-native",
@@ -146,7 +201,7 @@ export enum StyleRepresentationKind {
 }
 
 /** Stable route-level result after lowering, host rewrites, and validation. */
-export enum StyleMigrationOutcome {
+export const enum StyleMigrationOutcome {
 	Static = "static",
 	TargetNative = "target-native",
 	HostRuntime = "host-runtime",
@@ -155,21 +210,21 @@ export enum StyleMigrationOutcome {
 }
 
 /** How a target adapter materializes a source component when host rewriting is needed. */
-export enum StyleHostRepresentationKind {
+export const enum StyleHostRepresentationKind {
 	Class = "class",
 	Component = "component",
 	StyleProp = "style-prop",
 }
 
 /** Target-owned strategy for preserving named style object return shapes. */
-export enum StyleNamedRuleStrategy {
+export const enum StyleNamedRuleStrategy {
 	NativeMap = "native-map",
 	ClassMap = "class-map",
 	Unsupported = "unsupported",
 }
 
 /** Independent evidence dimensions used by real-repository promotion reports. */
-export enum RealRepositoryProofDimension {
+export const enum RealRepositoryProofDimension {
 	CanonicalCss = "canonical-css",
 	BrowserStates = "browser-states",
 	SsrHydration = "ssr-hydration",
@@ -178,7 +233,7 @@ export enum RealRepositoryProofDimension {
 	CssSize = "css-size",
 }
 
-export enum RealRepositoryProofDimensionStatus {
+export const enum RealRepositoryProofDimensionStatus {
 	Passed = "passed",
 	Failed = "failed",
 	Pending = "pending",
@@ -186,7 +241,7 @@ export enum RealRepositoryProofDimensionStatus {
 }
 
 /** Evidence state; source-static is not a claim of browser/SSR promotion. */
-export enum RealRepositoryProofStatus {
+export const enum RealRepositoryProofStatus {
 	SourceStatic = "source-static",
 	SourceMismatch = "source-mismatch",
 	RuntimePending = "runtime-pending",
@@ -194,21 +249,26 @@ export enum RealRepositoryProofStatus {
 }
 
 /** Execution source for differential evidence; semantic-model is not browser proof. */
-export enum DifferentialProofMode {
+export const enum DifferentialProofMode {
 	SemanticModel = "semantic-model",
 	ExternalRuntime = "external-runtime",
 }
 
-export enum MigrationStageId {
+export const enum DifferentialExpectedTag {
+	Pass = "pass",
+	Residual = "residual",
+}
+
+export const enum MigrationStageId {
 	AdapterMigration = "adapter-migration",
 }
 
-export enum HostComponentRewriterId {
+export const enum HostComponentRewriterId {
 	JsxIntrinsicComponent = "jsx-intrinsic-component",
 	TemplateIntrinsicComponent = "template-intrinsic-component",
 }
 
-export enum PandaMigrationStageId {
+export const enum PandaMigrationStageId {
 	ProjectDiscovery = "project-discovery",
 	ThemeConfig = "theme-config",
 	SourceScanning = "source-scanning",

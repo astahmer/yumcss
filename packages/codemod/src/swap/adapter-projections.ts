@@ -1,3 +1,5 @@
+import { StyleValueKindTag, SwapResidualKindTag } from "./semantic-ir.ts";
+import { AdapterCapabilityLevelTag } from "./capabilities.ts";
 import type {
 	AdapterComponentRewriteResult,
 	AdapterMigrationHooks,
@@ -197,7 +199,7 @@ function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgra
 			return (
 				rule.declarations.some(
 					({ value }) =>
-						value.kind === "literal" &&
+						value.kind === StyleValueKindTag.Literal &&
 						typeof value.value === "string" &&
 						value.value.startsWith("var(--pandwind-dynamic-"),
 				) || rule.children.some(containsCarrier)
@@ -209,7 +211,8 @@ function hasPortableDynamicValue(program: import("./semantic-ir.ts").StyleProgra
 function hasPortableDynamicResiduals(program: import("./semantic-ir.ts").StyleProgram): boolean {
 	return program.residuals.every(
 		(residual) =>
-			residual.kind === "dynamic" && !/selector interpolation/i.test(residual.hint ?? ""),
+			residual.kind === SwapResidualKindTag.Dynamic &&
+			!/selector interpolation/i.test(residual.hint ?? ""),
 	);
 }
 
@@ -238,8 +241,8 @@ export function projectPortableDynamicMigration(
 				const themeLevel = targetCapabilities?.capabilities["theme-context"];
 				const partialNativeRepresentation =
 					context.representation === StyleRepresentationKind.TargetNative &&
-					((dynamicLevel !== undefined && dynamicLevel !== "exact") ||
-						(themeLevel !== undefined && themeLevel !== "exact"));
+					((dynamicLevel !== undefined && dynamicLevel !== AdapterCapabilityLevelTag.Exact) ||
+						(themeLevel !== undefined && themeLevel !== AdapterCapabilityLevelTag.Exact));
 				if (
 					(!partialNativeRepresentation &&
 						context.representation !== StyleRepresentationKind.Residual &&

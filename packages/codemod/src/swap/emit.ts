@@ -14,7 +14,7 @@ import type { PandwindMeta } from "../meta.ts";
 import { mapToken } from "../map.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
-import type { TokenRefMode } from "./tokens.ts";
+import { TokenRefModeTag, type TokenRefMode } from "./tokens.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
 import { CSS_PROPERTY_ALIASES } from "./property-aliases.ts";
@@ -361,7 +361,7 @@ function toDesignTokenRef(
 	for (const group of groups) {
 		const hit = inverseTokens(tokens).get(group)?.get(value.toLowerCase());
 		if (hit !== undefined) {
-			if (mode === "group") return `${group}.${hit}`;
+			if (mode === TokenRefModeTag.Group) return `${group}.${hit}`;
 			// Bare spacing keys are numbers in the vocabulary (pad: [4, 8]).
 			return /^\d+$/.test(hit) ? Number(hit) : hit;
 		}

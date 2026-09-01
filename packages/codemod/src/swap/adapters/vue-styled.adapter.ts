@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { canConvertStaticSolidJsx, rewriteSolidJsxToVue } from "../host-adapters.ts";
@@ -12,7 +13,7 @@ import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 
 function isStaticProgram(program: StyleProgram): boolean {
 	return StyleProgramAnalysis.declarations(program).every(
-		(declaration) => declaration.value.kind !== "dynamic",
+		(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
 	);
 }
 
@@ -28,11 +29,11 @@ function functionStyleEmission(
 ): AdapterEmitResult | undefined {
 	const declarations = StyleProgramAnalysis.declarations(program);
 	const dynamic = declarations.flatMap((declaration) =>
-		declaration.value.kind === "dynamic" ? [declaration] : [],
+		declaration.value.kind === StyleValueKindTag.Dynamic ? [declaration] : [],
 	);
 	if (dynamic.length === 0 || program.source?.subject === undefined) return undefined;
 	const functions = dynamic.map((declaration) =>
-		declaration.value.kind === "dynamic"
+		declaration.value.kind === StyleValueKindTag.Dynamic
 			? functionExpression(declaration.value.expression)
 			: undefined,
 	);
@@ -40,7 +41,7 @@ function functionStyleEmission(
 	const parameter = functions[0]!.parameter;
 	if (functions.some((value) => value!.parameter !== parameter)) return undefined;
 	const stripFunction = (declaration: StyleProgram["declarations"][number]) => {
-		if (declaration.value.kind !== "dynamic") return declaration;
+		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return declaration;
 		const value = functionExpression(declaration.value.expression);
 		return value === undefined
 			? declaration
@@ -67,11 +68,11 @@ function supportsStaticOrFunctionProgram(program: StyleProgram): boolean {
 	if (isStaticProgram(program)) return true;
 	const declarations = StyleProgramAnalysis.declarations(program);
 	const dynamic = declarations.flatMap((declaration) =>
-		declaration.value.kind === "dynamic" ? [declaration] : [],
+		declaration.value.kind === StyleValueKindTag.Dynamic ? [declaration] : [],
 	);
 	if (dynamic.length === 0) return false;
 	const functions = dynamic.map((declaration) =>
-		declaration.value.kind === "dynamic"
+		declaration.value.kind === StyleValueKindTag.Dynamic
 			? functionExpression(declaration.value.expression)
 			: undefined,
 	);

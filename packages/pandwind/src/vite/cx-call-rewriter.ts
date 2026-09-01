@@ -4,7 +4,7 @@ import { createCx, type CxInput } from "../cx/index.ts";
 import { ATOM_REGISTRY } from "../css/atoms.ts";
 import type { CssFn } from "../css/create-css.ts";
 import type { OxcNode } from "../tw/literal.ts";
-import type { TwConfig, OnUnresolved } from "./inline.ts";
+import { OnUnresolvedTag, type TwConfig, type OnUnresolved } from "./inline.ts";
 import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
 import {
 	buildFoldSkeleton,
@@ -128,7 +128,7 @@ export class CxCallRewriter {
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		const unresolved: UnresolvedToken[] = [];
 		const lines =
-			options.onUnresolved !== undefined && options.onUnresolved !== "off"
+			options.onUnresolved !== undefined && options.onUnresolved !== OnUnresolvedTag.Off
 				? createLineIndex(code)
 				: undefined;
 		const partial = options.partialFold !== false;

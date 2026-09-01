@@ -14,6 +14,16 @@ export type RuntimeSemanticRuleKind =
 	| "supports"
 	| "property";
 
+export const enum RuntimeSemanticRuleKindTag {
+	Style = "style",
+	Global = "global",
+	Keyframes = "keyframes",
+	FontFace = "font-face",
+	Layer = "layer",
+	Supports = "supports",
+	Property = "property",
+}
+
 /** A declaration accepted by the runtime semantic-rule serializer. */
 export interface RuntimeDeclaration {
 	readonly property: string;

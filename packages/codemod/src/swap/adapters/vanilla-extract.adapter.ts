@@ -1,3 +1,4 @@
+import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -87,11 +88,11 @@ export default defineCodemodAdapter({
 			handled:
 				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
-				program.rules.every((rule) => rule.kind === "style"),
+				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 			standalone:
 				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
-				program.rules.every((rule) => rule.kind === "style"),
+				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
 		rewrite: ({ code, targetId, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
@@ -131,15 +132,15 @@ export default defineCodemodAdapter({
 	},
 	emit(program, { firstKind, programObject, declarationsObject }) {
 		const kind = firstKind(program);
-		if (kind === "keyframes")
+		if (kind === StyleRuleKindTag.Keyframes)
 			return {
 				text: `keyframes(${programObject(program)})`,
 				imports: ['import { keyframes } from "@vanilla-extract/css";'],
 			};
-		if (kind === "global")
+		if (kind === StyleRuleKindTag.Global)
 			return {
 				text: program.rules
-					.filter((rule) => rule.kind === "global")
+					.filter((rule) => rule.kind === StyleRuleKindTag.Global)
 					.map(
 						(rule) =>
 							`globalStyle(${JSON.stringify(rule.selector ?? "*")}, ${declarationsObject(rule.declarations)})`,
@@ -147,7 +148,7 @@ export default defineCodemodAdapter({
 					.join("; "),
 				imports: ['import { globalStyle } from "@vanilla-extract/css";'],
 			};
-		if (kind === "font-face")
+		if (kind === StyleRuleKindTag.FontFace)
 			return {
 				text: `fontFace(${programObject(program)})`,
 				imports: ['import { fontFace } from "@vanilla-extract/css";'],

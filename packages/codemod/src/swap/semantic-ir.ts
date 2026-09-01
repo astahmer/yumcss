@@ -7,7 +7,13 @@
  * values, and provenance without teaching every source parser about every
  * target library.
  */
-import type { SwapIR, SwapResidual, SwapResidualKind } from "./ir.ts";
+import {
+	SwapResidualKindTag,
+	type SwapIR,
+	type SwapResidual,
+	type SwapResidualKind,
+} from "./ir.ts";
+export { SwapResidualKindTag } from "./ir.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import {
 	StyleProgramConditionOrder,
@@ -17,6 +23,60 @@ import {
 } from "./identifiers.ts";
 
 export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/4" as const;
+
+export const enum SemanticConditionKindTag {
+	Named = "named",
+	Pseudo = "pseudo",
+	Selector = "selector",
+	Media = "media",
+	Container = "container",
+	Supports = "supports",
+}
+
+export const enum StyleConditionOperatorTag {
+	And = "and",
+	Or = "or",
+	Not = "not",
+}
+
+export const enum StyleRuleKindTag {
+	Style = "style",
+	Global = "global",
+	Keyframes = "keyframes",
+	FontFace = "font-face",
+	Layer = "layer",
+	Supports = "supports",
+	Property = "property",
+}
+
+export const enum StyleValueKindTag {
+	Token = "token",
+	Literal = "literal",
+	Dynamic = "dynamic",
+}
+
+/** Known residual categories used by lowering and migration diagnostics. */
+export const enum StyleProgramResidualKindTag {
+	Dynamic = "dynamic",
+	FunctionDynamic = "function-dynamic",
+	DynamicCustomProperty = "dynamic-custom-property",
+	DynamicFallback = "dynamic-fallback",
+	DynamicValues = "dynamic-values",
+	Parse = "parse",
+	Capability = "capability",
+	PluginTransform = "plugin-transform",
+}
+
+export interface StyleCondition {
+	readonly kind: SemanticConditionKind;
+	readonly name: string;
+	/** Canonical query/selector payload when the source supplied one. */
+	readonly value?: string;
+	/** Exact authored condition spelling when it differs from `name`. */
+	readonly raw?: string;
+	/** Logical composition marker for adapters that preserve condition trees. */
+	readonly operator?: StyleConditionOperator;
+}
 
 export type SemanticConditionKind =
 	| "named"
@@ -36,17 +96,6 @@ export type StyleRuleKind =
 	| "layer"
 	| "supports"
 	| "property";
-
-export interface StyleCondition {
-	readonly kind: SemanticConditionKind;
-	readonly name: string;
-	/** Canonical query/selector payload when the source supplied one. */
-	readonly value?: string;
-	/** Exact authored condition spelling when it differs from `name`. */
-	readonly raw?: string;
-	/** Logical composition marker for adapters that preserve condition trees. */
-	readonly operator?: StyleConditionOperator;
-}
 
 export interface StyleTokenValue {
 	readonly kind: "token";
@@ -259,7 +308,7 @@ function sourceIdentity(source: StyleProgramSource): string {
 }
 
 function normalizeDynamicValue(value: StyleValue): StyleValue {
-	if (value.kind !== "dynamic") return value;
+	if (value.kind !== StyleValueKindTag.Dynamic) return value;
 	return {
 		...value,
 		expressionKind: value.expressionKind ?? dynamicExpressionKind(value.expression),
@@ -301,7 +350,7 @@ function collectSources(
 	const visit = (rule: StyleRule): void => {
 		add(rule.source);
 		for (const declaration of rule.declarations) {
-			if (declaration.value.kind === "dynamic") add(declaration.value.source);
+			if (declaration.value.kind === StyleValueKindTag.Dynamic) add(declaration.value.source);
 		}
 		for (const child of rule.children) visit(child);
 	};
@@ -317,8 +366,8 @@ const toValue = (value: string | true | number): StyleValue => {
 };
 
 const fromValue = (value: StyleValue): string | true | number | null => {
-	if (value.kind === "token") return value.authored;
-	if (value.kind === "literal") return value.value === false ? null : value.value;
+	if (value.kind === StyleValueKindTag.Token) return value.authored;
+	if (value.kind === StyleValueKindTag.Literal) return value.value === false ? null : value.value;
 	return null;
 };
 
@@ -358,7 +407,7 @@ function conditionFor(name: string, options: StyleProgramOptions): StyleConditio
 	return {
 		kind:
 			options.conditionKinds?.[name] ??
-			(inferredNameKind === "named"
+			(inferredNameKind === SemanticConditionKindTag.Named
 				? (options.nestedObjectKind ?? inferSemanticConditionKind(value ?? name))
 				: inferredNameKind),
 		name,
@@ -432,7 +481,9 @@ export function styleProgramFromRules(
 		schema: STYLE_PROGRAM_SCHEMA,
 		rules: ordered,
 		declarations: ordered.flatMap((rule) =>
-			rule.kind === "style" && rule.name === undefined && rule.conditions.length === 0
+			rule.kind === StyleRuleKindTag.Style &&
+			rule.name === undefined &&
+			rule.conditions.length === 0
 				? rule.declarations
 				: [],
 		),
@@ -468,19 +519,20 @@ export function orderStyleRules(rules: readonly StyleRule[]): StyleRule[] {
 
 function cssCondition(condition: StyleCondition): string {
 	if (condition.value !== undefined) {
-		if (condition.kind === "media") return `@media ${condition.value}`;
-		if (condition.kind === "container") return `@container ${condition.value}`;
-		if (condition.kind === "supports") return `@supports ${condition.value}`;
+		if (condition.kind === SemanticConditionKindTag.Media) return `@media ${condition.value}`;
+		if (condition.kind === SemanticConditionKindTag.Container)
+			return `@container ${condition.value}`;
+		if (condition.kind === SemanticConditionKindTag.Supports) return `@supports ${condition.value}`;
 		return condition.value;
 	}
-	if (condition.kind === "pseudo")
+	if (condition.kind === SemanticConditionKindTag.Pseudo)
 		return condition.name.startsWith(":") ? condition.name : `:${condition.name}`;
 	return condition.name;
 }
 
 function cssValue(value: StyleValue): string {
-	if (value.kind === "token") return value.resolved ?? value.authored;
-	if (value.kind === "dynamic") return value.expression;
+	if (value.kind === StyleValueKindTag.Token) return value.resolved ?? value.authored;
+	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
 	return typeof value.value === "string" ? value.value : String(value.value);
 }
 
@@ -501,32 +553,33 @@ function conditionedSelector(
 	rule: StyleRule,
 	conditions: readonly StyleCondition[],
 ): { selector: string; wrappers: StyleCondition[] } {
-	let selector = rule.selector ?? (rule.kind === "global" ? "*" : "&");
+	let selector = rule.selector ?? (rule.kind === StyleRuleKindTag.Global ? "*" : "&");
 	const wrappers: StyleCondition[] = [];
 	for (const condition of conditions) {
 		if (
-			condition.kind === "media" ||
-			condition.kind === "container" ||
-			condition.kind === "supports"
+			condition.kind === SemanticConditionKindTag.Media ||
+			condition.kind === SemanticConditionKindTag.Container ||
+			condition.kind === SemanticConditionKindTag.Supports
 		) {
 			wrappers.push(condition);
 			continue;
 		}
 		const selectorValue =
-			condition.kind === "pseudo"
+			condition.kind === SemanticConditionKindTag.Pseudo
 				? (condition.value ?? condition.name)
 				: (condition.value ?? condition.raw ?? condition.name);
 		const normalizedSelectorValue =
-			condition.kind === "selector" && selectorValue.endsWith(" &")
+			condition.kind === SemanticConditionKindTag.Selector && selectorValue.endsWith(" &")
 				? `&${selectorValue.slice(0, -2)}`
 				: selectorValue;
 		if (normalizedSelectorValue.includes("&"))
 			selector = normalizedSelectorValue.replaceAll("&", selector);
-		else if (condition.kind === "pseudo")
+		else if (condition.kind === SemanticConditionKindTag.Pseudo)
 			selector += normalizedSelectorValue.startsWith(":")
 				? normalizedSelectorValue
 				: `:${normalizedSelectorValue}`;
-		else if (condition.kind === "selector") selector += normalizedSelectorValue;
+		else if (condition.kind === SemanticConditionKindTag.Selector)
+			selector += normalizedSelectorValue;
 		else selector += `:${normalizedSelectorValue}`;
 	}
 	return { selector, wrappers };
@@ -555,20 +608,22 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		const declarationText = renderDeclarations(declarations);
 		const childrenText = children.map(render).join("");
 		switch (rule.kind) {
-			case "style":
+			case StyleRuleKindTag.Style:
 				return `${selector ?? "&"}{${declarationText}}${childrenText}`;
-			case "global":
+			case StyleRuleKindTag.Global:
 				return `${selector ?? "*"}{${declarationText}}${childrenText}`;
-			case "keyframes":
+			case StyleRuleKindTag.Keyframes:
 				return `@keyframes ${rule.name ?? ""}{${declarationText}${childrenText}}`;
-			case "font-face":
+			case StyleRuleKindTag.FontFace:
 				return `@font-face{${declarationText}${childrenText}}`;
-			case "layer":
+			case StyleRuleKindTag.Layer:
 				return `@layer ${rule.layer ?? rule.name ?? ""}{${declarationText}${childrenText}}`;
-			case "supports":
+			case StyleRuleKindTag.Supports:
 				return `@supports ${rule.name ?? ""}{${declarationText}${childrenText}}`;
-			case "property":
+			case StyleRuleKindTag.Property:
 				return `@property ${rule.name ?? ""}{${declarationText}${childrenText}}`;
+			default:
+				throw new Error(`unknown style rule kind: ${rule.kind}`);
 		}
 	};
 	const render = (rule: StyleRule): string => {
@@ -581,7 +636,7 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 		);
 		const baseConditions = rule.conditions;
 		let base: string;
-		if (rule.kind === "style" || rule.kind === "global") {
+		if (rule.kind === StyleRuleKindTag.Style || rule.kind === StyleRuleKindTag.Global) {
 			const resolved = conditionedSelector(rule, baseConditions);
 			base = renderBase(rule, rootDeclarations, rule.children, resolved.selector);
 			base = wrapConditions(base, resolved.wrappers);
@@ -608,7 +663,7 @@ export function styleProgramToCanonicalCss(program: StyleProgram): string {
 			conditionalGroups.sort((a, b) => a.conditions.length - b.conditions.length);
 		const conditional = conditionalGroups.map((group) => {
 			const conditions = [...baseConditions, ...group.conditions];
-			if (rule.kind === "style" || rule.kind === "global") {
+			if (rule.kind === StyleRuleKindTag.Style || rule.kind === StyleRuleKindTag.Global) {
 				const resolved = conditionedSelector(rule, conditions);
 				return wrapConditions(
 					renderBase({ ...rule, children: [] }, group.declarations, [], resolved.selector),
@@ -712,7 +767,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 			const expression = expressions[index];
 			if (expression !== undefined) {
 				const evaluated = literalSourceValue(expression);
-				if (evaluated?.kind !== "literal") return null;
+				if (evaluated?.kind !== StyleValueKindTag.Literal) return null;
 				value += String(evaluated.value);
 			}
 		}
@@ -720,7 +775,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 	}
 	if (node.type === "UnaryExpression" && (node.operator === "-" || node.operator === "+")) {
 		const argument = node.argument === undefined ? null : literalSourceValue(node.argument);
-		if (argument?.kind === "literal" && typeof argument.value === "number") {
+		if (argument?.kind === StyleValueKindTag.Literal && typeof argument.value === "number") {
 			return {
 				kind: "literal",
 				value: node.operator === "-" ? -argument.value : argument.value,
@@ -729,7 +784,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 	}
 	if (node.type === "ConditionalExpression") {
 		const test = node.test === undefined ? null : literalSourceValue(node.test);
-		if (test?.kind === "literal" && typeof test.value === "boolean") {
+		if (test?.kind === StyleValueKindTag.Literal && typeof test.value === "boolean") {
 			const selected = test.value ? node.consequent : node.alternate;
 			return selected === undefined ? null : literalSourceValue(selected);
 		}
@@ -737,7 +792,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 	if (node.type === "BinaryExpression" || node.type === "LogicalExpression") {
 		const left = node.left === undefined ? null : literalSourceValue(node.left);
 		const right = node.right === undefined ? null : literalSourceValue(node.right);
-		if (left?.kind === "literal" && right?.kind === "literal") {
+		if (left?.kind === StyleValueKindTag.Literal && right?.kind === StyleValueKindTag.Literal) {
 			const value = evaluateLiteralBinary(node.operator, left.value, right.value);
 			if (value !== undefined) return { kind: "literal", value };
 		}
@@ -946,7 +1001,7 @@ export function styleProgramFromSourceObject(
 		conditions: readonly StyleCondition[],
 	): void => {
 		const value = literalSourceValue(valueNode) ?? dynamicSourceValue(valueNode, body, options);
-		if (value.kind === "dynamic") {
+		if (value.kind === StyleValueKindTag.Dynamic) {
 			const themeMatch = /^(?:theme|tokens)\.([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)$/.exec(
 				value.expression.trim(),
 			);
@@ -1030,7 +1085,9 @@ export function styleProgramFromSourceObject(
 						sourceOffset: 0,
 					});
 					declarations.push(...referenced.declarations);
-					specialRules.push(...referenced.rules.filter((rule) => rule.kind !== "style"));
+					specialRules.push(
+						...referenced.rules.filter((rule) => rule.kind !== StyleRuleKindTag.Style),
+					);
 					residuals.push(...referenced.residuals);
 				} else {
 					addDynamicResidual(
@@ -1150,7 +1207,9 @@ export function styleProgramFromSourceObject(
 					sourceOffset: 0,
 				});
 				declarations.push(...referenced.declarations);
-				specialRules.push(...referenced.rules.filter((rule) => rule.kind !== "style"));
+				specialRules.push(
+					...referenced.rules.filter((rule) => rule.kind !== StyleRuleKindTag.Style),
+				);
 				residuals.push(...referenced.residuals);
 				continue;
 			}
@@ -1235,7 +1294,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 	const rules = program.rules.length > 0 ? program.rules : [];
 	for (const rule of rules) {
 		if (
-			rule.kind !== "style" ||
+			rule.kind !== StyleRuleKindTag.Style ||
 			rule.selector !== undefined ||
 			rule.conditions.length > 0 ||
 			rule.children.length > 0
@@ -1253,7 +1312,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 				residuals.push({
 					kind: "dynamic",
 					text:
-						declaration.value.kind === "dynamic"
+						declaration.value.kind === StyleValueKindTag.Dynamic
 							? declaration.value.expression
 							: `${declaration.property}: <unsupported semantic value>`,
 					hint: "dynamic semantic declaration requires a target runtime",
@@ -1271,5 +1330,9 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 }
 
 function isResidualKind(value: string): value is SwapResidualKind {
-	return value === "dynamic" || value === "unknown-value" || value === "unrepresentable";
+	return (
+		value === SwapResidualKindTag.Dynamic ||
+		value === SwapResidualKindTag.UnknownValue ||
+		value === SwapResidualKindTag.Unrepresentable
+	);
 }

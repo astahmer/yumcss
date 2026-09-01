@@ -1,3 +1,4 @@
+import { SemanticConditionKindTag, StyleRuleKindTag, StyleValueKindTag } from "./semantic-ir.ts";
 import type { SemanticConditionKind, StyleDynamicValue, StyleProgram } from "./semantic-ir.ts";
 import type { AdapterDependencies } from "./adapter-contract.ts";
 import { StyleDynamicExpressionKind } from "./identifiers.ts";
@@ -43,6 +44,17 @@ export type AdapterCapability =
 
 export type AdapterCapabilityLevel = "exact" | "partial" | "unsupported";
 export type AdapterCapabilityMode = "safe" | "partial";
+
+export const enum AdapterCapabilityLevelTag {
+	Exact = "exact",
+	Partial = "partial",
+	Unsupported = "unsupported",
+}
+
+export const enum AdapterCapabilityModeTag {
+	Safe = "safe",
+	Partial = "partial",
+}
 
 export interface AdapterCapabilities {
 	readonly schema: typeof ADAPTER_CAPABILITIES_SCHEMA;
@@ -106,37 +118,41 @@ export function createAdapterCapabilityMatrix(
 
 const conditionCapability = (kind: SemanticConditionKind): AdapterCapability => {
 	switch (kind) {
-		case "pseudo":
+		case SemanticConditionKindTag.Pseudo:
 			return "pseudo-conditions";
-		case "selector":
+		case SemanticConditionKindTag.Selector:
 			return "selector-conditions";
-		case "media":
+		case SemanticConditionKindTag.Media:
 			return "media-conditions";
-		case "container":
+		case SemanticConditionKindTag.Container:
 			return "container-conditions";
-		case "supports":
+		case SemanticConditionKindTag.Supports:
 			return "supports-conditions";
-		case "named":
+		case SemanticConditionKindTag.Named:
 			return "named-conditions";
+		default:
+			throw new Error(`unknown semantic condition kind: ${kind}`);
 	}
 };
 
 const ruleCapability = (kind: StyleProgram["rules"][number]["kind"]): AdapterCapability => {
 	switch (kind) {
-		case "global":
+		case StyleRuleKindTag.Global:
 			return "global-rules";
-		case "keyframes":
+		case StyleRuleKindTag.Keyframes:
 			return "keyframes";
-		case "font-face":
+		case StyleRuleKindTag.FontFace:
 			return "font-face";
-		case "layer":
+		case StyleRuleKindTag.Layer:
 			return "layers";
-		case "supports":
+		case StyleRuleKindTag.Supports:
 			return "supports-rules";
-		case "property":
+		case StyleRuleKindTag.Property:
 			return "property-rules";
-		case "style":
+		case StyleRuleKindTag.Style:
 			return "rule-level";
+		default:
+			throw new Error(`unknown style rule kind: ${kind}`);
 	}
 };
 
@@ -169,12 +185,12 @@ export function requiredAdapterCapabilities(
 	if (program.source?.subject !== undefined)
 		add("components", `component subject: ${program.source.subject}`);
 	for (const rule of program.rules) {
-		if (rule.name !== undefined && rule.kind === "style")
+		if (rule.name !== undefined && rule.kind === StyleRuleKindTag.Style)
 			add("named-rules", `named style rule: ${rule.name}`);
 	}
 	const needsRuleLevel = program.rules.some(
 		(rule) =>
-			rule.kind !== "style" ||
+			rule.kind !== StyleRuleKindTag.Style ||
 			rule.selector !== undefined ||
 			rule.children.length > 0 ||
 			rule.conditions.length > 0,
@@ -193,8 +209,9 @@ export function requiredAdapterCapabilities(
 		for (const condition of declaration.conditions) {
 			add(conditionCapability(condition.kind), `${condition.kind}: ${condition.name}`);
 		}
-		if (declaration.value.kind === "token") add("token-values", `token: ${declaration.value.ref}`);
-		if (declaration.value.kind === "dynamic") {
+		if (declaration.value.kind === StyleValueKindTag.Token)
+			add("token-values", `token: ${declaration.value.ref}`);
+		if (declaration.value.kind === StyleValueKindTag.Dynamic) {
 			add(
 				isFunctionDynamic(declaration.value) ? "function-values" : "dynamic-values",
 				`dynamic: ${dynamicDetail(declaration.value)}`,
@@ -239,12 +256,16 @@ export function inspectAdapterCapabilities(
 		return {
 			...requirement,
 			level,
-			blocking: level === "unsupported" || (mode === "safe" && level === "partial"),
+			blocking:
+				level === AdapterCapabilityLevelTag.Unsupported ||
+				(mode === AdapterCapabilityModeTag.Safe && level === AdapterCapabilityLevelTag.Partial),
 		};
 	});
-	const exact = issues.filter((issue) => issue.level === "exact");
-	const partial = issues.filter((issue) => issue.level === "partial");
-	const unsupported = issues.filter((issue) => issue.level === "unsupported");
+	const exact = issues.filter((issue) => issue.level === AdapterCapabilityLevelTag.Exact);
+	const partial = issues.filter((issue) => issue.level === AdapterCapabilityLevelTag.Partial);
+	const unsupported = issues.filter(
+		(issue) => issue.level === AdapterCapabilityLevelTag.Unsupported,
+	);
 	const blockers = issues.filter((issue) => issue.blocking);
 	return {
 		adapter: capabilities.adapter,

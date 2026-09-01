@@ -1,3 +1,4 @@
+import { StyleRuleKindTag, StyleValueKindTag } from "../src/swap/semantic-ir.ts";
 import { describe, expect, test } from "vitest";
 import { createRuntimeSheet } from "pandwind/css/runtime";
 import { runDifferentialFixture } from "../src/swap/differential.ts";
@@ -8,7 +9,7 @@ function realRuntimeRender(program: StyleProgram): DifferentialRender {
 	const sheet = createRuntimeSheet({ id: "differential-runtime", autoMount: false });
 	sheet.registerSemanticRules(
 		program.rules.flatMap((rule) =>
-			rule.kind === "style"
+			rule.kind === StyleRuleKindTag.Style
 				? [
 						{
 							id: "card",
@@ -17,9 +18,9 @@ function realRuntimeRender(program: StyleProgram): DifferentialRender {
 							declarations: rule.declarations.map((declaration) => ({
 								property: declaration.property,
 								value:
-									declaration.value.kind === "literal"
+									declaration.value.kind === StyleValueKindTag.Literal
 										? declaration.value.value
-										: declaration.value.kind === "token"
+										: declaration.value.kind === StyleValueKindTag.Token
 											? declaration.value.authored
 											: declaration.value.expression,
 							})),

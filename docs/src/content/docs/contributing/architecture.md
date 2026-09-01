@@ -423,16 +423,19 @@ could change the generated CSS is never guessed away. Every such boundary has
 an adapter-specific inline-snapshot test covering the converted style and the
 non-happy residual path.
 
-Built-in registry identities are enum-backed. Codemod adapter/source/target
+Built-in registry identities are const-enum-backed. Codemod adapter/source/target
 ids, pattern ids, plugin ids, token-format ids, validator/lowering ids, and
 pipeline stage ids are defined once in the owning identity module and reused
 at every composition boundary. Shared orchestration must not compare raw
 ecosystem strings such as `adapter === "stylex"`; adapters normalize those
 differences into neutral IR metadata or registry-selected ports. Third-party
-ids remain extensible through branded plugin identifiers. Authored CSS values,
-property names, package specifiers in emitted source, and IR discriminants are
-data rather than registry identities and remain strings where that is the
-appropriate type.
+ids remain extensible through branded plugin identifiers. Semantic rule/value/
+condition/residual discriminants use const-enum tags for control flow while
+their literal-union views remain available at serialized and authored-source
+boundaries. Authored CSS values, property names, package specifiers in emitted
+source, and external AST protocol strings remain data rather than registry
+identities. Const enums have no runtime object, so registries expose explicit
+ordered arrays instead of relying on `Object.values`.
 
 Prefer one cohesive façade, registry, or class over a module that exports a
 collection of unrelated operations. Export a primitive only when it is an

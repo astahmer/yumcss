@@ -1,3 +1,4 @@
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "./semantic-ir.ts";
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
@@ -21,13 +22,13 @@ export class PortableStyleArtifact {
 	): StyleProgram {
 		const expressions = new Map<string, string>();
 		for (const residual of residuals) {
-			if (residual.kind !== "dynamic-custom-property") continue;
+			if (residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty) continue;
 			expressions.set(this.dynamicVariableName(residual.text), residual.text);
 		}
 
 		const restoreValue = (value: StyleValue): StyleValue => {
 			if (
-				value.kind !== "literal" ||
+				value.kind !== StyleValueKindTag.Literal ||
 				typeof value.value !== "string" ||
 				!value.value.startsWith("var(--pandwind-dynamic-")
 			)
@@ -57,8 +58,8 @@ export class PortableStyleArtifact {
 
 	static objectText(program: StyleProgram): string {
 		const valueText = (value: StyleValue): string => {
-			if (value.kind === "dynamic") return value.expression;
-			if (value.kind === "token") return JSON.stringify(value.authored);
+			if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
+			if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
 			return JSON.stringify(value.value);
 		};
 		type ObjectNode = { values: Array<[string, string]>; children: Map<string, ObjectNode> };

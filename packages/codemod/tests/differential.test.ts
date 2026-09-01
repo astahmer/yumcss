@@ -1,9 +1,11 @@
+import { StyleValueKindTag } from "../src/swap/semantic-ir.ts";
 import { describe, expect, test } from "vitest";
 import {
 	runDifferentialFixture,
 	runDifferentialSuite,
 	type DifferentialRender,
 } from "../src/swap/index.ts";
+import { SemanticConditionKindTag } from "../src/swap/semantic-ir.ts";
 import type { StyleProgram } from "../src/swap/semantic-ir.ts";
 import { createRuntimeSheet } from "pandwind/css/runtime";
 
@@ -11,13 +13,17 @@ type SemanticValue = StyleProgram["declarations"][number]["value"];
 type SemanticCondition = StyleProgram["rules"][number]["conditions"][number];
 
 const runtimeValue = (input: SemanticValue): string => {
-	if (input.kind === "token") return input.authored;
-	if (input.kind === "dynamic") return input.expression;
+	if (input.kind === StyleValueKindTag.Token) return input.authored;
+	if (input.kind === StyleValueKindTag.Dynamic) return input.expression;
 	return String(input.value);
 };
 
 const runtimeCondition = (input: SemanticCondition): string => {
-	if (input.kind === "media" || input.kind === "container" || input.kind === "supports")
+	if (
+		input.kind === SemanticConditionKindTag.Media ||
+		input.kind === SemanticConditionKindTag.Container ||
+		input.kind === SemanticConditionKindTag.Supports
+	)
 		return `@${input.kind} ${input.value ?? input.name}`;
 	return input.value ?? input.raw ?? input.name;
 };

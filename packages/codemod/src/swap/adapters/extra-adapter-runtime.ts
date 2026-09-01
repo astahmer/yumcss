@@ -1,3 +1,12 @@
+import {
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	styleProgramFromSourceObject,
+	styleProgramToCanonicalCss,
+	type StyleProgram,
+	type StyleProgramOptions,
+	type StyleProgramResidual,
+} from "../semantic-ir.ts";
 import type {
 	AdapterDependencies,
 	AdapterEmitContext,
@@ -16,13 +25,7 @@ import {
 	type AdapterCapabilityLevel,
 } from "../capabilities.ts";
 import { ADAPTER_CONTRACT_SCHEMA } from "../adapter-contract.ts";
-import {
-	styleProgramFromSourceObject,
-	styleProgramToCanonicalCss,
-	type StyleProgram,
-	type StyleProgramResidual,
-	type StyleProgramOptions,
-} from "../semantic-ir.ts";
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
@@ -114,8 +117,8 @@ const config = (id: string, context: { root?: string; file: string }): AdapterPr
 });
 
 const valueText = (value: StyleProgram["declarations"][number]["value"]): string => {
-	if (value.kind === "dynamic") return value.expression;
-	if (value.kind === "token") return JSON.stringify(value.authored);
+	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
+	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
 	return JSON.stringify(value.value);
 };
 
@@ -380,7 +383,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		loadConfig: (context) => config(options.id, context),
 		parse: (source, context) => {
 			const parsed =
-				options.form === "template"
+				options.form === CodemodCallPatternFormTag.Template
 					? parseTemplateCalls(options.id, source, context, options)
 					: parseObjectCalls(options.id, source, context, options);
 			const functionParsed = parseFunctionCalls(options.id, source, context, options);
@@ -421,7 +424,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			const targetEmission = options.targetEmit?.(program, context, objectText);
 			if (targetEmission !== undefined) return targetEmission;
 			const namedRules = program.rules.filter(
-				(rule) => rule.name !== undefined && rule.kind === "style",
+				(rule) => rule.name !== undefined && rule.kind === StyleRuleKindTag.Style,
 			);
 			if (namedRules.length > 0 && options.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap) {
 				const entries = namedRules.map((rule) => {

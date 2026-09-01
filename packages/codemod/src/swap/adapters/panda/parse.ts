@@ -30,6 +30,17 @@ import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 // Re-exported for tests/consumers that only import this module.
 export { parseObjectLiteral } from "../../parse.ts";
 
+export const enum PandaRecipeKindTag {
+	Cva = "cva",
+	Sva = "sva",
+}
+
+export const enum PandaCallKindTag {
+	Css = "css",
+	Cva = "cva",
+	Sva = "sva",
+}
+
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 	typeof v === "object" && v !== null && !Array.isArray(v);
 
@@ -487,14 +498,14 @@ export function pandaRecipeToIr(
 	};
 	const plain = toPlain(body) as Record<string, unknown>;
 
-	if (kind === "sva" && Array.isArray(plain["slots"])) {
+	if (kind === PandaRecipeKindTag.Sva && Array.isArray(plain["slots"])) {
 		recipe.slots = plain["slots"].map(String);
 	}
 	if (typeof plain["className"] === "string") recipe.className = plain["className"];
 
 	const base = plain["base"];
 	if (isPlainObject(base)) {
-		if (kind === "sva") {
+		if (kind === PandaRecipeKindTag.Sva) {
 			for (const [slot, style] of Object.entries(base)) {
 				recipe.base[slot] = styleIrOrResidual(style, slot, theme, recipe.residuals);
 			}
@@ -517,7 +528,7 @@ export function pandaRecipeToIr(
 			recipe.variants[variantName] = {};
 			for (const [valueName, style] of Object.entries(values)) {
 				recipe.variants[variantName]![valueName] = {};
-				if (kind === "sva") {
+				if (kind === PandaRecipeKindTag.Sva) {
 					if (!isPlainObject(style)) {
 						recipe.residuals.push({
 							kind: "dynamic",
@@ -581,7 +592,7 @@ export function pandaRecipeToIr(
 				}
 			}
 			const slots: Record<string, SwapIR> = {};
-			if (kind === "sva" && isPlainObject(css)) {
+			if (kind === PandaRecipeKindTag.Sva && isPlainObject(css)) {
 				for (const [slot, slotStyle] of Object.entries(css)) {
 					slots[slot] = styleIrOrResidual(slotStyle, slot, theme, recipe.residuals);
 				}
@@ -673,7 +684,7 @@ export function parsePandaCalls(
 				return {
 					start: match.index,
 					end: block.end,
-					kind: "css",
+					kind: PandaCallKindTag.Css,
 					ir: {
 						entries: [],
 						residuals: [{ kind: "dynamic", text: "css({...})", hint: "non-literal object" }],
@@ -683,7 +694,7 @@ export function parsePandaCalls(
 			return {
 				start: match.index,
 				end: block.end,
-				kind: "css",
+				kind: PandaCallKindTag.Css,
 				ir: pandaStyleToIr(toPlain(parsed) as never, theme),
 			};
 		},
@@ -700,15 +711,15 @@ export function parsePandaCalls(
 				return {
 					start: match.index,
 					end: block.end,
-					kind: "cva",
-					recipe: dynamicRecipe("cva"),
+					kind: PandaCallKindTag.Cva,
+					recipe: dynamicRecipe(PandaRecipeKindTag.Cva),
 				};
 			}
 			return {
 				start: match.index,
 				end: block.end,
-				kind: "cva",
-				recipe: pandaRecipeToIr(parsed, "cva", theme),
+				kind: PandaCallKindTag.Cva,
+				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Cva, theme),
 			};
 		},
 		calls,
@@ -724,15 +735,15 @@ export function parsePandaCalls(
 				return {
 					start: match.index,
 					end: block.end,
-					kind: "sva",
-					recipe: dynamicRecipe("sva"),
+					kind: PandaCallKindTag.Sva,
+					recipe: dynamicRecipe(PandaRecipeKindTag.Sva),
 				};
 			}
 			return {
 				start: match.index,
 				end: block.end,
-				kind: "sva",
-				recipe: pandaRecipeToIr(parsed, "sva", theme),
+				kind: PandaCallKindTag.Sva,
+				recipe: pandaRecipeToIr(parsed, PandaRecipeKindTag.Sva, theme),
 			};
 		},
 		calls,

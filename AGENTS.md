@@ -63,12 +63,16 @@ which concrete module to import or grow a switch statement in a central runner.
 - Registries are the extension point; unions and maps are derived from the
   registry where possible. Tests must prove that a fake/minimal adapter can be
   registered without changing core orchestration.
-- Built-in identity values are enum-backed. Adapter ids, source/target
+- Built-in identity values are `const enum`-backed. Adapter ids, source/target
   dialect ids, pattern ids, plugin ids, token-format ids, backend ids, and
-  validator/lowering ids must use exported TypeScript enums (or an equivalent
-  typed identifier owned by their registry), never repeated raw string
-  comparisons or untyped string literals. Third-party ids remain extensible
-  through a branded identifier factory and the plugin registry.
+  validator/lowering ids must use exported TypeScript `const enum` tags (or an
+  equivalent typed identifier owned by their registry), never repeated raw
+  string comparisons or untyped string literals. Keep a literal-union view at
+  serialization and authored-source boundaries when ordinary string literals
+  must remain assignable; use the enum tag for control flow. Because const
+  enums have no runtime object, registries must expose an explicit ordered
+  array for iteration instead of `Object.values`. Third-party ids remain
+  extensible through a branded identifier factory and the plugin registry.
 - Do not leak ecosystem branches into shared orchestration. Code outside an
   owning adapter must not contain checks such as `adapter === "stylex"` or
   `from === "panda"`; adapter-specific behavior is normalized into neutral

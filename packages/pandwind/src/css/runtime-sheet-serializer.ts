@@ -1,3 +1,4 @@
+import { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
 import type {
 	RuntimeDeclaration,
 	RuntimeRuleSerializer,
@@ -47,10 +48,10 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 			(rule.children ?? []).map((child) => this.serialize(child)).join("");
 		let output: string;
 		switch (rule.kind) {
-			case "style":
-			case "global": {
+			case RuntimeSemanticRuleKindTag.Style:
+			case RuntimeSemanticRuleKindTag.Global: {
 				const resolved = selector(
-					rule.selector ?? (rule.kind === "global" ? "*" : "&"),
+					rule.selector ?? (rule.kind === RuntimeSemanticRuleKindTag.Global ? "*" : "&"),
 					rule.conditions ?? [],
 				);
 				output = `${resolved.selector}{${body}}`;
@@ -60,21 +61,23 @@ export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 				);
 				return output;
 			}
-			case "keyframes":
+			case RuntimeSemanticRuleKindTag.Keyframes:
 				output = `@keyframes ${rule.name ?? ""}{${body}}`;
 				break;
-			case "font-face":
+			case RuntimeSemanticRuleKindTag.FontFace:
 				output = `@font-face{${body}}`;
 				break;
-			case "layer":
+			case RuntimeSemanticRuleKindTag.Layer:
 				output = `@layer ${rule.layer ?? rule.name ?? ""}{${body}}`;
 				break;
-			case "supports":
+			case RuntimeSemanticRuleKindTag.Supports:
 				output = `@supports ${rule.name ?? ""}{${body}}`;
 				break;
-			case "property":
+			case RuntimeSemanticRuleKindTag.Property:
 				output = `@property ${rule.name ?? ""}{${body}}`;
 				break;
+			default:
+				throw new Error(`unknown runtime semantic rule kind: ${rule.kind}`);
 		}
 		return (rule.conditions ?? []).reduceRight(
 			(current, item) => `${condition(item)}{${current}}`,

@@ -1,4 +1,5 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { StyleHostRepresentationKind, StyleNamedRuleStrategy } from "../identifiers.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import type {
@@ -196,12 +197,12 @@ export default defineCodemodAdapter({
 	},
 	emit(program, { firstKind, programObject }, context) {
 		const kind = firstKind(program);
-		if (kind === "keyframes")
+		if (kind === StyleRuleKindTag.Keyframes)
 			return {
 				text: `keyframes(${programObject(program)})`,
 				imports: ['import { keyframes } from "@emotion/css";'],
 			};
-		if (kind === "global")
+		if (kind === StyleRuleKindTag.Global)
 			return {
 				text: `injectGlobal(${programObject(program)})`,
 				imports: ['import { injectGlobal } from "@emotion/css";'],

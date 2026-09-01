@@ -1,3 +1,4 @@
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { StyleRepresentationKind } from "../identifiers.ts";
 import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
@@ -51,9 +52,9 @@ export class DynamicClassHost {
 		return program.rules.some(function containsCarrier(rule): boolean {
 			return (
 				rule.declarations.some((declaration) => {
-					if (declaration.value.kind === "dynamic") return true;
+					if (declaration.value.kind === StyleValueKindTag.Dynamic) return true;
 					return (
-						declaration.value.kind === "literal" &&
+						declaration.value.kind === StyleValueKindTag.Literal &&
 						typeof declaration.value.value === "string" &&
 						declaration.value.value.startsWith("var(--pandwind-dynamic-")
 					);
@@ -66,7 +67,7 @@ export class DynamicClassHost {
 		residuals: readonly StyleProgramResidual[] | undefined,
 	): readonly [string, string][] {
 		const entries = (residuals ?? []).flatMap((residual) => {
-			if (residual.kind !== "dynamic-custom-property") return [];
+			if (residual.kind !== StyleProgramResidualKindTag.DynamicCustomProperty) return [];
 			const variable = residual.hint?.match(/(--pandwind-dynamic-[a-z0-9]+)/u)?.[1];
 			return variable === undefined ? [] : [[variable, residual.text] as const];
 		});

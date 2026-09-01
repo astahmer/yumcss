@@ -24,6 +24,10 @@ import { matchBlock } from "../sources.ts";
 import type { SwapIR } from "./ir.ts";
 import { resolvedAuthoredToken } from "./tokens.ts";
 
+const enum LiteralParserValueTag {
+	Dynamic = "dynamic",
+}
+
 /* ------------------------------------------------------------------ */
 /* literal object parser                                               */
 /* ------------------------------------------------------------------ */
@@ -80,7 +84,7 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		}
 		return null;
 	};
-	const parseValue = (): LitValue | "dynamic" | null => {
+	const parseValue = (): LitValue | LiteralParserValueTag | null => {
 		skipWsAndComments();
 		if (i >= body.length) return null;
 		const ch = body[i]!;
@@ -101,13 +105,13 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		}
 		if (body.startsWith("null", i)) {
 			i += 4;
-			return "dynamic";
+			return LiteralParserValueTag.Dynamic;
 		}
 		// Identifiers / template literals / anything else — dynamic.
-		return "dynamic";
+		return LiteralParserValueTag.Dynamic;
 	};
 
-	const parseContainer = (): LitValue | "dynamic" | null => {
+	const parseContainer = (): LitValue | LiteralParserValueTag | null => {
 		const isOpenBrace = body[i] === "{";
 		i++;
 		skipWsAndComments();
@@ -124,7 +128,7 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 			for (;;) {
 				skipWsAndComments();
 				if (i >= body.length) return null;
-				if (body.startsWith("...", i)) return "dynamic"; // spread
+				if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic; // spread
 				let key: string;
 				const quote = body[i];
 				if (quote === '"' || quote === "'" || quote === "`") {
@@ -141,7 +145,7 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 				if (body[i] !== ":") return null;
 				i++;
 				const value = parseValue();
-				if (value === "dynamic") return "dynamic";
+				if (value === LiteralParserValueTag.Dynamic) return LiteralParserValueTag.Dynamic;
 				if (value === null) return null;
 				if (obj.keys.some((k) => k.key === key)) return "dynamic"; // duplicate key
 				obj.keys.push({ key, value });
@@ -169,9 +173,9 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		for (;;) {
 			skipWsAndComments();
 			if (i >= body.length) return null;
-			if (body.startsWith("...", i)) return "dynamic"; // spread
+			if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic; // spread
 			const v = parseValue();
-			if (v === "dynamic") return "dynamic";
+			if (v === LiteralParserValueTag.Dynamic) return LiteralParserValueTag.Dynamic;
 			if (v === null) return null;
 			arr.push(v);
 			skipWsAndComments();
@@ -208,7 +212,7 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		if (body[i] !== ":") return null;
 		i++;
 		const value = parseValue();
-		if (value === null || value === "dynamic") return null;
+		if (value === null || value === LiteralParserValueTag.Dynamic) return null;
 		if (entries.some((k) => k.key === key)) return null;
 		entries.push({ key, value });
 		skipWsAndComments();

@@ -1,4 +1,5 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -88,12 +89,12 @@ export default defineCodemodAdapter({
 	configFiles: ["package.json"],
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
-		if (kind === "keyframes")
+		if (kind === StyleRuleKindTag.Keyframes)
 			return {
 				text: `keyframes(${programObject(program)})`,
 				imports: ['import { keyframes } from "styled-components";'],
 			};
-		if (kind === "global")
+		if (kind === StyleRuleKindTag.Global)
 			return {
 				text: `createGlobalStyle(${programObject(program)})`,
 				imports: ['import { createGlobalStyle } from "styled-components";'],

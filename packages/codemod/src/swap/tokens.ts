@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "./semantic-ir.ts";
 /**
  * Token-reference helpers (plans/022 follow-up): map resolved values /
  * authored `$token` strings onto TARGET-library token references.
@@ -14,6 +15,12 @@ import type { StyleProgram } from "./semantic-ir.ts";
 
 /** How emitted token references are qualified. */
 export type TokenRefMode = "off" | "bare" | "group";
+
+export const enum TokenRefModeTag {
+	Off = "off",
+	Bare = "bare",
+	Group = "group",
+}
 
 export interface TokenCatalogMatch {
 	readonly group: string;
@@ -153,11 +160,11 @@ export class TokenCatalog {
 			const group = groupForProperty(property);
 			if (group === undefined) return value;
 			const match =
-				value.kind === "token"
+				value.kind === StyleValueKindTag.Token
 					? (this.findByReference([group], value.ref) ??
 						this.findUnique([group], value.resolved ?? "") ??
 						undefined)
-					: value.kind === "literal" &&
+					: value.kind === StyleValueKindTag.Literal &&
 						  (typeof value.value === "string" || typeof value.value === "number")
 						? this.findUnique([group], String(value.value))
 						: undefined;

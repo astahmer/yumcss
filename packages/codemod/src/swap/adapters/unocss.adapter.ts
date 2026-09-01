@@ -1,4 +1,15 @@
 import {
+	SemanticConditionKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	styleProgramFromRules,
+	styleProgramToCanonicalCss,
+	type StyleCondition,
+	type StyleDeclaration,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "../semantic-ir.ts";
+import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
 	type AdapterParseContext,
@@ -7,14 +18,6 @@ import {
 	type StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
-import {
-	styleProgramFromRules,
-	styleProgramToCanonicalCss,
-	type StyleCondition,
-	type StyleDeclaration,
-	type StyleProgram,
-	type StyleProgramResidual,
-} from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -214,8 +217,8 @@ function unoValue(value: string | number | boolean): string {
 }
 
 function unoCondition(condition: StyleCondition): string {
-	if (condition.kind === "pseudo") return `${condition.name}:`;
-	if (condition.kind === "selector") {
+	if (condition.kind === SemanticConditionKindTag.Pseudo) return `${condition.name}:`;
+	if (condition.kind === SemanticConditionKindTag.Selector) {
 		const selector = condition.value ?? condition.name;
 		return `[&${selector.startsWith("&") ? selector.slice(1) : selector}]:`;
 	}
@@ -223,7 +226,7 @@ function unoCondition(condition: StyleCondition): string {
 }
 
 function unoToken(declaration: StyleDeclaration): string | undefined {
-	if (declaration.value.kind !== "literal") return undefined;
+	if (declaration.value.kind !== StyleValueKindTag.Literal) return undefined;
 	const property = `[${unoProperty(declaration.property)}:${unoValue(declaration.value.value)}]`;
 	return `${declaration.conditions.map(unoCondition).join("")}${property}`;
 }
@@ -232,7 +235,8 @@ function unoNamedToken(
 	declaration: StyleDeclaration,
 	catalog: TokenCatalog | undefined,
 ): string | undefined {
-	if (catalog === undefined || declaration.value.kind !== "literal") return undefined;
+	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
+		return undefined;
 	const groups: Readonly<Record<string, string>> = {
 		color: "colors",
 		backgroundColor: "colors",
@@ -298,7 +302,7 @@ function emitUnoClassTokens(
 	readonly residuals: readonly StyleProgramResidual[];
 } {
 	const residuals: StyleProgramResidual[] = [];
-	const rules = program.rules.filter((rule) => rule.kind === "style");
+	const rules = program.rules.filter((rule) => rule.kind === StyleRuleKindTag.Style);
 	const declarations =
 		rules.length > 0 ? rules.flatMap((rule) => rule.declarations) : program.declarations;
 	const tokens: string[] = [];
@@ -331,7 +335,9 @@ function emitUnoNamedMap(
 } {
 	const entries: string[] = [];
 	const residuals: StyleProgramResidual[] = [];
-	for (const rule of program.rules.filter((candidate) => candidate.kind === "style")) {
+	for (const rule of program.rules.filter(
+		(candidate) => candidate.kind === StyleRuleKindTag.Style,
+	)) {
 		if (rule.name === undefined) continue;
 		const emitted = emitUnoClassTokens(
 			{
@@ -809,7 +815,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 		emit: (program, context) => {
 			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 			const namedRules = program.rules.some(
-				(rule) => rule.kind === "style" && rule.name !== undefined,
+				(rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined,
 			);
 			return namedRules
 				? emitUnoNamedMap(program, tokenCatalog)

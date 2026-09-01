@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
 	BuiltinHostFramework,
@@ -62,7 +63,7 @@ function reactNativeProgram(program: StyleProgram): StyleProgram {
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
 		value:
-			item.value.kind === "literal"
+			item.value.kind === StyleValueKindTag.Literal
 				? { ...item.value, value: reactNativeValue(item.property, item.value.value) }
 				: item.value,
 	});
@@ -94,7 +95,9 @@ const reactNativeUnitLowering: StyleLowering = {
 function hasOnlyStaticDeclarations(program: StyleProgram): boolean {
 	return program.rules.every(
 		(rule) =>
-			rule.declarations.every((declaration) => declaration.value.kind !== "dynamic") &&
+			rule.declarations.every(
+				(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
+			) &&
 			rule.children.every((child) => hasOnlyStaticDeclarations({ ...program, rules: [child] })),
 	);
 }

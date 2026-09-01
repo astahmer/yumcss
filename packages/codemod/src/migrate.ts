@@ -21,6 +21,12 @@ import {
 	SKIP_MARKER_DEFAULT,
 } from "./shared.ts";
 
+export const enum MigrateModeTag {
+	Tw = "tw",
+	Cx = "cx",
+	Css = "css",
+	Keep = "keep",
+}
 export type MigrateMode = "tw" | "cx" | "css" | "keep";
 
 export interface TransformResult {
@@ -519,13 +525,15 @@ function runMode(
 	options: TransformOptions,
 ): TransformResult {
 	switch (mode) {
-		case "tw":
+		case MigrateModeTag.Tw:
 			return transformTw(source, meta, options);
-		case "cx":
+		case MigrateModeTag.Cx:
 			return transformCx(source, meta, options);
-		case "css":
+		case MigrateModeTag.Css:
 			return transformCss(source, meta, options);
-		case "keep":
+		case MigrateModeTag.Keep:
 			return transformKeep(source, meta, options);
+		default:
+			throw new Error(`unknown migration mode: ${mode}`);
 	}
 }

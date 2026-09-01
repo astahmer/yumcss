@@ -1,8 +1,10 @@
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "./semantic-ir.ts";
 import type {
 	AdapterCapabilities,
 	AdapterCapability,
 	AdapterCapabilityMode,
 } from "./capabilities.ts";
+import { AdapterCapabilityLevelTag, AdapterCapabilityModeTag } from "./capabilities.ts";
 import type {
 	StyleDeclaration,
 	StyleProgram,
@@ -72,7 +74,7 @@ const level = (
 ) => target.capabilities[capability] ?? "unsupported";
 
 const isFunctionDynamic = (value: StyleDeclaration["value"]): boolean =>
-	value.kind === "dynamic" &&
+	value.kind === StyleValueKindTag.Dynamic &&
 	(value.expressionKind === StyleDynamicExpressionKind.Function ||
 		/=>|^function\b/.test(value.expression.trim()));
 
@@ -120,17 +122,20 @@ const dynamicAndThemes: StyleLowering = {
 		const resolvedDynamicCapabilities = new Set<AdapterCapability>();
 		const transform = (declaration: StyleDeclaration): StyleDeclaration => {
 			const value = declaration.value;
-			if (value.kind !== "dynamic") return declaration;
+			if (value.kind !== StyleValueKindTag.Dynamic) return declaration;
 			// A function-valued style is not a scalar runtime value. Replacing it
 			// with a custom property would stringify the function and silently lose
 			// its props/theme evaluation. Only a target-native function carrier or a
 			// host/framework lowering may consume it.
 			if (isFunctionDynamic(value)) {
-				if (level(target, "function-values") !== "unsupported") {
+				if (level(target, "function-values") !== AdapterCapabilityLevelTag.Unsupported) {
 					resolvedDynamicCapabilities.add("function-values");
 					return declaration;
 				}
-				if (hostFramework === true && level(target, "custom-properties") === "exact") {
+				if (
+					hostFramework === true &&
+					level(target, "custom-properties") === AdapterCapabilityLevelTag.Exact
+				) {
 					changed = true;
 					const variable = dynamicVariableName(value.expression);
 					residuals.push({
@@ -151,22 +156,31 @@ const dynamicAndThemes: StyleLowering = {
 				return declaration;
 			}
 			const resolved = resolveThemeExpression(value.expression, program);
-			if (resolved !== undefined && level(target, "theme-context") === "unsupported") {
+			if (
+				resolved !== undefined &&
+				level(target, "theme-context") === AdapterCapabilityLevelTag.Unsupported
+			) {
 				changed = true;
 				return { ...declaration, value: { kind: "literal", value: resolved.value } };
 			}
 			const nativeDynamicLevel = level(target, "dynamic-values");
 			const preferStaticCustomProperty =
-				mode === "safe" &&
-				nativeDynamicLevel === "partial" &&
-				level(target, "custom-properties") === "exact";
-			if (nativeDynamicLevel !== "unsupported" && !preferStaticCustomProperty) {
+				mode === AdapterCapabilityModeTag.Safe &&
+				nativeDynamicLevel === AdapterCapabilityLevelTag.Partial &&
+				level(target, "custom-properties") === AdapterCapabilityLevelTag.Exact;
+			if (
+				nativeDynamicLevel !== AdapterCapabilityLevelTag.Unsupported &&
+				!preferStaticCustomProperty
+			) {
 				const themeExpression = /^(?:theme|tokens)\./.test(value.expression.trim());
-				if (!themeExpression || level(target, "theme-context") !== "unsupported")
+				if (
+					!themeExpression ||
+					level(target, "theme-context") !== AdapterCapabilityLevelTag.Unsupported
+				)
 					resolvedDynamicCapabilities.add("dynamic-values");
 				return declaration;
 			}
-			if (level(target, "custom-properties") !== "unsupported") {
+			if (level(target, "custom-properties") !== AdapterCapabilityLevelTag.Unsupported) {
 				changed = true;
 				const variable = dynamicVariableName(value.expression);
 				residuals.push({
@@ -196,7 +210,10 @@ const dynamicAndThemes: StyleLowering = {
 			return declaration;
 		};
 		const rules = program.rules.map((rule) => replaceDeclarations(rule, transform));
-		const themes = level(target, "theme-context") === "unsupported" ? undefined : program.themes;
+		const themes =
+			level(target, "theme-context") === AdapterCapabilityLevelTag.Unsupported
+				? undefined
+				: program.themes;
 		if (themes === undefined && program.themes !== undefined) changed = true;
 		return {
 			program: changed
@@ -215,7 +232,10 @@ const composition: StyleLowering = {
 	schema: STYLE_LOWERING_SCHEMA,
 	id: StyleLoweringId.CompositionFlatten,
 	apply: ({ program, target }) => {
-		if ((program.compositions?.length ?? 0) === 0 || level(target, "composition") !== "unsupported")
+		if (
+			(program.compositions?.length ?? 0) === 0 ||
+			level(target, "composition") !== AdapterCapabilityLevelTag.Unsupported
+		)
 			return { program, residuals: [], applied: [] };
 		const residuals: StyleProgramResidual[] = [];
 		const rules = [...program.rules];
@@ -254,13 +274,13 @@ const runtimeAndPlugins: StyleLowering = {
 		let remainingPlugins = program.plugins;
 		if (
 			(program.plugins?.length ?? 0) > 0 &&
-			level(target, "plugin-transforms") === "unsupported"
+			level(target, "plugin-transforms") === AdapterCapabilityLevelTag.Unsupported
 		) {
 			const transforms = program.plugins ?? [];
 			rules = rules.map((rule) =>
 				replaceDeclarations(rule, (declaration) => {
 					const value = declaration.value;
-					if (value.kind !== "dynamic") return declaration;
+					if (value.kind !== StyleValueKindTag.Dynamic) return declaration;
 					let expression = value.expression;
 					for (const transform of transforms) {
 						const before = expression;
@@ -283,7 +303,9 @@ const runtimeAndPlugins: StyleLowering = {
 			remainingPlugins = transforms.filter((transform) => !resolvedPluginIds.has(transform.id));
 		}
 		const runtime =
-			level(target, "runtime-context") === "unsupported" ? undefined : program.runtime;
+			level(target, "runtime-context") === AdapterCapabilityLevelTag.Unsupported
+				? undefined
+				: program.runtime;
 		if (runtime === undefined && program.runtime !== undefined) {
 			applied = true;
 			residuals.push({
@@ -293,7 +315,7 @@ const runtimeAndPlugins: StyleLowering = {
 			});
 		}
 		const source =
-			level(target, "framework-semantics") === "unsupported" &&
+			level(target, "framework-semantics") === AdapterCapabilityLevelTag.Unsupported &&
 			program.source?.framework !== undefined &&
 			hostFramework !== true
 				? { ...program.source, framework: undefined }
@@ -323,7 +345,9 @@ const runtimeAndPlugins: StyleLowering = {
 			applied: applied ? [StyleLoweringId.RuntimeAndPlugin] : [],
 			...(program.plugins !== undefined &&
 			program.plugins.length > 0 &&
-			residuals.every((residual) => residual.kind !== "plugin-transform") &&
+			residuals.every(
+				(residual) => residual.kind !== StyleProgramResidualKindTag.PluginTransform,
+			) &&
 			resolvedPluginIds.size === program.plugins.length
 				? { resolvedCapabilities: ["plugin-transforms"] }
 				: {}),
@@ -442,12 +466,14 @@ function representationFor(
 	result: StyleLoweringResult,
 ): StyleRepresentationKind {
 	const declarations = StyleProgramAnalysis.declarations(result.program);
-	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
+	const hasDynamic = declarations.some(
+		(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+	);
 	if (result.residuals.length > 0 || result.program.residuals.length > 0) {
 		if (
 			declarations.some(
 				(declaration) =>
-					declaration.value.kind === "literal" &&
+					declaration.value.kind === StyleValueKindTag.Literal &&
 					typeof declaration.value.value === "string" &&
 					declaration.value.value.startsWith("var(--pandwind-dynamic-"),
 			)
@@ -460,13 +486,13 @@ function representationFor(
 	if (hasDynamic) {
 		const hasFunctionDynamic = declarations.some(
 			(declaration) =>
-				declaration.value.kind === "dynamic" &&
+				declaration.value.kind === StyleValueKindTag.Dynamic &&
 				declaration.value.expressionKind === StyleDynamicExpressionKind.Function,
 		);
 		const dynamicCapability = hasFunctionDynamic
 			? level(context.target, "function-values")
 			: level(context.target, "dynamic-values");
-		return dynamicCapability === "unsupported"
+		return dynamicCapability === AdapterCapabilityLevelTag.Unsupported
 			? StyleRepresentationKind.Residual
 			: StyleRepresentationKind.TargetNative;
 	}
@@ -478,34 +504,39 @@ function availableRepresentationsFor(
 	result: StyleLoweringResult,
 ): readonly StyleRepresentationKind[] {
 	const declarations = allDeclarations(result.program);
-	const hasDynamic = declarations.some((declaration) => declaration.value.kind === "dynamic");
+	const hasDynamic = declarations.some(
+		(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+	);
 	const hasFunctionDynamic = declarations.some((declaration) =>
 		isFunctionDynamic(declaration.value),
 	);
 	const hasCustomProperty = declarations.some(
 		(declaration) =>
-			declaration.value.kind === "literal" &&
+			declaration.value.kind === StyleValueKindTag.Literal &&
 			typeof declaration.value.value === "string" &&
 			declaration.value.value.startsWith("var(--pandwind-dynamic-"),
 	);
 	const hasResidual = result.program.residuals.length > 0 || result.residuals.length > 0;
 	const representations: StyleRepresentationKind[] = [];
 	if (!hasDynamic && !hasResidual) representations.push(StyleRepresentationKind.Static);
-	if (level(context.target, "named-rules") !== "unsupported")
+	if (level(context.target, "named-rules") !== AdapterCapabilityLevelTag.Unsupported)
 		representations.push(StyleRepresentationKind.NamedMap);
 	if (
 		hasDynamic &&
 		!hasFunctionDynamic &&
-		level(context.target, "dynamic-values") !== "unsupported"
+		level(context.target, "dynamic-values") !== AdapterCapabilityLevelTag.Unsupported
 	)
 		representations.push(StyleRepresentationKind.TargetNative);
 	if (
 		(hasDynamic || hasCustomProperty) &&
 		!hasFunctionDynamic &&
-		level(context.target, "custom-properties") !== "unsupported"
+		level(context.target, "custom-properties") !== AdapterCapabilityLevelTag.Unsupported
 	)
 		representations.push(StyleRepresentationKind.CustomProperty);
-	if (hasDynamic && level(context.target, "runtime-context") !== "unsupported")
+	if (
+		hasDynamic &&
+		level(context.target, "runtime-context") !== AdapterCapabilityLevelTag.Unsupported
+	)
 		representations.push(StyleRepresentationKind.RuntimeCarrier);
 	representations.push(StyleRepresentationKind.Residual);
 	return representations;

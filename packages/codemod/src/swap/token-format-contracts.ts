@@ -1,7 +1,7 @@
 export const TOKEN_FORMAT_SCHEMA = "pandwind.token-format/1" as const;
 
 /** Versioned normalized token IR shared by every source and target format. */
-export enum TokenFormatId {
+export const enum TokenFormatId {
 	Dtcg = "dtcg",
 	Theme = "theme",
 	Panda = "panda",

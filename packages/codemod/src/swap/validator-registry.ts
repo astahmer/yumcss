@@ -8,6 +8,7 @@ import type {
 	AdapterLossiness,
 	AdapterValidationResult,
 } from "./adapter-contract.ts";
+import { AdapterLossinessTag } from "./adapter-contract.ts";
 import { StyleValidatorId } from "./identifiers.ts";
 
 export const VALIDATOR_SCHEMA = "pandwind.style-validator/1" as const;
@@ -237,11 +238,13 @@ export function createStyleValidatorRegistry(
 			const canonicalSource = styleProgramToCanonicalCss(context.source);
 			const canonicalTarget = styleProgramToCanonicalCss(context.target);
 			const valid = evidence.every((item) => item.valid);
-			const lossiness: AdapterLossiness = evidence.some((item) => item.lossiness === "unsupported")
-				? "unsupported"
-				: evidence.some((item) => item.lossiness === "lossy")
-					? "lossy"
-					: "lossless";
+			const lossiness: AdapterLossiness = evidence.some(
+				(item) => item.lossiness === AdapterLossinessTag.Unsupported,
+			)
+				? AdapterLossinessTag.Unsupported
+				: evidence.some((item) => item.lossiness === AdapterLossinessTag.Lossy)
+					? AdapterLossinessTag.Lossy
+					: AdapterLossinessTag.Lossless;
 			return { valid, lossiness, canonicalSource, canonicalTarget, differences, residuals };
 		},
 	};

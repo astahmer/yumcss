@@ -1,3 +1,4 @@
+import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -238,7 +239,7 @@ const propertyAliases = {
 } as const;
 
 function chakraValue(property: string, value: StyleValue): StyleValue {
-	if (value.kind !== "literal") return value;
+	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (typeof value.value === "number" && isSpacingProperty(property)) {
 		if (value.value === 0) return { kind: "literal", value: 0 };
 		const absolute = Math.abs(value.value);
@@ -310,7 +311,7 @@ function chakraTokenSource(adapter: string | undefined): boolean {
 function normalizeChakraEmissionProgram(program: StyleProgram): StyleProgram {
 	if (chakraTokenSource(program.source?.adapter)) return program;
 	const normalizeDeclaration = (declaration: StyleProgram["declarations"][number]) =>
-		declaration.value.kind === "literal" &&
+		declaration.value.kind === StyleValueKindTag.Literal &&
 		typeof declaration.value.value === "number" &&
 		declaration.value.value !== 0 &&
 		isSpacingProperty(declaration.property)
@@ -407,7 +408,7 @@ function chakraOfficialValue(
 	context: AdapterParseContext,
 ): StyleValue {
 	const fallback = chakraValue(property, value);
-	if (value.kind !== "literal" || typeof value.value !== "string") return fallback;
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return fallback;
 	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
 	const config = context.config.values.chakraConfig;
 	const group = chakraTokenGroup(property);
@@ -909,7 +910,7 @@ export function createChakraAdapter(
 		}),
 		emit(program, { programObject }, context) {
 			const outputProgram = normalizeChakraEmissionProgram(program);
-			if (program.rules.some((rule) => rule.kind !== "style"))
+			if (program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style))
 				return {
 					text: programObject(outputProgram),
 					residuals: [

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { StyleProgramResidualKindTag } from "../src/swap/semantic-ir.ts";
 import {
 	BuiltinHostFramework,
 	CodemodAdapterId,
@@ -164,7 +165,9 @@ describe("target adapter emission contract", () => {
 		);
 
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+		expect(
+			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Capability),
+		).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<div className={Card} />");

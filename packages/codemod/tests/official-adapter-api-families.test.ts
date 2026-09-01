@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
 	runAdapterMigration,
 	type AdapterMigrationResult,
@@ -325,7 +326,7 @@ describe("official adapter API families", () => {
 		const results = cases.map((api) => ({ api, result: migrate(api) }));
 		const covered = new Set(results.map(({ api }) => api.adapter));
 
-		expect(covered).toEqual(new Set(Object.values(CodemodAdapterId)));
+		expect(covered).toEqual(new Set(BUILTIN_CODEMOD_ADAPTER_IDS));
 		for (const { api, result } of results) {
 			if (api.expectation === "identity") {
 				expect(result.converted, `${api.adapter}/${api.name}`).toBe(0);

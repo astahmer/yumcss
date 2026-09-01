@@ -1,3 +1,4 @@
+import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
 import {
@@ -38,7 +39,11 @@ function stitchesTheme(source: string): TokenCatalog | undefined {
 }
 
 function stitchesValue(value: StyleValue, catalog: TokenCatalog | undefined): StyleValue {
-	if (catalog === undefined || value.kind !== "literal" || typeof value.value !== "string")
+	if (
+		catalog === undefined ||
+		value.kind !== StyleValueKindTag.Literal ||
+		typeof value.value !== "string"
+	)
 		return value;
 	const reference = /^\$([^$]+)\$(.+)$/u.exec(value.value);
 	if (reference?.[1] === undefined || reference[2] === undefined) return value;
@@ -50,7 +55,10 @@ function stitchesTransform(program: StyleProgram): StyleProgram {
 	const unresolved = new Set<string>();
 	const visit = (rule: StyleProgram["rules"][number]): void => {
 		for (const declaration of rule.declarations) {
-			if (declaration.value.kind === "literal" && typeof declaration.value.value === "string") {
+			if (
+				declaration.value.kind === StyleValueKindTag.Literal &&
+				typeof declaration.value.value === "string"
+			) {
 				const value = declaration.value.value;
 				if (/^\$[^$]+\$.+/u.test(value)) unresolved.add(value);
 			}
@@ -180,12 +188,12 @@ export default defineCodemodAdapter({
 	},
 	emit(program, { firstKind, programObject }) {
 		const kind = firstKind(program);
-		if (kind === "keyframes")
+		if (kind === StyleRuleKindTag.Keyframes)
 			return {
 				text: `keyframes(${programObject(program)})`,
 				imports: ['import { keyframes } from "@stitches/react";'],
 			};
-		if (kind === "global")
+		if (kind === StyleRuleKindTag.Global)
 			return {
 				text: `globalCss(${programObject(program)})`,
 				imports: ['import { globalCss } from "@stitches/react";'],

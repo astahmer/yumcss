@@ -1,3 +1,5 @@
+import { StyleProgramResidualKindTag, SwapResidualKindTag } from "../src/swap/semantic-ir.ts";
+import { AdapterDependencyKindTag } from "../src/swap/adapter-contract.ts";
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
@@ -358,7 +360,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+		expect(result.residuals.some((residual) => residual.kind === SwapResidualKindTag.Dynamic)).toBe(
+			true,
+		);
 	});
 
 	test("lowers named style maps to target class maps when the target owns that strategy", () => {
@@ -1351,7 +1355,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("createRuntimeCss");
 		expect(
 			result.dependencies.some((dependency) =>
-				dependency.packages.some((item) => item.name === "pandwind" && item.kind === "runtime"),
+				dependency.packages.some(
+					(item) => item.name === "pandwind" && item.kind === AdapterDependencyKindTag.Runtime,
+				),
 			),
 		).toBe(true);
 	});
@@ -1391,7 +1397,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "vanilla-extract", to: "emotion", file: "fonts.css.ts", mode: "safe" },
 		);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "capability")).toBe(true);
+		expect(
+			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Capability),
+		).toBe(true);
 	});
 
 	test("keeps component interpolations as explicit host residuals in safe mode", () => {
@@ -1402,7 +1410,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 			mode: "safe",
 		});
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "dynamic")).toBe(true);
+		expect(result.residuals.some((residual) => residual.kind === SwapResidualKindTag.Dynamic)).toBe(
+			true,
+		);
 	});
 
 	test("lowers dynamic intrinsic styled components into class and style carriers", () => {
@@ -1727,9 +1737,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(parsed.matches).toHaveLength(1);
 		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
 		expect(
-			parsed.matches[0]?.program.residuals.some((residual) => residual.kind === "dynamic"),
+			parsed.matches[0]?.program.residuals.some(
+				(residual) => residual.kind === SwapResidualKindTag.Dynamic,
+			),
 		).toBe(true);
-		expect(parsed.residuals.some((residual) => residual.kind === "parse")).toBe(false);
+		expect(
+			parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
+		).toBe(false);
 	});
 
 	test("normalizes plain nested template selectors as descendants", () => {
@@ -1937,7 +1951,11 @@ describe("CSS-in-JS adapter contract v2", () => {
 		);
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);
-		expect(result.residuals.some((residual) => residual.kind === "dynamic-values")).toBe(true);
+		expect(
+			result.residuals.some(
+				(residual) => residual.kind === StyleProgramResidualKindTag.DynamicValues,
+			),
+		).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 });

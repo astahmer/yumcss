@@ -15,7 +15,7 @@
 import type { SwapIR } from "../../ir.ts";
 import { emitCssClass } from "../../emit.ts";
 import type { PandwindMeta } from "../../../meta.ts";
-import { PANDA_ALIASES, type PandaRecipeIR } from "./parse.ts";
+import { PANDA_ALIASES, PandaRecipeKindTag, type PandaRecipeIR } from "./parse.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 import { expandBuiltinPattern } from "./patterns.ts";
 import type { PandaTheme } from "./theme.ts";
@@ -470,7 +470,7 @@ export function renderRecipeModule(
 	lines.push(options.cssImport);
 
 	const slotNames = recipe.slots ?? [""];
-	const isSva = recipe.kind === "sva";
+	const isSva = recipe.kind === PandaRecipeKindTag.Sva;
 
 	for (const slot of slotNames) {
 		const label = slot === "" ? "base" : `base_${slot}`;

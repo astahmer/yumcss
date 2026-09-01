@@ -20,7 +20,7 @@ const fela = makeExtraAdapter({
 	residualPatterns: [
 		{
 			name: "createRenderer",
-			regex: /\bcreateRenderer\s*\(/g,
+			regex: /\bcreateRenderer\s*\((?!\s*\))/g,
 			kind: "configuration",
 			hint: "Fela renderer configuration and plugins require target-aware lowering",
 		},

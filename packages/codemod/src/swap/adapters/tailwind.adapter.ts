@@ -1,4 +1,15 @@
 import {
+	SemanticConditionKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	styleProgramFromRules,
+	styleProgramToCanonicalCss,
+	type StyleCondition,
+	type StyleDeclaration,
+	type StyleProgram,
+	type StyleProgramResidual,
+} from "../semantic-ir.ts";
+import {
 	ADAPTER_CONTRACT_SCHEMA,
 	type AdapterConfigContext,
 	type AdapterParseContext,
@@ -8,14 +19,6 @@ import {
 	type StyleAdapter,
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
-import {
-	styleProgramFromRules,
-	styleProgramToCanonicalCss,
-	type StyleCondition,
-	type StyleDeclaration,
-	type StyleProgram,
-	type StyleProgramResidual,
-} from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -445,8 +448,8 @@ function utilityValue(value: string | number | boolean): string {
 }
 
 function utilityCondition(conditionValue: StyleCondition): string {
-	if (conditionValue.kind === "pseudo") return `${conditionValue.name}:`;
-	if (conditionValue.kind === "selector") {
+	if (conditionValue.kind === SemanticConditionKindTag.Pseudo) return `${conditionValue.name}:`;
+	if (conditionValue.kind === SemanticConditionKindTag.Selector) {
 		const selector = conditionValue.value ?? conditionValue.name;
 		return `[&${selector.startsWith("&") ? selector.slice(1) : selector}]:`;
 	}
@@ -457,7 +460,8 @@ function tailwindTokenUtility(
 	declaration: StyleDeclaration,
 	catalog: TokenCatalog | undefined,
 ): string | undefined {
-	if (catalog === undefined || declaration.value.kind !== "literal") return undefined;
+	if (catalog === undefined || declaration.value.kind !== StyleValueKindTag.Literal)
+		return undefined;
 	const property = declaration.property;
 	const groups: Readonly<Record<string, string>> = {
 		color: "colors",
@@ -529,7 +533,7 @@ function emitTailwind(
 } {
 	const residuals: StyleProgramResidual[] = [];
 	for (const rule of StyleProgramAnalysis.rules(program)) {
-		if (rule.kind !== "style") {
+		if (rule.kind !== StyleRuleKindTag.Style) {
 			residuals.push({
 				kind: "rule-level",
 				text: rule.kind,
@@ -540,7 +544,7 @@ function emitTailwind(
 	const declarations = StyleProgramAnalysis.declarations(program);
 	const tokens: string[] = [];
 	for (const declaration of declarations) {
-		if (declaration.value.kind !== "literal") {
+		if (declaration.value.kind !== StyleValueKindTag.Literal) {
 			residuals.push({
 				kind: "dynamic",
 				text: declaration.property,
@@ -739,7 +743,7 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 		emit: (program, context) => {
 			const tokenCatalog = TokenCatalog.fromContract(context.config.tokenCatalog);
 			const namedRules = program.rules.filter(
-				(rule) => rule.kind === "style" && rule.name !== undefined,
+				(rule) => rule.kind === StyleRuleKindTag.Style && rule.name !== undefined,
 			);
 			if (namedRules.length > 0) {
 				const residuals: StyleProgramResidual[] = [];

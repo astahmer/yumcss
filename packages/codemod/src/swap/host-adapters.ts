@@ -2,7 +2,7 @@ import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
-export enum BuiltinHostFramework {
+export const enum BuiltinHostFramework {
 	React = "react",
 	Preact = "preact",
 	Solid = "solid",

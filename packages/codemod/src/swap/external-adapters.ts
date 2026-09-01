@@ -1,3 +1,17 @@
+import {
+	SemanticConditionKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	inferSemanticConditionKind,
+	styleProgramFromRules,
+	styleProgramFromSourceObject,
+	styleProgramToCanonicalCss,
+	type StyleDeclaration,
+	type StyleProgram,
+	type StyleProgramOptions,
+	type StyleProgramResidual,
+	type StyleProgramSource,
+} from "./semantic-ir.ts";
 import { applyEdits } from "../migrate.ts";
 import { matchBlock } from "../sources.ts";
 import { joinDocumentPath } from "../path-utils.ts";
@@ -22,21 +36,15 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
-import {
-	styleProgramFromRules,
-	styleProgramFromSourceObject,
-	styleProgramToCanonicalCss,
-	inferSemanticConditionKind,
-	type StyleDeclaration,
-	type StyleProgram,
-	type StyleProgramOptions,
-	type StyleProgramResidual,
-	type StyleProgramSource,
-} from "./semantic-ir.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
-import { StyleNamedRuleStrategy, StyleRepresentationKind } from "./identifiers.ts";
+import {
+	CodemodCallPatternFormTag,
+	CodemodCallPatternKindTag,
+	StyleNamedRuleStrategy,
+	StyleRepresentationKind,
+} from "./identifiers.ts";
 import { FunctionStyleCallParser } from "./function-style-parser.ts";
 import {
 	projectDynamicClassMigration,
@@ -280,15 +288,15 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 		if (condition.raw.startsWith("_")) return `&:${condition.raw.slice(1)}`;
 		return condition.raw;
 	}
-	if (condition.kind === "pseudo")
+	if (condition.kind === SemanticConditionKindTag.Pseudo)
 		return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
-	if (condition.kind === "media")
+	if (condition.kind === SemanticConditionKindTag.Media)
 		return condition.value === undefined ? condition.name : `@media ${condition.value}`;
-	if (condition.kind === "container")
+	if (condition.kind === SemanticConditionKindTag.Container)
 		return condition.value === undefined ? condition.name : `@container ${condition.value}`;
-	if (condition.kind === "supports")
+	if (condition.kind === SemanticConditionKindTag.Supports)
 		return condition.value === undefined ? condition.name : `@supports ${condition.value}`;
-	if (condition.kind === "selector") {
+	if (condition.kind === SemanticConditionKindTag.Selector) {
 		if (condition.name.endsWith(" &")) return `&${condition.name.slice(0, -2)}`;
 		if (!condition.name.includes("&"))
 			return condition.name.startsWith(":") || condition.name.startsWith("[")
@@ -305,8 +313,8 @@ function objectNode(): ObjectNode {
 }
 
 function renderValue(value: StyleProgram["declarations"][number]["value"]): string {
-	if (value.kind === "dynamic") return value.expression;
-	if (value.kind === "token") return JSON.stringify(value.authored);
+	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
+	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
 	return JSON.stringify(value.value);
 }
 
@@ -360,13 +368,17 @@ function styleRuleNode(rule: StyleProgram["rules"][number]): ObjectNode {
 }
 
 function ruleObject(rule: StyleProgram["rules"][number]): string {
-	if (rule.kind === "style" || rule.kind === "font-face" || rule.kind === "property") {
+	if (
+		rule.kind === StyleRuleKindTag.Style ||
+		rule.kind === StyleRuleKindTag.FontFace ||
+		rule.kind === StyleRuleKindTag.Property
+	) {
 		return renderObjectNode(styleRuleNode(rule));
 	}
-	if (rule.kind === "global") {
+	if (rule.kind === StyleRuleKindTag.Global) {
 		return `{ ${JSON.stringify(rule.selector ?? "*")}: ${declarationsObject(rule.declarations)} }`;
 	}
-	if (rule.kind === "keyframes") {
+	if (rule.kind === StyleRuleKindTag.Keyframes) {
 		return `{ ${rule.children
 			.map(
 				(child) =>
@@ -376,7 +388,7 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 	}
 	const body = declarationsObject(rule.declarations);
 	const prefix =
-		rule.kind === "layer"
+		rule.kind === StyleRuleKindTag.Layer
 			? `@layer ${rule.layer ?? rule.name ?? ""}`
 			: `@supports ${rule.name ?? ""}`;
 	return `{ ${JSON.stringify(prefix)}: ${body} }`;
@@ -385,11 +397,11 @@ function ruleObject(rule: StyleProgram["rules"][number]): string {
 function programObject(program: StyleProgram): string {
 	if (program.rules.length === 1) {
 		const rule = program.rules[0]!;
-		if (rule.kind === "style" && rule.name !== undefined)
+		if (rule.kind === StyleRuleKindTag.Style && rule.name !== undefined)
 			return `{ ${JSON.stringify(rule.name)}: ${ruleObject({ ...rule, name: undefined })} }`;
 		return ruleObject(rule);
 	}
-	if (program.rules.every((rule) => rule.kind === "global")) {
+	if (program.rules.every((rule) => rule.kind === StyleRuleKindTag.Global)) {
 		const root = objectNode();
 		for (const rule of program.rules) {
 			root.entries.push([rule.selector ?? "*", declarationsObject(rule.declarations)]);
@@ -398,11 +410,11 @@ function programObject(program: StyleProgram): string {
 	}
 	const root = objectNode();
 	for (const rule of program.rules) {
-		if (rule.kind === "style" && rule.name === undefined) {
+		if (rule.kind === StyleRuleKindTag.Style && rule.name === undefined) {
 			for (const declaration of rule.declarations) {
 				addDeclaration(root, declaration, declaration.conditions.map(conditionKey));
 			}
-		} else if (rule.kind === "style" && rule.name !== undefined) {
+		} else if (rule.kind === StyleRuleKindTag.Style && rule.name !== undefined) {
 			root.entries.push([rule.name, ruleObject(rule)]);
 		} else {
 			root.entries.push([rule.selector ?? rule.name ?? rule.kind, ruleObject(rule)]);
@@ -627,7 +639,9 @@ function parseTemplateProgram(
 				const conditionKind = inferSemanticConditionKind(selector);
 				const conditionValue = selector.replace(/^@(media|container|supports)\s+/, "");
 				const atRuleCondition =
-					conditionKind === "media" || conditionKind === "container" || conditionKind === "supports"
+					conditionKind === SemanticConditionKindTag.Media ||
+					conditionKind === SemanticConditionKindTag.Container ||
+					conditionKind === SemanticConditionKindTag.Supports
 						? { kind: conditionKind, name: selector, value: conditionValue }
 						: undefined;
 				children.push({
@@ -707,8 +721,8 @@ function kebabProperty(property: string): string {
 
 /** Emit the static subset as authored CSS for template-based adapters. */
 const templateValue = (value: StyleProgram["declarations"][number]["value"]): string => {
-	if (value.kind === "dynamic") return `\${${value.expression}}`;
-	if (value.kind === "token") return value.authored;
+	if (value.kind === StyleValueKindTag.Dynamic) return `\${${value.expression}}`;
+	if (value.kind === StyleValueKindTag.Token) return value.authored;
 	return String(value.value);
 };
 
@@ -717,14 +731,14 @@ function templateCss(program: StyleProgram): string {
 		condition: StyleProgram["rules"][number]["conditions"][number],
 	): string => {
 		if (
-			condition.kind === "media" ||
-			condition.kind === "container" ||
-			condition.kind === "supports"
+			condition.kind === SemanticConditionKindTag.Media ||
+			condition.kind === SemanticConditionKindTag.Container ||
+			condition.kind === SemanticConditionKindTag.Supports
 		)
 			return (condition.value ?? condition.name).startsWith(`@${condition.kind}`)
 				? (condition.value ?? condition.name)
 				: `@${condition.kind} ${condition.value ?? condition.name}`;
-		if (condition.kind === "pseudo")
+		if (condition.kind === SemanticConditionKindTag.Pseudo)
 			return condition.name.startsWith(":") ? `&${condition.name}` : `&:${condition.name}`;
 		const value = condition.value ?? condition.raw ?? condition.name;
 		return value.includes("&") ? value : `&${value}`;
@@ -771,7 +785,7 @@ function templateCss(program: StyleProgram): string {
 			)
 			.join(" ");
 		const nested = rule.children.map(renderRule).join(" ");
-		if (rule.kind !== "style") return `${declarations}${nested}`;
+		if (rule.kind !== StyleRuleKindTag.Style) return `${declarations}${nested}`;
 		const base = `${declarations}${conditioned}${nested}`;
 		return base;
 	};
@@ -798,7 +812,7 @@ function parseCalls(
 		// modules; the adapter remains conservative through its balanced matcher.
 	}
 	const hostRanges = patterns.flatMap((pattern) => {
-		if (pattern.form !== "jsx-style") return [];
+		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
 		return [...source.matchAll(pattern.regex)].flatMap((match) => {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) return [];
@@ -832,7 +846,7 @@ function parseCalls(
 		for (const match of source.matchAll(pattern.regex)) {
 			const start = match.index ?? 0;
 			if (mask?.isExcluded(start)) continue;
-			if (pattern.form === "jsx-style") {
+			if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
 				const initialTag = JsxStyleHost.parse(
 					source,
 					start,
@@ -879,7 +893,7 @@ function parseCalls(
 				}
 				continue;
 			}
-			if (pattern.form === "residual") {
+			if (pattern.form === CodemodCallPatternFormTag.Residual) {
 				const residual = pattern.residual;
 				if (residual === undefined) continue;
 				const sourceMap: StyleProgramSource = {
@@ -906,7 +920,7 @@ function parseCalls(
 				});
 				continue;
 			}
-			if (pattern.form === "reference") {
+			if (pattern.form === CodemodCallPatternFormTag.Reference) {
 				const reference = match[1];
 				if (reference === undefined) continue;
 				const escaped = reference.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -949,7 +963,7 @@ function parseCalls(
 				});
 				continue;
 			}
-			if (pattern.form === "template") {
+			if (pattern.form === CodemodCallPatternFormTag.Template) {
 				const firstTick = source.indexOf("`", start);
 				const lastTick = findTemplateLiteralEnd(source, firstTick);
 				if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
@@ -976,7 +990,7 @@ function parseCalls(
 				}
 				const template = source.slice(start, lastTick + 1);
 				let program =
-					pattern.kind === "keyframes"
+					pattern.kind === CodemodCallPatternKindTag.Keyframes
 						? parseKeyframeTemplateProgram(
 								templateBody,
 								context,
@@ -988,7 +1002,9 @@ function parseCalls(
 					...program,
 					source: {
 						...program.source,
-						...(pattern.kind === "styled" ? styledSubject(source, start) : {}),
+						...(pattern.kind === CodemodCallPatternKindTag.Styled
+							? styledSubject(source, start)
+							: {}),
 						...(context.document?.framework ? { framework: context.document.framework } : {}),
 						...context.semantic?.source,
 					},
@@ -1013,7 +1029,7 @@ function parseCalls(
 			const fullEnd = suffixMatch?.index === 0 ? end + suffixMatch[0].length : end;
 			const fallbackName = `${pattern.name}Style${matches.length + 1}`;
 			let program: StyleProgram;
-			if (pattern.kind === "keyframes") {
+			if (pattern.kind === CodemodCallPatternKindTag.Keyframes) {
 				program = parseKeyframeProgram(
 					block.body,
 					context,
@@ -1021,7 +1037,7 @@ function parseCalls(
 					sourceName(source, start, fallbackName),
 					{ ...resolvedObjectOptions, ...patternObjectOptions },
 				);
-			} else if (pattern.kind === "global") {
+			} else if (pattern.kind === CodemodCallPatternKindTag.Global) {
 				const selector = source.slice(start, open).match(/\(\s*(["'])([^"']+)\1\s*,\s*$/)?.[2];
 				program = parseGlobalProgram(block.body, context, start, selector);
 			} else {
@@ -1046,7 +1062,7 @@ function parseCalls(
 					...patternObjectOptions,
 					...(pattern.objectKind === undefined ? {} : { nestedObjectKind: pattern.objectKind }),
 				});
-				if (pattern.kind === "font-face") {
+				if (pattern.kind === CodemodCallPatternKindTag.FontFace) {
 					program = styleProgramFromRules(
 						[
 							{
@@ -1180,7 +1196,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				};
 			}
 			const namedRules = program.rules.filter(
-				(rule) => rule.name !== undefined && rule.kind === "style",
+				(rule) => rule.name !== undefined && rule.kind === StyleRuleKindTag.Style,
 			);
 			const rendered: CodemodAdapterEmission =
 				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
@@ -1309,7 +1325,7 @@ export function consolidateImports(statements: Iterable<string>): string[] {
 
 export function validationSource(text: string, program: StyleProgram): string {
 	const rule = program.rules[0];
-	return rule?.kind === "keyframes" && rule.name !== undefined
+	return rule?.kind === StyleRuleKindTag.Keyframes && rule.name !== undefined
 		? `const ${rule.name} = ${text}`
 		: text;
 }

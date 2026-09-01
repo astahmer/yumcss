@@ -18,6 +18,7 @@ export type {
 	RuntimeRuleSerializer,
 	RuntimeStyleElementSink,
 } from "./runtime-sheet-contracts.ts";
+export { RuntimeSemanticRuleKindTag } from "./runtime-sheet-contracts.ts";
 import { VARS_ATOMS } from "./var-compiler.ts";
 import type { ClassNameStrategy } from "./class-name-strategy.ts";
 import { createDesignCss, type DesignPreset, type DesignStyleObject } from "../design/index.ts";

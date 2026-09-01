@@ -1,3 +1,4 @@
+import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
 	CodemodAdapterId,
@@ -27,11 +28,11 @@ const treat = makeExtraAdapter({
 			handled:
 				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
-				program.rules.every((rule) => rule.kind === "style"),
+				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 			standalone:
 				targetId === CodemodAdapterId.Pandwind &&
 				program.rules.length > 0 &&
-				program.rules.every((rule) => rule.kind === "style"),
+				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
 	},
 	sourceObjectOptions: { emissionHints: [StyleProgramEmissionHint.RuntimeClass] },

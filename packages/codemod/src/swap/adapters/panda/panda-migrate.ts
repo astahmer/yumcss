@@ -1,3 +1,4 @@
+import { SwapResidualKindTag } from "../../semantic-ir.ts";
 /**
  * Panda project migration orchestrator (plan 024 steps 3-6).
  *
@@ -32,6 +33,7 @@ import {
 import { BUILTIN_PATTERNS } from "./patterns.ts";
 import { aliasSpecifier, type ProjectUsage } from "./project.ts";
 import { parseObjectLiteral } from "../../parse.ts";
+import { PandaCallKindTag, PandaRecipeKindTag } from "./parse.ts";
 import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
@@ -357,7 +359,7 @@ function parseRecipeDefs(file: FileEntry): Array<RecipeDef> {
 		}
 		defs.push({
 			name: m[1]!,
-			kind: (m[3] !== undefined ? "sva" : "cva") as "cva" | "sva",
+			kind: (m[3] !== undefined ? PandaRecipeKindTag.Sva : PandaRecipeKindTag.Cva) as "cva" | "sva",
 			file,
 			start: m.index ?? 0,
 			end,
@@ -926,7 +928,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			report.notes.push(`definition '${def.name}' unused — removed`);
 			continue;
 		}
-		if (ir.kind === "cva" && sites.length === 1 && sites[0]!.argsLiteral) {
+		if (ir.kind === PandaRecipeKindTag.Cva && sites.length === 1 && sites[0]!.argsLiteral) {
 			const site = sites[0]!;
 			const folded = foldRecipeCall(ir, site.props ?? {}, meta);
 			if (folded !== null) {
@@ -1107,11 +1109,11 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 
 		// css({...}) -> css.class({...}) / marker
 		for (const call of parsePandaCalls(file.source, masked, { theme })) {
-			if (call.kind !== "css" || call.ir === undefined) continue;
+			if (call.kind !== PandaCallKindTag.Css || call.ir === undefined) continue;
 			const text = irToText(call.ir, meta);
 			for (const residual of call.ir.residuals) countResidual(report, residual.kind);
 			const hasUnrepresentable = call.ir.residuals.some(
-				(residual) => residual.kind === "unrepresentable",
+				(residual) => residual.kind === SwapResidualKindTag.Unrepresentable,
 			);
 			if (hasUnrepresentable) {
 				// Never emit a partial style object: dropping a nested selector or

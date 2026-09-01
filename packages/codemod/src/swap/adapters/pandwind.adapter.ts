@@ -1,4 +1,10 @@
 import {
+	SemanticConditionKindTag,
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+} from "../semantic-ir.ts";
+import {
 	CodemodAdapterKit,
 	defineCodemodAdapter,
 	type AdapterRenderers,
@@ -97,8 +103,8 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 };
 
 function runtimeValue(value: StyleProgram["declarations"][number]["value"]): string {
-	if (value.kind === "dynamic") return value.expression;
-	if (value.kind === "token") return JSON.stringify(value.authored);
+	if (value.kind === StyleValueKindTag.Dynamic) return value.expression;
+	if (value.kind === StyleValueKindTag.Token) return JSON.stringify(value.authored);
 	return JSON.stringify(value.value);
 }
 
@@ -282,7 +288,7 @@ function hasThemeContextValues(program: StyleProgram, source: string | undefined
 	return program.rules.some(
 		(rule) =>
 			rule.declarations.some((declaration) => {
-				if (declaration.value.kind !== "dynamic") return false;
+				if (declaration.value.kind !== StyleValueKindTag.Dynamic) return false;
 				const binding = declaration.value.expression.trim();
 				if (!/^[A-Za-z_$][\w$]*$/.test(binding)) return false;
 				const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -365,7 +371,7 @@ function lowerComposedBaseProgram(
 	if (context?.host?.binding === undefined || !isComposedBase(context.host.binding, context))
 		return program;
 	const rules = program.rules.map((rule) =>
-		rule.kind === "style" ? { ...rule, selector: ":where(&)" } : rule,
+		rule.kind === StyleRuleKindTag.Style ? { ...rule, selector: ":where(&)" } : rule,
 	);
 	return {
 		...program,
@@ -520,7 +526,7 @@ function mapRuntimeProps(program: StyleProgram, parameter = "props"): StyleProgr
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
 		value:
-			item.value.kind === "dynamic" && /=>|\bfunction\b/.test(item.value.expression)
+			item.value.kind === StyleValueKindTag.Dynamic && /=>|\bfunction\b/.test(item.value.expression)
 				? { ...item.value, expression: expressionWithProps(item.value.expression) }
 				: item.value,
 	});
@@ -547,7 +553,10 @@ function mapThemeRuntimeValues(
 			themeBindings.add(match[1]!);
 	}
 	const declaration = (item: StyleProgram["declarations"][number]) => {
-		if (item.value.kind !== "dynamic" || !themeBindings.has(item.value.expression.trim()))
+		if (
+			item.value.kind !== StyleValueKindTag.Dynamic ||
+			!themeBindings.has(item.value.expression.trim())
+		)
 			return item;
 		const binding = item.value.expression.trim();
 		return {
@@ -668,8 +677,9 @@ function staticComponent(
 	if (
 		program.rules.some(function containsDynamic(rule): boolean {
 			return (
-				rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-				rule.children.some(containsDynamic)
+				rule.declarations.some(
+					(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+				) || rule.children.some(containsDynamic)
 			);
 		})
 	)
@@ -774,7 +784,7 @@ function hybridComponent(
 		host?.binding === undefined ||
 		subject === undefined ||
 		framework === undefined ||
-		program.residuals.some((residual) => residual.kind === "parse") ||
+		program.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse) ||
 		(template !== undefined && hasComponentSelectorInterpolation(template)) ||
 		/\bLiveEditor\b/.test(subject)
 	)
@@ -790,17 +800,18 @@ function hybridComponent(
 	if (tag === undefined && base === undefined) return undefined;
 	const hasDynamic = program.rules.some(function containsDynamic(rule): boolean {
 		return (
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some(containsDynamic)
+			rule.declarations.some(
+				(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+			) || rule.children.some(containsDynamic)
 		);
 	});
 	if (!hasDynamic) return undefined;
 	const staticProgram = lowerComposedBaseProgram(
-		selectProgramDeclarations(program, (value) => value.kind !== "dynamic"),
+		selectProgramDeclarations(program, (value) => value.kind !== StyleValueKindTag.Dynamic),
 		context,
 	);
 	const dynamicProgram = lowerComposedBaseProgram(
-		selectProgramDeclarations(program, (value) => value.kind === "dynamic"),
+		selectProgramDeclarations(program, (value) => value.kind === StyleValueKindTag.Dynamic),
 		context,
 	);
 	const source = context?.document?.document.source;
@@ -863,7 +874,7 @@ function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | u
 }
 
 function runtimeGlobalRule(rule: StyleProgram["rules"][number], root: boolean): string {
-	const kind = root && rule.kind === "style" ? "global" : rule.kind;
+	const kind = root && rule.kind === StyleRuleKindTag.Style ? "global" : rule.kind;
 	return `{ kind: ${JSON.stringify(kind)}, selector: ${JSON.stringify(rule.selector)}, declarations: [${rule.declarations
 		.map(
 			(declaration) =>
@@ -1125,7 +1136,7 @@ function runtimeRawComponent(
 function runtimeFontFaces(program: StyleProgram): string {
 	const rules = StyleProgramAnalysis.rules(program);
 	return rules
-		.filter((rule) => rule.kind === "font-face")
+		.filter((rule) => rule.kind === StyleRuleKindTag.FontFace)
 		.map(
 			(rule) =>
 				`{ kind: "font-face", declarations: [${rule.declarations
@@ -1168,7 +1179,11 @@ function stitchesRecipeObject(
 	const variants = new Map<string, Map<string, typeof declarations>>();
 	for (const declaration of declarations) {
 		const [variant, value] = declaration.conditions;
-		if (variant?.kind !== "named" || value?.kind !== "named") continue;
+		if (
+			variant?.kind !== SemanticConditionKindTag.Named ||
+			value?.kind !== SemanticConditionKindTag.Named
+		)
+			continue;
 		const values = variants.get(variant.name) ?? new Map<string, typeof declarations>();
 		const list = values.get(value.name) ?? [];
 		values.set(value.name, [...list, { ...declaration, conditions: [] }]);
@@ -1227,7 +1242,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				return (
 					rule.declarations.some(
 						(declaration) =>
-							declaration.value.kind === "dynamic" &&
+							declaration.value.kind === StyleValueKindTag.Dynamic &&
 							/=>|^function\b/.test(declaration.value.expression.trim()),
 					) || rule.children.some(containsFunction)
 				);
@@ -1255,8 +1270,9 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					program.residuals.length === 0 &&
 					!program.rules.some(function containsDynamic(rule): boolean {
 						return (
-							rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-							rule.children.some(containsDynamic)
+							rule.declarations.some(
+								(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+							) || rule.children.some(containsDynamic)
 						);
 					})
 				) {
@@ -1280,7 +1296,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					],
 				});
 			}
-			if (program.rules.some((rule) => rule.kind === "global")) {
+			if (program.rules.some((rule) => rule.kind === StyleRuleKindTag.Global)) {
 				const template =
 					program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
 						? runtimeGlobalTemplate(program, context)
@@ -1363,7 +1379,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			const hasFontFaces = program.rules.some(function containsFontFace(
 				rule: StyleProgram["rules"][number],
 			): boolean {
-				return rule.kind === "font-face" || rule.children.some(containsFontFace);
+				return rule.kind === StyleRuleKindTag.FontFace || rule.children.some(containsFontFace);
 			});
 			if (hasFontFaces) {
 				const withoutFontFaces = (
@@ -1371,12 +1387,14 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 				): StyleProgram["rules"][number] => ({
 					...rule,
 					children: rule.children
-						.filter((child) => child.kind !== "font-face")
+						.filter((child) => child.kind !== StyleRuleKindTag.FontFace)
 						.map(withoutFontFaces),
 				});
 				const styleProgram = {
 					...program,
-					rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),
+					rules: program.rules
+						.filter((rule) => rule.kind !== StyleRuleKindTag.FontFace)
+						.map(withoutFontFaces),
 				};
 				return finalize({
 					text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), css.group(${renderProgramObject(styleProgram)}))`,
@@ -1387,7 +1405,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					],
 				});
 			}
-			if (kind === "keyframes")
+			if (kind === StyleRuleKindTag.Keyframes)
 				return finalize({
 					text: runtimeKeyframes(outputProgram, context),
 					imports: [
@@ -1399,23 +1417,26 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			const named =
 				program.rules.some((rule) => rule.name !== undefined) ||
 				program.declarations.some((declaration) =>
-					declaration.conditions.some((condition) => condition.kind === "named"),
+					declaration.conditions.some(
+						(condition) => condition.kind === SemanticConditionKindTag.Named,
+					),
 				);
 			const dynamic = program.rules.some(function containsDynamic(rule): boolean {
 				return (
-					rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-					rule.children.some(containsDynamic)
+					rule.declarations.some(
+						(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+					) || rule.children.some(containsDynamic)
 				);
 			});
 			const runtimeStandalone =
 				dynamic &&
-				(kind === "style" || kind === undefined) &&
+				(kind === StyleRuleKindTag.Style || kind === undefined) &&
 				program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeClass) === true;
 			const functionDynamic = program.rules.some(function containsFunction(rule): boolean {
 				return (
 					rule.declarations.some(
 						(declaration) =>
-							declaration.value.kind === "dynamic" &&
+							declaration.value.kind === StyleValueKindTag.Dynamic &&
 							/=>|^function\b/.test(declaration.value.expression.trim()),
 					) || rule.children.some(containsFunction)
 				);

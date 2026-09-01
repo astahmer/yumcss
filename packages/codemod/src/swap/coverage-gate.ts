@@ -7,6 +7,12 @@ export const ADAPTER_COVERAGE_SCHEMA = "pandwind.adapter-coverage/2" as const;
 
 export type AdapterCoverageEvidenceKind = "contract" | "real-repository" | "browser";
 
+export const enum AdapterCoverageEvidenceKindTag {
+	Contract = "contract",
+	RealRepository = "real-repository",
+	Browser = "browser",
+}
+
 export interface AdapterCoverageEvidence {
 	readonly adapter: string;
 	readonly fixture: string;
@@ -105,10 +111,15 @@ export function createAdapterCoverageGate(): AdapterCoverageGate {
 				return {
 					adapter: adapter.id,
 					fixtures: adapterEvidence.length,
-					contractFixtures: adapterEvidence.filter((item) => item.kind === "contract").length,
-					realRepositoryFixtures: adapterEvidence.filter((item) => item.kind === "real-repository")
-						.length,
-					browserFixtures: adapterEvidence.filter((item) => item.kind === "browser").length,
+					contractFixtures: adapterEvidence.filter(
+						(item) => item.kind === AdapterCoverageEvidenceKindTag.Contract,
+					).length,
+					realRepositoryFixtures: adapterEvidence.filter(
+						(item) => item.kind === AdapterCoverageEvidenceKindTag.RealRepository,
+					).length,
+					browserFixtures: adapterEvidence.filter(
+						(item) => item.kind === AdapterCoverageEvidenceKindTag.Browser,
+					).length,
 					capabilities,
 					proof: passedProofDimensions(adapterEvidence),
 				};

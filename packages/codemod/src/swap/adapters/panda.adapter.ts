@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -51,7 +52,7 @@ function pandaSourceValue(
 	property: string,
 	context: import("../adapter-contract.ts").AdapterParseContext,
 ): StyleValue {
-	if (value.kind !== "literal" || typeof value.value !== "string") return value;
+	if (value.kind !== StyleValueKindTag.Literal || typeof value.value !== "string") return value;
 	const group = pandaTokenGroup(property);
 	const theme = context.config.values.pandaTheme as PandaTheme | undefined;
 	const token =

@@ -28,7 +28,13 @@ import { createCssSourceService } from "./css-source-service.ts";
 import { createPandwindEngineContext, type PandwindEngineContext } from "./engine-context.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssPreset } from "./css-extract.ts";
-import { extractTwConfig, inlineTwCalls, type OnUnresolved, type TwConfig } from "./inline.ts";
+import {
+	extractTwConfig,
+	inlineTwCalls,
+	OnUnresolvedTag,
+	type OnUnresolved,
+	type TwConfig,
+} from "./inline.ts";
 import type { UnresolvedToken } from "./unresolved.ts";
 
 export interface PandwindViteOptions {
@@ -184,7 +190,7 @@ const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnr
 		`pandwind: ${unresolved.length} folded class token(s) outside the design system:\n${sites}\n` +
 		"Arbitrary [...] values bypass the token vocabulary; unknown tokens render unstyled. " +
 		'Set onUnresolved: "off" to silence.';
-	if (mode === "error") throw new Error(message);
+	if (mode === OnUnresolvedTag.Error) throw new Error(message);
 	console.warn(message);
 };
 
@@ -228,7 +234,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 	};
 
 	const crossModuleResolver = createCrossModuleConstResolver();
-	const unresolvedMode: OnUnresolved = options.onUnresolved ?? "off";
+	const unresolvedMode: OnUnresolved = options.onUnresolved ?? OnUnresolvedTag.Off;
 	const unresolvedOptions = { onUnresolved: unresolvedMode };
 
 	return {
@@ -303,7 +309,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			return inlined === 0
 				? null
 				: (() => {
-						if (unresolvedMode !== "off") {
+						if (unresolvedMode !== OnUnresolvedTag.Off) {
 							reportUnresolved(id, [...(result.unresolved ?? []), ...cxUnresolved], unresolvedMode);
 						}
 						return { code: working, map: null } as const;

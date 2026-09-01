@@ -24,6 +24,13 @@ export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
 
 export type AdapterDependencyKind = "runtime" | "development" | "peer" | "config";
 
+export const enum AdapterDependencyKindTag {
+	Runtime = "runtime",
+	Development = "development",
+	Peer = "peer",
+	Config = "config",
+}
+
 export interface AdapterDependency {
 	readonly name: string;
 	readonly range?: string;
@@ -361,6 +368,12 @@ export interface AdapterTargetMigrationPolicy {
 }
 
 export type AdapterLossiness = "lossless" | "lossy" | "unsupported";
+
+export const enum AdapterLossinessTag {
+	Lossless = "lossless",
+	Lossy = "lossy",
+	Unsupported = "unsupported",
+}
 
 export interface AdapterValidationResult {
 	readonly valid: boolean;

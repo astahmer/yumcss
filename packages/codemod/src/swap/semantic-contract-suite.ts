@@ -28,6 +28,10 @@ export interface SemanticContractFixture {
 	readonly file?: string;
 }
 
+export const enum SemanticContractOutcomeTag {
+	Validated = "validated",
+	ExplicitResidual = "explicit-residual",
+}
 export type SemanticContractOutcome = "validated" | "explicit-residual";
 
 export interface SemanticContractCase {
@@ -220,8 +224,11 @@ export function createSemanticContractSuite(
 				schema: SEMANTIC_CONTRACT_SUITE_SCHEMA,
 				cases,
 				failures,
-				validated: cases.filter((item) => item.outcome === "validated").length,
-				explicitResiduals: cases.filter((item) => item.outcome === "explicit-residual").length,
+				validated: cases.filter((item) => item.outcome === SemanticContractOutcomeTag.Validated)
+					.length,
+				explicitResiduals: cases.filter(
+					(item) => item.outcome === SemanticContractOutcomeTag.ExplicitResidual,
+				).length,
 				failed: failures.length,
 			};
 		},

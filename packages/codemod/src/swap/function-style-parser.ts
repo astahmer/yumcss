@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "./semantic-ir.ts";
 import type { AdapterParseContext, AdapterParseResult } from "./adapter-contract.ts";
 import {
 	styleProgramFromSourceObject,
@@ -60,7 +61,7 @@ function markFunctionValues(program: StyleProgram, parameter: string): StyleProg
 	const declaration = (item: StyleProgram["declarations"][number]) => ({
 		...item,
 		value:
-			item.value.kind === "dynamic"
+			item.value.kind === StyleValueKindTag.Dynamic
 				? { ...item.value, expression: `(${parameter}) => ${item.value.expression}` }
 				: item.value,
 	});

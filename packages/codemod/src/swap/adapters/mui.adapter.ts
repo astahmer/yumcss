@@ -1,3 +1,4 @@
+import { StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
@@ -54,7 +55,7 @@ const propertyAliases = {
 } as const;
 
 function defaultSpacing(property: string, value: StyleValue): StyleValue {
-	if (value.kind !== "literal") return value;
+	if (value.kind !== StyleValueKindTag.Literal) return value;
 	if (spacing.has(property) && typeof value.value === "number")
 		return { kind: "literal", value: `${value.value * 8}px` };
 	if (property === "borderRadius" && typeof value.value === "number")
@@ -75,7 +76,7 @@ function muiTransforms(
 		[...spacing, "bgcolor", "backgroundColor", "color", "borderRadius"].map((property) => [
 			property,
 			(value: StyleValue) => {
-				if (value.kind === "literal" && typeof value.value === "string") {
+				if (value.kind === StyleValueKindTag.Literal && typeof value.value === "string") {
 					const [group, key] = value.value.split(".");
 					if (group !== undefined && key !== undefined) {
 						const escapedGroup = group.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -184,7 +185,7 @@ function isStaticProgram(program: StyleProgram): boolean {
 	return (
 		program.residuals.length === 0 &&
 		StyleProgramAnalysis.declarations(program).every(
-			(declaration) => declaration.value.kind !== "dynamic",
+			(declaration) => declaration.value.kind !== StyleValueKindTag.Dynamic,
 		)
 	);
 }
