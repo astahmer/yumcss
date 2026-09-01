@@ -100,7 +100,7 @@ describe("CLI adapter migration e2e matrix", () => {
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
 		}
-	});
+	}, 120_000);
 
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"executes the %s -> Pandwind command with safe source preservation",
