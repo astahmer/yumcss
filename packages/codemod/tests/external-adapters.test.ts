@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
 	ADAPTER_CONTRACT_SCHEMA,
+	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	createChakraAdapter,
 	getCodemodAdapter,
@@ -1009,6 +1010,73 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).toContain("StyleSheet.create");
 		expect(result.code).toContain("<View style={card} />");
 		expect(result.code).not.toContain('from "pandwind/css"');
+	});
+
+	test.each([
+		[CodemodAdapterId.ChakraUi, "@chakra-ui/react", "<View"],
+		[CodemodAdapterId.Mui, "@mui/material", "<View"],
+		[CodemodAdapterId.Mantine, "@mantine/core", "<View"],
+		[CodemodAdapterId.Tailwind, "tailwindcss", "<View"],
+		[CodemodAdapterId.UnoCSS, "className", "<View"],
+	] as const)("projects static %s React hosts to React Native", (sourceAdapter, removed, host) => {
+		const fixture = {
+			[CodemodAdapterId.ChakraUi]: 'import { Box } from "@chakra-ui/react"; <Box bg="tomato" />',
+			[CodemodAdapterId.Mui]: 'import { Box } from "@mui/material"; <Box sx={{ color: "red" }} />',
+			[CodemodAdapterId.Mantine]: 'import { Box } from "@mantine/core"; <Box c="red" />',
+			[CodemodAdapterId.Tailwind]: 'import "tailwindcss"; <div className="flex p-4" />',
+			[CodemodAdapterId.UnoCSS]: '<div className="flex items-center" />',
+		}[sourceAdapter];
+		const result = runAdapterMigration(fixture, {
+			from: sourceAdapter,
+			to: CodemodAdapterId.ReactNative,
+			file: "App.tsx",
+			mode: "safe",
+		});
+		expect(result.converted, `${sourceAdapter} was not converted`).toBe(1);
+		expect(result.skipped, `${sourceAdapter} was skipped`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(host);
+		expect(result.code).toContain("StyleSheet.create");
+		expect(result.code).not.toContain(removed);
+		expect(result.code).toContain("style={StyleSheet.create");
+		if (sourceAdapter === CodemodAdapterId.Tailwind) {
+			expect(result.code).toContain('"padding": 16');
+			expect(result.code).not.toContain("1rem");
+		}
+	});
+
+	test("keeps unsupported React host shapes source-preserving for React Native", () => {
+		const result = runAdapterMigration(
+			'import { css } from "pandwind/css";\n' +
+				'const card = css.class({ color: "red" });\n' +
+				"export const App = () => <button className={card} />;",
+			{ from: CodemodAdapterId.Pandwind, to: CodemodAdapterId.ReactNative, file: "App.tsx" },
+		);
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toContain("className={card}");
+		expect(result.code).toContain('from "pandwind/css"');
+	});
+
+	test("does not overwrite an existing React style prop during React Native conversion", () => {
+		const source =
+			'import { css } from "pandwind/css";\n' +
+			'const card = css.class({ color: "red" });\n' +
+			"export const App = () => <div className={card} style={{ opacity: 1 }} />;";
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.Pandwind,
+			to: CodemodAdapterId.ReactNative,
+			file: "App.tsx",
+		});
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "host-framework" })]),
+		);
+		expect(result.code).toContain("className={card}");
+		expect(result.code).toContain("style={{ opacity: 1 }}");
+		expect(result.code).not.toContain("StyleSheet.create");
 	});
 
 	test("imports a React Native style map into Pandwind without losing the style lookup", () => {

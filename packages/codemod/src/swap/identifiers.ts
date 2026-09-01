@@ -121,6 +121,7 @@ export enum StyleLoweringId {
 	CompositionFlatten = "composition-flatten",
 	RuntimeAndPlugin = "runtime-and-plugin",
 	StyleXNumericNormalization = "stylex-numeric-normalization",
+	ReactNativeNumericNormalization = "react-native-numeric-normalization",
 	Builtin = "pandwind-core-lowerings",
 }
 

@@ -17,6 +17,7 @@ import type {
 import type { SourceScanResult } from "pandwind/source";
 import type { StyleLowering } from "./lowering.ts";
 import type { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
+import type { HostFramework } from "./host-adapters.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
 export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
@@ -142,6 +143,8 @@ export interface AdapterHostRewriteContext {
 	readonly code: string;
 	readonly file: string;
 	readonly targetId: string;
+	/** Source adapter-owned runtime modules that may become removable after host conversion. */
+	readonly sourceModules: readonly string[];
 	readonly program: StyleProgram;
 	readonly emittedExpression: string;
 	readonly binding?: string;
@@ -153,9 +156,18 @@ export interface AdapterHostRewriteContext {
 	readonly residuals?: readonly StyleProgramResidual[];
 }
 
+export interface AdapterHostFrameworkConversion {
+	/** Source host dialect that this target can translate. */
+	readonly from: HostFramework;
+	/** Target host dialect produced by the rewrite. */
+	readonly to: HostFramework;
+}
+
 export interface AdapterHostRewriteResult {
 	readonly code: string;
 	readonly imports?: readonly string[];
+	/** Modules made unreachable by a target-owned host conversion. */
+	readonly removeSourceModules?: readonly string[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
@@ -254,6 +266,10 @@ export interface AdapterTargetMigrationPolicy {
 	readonly handlesFrameworkSemantics?: boolean;
 	/** Frameworks whose component syntax the target adapter can preserve natively. */
 	readonly hostFrameworks?: readonly string[];
+	/** Explicit source-to-target host dialect rewrites owned by this target. */
+	readonly hostFrameworkConversions?: readonly AdapterHostFrameworkConversion[];
+	/** Whether rewriteHost consumes source host style attributes in addition to the carrier. */
+	readonly handlesSourceHostAttributes?: boolean;
 	/** Target-owned rewrite for representations attached to a host prop. */
 	readonly rewriteHost?: (context: AdapterHostRewriteContext) => AdapterHostRewriteResult;
 	/** Target-owned rewrite for styled subjects that become intrinsic hosts. */

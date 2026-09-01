@@ -471,6 +471,7 @@ function runAdapterMigrationInternal(
 	const validations: AdapterValidationResult[] = [];
 	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
+	const sourceModulesToRemove = new Set<string>();
 	const loweringPlans: StyleLoweringPlan[] = [];
 	const outcomes: AdapterMigrationOutcome[] = [];
 	const convertedBindings = new Set<string>();
@@ -488,6 +489,7 @@ function runAdapterMigrationInternal(
 	const targetHostRewrites: Array<{
 		readonly program: StyleProgram;
 		readonly emittedExpression: string;
+		readonly sourceModules: readonly string[];
 		readonly binding?: string;
 		readonly framework?: string;
 		readonly representation: StyleHostRepresentationKind;
@@ -1104,11 +1106,13 @@ function runAdapterMigrationInternal(
 			!targetHostProjection &&
 			emittedHostRepresentation !== undefined &&
 			program.source?.subject === undefined &&
-			program.source?.hostOpenTag === undefined
+			(program.source?.hostOpenTag === undefined ||
+				targetAdapter.migration.targetPolicy.handlesSourceHostAttributes === true)
 		) {
 			targetHostRewrites.push({
 				program,
 				emittedExpression: emitted.text,
+				sourceModules: sourceAdapter.sourceModules,
 				representation: emittedHostRepresentation,
 				representationKind: targetRepresentationKind,
 				residuals: carrierResiduals,
@@ -1259,6 +1263,7 @@ function runAdapterMigrationInternal(
 		if (rewrite === undefined) continue;
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
+		for (const module of rewrite.removeSourceModules ?? []) sourceModulesToRemove.add(module);
 		residuals.push(...rewrite.residuals);
 	}
 	for (const request of targetComponentRewrites) {
@@ -1359,7 +1364,10 @@ function runAdapterMigrationInternal(
 	// source runtime. Removing them would turn a safe residual into broken code.
 	let code =
 		skipped === 0 && residuals.length === 0
-			? removeSourceImports(runtimeEdited, sourceAdapter.sourceModules)
+			? removeSourceImports(runtimeEdited, [
+					...sourceAdapter.sourceModules,
+					...sourceModulesToRemove,
+				])
 			: runtimeEdited;
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		imports.delete('import { createCss } from "pandwind/css";');

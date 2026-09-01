@@ -55,6 +55,17 @@ host adapter to bind the original expression. The opt-in is adapter-owned and
 requires a substitution test; it is not a blanket permission for the runner to
 reinterpret function-valued styles or overwrite an existing style prop.
 
+Cross-framework and cross-backend migration uses an explicit host-conversion
+port. A target declares native host frameworks separately from
+`hostFrameworkConversions`; the latter describes a source host dialect that it
+can rewrite into the target dialect. React Native currently owns the narrow
+static React layout-host conversion: known `div`/`Box` hosts lose their source
+style attributes, become `View` hosts, and receive the emitted
+`StyleSheet.create` style prop. Unknown tags, existing style props, dynamic
+declarations, and other DOM behavior remain typed `host-framework` residuals.
+This keeps host portability target-owned and prevents the semantic runner from
+pretending that a CSS declaration alone proves runtime or platform parity.
+
 Framework metadata is only a capability requirement when the program carries
 host or component semantics. Standalone style carriers retain framework
 provenance in the IR but do not need a framework-specific target rewrite. Each

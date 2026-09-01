@@ -23,6 +23,7 @@ import {
 	type StyleProgramResidual,
 	type StyleProgramOptions,
 } from "../semantic-ir.ts";
+import type { StyleLowering } from "../lowering.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
@@ -50,6 +51,8 @@ export interface ExtraAdapterOptions {
 		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
 	>;
 	readonly migration?: AdapterMigrationHooks;
+	/** Adapter-owned semantic strategies composed by the route lowering registry. */
+	readonly lowerings?: readonly StyleLowering[];
 	/** Target-side host port for adapters whose style call returns a class string. */
 	readonly targetPolicy?: AdapterTargetMigrationPolicy;
 	/** Adapter-owned exceptions to the conservative generic capability baseline. */
@@ -304,6 +307,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			},
 		),
 		dependencies: options.packages,
+		...(options.lowerings === undefined ? {} : { lowerings: options.lowerings }),
 		migration: projectDynamicClassMigration(
 			options.id,
 			projectStaticSubjectMigration(

@@ -173,6 +173,15 @@ static class binding in a file importing `react-native`, the target emits
 specific React Native detection takes precedence over generic JSX metadata;
 ordinary React files therefore cannot receive the native rewrite accidentally.
 
+React Native also owns an explicit host-dialect conversion for the simple
+static React layout-host case. Chakra/MUI/Mantine `Box` hosts and intrinsic
+layout hosts such as `div` can become native `View` hosts, with source style
+attributes removed and the generated `StyleSheet` carrier attached as `style`.
+The target preflights the host before emission, removes an unused source host
+import when it owns that conversion, and leaves unknown tags, existing style
+props, dynamic declarations, and other DOM behavior as source-preserving
+`host-framework` residuals.
+
 Standalone static styled subjects now use Pandwind's component representation
 when no local host use is present. React-family and Solid output keeps the
 static `css.class(...)` carrier inside a JSX wrapper, while Vue emits a
@@ -298,7 +307,9 @@ The remaining skips are therefore not evidence that the HIR is missing. They
 identify target projections or host facts that still need an implementation:
 for example, a dynamic value without a host binding, MUI's `sx` object prop
 on an unsupported framework, or a custom component whose prop-forwarding
-contract is unknown. The next implementation must add those projections
+contract is unknown. The current representative static fixture audit now has
+only two framework-boundary skips: styled-components → Solid-styled and
+styled-components → Vue-styled. The next implementation must add those projections
 behind target-owned ports and prove them, rather than weakening the
 capability gate.
 
