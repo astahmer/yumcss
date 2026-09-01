@@ -89,6 +89,11 @@ the interpolation delimiters, and the target parser's matching residual is
 excluded from validation only because the target explicitly owns that runtime
 representation.
 
+Mantine uses its host `style` prop for dynamic JSX style programs. Standalone
+programs use the portable Pandwind artifact because Mantine does not expose a
+general standalone style factory; the adapter no longer emits a fabricated
+standalone API for that case.
+
 Cross-framework and cross-backend migration uses an explicit host-conversion
 port. A target declares native host frameworks separately from
 `hostFrameworkConversions`; the latter describes a source host dialect that it
