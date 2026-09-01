@@ -165,6 +165,16 @@ export {
 	createSemanticContractSuite,
 } from "./semantic-contract-suite.ts";
 export { StyleProgramBuilder } from "./style-program-builder.ts";
+export {
+	STYLE_PROGRAM_ARTIFACT_SCHEMA,
+	STYLE_PROGRAM_CORE_VERSION,
+	StyleProgramCore,
+} from "./style-program-core.ts";
+export type {
+	StyleProgramArtifact,
+	StyleProgramIssue,
+	StyleProgramValidation,
+} from "./style-program-core.ts";
 export type {
 	StyleProgramChildInput,
 	StyleProgramBuilderOptions,

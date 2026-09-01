@@ -52,6 +52,7 @@ import {
 	StyleRepresentationKind,
 } from "./identifiers.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
+import { StyleProgramCore } from "./style-program-core.ts";
 
 function tagForStandalone(source: string, start: number): string | undefined {
 	const subject = source
@@ -454,7 +455,7 @@ function runAdapterMigrationInternal(
 		source,
 		root: options.root,
 	});
-	const parsed = sourceAdapter.parse(source, {
+	const parsedResult = sourceAdapter.parse(source, {
 		file: options.file,
 		source,
 		root: options.root,
@@ -464,6 +465,16 @@ function runAdapterMigrationInternal(
 		document,
 		semantic: options.semantic,
 	});
+	// Every frontend crosses the same compiler-core boundary before lowering.
+	// This keeps target adapters independent from source-specific object shape
+	// and makes the versioned StyleProgram contract observable at the pivot.
+	const parsed = {
+		...parsedResult,
+		matches: parsedResult.matches.map((match) => ({
+			...match,
+			program: StyleProgramCore.normalize(match.program),
+		})),
+	};
 	const mode = options.mode ?? "safe";
 	const loweringRegistry = loweringRegistryForRoute(
 		options.loweringRegistry ?? STYLE_LOWERING_REGISTRY,

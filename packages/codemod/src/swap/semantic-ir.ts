@@ -511,10 +511,14 @@ export function orderStyleRules(rules: readonly StyleRule[]): StyleRule[] {
 		.toSorted(
 			(a, b) =>
 				a.order - b.order ||
-				a.kind.localeCompare(b.kind) ||
-				(a.name ?? "").localeCompare(b.name ?? ""),
+				compareCodeUnits(a.kind, b.kind) ||
+				compareCodeUnits(a.name ?? "", b.name ?? ""),
 		)
 		.map((rule) => ({ ...rule, children: orderStyleRules(rule.children) }));
+}
+
+function compareCodeUnits(left: string, right: string): number {
+	return left < right ? -1 : left > right ? 1 : 0;
 }
 
 function cssCondition(condition: StyleCondition): string {

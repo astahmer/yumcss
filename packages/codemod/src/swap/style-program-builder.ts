@@ -15,6 +15,7 @@ import {
 	type StyleTokenValue,
 	type StyleValue,
 } from "./semantic-ir.ts";
+import { StyleProgramCore } from "./style-program-core.ts";
 
 export type StyleProgramValueInput = StyleValue | string | number | boolean;
 
@@ -280,10 +281,12 @@ export class StyleProgramBuilder {
 	}
 
 	build(): StyleProgram {
-		return styleProgramFromRules(this.rules, {
-			...this.options,
-			residuals: this.residuals,
-		});
+		return StyleProgramCore.normalize(
+			styleProgramFromRules(this.rules, {
+				...this.options,
+				residuals: this.residuals,
+			}),
+		);
 	}
 }
 
