@@ -187,6 +187,14 @@ host evaluation.
 | Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                   |
 | Tokenami  | `@tokenami/config`                | normalized project config and aliases                                |
 
+Pandwind is the target-side exception: its async adapter loader discovers the
+project's generated `pandwind.interop.json` and `bridge.ts`, then imports the
+same project preset that codegen uses. This lets a migration reuse the actual
+target token catalog without a second hand-maintained token map. If the
+artifact is present but cannot be loaded, the adapter reports a configuration
+residual; if no artifact exists, it falls back to literal output rather than
+emitting references that the target cannot resolve.
+
 These packages are optional integration dependencies, not Pandwind runtime
 dependencies. If they are absent, the adapter uses its documented deterministic
 fallback. If an official loader is present but fails, the adapter records a
@@ -692,9 +700,11 @@ This is deliberately conservative. Without a target preset or generated
 interop metadata, the adapter keeps the literal; with ambiguous or conflicting
 token matches, it also keeps the literal. Migration tooling must not guess a
 token from a familiar value, because the same literal can have different
-design-system roles or different runtime behavior. External adapter CLI runs
-load this context only when the user supplies `--meta=<dir>`; they never borrow
-the repository's example preset implicitly. The focused regressions in
+design-system roles or different runtime behavior. Async external adapter runs
+discover target-side generated interop metadata from the migrated project;
+`--meta=<dir>` remains the explicit override for CLI callers and projects
+whose generated files live outside the normal source-tree search. The focused
+regressions in
 `packages/codemod/tests/token-preservation.test.ts` and
 `packages/codemod/tests/official-token-catalog.test.ts` prove verified
 emission, official custom-config loading, ambiguity rejection, and literal

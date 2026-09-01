@@ -4,15 +4,16 @@ import type {
 	AdapterProjectConfig,
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
+import type { StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import { TokenCatalog } from "../tokens.ts";
-import { NODE_PROJECT_MODULE_LOADER } from "../project-module-loader.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { loadPandaTheme } from "./panda/index.ts";
+import { loadPandaTheme, type PandaTheme } from "./panda/index.ts";
 
 /**
  * Panda's generated `styled-system/css` object dialect is a normal pivot
@@ -45,6 +46,27 @@ const PANDA_TOKEN_POLICY: AdapterTokenPolicy = {
 		) ?? program,
 };
 
+function pandaSourceValue(
+	value: StyleValue,
+	property: string,
+	context: import("../adapter-contract.ts").AdapterParseContext,
+): StyleValue {
+	if (value.kind !== "literal" || typeof value.value !== "string") return value;
+	const group = pandaTokenGroup(property);
+	const theme = context.config.values.pandaTheme as PandaTheme | undefined;
+	const token =
+		group === undefined
+			? undefined
+			: TokenCatalog.fromContract(theme?.tokenCatalog)?.findByReference([group], value.value);
+	if (token === undefined) return value;
+	return {
+		kind: "token",
+		ref: token.ref,
+		authored: value.value,
+		resolved: token.resolved,
+	};
+}
+
 function pandaConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	return {
 		adapter: CodemodAdapterId.Panda,
@@ -54,14 +76,27 @@ function pandaConfig(context: AdapterConfigContext): AdapterProjectConfig {
 	};
 }
 
-async function officialPandaConfig(context: AdapterConfigContext): Promise<AdapterProjectConfig> {
+export interface PandaAdapterOptions {
+	readonly moduleLoader?: ProjectModuleLoader | null;
+}
+
+function createPandaConfigLoader(options: PandaAdapterOptions): ProjectModuleLoader | undefined {
+	return options.moduleLoader === null
+		? undefined
+		: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+}
+
+async function officialPandaConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<AdapterProjectConfig> {
 	const fallback = pandaConfig(context);
 	if (context.root === undefined || context.readFile === undefined) return fallback;
 	for (const candidate of ["panda.config.ts", "panda.config.js", "panda.config.mjs"]) {
 		const path = joinDocumentPath(context.root, candidate);
 		if (context.readFile(path) === undefined) continue;
 		try {
-			const theme = await loadPandaTheme(path, NODE_PROJECT_MODULE_LOADER);
+			const theme = await loadPandaTheme(path, loader);
 			return {
 				...fallback,
 				files: [...fallback.files, path],
@@ -87,94 +122,107 @@ async function officialPandaConfig(context: AdapterConfigContext): Promise<Adapt
 	return fallback;
 }
 
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.Panda,
-	patterns: [
-		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
-		{
-			name: "cva",
-			regex: /\bcva\s*\(\s*\{/g,
-			form: "residual",
-			residual: {
-				kind: "composition",
-				hint: "Panda cva recipes require variant-aware target lowering",
+export function createPandaAdapter(options: PandaAdapterOptions = {}) {
+	const moduleLoader = createPandaConfigLoader(options);
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.Panda,
+		patterns: [
+			{ name: "css", regex: /\bcss\s*\(\s*\{/g },
+			{
+				name: "cva",
+				regex: /\bcva\s*\(\s*\{/g,
+				form: "residual",
+				residual: {
+					kind: "composition",
+					hint: "Panda cva recipes require variant-aware target lowering",
+				},
+			},
+			{
+				name: "sva",
+				regex: /\bsva\s*\(\s*\{/g,
+				form: "residual",
+				residual: {
+					kind: "composition",
+					hint: "Panda sva slot recipes require slot-aware target lowering",
+				},
+			},
+			{
+				name: "generated-styled",
+				regex: /\bstyled\.[A-Za-z_$][\w$]*\s*\(/g,
+				form: "residual",
+				residual: {
+					kind: "component",
+					hint: "Panda generated styled components require host/component lowering",
+				},
+			},
+		],
+		packages: {
+			packages: [dependency("@pandacss/dev", "development").packages[0]!],
+			files: ["panda.config.ts", "panda.config.js", "styled-system"],
+		},
+		capabilities: allRuleCapabilities(CodemodAdapterId.Panda, "partial", {
+			// This endpoint is the generated Panda object dialect. It can express
+			// declarations and nested conditions, but it is not a general stylesheet
+			// rule API. Keep unsupported rule kinds explicit so the IR residual remains
+			// actionable instead of claiming a false exact conversion.
+			"rule-level": "partial",
+			"custom-properties": "exact",
+			"global-rules": "unsupported",
+			keyframes: "unsupported",
+			"font-face": "unsupported",
+			layers: "unsupported",
+			"supports-rules": "unsupported",
+			"property-rules": "unsupported",
+			selectors: "partial",
+			nesting: "partial",
+			ordering: "unsupported",
+			"theme-context": "partial",
+			"runtime-context": "unsupported",
+			composition: "partial",
+			recipes: "partial",
+			"plugin-transforms": "partial",
+			"framework-semantics": "exact",
+			components: "partial",
+		}),
+		detectPatterns: [
+			/from\s+["'](?:@pandacss\/dev|styled-system\/(?:css|jsx|recipes))["']/,
+			/\b(?:cva|sva|css)\s*\(\s*\{/,
+		],
+		sourceModules: [
+			"@pandacss/dev",
+			"styled-system/css",
+			"styled-system/jsx",
+			"styled-system/recipes",
+		],
+		configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],
+		loadConfig: pandaConfig,
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						officialPandaConfig(context, moduleLoader),
+				}),
+		migration: {
+			targetPolicy: {
+				handlesHostRewrites: true,
+				handlesFrameworkSemantics: true,
+				hostRepresentation: StyleHostRepresentationKind.Class,
+				dynamicClassCarrier: true,
 			},
 		},
-		{
-			name: "sva",
-			regex: /\bsva\s*\(\s*\{/g,
-			form: "residual",
-			residual: {
-				kind: "composition",
-				hint: "Panda sva slot recipes require slot-aware target lowering",
+		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+		tokenPolicy: PANDA_TOKEN_POLICY,
+		sourceObjectOptions: (_source, context) => ({
+			valueTransforms: {
+				"*": (value, property) => pandaSourceValue(value, property ?? "", context),
 			},
+		}),
+		emit(program, renderers) {
+			return {
+				text: `css(${renderers.programObject(program)})`,
+				imports: ['import { css } from "styled-system/css";'],
+				semantic: program,
+			};
 		},
-		{
-			name: "generated-styled",
-			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*\(/g,
-			form: "residual",
-			residual: {
-				kind: "component",
-				hint: "Panda generated styled components require host/component lowering",
-			},
-		},
-	],
-	packages: {
-		packages: [dependency("@pandacss/dev", "development").packages[0]!],
-		files: ["panda.config.ts", "panda.config.js", "styled-system"],
-	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Panda, "partial", {
-		// This endpoint is the generated Panda object dialect. It can express
-		// declarations and nested conditions, but it is not a general stylesheet
-		// rule API. Keep unsupported rule kinds explicit so the IR residual remains
-		// actionable instead of claiming a false exact conversion.
-		"rule-level": "partial",
-		"custom-properties": "exact",
-		"global-rules": "unsupported",
-		keyframes: "unsupported",
-		"font-face": "unsupported",
-		layers: "unsupported",
-		"supports-rules": "unsupported",
-		"property-rules": "unsupported",
-		selectors: "partial",
-		nesting: "partial",
-		ordering: "unsupported",
-		"theme-context": "partial",
-		"runtime-context": "unsupported",
-		composition: "partial",
-		recipes: "partial",
-		"plugin-transforms": "partial",
-		"framework-semantics": "exact",
-		components: "partial",
-	}),
-	detectPatterns: [
-		/from\s+["'](?:@pandacss\/dev|styled-system\/(?:css|jsx|recipes))["']/,
-		/\b(?:cva|sva|css)\s*\(\s*\{/,
-	],
-	sourceModules: [
-		"@pandacss/dev",
-		"styled-system/css",
-		"styled-system/jsx",
-		"styled-system/recipes",
-	],
-	configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],
-	loadConfig: pandaConfig,
-	loadConfigAsync: officialPandaConfig,
-	migration: {
-		targetPolicy: {
-			handlesHostRewrites: true,
-			handlesFrameworkSemantics: true,
-			hostRepresentation: StyleHostRepresentationKind.Class,
-			dynamicClassCarrier: true,
-		},
-	},
-	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	tokenPolicy: PANDA_TOKEN_POLICY,
-	emit(program, renderers) {
-		return {
-			text: `css(${renderers.programObject(program)})`,
-			imports: ['import { css } from "styled-system/css";'],
-			semantic: program,
-		};
-	},
-});
+	});
+}

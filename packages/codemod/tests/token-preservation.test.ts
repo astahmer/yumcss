@@ -41,13 +41,13 @@ describe("verified Pandwind token preservation", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('color: "$blue-500"');
 		expect(result.code).not.toContain('color: "#3182ce"');
-		expect(result.code).toContain('padding: "4"');
-		expect(result.code).toContain('borderRadius: "lg"');
+		expect(result.code).toContain('padding: "$4"');
+		expect(result.code).toContain('borderRadius: "$lg"');
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "$blue-500", padding: "4", borderRadius: "lg" });"
+			export const card = css.class({ color: "$blue-500", padding: "$4", borderRadius: "$lg" });"
 		`);
 	});
 

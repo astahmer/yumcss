@@ -476,12 +476,15 @@ function tailwindTokenUtility(
 		marginInline: "spacing",
 		marginBlock: "spacing",
 		gap: "spacing",
-		width: "sizes",
-		height: "sizes",
-		minWidth: "sizes",
-		maxWidth: "sizes",
-		minHeight: "sizes",
-		maxHeight: "sizes",
+		// Tailwind v4 uses the `--spacing-*` namespace for width/height as well
+		// as padding, margin, and gap utilities. `sizes` is not a valid inferred
+		// namespace for a custom `w-*` token in the official engine.
+		width: "spacing",
+		height: "spacing",
+		minWidth: "spacing",
+		maxWidth: "spacing",
+		minHeight: "spacing",
+		maxHeight: "spacing",
 	};
 	const group = groups[property];
 	const match =

@@ -110,6 +110,14 @@ which concrete module to import or grow a switch statement in a central runner.
   refreshes the bridge section; migration tooling may fall back to legacy
   generated files only for pre-artifact projects. Never hardcode an example
   preset or application-specific metadata in a generic migration path.
+- Token catalogs normalize only statically resolved scalar values (strings and
+  numbers). Conditional/theme-dependent token objects must remain outside the
+  static catalog unless an active theme context is explicitly carried in the
+  semantic IR; never flatten their condition keys into invented token names.
+  When an official source loader proves a token reference, preserve it as a
+  `StyleTokenValue` with its resolved value attached so a target policy can
+  remap it to the target preset rather than prematurely replacing it with a
+  source CSS variable.
 - `StyleProgram.sourceMap` must retain program/rule/theme/composition and
   dynamic-expression provenance. Recipe/component semantics belong in their
   versioned IR and host contracts, not in opaque residual text.

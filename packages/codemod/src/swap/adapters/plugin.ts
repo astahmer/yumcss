@@ -14,8 +14,8 @@ import linaria from "./linaria.adapter.ts";
 import mantine from "./mantine.adapter.ts";
 import mui from "./mui.adapter.ts";
 import nextYak from "./next-yak.adapter.ts";
-import panda from "./panda.adapter.ts";
-import pandwind from "./pandwind.adapter.ts";
+import { createPandaAdapter } from "./panda.adapter.ts";
+import { createPandwindAdapter } from "./pandwind.adapter.ts";
 import reactNative from "./react-native.adapter.ts";
 import solidStyled from "./solid-styled.adapter.ts";
 import stitches from "./stitches.adapter.ts";
@@ -37,7 +37,7 @@ export function createBuiltinAdapterPlugin(
 ): StyleAdapterPlugin {
 	const stylex = createStyleXAdapter({ crossModuleResolver: stylexResolver });
 	return createStyleAdapterPlugin(CodemodPluginId.BuiltinAdapters, [
-		pandwind,
+		createPandwindAdapter({ moduleLoader: moduleLoader ?? null }),
 		bamboo,
 		moduleLoader === undefined
 			? createChakraAdapter({ moduleLoader: null })
@@ -50,7 +50,7 @@ export function createBuiltinAdapterPlugin(
 		mantine,
 		mui,
 		nextYak,
-		panda,
+		createPandaAdapter({ moduleLoader: moduleLoader ?? null }),
 		moduleLoader === undefined
 			? createTailwindAdapter({ moduleLoader: null })
 			: createTailwindAdapter({ moduleLoader }),

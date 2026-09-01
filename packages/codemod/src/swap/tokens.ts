@@ -31,6 +31,10 @@ function normalizeTokenKey(key: string): string {
 	return key.replace(/^\$/, "").replace(/-/g, ".");
 }
 
+function normalizedTokenValue(value: unknown): string | undefined {
+	return typeof value === "string" || typeof value === "number" ? String(value) : undefined;
+}
+
 /**
  * Neutral token catalog used by config-loading adapters. It intentionally
  * knows nothing about Tailwind, Chakra, Panda, UnoCSS, or a target emitter.
@@ -46,7 +50,8 @@ export class TokenCatalog {
 		for (const [group, values] of Object.entries(tokens)) {
 			const normalized: Record<string, string> = {};
 			for (const [key, value] of Object.entries(values)) {
-				if (typeof value === "string") normalized[key] = value;
+				const scalar = normalizedTokenValue(value);
+				if (scalar !== undefined) normalized[key] = scalar;
 			}
 			if (Object.keys(normalized).length > 0) groups[group] = normalized;
 		}
@@ -75,14 +80,19 @@ export class TokenCatalog {
 		if (groups === undefined) return undefined;
 		const flattened: Record<string, Record<string, string>> = {};
 		const visit = (group: string, value: unknown, path: string[]): void => {
-			if (typeof value === "string") {
-				(flattened[group] ??= {})[path.join(".")] = value;
+			const scalar = normalizedTokenValue(value);
+			if (scalar !== undefined) {
+				(flattened[group] ??= {})[path.join(".")] = scalar;
 				return;
 			}
 			if (typeof value !== "object" || value === null || Array.isArray(value)) return;
 			const record = value as Record<string, unknown>;
-			if (typeof record.value === "string") {
-				(flattened[group] ??= {})[path.join(".")] = record.value;
+			if (Object.prototype.hasOwnProperty.call(record, "value")) {
+				const boxed = normalizedTokenValue(record.value);
+				if (boxed !== undefined) (flattened[group] ??= {})[path.join(".")] = boxed;
+				// Conditional token values are intentionally not flattened. Their
+				// active value depends on runtime theme state and cannot be safely
+				// emitted as one static target reference.
 				return;
 			}
 			for (const [key, child] of Object.entries(record)) visit(group, child, [...path, key]);
@@ -113,6 +123,24 @@ export class TokenCatalog {
 		return matches.length === 1 ? matches[0] : undefined;
 	}
 
+	findByReference(groups: readonly string[], reference: string): TokenCatalogMatch | undefined {
+		const normalized = normalizeTokenKey(reference).toLowerCase();
+		const matches: TokenCatalogMatch[] = [];
+		for (const group of groups) {
+			for (const [key, resolved] of Object.entries(this.catalog.groups[group] ?? {})) {
+				if (normalizeTokenKey(key).toLowerCase() !== normalized) continue;
+				matches.push({
+					group,
+					key,
+					authored: key,
+					ref: normalizeTokenKey(key),
+					resolved,
+				});
+			}
+		}
+		return matches.length === 1 ? matches[0] : undefined;
+	}
+
 	preserveProgram(
 		program: StyleProgram,
 		groupForProperty: TokenGroupForProperty,
@@ -122,10 +150,17 @@ export class TokenCatalog {
 			value: StyleProgram["declarations"][number]["value"],
 			property: string,
 		): typeof value => {
-			if (value.kind !== "literal" || typeof value.value !== "string") return value;
 			const group = groupForProperty(property);
 			if (group === undefined) return value;
-			const match = this.findUnique([group], value.value);
+			const match =
+				value.kind === "token"
+					? (this.findByReference([group], value.ref) ??
+						this.findUnique([group], value.resolved ?? "") ??
+						undefined)
+					: value.kind === "literal" &&
+						  (typeof value.value === "string" || typeof value.value === "number")
+						? this.findUnique([group], String(value.value))
+						: undefined;
 			if (match === undefined || !/^[A-Za-z0-9_$][A-Za-z0-9_$.-]*$/u.test(formatReference(match)))
 				return value;
 			return {

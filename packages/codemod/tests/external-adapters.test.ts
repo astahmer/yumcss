@@ -99,7 +99,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect.arrayContaining([
 				expect.objectContaining({
 					property: "color",
-					value: { kind: "literal", value: "var(--chakra-colors-brand-500)" },
+					value: {
+						kind: "token",
+						ref: "brand.500",
+						authored: "brand.500",
+						resolved: "#123456",
+					},
 				}),
 			]),
 		);

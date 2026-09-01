@@ -417,6 +417,18 @@ function chakraOfficialValue(
 		!hasConfigToken(config, group, value.value)
 	)
 		return fallback;
+	const catalog = TokenCatalog.fromContract(context.config.tokenCatalog);
+	const token = catalog?.findByReference([group], value.value);
+	// Keep a statically resolvable Chakra token as a token IR node. Resolving it
+	// directly to `var(--chakra-...)` would make later target adapters lose the
+	// authored token and would prevent a configured target preset from reusing it.
+	if (token !== undefined)
+		return {
+			kind: "token",
+			ref: token.ref,
+			authored: value.value,
+			resolved: token.resolved,
+		};
 	const resolved = system.token.var(`${group}.${value.value}`);
 	return typeof resolved === "string" ? { kind: "literal", value: resolved } : fallback;
 }

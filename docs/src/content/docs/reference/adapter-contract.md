@@ -40,7 +40,12 @@ The official loader is optional and injectable. Missing packages use the
 adapter's deterministic fallback; an installed loader that cannot evaluate a
 custom configuration produces a structured configuration residual. This keeps
 presets, plugins, merged themes, shortcuts, and generated tokens from being
-silently mistaken for a small handwritten approximation.
+silently mistaken for a small handwritten approximation. The Pandwind target
+also discovers `pandwind.interop.json` and its generated bridge/preset during
+async migration, so code emission consumes the same project token context as
+the generated runtime. An unreadable artifact is reported as a configuration
+residual; when no artifact exists, the adapter safely keeps literal values
+instead of guessing target token names.
 
 The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
 styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,

@@ -5,7 +5,9 @@ import {
 } from "../external-adapters.ts";
 import { matchBlock } from "../../source-pass-utils.ts";
 import type {
+	AdapterConfigContext,
 	AdapterEmitContext,
+	AdapterProjectConfig,
 	AdapterTargetMigrationPolicy,
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
@@ -26,6 +28,8 @@ import {
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 import { TokenCatalog } from "../tokens.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
@@ -133,13 +137,123 @@ function preserveKnownPresetTokens(
 		TokenCatalog.fromContract(context?.config.tokenCatalog) ??
 		TokenCatalog.fromAnyTokens(context?.meta?.tokens);
 	if (catalog === undefined) return program;
-	return catalog.preserveProgram(program, pandwindTokenGroup);
+	return catalog.preserveProgram(
+		program,
+		pandwindTokenGroup,
+		(match) => `$${match.ref.replaceAll(".", "-")}`,
+	);
 }
 
 const PANDWIND_TOKEN_POLICY: AdapterTokenPolicy = {
 	schema: "pandwind.adapter-token-policy/1",
 	preserve: (program, context) => preserveKnownPresetTokens(program, context),
 };
+
+function pandwindConfig(context: AdapterConfigContext): AdapterProjectConfig {
+	return {
+		adapter: CodemodAdapterId.Pandwind,
+		root: context.root,
+		files: [context.file],
+		values: {},
+	};
+}
+
+type PresetModule = Record<string, unknown>;
+
+async function importGeneratedPreset(
+	bridgePath: string,
+	bridgeSource: string,
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<Record<string, Record<string, unknown>> | undefined> {
+	const binding = /\bpreset\s*:\s*([A-Za-z_$][\w$]*)/u.exec(bridgeSource)?.[1];
+	if (binding === undefined) return undefined;
+	for (const match of bridgeSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/gu)) {
+		const imported = match[1]
+			?.split(",")
+			.map((part) => part.trim().split(/\s+as\s+/u))
+			.find((parts) => (parts[1] ?? parts[0]) === binding);
+		if (imported === undefined || context.root === undefined) continue;
+		const specifier = match[2]!;
+		let module: PresetModule | undefined;
+		if (specifier.startsWith(".")) {
+			const path = joinDocumentPath(dirnameDocumentPath(bridgePath), specifier);
+			for (const candidate of [path, `${path}.ts`, `${path}.tsx`, `${path}.js`, `${path}.mjs`]) {
+				module = await loader.importFile<PresetModule>(candidate);
+				if (module !== undefined) break;
+			}
+		} else {
+			module = await loader.importPackage<PresetModule>(specifier, context.root);
+		}
+		const preset = module?.[imported[0]!] as { tokens?: unknown } | undefined;
+		if (preset?.tokens === null || typeof preset?.tokens !== "object") continue;
+		return preset.tokens as Record<string, Record<string, unknown>>;
+	}
+	return undefined;
+}
+
+async function officialPandwindConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<AdapterProjectConfig> {
+	const fallback = pandwindConfig(context);
+	if (context.root === undefined || context.readFile === undefined) return fallback;
+	const sourceFile = isAbsoluteDocumentPath(context.file)
+		? context.file
+		: joinDocumentPath(context.root, context.file);
+	const directories: string[] = [];
+	let directory = dirnameDocumentPath(sourceFile);
+	for (;;) {
+		if (!directories.includes(directory)) directories.push(directory);
+		if (directory === context.root || directory === "." || directory === "/") break;
+		directory = dirnameDocumentPath(directory);
+	}
+	for (const candidateDirectory of directories) {
+		const interopPath = joinDocumentPath(candidateDirectory, "pandwind.interop.json");
+		const interopSource = context.readFile(interopPath);
+		if (interopSource === undefined) continue;
+		try {
+			const interop = JSON.parse(interopSource) as {
+				generatedFrom?: { bridge?: string };
+			};
+			const bridgePath = joinDocumentPath(
+				candidateDirectory,
+				interop.generatedFrom?.bridge ?? "bridge.ts",
+			);
+			const bridgeSource = context.readFile(bridgePath);
+			if (bridgeSource === undefined)
+				throw new Error(`generated bridge not found at ${bridgePath}`);
+			const tokens = await importGeneratedPreset(bridgePath, bridgeSource, context, loader);
+			if (tokens === undefined)
+				throw new Error("generated bridge does not expose a loadable preset");
+			const tokenCatalog = TokenCatalog.fromNested(tokens)?.contract;
+			if (tokenCatalog === undefined)
+				throw new Error("generated preset does not contain statically resolvable tokens");
+			return {
+				...fallback,
+				files: [...fallback.files, interopPath, bridgePath],
+				tokenCatalog,
+				values: {
+					pandwindInteropPath: interopPath,
+					pandwindBridgePath: bridgePath,
+					officialConfigPackage: "pandwind interop artifact",
+				},
+			};
+		} catch (error) {
+			return {
+				...fallback,
+				residuals: [
+					{
+						kind: "configuration",
+						text: "Pandwind generated design-system metadata",
+						hint: `Pandwind interop loading failed: ${error instanceof Error ? error.message : String(error)}`,
+					},
+				],
+			};
+		}
+	}
+	return fallback;
+}
 
 function generatedCssBinding(source: string | undefined): string {
 	const input = source ?? "";
@@ -1087,259 +1201,279 @@ function stitchesRecipeObject(
 	return `{ base: ${base}, variants: { ${variantText.join(", ")} } }`;
 }
 
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.Pandwind,
-	patterns: [
-		{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
-		{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
-		{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
-	],
-	packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
-		"named-conditions": "exact",
-		"named-rules": "exact",
-		"function-values": "exact",
-		"framework-semantics": "exact",
-		composition: "exact",
-		recipes: "exact",
-		components: "exact",
-	}),
-	detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
-	sourceModules: ["pandwind/css", "pandwind/css/runtime"],
-	configFiles: ["pandwind.config.ts", "package.json"],
-	tokenPolicy: PANDWIND_TOKEN_POLICY,
-	migration: { targetPolicy: PANDWIND_TARGET_POLICY },
-	emit(program, { programObject, declarationsObject }, context) {
-		const cssBinding = generatedCssBinding(context?.document?.document.source);
-		const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
-			return (
-				rule.declarations.some(
-					(declaration) =>
-						declaration.value.kind === "dynamic" &&
-						/=>|^function\b/.test(declaration.value.expression.trim()),
-				) || rule.children.some(containsFunction)
-			);
-		});
-		const outputProgram = preserveKnownPresetTokens(program, context);
-		const renderProgramObject = (value: StyleProgram): string =>
-			programObject(preserveKnownPresetTokens(value, context));
-		const finalize = (emission: { text: string; imports: readonly string[] }) => ({
-			...renameGeneratedCssBinding(emission, cssBinding),
-			// The target object syntax is intentionally a projection of the
-			// versioned program. Keep the program attached for validation and
-			// downstream tools so nested conditions, rule kinds, and provenance are
-			// never inferred back from generated JavaScript.
-			semantic: outputProgram,
-		});
-		if (
-			program.source?.pattern === CodemodPatternId.CssTemplate &&
-			program.source.hostOpenTag === undefined
-		) {
-			const hasStaticContent = program.rules.some(function hasContent(rule): boolean {
-				return rule.declarations.length > 0 || rule.children.some(hasContent);
+export interface PandwindAdapterOptions {
+	readonly moduleLoader?: ProjectModuleLoader | null;
+}
+
+export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
+	const moduleLoader =
+		options.moduleLoader === null
+			? undefined
+			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.Pandwind,
+		patterns: [
+			{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
+			{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },
+			{ name: "css-group", regex: /\bcss\.group\s*\(\s*\{/g, objectKind: "named" },
+		],
+		packages: CodemodAdapterKit.dependency("pandwind", "runtime"),
+		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Pandwind, "exact", {
+			"named-conditions": "exact",
+			"named-rules": "exact",
+			"function-values": "exact",
+			"framework-semantics": "exact",
+			composition: "exact",
+			recipes: "exact",
+			components: "exact",
+		}),
+		detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
+		sourceModules: ["pandwind/css", "pandwind/css/runtime"],
+		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
+		loadConfig: pandwindConfig,
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						officialPandwindConfig(context, moduleLoader),
+				}),
+		tokenPolicy: PANDWIND_TOKEN_POLICY,
+		migration: { targetPolicy: PANDWIND_TARGET_POLICY },
+		emit(program, { programObject, declarationsObject }, context) {
+			const cssBinding = generatedCssBinding(context?.document?.document.source);
+			const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
+				return (
+					rule.declarations.some(
+						(declaration) =>
+							declaration.value.kind === "dynamic" &&
+							/=>|^function\b/.test(declaration.value.expression.trim()),
+					) || rule.children.some(containsFunction)
+				);
+			});
+			const outputProgram = preserveKnownPresetTokens(program, context);
+			const renderProgramObject = (value: StyleProgram): string =>
+				programObject(preserveKnownPresetTokens(value, context));
+			const finalize = (emission: { text: string; imports: readonly string[] }) => ({
+				...renameGeneratedCssBinding(emission, cssBinding),
+				// The target object syntax is intentionally a projection of the
+				// versioned program. Keep the program attached for validation and
+				// downstream tools so nested conditions, rule kinds, and provenance are
+				// never inferred back from generated JavaScript.
+				semantic: outputProgram,
 			});
 			if (
-				hasStaticContent &&
-				program.residuals.length === 0 &&
-				!program.rules.some(function containsDynamic(rule): boolean {
-					return (
-						rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-						rule.children.some(containsDynamic)
-					);
-				})
+				program.source?.pattern === CodemodPatternId.CssTemplate &&
+				program.source.hostOpenTag === undefined
 			) {
+				const hasStaticContent = program.rules.some(function hasContent(rule): boolean {
+					return rule.declarations.length > 0 || rule.children.some(hasContent);
+				});
+				if (
+					hasStaticContent &&
+					program.residuals.length === 0 &&
+					!program.rules.some(function containsDynamic(rule): boolean {
+						return (
+							rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+							rule.children.some(containsDynamic)
+						);
+					})
+				) {
+					return finalize({
+						text: `css.class(${renderProgramObject(outputProgram)})`,
+						imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					});
+				}
 				return finalize({
-					text: `css.class(${renderProgramObject(outputProgram)})`,
-					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					text: `cssTemplate\`${program.source.template ?? ""}\``,
+					imports: [],
 				});
 			}
-			return finalize({
-				text: `cssTemplate\`${program.source.template ?? ""}\``,
-				imports: [],
-			});
-		}
-		if (program.emissionHints?.includes(StyleProgramEmissionHint.GlobalVariables)) {
-			return finalize({
-				text: runtimeGlobalVars(outputProgram),
-				imports: [
-					'import { createRuntimeCss } from "pandwind/css/runtime";',
-					'import { pandwindPreset } from "pandwind/preset";',
-					"const css = createRuntimeCss(pandwindPreset);",
-				],
-			});
-		}
-		if (program.rules.some((rule) => rule.kind === "global")) {
-			const template =
+			if (program.emissionHints?.includes(StyleProgramEmissionHint.GlobalVariables)) {
+				return finalize({
+					text: runtimeGlobalVars(outputProgram),
+					imports: [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { pandwindPreset } from "pandwind/preset";',
+						"const css = createRuntimeCss(pandwindPreset);",
+					],
+				});
+			}
+			if (program.rules.some((rule) => rule.kind === "global")) {
+				const template =
+					program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
+						? runtimeGlobalTemplate(program, context)
+						: undefined;
+				return finalize({
+					text:
+						template === undefined
+							? `() => (css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}]), null)`
+							: `() => ${template}`,
+					imports: [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { pandwindPreset } from "pandwind/preset";',
+						"const css = createRuntimeCss(pandwindPreset);",
+					],
+				});
+			}
+			if (
+				context?.host?.representation === StyleHostRepresentationKind.Component &&
 				program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
-					? runtimeGlobalTemplate(program, context)
-					: undefined;
-			return finalize({
-				text:
-					template === undefined
-						? `() => (css.sheet.registerSemanticRules([${runtimeGlobalRules(outputProgram)}]), null)`
-						: `() => ${template}`,
-				imports: [
-					'import { createRuntimeCss } from "pandwind/css/runtime";',
-					'import { pandwindPreset } from "pandwind/preset";',
-					"const css = createRuntimeCss(pandwindPreset);",
-				],
-			});
-		}
-		if (
-			context?.host?.representation === StyleHostRepresentationKind.Component &&
-			program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true
-		) {
-			const component = runtimeRawComponent(program, context);
-			if (component !== undefined) return finalize(component);
-		}
-		if (context?.host?.representation === StyleHostRepresentationKind.Component) {
-			const component = staticComponent(outputProgram, renderProgramObject, context);
-			if (component !== undefined) return finalize(component);
-			const hybrid = hybridComponent(outputProgram, renderProgramObject, context);
-			if (hybrid !== undefined) return finalize(hybrid);
-		}
-		const host = program.source;
-		if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
-			const runtimeHost =
-				host.template !== undefined && hasComponentSelectorInterpolation(host.template)
-					? runtimeHostTemplateExpression(program, context)
-					: undefined;
-			if (runtimeHost !== undefined) return finalize(runtimeHost);
-			const framework =
-				host.framework ??
-				context?.document?.framework ??
-				(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
-			const dynamicHost = hasDynamicValues(program);
-			const programObjectText = renderProgramObject(
-				hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
-			);
-			const rendered = JsxStyleHost.render(
-				host.hostOpenTag,
-				host.hostStyleAttributes,
-				dynamicHost ? `css.vars(${programObjectText}).class` : `css.class(${programObjectText})`,
-				framework,
-				dynamicHost ? `css.vars(${programObjectText}).style` : undefined,
-			);
-			return finalize({
-				text: rendered.text,
-				imports: [
-					dynamicHost
-						? 'import { createRuntimeCss } from "pandwind/css/runtime";'
-						: 'import { createCss } from "pandwind/css";',
-					...(dynamicHost ? ['import { pandwindPreset } from "pandwind/preset";'] : []),
-					dynamicHost
-						? "const css = createRuntimeCss(pandwindPreset);"
-						: "const css = createCss();",
-					...(rendered.needsCx
-						? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
-						: []),
-				],
-			});
-		}
-		const kind = program.rules[0]?.kind;
-		const stylexDynamicGroup =
-			program.source?.adapter === CodemodAdapterId.StyleX &&
-			program.source.pattern === CodemodPatternId.StyleXCreate;
-		if (
-			(context?.host?.representation === StyleHostRepresentationKind.Component ||
-				hasFunctionDynamic) &&
-			!stylexDynamicGroup
-		) {
-			const component = runtimeComponent(outputProgram, renderProgramObject, context);
-			if (component !== undefined) return finalize(component);
-		}
-		const hasFontFaces = program.rules.some(function containsFontFace(
-			rule: StyleProgram["rules"][number],
-		): boolean {
-			return rule.kind === "font-face" || rule.children.some(containsFontFace);
-		});
-		if (hasFontFaces) {
-			const withoutFontFaces = (
+			) {
+				const component = runtimeRawComponent(program, context);
+				if (component !== undefined) return finalize(component);
+			}
+			if (context?.host?.representation === StyleHostRepresentationKind.Component) {
+				const component = staticComponent(outputProgram, renderProgramObject, context);
+				if (component !== undefined) return finalize(component);
+				const hybrid = hybridComponent(outputProgram, renderProgramObject, context);
+				if (hybrid !== undefined) return finalize(hybrid);
+			}
+			const host = program.source;
+			if (host?.hostOpenTag !== undefined && host.hostStyleAttributes !== undefined) {
+				const runtimeHost =
+					host.template !== undefined && hasComponentSelectorInterpolation(host.template)
+						? runtimeHostTemplateExpression(program, context)
+						: undefined;
+				if (runtimeHost !== undefined) return finalize(runtimeHost);
+				const framework =
+					host.framework ??
+					context?.document?.framework ??
+					(/\.(?:jsx|tsx|mdx)$/.test(context?.file ?? "") ? "react" : undefined);
+				const dynamicHost = hasDynamicValues(program);
+				const programObjectText = renderProgramObject(
+					hasFunctionDynamic ? mapRuntimeProps(outputProgram, "undefined") : outputProgram,
+				);
+				const rendered = JsxStyleHost.render(
+					host.hostOpenTag,
+					host.hostStyleAttributes,
+					dynamicHost ? `css.vars(${programObjectText}).class` : `css.class(${programObjectText})`,
+					framework,
+					dynamicHost ? `css.vars(${programObjectText}).style` : undefined,
+				);
+				return finalize({
+					text: rendered.text,
+					imports: [
+						dynamicHost
+							? 'import { createRuntimeCss } from "pandwind/css/runtime";'
+							: 'import { createCss } from "pandwind/css";',
+						...(dynamicHost ? ['import { pandwindPreset } from "pandwind/preset";'] : []),
+						dynamicHost
+							? "const css = createRuntimeCss(pandwindPreset);"
+							: "const css = createCss();",
+						...(rendered.needsCx
+							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
+							: []),
+					],
+				});
+			}
+			const kind = program.rules[0]?.kind;
+			const stylexDynamicGroup =
+				program.source?.adapter === CodemodAdapterId.StyleX &&
+				program.source.pattern === CodemodPatternId.StyleXCreate;
+			if (
+				(context?.host?.representation === StyleHostRepresentationKind.Component ||
+					hasFunctionDynamic) &&
+				!stylexDynamicGroup
+			) {
+				const component = runtimeComponent(outputProgram, renderProgramObject, context);
+				if (component !== undefined) return finalize(component);
+			}
+			const hasFontFaces = program.rules.some(function containsFontFace(
 				rule: StyleProgram["rules"][number],
-			): StyleProgram["rules"][number] => ({
-				...rule,
-				children: rule.children.filter((child) => child.kind !== "font-face").map(withoutFontFaces),
+			): boolean {
+				return rule.kind === "font-face" || rule.children.some(containsFontFace);
 			});
-			const styleProgram = {
-				...program,
-				rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),
-			};
+			if (hasFontFaces) {
+				const withoutFontFaces = (
+					rule: StyleProgram["rules"][number],
+				): StyleProgram["rules"][number] => ({
+					...rule,
+					children: rule.children
+						.filter((child) => child.kind !== "font-face")
+						.map(withoutFontFaces),
+				});
+				const styleProgram = {
+					...program,
+					rules: program.rules.filter((rule) => rule.kind !== "font-face").map(withoutFontFaces),
+				};
+				return finalize({
+					text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), css.group(${renderProgramObject(styleProgram)}))`,
+					imports: [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { pandwindPreset } from "pandwind/preset";',
+						"const css = createRuntimeCss(pandwindPreset);",
+					],
+				});
+			}
+			if (kind === "keyframes")
+				return finalize({
+					text: runtimeKeyframes(outputProgram, context),
+					imports: [
+						'import { createRuntimeCss } from "pandwind/css/runtime";',
+						'import { pandwindPreset } from "pandwind/preset";',
+						"const css = createRuntimeCss(pandwindPreset);",
+					],
+				});
+			const named =
+				program.rules.some((rule) => rule.name !== undefined) ||
+				program.declarations.some((declaration) =>
+					declaration.conditions.some((condition) => condition.kind === "named"),
+				);
+			const dynamic = program.rules.some(function containsDynamic(rule): boolean {
+				return (
+					rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
+					rule.children.some(containsDynamic)
+				);
+			});
+			const runtimeStandalone =
+				dynamic &&
+				(kind === "style" || kind === undefined) &&
+				program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeClass) === true;
+			const functionDynamic = program.rules.some(function containsFunction(rule): boolean {
+				return (
+					rule.declarations.some(
+						(declaration) =>
+							declaration.value.kind === "dynamic" &&
+							/=>|^function\b/.test(declaration.value.expression.trim()),
+					) || rule.children.some(containsFunction)
+				);
+			});
+			const stitchesVariants =
+				program.compositions?.some(
+					(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
+				) === true &&
+				program.declarations.some((declaration) => declaration.conditions.length >= 2);
+			const needsRuntimeCss =
+				!stylexDynamicGroup &&
+				(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
+					runtimeStandalone ||
+					functionDynamic);
 			return finalize({
-				text: `(css.sheet.registerSemanticRules([${runtimeFontFaces(outputProgram)}]), css.group(${renderProgramObject(styleProgram)}))`,
-				imports: [
-					'import { createRuntimeCss } from "pandwind/css/runtime";',
-					'import { pandwindPreset } from "pandwind/preset";',
-					"const css = createRuntimeCss(pandwindPreset);",
-				],
-			});
-		}
-		if (kind === "keyframes")
-			return finalize({
-				text: runtimeKeyframes(outputProgram, context),
-				imports: [
-					'import { createRuntimeCss } from "pandwind/css/runtime";',
-					'import { pandwindPreset } from "pandwind/preset";',
-					"const css = createRuntimeCss(pandwindPreset);",
-				],
-			});
-		const named =
-			program.rules.some((rule) => rule.name !== undefined) ||
-			program.declarations.some((declaration) =>
-				declaration.conditions.some((condition) => condition.kind === "named"),
-			);
-		const dynamic = program.rules.some(function containsDynamic(rule): boolean {
-			return (
-				rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-				rule.children.some(containsDynamic)
-			);
-		});
-		const runtimeStandalone =
-			dynamic &&
-			(kind === "style" || kind === undefined) &&
-			program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeClass) === true;
-		const functionDynamic = program.rules.some(function containsFunction(rule): boolean {
-			return (
-				rule.declarations.some(
-					(declaration) =>
-						declaration.value.kind === "dynamic" &&
-						/=>|^function\b/.test(declaration.value.expression.trim()),
-				) || rule.children.some(containsFunction)
-			);
-		});
-		const stitchesVariants =
-			program.compositions?.some(
-				(composition) => composition.kind === StyleProgramCompositionKind.Recipe,
-			) === true && program.declarations.some((declaration) => declaration.conditions.length >= 2);
-		const needsRuntimeCss =
-			!stylexDynamicGroup &&
-			(program.emissionHints?.includes(StyleProgramEmissionHint.RuntimeFunction) === true ||
-				runtimeStandalone ||
-				functionDynamic);
-		return finalize({
-			text: stitchesVariants
-				? `createRecipe(css, ${stitchesRecipeObject(outputProgram, declarationsObject)})`
-				: named
-					? `css.group(${renderProgramObject(outputProgram)})`
-					: functionDynamic
+				text: stitchesVariants
+					? `createRecipe(css, ${stitchesRecipeObject(outputProgram, declarationsObject)})`
+					: named
 						? `css.group(${renderProgramObject(outputProgram)})`
-						: runtimeStandalone
-							? `css.class(${renderProgramObject(outputProgram)})`
-							: dynamic
-								? `css.vars(${renderProgramObject(outputProgram)})`
-								: `css.class(${renderProgramObject(outputProgram)})`,
-			imports: stitchesVariants
-				? [
-						'import { createCss } from "pandwind/css";',
-						'import { createRecipe } from "pandwind/recipe";',
-						"const css = createCss();",
-					]
-				: needsRuntimeCss
+						: functionDynamic
+							? `css.group(${renderProgramObject(outputProgram)})`
+							: runtimeStandalone
+								? `css.class(${renderProgramObject(outputProgram)})`
+								: dynamic
+									? `css.vars(${renderProgramObject(outputProgram)})`
+									: `css.class(${renderProgramObject(outputProgram)})`,
+				imports: stitchesVariants
 					? [
-							'import { createRuntimeCss } from "pandwind/css/runtime";',
-							'import { pandwindPreset } from "pandwind/preset";',
-							"const css = createRuntimeCss(pandwindPreset);",
+							'import { createCss } from "pandwind/css";',
+							'import { createRecipe } from "pandwind/recipe";',
+							"const css = createCss();",
 						]
-					: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
-		});
-	},
-});
+					: needsRuntimeCss
+						? [
+								'import { createRuntimeCss } from "pandwind/css/runtime";',
+								'import { pandwindPreset } from "pandwind/preset";',
+								"const css = createRuntimeCss(pandwindPreset);",
+							]
+						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+			});
+		},
+	});
+}
