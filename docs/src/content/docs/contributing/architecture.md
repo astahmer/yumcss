@@ -69,10 +69,10 @@ pretending that a CSS declaration alone proves runtime or platform parity.
 Solid-styled and Vue-styled own the corresponding static React component
 projection. A React `styled.div` subject with only static declarations can be
 emitted as the target's styled component subject while preserving its simple
-JSX component use. Function-valued declarations remain source-preserving until
-the target runtime carrier and prop/theme semantics are proven; parseability
-alone is not enough to claim that a React component's dynamic host behavior is
-portable.
+JSX component use. They also preserve a single callback-valued style body by
+emitting the target's callback form; free scalar theme values, mixed callback
+contexts, React-specific props, and template-only behavior remain
+source-preserving until the target runtime and host semantics are proven.
 
 Framework metadata is only a capability requirement when the program carries
 host or component semantics. Standalone style carriers retain framework

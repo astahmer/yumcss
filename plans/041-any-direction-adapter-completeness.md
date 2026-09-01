@@ -31,12 +31,15 @@ registry-derived target suite. This closes the common false capability skip
 for static `styled.div`-style subjects without making the runner know any
 ecosystem-specific syntax.
 
-The plan is not yet a universal-compatibility claim. Dynamic values without a
-host carrier, custom subjects whose prop-forwarding contract is unknown,
-framework-specific components, plugin-generated output, and adapters that are
-still fixture-only in browser/SSR proof remain explicit production-proof or
-semantic work. Those cases must continue to produce typed, source-preserving
-residuals until a target-owned representation and proof exist.
+The plan is not yet a universal-compatibility claim. Free dynamic values
+without a target runtime context, custom subjects whose prop-forwarding
+contract is unknown, framework-specific components, plugin-generated output,
+and adapters that are still fixture-only in browser/SSR proof remain explicit
+production-proof or semantic work. Solid-styled and Vue-styled now preserve a
+single callback-valued styled body through their target runtime form, but
+mixed callback contexts and free theme values still produce typed,
+source-preserving residuals until a target-owned representation and proof
+exist.
 
 The shared source workspace is now the discovery boundary for analyzer, Vite
 CSS extraction, Tailwind collection, and codemod host-language selection. A

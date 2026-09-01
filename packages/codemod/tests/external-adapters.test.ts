@@ -686,10 +686,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
-	test("keeps dynamic React styled subjects source-preserving for Solid", () => {
+	test("keeps free dynamic React styled values source-preserving for Solid", () => {
 		const source =
 			'import styled from "styled-components";\n' +
-			"const Card = styled.div((props) => ({ color: props.color }));\n" +
+			"const Card = styled.div({ color: theme.foreground });\n" +
 			'export const App = () => <Card color="red" />;';
 		const result = runAdapterMigration(source, {
 			from: "styled-components",
@@ -706,7 +706,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			]),
 		);
 		expect(result.code).toContain('from "styled-components"');
-		expect(result.code).toContain("styled.div((props) => ({ color: props.color }))");
+		expect(result.code).toContain("styled.div({ color: theme.foreground })");
 		expect(result.code).toContain("pandwind:migrate-skip");
 	});
 
@@ -726,10 +726,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain('from "styled-components"');
 	});
 
-	test("keeps dynamic React styled subjects source-preserving for Vue", () => {
+	test("keeps free dynamic React styled values source-preserving for Vue", () => {
 		const source =
 			'import styled from "styled-components";\n' +
-			"const Card = styled.div((props) => ({ color: props.color }));\n" +
+			"const Card = styled.div({ color: theme.foreground });\n" +
 			'export const App = () => <Card color="red" />;';
 		const result = runAdapterMigration(source, {
 			from: "styled-components",
@@ -746,8 +746,33 @@ describe("CSS-in-JS adapter contract v2", () => {
 			]),
 		);
 		expect(result.code).toContain('from "styled-components"');
-		expect(result.code).toContain("styled.div((props) => ({ color: props.color }))");
+		expect(result.code).toContain("styled.div({ color: theme.foreground })");
 		expect(result.code).toContain("pandwind:migrate-skip");
+	});
+
+	test.each([
+		[CodemodAdapterId.SolidStyled, 'import { styled } from "solid-styled-components";'],
+		[CodemodAdapterId.VueStyled, 'import styled from "vue-styled-components";'],
+	] as const)("preserves callback-valued styled subjects for %s", (target, targetImport) => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div((props) => ({ color: props.color }));\n" +
+				'export const App = () => <Card color="red" />;',
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: target,
+				file: "Card.tsx",
+				mode: "safe",
+			},
+		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(targetImport);
+		expect(result.code).toContain("styled.div((props) => ({");
+		expect(result.code).toContain('"color": props.color');
+		expect(result.code).toContain('<Card color="red" />');
+		expect(result.code).not.toContain('from "styled-components"');
 	});
 
 	test.each([
