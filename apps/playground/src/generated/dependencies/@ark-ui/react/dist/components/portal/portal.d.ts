@@ -1,0 +1,7 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { PropsWithChildren, RefObject } from 'react';
+export interface PortalProps {
+    disabled?: boolean | undefined;
+    container?: RefObject<HTMLElement | null> | undefined;
+}
+export declare const Portal: (props: PropsWithChildren<PortalProps>) => import("react").JSX.Element;

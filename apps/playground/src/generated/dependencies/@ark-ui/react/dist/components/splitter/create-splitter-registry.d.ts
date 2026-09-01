@@ -1,0 +1,7 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import * as splitter from '@zag-js/splitter';
+export interface SplitterRegistryProps extends splitter.SplitterRegistryOptions {
+}
+export interface SplitterRegistryReturn extends splitter.SplitterRegistry {
+}
+export declare const createSplitterRegistry: (props?: splitter.SplitterRegistryOptions) => splitter.SplitterRegistry;

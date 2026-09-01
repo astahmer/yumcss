@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface TocListBaseProps extends PolymorphicProps {
+}
+export interface TocListProps extends HTMLProps<'ul'>, TocListBaseProps {
+}
+export declare const TocList: ForwardRefExoticComponent<TocListProps & RefAttributes<HTMLUListElement>>;

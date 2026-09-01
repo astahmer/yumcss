@@ -1,5 +1,10 @@
 node_modules/
 dist/
+!apps/playground/src/generated/
+!apps/playground/src/generated/**/
+!apps/playground/src/generated/**/*.d.ts
+!apps/playground/src/generated/**/*.d.mts
+!apps/playground/src/generated/**/*.d.cts
 coverage/
 .DS_Store
 *.tsbuildinfo

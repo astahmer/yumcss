@@ -1,0 +1,7 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import * as _zag_js_anatomy from '@zag-js/anatomy';
+
+declare const anatomy: _zag_js_anatomy.AnatomyInstance<"item" | "trigger" | "content" | "viewport" | "link" | "root" | "viewportPositioner" | "list" | "indicator" | "itemIndicator" | "arrow">;
+declare const parts: Record<"item" | "trigger" | "content" | "viewport" | "link" | "root" | "viewportPositioner" | "list" | "indicator" | "itemIndicator" | "arrow", _zag_js_anatomy.AnatomyPart>;
+
+export { anatomy, parts };

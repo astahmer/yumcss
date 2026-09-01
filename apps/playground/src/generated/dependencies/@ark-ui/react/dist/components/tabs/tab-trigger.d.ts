@@ -1,0 +1,10 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { TriggerProps } from '@zag-js/tabs';
+import { Assign } from '../../types.d.ts';
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface TabTriggerBaseProps extends TriggerProps, PolymorphicProps {
+}
+export interface TabTriggerProps extends Assign<HTMLProps<'button'>, TabTriggerBaseProps> {
+}
+export declare const TabTrigger: ForwardRefExoticComponent<TabTriggerProps & RefAttributes<HTMLButtonElement>>;

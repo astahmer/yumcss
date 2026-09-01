@@ -1,0 +1,11 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+export interface FormatRelativeTimeProps extends Intl.RelativeTimeFormatOptions {
+    /**
+     * The date to format
+     */
+    value: Date;
+}
+export declare const FormatRelativeTime: {
+    (props: FormatRelativeTimeProps): import("react").JSX.Element;
+    displayName: string;
+};

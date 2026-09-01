@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface DrawerBackdropBaseProps extends PolymorphicProps {
+}
+export interface DrawerBackdropProps extends HTMLProps<'div'>, DrawerBackdropBaseProps {
+}
+export declare const DrawerBackdrop: ForwardRefExoticComponent<DrawerBackdropProps & RefAttributes<HTMLDivElement>>;

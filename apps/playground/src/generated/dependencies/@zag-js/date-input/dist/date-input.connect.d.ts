@@ -1,0 +1,11 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { PropTypes, NormalizeProps } from '@zag-js/types';
+import { m as DateInputService, D as DateInputApi } from './date-input.types--uhGHnWA.d.ts';
+import '@internationalized/date';
+import '@zag-js/core';
+import '@zag-js/date-utils';
+import '@zag-js/live-region';
+
+declare function connect<T extends PropTypes>(service: DateInputService, normalize: NormalizeProps<T>): DateInputApi<T>;
+
+export { connect };

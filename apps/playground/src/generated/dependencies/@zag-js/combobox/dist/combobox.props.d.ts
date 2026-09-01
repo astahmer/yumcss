@@ -1,0 +1,19 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { ItemProps, ComboboxProps, ItemGroupLabelProps, ItemGroupProps } from './combobox.types.d.ts';
+import '@zag-js/collection';
+import '@zag-js/core';
+import '@zag-js/dismissable';
+import '@zag-js/popper';
+import '@zag-js/types';
+import '@zag-js/live-region';
+
+declare const props: (keyof ComboboxProps<any>)[];
+declare const splitProps: <Props extends Partial<ComboboxProps<any>>>(props: Props) => [Partial<ComboboxProps<any>>, Omit<Props, keyof ComboboxProps<any>>];
+declare const itemGroupLabelProps: "htmlFor"[];
+declare const splitItemGroupLabelProps: <Props extends ItemGroupLabelProps>(props: Props) => [ItemGroupLabelProps, Omit<Props, "htmlFor">];
+declare const itemGroupProps: "id"[];
+declare const splitItemGroupProps: <Props extends ItemGroupProps>(props: Props) => [ItemGroupProps, Omit<Props, "id">];
+declare const itemProps: (keyof ItemProps)[];
+declare const splitItemProps: <Props extends ItemProps>(props: Props) => [ItemProps, Omit<Props, keyof ItemProps>];
+
+export { itemGroupLabelProps, itemGroupProps, itemProps, props, splitItemGroupLabelProps, splitItemGroupProps, splitItemProps, splitProps };

@@ -1,0 +1,17 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { type HighlightChunk } from "@ark-ui/react/highlight";
+import { type JSX } from "react";
+import { type SystemStyleObject } from "../../styled-system.d.ts";
+export interface HighlightProps {
+    query: string | string[];
+    children: string | ((props: HighlightChunk[]) => React.ReactNode);
+    styles?: SystemStyleObject | undefined;
+    ignoreCase?: boolean | undefined;
+    matchAll?: boolean | undefined;
+}
+/**
+ * `Highlight` allows you to highlight substrings of a text.
+ *
+ * @see Docs https://chakra-ui.com/docs/components/highlight
+ */
+export declare function Highlight(props: HighlightProps): JSX.Element;

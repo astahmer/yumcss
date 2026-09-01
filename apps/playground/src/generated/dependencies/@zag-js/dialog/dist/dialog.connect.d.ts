@@ -1,0 +1,9 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { Service } from '@zag-js/core';
+import { PropTypes, NormalizeProps } from '@zag-js/types';
+import { DialogSchema, DialogApi } from './dialog.types.d.ts';
+import '@zag-js/dismissable';
+
+declare function connect<T extends PropTypes>(service: Service<DialogSchema>, normalize: NormalizeProps<T>): DialogApi<T>;
+
+export { connect };

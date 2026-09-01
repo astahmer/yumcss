@@ -1,0 +1,12 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { FormatTimeOptions } from '@zag-js/i18n-utils';
+export interface FormatTimeProps extends FormatTimeOptions {
+    /**
+     * The time to format
+     */
+    value: string | Date;
+}
+export declare const FormatTime: {
+    (props: FormatTimeProps): import("react").JSX.Element;
+    displayName: string;
+};

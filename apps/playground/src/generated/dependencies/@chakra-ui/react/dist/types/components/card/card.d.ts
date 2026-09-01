@@ -1,0 +1,25 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { type HTMLChakraProps, type SlotRecipeProps, type UnstyledProp } from "../../styled-system.d.ts";
+declare const useCardStyles: () => Record<string, import("../...d.ts").SystemStyleObject>;
+export { useCardStyles };
+export interface CardRootBaseProps extends SlotRecipeProps<"card">, UnstyledProp {
+}
+export interface CardRootProps extends HTMLChakraProps<"div", CardRootBaseProps> {
+}
+export declare const CardRoot: import("react").ForwardRefExoticComponent<CardRootProps & import("react").RefAttributes<HTMLDivElement>>;
+export declare const CardPropsProvider: React.Provider<CardRootBaseProps>;
+export interface CardBodyProps extends HTMLChakraProps<"div">, UnstyledProp {
+}
+export declare const CardBody: import("react").ForwardRefExoticComponent<CardBodyProps & import("react").RefAttributes<HTMLDivElement>>;
+export interface CardHeaderProps extends HTMLChakraProps<"div">, UnstyledProp {
+}
+export declare const CardHeader: import("react").ForwardRefExoticComponent<CardHeaderProps & import("react").RefAttributes<HTMLDivElement>>;
+export interface CardFooterProps extends HTMLChakraProps<"div">, UnstyledProp {
+}
+export declare const CardFooter: import("react").ForwardRefExoticComponent<CardFooterProps & import("react").RefAttributes<HTMLDivElement>>;
+export interface CardTitleProps extends HTMLChakraProps<"h2">, UnstyledProp {
+}
+export declare const CardTitle: import("react").ForwardRefExoticComponent<CardTitleProps & import("react").RefAttributes<HTMLHeadingElement>>;
+export interface CardDescriptionProps extends HTMLChakraProps<"p">, UnstyledProp {
+}
+export declare const CardDescription: import("react").ForwardRefExoticComponent<CardDescriptionProps & import("react").RefAttributes<HTMLParagraphElement>>;

@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface FileUploadItemDeleteTriggerBaseProps extends PolymorphicProps {
+}
+export interface FileUploadItemDeleteTriggerProps extends HTMLProps<'button'>, FileUploadItemDeleteTriggerBaseProps {
+}
+export declare const FileUploadItemDeleteTrigger: ForwardRefExoticComponent<FileUploadItemDeleteTriggerProps & RefAttributes<HTMLButtonElement>>;

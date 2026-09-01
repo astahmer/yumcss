@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface NumberInputLabelBaseProps extends PolymorphicProps {
+}
+export interface NumberInputLabelProps extends HTMLProps<'label'>, NumberInputLabelBaseProps {
+}
+export declare const NumberInputLabel: ForwardRefExoticComponent<NumberInputLabelProps & RefAttributes<HTMLLabelElement>>;

@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface SwitchHiddenInputBaseProps extends PolymorphicProps {
+}
+export interface SwitchHiddenInputProps extends HTMLProps<'input'>, SwitchHiddenInputBaseProps {
+}
+export declare const SwitchHiddenInput: ForwardRefExoticComponent<SwitchHiddenInputProps & RefAttributes<HTMLInputElement>>;

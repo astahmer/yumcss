@@ -1,6 +1,14 @@
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,14 +24,62 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as {
 const outputRoot = resolve(playgroundRoot, "src/generated/pandwind");
 const dependencyOutputRoot = resolve(playgroundRoot, "src/generated/dependencies");
 const sourceDeclarationFiles = ["types/selectors.d.ts"] as const;
+const editorPackageSpecifiers = [
+	"@pandacss/dev",
+	"@emotion/css",
+	"@emotion/react",
+	"@compiled/react",
+	"@vanilla-extract/css",
+	"@treat/webpack",
+	"@tokenami/css",
+	"goober",
+	"@stitches/react",
+	"react-jss",
+	"aphrodite",
+	"style9",
+	"stylex",
+	"@chakra-ui/react",
+	"@mui/material",
+	"@mantine/core",
+	"styled-components",
+	"next-yak",
+	"solid-styled-components",
+	"vue3-styled-components",
+	"react-fela",
+	"fela",
+	"@pandacss/config",
+	"@tokenami/config",
+	"@unocss/config",
+	"@unocss/core",
+	"unocss",
+	"tailwindcss",
+	"jss",
+] as const;
+const workspaceResolutionRoots = [
+	packageRoot,
+	playgroundRoot,
+	repositoryRoot,
+	...(["apps", "packages"] as const).flatMap((directory) =>
+		readdirSync(resolve(repositoryRoot, directory), { withFileTypes: true })
+			.filter((entry) => entry.isDirectory())
+			.map((entry) => resolve(repositoryRoot, directory, entry.name)),
+	),
+];
 
 const entryExportKeys = [".", "./css", "./design", "./tw", "./cx", "./types/typings"] as const;
 
-type ExportTarget = string | { [condition: string]: ExportTarget };
+type ExportTarget = string | readonly ExportTarget[] | { [condition: string]: ExportTarget };
 
 const findExportPath = (target: ExportTarget | undefined): string | undefined => {
 	if (typeof target === "string") return target;
 	if (target === undefined) return undefined;
+	if (Array.isArray(target)) {
+		for (const candidate of target) {
+			const path = findExportPath(candidate);
+			if (path !== undefined) return path;
+		}
+		return undefined;
+	}
 	for (const condition of ["types", "import", "require", "default"]) {
 		const path = findExportPath(target[condition]);
 		if (path !== undefined) return path;
@@ -41,8 +97,14 @@ const resolveExport = (key: (typeof entryExportKeys)[number]): string => {
 
 const normalizeDeclarationImports = (content: string): string =>
 	content.replace(/(["'])(\.\.?\/[^"']+)\1/g, (match, quote: string, path: string) => {
-		if (path.endsWith(".d.ts")) return match;
-		const declarationPath = path.replace(/\.(?:[cm]?js|tsx?)$/, ".d.ts");
+		if (path.endsWith(".d.ts") || path.endsWith(".d.mts") || path.endsWith(".d.cts")) {
+			return match;
+		}
+		const declarationPath = path.endsWith(".mts")
+			? `${path.slice(0, -4)}.d.mts`
+			: path.endsWith(".cts")
+				? `${path.slice(0, -4)}.d.cts`
+				: path.replace(/\.(?:[cm]?js|tsx?)$/, ".d.ts");
 		const normalizedPath = declarationPath === path ? `${path}.d.ts` : declarationPath;
 		return `${quote}${normalizedPath}${quote}`;
 	});
@@ -79,13 +141,26 @@ const packageSpecifiers = (content: string): string[] => {
 	return [...specifiers];
 };
 
+const relativeSpecifiers = (content: string): string[] => {
+	const declarationCode = content.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+	const specifiers = new Set<string>();
+	const imports = [
+		...declarationCode.matchAll(/^\s*(?:import|export)\b[^\n;]*\bfrom\s*["']([^"']+)["']/gm),
+		...declarationCode.matchAll(/\bimport\(\s*["']([^"']+)["']\s*\)/g),
+	];
+	for (const match of imports) {
+		if (match[1]?.startsWith(".")) specifiers.add(match[1]);
+	}
+	return [...specifiers];
+};
+
 const declarationFiles = (root: string): string[] => {
 	const files: string[] = [];
 	const visit = (directory: string): void => {
 		for (const entry of readdirSync(directory, { withFileTypes: true, encoding: "utf8" })) {
 			const path = join(directory, entry.name);
 			if (entry.isDirectory()) visit(path);
-			else if (entry.name.endsWith(".d.ts")) files.push(path);
+			else if (/\.d\.(?:ts|mts|cts)$/.test(entry.name)) files.push(path);
 		}
 	};
 	visit(root);
@@ -93,23 +168,101 @@ const declarationFiles = (root: string): string[] => {
 };
 
 const resolveDependencyPackage = (name: string, resolutionRoots: string[]): string => {
-	const packagePath = require.resolve(`${name}/package.json`, { paths: resolutionRoots });
-	return dirname(packagePath);
+	try {
+		const packagePath = require.resolve(`${name}/package.json`, { paths: resolutionRoots });
+		return dirname(packagePath);
+	} catch (error) {
+		if (
+			!(error instanceof Error) ||
+			!(error as NodeJS.ErrnoException).code?.includes("PACKAGE_PATH_NOT_EXPORTED")
+		) {
+			throw error;
+		}
+		const packagePathMatch = error.message.match(/ in (.+\/package\.json)$/u);
+		if (packagePathMatch?.[1] !== undefined && existsSync(packagePathMatch[1])) {
+			return dirname(packagePathMatch[1]);
+		}
+		for (const root of resolutionRoots) {
+			const candidate = join(root, "node_modules", ...name.split("/"), "package.json");
+			if (existsSync(candidate) && statSync(candidate).isFile()) return dirname(candidate);
+		}
+		let directory = dirname(require.resolve(name, { paths: resolutionRoots }));
+		while (directory !== dirname(directory)) {
+			const candidate = join(directory, "package.json");
+			try {
+				const candidatePackage = JSON.parse(readFileSync(candidate, "utf8")) as { name?: string };
+				if (candidatePackage.name === name) return directory;
+			} catch {
+				// Continue toward the package root when an entry directory has no manifest.
+			}
+			directory = dirname(directory);
+		}
+		throw error;
+	}
+};
+
+const resolveDeclarationFile = (sourceFile: string, specifier: string): string | undefined => {
+	const resolved = resolve(dirname(sourceFile), specifier);
+	const withoutSourceExtension = resolved.replace(/\.(?:[cm]?js|tsx?)$/, "");
+	const candidates = [
+		...(/\.d\.(?:ts|mts|cts)$/.test(resolved) ? [resolved] : []),
+		`${withoutSourceExtension}.d.ts`,
+		`${withoutSourceExtension}.d.mts`,
+		`${withoutSourceExtension}.d.cts`,
+		join(resolved, "index.d.ts"),
+		join(resolved, "index.d.mts"),
+		join(resolved, "index.d.cts"),
+	];
+	return candidates.find((candidate) => existsSync(candidate) && statSync(candidate).isFile());
+};
+
+const declarationEntry = (packageJson: {
+	types?: string;
+	typings?: string;
+	exports?: Record<string, ExportTarget>;
+}): string | undefined => {
+	const entry =
+		packageJson.types ?? packageJson.typings ?? findExportPath(packageJson.exports?.["."]);
+	return entry !== undefined && /\.d\.(?:ts|mts|cts)$/.test(entry) ? entry : undefined;
+};
+
+const definitelyTypedName = (name: string): string | undefined => {
+	if (name.startsWith("@types/") || name.startsWith("@")) return undefined;
+	return `@types/${name}`;
 };
 
 const copyDependencyDeclarations = (name: string, resolutionRoots: string[]): void => {
 	if (activeDependencyModuleEntries.has(name)) return;
-	const sourceRoot = resolveDependencyPackage(name, resolutionRoots);
-	const dependencyPackage = JSON.parse(readFileSync(join(sourceRoot, "package.json"), "utf8")) as {
+	let sourceRoot = resolveDependencyPackage(name, resolutionRoots);
+	let dependencyPackage = JSON.parse(readFileSync(join(sourceRoot, "package.json"), "utf8")) as {
 		types?: string;
 		typings?: string;
+		exports?: Record<string, ExportTarget>;
 	};
-	const typeEntry = dependencyPackage.types ?? dependencyPackage.typings;
+	let typeEntry = declarationEntry(dependencyPackage);
+	if (typeEntry === undefined) {
+		const typePackageName = definitelyTypedName(name);
+		if (typePackageName !== undefined) {
+			try {
+				sourceRoot = resolveDependencyPackage(typePackageName, [sourceRoot, ...resolutionRoots]);
+				dependencyPackage = JSON.parse(readFileSync(join(sourceRoot, "package.json"), "utf8"));
+				typeEntry = declarationEntry(dependencyPackage);
+			} catch {
+				// The runtime package may legitimately have no bundled declarations.
+			}
+		}
+	}
 	if (typeEntry === undefined) {
 		throw new Error(`Cannot mount ${name}: package does not publish declarations`);
 	}
 	const targetRoot = join(activeDependencyOutputRoot, name);
-	for (const sourceFile of declarationFiles(sourceRoot)) {
+	const sourceEntry = resolve(sourceRoot, typeEntry);
+	const targetEntry = join(targetRoot, typeEntry).slice(activeDependencyOutputRoot.length + 1);
+	activeDependencyModuleEntries.set(name, targetEntry);
+	const visited = new Set<string>();
+	const visit = (sourceFile: string): void => {
+		if (visited.has(sourceFile)) return;
+		visited.add(sourceFile);
 		const relativePath = sourceFile.slice(sourceRoot.length + 1);
 		const targetFile = join(targetRoot, relativePath);
 		mkdirSync(dirname(targetFile), { recursive: true });
@@ -117,14 +270,18 @@ const copyDependencyDeclarations = (name: string, resolutionRoots: string[]): vo
 			targetFile,
 			generatedHeader + normalizeDeclarationImports(readFileSync(sourceFile, "utf8")),
 		);
-	}
-	const targetEntry = join(targetRoot, typeEntry).slice(activeDependencyOutputRoot.length + 1);
-	activeDependencyModuleEntries.set(name, targetEntry);
-	for (const sourceFile of declarationFiles(sourceRoot)) {
-		for (const importedName of packageSpecifiers(readFileSync(sourceFile, "utf8"))) {
+		const source = readFileSync(sourceFile, "utf8");
+		for (const specifier of relativeSpecifiers(source)) {
+			const importedFile = resolveDeclarationFile(sourceFile, specifier);
+			if (importedFile !== undefined) visit(importedFile);
+		}
+		for (const importedName of packageSpecifiers(source)) {
 			copyDependencyDeclarations(importedName, [sourceRoot, ...resolutionRoots]);
 		}
-	}
+	};
+	if (!existsSync(sourceEntry))
+		throw new Error(`Cannot mount ${name}: missing declaration entry ${typeEntry}`);
+	visit(sourceEntry);
 };
 
 const generateDependencyModules = (): void => {
@@ -196,9 +353,19 @@ const generate = (root: string, dependenciesRoot: string): void => {
 	for (const file of declarationFiles(root)) {
 		for (const name of packageSpecifiers(readFileSync(file, "utf8"))) dependencies.add(name);
 	}
-	for (const name of dependencies) {
+	for (const name of [...dependencies, ...editorPackageSpecifiers]) {
 		if (name === packageJson.name) continue;
-		copyDependencyDeclarations(name, [packageRoot]);
+		try {
+			copyDependencyDeclarations(name, workspaceResolutionRoots);
+		} catch (error) {
+			if (error instanceof Error && (error as NodeJS.ErrnoException).code === "MODULE_NOT_FOUND") {
+				continue;
+			}
+			if (error instanceof Error && error.message.includes("does not publish declarations")) {
+				continue;
+			}
+			throw error;
+		}
 	}
 	generateDependencyModules();
 };

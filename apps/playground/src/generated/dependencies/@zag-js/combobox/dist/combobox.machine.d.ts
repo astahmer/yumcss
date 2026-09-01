@@ -1,0 +1,12 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import * as _zag_js_core from '@zag-js/core';
+import { ComboboxSchema } from './combobox.types.d.ts';
+import '@zag-js/collection';
+import '@zag-js/dismissable';
+import '@zag-js/popper';
+import '@zag-js/types';
+import '@zag-js/live-region';
+
+declare const machine: _zag_js_core.Machine<ComboboxSchema<any>>;
+
+export { machine };

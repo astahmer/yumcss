@@ -1,0 +1,16 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+interface LiveRegionOptions {
+    level: "polite" | "assertive";
+    document?: Document | undefined;
+    root?: HTMLElement | null | undefined;
+    delay?: number | undefined;
+    debug?: boolean | undefined;
+}
+type LiveRegion = ReturnType<typeof createLiveRegion>;
+declare function createLiveRegion(opts?: Partial<LiveRegionOptions>): {
+    announce: (message: string, delay?: number) => void;
+    destroy: () => void;
+    toJSON(): string;
+};
+
+export { type LiveRegion, type LiveRegionOptions, createLiveRegion };

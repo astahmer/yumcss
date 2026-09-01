@@ -1,0 +1,9 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface FieldRequiredIndicatorBaseProps extends PolymorphicProps {
+    fallback?: React.ReactNode | undefined;
+}
+export interface FieldRequiredIndicatorProps extends HTMLProps<'span'>, FieldRequiredIndicatorBaseProps {
+}
+export declare const FieldRequiredIndicator: ForwardRefExoticComponent<FieldRequiredIndicatorProps & RefAttributes<HTMLSpanElement>>;

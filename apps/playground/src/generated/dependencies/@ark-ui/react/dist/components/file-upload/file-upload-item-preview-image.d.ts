@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface FileUploadItemPreviewImageBaseProps extends PolymorphicProps {
+}
+export interface FileUploadItemPreviewImageProps extends HTMLProps<'img'>, FileUploadItemPreviewImageBaseProps {
+}
+export declare const FileUploadItemPreviewImage: ForwardRefExoticComponent<FileUploadItemPreviewImageProps & RefAttributes<HTMLImageElement>>;

@@ -1,0 +1,8 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface TocLinkBaseProps extends PolymorphicProps {
+}
+export interface TocLinkProps extends HTMLProps<'a'>, TocLinkBaseProps {
+}
+export declare const TocLink: ForwardRefExoticComponent<TocLinkProps & RefAttributes<HTMLAnchorElement>>;

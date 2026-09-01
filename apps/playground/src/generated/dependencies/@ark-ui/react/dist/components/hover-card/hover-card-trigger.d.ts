@@ -1,0 +1,10 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { TriggerProps } from '@zag-js/hover-card';
+import { Assign } from '../../types.d.ts';
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+export interface HoverCardTriggerBaseProps extends TriggerProps, PolymorphicProps {
+}
+export interface HoverCardTriggerProps extends Assign<HTMLProps<'button'>, HoverCardTriggerBaseProps> {
+}
+export declare const HoverCardTrigger: ForwardRefExoticComponent<HoverCardTriggerProps & RefAttributes<HTMLButtonElement>>;

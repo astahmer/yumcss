@@ -1,0 +1,17 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { ItemProps } from '@zag-js/menu';
+import { Assign } from '../../types.d.ts';
+import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
+import { ForwardRefExoticComponent, RefAttributes } from 'react';
+interface ItemBaseProps extends ItemProps {
+    /**
+     * The function to call when the item is selected
+     */
+    onSelect?: VoidFunction | undefined;
+}
+export interface MenuItemBaseProps extends ItemBaseProps, PolymorphicProps {
+}
+export interface MenuItemProps extends Assign<HTMLProps<'div'>, MenuItemBaseProps> {
+}
+export declare const MenuItem: ForwardRefExoticComponent<MenuItemProps & RefAttributes<HTMLDivElement>>;
+export {};

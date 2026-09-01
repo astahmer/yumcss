@@ -52,12 +52,28 @@ describe("playground editor declarations", () => {
 
 	test("mounts external declaration dependencies from the installed graph", () => {
 		const dependencyPaths = EDITOR_TYPE_LIBRARIES.map((library) => library.filePath);
+		const dependencyModules = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/generated/dependencies/modules.d.ts"),
+		)?.content;
 
 		expect(dependencyPaths).toContain(
 			"file:///pandwind/playground/generated/dependencies/csstype/index.d.ts",
 		);
 		expect(dependencyPaths).toContain(
 			"file:///pandwind/playground/generated/dependencies/postcss/lib/postcss.d.ts",
+		);
+		expect(dependencyModules).toContain('declare module "@chakra-ui/react"');
+		expect(dependencyModules).toContain('declare module "@mantine/core"');
+		expect(dependencyModules).toContain('declare module "@emotion/react"');
+		expect(dependencyModules).toContain('declare module "tailwindcss"');
+		expect(dependencyModules).toContain('declare module "@unocss/core"');
+		expect(dependencyModules).toContain('declare module "jss"');
+		const mountedModules = EDITOR_TYPE_LIBRARIES.map((library) => library.content).join("\n");
+		expect(mountedModules).not.toContain(
+			'declare module "@chakra-ui/react" { export const Box: PlaygroundComponent; }',
+		);
+		expect(mountedModules).not.toContain(
+			'declare module "@mantine/core" { export const Box: PlaygroundComponent; }',
 		);
 	});
 });

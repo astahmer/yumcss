@@ -1,0 +1,3 @@
+// Generated from the workspace-linked pandwind package. Do not edit.
+import { AnatomyInstance } from '@zag-js/anatomy';
+export declare const datePickerAnatomy: AnatomyInstance<"root" | "control" | "nextTrigger" | "prevTrigger" | "label" | "trigger" | "positioner" | "content" | "valueText" | "view" | "clearTrigger" | "input" | "monthSelect" | "presetTrigger" | "rangeText" | "table" | "tableBody" | "tableCell" | "tableCellTrigger" | "tableHead" | "tableHeader" | "tableRow" | "viewControl" | "viewTrigger" | "yearSelect">;
