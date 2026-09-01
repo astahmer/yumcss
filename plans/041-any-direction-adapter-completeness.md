@@ -307,12 +307,12 @@ The remaining skips are therefore not evidence that the HIR is missing. They
 identify target projections or host facts that still need an implementation:
 for example, a dynamic value without a host binding, MUI's `sx` object prop
 on an unsupported framework, or a custom component whose prop-forwarding
-contract is unknown. The current representative static fixture audit now has
-only one framework-boundary skip: styled-components → Vue-styled. Static
-styled-components → Solid-styled is handled by Solid's target-owned component
-projection; dynamic/function-valued subjects remain explicitly residual. The
-next implementation must add the Vue projection behind a target-owned port and
-prove it, rather than weakening the capability gate.
+contract is unknown. The current representative static fixture audit has no
+framework-boundary skips: static styled-components → Solid-styled and
+styled-components → Vue-styled are handled by their target-owned component
+projections. Dynamic/function-valued subjects, React-specific props, and
+template-only framework behavior remain explicitly residual and still require
+their own target-owned rewrites and proofs.
 
 The diagnostic is intentionally route-specific. `capability-blocked` means the
 target adapter's declared representations were exhausted after lowering and

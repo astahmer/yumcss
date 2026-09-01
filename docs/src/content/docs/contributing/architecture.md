@@ -221,10 +221,12 @@ special cases in the route runner.
 
 Target-native component projections may also constrain the host language. For
 example, the MUI adapter emits `styled("div")({...})` for a React component
-subject and declares that React as its supported host framework. A Solid or
-Vue subject therefore remains source-preserving with a framework residual until
-an explicit cross-framework host adapter is registered; it is never emitted as
-React-shaped code by accident.
+subject and declares that React as its supported host framework. Solid-styled
+and Vue-styled separately own the narrow static React JSX projection for their
+component targets; dynamic values, React-specific props, and files requiring a
+template rewrite remain source-preserving until those semantics are modeled.
+No target is emitted as React-shaped code by accident merely because its style
+declarations are parseable.
 
 The same rule applies to Stitches and styled-components: their `css`/`styled`
 targets produce React component values, not class strings. Class-oriented
