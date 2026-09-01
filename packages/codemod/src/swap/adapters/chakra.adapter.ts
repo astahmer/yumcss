@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
 	AdapterParseContext,
@@ -830,8 +830,8 @@ export function createChakraAdapter(
 				},
 			},
 		],
-		packages: dependency("@chakra-ui/react", "peer"),
-		capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
+		packages: CodemodAdapterKit.dependency("@chakra-ui/react", "peer"),
+		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
 			"custom-properties": "exact",
 			"theme-context": "partial",
 			"runtime-context": "partial",

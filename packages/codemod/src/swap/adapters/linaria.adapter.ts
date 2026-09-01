@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -18,11 +18,11 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			dependency("@linaria/core", "peer").packages[0]!,
-			dependency("@linaria/react", "peer").packages[0]!,
+			CodemodAdapterKit.dependency("@linaria/core", "peer").packages[0]!,
+			CodemodAdapterKit.dependency("@linaria/react", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Linaria, "unsupported", {
 		"dynamic-values": "partial",
 		components: "exact",
 		"font-face": "unsupported",

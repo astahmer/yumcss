@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -62,12 +62,16 @@ export default defineCodemodAdapter({
 			},
 		},
 	],
-	packages: dependency("@vanilla-extract/css", "runtime"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.VanillaExtract, "unsupported", {
-		layers: "unsupported",
-		"supports-rules": "unsupported",
-		"property-rules": "unsupported",
-	}),
+	packages: CodemodAdapterKit.dependency("@vanilla-extract/css", "runtime"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(
+		CodemodAdapterId.VanillaExtract,
+		"unsupported",
+		{
+			layers: "unsupported",
+			"supports-rules": "unsupported",
+			"property-rules": "unsupported",
+		},
+	),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
 	sourceModules: ["@vanilla-extract/css"],

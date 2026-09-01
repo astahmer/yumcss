@@ -145,51 +145,52 @@ export interface CodemodAdapterSpec {
 	): CodemodAdapterEmission;
 }
 
-export function dependency(
-	name: string,
-	kind: AdapterDependencies["packages"][number]["kind"],
-): AdapterDependencies {
-	return { packages: [{ name, kind }] };
-}
-
-export function allRuleCapabilities(
-	adapterId: string,
-	dynamic: "exact" | "partial" | "unsupported",
-	capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
-): AdapterCapabilities {
-	return {
-		schema: ADAPTER_CAPABILITIES_SCHEMA,
-		adapter: adapterId,
-		capabilities: {
-			declarations: "exact",
-			"rule-level": "exact",
-			"global-rules": "exact",
-			keyframes: "exact",
-			"font-face": "exact",
-			layers: "exact",
-			"supports-rules": "exact",
-			"property-rules": "exact",
-			selectors: "exact",
-			nesting: "exact",
-			ordering: "exact",
-			"token-values": "exact",
-			"dynamic-values": dynamic,
-			"function-values": "unsupported",
-			"pseudo-conditions": "exact",
-			"selector-conditions": "exact",
-			"media-conditions": "exact",
-			"container-conditions": "exact",
-			"supports-conditions": "exact",
-			...capabilities,
-		},
-	};
-}
-
 /** Cohesive construction utilities used by concrete adapter modules. */
 export class CodemodAdapterKit {
-	static dependency = dependency;
-	static allRuleCapabilities = allRuleCapabilities;
+	static dependency(
+		name: string,
+		kind: AdapterDependencies["packages"][number]["kind"],
+	): AdapterDependencies {
+		return { packages: [{ name, kind }] };
+	}
+
+	static allRuleCapabilities(
+		adapterId: string,
+		dynamic: "exact" | "partial" | "unsupported",
+		capabilities: Partial<AdapterCapabilities["capabilities"]> = {},
+	): AdapterCapabilities {
+		return {
+			schema: ADAPTER_CAPABILITIES_SCHEMA,
+			adapter: adapterId,
+			capabilities: {
+				declarations: "exact",
+				"rule-level": "exact",
+				"global-rules": "exact",
+				keyframes: "exact",
+				"font-face": "exact",
+				layers: "exact",
+				"supports-rules": "exact",
+				"property-rules": "exact",
+				selectors: "exact",
+				nesting: "exact",
+				ordering: "exact",
+				"token-values": "exact",
+				"dynamic-values": dynamic,
+				"function-values": "unsupported",
+				"pseudo-conditions": "exact",
+				"selector-conditions": "exact",
+				"media-conditions": "exact",
+				"container-conditions": "exact",
+				"supports-conditions": "exact",
+				...capabilities,
+			},
+		};
+	}
 }
+
+/** Public convenience delegates; adapter implementations should use the kit. */
+export const dependency = CodemodAdapterKit.dependency;
+export const allRuleCapabilities = CodemodAdapterKit.allRuleCapabilities;
 
 function configFor(
 	id: string,

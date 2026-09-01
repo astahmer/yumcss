@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
@@ -263,8 +263,8 @@ export default defineCodemodAdapter({
 			},
 		},
 	],
-	packages: dependency("@mantine/core", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
+	packages: CodemodAdapterKit.dependency("@mantine/core", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
 		"theme-context": "partial",
 		"runtime-context": "partial",
 		"framework-semantics": "partial",

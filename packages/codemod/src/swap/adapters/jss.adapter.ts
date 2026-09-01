@@ -1,6 +1,6 @@
 import { applyEdits } from "../../migrate.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
 
@@ -46,11 +46,11 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			dependency("jss", "runtime").packages[0]!,
-			dependency("react-jss", "peer").packages[0]!,
+			CodemodAdapterKit.dependency("jss", "runtime").packages[0]!,
+			CodemodAdapterKit.dependency("react-jss", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Jss, "unsupported", {
 		"named-conditions": "exact",
 		"named-rules": "exact",
 		"dynamic-values": "partial",

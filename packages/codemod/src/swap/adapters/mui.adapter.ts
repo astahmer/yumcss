@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
 import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import {
@@ -249,11 +249,11 @@ export default defineCodemodAdapter({
 	],
 	packages: {
 		packages: [
-			dependency("@mui/system", "peer").packages[0]!,
-			dependency("@mui/material", "peer").packages[0]!,
+			CodemodAdapterKit.dependency("@mui/system", "peer").packages[0]!,
+			CodemodAdapterKit.dependency("@mui/material", "peer").packages[0]!,
 		],
 	},
-	capabilities: allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
 		"function-values": "exact",
 		"theme-context": "partial",
 		"runtime-context": "partial",

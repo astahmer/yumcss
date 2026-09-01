@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
 	AdapterProjectConfig,
@@ -161,10 +161,10 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			},
 		],
 		packages: {
-			packages: [dependency("@pandacss/dev", "development").packages[0]!],
+			packages: [CodemodAdapterKit.dependency("@pandacss/dev", "development").packages[0]!],
 			files: ["panda.config.ts", "panda.config.js", "styled-system"],
 		},
-		capabilities: allRuleCapabilities(CodemodAdapterId.Panda, "partial", {
+		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Panda, "partial", {
 			// This endpoint is the generated Panda object dialect. It can express
 			// declarations and nested conditions, but it is not a general stylesheet
 			// rule API. Keep unsupported rule kinds explicit so the IR residual remains

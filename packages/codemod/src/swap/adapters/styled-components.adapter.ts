@@ -1,4 +1,4 @@
-import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
+import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -60,8 +60,8 @@ export default defineCodemodAdapter({
 			},
 		},
 	],
-	packages: dependency("styled-components", "peer"),
-	capabilities: allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
+	packages: CodemodAdapterKit.dependency("styled-components", "peer"),
+	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyledComponents, "exact", {
 		"theme-context": "exact",
 		"runtime-context": "exact",
 		"function-values": "exact",
