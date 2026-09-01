@@ -74,7 +74,32 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("style=");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).not.toContain("bg={theme.foreground}");
-		expect(result.code).not.toContain("adapter capability mismatch");
+		 expect(result.code).not.toContain("adapter capability mismatch");
+	});
+
+	test("keeps scalar template dynamics in Chakra's target-native css carrier", () => {
+		const result = runAdapterMigration(
+			'import { css } from "@linaria/core";\n' +
+				"const card = css`color: ${theme.foreground};`;",
+			{
+				from: CodemodAdapterId.Linaria,
+				to: CodemodAdapterId.ChakraUi,
+				file: "Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css } from "@chakra-ui/react";');
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("css({");
+		expect(result.outcomes).toMatchObject([
+			{ outcome: "host-runtime", representation: "target-native" },
+		]);
 	});
 
 	test.each([

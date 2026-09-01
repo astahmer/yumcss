@@ -1177,7 +1177,15 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			return {
 				...processed,
 				dependencies: spec.packages,
-				residuals: [...program.residuals, ...(processed.residuals ?? [])],
+				// A target representation may explicitly preserve a source residual
+				// (for example, a scalar template expression carried by Chakra's
+				// runtime `css` object). It remains in semantic IR for provenance, but
+				// must not fail target validation or be reported as an unhandled
+				// conversion residual.
+				residuals: [
+					...program.residuals.filter((residual) => residual.preserved !== true),
+					...(processed.residuals ?? []),
+				],
 			};
 		},
 		validate: validatePrograms,

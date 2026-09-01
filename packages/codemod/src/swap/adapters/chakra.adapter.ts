@@ -591,11 +591,17 @@ export function createChakraAdapter(
 				hostRepresentation: StyleHostRepresentationKind.Class,
 				resolveRepresentation: ({ program, hasHostContext }) =>
 					!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
-						? StyleRepresentationKind.RuntimeCarrier
+						? StyleRepresentationKind.TargetNative
 						: undefined,
 				capabilitiesForRepresentation: ({ representation }) =>
-					representation === StyleRepresentationKind.RuntimeCarrier
+				[StyleRepresentationKind.TargetNative, StyleRepresentationKind.RuntimeCarrier].includes(
+					representation,
+				)
 						? ["dynamic-values", "theme-context", "runtime-context"]
+						: [],
+				preservesResidualKindsForRepresentation: ({ program, representation }) =>
+					representation === StyleRepresentationKind.TargetNative && hasDynamicValues(program)
+						? ["dynamic"]
 						: [],
 			},
 		},
