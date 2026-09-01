@@ -87,6 +87,23 @@ export function componentAttrsExpressionForSubject(subject: string): string | un
 	return expression === undefined || expression === "" ? undefined : expression;
 }
 
+/**
+ * A static styled subject used only as an expression statement has no
+ * component value for a target to preserve. It is safe to lower its style
+ * carrier in place; assignments, returns, calls, exports, and host uses must
+ * continue through the component contract instead.
+ */
+export function isDiscardedExpressionStatement(
+	source: string,
+	start: number,
+	end: number,
+): boolean {
+	const before = source.slice(0, start).trimEnd();
+	const after = source.slice(end).trimStart();
+	if (/\bexport\s+default$/.test(before)) return false;
+	return (before === "" || /[;{}]$/.test(before)) && (after === "" || /^[;}]/.test(after));
+}
+
 const excluded = (source: string, file: string, index: number): boolean => {
 	try {
 		return computeExcludedRanges(source, file).isExcluded(index);

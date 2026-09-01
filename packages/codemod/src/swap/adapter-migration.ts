@@ -32,6 +32,7 @@ import {
 	getHostComponentRewriter,
 	componentTagForSubject,
 	intrinsicTagForSubject,
+	isDiscardedExpressionStatement,
 	rewriteDynamicCarrier,
 	rewriteDynamicExpressionCarrier,
 	type HostComponentRewriteRequest,
@@ -549,6 +550,17 @@ function runAdapterMigrationInternal(
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(source, bindingBeforeMatch) ||
 			hasInlineHostUse(source, match.start);
+		const discardableStaticSubject =
+			sourceSubject !== undefined &&
+			bindingBeforeMatch === undefined &&
+			!programHasDynamic(program) &&
+			!hasHostContext &&
+			isDiscardedExpressionStatement(source, match.start, match.end);
+		if (discardableStaticSubject)
+			program = {
+				...program,
+				source: { ...program.source, subject: undefined },
+			};
 		const hostFramework = frameworkForHost(options.file, document, options.semantic, program);
 		const resolvedHostRepresentation = targetPolicy?.resolveHostRepresentation;
 		hostRepresentation =

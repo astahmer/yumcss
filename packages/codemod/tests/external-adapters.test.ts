@@ -817,6 +817,34 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.code).not.toContain("styled-components");
 	});
 
+	test.each(["bamboo", "tailwind", "unocss"] as const)(
+		"lowers a discarded static styled subject to the target class carrier for %s",
+		(target) => {
+			const result = runAdapterMigration(
+				'import styled from "styled-components"; styled.div({ color: "red" });',
+				{ from: "styled-components", to: target, file: "styles.tsx", mode: "safe" },
+			);
+			expect(result.converted).toBe(1);
+			expect(result.skipped).toBe(0);
+			expect(result.residuals).toEqual([]);
+			expect(result.code).not.toContain("pandwind:migrate-skip");
+			expect(result.code).not.toContain('from "styled-components"');
+		},
+	);
+
+	test("does not discard a static styled subject passed as a value", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components"; const result = use(styled.div({ color: "red" }));',
+			{ from: "styled-components", to: "tailwind", file: "Card.tsx", mode: "safe" },
+		);
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
+		);
+		expect(result.code).toContain("styled.div");
+	});
+
 	test("emits a JSS class carrier for a static Pandwind React host", () => {
 		const result = runAdapterMigration(
 			'import { css } from "pandwind/css";\n' +
