@@ -43,10 +43,16 @@ const UNITLESS_PROPERTIES = new Set([
 ]);
 
 export function normalizeCssValue(property: string, value: string | number): string {
-	const cssProperty = property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
-	return typeof value === "number" &&
-		!cssProperty.startsWith("--") &&
-		!UNITLESS_PROPERTIES.has(cssProperty)
+	if (typeof value !== "number") return value;
+	let cssProperty = property;
+	for (let index = 0; index < property.length; index++) {
+		const code = property.charCodeAt(index);
+		if (code >= 65 && code <= 90) {
+			cssProperty = property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
+			break;
+		}
+	}
+	return !cssProperty.startsWith("--") && !UNITLESS_PROPERTIES.has(cssProperty)
 		? `${value}px`
 		: String(value);
 }

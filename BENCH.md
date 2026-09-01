@@ -113,7 +113,7 @@ regime. Size cost of the cache: cx entry +413 min / +185 gz bytes vs v2
 
 ## Runtime hot-path pass — 2026-09-01
 
-Three narrow optimizations were measured against the existing size gate:
+Five narrow optimizations were measured against the existing size gate:
 
 - `createCx()` takes a no-config/no-atom fast path for two distinct,
   whitespace-free class tokens. The cold unique-pair harness measured
@@ -123,6 +123,39 @@ Three narrow optimizations were measured against the existing size gate:
 - `createTw()` materializes the composing-utility set once per created runtime,
   instead of once per style call. Direct `compileStyles()` callers still accept
   the generated array form.
+- CSS null-reset normalization is now clone-on-write, so ordinary dynamic
+  style objects are not copied before flattening. A representative CSS object
+  moved from ~552K to ~617K calls/sec (+12%). Null-reset and nested-condition
+  behavior remain covered by runtime tests.
+- Flat CSS objects bypass `flattie` when they contain no nested, null, or
+  undefined values; conditional and array styles still use the general
+  flattener. Atomic property extraction also avoids a split allocation for
+  flat keys.
+- `normalizeCssValue` returns string values immediately and only performs
+  camel-case/unit checks for numeric values. This keeps the common string path
+  allocation-free.
+- The no-config `cx()` fast path now handles up to four distinct,
+  whitespace-free string tokens. A three-token call measured ~11.7M ops/sec
+  and a four-token call ~10.5M ops/sec; duplicates, whitespace, arrays, and
+  configured/atom-backed calls retain the full merge path.
+
+The current size record after this pass is:
+
+| entry | minified | gzip |
+| --- | ---: | ---: |
+| CSS fallback | 6,538 | 2,953 |
+| CSS compiler-pruned call | 3,931 | 1,892 |
+| `tw()` | 2,319 | 1,103 |
+| `cx()` | 12,321 | 5,206 |
+| all engines | 14,594 | 6,008 |
+
+The CSS fallback grew by about 406 minified bytes versus the previous
+snapshot. That is an intentional trade: the measured representative CSS
+object path improved by about 12%, while literal calls continue to be erased
+by the compiler and the reviewed hard budgets remain explicit in
+`packages/pandwind/tests/runtime-budget.json`.
+
+The earlier runtime-sheet cache remains part of the same pass:
 - `createRuntimeSheet()` memoizes ordering and serialized CSS until a rule or
   token mutation. The substitution test verifies that repeated reads invoke
   neither policy again, while every state change invalidates both caches.

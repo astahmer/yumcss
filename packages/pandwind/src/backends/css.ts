@@ -18,12 +18,14 @@ export interface CssBackendOptions {
 	conditions?: Record<string, string | string[]>;
 }
 
-const canonicalStyleKey = (key: string): string =>
-	key
+const canonicalStyleKey = (key: string): string => {
+	if (!key.includes("__")) return key;
+	return key
 		.split("__")
 		.filter((part) => part !== "")
 		.toSorted()
 		.join("__");
+};
 
 const CSS_BACKEND_CAPABILITIES: BackendCapabilityContract = {
 	schema: "pandwind.style-backend-capabilities/1",
@@ -61,7 +63,9 @@ export function createCssBackend(options: CssBackendOptions = {}): StyleBackend 
 
 	const declare = (key: string, value: string): string => {
 		const orderedKey = canonicalStyleKey(key);
-		const property = orderedKey.split("__").at(-1) ?? orderedKey;
+		const propertySeparator = orderedKey.lastIndexOf("__");
+		const property =
+			propertySeparator === -1 ? orderedKey : orderedKey.slice(propertySeparator + 2);
 		const rawValue = normalizeCssValue(property, value);
 		// The stylesheet canonicalizes flattened condition paths before it
 		// hashes them. Do the same at declaration time so inverted nesting

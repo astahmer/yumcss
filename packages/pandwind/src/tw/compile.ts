@@ -288,8 +288,11 @@ export function compileStyles(
 	const classes: Emitted[] = [];
 	const composeSet = compose === undefined || compose instanceof Set ? compose : new Set(compose);
 	visit(styles, variants, conflicts, composeSet, classes, new Map(), "", undefined);
-	return classes
-		.map((emitted) => emitted.className)
-		.filter(Boolean)
-		.join(" ");
+	let output = "";
+	for (const emitted of classes) {
+		if (emitted.className === "") continue;
+		if (output !== "") output += " ";
+		output += emitted.className;
+	}
+	return output;
 }

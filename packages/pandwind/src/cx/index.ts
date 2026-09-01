@@ -648,25 +648,29 @@ export function createCx(options: CxOptions = {}): CxFn {
 		return parts.join(" ");
 	};
 
+	const fastPlainInputs = (inputs: Array<CxInput | CxInput[]>): string | undefined => {
+		if (inputs.length === 0 || inputs.length > 4) return undefined;
+		let out = "";
+		for (let index = 0; index < inputs.length; index++) {
+			const input = inputs[index];
+			if (typeof input !== "string" || input.length === 0 || /\s/.test(input)) return undefined;
+			for (let previous = 0; previous < index; previous++) {
+				if (inputs[previous] === input) return undefined;
+			}
+			if (out !== "") out += " ";
+			out += input;
+		}
+		return out;
+	};
+
 	const cx = (...inputs: Array<CxInput | CxInput[]>): string => {
 		// The no-config path is also used for plain class composition. Two
 		// already-separated tokens need neither tokenization nor deduplication;
 		// keep this branch deliberately narrow so every other shape retains the
 		// exact merge implementation below.
-		if (conflicts === undefined && atoms === undefined && inputs.length === 2) {
-			const first = inputs[0];
-			const second = inputs[1];
-			if (
-				typeof first === "string" &&
-				typeof second === "string" &&
-				first.length > 0 &&
-				second.length > 0 &&
-				first !== second &&
-				/^\S+$/.test(first) &&
-				/^\S+$/.test(second)
-			) {
-				return `${first} ${second}`;
-			}
+		if (conflicts === undefined && atoms === undefined) {
+			const plain = fastPlainInputs(inputs);
+			if (plain !== undefined) return plain;
 		}
 		// Whole-input cache: only when every top-level input is a string (no
 		// arrays to flatten, no css-atom objects whose resolution depends on

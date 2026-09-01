@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Last measured: **2026-08-27** for the runtime-size contract and **2026-08-23**
+Last measured: **2026-09-01** for the runtime hot-path and runtime-size contracts and **2026-08-23**
 for `cx()` v3 (whole-input cache), **2026-08-22**
 for the competitor table. Local macOS (arm64), Node v24.19.0. Interleaved
 rotated-order rounds, best-of-5-pass median sample. This is local-machine
@@ -75,6 +75,22 @@ The current runtime keeps the optimizations deliberately narrow:
 - `createTw()` creates its composing-utility set once per runtime instance;
 - `createRuntimeSheet()` caches ordering and serialized CSS until a rule or
   token mutation, avoiding repeated work for unchanged reads.
+- CSS null-reset normalization is clone-on-write and flat CSS objects bypass
+  the general flattener when safe. A representative object call measured about
+  552K → 617K calls/sec (+12%).
+- no-config `cx()` directly joins up to four distinct whitespace-free tokens;
+  three-token and four-token calls measured about 11.7M and 10.5M calls/sec.
+  Duplicate/complex/configured inputs keep the full merge path.
+- `tw()` now assembles its final output without intermediate `map`/`filter`
+  arrays. The generated-config shape measured about 270K → 296K calls/sec
+  (+10%).
+
+The intentional current size record is 6,538 min / 2,953 gzip for the full
+CSS fallback, 3,931 / 1,892 for a compiler-pruned CSS call, 2,319 / 1,103
+for `tw()`, 12,321 / 5,206 for `cx()`, and 14,594 / 6,008 for all engines.
+The CSS fallback is roughly 406 minified bytes larger than the previous
+snapshot because the measured dynamic CSS speedup is worth the modest size
+trade-off; literal calls are still erased by the compiler.
 
 Literal calls remain statically erased by the Vite compiler, so these runtime
 costs apply to dynamic or unsupported calls only.

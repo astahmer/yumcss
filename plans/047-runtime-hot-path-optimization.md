@@ -1,6 +1,6 @@
 # Runtime hot-path optimization
 
-Status: in progress
+Status: complete
 
 ## Goal
 
@@ -18,14 +18,16 @@ to measured throughput wins.
   for every new fast path;
 - remeasure minified/gzipped runtime entries and document the trade-off.
 
-## Initial targets
+## Completed work
 
-1. Make CSS null-reset normalization clone-on-write so ordinary styles retain
+1. CSS null-reset normalization is clone-on-write so ordinary styles retain
    their original object graph and avoid `map`/`Object.fromEntries` work.
-2. Avoid intermediate arrays when compiling one or several CSS style objects,
-   and use direct key extraction for flat atomic declarations.
-3. Extend the already conservative no-config `cx` fast path to trivial inputs
+2. Flat CSS objects bypass the general flattener when safe, several CSS
+   declaration paths avoid intermediate arrays/splits, and string values skip
+   numeric normalization work.
+3. The already conservative no-config `cx` fast path now handles up to four
    only when it is provably equivalent to the normal deduplicating path.
+4. `tw` output assembly avoids intermediate `map`/`filter` arrays.
 
 ## Guardrails
 
@@ -42,3 +44,15 @@ to measured throughput wins.
 - unit tests cover fast-path equivalence and null-reset edge cases;
 - runtime-size and type checks pass;
 - focused JJ revisions describe each independently reviewable optimization.
+
+## Measured outcome
+
+- representative CSS object: ~552K → ~617K calls/sec (+12%);
+- generated-config `tw` object: ~270K → ~296K calls/sec (+10%);
+- no-config `cx` with three/four tokens: ~11.7M/~10.5M calls/sec;
+- full CSS fallback: 6,538 min / 2,953 gzip;
+- all-engine runtime: 14,594 min / 6,008 gzip.
+
+The CSS fallback size increase is intentional and bounded by the reviewed
+runtime budget. Static calls remain compiler-erased, so these optimizations
+primarily improve dynamic and unsupported semantic fallbacks.

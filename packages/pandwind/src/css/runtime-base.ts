@@ -50,16 +50,41 @@ export interface RuntimeCssContext {
 
 export type RuntimeCssAttachment = (css: RuntimeCssFunction, context: RuntimeCssContext) => void;
 
+/**
+ * Replace Chakra/Panda-style null resets without copying ordinary style
+ * objects. Most runtime calls contain no nulls, so clone only the branch that
+ * actually changes; this keeps the common path allocation-light and preserves
+ * the input object for callers that reuse style constants.
+ */
 const preserveNullResets = (value: unknown, property = ""): unknown => {
 	if (value === null) {
 		const cssProperty = property.replace(/[A-Z]/g, (character) => `-${character.toLowerCase()}`);
 		return cssProperty.endsWith("-width") && cssProperty.includes("border-") ? 0 : "initial";
 	}
-	if (Array.isArray(value)) return value.map((item) => preserveNullResets(item, property));
+	if (Array.isArray(value)) {
+		let copy: unknown[] | undefined;
+		for (let index = 0; index < value.length; index++) {
+			const item = value[index];
+			const normalized = preserveNullResets(item, property);
+			if (normalized !== item) {
+				copy ??= value.slice(0, index);
+				copy[index] = normalized;
+			} else if (copy !== undefined) {
+				copy[index] = item;
+			}
+		}
+		return copy ?? value;
+	}
 	if (typeof value !== "object" || value === undefined) return value;
-	return Object.fromEntries(
-		Object.entries(value).map(([key, child]) => [key, preserveNullResets(child, key)]),
-	);
+	let copy: Record<string, unknown> | undefined;
+	for (const [key, child] of Object.entries(value)) {
+		const normalized = preserveNullResets(child, key);
+		if (normalized !== child) {
+			copy ??= { ...(value as Record<string, unknown>) };
+			copy[key] = normalized;
+		}
+	}
+	return copy ?? value;
 };
 
 const isPreset = (value: CreateCssOptions | TypedPreset): value is TypedPreset =>
@@ -82,9 +107,14 @@ export function createCssRuntime(
 	const atoms = backend.atoms;
 
 	const compileStyles = (...styles: Array<StyleObject>): CompiledStyles => {
-		const flat = flattenStyle(
-			assign(...styles.map((style) => preserveNullResets(style) as StyleObject)),
-		);
+		let source: StyleObject;
+		if (styles.length === 1) {
+			source = preserveNullResets(styles[0]) as StyleObject;
+		} else {
+			source = {};
+			for (const style of styles) Object.assign(source, preserveNullResets(style));
+		}
+		const flat = flattenStyle(source);
 		const compiled = {} as CompiledStyles;
 		for (const key in flat) compiled[key] = backend.declare(key, flat[key]!);
 		Object.defineProperty(compiled, "$$css", { value: true, enumerable: false });
