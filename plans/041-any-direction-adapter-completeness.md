@@ -76,7 +76,9 @@ exposes the legacy Panda/Pandwind dialects through the same style-system
 registry. Named style maps and function-valued styles now have explicit
 representation contracts. The route proof is no longer only a single happy
 fixture: the shared proof corpus exercises happy, edge, and malformed inputs
-in safe and partial modes.
+in safe and partial modes. The codemod suite currently passes 51 test files
+and 746 tests including the adapter coverage gate; the CLI e2e matrix passes
+105 tests across the ordered routes, and the route proof passes 4,056 cases.
 
 Function-valued object calls now share `FunctionStyleCallParser` across the
 normal adapter-definition path and the generic extra-adapter runtime. The
@@ -94,6 +96,15 @@ target adapters receive the selected typed representation. This prevents
 component factories from being assigned to `className`, preserves native
 component targets for unused declarations, and keeps Pandwind's runtime
 component carrier limited to function-valued cases.
+
+Host conversion is executable rather than descriptive metadata. Target
+policies may guard a source-to-target dialect conversion with `canConvert`; the
+runner passes the target framework and original `sourceFramework` separately
+to representation selectors and host rewrites. Static Solid JSX can therefore
+project into React-bound Stitches, MUI, and StyleX targets, while Solid-only
+signals/directives/attributes remain source-preserving capability residuals.
+React-to-React Native rewrites use the same split for intrinsic hosts and
+styled subjects. The focused target suite covers both classes of outcome.
 
 The migration result now exposes a typed outcome for each parsed call in
 addition to the lowering plan. `static` means no runtime carrier was needed;

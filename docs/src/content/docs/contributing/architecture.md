@@ -66,6 +66,14 @@ declarations, and other DOM behavior remain typed `host-framework` residuals.
 This keeps host portability target-owned and prevents the semantic runner from
 pretending that a CSS declaration alone proves runtime or platform parity.
 
+The host rewrite contract carries both facts when they differ: `framework` is
+the target dialect used to validate emitted code, while `sourceFramework` is
+the original dialect used by the target-owned source rewrite. A conversion may
+also provide `canConvert`, so a `.tsx` file that happens to use Solid-only
+signals, directives, or `class=` syntax is not mislabeled as React-compatible.
+The route remains source-preserving with a typed residual until a real dialect
+rewrite exists.
+
 Solid-styled and Vue-styled own the corresponding static React component
 projection. A React `styled.div` subject with only static declarations can be
 emitted as the target's styled component subject while preserving its simple
