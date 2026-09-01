@@ -55,6 +55,16 @@ host adapter to bind the original expression. The opt-in is adapter-owned and
 requires a substitution test; it is not a blanket permission for the runner to
 reinterpret function-valued styles or overwrite an existing style prop.
 
+The same class-host port handles source systems whose style match is the whole
+JSX opening tag, such as `<Box bg={theme.foreground} />`. The target emitter
+produces its class expression first; the host projection then removes the
+source style prop, attaches the target class, and binds the original scalar
+expression through an inline custom-property style object. This keeps the
+runner generic: class adapters opt in through `dynamicClassCarrier`, while
+Tailwind and UnoCSS retain their own utility-token emitters. A registry
+substitution test proves that a new class adapter receives the projection
+without adding a central adapter branch.
+
 Cross-framework and cross-backend migration uses an explicit host-conversion
 port. A target declares native host frameworks separately from
 `hostFrameworkConversions`; the latter describes a source host dialect that it

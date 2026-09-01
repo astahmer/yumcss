@@ -49,6 +49,15 @@ mixed callback contexts and free theme values still produce typed,
 source-preserving residuals until a target-owned representation and proof
 exist.
 
+Class-oriented targets now also handle source systems whose style match is the
+whole JSX opening tag. The shared `DynamicClassHost` projection removes the
+source style props only after target emission, attaches the target class, and
+binds lowered scalar dynamics as an inline custom-property style object. This
+is inherited by adapters that declare `dynamicClassCarrier`; Tailwind and
+UnoCSS retain their own utility emitters while using the same host contract.
+The registry has a substitute-adapter test proving that a newly registered
+class target receives this behavior without a central migration branch.
+
 The shared source workspace is now the discovery boundary for analyzer, Vite
 CSS extraction, Tailwind collection, and codemod host-language selection. A
 workspace query can explicitly include non-script assets for CSS/theme
@@ -360,6 +369,15 @@ registered lowering can carry; `host-framework` means syntax or prop ownership
 cannot be rewritten safely. In each case the source remains intact. A target
 adapter becomes bidirectionally usable by adding a representation and its
 substitution proof, not by making the capability report permissive.
+
+After the class-host projection revision, the deterministic matrix reports
+`4,056` cases, `0` route failures, `274` cases with typed residuals, and `271`
+source-preserving skips. The largest remaining groups are free theme
+expressions inside styled subjects, framework-specific component subjects,
+and project utilities whose official preset/generator context is unavailable.
+They are actionable semantic/configuration gaps, not the obsolete generic
+`adapter capability mismatch` diagnosis. If that exact text appears in the
+playground, its bundle or migrated artifact is stale and must be rebuilt.
 
 The shared host boundary also distinguishes a discarded static styled
 expression from a component-valued subject. The former can be lowered directly
