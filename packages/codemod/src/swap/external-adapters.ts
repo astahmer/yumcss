@@ -197,8 +197,6 @@ export class CodemodAdapterKit {
 }
 
 /** Public convenience delegates; adapter implementations should use the kit. */
-export const dependency = CodemodAdapterKit.dependency;
-export const allRuleCapabilities = CodemodAdapterKit.allRuleCapabilities;
 
 function configFor(
 	id: string,
