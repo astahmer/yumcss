@@ -1117,8 +1117,8 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 			);
 			if (hasUnrepresentable) {
 				// Never emit a partial style object: dropping a nested selector or
-				// spread silently changes the page. The migrated css callable still
-				// returns a class, so preserving this call is the lossless fallback.
+				// spread silently changes the page. Preserving the original call is
+				// the lossless fallback.
 				report.cssCallsFlagged++;
 				applyMarker(
 					edits,

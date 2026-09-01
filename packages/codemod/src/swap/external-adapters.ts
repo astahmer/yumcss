@@ -195,8 +195,6 @@ export class CodemodAdapterKit {
 	}
 }
 
-/** Public convenience delegates; adapter implementations should use the kit. */
-
 function configFor(
 	id: string,
 	configFiles: readonly string[],

@@ -1352,7 +1352,6 @@ function runAdapterMigrationInternal(
 			hasTargetHostPort(targetAdapter) &&
 			program.source?.subject === undefined &&
 			program.source?.framework !== undefined &&
-			program.source?.subject === undefined &&
 			tagForStandalone(source, match.start) !== undefined &&
 			isStandaloneDefaultExport(source, match.start)
 		) {
