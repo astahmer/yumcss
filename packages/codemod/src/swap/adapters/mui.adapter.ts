@@ -9,6 +9,7 @@ import {
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
+	StyleDynamicExpressionKind,
 	StyleNamedRuleStrategy,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
@@ -191,6 +192,19 @@ function isStaticProgram(program: StyleProgram): boolean {
 	return program.residuals.length === 0 && isStaticRules(program.rules);
 }
 
+function hasScalarDynamicProgram(program: StyleProgram): boolean {
+	return program.rules.some(function containsScalarDynamic(rule): boolean {
+		return (
+			rule.declarations.some(
+				(declaration) =>
+					declaration.value.kind === "dynamic" &&
+					declaration.value.expressionKind !== StyleDynamicExpressionKind.Function &&
+					!/=>|^function\b/.test(declaration.value.expression.trim()),
+			) || rule.children.some(containsScalarDynamic)
+		);
+	});
+}
+
 function rewriteMuiIntrinsicHost(
 	code: string,
 	expression: string,
@@ -339,9 +353,22 @@ export default defineCodemodAdapter({
 				program.source?.subject === undefined &&
 				program.residuals.length === 0
 					? StyleRepresentationKind.PortableArtifact
-					: undefined,
-			capabilitiesForRepresentation: ({ representation }) =>
-				representation === StyleRepresentationKind.PortableArtifact ? ["theme-context"] : [],
+					: program.source?.subject !== undefined && hasScalarDynamicProgram(program)
+						? StyleRepresentationKind.TargetNative
+						: undefined,
+			capabilitiesForRepresentation: ({ program, representation }) => {
+				if (representation === StyleRepresentationKind.PortableArtifact) return ["theme-context"];
+				if (
+					representation === StyleRepresentationKind.TargetNative &&
+					hasScalarDynamicProgram(program)
+				)
+					return ["dynamic-values", "theme-context"];
+				return [];
+			},
+			preservesResidualKindsForRepresentation: ({ program, representation }) =>
+				representation === StyleRepresentationKind.TargetNative && hasScalarDynamicProgram(program)
+					? ["dynamic"]
+					: [],
 			handlesFrameworkSemantics: true,
 			hostFrameworks: [BuiltinHostFramework.React],
 			hostFrameworkConversions: [

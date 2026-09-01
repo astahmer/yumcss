@@ -578,6 +578,7 @@ export function createChakraAdapter(
 		],
 		packages: dependency("@chakra-ui/react", "peer"),
 		capabilities: allRuleCapabilities(CodemodAdapterId.ChakraUi, "partial", {
+			"custom-properties": "exact",
 			"theme-context": "partial",
 			"runtime-context": "partial",
 			"framework-semantics": "partial",
@@ -589,19 +590,14 @@ export function createChakraAdapter(
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,
 				hostRepresentation: StyleHostRepresentationKind.Class,
+				dynamicClassCarrier: true,
 				resolveRepresentation: ({ program, hasHostContext }) =>
 					!hasHostContext && program.source?.subject === undefined && hasDynamicValues(program)
-						? StyleRepresentationKind.TargetNative
+						? StyleRepresentationKind.RuntimeCarrier
 						: undefined,
 				capabilitiesForRepresentation: ({ representation }) =>
-				[StyleRepresentationKind.TargetNative, StyleRepresentationKind.RuntimeCarrier].includes(
-					representation,
-				)
+					representation === StyleRepresentationKind.RuntimeCarrier
 						? ["dynamic-values", "theme-context", "runtime-context"]
-						: [],
-				preservesResidualKindsForRepresentation: ({ program, representation }) =>
-					representation === StyleRepresentationKind.TargetNative && hasDynamicValues(program)
-						? ["dynamic"]
 						: [],
 			},
 		},

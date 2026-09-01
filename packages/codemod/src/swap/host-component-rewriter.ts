@@ -225,9 +225,13 @@ function rewriteJsx(request: HostComponentRewriteRequest): HostComponentRewriteR
 }
 
 function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
-	const assignment = `${request.binding} = ${request.classExpression};`;
-	const start = request.source.indexOf(assignment);
-	if (start === -1) {
+	const escapedBinding = request.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const escapedExpression = request.classExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const assignment = new RegExp(
+		`\\b(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*${escapedExpression}\\s*;`,
+	);
+	const match = assignment.exec(request.source);
+	if (match === null) {
 		return {
 			code: request.source,
 			changed: false,
@@ -254,9 +258,14 @@ function rewriteJsxDeclaration(request: HostComponentRewriteRequest): HostCompon
 				);
 	return {
 		code:
-			request.source.slice(0, start) +
+			request.source.slice(0, match.index + match[0].indexOf(request.binding)) +
 			declarationWithStyle +
-			request.source.slice(start + assignment.length),
+			request.source.slice(
+				match.index +
+					match[0].indexOf(request.binding) +
+					match[0].length -
+					match[0].indexOf(request.binding),
+			),
 		changed: true,
 		needsCx: true,
 		residuals: [],
@@ -328,9 +337,13 @@ function rewriteTemplate(request: HostComponentRewriteRequest): HostComponentRew
 }
 
 function rewriteVueDeclaration(request: HostComponentRewriteRequest): HostComponentRewriteResult {
-	const assignment = `${request.binding} = ${request.classExpression};`;
-	const start = request.source.indexOf(assignment);
-	if (start === -1)
+	const escapedBinding = request.binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const escapedExpression = request.classExpression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const assignment = new RegExp(
+		`\\b(?:const|let|var)\\s+${escapedBinding}\\s*=\\s*${escapedExpression}\\s*;`,
+	);
+	const match = assignment.exec(request.source);
+	if (match === null)
 		return {
 			code: request.source,
 			changed: false,
@@ -348,9 +361,14 @@ function rewriteVueDeclaration(request: HostComponentRewriteRequest): HostCompon
 		`h(${JSON.stringify(request.tag)}, { ...attrs, ...props, class: [${request.classExpression}, attrs.class] }, slots.default?.()));`;
 	return {
 		code:
-			request.source.slice(0, start) +
+			request.source.slice(0, match.index + match[0].indexOf(request.binding)) +
 			declaration +
-			request.source.slice(start + assignment.length),
+			request.source.slice(
+				match.index +
+					match[0].indexOf(request.binding) +
+					match[0].length -
+					match[0].indexOf(request.binding),
+			),
 		changed: true,
 		needsCx: false,
 		imports: ['import { defineComponent, h } from "vue";'],

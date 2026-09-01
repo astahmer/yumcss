@@ -74,13 +74,12 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("style=");
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).not.toContain("bg={theme.foreground}");
-		 expect(result.code).not.toContain("adapter capability mismatch");
+		expect(result.code).not.toContain("adapter capability mismatch");
 	});
 
-	test("keeps scalar template dynamics in Chakra's target-native css carrier", () => {
+	test("preserves scalar template dynamics when Chakra has no host carrier", () => {
 		const result = runAdapterMigration(
-			'import { css } from "@linaria/core";\n' +
-				"const card = css`color: ${theme.foreground};`;",
+			'import { css } from "@linaria/core";\n' + "const card = css`color: ${theme.foreground};`;",
 			{
 				from: CodemodAdapterId.Linaria,
 				to: CodemodAdapterId.ChakraUi,
@@ -94,11 +93,11 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('import { css } from "@chakra-ui/react";');
+		expect(result.code).toContain('import { createRuntimeCss } from "pandwind/css/runtime";');
 		expect(result.code).toContain("theme.foreground");
-		expect(result.code).toContain("css({");
+		expect(result.code).toContain("css.vars({");
 		expect(result.outcomes).toMatchObject([
-			{ outcome: "host-runtime", representation: "target-native" },
+			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
 	});
 
@@ -129,6 +128,53 @@ describe("target adapter emission contract", () => {
 		expect(result.code).toContain("theme.foreground");
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain("styled-components");
+	});
+
+	test("projects a scalar dynamic styled subject through Chakra's class carrier", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: CodemodAdapterId.ChakraUi,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { css } from "@chakra-ui/react";');
+		expect(result.code).toContain("const Card = (props) => <div");
+		expect(result.code).toContain("theme.foreground");
+		expect(result.code).toContain("<Card />");
+	});
+
+	test("keeps scalar dynamic styled subjects in MUI's target-native styled carrier", () => {
+		const result = runAdapterMigration(
+			'import styled from "styled-components";\n' +
+				"const Card = styled.div({ color: theme.foreground });\n" +
+				"export const App = () => <Card />;",
+			{
+				from: CodemodAdapterId.StyledComponents,
+				to: CodemodAdapterId.Mui,
+				file: "App.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('import { styled } from "@mui/system";');
+		expect(result.code).toContain('styled("div")({ color: theme.foreground })');
+		expect(result.code).toContain("<Card />");
 	});
 
 	test.each(
