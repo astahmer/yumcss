@@ -11,6 +11,7 @@ import {
 	type AdapterDetectionResult,
 	type AdapterEmitContext,
 	type AdapterEmitResult,
+	type AdapterGeneratedFile,
 	type AdapterMigrationHooks,
 	type AdapterLossiness,
 	type AdapterMatch,
@@ -107,6 +108,7 @@ export interface AdapterRenderers {
  */
 export type CodemodAdapterEmission = Pick<AdapterEmitResult, "text" | "imports" | "semantic"> & {
 	readonly residuals?: readonly StyleProgramResidual[];
+	readonly generatedFiles?: readonly AdapterGeneratedFile[];
 };
 
 export interface CodemodAdapterSpec {
@@ -1179,6 +1181,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				namedRules.length > 0 && spec.namedRuleStrategy === StyleNamedRuleStrategy.ClassMap
 					? (() => {
 							const imports = new Set<string>();
+							const generatedFiles: AdapterGeneratedFile[] = [];
 							const semanticPrograms: StyleProgram[] = [];
 							const entries = namedRules.map((rule) => {
 								const single = render({
@@ -1187,12 +1190,14 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 									declarations: rule.declarations,
 								});
 								for (const statement of single.imports ?? []) imports.add(statement);
+								generatedFiles.push(...(single.generatedFiles ?? []));
 								if (single.semantic !== undefined) semanticPrograms.push(single.semantic);
 								return `${JSON.stringify(rule.name)}: ${single.text}`;
 							});
 							return {
 								text: `{ ${entries.join(", ")} }`,
 								imports: [...imports],
+								...(generatedFiles.length === 0 ? {} : { generatedFiles }),
 								...(semanticPrograms.length === entries.length
 									? {
 											semantic: styleProgramFromRules(

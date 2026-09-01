@@ -644,3 +644,31 @@ keyframes, and framework rewrites. `scripts/verify-styled-components-docs.mjs`
 then checks the pinned baseline and migrated applications in the browser and
 records route, hydration, screenshot, and CSS-size evidence. This proof is
 kept as a script and a pinned reference rather than as a vendored website.
+
+## Expert target emission and generated files
+
+An adapter is responsible for producing the code a staff engineer would
+actually author in the target ecosystem. CSS equivalence is necessary but not
+sufficient: the target's normal component carrier, theme/token access,
+composition primitive, framework binding, import shape, and file organization
+are part of the migration contract. The runner transports that decision; it
+does not rewrite target code into a generic lowest-common-denominator form.
+
+Most declarations should stay inline. When the target's idiomatic form needs a
+shared theme, helper, recipe, or runtime bridge, `AdapterEmitResult` may return
+`generatedFiles`. Each artifact has a project-relative path, source content,
+and an optional purpose. The migration runner normalizes paths, deduplicates
+identical `(path, content)` pairs across matches, and reports a typed
+`generated-file` residual for invalid paths or conflicting content. A conflict
+preserves the entire source module so a migration can never leave a partially
+converted project.
+
+The CLI writes generated files only with `--write`. It preflights existing
+files: identical content is safe to reuse, while different content is a hard
+error rather than an overwrite. This makes one source occurrence able to add a
+reusable target module without duplicating it when later occurrences request
+the same artifact. The regression contract lives in
+`packages/codemod/tests/generated-file-emission.test.ts`; its inline snapshots
+show the expert target expression, the generated module, repeated-artifact
+deduplication, and source-preserving conflict behavior, with ordinary
+assertions guarding the snapshots.

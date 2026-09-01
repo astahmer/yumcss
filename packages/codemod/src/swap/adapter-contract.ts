@@ -35,6 +35,13 @@ export interface AdapterDependencies {
 	readonly files?: readonly string[];
 }
 
+/** Target-owned project-relative source file emitted with a migration. */
+export interface AdapterGeneratedFile {
+	readonly path: string;
+	readonly content: string;
+	readonly purpose?: string;
+}
+
 export interface AdapterDetectionContext {
 	readonly file: string;
 	readonly source: string;
@@ -123,6 +130,7 @@ export interface AdapterEmitResult {
 	readonly semantic?: StyleProgram;
 	readonly imports?: readonly string[];
 	readonly dependencies?: AdapterDependencies;
+	readonly generatedFiles?: readonly AdapterGeneratedFile[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 

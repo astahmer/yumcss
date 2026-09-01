@@ -14,7 +14,7 @@
  * object literals, css.class()/css() literals and the design vocabulary,
  * plus outbound emission to plain tailwind classes via the tw target.
  */
-import { existsSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, resolve } from "node:path";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
@@ -24,6 +24,45 @@ import * as swapImport from "./swap/index.ts";
 import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "./swap/identifiers.ts";
 import { tokenSetCodec } from "./swap/token-set.ts";
 import type { TokenFormatId } from "./swap/token-format-contracts.ts";
+
+function writeGeneratedFiles(
+	root: string,
+	files: readonly { readonly path: string; readonly content: string }[],
+): void {
+	const resolved = files.map((file) => ({
+		...file,
+		absolutePath: resolve(root, file.path),
+	}));
+	for (const file of resolved) {
+		if (!existsSync(file.absolutePath)) continue;
+		const current = readFileSync(file.absolutePath, "utf8");
+		if (current !== file.content)
+			throw new Error(
+				`codemod: refusing to overwrite conflicting generated file ${file.absolutePath}`,
+			);
+	}
+	for (const file of resolved) {
+		if (existsSync(file.absolutePath)) continue;
+		mkdirSync(dirname(file.absolutePath), { recursive: true });
+		writeFileSync(file.absolutePath, file.content, { flag: "wx" });
+	}
+}
+
+function validatePlannedGeneratedFiles(
+	root: string,
+	files: readonly { readonly path: string; readonly content: string }[],
+	planned: Map<string, string>,
+): void {
+	for (const file of files) {
+		const plannedContent = planned.get(file.path);
+		if (planned.has(file.path) && plannedContent !== file.content)
+			throw new Error(`codemod: conflicting generated file ${file.path} in one migration run`);
+		planned.set(file.path, file.content);
+		const absolutePath = resolve(root, file.path);
+		if (existsSync(absolutePath) && readFileSync(absolutePath, "utf8") !== file.content)
+			throw new Error(`codemod: refusing to overwrite conflicting generated file ${absolutePath}`);
+	}
+}
 
 interface CliArgs {
 	patterns: string[];
@@ -428,10 +467,18 @@ async function runExternalAdapterSwap(
 	const reportEntries: Array<{
 		file: string;
 		outputFile?: string;
+		generatedFiles: readonly string[];
 		from: string;
 		converted: number;
 		skipped: number;
 		residuals: number;
+	}> = [];
+	const plannedGeneratedFiles = new Map<string, string>();
+	const pendingWrites: Array<{
+		file: string;
+		outputFile: string;
+		relative: string;
+		result: Awaited<ReturnType<typeof swapImport.runAdapterMigrationAsync>>;
 	}> = [];
 	for (const file of filePaths) {
 		const relative = file.slice(root.length + 1);
@@ -470,6 +517,7 @@ async function runExternalAdapterSwap(
 		reportEntries.push({
 			file: relative,
 			...(outputFile === file ? {} : { outputFile: outputFile.slice(root.length + 1) }),
+			generatedFiles: result.generatedFiles.map((generatedFile) => generatedFile.path),
 			from,
 			converted: result.converted,
 			skipped: result.skipped,
@@ -478,7 +526,7 @@ async function runExternalAdapterSwap(
 		totalConverted += result.converted;
 		totalSkipped += result.skipped;
 		totalResiduals += result.residuals.length;
-		if (!result.changed) {
+		if (!result.changed && result.generatedFiles.length === 0) {
 			if (args.reportFormat !== "json") console.log(`${relative}: no changes (${from}->${target})`);
 			continue;
 		}
@@ -486,19 +534,16 @@ async function runExternalAdapterSwap(
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
 		if (args.write) {
-			if (outputFile === file) writeFileSync(file, result.code);
-			else {
-				if (existsSync(outputFile))
-					throw new Error(
-						`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
-					);
-				writeFileSync(outputFile, result.code, { flag: "wx" });
-				unlinkSync(file);
-			}
+			if (outputFile !== file && existsSync(outputFile))
+				throw new Error(
+					`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
+				);
+			validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
+			pendingWrites.push({ file, outputFile, relative, result });
 		}
-		if (args.reportFormat !== "json")
+		if (!args.write && args.reportFormat !== "json")
 			console.log(
-				`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} converted, ` +
+				`${relative}: would change — ${result.converted} converted, ` +
 					`${result.skipped} skipped, ${result.residuals.length} residual(s), ${from}->${target}`,
 			);
 		if (args.report && args.reportFormat === "text") {
@@ -506,6 +551,21 @@ async function runExternalAdapterSwap(
 				if (report.blockers.length > 0)
 					console.log(`  blocker: ${report.blockers.map((issue) => issue.detail).join("; ")}`);
 			}
+		}
+	}
+	if (args.write) {
+		for (const pending of pendingWrites) {
+			writeGeneratedFiles(root, pending.result.generatedFiles);
+			if (pending.outputFile === pending.file) writeFileSync(pending.file, pending.result.code);
+			else {
+				writeFileSync(pending.outputFile, pending.result.code, { flag: "wx" });
+				unlinkSync(pending.file);
+			}
+			if (args.reportFormat !== "json")
+				console.log(
+					`${pending.relative}: written — ${pending.result.converted} converted, ` +
+						`${pending.result.skipped} skipped, ${pending.result.residuals.length} residual(s)`,
+				);
 		}
 	}
 	if (args.reportFormat !== "json")

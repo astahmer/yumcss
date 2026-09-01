@@ -9,6 +9,7 @@ import {
 } from "./capabilities.ts";
 import type {
 	AdapterDependencies,
+	AdapterGeneratedFile,
 	AdapterHostFrameworkConversion,
 	AdapterParseContext,
 	AdapterValidationResult,
@@ -211,6 +212,8 @@ export interface AdapterMigrationResult {
 	readonly reports: readonly AdapterCapabilityReport[];
 	readonly validations: readonly AdapterValidationResult[];
 	readonly dependencies: readonly AdapterDependencies[];
+	/** Target-owned project-relative files emitted with the rewritten module. */
+	readonly generatedFiles: readonly AdapterGeneratedFile[];
 	readonly residuals: readonly StyleProgramResidual[];
 	/** One inspectable representation decision for each parsed source match. */
 	readonly loweringPlans: readonly StyleLoweringPlan[];
@@ -263,6 +266,7 @@ function configurationFailure(
 		reports: [],
 		validations: [],
 		dependencies: [],
+		generatedFiles: [],
 		residuals: [
 			{
 				kind: "configuration",
@@ -418,6 +422,7 @@ function runAdapterMigrationInternal(
 			reports: [],
 			validations: [],
 			dependencies: [],
+			generatedFiles: [],
 			residuals: [],
 			loweringPlans: [],
 			outcomes: [],
@@ -439,6 +444,7 @@ function runAdapterMigrationInternal(
 			reports: [],
 			validations: [],
 			dependencies: [],
+			generatedFiles: [],
 			residuals: [],
 			loweringPlans: [],
 			outcomes: [],
@@ -479,6 +485,7 @@ function runAdapterMigrationInternal(
 			reports: [],
 			validations: [],
 			dependencies: [],
+			generatedFiles: [],
 			residuals: configurationResiduals,
 			loweringPlans: [],
 			outcomes: [
@@ -519,6 +526,39 @@ function runAdapterMigrationInternal(
 	const reports: AdapterCapabilityReport[] = [];
 	const validations: AdapterValidationResult[] = [];
 	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
+	const generatedFiles = new Map<string, AdapterGeneratedFile>();
+	const generatedFileResiduals: StyleProgramResidual[] = [];
+	const collectGeneratedFiles = (files: readonly AdapterGeneratedFile[] | undefined): void => {
+		for (const file of files ?? []) {
+			const path = file.path.replaceAll("\\", "/");
+			const segments = path.split("/");
+			if (
+				path === "" ||
+				path.startsWith("/") ||
+				/^[A-Za-z]:\//u.test(path) ||
+				segments.some((segment) => segment === "" || segment === "." || segment === "..")
+			) {
+				generatedFileResiduals.push({
+					kind: "generated-file",
+					text: file.path,
+					hint: "generated file paths must be non-empty project-relative paths",
+				});
+				continue;
+			}
+			const existing = generatedFiles.get(path);
+			if (existing === undefined) {
+				generatedFiles.set(path, { ...file, path });
+				continue;
+			}
+			if (existing.content !== file.content) {
+				generatedFileResiduals.push({
+					kind: "generated-file",
+					text: path,
+					hint: "multiple target emissions produced conflicting content for one generated file",
+				});
+			}
+		}
+	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
 	const loweringPlans: StyleLoweringPlan[] = [];
@@ -1316,6 +1356,7 @@ function runAdapterMigrationInternal(
 			});
 			continue;
 		}
+		collectGeneratedFiles(emitted.generatedFiles);
 		for (const statement of emitted.imports ?? []) imports.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
@@ -1549,6 +1590,26 @@ function runAdapterMigrationInternal(
 			for (const statement of documentRewrite.imports ?? []) imports.add(statement);
 		}
 	}
+	// A generated artifact is part of the same atomic migration as its source
+	// module. Invalid paths or conflicting contents therefore preserve the
+	// original module instead of producing a partially migrated project.
+	if (generatedFileResiduals.length > 0) {
+		residuals.push(...generatedFileResiduals);
+		runtimeEdited =
+			MigrationDiagnostics.skipMarker({
+				marker,
+				sourceAdapter: sourceAdapter.id,
+				targetAdapter: targetAdapter.id,
+				loweringResiduals: generatedFileResiduals,
+			}) +
+			"\n" +
+			source;
+		converted = 0;
+		skipped = Math.max(1, skipped);
+		imports.clear();
+		generatedFiles.clear();
+		outputExtension = undefined;
+	}
 	// Keep source imports whenever a skipped/residual match still depends on the
 	// source runtime. Removing them would turn a safe residual into broken code.
 	let code =
@@ -1575,6 +1636,7 @@ function runAdapterMigrationInternal(
 		validations,
 		dependencies,
 		residuals,
+		generatedFiles: [...generatedFiles.values()],
 		loweringPlans,
 		outcomes,
 	};

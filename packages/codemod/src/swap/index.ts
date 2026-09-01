@@ -202,6 +202,7 @@ export type {
 	AdapterDetectionResult,
 	AdapterEmitContext,
 	AdapterEmitResult,
+	AdapterGeneratedFile,
 	AdapterMatch,
 	AdapterParseContext,
 	AdapterParseResult,
