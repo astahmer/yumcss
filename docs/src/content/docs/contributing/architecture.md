@@ -74,6 +74,14 @@ to `Card` or rewriting the use to `className={Card}` would change the public
 component shape and is therefore invalid. This projection is selected by
 registry normalization and covered for every built-in dynamic class carrier.
 
+Runtime-capable targets make the same distinction for scalar expressions. A
+target-owned runtime object such as Chakra's `css()` or MUI's `styled()` may
+preserve a scalar expression when the expression remains in the source lexical
+scope; the adapter marks that representation explicitly so validation does not
+count the preserved IR residual as a failed conversion. This does not bless
+function-valued callbacks, provider-specific theme lookups, or framework-only
+bindings: those still require a target wrapper or an explicit residual.
+
 Cross-framework and cross-backend migration uses an explicit host-conversion
 port. A target declares native host frameworks separately from
 `hostFrameworkConversions`; the latter describes a source host dialect that it
