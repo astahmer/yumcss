@@ -14,8 +14,8 @@
  * object literals, css.class()/css() literals and the design vocabulary,
  * plus outbound emission to plain tailwind classes via the tw target.
  */
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { basename, dirname, extname, resolve } from "node:path";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { loadMetaFromSourcesAsync, type PandwindMeta } from "./meta.ts";
 import { transformSource, type MigrateMode, type TransformResult } from "./migrate.ts";
@@ -427,6 +427,7 @@ async function runExternalAdapterSwap(
 	let totalChanged = 0;
 	const reportEntries: Array<{
 		file: string;
+		outputFile?: string;
 		from: string;
 		converted: number;
 		skipped: number;
@@ -462,8 +463,13 @@ async function runExternalAdapterSwap(
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
 		});
+		const outputFile =
+			result.outputExtension === undefined
+				? file
+				: resolve(dirname(file), `${basename(file, extname(file))}${result.outputExtension}`);
 		reportEntries.push({
 			file: relative,
+			...(outputFile === file ? {} : { outputFile: outputFile.slice(root.length + 1) }),
 			from,
 			converted: result.converted,
 			skipped: result.skipped,
@@ -479,7 +485,17 @@ async function runExternalAdapterSwap(
 		totalChanged++;
 		if (args.diff && args.reportFormat !== "json")
 			console.log(unifiedDiff(source, result.code, relative));
-		if (args.write) writeFileSync(file, result.code);
+		if (args.write) {
+			if (outputFile === file) writeFileSync(file, result.code);
+			else {
+				if (existsSync(outputFile))
+					throw new Error(
+						`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
+					);
+				writeFileSync(outputFile, result.code, { flag: "wx" });
+				unlinkSync(file);
+			}
+		}
 		if (args.reportFormat !== "json")
 			console.log(
 				`${relative}: ${args.write ? "written" : "would change"} — ${result.converted} converted, ` +

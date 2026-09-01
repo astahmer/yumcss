@@ -1,5 +1,9 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
-import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	canConvertStaticVueSfc,
+	rewriteVueSfcToJsx,
+} from "../host-adapters.ts";
 import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind, StyleLoweringId } from "../identifiers.ts";
 import { STYLE_LOWERING_SCHEMA, type StyleLowering } from "../lowering.ts";
@@ -26,6 +30,19 @@ function reactNativeHostTag(tag: string): "View" | undefined {
 
 const reactToReactNative: readonly AdapterHostFrameworkConversion[] = [
 	{ from: BuiltinHostFramework.React, to: BuiltinHostFramework.ReactNative },
+	{
+		from: BuiltinHostFramework.Solid,
+		to: BuiltinHostFramework.ReactNative,
+		canConvert: ({ file, source }) =>
+			/\.(?:jsx|tsx)$/.test(file) &&
+			!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:/.test(source),
+	},
+	{
+		from: BuiltinHostFramework.Vue,
+		to: BuiltinHostFramework.ReactNative,
+		canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
+		rewriteDocument: ({ code, targetFramework }) => rewriteVueSfcToJsx(code, targetFramework),
+	},
 ];
 
 function reactNativeValue(
@@ -378,7 +395,9 @@ const reactNative = makeExtraAdapter({
 			)
 				return StyleHostRepresentationKind.StyleProp;
 			if (
-				sourceHostFramework === BuiltinHostFramework.React &&
+				(sourceHostFramework === BuiltinHostFramework.React ||
+					sourceHostFramework === BuiltinHostFramework.Solid ||
+					sourceHostFramework === BuiltinHostFramework.Vue) &&
 				framework === BuiltinHostFramework.ReactNative &&
 				program.source?.subject !== undefined &&
 				hasHostContext &&
@@ -403,7 +422,13 @@ const reactNative = makeExtraAdapter({
 			representation,
 		}) => {
 			if (representation !== StyleHostRepresentationKind.StyleProp) return { code, residuals: [] };
-			if ((sourceFramework ?? framework) !== BuiltinHostFramework.React)
+			if (
+				sourceFramework !== BuiltinHostFramework.React &&
+				sourceFramework !== BuiltinHostFramework.Solid &&
+				sourceFramework !== BuiltinHostFramework.Vue &&
+				framework !== BuiltinHostFramework.React &&
+				framework !== BuiltinHostFramework.Solid
+			)
 				return {
 					code,
 					residuals: [
@@ -427,7 +452,10 @@ const reactNative = makeExtraAdapter({
 		}) => {
 			if (representation !== StyleHostRepresentationKind.StyleProp) return { code, residuals: [] };
 			const sourceHostFramework = sourceFramework ?? framework;
-			if (sourceHostFramework === BuiltinHostFramework.React)
+			if (
+				sourceHostFramework === BuiltinHostFramework.React ||
+				sourceHostFramework === BuiltinHostFramework.Solid
+			)
 				return rewriteReactHost(code, program, emittedExpression, sourceModules, binding);
 			if (
 				sourceHostFramework !== undefined &&

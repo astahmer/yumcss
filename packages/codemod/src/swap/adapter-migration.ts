@@ -9,6 +9,7 @@ import {
 } from "./capabilities.ts";
 import type {
 	AdapterDependencies,
+	AdapterHostFrameworkConversion,
 	AdapterParseContext,
 	AdapterValidationResult,
 	AdapterTargetMigrationPolicy,
@@ -149,6 +150,13 @@ function ensureGeneratedStatement(code: string, statement: string, file: string)
 	return `${code.slice(0, contentStart)}${updated.startsWith("\n") ? "" : "\n"}${updated}${code.slice(contentEnd)}`;
 }
 
+function fileWithExtension(file: string, extension: string | undefined): string {
+	if (extension === undefined) return file;
+	const slash = Math.max(file.lastIndexOf("/"), file.lastIndexOf("\\"));
+	const dot = file.lastIndexOf(".");
+	return dot > slash ? `${file.slice(0, dot)}${extension}` : `${file}${extension}`;
+}
+
 function selectNonOverlappingMatches<
 	T extends { start: number; end: number; program: StyleProgram },
 >(matches: readonly T[]): readonly T[] {
@@ -195,6 +203,8 @@ export interface AdapterMigrationOptions {
 
 export interface AdapterMigrationResult {
 	readonly code: string;
+	/** Suggested extension when a host dialect projection changes file syntax. */
+	readonly outputExtension?: string;
 	readonly changed: boolean;
 	readonly converted: number;
 	readonly skipped: number;
@@ -277,6 +287,19 @@ function hasTargetHostPort(adapter: StyleAdapter): boolean {
 	return adapter.migration?.targetPolicy?.handlesHostRewrites === true;
 }
 
+function hostFrameworkConversion(
+	policy: AdapterTargetMigrationPolicy | undefined,
+	sourceFramework: HostFramework | undefined,
+	context: { readonly file: string; readonly source: string; readonly program: StyleProgram },
+): AdapterHostFrameworkConversion | undefined {
+	if (sourceFramework === undefined) return undefined;
+	return policy?.hostFrameworkConversions?.find(
+		(candidate) =>
+			candidate.from === sourceFramework &&
+			(candidate.canConvert === undefined || candidate.canConvert(context)),
+	);
+}
+
 function targetHostFramework(
 	policy: AdapterTargetMigrationPolicy | undefined,
 	sourceFramework: HostFramework | undefined,
@@ -286,11 +309,7 @@ function targetHostFramework(
 	if (policy?.hostFrameworks?.includes(sourceFramework)) return sourceFramework;
 	if (policy?.hostFrameworks === undefined && policy?.hostFrameworkConversions === undefined)
 		return sourceFramework;
-	const conversion = policy?.hostFrameworkConversions?.find(
-		(candidate) =>
-			candidate.from === sourceFramework &&
-			(candidate.canConvert === undefined || candidate.canConvert(context)),
-	);
+	const conversion = hostFrameworkConversion(policy, sourceFramework, context);
 	return conversion?.to ?? sourceFramework;
 }
 
@@ -303,13 +322,7 @@ function targetAcceptsSourceFramework(
 	if (policy?.hostFrameworks?.includes(sourceFramework)) return true;
 	if (policy?.hostFrameworks === undefined && policy?.hostFrameworkConversions === undefined)
 		return true;
-	return (
-		policy?.hostFrameworkConversions?.some(
-			(candidate) =>
-				candidate.from === sourceFramework &&
-				(candidate.canConvert === undefined || candidate.canConvert(context)),
-		) === true
-	);
+	return hostFrameworkConversion(policy, sourceFramework, context) !== undefined;
 }
 
 function loweringRegistryForRoute(
@@ -544,6 +557,7 @@ function runAdapterMigrationInternal(
 	}> = [];
 	let skipped = 0;
 	let converted = 0;
+	let outputExtension: string | undefined;
 	const unpreservedParseResiduals = parsed.residuals.filter(
 		(residual) => residual.preserved !== true,
 	);
@@ -1408,6 +1422,56 @@ function runAdapterMigrationInternal(
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
 		residuals.push(...rewrite.residuals);
 	}
+	const documentProgram = parsed.matches[0]?.program;
+	const documentSourceFramework =
+		documentProgram === undefined
+			? undefined
+			: frameworkForHost(options.file, document, options.semantic, documentProgram);
+	const documentConversion = hostFrameworkConversion(
+		targetAdapter.migration?.targetPolicy,
+		documentSourceFramework,
+		documentProgram === undefined
+			? { file: options.file, source, program: styleProgramFromRules([]) }
+			: { file: options.file, source, program: documentProgram },
+	);
+	if (
+		documentConversion?.rewriteDocument !== undefined &&
+		documentSourceFramework !== undefined &&
+		documentProgram !== undefined &&
+		converted > 0 &&
+		skipped === 0 &&
+		residuals.length === 0
+	) {
+		const targetFramework = documentConversion.to;
+		const documentRewrite = documentConversion.rewriteDocument({
+			source,
+			code: runtimeEdited,
+			file: options.file,
+			targetId: targetAdapter.id,
+			sourceFramework: documentSourceFramework,
+			targetFramework,
+			convertedBindings,
+		});
+		if (documentRewrite.residuals.length > 0) {
+			residuals.push(...documentRewrite.residuals);
+			runtimeEdited =
+				MigrationDiagnostics.skipMarker({
+					marker,
+					sourceAdapter: sourceAdapter.id,
+					targetAdapter: targetAdapter.id,
+					loweringResiduals: documentRewrite.residuals,
+				}) +
+				"\n" +
+				source;
+			converted = 0;
+			skipped = 1;
+			imports.clear();
+		} else {
+			runtimeEdited = documentRewrite.code;
+			outputExtension = documentRewrite.outputExtension;
+			for (const statement of documentRewrite.imports ?? []) imports.add(statement);
+		}
+	}
 	// Keep source imports whenever a skipped/residual match still depends on the
 	// source runtime. Removing them would turn a safe residual into broken code.
 	let code =
@@ -1421,10 +1485,12 @@ function runAdapterMigrationInternal(
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");
 	}
+	const outputFile = fileWithExtension(options.file, outputExtension);
 	for (const statement of consolidateImports(imports))
-		code = ensureGeneratedStatement(code, statement, options.file);
+		code = ensureGeneratedStatement(code, statement, outputFile);
 	return {
 		code,
+		...(outputExtension === undefined ? {} : { outputExtension }),
 		changed: code !== source,
 		converted,
 		skipped,

@@ -143,6 +143,66 @@ describe("target adapter emission contract", () => {
 		},
 	);
 
+	test.each([
+		[CodemodAdapterId.Stitches, 'import { css } from "@stitches/react";'],
+		[CodemodAdapterId.Mui, 'import { styled } from "@mui/system";'],
+		[CodemodAdapterId.StyleX, 'import * as stylex from "@stylexjs/stylex";'],
+	] as const)("projects a static Vue SFC into %s's React host dialect", (target, targetImport) => {
+		const result = runAdapterMigration(
+			"<script setup>\n" +
+				'import styled from "vue-styled-components";\n' +
+				'const Card = styled.div({ color: "red" });\n' +
+				"</script>\n<template><Card /></template>",
+			{
+				from: CodemodAdapterId.VueStyled,
+				to: target,
+				file: "App.vue",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.Vue } },
+			},
+		);
+
+		expect(result.skipped, `${CodemodAdapterId.VueStyled} -> ${target}`).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain(targetImport);
+		expect(result.code).toContain("export default function App()");
+		expect(result.code).toMatch(/<(?:Card|div)\b/);
+		expect(result.code).not.toContain("<template>");
+		expect(result.code).not.toContain("vue-styled-components");
+		expect(result.outputExtension).toBe(".tsx");
+	});
+
+	test("preserves a reactive Vue SFC as an explicit host residual", () => {
+		const source =
+			"<script setup>\n" +
+			'import { ref } from "vue";\n' +
+			'import styled from "vue-styled-components";\n' +
+			"const active = ref(true);\n" +
+			'const Card = styled.div({ color: "red" });\n' +
+			'</script>\n<template><Card v-if="active" /></template>';
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.VueStyled,
+			to: CodemodAdapterId.Stitches,
+			file: "App.vue",
+			mode: "safe",
+			readFile: () => undefined,
+			adapterRegistry: catalog.registry,
+			semantic: { source: { framework: BuiltinHostFramework.Vue } },
+		});
+
+		expect(result.skipped).toBeGreaterThan(0);
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({ kind: expect.stringMatching(/capability|host-framework/) }),
+			]),
+		);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain("vue-styled-components");
+		expect(result.outputExtension).toBeUndefined();
+	});
+
 	test.each([CodemodAdapterId.Stitches, CodemodAdapterId.Mui, CodemodAdapterId.StyleX] as const)(
 		"preserves Solid-only host semantics as a typed residual for %s",
 		(target) => {

@@ -1,4 +1,5 @@
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import type { StyleProgramResidual } from "./semantic-ir.ts";
 
 /** Open host id; built-ins are named separately so third-party hosts do not edit this union. */
 export enum BuiltinHostFramework {
@@ -12,6 +13,74 @@ export enum BuiltinHostFramework {
 	ReactNative = "react-native",
 }
 export type HostFramework = BuiltinHostFramework | (string & {});
+
+export interface HostDialectRewriteResult {
+	readonly code: string;
+	readonly residuals: readonly StyleProgramResidual[];
+	readonly outputExtension?: string;
+}
+
+const vueDialectResidual = (text: string, hint: string): StyleProgramResidual => ({
+	kind: "host-framework",
+	text,
+	hint,
+});
+
+function staticVueSfcParts(
+	source: string,
+): { readonly script: string; readonly template: string } | undefined {
+	const scriptMatch = /<script\b[^>]*>([\s\S]*?)<\/script>/iu.exec(source);
+	const templateMatch = /<template\b[^>]*>([\s\S]*?)<\/template>/iu.exec(source);
+	if (scriptMatch === null || templateMatch === null) return undefined;
+	const blockNames = source.match(/<(?:script|template)\b/giu) ?? [];
+	if (blockNames.length !== 2) return undefined;
+	const templateEnd = templateMatch.index + templateMatch[0].length;
+	if (source.slice(templateEnd).trim() !== "") return undefined;
+	return { script: scriptMatch[1]!, template: templateMatch[1]! };
+}
+
+/**
+ * Conservative Vue SFC projection for static templates. It intentionally
+ * rejects directives and reactive setup code; those need a framework-owned
+ * semantic transform rather than a text substitution.
+ */
+export function canConvertStaticVueSfc(file: string, source: string): boolean {
+	if (!/\.vue$/u.test(file)) return false;
+	const parts = staticVueSfcParts(source);
+	if (parts === undefined || parts.script.trim() === "" || parts.template.trim() === "")
+		return false;
+	return !(
+		/\b(?:ref|reactive|computed|watch|watchEffect|onMounted|defineProps|defineEmits)\s*\(/u.test(
+			parts.script,
+		) || /\bv-[\w-]+\s*=|\s[@:#][\w-]+\s*=|\{\{[\s\S]*?\}\}|<slot\b/iu.test(parts.template)
+	);
+}
+
+export function rewriteVueSfcToJsx(
+	code: string,
+	targetFramework: HostFramework,
+): HostDialectRewriteResult {
+	const parts = staticVueSfcParts(code);
+	if (parts === undefined || !canConvertStaticVueSfc("App.vue", code))
+		return {
+			code,
+			residuals: [
+				vueDialectResidual(
+					code,
+					"Vue-to-host projection requires a static script setup and template without directives or reactive setup",
+				),
+			],
+		};
+	const script = parts.script.trim();
+	let template = parts.template.trim();
+	if (targetFramework === BuiltinHostFramework.React)
+		template = template.replace(/\bclass\s*=/gu, "className=");
+	return {
+		code: `${script}\n\nexport default function App() {\n\treturn (\n${template}\n\t);\n}\n`,
+		residuals: [],
+		outputExtension: ".tsx",
+	};
+}
 
 export const HOST_FRAMEWORK_PLUGIN_SCHEMA = "pandwind.host-framework-plugin/1" as const;
 export const HOST_FRAMEWORK_CONTRACT_SCHEMA = "pandwind.host-framework-contract/1" as const;

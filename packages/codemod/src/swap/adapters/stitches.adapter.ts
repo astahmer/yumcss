@@ -1,5 +1,9 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
-import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	canConvertStaticVueSfc,
+	rewriteVueSfcToJsx,
+} from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -39,6 +43,12 @@ export default defineCodemodAdapter({
 						!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
 							source,
 						),
+				},
+				{
+					from: BuiltinHostFramework.Vue,
+					to: BuiltinHostFramework.React,
+					canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
+					rewriteDocument: ({ code, targetFramework }) => rewriteVueSfcToJsx(code, targetFramework),
 				},
 			],
 		},

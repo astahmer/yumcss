@@ -169,6 +169,28 @@ export interface AdapterHostFrameworkConversion {
 		readonly source: string;
 		readonly program: StyleProgram;
 	}) => boolean;
+	/** Optional whole-document dialect projection after style call lowering. */
+	readonly rewriteDocument?: (
+		context: AdapterHostDocumentRewriteContext,
+	) => AdapterHostDocumentRewriteResult;
+}
+
+export interface AdapterHostDocumentRewriteContext {
+	readonly source: string;
+	readonly code: string;
+	readonly file: string;
+	readonly targetId: string;
+	readonly sourceFramework: HostFramework;
+	readonly targetFramework: HostFramework;
+	readonly convertedBindings: ReadonlySet<string>;
+}
+
+export interface AdapterHostDocumentRewriteResult {
+	readonly code: string;
+	readonly imports?: readonly string[];
+	readonly residuals: readonly StyleProgramResidual[];
+	/** Target extension when the dialect projection changes the file language. */
+	readonly outputExtension?: string;
 }
 
 export interface AdapterHostRewriteResult {

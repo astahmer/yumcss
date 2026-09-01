@@ -1,7 +1,11 @@
 import { allRuleCapabilities, defineCodemodAdapter, dependency } from "../external-adapters.ts";
 import type { StyleProgram, StyleRule, StyleValue } from "../semantic-ir.ts";
 import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
-import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	canConvertStaticVueSfc,
+	rewriteVueSfcToJsx,
+} from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -349,6 +353,12 @@ export default defineCodemodAdapter({
 						!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
 							source,
 						),
+				},
+				{
+					from: BuiltinHostFramework.Vue,
+					to: BuiltinHostFramework.React,
+					canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
+					rewriteDocument: ({ code, targetFramework }) => rewriteVueSfcToJsx(code, targetFramework),
 				},
 			],
 			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {

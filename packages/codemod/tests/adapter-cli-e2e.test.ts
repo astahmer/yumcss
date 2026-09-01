@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { CodemodAdapterId, createBuiltinCodemodCatalog } from "../src/swap/index.ts";
@@ -62,6 +62,46 @@ function runCli(
 }
 
 describe("CLI adapter migration e2e matrix", () => {
+	test("writes a host-dialect conversion to the target extension", () => {
+		const directory = mkdtempSync(join(repoRoot, ".tmp-codemod-e2e-"));
+		const file = join(directory, "App.vue");
+		const source =
+			"<script setup>\n" +
+			'import styled from "vue-styled-components";\n' +
+			'const Card = styled.div({ color: "red" });\n' +
+			"</script>\n<template><Card /></template>";
+		writeFileSync(file, source);
+		try {
+			const output = execFileSync(
+				"pnpm",
+				[
+					"exec",
+					"tsx",
+					"src/cli.ts",
+					"swap",
+					`--from=${CodemodAdapterId.VueStyled}`,
+					`--to=${CodemodAdapterId.Stitches}`,
+					"--safe",
+					"--write",
+					"--report=json",
+					file,
+				],
+				{ cwd: codemodRoot, encoding: "utf8" },
+			);
+			const report = JSON.parse(output) as {
+				readonly files: readonly [{ readonly file: string; readonly outputFile?: string }];
+			};
+			const outputFile = report.files[0]?.outputFile;
+			expect(outputFile).toMatch(/App\.tsx$/u);
+			expect(existsSync(file)).toBe(false);
+			expect(outputFile === undefined ? false : existsSync(resolve(repoRoot, outputFile))).toBe(
+				true,
+			);
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
+	});
+
 	test.each(catalog.adapters.map((adapter) => adapter.id))(
 		"executes the %s -> Pandwind command with safe source preservation",
 		(sourceAdapter) => {

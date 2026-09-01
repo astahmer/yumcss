@@ -13,6 +13,7 @@ const execFileAsync = promisify(execFile);
 
 interface CliFileResult {
 	readonly file: string;
+	readonly outputFile?: string;
 	readonly converted: number;
 	readonly skipped: number;
 	readonly residuals: number;
@@ -63,7 +64,7 @@ async function runCliMatrix(
 		};
 		return report.files.map((result) => ({
 			...result,
-			source: readFileSync(resolve(repoRoot, result.file), "utf8"),
+			source: readFileSync(resolve(repoRoot, result.outputFile ?? result.file), "utf8"),
 		}));
 	} finally {
 		rmSync(directory, { recursive: true, force: true });

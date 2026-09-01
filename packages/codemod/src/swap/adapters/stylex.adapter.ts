@@ -14,7 +14,11 @@ import {
 	StyleHostRepresentationKind,
 	StyleLoweringId,
 } from "../identifiers.ts";
-import { BuiltinHostFramework } from "../host-adapters.ts";
+import {
+	BuiltinHostFramework,
+	canConvertStaticVueSfc,
+	rewriteVueSfcToJsx,
+} from "../host-adapters.ts";
 
 function generatedCssBinding(source: string): string {
 	if (/\bimport\s+css\s+from\b/.test(source) && !/\b(?:const|let|var)\s+pandwindCss\b/.test(source))
@@ -767,6 +771,13 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 							!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
 								source,
 							),
+					},
+					{
+						from: BuiltinHostFramework.Vue,
+						to: BuiltinHostFramework.React,
+						canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
+						rewriteDocument: ({ code, targetFramework }) =>
+							rewriteVueSfcToJsx(code, targetFramework),
 					},
 				],
 				hostRepresentation: StyleHostRepresentationKind.Component,
