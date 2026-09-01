@@ -79,7 +79,7 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 		);
 		const concurrency = 64;
 		for (let start = 0; start < routes.length; start += concurrency) {
-			await Promise.all(
+			const settled = await Promise.allSettled(
 				routes.slice(start, start + concurrency).map(async ({ source, target }) => {
 					const results = await runCliMatrix(source.id, target.id);
 					expect(results).toHaveLength(3);
@@ -118,6 +118,10 @@ cliMatrixE2e("real CLI ordered adapter matrix", () => {
 					}
 				}),
 			);
+			const failures = settled.flatMap((result) =>
+				result.status === "rejected" ? [result.reason] : [],
+			);
+			expect(failures, `CLI matrix failures in batch ${start}`).toEqual([]);
 		}
 	}, 600_000);
 });
