@@ -2,7 +2,11 @@ import { describe, expect, test } from "vitest";
 import {
 	BUILTIN_CODEMOD_ADAPTER_IDS,
 	CodemodAdapterId,
+	createBuiltinCodemodCatalog,
+	createPandaAdapter,
 	runAdapterMigration,
+	createStyleAdapterRegistry,
+	runAdapterMigrationAsync,
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
 import { routeEvidence } from "./route-spec-support.ts";
@@ -718,7 +722,35 @@ class OfficialAdapterApiFamilyCatalog {
 	}
 }
 
-function migrate(api: OfficialApiFamilyCase): AdapterMigrationResult {
+const pandaProofRegistry = createStyleAdapterRegistry([
+	createPandaAdapter({
+		moduleLoader: {
+			async importPackage(packageName) {
+				if (packageName === "@pandacss/config")
+					return { loadConfig: async () => ({ config: {} }) } as never;
+				if (packageName === "@pandacss/is-valid-prop")
+					return { isCssProperty: (value: string) => value === "color" } as never;
+				return undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		},
+	}),
+	createBuiltinCodemodCatalog().registry.get(CodemodAdapterId.Pandwind)!,
+]);
+
+async function migrate(api: OfficialApiFamilyCase): Promise<AdapterMigrationResult> {
+	if (api.adapter === CodemodAdapterId.Panda && api.name === "generated styled JSX style props")
+		return runAdapterMigrationAsync(api.source, {
+			from: api.adapter,
+			to: CodemodAdapterId.Pandwind,
+			file: api.file ?? "App.tsx",
+			root: "/project",
+			adapterRegistry: pandaProofRegistry,
+			readFile: (file) => (file.endsWith("panda.config.ts") ? "export default {};" : undefined),
+			listFiles: () => ["/project/panda.config.ts"],
+		});
 	return runAdapterMigration(api.source, {
 		from: api.adapter,
 		to: CodemodAdapterId.Pandwind,
@@ -737,9 +769,11 @@ function normalizeSource(code: string): string {
 }
 
 describe("official adapter API families", () => {
-	test("covers every registered adapter's documented secondary forms", () => {
+	test("covers every registered adapter's documented secondary forms", async () => {
 		const cases = OfficialAdapterApiFamilyCatalog.cases();
-		const results = cases.map((api) => ({ api, result: migrate(api) }));
+		const results = await Promise.all(
+			cases.map(async (api) => ({ api, result: await migrate(api) })),
+		);
 		const covered = new Set(results.map(({ api }) => api.adapter));
 
 		expect(covered).toEqual(new Set(BUILTIN_CODEMOD_ADAPTER_IDS));

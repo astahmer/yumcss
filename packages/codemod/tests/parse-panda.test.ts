@@ -21,6 +21,7 @@ import {
 	type PandaRecipeIR,
 } from "../src/swap/adapters/panda/parse.ts";
 import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
+import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
@@ -47,6 +48,11 @@ const siteTheme: PandaTheme = {
 		["panda.h4", { fontSize: "1.625rem", lineHeight: "1.2", letterSpacing: "tight" }],
 	]),
 	customPatterns: new Map(),
+	jsxStyleProps: {
+		mode: PandaJsxStylePropsModeTag.All,
+		evidence: ["fallback"],
+		matches: () => false,
+	},
 };
 
 describe("panda css.class emission", () => {

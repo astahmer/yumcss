@@ -2,10 +2,14 @@ import { describe, expect, test } from "vitest";
 import {
 	createChakraAdapter,
 	createPandaAdapter,
+	createPandwindAdapter,
+	createStyleAdapterRegistry,
 	createTokenamiAdapter,
+	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
 import { loadPandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 
 describe("effective ecosystem configuration", () => {
 	test("does not invent Panda preset text styles when the official config removes presets", async () => {
@@ -91,6 +95,135 @@ describe("effective ecosystem configuration", () => {
 				text: "Panda project configuration",
 			}),
 		]);
+	});
+
+	test("resolves Panda JSX props through the official validator and project conditions", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName === "@pandacss/config")
+					return {
+						loadConfig: async () => ({
+							config: {
+								jsxStyleProps: PandaJsxStylePropsModeTag.All,
+								conditions: { _night: "[data-theme=night] &" },
+							},
+						}),
+					} as never;
+				if (packageName === "@pandacss/is-valid-prop")
+					return { isCssProperty: (value: string) => value === "color" } as never;
+				return undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+
+		expect(theme.jsxStyleProps.evidence).toMatchInlineSnapshot(`
+			[
+			  "official-package",
+			]
+		`);
+		expect(theme.jsxStyleProps.matches("color")).toBe(true);
+		expect(theme.jsxStyleProps.matches("_night")).toBe(true);
+		expect(theme.jsxStyleProps.matches("notAStyleProp")).toBe(false);
+	});
+
+	test("uses generated Panda SystemProperties when the official validator is unavailable", async () => {
+		const generated = `
+			export interface SystemProperties {
+				brandShadow?: string;
+			}
+			export interface Conditions {
+				_night?: string;
+			}
+		`;
+		const theme = await loadPandaTheme(
+			"/project/panda.config.ts",
+			{
+				async importPackage() {
+					return undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+			(file) => (file.endsWith("styled-system/types/system.d.ts") ? generated : undefined),
+		);
+
+		expect(theme.jsxStyleProps.evidence).toMatchInlineSnapshot(`
+			[
+			  "generated-system",
+			]
+		`);
+		expect(theme.jsxStyleProps.matches("brandShadow")).toBe(true);
+		expect(theme.jsxStyleProps.matches("_night")).toBe(true);
+		expect(theme.jsxStyleProps.matches("customComponentProp")).toBe(false);
+	});
+
+	test("uses generated custom Panda props in the migration, while preserving host props", async () => {
+		const generated = `export interface SystemProperties { brandShadow?: string; }`;
+		const source = `import { styled } from "styled-system/jsx";
+export const Button = () => <styled.button brandShadow="soft" data-testid="button" />;`;
+		const result = await runAdapterMigrationAsync(source, {
+			from: "panda",
+			to: "pandwind",
+			file: "src/Button.tsx",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([
+				createPandaAdapter({
+					moduleLoader: {
+						async importPackage(packageName) {
+							if (packageName === "@pandacss/config")
+								return { loadConfig: async () => ({ config: {} }) } as never;
+							return undefined;
+						},
+						async importFile() {
+							return undefined;
+						},
+					},
+				}),
+				createPandwindAdapter({ moduleLoader: null }),
+			]),
+			readFile: (file) => {
+				if (file.endsWith("panda.config.ts")) return "export default {};";
+				if (file.endsWith("styled-system/types/system.d.ts")) return generated;
+				return undefined;
+			},
+			listFiles: () => ["/project/panda.config.ts", "/project/styled-system/types/system.d.ts"],
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('brandShadow: "soft"');
+		expect(result.code).toContain('data-testid="button"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createCss } from \"pandwind/css\";
+			const css = createCss();
+
+			export const Button = () => <button data-testid=\"button\" className={css.class({ brandShadow: \"soft\" })} />;"
+		`);
+	});
+
+	test("honors Panda jsxStyleProps none and minimal modes", async () => {
+		const load = async (mode: PandaJsxStylePropsModeTag) =>
+			loadPandaTheme("/project/panda.config.ts", {
+				async importPackage(packageName) {
+					if (packageName !== "@pandacss/config") return undefined;
+					return { loadConfig: async () => ({ config: { jsxStyleProps: mode } }) } as never;
+				},
+				async importFile() {
+					return undefined;
+				},
+			});
+		const none = await load(PandaJsxStylePropsModeTag.None);
+		const minimal = await load(PandaJsxStylePropsModeTag.Minimal);
+
+		expect(none.jsxStyleProps.matches("css")).toBe(false);
+		expect(none.jsxStyleProps.matches("color")).toBe(false);
+		expect(minimal.jsxStyleProps.matches("css")).toBe(true);
+		expect(minimal.jsxStyleProps.matches("color")).toBe(false);
 	});
 
 	test("loads Chakra systems from discovered theme modules and preserves custom conditions", async () => {

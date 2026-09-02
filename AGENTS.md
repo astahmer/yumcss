@@ -138,6 +138,15 @@ install` may update it compatibly. CI must provision Nub before invoking
   runtime theme behavior remain owned by the source adapter. A catalog is
   evidence, not permission to guess: absent or ambiguous values stay literal
   and must remain visible to validation.
+- Never add a partial adapter-local catalog of utilities, conditions, or JSX
+  style props just to make a fixture convert. If the vocabulary is configurable,
+  resolve it from the ecosystem's official loader or generated artifact. If
+  that evidence is unavailable or ambiguous, fail closed and preserve the
+  source rather than guessing and removing a user prop. A small list is only
+  acceptable for a complete, documented fixed syntax contract (such as a
+  carrier name or stable shorthand map), not for project-defined vocabulary.
+  Every such resolver needs tests for official/default metadata, custom
+  metadata, disabled features, and missing metadata.
 - Preserve the fast paths: the flat `SwapIR` remains the cheap migration path,
   and backend adapters must not force every call through the richest semantic
   representation when the simple path is sufficient.

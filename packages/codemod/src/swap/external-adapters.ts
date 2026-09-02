@@ -46,7 +46,11 @@ import {
 	type StyleAdapter,
 } from "./adapter-contract.ts";
 import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
-import { JsxStyleHost, type JsxStyleHostMatch } from "./jsx-style-host.ts";
+import {
+	JsxStyleHost,
+	type JsxStyleHostMatch,
+	type JsxStylePropSelector,
+} from "./jsx-style-host.ts";
 import type { StyleLowering } from "./lowering.ts";
 import {
 	CodemodCallPatternFormTag,
@@ -91,7 +95,9 @@ type CallPattern = {
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	/** Optional source syntax immediately following the balanced call body. */
 	readonly suffix?: RegExp;
-	readonly styleProps?: readonly string[];
+	readonly styleProps?:
+		| JsxStylePropSelector
+		| ((context: AdapterParseContext) => JsxStylePropSelector);
 	/** Source-specific host props that must remain for component semantics. */
 	readonly preserveHostStyleProps?: (host: JsxStyleHostMatch) => readonly string[];
 	readonly transform?: (program: StyleProgram, context: AdapterParseContext) => StyleProgram;
@@ -174,6 +180,23 @@ export interface CodemodAdapterSpec {
 		renderers: AdapterRenderers,
 		context?: AdapterEmitContext,
 	): CodemodAdapterEmission;
+}
+
+function resolveStyleProps(
+	pattern: CallPattern,
+	context: AdapterParseContext,
+): JsxStylePropSelector {
+	const styleProps = pattern.styleProps;
+	return typeof styleProps === "function" ? styleProps(context) : (styleProps ?? []);
+}
+
+function excludeStyleProps(
+	styleProps: JsxStylePropSelector,
+	excluded: ReadonlySet<string>,
+): JsxStylePropSelector {
+	if (excluded.size === 0) return styleProps;
+	if (typeof styleProps === "function") return (name) => !excluded.has(name) && styleProps(name);
+	return styleProps.filter((name) => !excluded.has(name));
 }
 
 /** Cohesive construction utilities used by concrete adapter modules. */
@@ -981,7 +1004,7 @@ function parseCalls(
 					source,
 					start,
 					context,
-					pattern.styleProps ?? [],
+					resolveStyleProps(pattern, context),
 					adapterSource(context, start),
 				);
 				return tag === undefined ? [] : [{ start, end: tag.end }];
@@ -1022,7 +1045,7 @@ function parseCalls(
 						source,
 						start,
 						context,
-						pattern.styleProps ?? [],
+						resolveStyleProps(pattern, context),
 						adapterSource(context, start),
 					);
 					if (initialTag !== undefined) {
@@ -1044,7 +1067,7 @@ function parseCalls(
 										source,
 										start,
 										context,
-										(pattern.styleProps ?? []).filter((property) => !preserved.has(property)),
+										excludeStyleProps(resolveStyleProps(pattern, context), preserved),
 										adapterSource(context, start),
 									);
 						if (tag === undefined) continue;

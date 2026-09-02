@@ -26,6 +26,12 @@ import {
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { TokenCatalog } from "../../tokens.ts";
 import type { AdapterTokenCatalog } from "../../adapter-contract.ts";
+import { PANDA_ALIASES } from "./parse.ts";
+import {
+	PandaJsxStylePropsModeTag,
+	resolvePandaStylePropContract,
+	type PandaStylePropContract,
+} from "./style-props.ts";
 
 const sourceWorkspace = createSourceWorkspace();
 
@@ -55,6 +61,10 @@ export interface PandaTheme {
 	readonly tokenCatalog?: AdapterTokenCatalog;
 	/** Set when the official config loader failed and the deterministic fallback was used. */
 	readonly officialConfigError?: string;
+	/** Effective JSX style-prop contract, sourced from Panda or generated types. */
+	readonly jsxStyleProps: PandaStylePropContract;
+	/** Effective generated-system output directory, when configured. */
+	readonly outdir?: string;
 }
 
 interface ValueBox {
@@ -265,6 +275,8 @@ interface PandaConfigShape {
 	conditions?: { extend?: Record<string, unknown> } & Record<string, unknown>;
 	patterns?: { extend?: Record<string, unknown> } & Record<string, unknown>;
 	default?: PandaConfigShape;
+	jsxStyleProps?: "all" | "minimal" | "none";
+	outdir?: string;
 }
 
 async function importModule(path: string): Promise<AnyModule> {
@@ -275,24 +287,55 @@ async function importModule(path: string): Promise<AnyModule> {
 export async function loadPandaTheme(
 	configPath: string,
 	loader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
+	readFile: (file: string) => string | undefined = (file) =>
+		sourceWorkspace.read([file])[0]?.source,
 ): Promise<PandaTheme> {
 	try {
 		const official = await loadPandaThemeByOfficialPackage(configPath, loader);
-		if (official !== undefined) return official;
+		if (official !== undefined) return withPandaStyleProps(official, configPath, loader, readFile);
 	} catch (error) {
 		const fallback = await loadPandaThemeByImport(configPath).catch(() =>
 			loadPandaThemeFromDisk(configPath),
 		);
-		return {
-			...fallback,
-			officialConfigError: error instanceof Error ? error.message : String(error),
-		};
+		return withPandaStyleProps(
+			{
+				...fallback,
+				officialConfigError: error instanceof Error ? error.message : String(error),
+			},
+			configPath,
+			loader,
+			readFile,
+		);
 	}
 	try {
-		return await loadPandaThemeByImport(configPath);
+		return withPandaStyleProps(
+			await loadPandaThemeByImport(configPath),
+			configPath,
+			loader,
+			readFile,
+		);
 	} catch {
-		return loadPandaThemeFromDisk(configPath);
+		return withPandaStyleProps(loadPandaThemeFromDisk(configPath), configPath, loader, readFile);
 	}
+}
+
+async function withPandaStyleProps(
+	theme: PandaTheme,
+	configPath: string,
+	loader: ProjectModuleLoader,
+	readFile: (file: string) => string | undefined,
+): Promise<PandaTheme> {
+	return {
+		...theme,
+		jsxStyleProps: await resolvePandaStylePropContract(
+			configPath,
+			{ jsxStyleProps: theme.jsxStyleProps.mode, outdir: theme.outdir },
+			[...PANDA_ALIASES.keys()],
+			Object.keys(theme.conditions),
+			loader,
+			readFile,
+		),
+	};
 }
 
 async function loadPandaThemeByOfficialPackage(
@@ -386,6 +429,12 @@ function pandaThemeFromConfig(
 		customPatterns,
 		plugins: Array.isArray(unwrapped?.plugins) ? unwrapped.plugins : undefined,
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
+		jsxStyleProps: {
+			mode: unwrapped?.jsxStyleProps ?? PandaJsxStylePropsModeTag.All,
+			evidence: ["config"],
+			matches: () => false,
+		},
+		...(unwrapped?.outdir === undefined ? {} : { outdir: unwrapped.outdir }),
 	};
 }
 
@@ -409,7 +458,11 @@ function loadPandaThemeFromDisk(configPath: string): PandaTheme {
 		const source = sourceWorkspace.read([candidate])[0]?.source;
 		if (source !== undefined) extra.push(source);
 	}
-	return loadPandaThemeFromSource(configSource, extra);
+	const mode = /\bjsxStyleProps\s*:\s*["'](all|minimal|none)["']/u.exec(configSource)?.[1] as
+		| PandaJsxStylePropsModeTag
+		| undefined;
+	const outdir = /\boutdir\s*:\s*["']([^"']+)["']/u.exec(configSource)?.[1];
+	return loadPandaThemeFromSource(configSource, extra, { mode, outdir });
 }
 
 /** Empty theme — every token candidate falls back to verbatim/CSS-var. */
@@ -420,6 +473,11 @@ export const emptyPandaTheme: PandaTheme = {
 	textStyles: new Map(),
 	customPatterns: new Map(),
 	plugins: [],
+	jsxStyleProps: {
+		mode: PandaJsxStylePropsModeTag.All,
+		evidence: ["fallback"],
+		matches: () => false,
+	},
 };
 
 /* ------------------------------------------------------------------ */
@@ -432,7 +490,11 @@ export const emptyPandaTheme: PandaTheme = {
  * installed). The theme files are plain literals behind identity helpers,
  * so brace-balanced slicing + the shared literal parser recovers them.
  */
-function loadPandaThemeFromSource(configSource: string, extraSources: Array<string>): PandaTheme {
+function loadPandaThemeFromSource(
+	configSource: string,
+	extraSources: Array<string>,
+	options: { readonly mode?: PandaJsxStylePropsModeTag; readonly outdir?: string } = {},
+): PandaTheme {
 	const tokenVars = new Map<string, string>();
 	const tokens: Record<string, Record<string, unknown>> = {};
 	const textStyles = new Map<string, Record<string, unknown>>();
@@ -471,5 +533,11 @@ function loadPandaThemeFromSource(configSource: string, extraSources: Array<stri
 		customPatterns: new Map(),
 		plugins: [],
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
+		jsxStyleProps: {
+			mode: options.mode ?? PandaJsxStylePropsModeTag.All,
+			evidence: ["fallback"],
+			matches: () => false,
+		},
+		...(options.outdir === undefined ? {} : { outdir: options.outdir }),
 	};
 }

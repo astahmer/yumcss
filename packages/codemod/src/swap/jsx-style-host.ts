@@ -25,21 +25,26 @@ export interface JsxStyleHostRenderResult {
 	readonly needsCx: boolean;
 }
 
+export type JsxStylePropSelector = readonly string[] | ((name: string) => boolean);
+
 /** Shared host syntax port for adapters that express styles as JSX attributes. */
 export class JsxStyleHost {
 	static parse(
 		source: string,
 		start: number,
 		_context: AdapterParseContext,
-		styleProps: readonly string[],
+		styleProps: JsxStylePropSelector,
 		styleSource: StyleProgramSource,
 	): JsxStyleHostMatch | undefined {
 		const end = this.findEnd(source, start);
 		if (end === undefined) return undefined;
 		const openingTag = source.slice(start, end);
 		const attributes = this.attributes(openingTag);
-		const names = new Set(styleProps);
-		const styleAttributes = attributes.filter((attribute) => names.has(attribute.name));
+		const matches =
+			typeof styleProps === "function"
+				? styleProps
+				: (name: string) => new Set(styleProps).has(name);
+		const styleAttributes = attributes.filter((attribute) => matches(attribute.name));
 		if (styleAttributes.length === 0) return undefined;
 		const parts: string[] = [];
 		let template: string | undefined;

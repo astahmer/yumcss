@@ -17,46 +17,9 @@ import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
 import { PANDA_ALIASES } from "./panda/parse.ts";
 
-const PANDA_JSX_STYLE_PROPS = [
-	"css",
-	"color",
-	"background",
-	"backgroundColor",
-	"border",
-	"borderColor",
-	"borderRadius",
-	"boxShadow",
-	"display",
-	"flex",
-	"flexDirection",
-	"fontFamily",
-	"fontSize",
-	"fontWeight",
-	"gap",
-	"gridTemplateColumns",
-	"height",
-	"justifyContent",
-	"lineHeight",
-	"margin",
-	"maxWidth",
-	"minHeight",
-	"opacity",
-	"padding",
-	"position",
-	"textAlign",
-	"textDecoration",
-	"transform",
-	"width",
-	"zIndex",
-	"_active",
-	"_before",
-	"_disabled",
-	"_focus",
-	"_hover",
-	"_after",
-] as const;
-
-const pandaJsxStyleProps = [...new Set([...PANDA_JSX_STYLE_PROPS, ...PANDA_ALIASES.keys()])];
+const pandaJsxStyleProps = (context: import("../adapter-contract.ts").AdapterParseContext) =>
+	(context.config.values.pandaTheme as PandaTheme | undefined)?.jsxStyleProps.matches ??
+	((name: string) => name === "css" || PANDA_ALIASES.has(name));
 
 function pandaFactoryHostTag(program: StyleProgram): StyleProgram {
 	const source = program.source;
@@ -163,7 +126,7 @@ async function officialPandaConfig(
 			: joinDocumentPath(context.root, candidate);
 		if (context.readFile(path) === undefined) continue;
 		try {
-			const theme = await loadPandaTheme(path, loader);
+			const theme = await loadPandaTheme(path, loader, context.readFile);
 			return {
 				...fallback,
 				files: [...fallback.files, path],

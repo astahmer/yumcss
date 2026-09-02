@@ -31,6 +31,7 @@ import type { PandaTheme } from "./theme.ts";
 import { emptyPandaTheme } from "./theme.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
+import { PANDA_ALIASES } from "./aliases.ts";
 
 // Re-exported for tests/consumers that only import this module.
 export { parseObjectLiteral } from "../../parse.ts";
@@ -54,44 +55,7 @@ const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 /* ------------------------------------------------------------------ */
 
 /** panda shorthand / alias key -> canonical camelCase CSS property. */
-export const PANDA_ALIASES: ReadonlyMap<string, string> = new Map([
-	["p", "padding"],
-	["px", "paddingX"],
-	["py", "paddingY"],
-	["pt", "paddingTop"],
-	["pb", "paddingBottom"],
-	["pl", "paddingLeft"],
-	["pr", "paddingRight"],
-	["m", "margin"],
-	["mx", "marginX"],
-	["my", "marginY"],
-	["mt", "marginTop"],
-	["mb", "marginBottom"],
-	["ml", "marginLeft"],
-	["mr", "marginRight"],
-	["ms", "marginInlineStart"],
-	["me", "marginInlineEnd"],
-	["ps", "paddingInlineStart"],
-	["pe", "paddingInlineEnd"],
-	["bg", "backgroundColor"],
-	["rounded", "borderRadius"],
-	["w", "width"],
-	["h", "height"],
-	["minW", "minWidth"],
-	["minH", "minHeight"],
-	["maxW", "maxWidth"],
-	["maxH", "maxHeight"],
-	["pos", "position"],
-	["shadow", "boxShadow"],
-	["insetStart", "insetInlineStart"],
-	["insetEnd", "insetInlineEnd"],
-	["roundedTop", "borderTopRadius"],
-	["roundedRight", "borderRightRadius"],
-	["roundedBottom", "borderBottomRadius"],
-	["roundedLeft", "borderLeftRadius"],
-	["roundedStart", "borderStartRadius"],
-	["roundedEnd", "borderEndRadius"],
-]);
+export { PANDA_ALIASES } from "./aliases.ts";
 
 const camelProp = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
@@ -186,26 +150,6 @@ export function normalizePandaStyleObject(style: Record<string, unknown>): Recor
  */
 const TOKEN_PATH_RE = /^[a-zA-Z][\w-]*(?:\.[a-zA-Z][\w-]*)+$/;
 
-const COLOR_TOKEN_HEADS = new Set([
-	"fg",
-	"bg",
-	"accent",
-	"primary",
-	"secondary",
-	"neutral",
-	"gray",
-	"red",
-	"orange",
-	"yellow",
-	"green",
-	"blue",
-	"purple",
-	"pink",
-	"teal",
-	"cyan",
-	"indigo",
-]);
-
 // Simple Panda values are ambiguous across token groups (`sm` is a font size,
 // radius, spacing value, etc.). Only turn them into `$` references when the
 // declaration has a matching theme-driven group; dotted paths remain safe to
@@ -235,7 +179,7 @@ const SIMPLE_TOKEN_PROPS = new Set([
 /** Best-effort panda CSS-var group for an unmapped dotted token. */
 function fallbackVarForPath(path: string): string {
 	const segments = path.split(".");
-	const group = COLOR_TOKEN_HEADS.has(segments[0] ?? "") ? "colors" : (segments[0] ?? "tokens");
+	const group = segments[0] ?? "tokens";
 	return `var(--${group}-${segments.map((segment) => segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)).join("-")})`;
 }
 
