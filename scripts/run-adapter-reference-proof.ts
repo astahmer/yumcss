@@ -7,6 +7,7 @@ import {
 	createRealRepositoryCorpus,
 	runAdapterMigrationAsync,
 } from "../packages/codemod/src/swap/index.ts";
+import { createEffectToolingTaskRunner } from "./effect-tooling.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 /**
@@ -206,6 +207,70 @@ async function proveInBrowser(
 	};
 }
 
+async function proveReference(
+	reference: ReturnType<typeof createRealRepositoryCorpus>["references"][number],
+): Promise<ReferenceProofReport> {
+	const source = readPinnedSource(reference);
+	const projectRoot = projectRootFor(reference);
+	const migration = await runAdapterMigrationAsync(source, {
+		from: reference.from,
+		to: reference.to,
+		file: reference.path,
+		root: projectRoot,
+		semantic: { source: { file: reference.path, framework: reference.framework } },
+	});
+	const validations = migration.validations as readonly CanonicalValidation[];
+	const canonicalSource = validations.map((item) => item.canonicalSource).join("\n");
+	const canonicalTarget = validations.map((item) => item.canonicalTarget).join("\n");
+	const browser = await proveInBrowser(validations);
+	return {
+		id: reference.id,
+		repository: reference.repository,
+		commit: reference.commit,
+		path: reference.path,
+		adapter: reference.from,
+		execution: "adapter-program",
+		migration: {
+			detected: migration.reports.length > 0 || migration.converted > 0,
+			converted: migration.converted,
+			skipped: migration.skipped,
+			residuals: migration.residuals.length,
+			validations: validations.length,
+			valid:
+				migration.residuals.length === 0 &&
+				migration.skipped === 0 &&
+				validations.every((item) => item.valid),
+			differences: validations.flatMap((item) =>
+				item.valid
+					? []
+					: [
+							`canonical source: ${item.canonicalSource}`,
+							`canonical target: ${item.canonicalTarget}`,
+						],
+			),
+			residualKinds: Object.fromEntries(
+				migration.residuals.reduce(
+					(counts, residual) => counts.set(residual.kind, (counts.get(residual.kind) ?? 0) + 1),
+					new Map<string, number>(),
+				),
+			),
+			residualDetails: migration.residuals.map((residual) => ({
+				kind: residual.kind,
+				text: residual.text,
+				...(residual.hint === undefined ? {} : { hint: residual.hint }),
+			})),
+		},
+		canonicalCss: {
+			checked: validations.length > 0,
+			equal: validations.length > 0 && validations.every((item) => item.valid),
+			sourceBytes: Buffer.byteLength(canonicalSource),
+			targetBytes: Buffer.byteLength(canonicalTarget),
+			notLarger: Buffer.byteLength(canonicalTarget) <= Buffer.byteLength(canonicalSource),
+		},
+		browser,
+	};
+}
+
 async function run(): Promise<AdapterReferenceProofReport> {
 	const excluded = {
 		[CodemodAdapterId.Panda]:
@@ -215,68 +280,10 @@ async function run(): Promise<AdapterReferenceProofReport> {
 	const references = createRealRepositoryCorpus().references.filter(
 		(reference) => excluded[reference.from] === undefined,
 	);
-	const reports: ReferenceProofReport[] = [];
-	for (const reference of references) {
-		const source = readPinnedSource(reference);
-		const projectRoot = projectRootFor(reference);
-		const migration = await runAdapterMigrationAsync(source, {
-			from: reference.from,
-			to: reference.to,
-			file: reference.path,
-			root: projectRoot,
-			semantic: { source: { file: reference.path, framework: reference.framework } },
-		});
-		const validations = migration.validations as readonly CanonicalValidation[];
-		const canonicalSource = validations.map((item) => item.canonicalSource).join("\n");
-		const canonicalTarget = validations.map((item) => item.canonicalTarget).join("\n");
-		const browser = await proveInBrowser(validations);
-		reports.push({
-			id: reference.id,
-			repository: reference.repository,
-			commit: reference.commit,
-			path: reference.path,
-			adapter: reference.from,
-			execution: "adapter-program",
-			migration: {
-				detected: migration.reports.length > 0 || migration.converted > 0,
-				converted: migration.converted,
-				skipped: migration.skipped,
-				residuals: migration.residuals.length,
-				validations: validations.length,
-				valid:
-					migration.residuals.length === 0 &&
-					migration.skipped === 0 &&
-					validations.every((item) => item.valid),
-				differences: validations.flatMap((item) =>
-					item.valid
-						? []
-						: [
-								`canonical source: ${item.canonicalSource}`,
-								`canonical target: ${item.canonicalTarget}`,
-							],
-				),
-				residualKinds: Object.fromEntries(
-					migration.residuals.reduce(
-						(counts, residual) => counts.set(residual.kind, (counts.get(residual.kind) ?? 0) + 1),
-						new Map<string, number>(),
-					),
-				),
-				residualDetails: migration.residuals.map((residual) => ({
-					kind: residual.kind,
-					text: residual.text,
-					...(residual.hint === undefined ? {} : { hint: residual.hint }),
-				})),
-			},
-			canonicalCss: {
-				checked: validations.length > 0,
-				equal: validations.length > 0 && validations.every((item) => item.valid),
-				sourceBytes: Buffer.byteLength(canonicalSource),
-				targetBytes: Buffer.byteLength(canonicalTarget),
-				notLarger: Buffer.byteLength(canonicalTarget) <= Buffer.byteLength(canonicalSource),
-			},
-			browser,
-		});
-	}
+	const reports = await createEffectToolingTaskRunner().run(
+		references.map((reference) => ({ id: reference.id, run: () => proveReference(reference) })),
+		{ concurrency: 2 },
+	);
 	const passed = reports.filter(
 		(report) =>
 			report.migration.valid &&

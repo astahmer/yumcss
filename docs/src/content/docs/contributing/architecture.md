@@ -347,6 +347,17 @@ bounded `SourceProjectBindingIndex`: relative imports can be followed through
 barrel re-exports using AST binding facts, while package boundaries stop at
 the owning adapter. No project module is executed during this resolution.
 
+Long-running repository and proof scripts use an optional Effect 4 adapter at
+their composition boundary. `scripts/effect-tooling.ts` exposes ordinary
+Pandwind-owned task and filesystem ports while adapting them to Effect's
+official `FileSystem`, `Path`, and bounded `Effect.forEach` services. Reference
+preparation and adapter-reference proof batches preserve input order, bound
+parallel work, retain task ids on failure, and accept cancellation. Effect is a
+root tooling dependency only: no shipped runtime, Vite transform, pure
+semantic lowering, backend renderer, or browser bundle imports it. Because the
+adapter is script-local and substitution-tested, the beta dependency can be
+replaced without changing migration or source-workspace contracts.
+
 Generated artifacts are maintained through their generators rather than
 treated as hand-authored adapter implementations. Repository lint and
 formatting ignore the generated playground declaration graph and generated

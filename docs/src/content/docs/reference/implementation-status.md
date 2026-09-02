@@ -35,6 +35,9 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
 - an injectable `SourceWorkspace` filesystem/scanner boundary and a bounded
   AST-backed project binding index for aliased imports through relative barrel
   re-exports;
+- an optional Effect 4 tooling adapter for bounded, cancellable reference
+  batches and official Node filesystem/path services, isolated from shipped
+  runtime and Vite code;
 - a typed real-repository promotion report that distinguishes source-static
   evidence from runtime-pending, source-mismatch, and pipeline-unpaired
   entries across canonical CSS, browser, SSR/hydration, streaming,
@@ -66,6 +69,7 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence                       | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/)                                        |
 | 038–039      | Complete for the reproducible offline pivot gate, pinned-reference adapter browser proof, explicit per-adapter coverage evidence, and the final history/proof audit | [Testing](/contributing/testing/), [Architecture](/contributing/architecture/), [Shipped plans](/reference/shipped-plans/)             |
 | 043          | Complete for the deterministic semantic core, compatibility negotiation, proof fingerprints, conformance tests, and architecture documentation                      | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/), [Testing](/contributing/testing/)       |
+| 049          | Complete for the optional tooling-only Effect 4 boundary, ordered bounded task runner, Node filesystem/path adapter, and substitution tests                         | [Architecture](/contributing/architecture/), [Testing](/contributing/testing/)                                                         |
 
 ## What remains intentionally bounded
 
