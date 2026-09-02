@@ -1,5 +1,5 @@
 /**
- * pandwind static-extraction discipline rules (oxlint JS plugin).
+ * pandwind static-extraction discipline rules (TypeScript source for the Oxlint JS plugin).
  *
  * The plugin enforces source-level constraints only. Project configuration,
  * official ecosystem loaders, CSS generation, and browser proofs belong to
@@ -28,19 +28,35 @@ const API = Object.freeze({
 	style: "style",
 });
 
-const CORE_APIS = new Set([API.cx, API.tw]);
+const CORE_APIS = new Set<string>([API.cx, API.tw]);
 const STYLE_METHODS = new Set(["class", "vars", "props", "group", "input", "raw"]);
 const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
 
-const isNode = (value) =>
-	value !== null && typeof value === "object" && typeof value.type === "string";
+type AstNode = { type: string; [key: string]: any };
+type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
+type AstVisitor = (node: AstNode) => void;
+type ApiReference = { kind: string; name: string };
+type RuleContext = {
+	readonly options?: readonly unknown[];
+	report(payload: {
+		node?: AstNode;
+		message: string;
+		data?: Record<string, string | number>;
+	}): void;
+};
+type RuleListener = {
+	Program?: (node: AstNode) => void;
+	CallExpression?: (node: AstNode) => void;
+};
+const isNode = (value: unknown): value is AstNode =>
+	value !== null && typeof value === "object" && "type" in value && typeof value.type === "string";
 
 /**
  * Explicit depth-first traversal avoids call-stack exhaustion for generated
  * or user-authored ASTs. The reverse push preserves source order.
  */
-const walkNode = (root, visit) => {
-	const stack = Array.isArray(root) ? root.toReversed() : [root];
+const walkNode = (root: AstValue, visit: AstVisitor): void => {
+	const stack: AstValue[] = Array.isArray(root) ? root.toReversed() : [root];
 	while (stack.length > 0) {
 		const node = stack.pop();
 		if (Array.isArray(node)) {
@@ -52,12 +68,13 @@ const walkNode = (root, visit) => {
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
+			if (key === undefined) continue;
 			if (key !== "parent" && key !== "type") stack.push(node[key]);
 		}
 	}
 };
 
-const propertyName = (property) => {
+const propertyName = (property: AstNode): string | undefined => {
 	if (property.type !== "Property") return undefined;
 	const key = property.key;
 	if (key?.type === "Identifier") return key.name;
@@ -65,25 +82,28 @@ const propertyName = (property) => {
 	return undefined;
 };
 
-const memberName = (member) => {
+const memberName = (member: AstNode): string | undefined => {
 	if (member.type !== "MemberExpression") return undefined;
 	if (!member.computed && member.property?.type === "Identifier") return member.property.name;
 	if (member.computed && member.property?.type === "Literal") return String(member.property.value);
 	return undefined;
 };
 
-const sourceName = (source) =>
+const sourceName = (source: AstNode | undefined): string | undefined =>
 	source?.type === "Literal" && typeof source.value === "string" ? source.value : undefined;
 
-const importedName = (specifier) => {
+const importedName = (specifier: AstNode): string | undefined => {
 	if (specifier.type !== "ImportSpecifier") return undefined;
 	if (specifier.imported?.type === "Identifier") return specifier.imported.name;
 	if (specifier.imported?.type === "Literal") return String(specifier.imported.value);
 	return undefined;
 };
 
-const apiFromImport = (source, imported) => {
-	if (source === SOURCE.core && CORE_APIS.has(imported)) return imported;
+const apiFromImport = (
+	source: string | undefined,
+	imported: string | undefined,
+): string | undefined => {
+	if (source === SOURCE.core && imported !== undefined && CORE_APIS.has(imported)) return imported;
 	if (source === SOURCE.css && imported === API.cssFactory) return API.cssFactory;
 	if (source === SOURCE.design && imported === API.designFactory) return API.designFactory;
 	return undefined;
@@ -100,7 +120,7 @@ const createApiResolver = () => {
 	const factories = new Map();
 	const instances = new Set();
 
-	const registerImport = (node) => {
+	const registerImport = (node: AstNode): void => {
 		const source = sourceName(node.source);
 		if (source !== SOURCE.core && source !== SOURCE.css && source !== SOURCE.design) return;
 		for (const specifier of node.specifiers ?? []) {
@@ -117,7 +137,7 @@ const createApiResolver = () => {
 		}
 	};
 
-	const resolveMember = (expression) => {
+	const resolveMember = (expression: unknown): string | undefined => {
 		if (!isNode(expression) || expression.type !== "MemberExpression") return undefined;
 		if (expression.object?.type !== "Identifier") return undefined;
 		const object = expression.object.name;
@@ -129,13 +149,13 @@ const createApiResolver = () => {
 		return undefined;
 	};
 
-	const resolveFactory = (expression) => {
+	const resolveFactory = (expression: unknown): string | undefined => {
 		if (!isNode(expression) || expression.type !== "CallExpression") return undefined;
 		if (expression.callee?.type === "Identifier") return factories.get(expression.callee.name);
 		return resolveMember(expression.callee);
 	};
 
-	const scan = (program) => {
+	const scan = (program: AstNode): void => {
 		walkNode(program, (node) => {
 			if (node.type === "ImportDeclaration") registerImport(node);
 		});
@@ -146,7 +166,7 @@ const createApiResolver = () => {
 		});
 	};
 
-	const resolve = (call) => {
+	const resolve = (call: AstNode): ApiReference | undefined => {
 		if (call.type !== "CallExpression") return undefined;
 		if (call.callee?.type === "Identifier") {
 			const kind = direct.get(call.callee.name);
@@ -162,7 +182,7 @@ const createApiResolver = () => {
 	return { scan, resolve };
 };
 
-const countDynamicConditionals = (args) =>
+const countDynamicConditionals = (args: readonly AstNode[]): number =>
 	args.filter(
 		(arg) =>
 			arg.type === "ConditionalExpression" ||
@@ -176,8 +196,8 @@ const ARBITRARY_RE = /\[[^\]\s]+\]/;
  * Walk one design module's values without recursing. `$raw` is an explicit
  * escape hatch and conditional branches stay opaque to avoid false positives.
  */
-const walkDesignValues = (root, seen, report) => {
-	const stack = [root];
+const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor): void => {
+	const stack: AstValue[] = [root];
 	while (stack.length > 0) {
 		const node = stack.pop();
 		if (Array.isArray(node)) {
@@ -197,23 +217,25 @@ const walkDesignValues = (root, seen, report) => {
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
+			if (key === undefined) continue;
 			if (key !== "parent" && key !== "type") stack.push(node[key]);
 		}
 	}
 };
 
-const tokenPolicy = (context) => {
+const tokenPolicy = (context: RuleContext): { allows(value: string): boolean } | undefined => {
 	const options = context.options?.[0];
-	if (!options || typeof options !== "object") return undefined;
-	const allowedValues = Array.isArray(options.allowedValues)
-		? new Set(options.allowedValues.filter((value) => typeof value === "string"))
+	if (options === null || typeof options !== "object") return undefined;
+	const settings = options as Record<string, unknown>;
+	const allowedValues = Array.isArray(settings.allowedValues)
+		? new Set(settings.allowedValues.filter((value): value is string => typeof value === "string"))
 		: undefined;
-	const allowedPrefixes = Array.isArray(options.allowedPrefixes)
-		? options.allowedPrefixes.filter((value) => typeof value === "string")
+	const allowedPrefixes = Array.isArray(settings.allowedPrefixes)
+		? settings.allowedPrefixes.filter((value): value is string => typeof value === "string")
 		: [];
 	if (allowedValues === undefined && allowedPrefixes.length === 0) return undefined;
 	return {
-		allows(value) {
+		allows(value: string): boolean {
 			return (
 				allowedValues?.has(value) === true ||
 				allowedPrefixes.some((prefix) => value.startsWith(prefix))
@@ -222,12 +244,15 @@ const tokenPolicy = (context) => {
 	};
 };
 
-const callName = (api) => api?.name ?? "pandwind";
-const isStaticLane = (api) => api !== undefined;
-const isTokenLane = (api) => api !== undefined;
-const isClassLane = (api) => api?.kind === API.cx || api?.kind === API.tw;
+const callName = (api: ApiReference | undefined): string => api?.name ?? "pandwind";
+const isStaticLane = (api: ApiReference | undefined): boolean => api !== undefined;
+const isTokenLane = (api: ApiReference | undefined): boolean => api !== undefined;
+const isClassLane = (api: ApiReference | undefined): boolean =>
+	api?.kind === API.cx || api?.kind === API.tw;
 
-const withResolver = (onCall) => {
+const withResolver = (
+	onCall: (node: AstNode, api: ApiReference | undefined) => void,
+): RuleListener => {
 	const resolver = createApiResolver();
 	return {
 		Program(node) {
@@ -239,7 +264,7 @@ const withResolver = (onCall) => {
 	};
 };
 
-const rules = {
+const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 	"no-dollar-raw": {
 		create(context) {
 			return withResolver((node, api) => {
@@ -287,9 +312,11 @@ const rules = {
 			return withResolver((node, api) => {
 				if (policy === undefined || !isTokenLane(api)) return;
 				for (const arg of node.arguments) {
-					const seen = new Set();
+					const seen = new Set<AstNode>();
 					walkNode(arg, (inner) => {
-						if (inner.type !== "Property" || !DESIGN_MODULE_KEYS.has(propertyName(inner))) return;
+						const name = propertyName(inner);
+						if (inner.type !== "Property" || name === undefined || !DESIGN_MODULE_KEYS.has(name))
+							return;
 						walkDesignValues(inner.value, seen, (literal) => {
 							if (policy.allows(literal.value)) return;
 							context.report({

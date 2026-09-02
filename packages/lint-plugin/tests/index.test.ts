@@ -1,11 +1,26 @@
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
-import plugin from "../src/index.js";
+import plugin from "../src/index.ts";
 
-const parse = (code) => parseSync("fixture.ts", code, { sourceType: "module", lang: "ts" }).program;
+type AstNode = { type: string; [key: string]: any };
+type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
+type RuleContext = {
+	readonly options?: readonly unknown[];
+	report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void;
+};
+type RuleListeners = {
+	Program?: (node: AstNode) => void;
+	CallExpression?: (node: AstNode) => void;
+};
+type Plugin = { rules: Record<string, { create(context: RuleContext): RuleListeners }> };
+type Report = { data: Record<string, unknown>; message: string; nodeType?: string };
 
-const visitCalls = (program, visit) => {
-	const stack = [program];
+const typedPlugin = plugin as unknown as Plugin;
+const parse = (code: string): AstNode =>
+	parseSync("fixture.ts", code, { sourceType: "module", lang: "ts" }).program as AstNode;
+
+const visitCalls = (program: AstValue, visit: (node: AstNode) => void): void => {
+	const stack: AstValue[] = [program];
 	while (stack.length > 0) {
 		const node = stack.pop();
 		if (node === null || typeof node !== "object") continue;
@@ -21,19 +36,25 @@ const visitCalls = (program, visit) => {
 	}
 };
 
-const runRule = (ruleName, code, options = []) => {
-	const reports = [];
+const runRule = (
+	ruleName: string,
+	code: string | AstNode,
+	options: readonly unknown[] = [],
+): Report[] => {
+	const reports: Report[] = [];
 	const context = {
 		options,
-		report(payload) {
+		report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void {
 			reports.push({
-				data: payload.data,
+				data: payload.data ?? {},
 				message: payload.message,
 				nodeType: payload.node?.type,
 			});
 		},
 	};
-	const listeners = plugin.rules[ruleName].create(context);
+	const rule = typedPlugin.rules[ruleName];
+	if (rule === undefined) throw new Error(`unknown rule: ${ruleName}`);
+	const listeners = rule.create(context);
 	const program = typeof code === "string" ? parse(code) : code;
 	listeners.Program?.(program);
 	visitCalls(program, (node) => listeners.CallExpression?.(node));
@@ -155,7 +176,7 @@ css.class({ color: "[red]" });`,
 		);
 
 		expect(reports).toHaveLength(1);
-		expect(reports[0].data).toEqual({ name: "tw", value: "w-[13px]" });
+		expect(reports.at(0)?.data).toEqual({ name: "tw", value: "w-[13px]" });
 		expect(reports).toMatchInlineSnapshot(`
 			[
 			  {
@@ -225,7 +246,7 @@ utility(active ? "opacity-100" : "opacity-50", disabled ? "cursor-not-allowed" :
 		);
 
 		expect(reports).toHaveLength(1);
-		expect(reports[0].data).toEqual({ n: 2, name: "utility" });
+		expect(reports.at(0)?.data).toEqual({ n: 2, name: "utility" });
 		expect(reports).toMatchInlineSnapshot(`
 			[
 			  {
@@ -277,7 +298,7 @@ dcss.class({ $frame: { gap: "space-5" } });`,
 	});
 
 	test("handles deeply nested generated ASTs without consuming the call stack", () => {
-		let value = { type: "Literal", value: "w-[13px]" };
+		let value: AstNode = { type: "Literal", value: "w-[13px]" };
 		for (let index = 0; index < 12_000; index += 1) {
 			value = {
 				type: "ObjectExpression",

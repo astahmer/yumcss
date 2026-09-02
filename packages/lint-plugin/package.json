@@ -13,26 +13,30 @@
 		"directory": "packages/lint-plugin"
 	},
 	"files": [
-		"src",
+		"dist",
 		"README.md",
 		"LICENSE"
 	],
 	"type": "module",
-	"main": "./src/index.js",
+	"main": "./dist/index.js",
 	"exports": {
-		".": "./src/index.js"
-	},
-	"scripts": {
-		"test": "vitest run"
-	},
-	"devDependencies": {
-		"oxc-parser": "0.144.0",
-		"vitest": "4.1.10"
+		".": "./dist/index.js"
 	},
 	"publishConfig": {
 		"access": "public",
 		"provenance": true,
 		"registry": "https://registry.npmjs.org/"
+	},
+	"scripts": {
+		"build": "nub exec tsdown",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"devDependencies": {
+		"oxc-parser": "0.144.0",
+		"tsdown": "0.22.14",
+		"typescript": "7.0.2",
+		"vitest": "4.1.10"
 	},
 	"engines": {
 		"node": ">=20"

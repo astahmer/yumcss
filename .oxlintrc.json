@@ -34,7 +34,7 @@
 		"**/packages/codemod/tests/roundtrips/**",
 		"**/packages/analyze/tests/fixtures/**"
 	],
-	"jsPlugins": ["./packages/lint-plugin/src/index.js"],
+	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
 	"overrides": [
 		{
 			"files": [

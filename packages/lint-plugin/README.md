@@ -47,9 +47,12 @@ The lint plugin itself stays synchronous and does not load arbitrary packages.
 
 ## Wiring
 
+Build the TypeScript source before running Oxlint. The generated JavaScript
+file is the runtime plugin entry because Oxlint loads JavaScript plugins:
+
 ```json
 {
-	"jsPlugins": ["./packages/lint-plugin/src/index.js"],
+	"jsPlugins": ["./packages/lint-plugin/dist/index.js"],
 	"rules": {
 		"pandwind-extraction/no-spreads": "warn",
 		"pandwind-extraction/no-dynamic-values": "warn",
