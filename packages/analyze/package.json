@@ -49,6 +49,7 @@
 	"devDependencies": {
 		"@types/node": "26.2.0",
 		"@vitest/coverage-v8": "4.1.10",
+		"oxc-parser": "0.144.0",
 		"typescript": "7.0.2",
 		"vitest": "4.1.10"
 	},

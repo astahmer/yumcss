@@ -115,8 +115,9 @@ async function compileSheet(classes: Array<string>): Promise<{ set: Set<string>;
 	const set = new Set<string>();
 	root.walkRules((rule) => {
 		const decls: string[] = [];
-		rule.walkDecls((decl) => decls.push(`${decl.prop}:${decl.value}`));
-		rule.walkDecls((decl) => void decl);
+		rule.walkDecls((decl) => {
+			decls.push(`${decl.prop}:${decl.value}`);
+		});
 		if (decls.length > 0) set.add(`${rule.selector} { ${decls.toSorted().join("; ")} }`);
 	});
 	return { set, built };

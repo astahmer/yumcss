@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "nub run -r --if-present build",
 		"dev": "nub run --filter example dev",
-		"typecheck": "nub run --filter pandwind-analyze --filter pandwind-codemod --filter pandwind --filter example --filter inspector --filter playground --filter css-example --filter opentui-example --filter rn-example --filter showcase --workspace-concurrency=1 typecheck",
+		"typecheck": "nub run --filter pandwind-analyze --filter pandwind-codemod --filter pandwind --filter example --filter inspector --filter playground --filter css-example --filter opentui-example --filter rn-example --filter showcase --filter pandwind-docs --workspace-concurrency=1 typecheck",
 		"test": "nub run --filter pandwind test && nub run --filter pandwind test:types",
 		"test:all": "nub run -r --workspace-concurrency=1 --if-present test",
 		"test:coverage": "nub run --filter pandwind test:coverage && nub run --filter pandwind-codemod test:coverage && nub run --filter pandwind-analyze test:coverage",
