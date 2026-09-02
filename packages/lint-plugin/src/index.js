@@ -1,50 +1,166 @@
 /**
  * pandwind static-extraction discipline rules (oxlint JS plugin).
  *
- * Mirrors the taxonomy from plans/012 §3.1 (stylex eslint-plugin steal):
- * keep `cx()` / `css()` calls analyzable so the vite folding passes can
- * eliminate them. Rules run at the WARNING tier — partial conditional
- * folding is legitimate, so conditionals are allowed; everything the
- * evaluator provably cannot fold is flagged.
+ * The plugin enforces source-level constraints only. Project configuration,
+ * official ecosystem loaders, CSS generation, and browser proofs belong to
+ * the adapter and validator layers; this plugin must not guess them.
  *
  * Rules:
- * - custom/pandwind-no-spreads:        spread arguments in cx() (never folds)
- * - custom/pandwind-no-dynamic-values: template interpolations, member
- *   expressions, function args and helper calls as cx() arguments
- * - custom/pandwind-no-multiple-conditionals: >1 dynamic conditional in one
- *   call (the pass folds exactly one)
- *
- * Strict-token rules (ERROR tier — the de-facto strict mode):
- * - pandwind-extraction/no-dollar-raw:      $raw property inside css()/cx()
- *   /tw()/createDesignCss() arguments
- * - pandwind-extraction/no-arbitrary-values: arbitrary-value class tokens
- *   (`w-[13px]`, `[margin-top:7px]`) in cx()/tw() string literals
- * - pandwind-extraction/design-tokens-only: plain strings inside
- *   $frame/$layout/$text modules that are neither token references, scale
- *   words nor numeric — conservative heuristic, unsure means silent
- *
- * Known limitation: identifier arguments are not resolved across scopes by
- * design (the build's constant propagation handles same-module/cross-module
- * consts; this lint only flags shapes that NEVER fold).
+ * - no-spreads: spread arguments that cannot be statically folded
+ * - no-dynamic-values: runtime-only argument shapes
+ * - no-multiple-conditionals: more than one partially foldable conditional
+ * - no-dollar-raw: explicit escape hatches from the token lane
+ * - no-arbitrary-values: arbitrary class values in static lanes
+ * - design-tokens-only: verified project token policy violations
  */
 
-const CX_LIKE_NAMES = new Set(["cx", "css", "tw"]);
+const SOURCE = Object.freeze({
+	core: "pandwind",
+	css: "pandwind/css",
+	design: "pandwind/design",
+});
+
+const API = Object.freeze({
+	cx: "cx",
+	tw: "tw",
+	cssFactory: "createCss",
+	designFactory: "createDesignCss",
+	style: "style",
+});
+
+const CORE_APIS = new Set([API.cx, API.tw]);
+const STYLE_METHODS = new Set(["class", "vars", "props", "group", "input", "raw"]);
+const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
+
+const isNode = (value) =>
+	value !== null && typeof value === "object" && typeof value.type === "string";
 
 /**
- * Calls whose arguments the design-token rules inspect. `dcss` is the
- * documented convention for createDesignCss() instances.
+ * Explicit depth-first traversal avoids call-stack exhaustion for generated
+ * or user-authored ASTs. The reverse push preserves source order.
  */
-const TOKEN_LANE_NAMES = new Set([...CX_LIKE_NAMES, "createDesignCss", "dcss"]);
+const walkNode = (root, visit) => {
+	const stack = Array.isArray(root) ? root.toReversed() : [root];
+	while (stack.length > 0) {
+		const node = stack.pop();
+		if (Array.isArray(node)) {
+			for (let index = node.length - 1; index >= 0; index -= 1) stack.push(node[index]);
+			continue;
+		}
+		if (!isNode(node)) continue;
+		visit(node);
+		const keys = Object.keys(node);
+		for (let index = keys.length - 1; index >= 0; index -= 1) {
+			const key = keys[index];
+			if (key !== "parent" && key !== "type") stack.push(node[key]);
+		}
+	}
+};
 
-const isCxCall = (node) =>
-	node.type === "CallExpression" &&
-	node.callee?.type === "Identifier" &&
-	CX_LIKE_NAMES.has(node.callee.name);
+const propertyName = (property) => {
+	if (property.type !== "Property") return undefined;
+	const key = property.key;
+	if (key?.type === "Identifier") return key.name;
+	if (key?.type === "Literal") return String(key.value);
+	return undefined;
+};
 
-const isTokenLaneCall = (node) =>
-	node.type === "CallExpression" &&
-	node.callee?.type === "Identifier" &&
-	TOKEN_LANE_NAMES.has(node.callee.name);
+const memberName = (member) => {
+	if (member.type !== "MemberExpression") return undefined;
+	if (!member.computed && member.property?.type === "Identifier") return member.property.name;
+	if (member.computed && member.property?.type === "Literal") return String(member.property.value);
+	return undefined;
+};
+
+const sourceName = (source) =>
+	source?.type === "Literal" && typeof source.value === "string" ? source.value : undefined;
+
+const importedName = (specifier) => {
+	if (specifier.type !== "ImportSpecifier") return undefined;
+	if (specifier.imported?.type === "Identifier") return specifier.imported.name;
+	if (specifier.imported?.type === "Literal") return String(specifier.imported.value);
+	return undefined;
+};
+
+const apiFromImport = (source, imported) => {
+	if (source === SOURCE.core && CORE_APIS.has(imported)) return imported;
+	if (source === SOURCE.css && imported === API.cssFactory) return API.cssFactory;
+	if (source === SOURCE.design && imported === API.designFactory) return API.designFactory;
+	return undefined;
+};
+
+/**
+ * Resolve only real Pandwind bindings. This intentionally rejects unrelated
+ * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
+ * remain fully supported without putting ecosystem checks in every rule.
+ */
+const createApiResolver = () => {
+	const direct = new Map();
+	const namespaces = new Map();
+	const factories = new Map();
+	const instances = new Set();
+
+	const registerImport = (node) => {
+		const source = sourceName(node.source);
+		if (source !== SOURCE.core && source !== SOURCE.css && source !== SOURCE.design) return;
+		for (const specifier of node.specifiers ?? []) {
+			if (specifier.type === "ImportNamespaceSpecifier") {
+				namespaces.set(specifier.local.name, source);
+				continue;
+			}
+			const imported = importedName(specifier);
+			const api = apiFromImport(source, imported);
+			if (api === undefined) continue;
+			if (api === API.cssFactory || api === API.designFactory)
+				factories.set(specifier.local.name, api);
+			else direct.set(specifier.local.name, api);
+		}
+	};
+
+	const resolveMember = (expression) => {
+		if (!isNode(expression) || expression.type !== "MemberExpression") return undefined;
+		if (expression.object?.type !== "Identifier") return undefined;
+		const object = expression.object.name;
+		const property = memberName(expression);
+		if (property === undefined) return undefined;
+		const namespace = namespaces.get(object);
+		if (namespace !== undefined) return apiFromImport(namespace, property);
+		if (instances.has(object) && STYLE_METHODS.has(property)) return API.style;
+		return undefined;
+	};
+
+	const resolveFactory = (expression) => {
+		if (!isNode(expression) || expression.type !== "CallExpression") return undefined;
+		if (expression.callee?.type === "Identifier") return factories.get(expression.callee.name);
+		return resolveMember(expression.callee);
+	};
+
+	const scan = (program) => {
+		walkNode(program, (node) => {
+			if (node.type === "ImportDeclaration") registerImport(node);
+		});
+		walkNode(program, (node) => {
+			if (node.type !== "VariableDeclarator" || node.id?.type !== "Identifier") return;
+			const factory = resolveFactory(node.init);
+			if (factory === API.cssFactory || factory === API.designFactory) instances.add(node.id.name);
+		});
+	};
+
+	const resolve = (call) => {
+		if (call.type !== "CallExpression") return undefined;
+		if (call.callee?.type === "Identifier") {
+			const kind = direct.get(call.callee.name);
+			if (kind !== undefined) return { kind, name: call.callee.name };
+			if (instances.has(call.callee.name)) return { kind: API.style, name: call.callee.name };
+			return undefined;
+		}
+		const kind = resolveMember(call.callee);
+		if (kind === undefined) return undefined;
+		return { kind, name: `${call.callee.object.name}.${memberName(call.callee)}` };
+	};
+
+	return { scan, resolve };
+};
 
 const countDynamicConditionals = (args) =>
 	args.filter(
@@ -57,270 +173,189 @@ const countDynamicConditionals = (args) =>
 const ARBITRARY_RE = /\[[^\]\s]+\]/;
 
 /**
- * Design-vocabulary scale words accepted by design-tokens-only. Curated
- * from the `$frame`/`$layout`/`$text` modules — deliberately conservative:
- * anything not listed and not matching a value shape below is NOT reported.
+ * Walk one design module's values without recursing. `$raw` is an explicit
+ * escape hatch and conditional branches stay opaque to avoid false positives.
  */
-const SCALE_WORDS = new Set([
-	// sizes / radii
-	"none",
-	"xs",
-	"sm",
-	"md",
-	"lg",
-	"xl",
-	"2xl",
-	"3xl",
-	"full",
-	"auto",
-	// weights
-	"thin",
-	"light",
-	"normal",
-	"medium",
-	"semibold",
-	"bold",
-	"black",
-	// layout flow / wrap
-	"stackX",
-	"stackY",
-	"grid",
-	"wrap",
-	"nowrap",
-	// align / justify / distribute
-	"start",
-	"end",
-	"center",
-	"between",
-	"around",
-	"evenly",
-	"stretch",
-	"baseline",
-	// position
-	"relative",
-	"absolute",
-	"fixed",
-	"sticky",
-	"static",
-	// overflow / misc
-	"hidden",
-	"scroll",
-	"visible",
-	"clip",
-	"italic",
-	"underline",
-	"uppercase",
-	"lowercase",
-	"capitalize",
-]);
-
-const isNumericish = (value) =>
-	/^\d+(\.\d+)?(px|%|rem|em|vh|vw)?$/.test(value) || /^-?\d+\/\d+$/.test(value);
-
-/**
- * Conservative token check for design-css values. A string is fine when it
- * looks like a token reference, a number-ish scale value or a known scale
- * word. Everything else passes silently — false positives are worse than
- * false negatives here.
- */
-const looksLikeDesignValue = (value) =>
-	value.startsWith("$") || SCALE_WORDS.has(value) || isNumericish(value);
-
-/**
- * Generic recursive AST walker for one call-argument subtree. Skips
- * `parent` back-references; tolerates arrays and non-node fields.
- */
-const walkNode = (node, visit) => {
-	if (node === null || node === undefined || typeof node !== "object") return;
-	if (Array.isArray(node)) {
-		for (const item of node) walkNode(item, visit);
-		return;
-	}
-	if (typeof node.type !== "string") return;
-	visit(node);
-	for (const key of Object.keys(node)) {
-		if (key === "parent" || key === "type") continue;
-		walkNode(node[key], visit);
+const walkDesignValues = (root, seen, report) => {
+	const stack = [root];
+	while (stack.length > 0) {
+		const node = stack.pop();
+		if (Array.isArray(node)) {
+			for (let index = node.length - 1; index >= 0; index -= 1) stack.push(node[index]);
+			continue;
+		}
+		if (!isNode(node)) continue;
+		if (node.type === "Property" && propertyName(node) === "$raw") continue;
+		if (node.type === "Literal" && typeof node.value === "string") {
+			if (!seen.has(node)) {
+				seen.add(node);
+				report(node);
+			}
+			continue;
+		}
+		if (node.type === "ConditionalExpression" || node.type === "LogicalExpression") continue;
+		const keys = Object.keys(node);
+		for (let index = keys.length - 1; index >= 0; index -= 1) {
+			const key = keys[index];
+			if (key !== "parent" && key !== "type") stack.push(node[key]);
+		}
 	}
 };
 
-const propertyName = (prop) => {
-	if (prop.type !== "Property") return undefined;
-	const key = prop.key;
-	if (key?.type === "Identifier") return key.name;
-	if (key?.type === "Literal") return String(key.value);
-	return undefined;
+const tokenPolicy = (context) => {
+	const options = context.options?.[0];
+	if (!options || typeof options !== "object") return undefined;
+	const allowedValues = Array.isArray(options.allowedValues)
+		? new Set(options.allowedValues.filter((value) => typeof value === "string"))
+		: undefined;
+	const allowedPrefixes = Array.isArray(options.allowedPrefixes)
+		? options.allowedPrefixes.filter((value) => typeof value === "string")
+		: [];
+	if (allowedValues === undefined && allowedPrefixes.length === 0) return undefined;
+	return {
+		allows(value) {
+			return (
+				allowedValues?.has(value) === true ||
+				allowedPrefixes.some((prefix) => value.startsWith(prefix))
+			);
+		},
+	};
 };
 
-const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
+const callName = (api) => api?.name ?? "pandwind";
+const isStaticLane = (api) => api !== undefined;
+const isTokenLane = (api) => api !== undefined;
+const isClassLane = (api) => api?.kind === API.cx || api?.kind === API.tw;
 
-/**
- * Walk one design module's values, reporting every off-system string.
- * Recursion stops at `$raw` subtrees (raw CSS is what `$raw` is FOR) and
- * dedupes through `seen` so nested conditional variants don't double-report.
- */
-const walkDesignValues = (node, seen, report) => {
-	if (node === null || node === undefined || typeof node !== "object") return;
-	if (Array.isArray(node)) {
-		for (const item of node) walkDesignValues(item, seen, report);
-		return;
-	}
-	if (typeof node.type !== "string") return;
-	if (node.type === "Property") {
-		if (propertyName(node) === "$raw") return; // escape hatch stays unflagged here
-	}
-	if (node.type === "Literal" && typeof node.value === "string") {
-		if (seen.has(node)) return;
-		seen.add(node);
-		report(node);
-		return;
-	}
-	// Do not descend into conditionals: branch values may legitimately be
-	// dynamic-token unions we cannot resolve statically.
-	if (node.type === "ConditionalExpression" || node.type === "LogicalExpression") return;
-	for (const key of Object.keys(node)) {
-		if (key === "parent" || key === "type") continue;
-		walkDesignValues(node[key], seen, report);
-	}
+const withResolver = (onCall) => {
+	const resolver = createApiResolver();
+	return {
+		Program(node) {
+			resolver.scan(node);
+		},
+		CallExpression(node) {
+			onCall(node, resolver.resolve(node));
+		},
+	};
 };
 
 const rules = {
 	"no-dollar-raw": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isTokenLaneCall(node)) return;
-					for (const arg of node.arguments) {
-						walkNode(arg, (inner) => {
-							if (inner.type !== "Property") return;
-							if (propertyName(inner) !== "$raw") return;
-							context.report({
-								node: inner,
-								message:
-									"pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
-								data: { name: node.callee.name },
-							});
+			return withResolver((node, api) => {
+				if (!isTokenLane(api)) return;
+				for (const arg of node.arguments) {
+					walkNode(arg, (inner) => {
+						if (inner.type !== "Property" || propertyName(inner) !== "$raw") return;
+						context.report({
+							node: inner,
+							message:
+								"pandwind: $raw in {{name}}() escapes the design system — model the value as a token or extend the preset",
+							data: { name: callName(api) },
 						});
-					}
-				},
-			};
+					});
+				}
+			});
 		},
 	},
 	"no-arbitrary-values": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isCxCall(node)) return;
-					for (const arg of node.arguments) {
-						walkNode(arg, (inner) => {
-							if (inner.type !== "Literal" || typeof inner.value !== "string") return;
-							if (!ARBITRARY_RE.test(inner.value)) return;
-							context.report({
-								node: inner,
-								message:
-									'pandwind: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)',
-								data: { value: inner.value, name: node.callee.name },
-							});
+			return withResolver((node, api) => {
+				if (!isClassLane(api)) return;
+				for (const arg of node.arguments) {
+					walkNode(arg, (inner) => {
+						if (
+							inner.type !== "Literal" ||
+							typeof inner.value !== "string" ||
+							!ARBITRARY_RE.test(inner.value)
+						)
+							return;
+						context.report({
+							node: inner,
+							message:
+								'pandwind: arbitrary value "{{value}}" bypasses the design system — use a token ({{name}}() lane)',
+							data: { value: inner.value, name: callName(api) },
 						});
-					}
-				},
-			};
+					});
+				}
+			});
 		},
 	},
 	"design-tokens-only": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isTokenLaneCall(node)) return;
-					for (const arg of node.arguments) {
-						// One dedupe set per argument: nested conditional variants
-						// revisit the same literals through multiple module walks.
-						const seen = new Set();
-						walkNode(arg, (inner) => {
-							if (inner.type !== "Property") return;
-							if (!DESIGN_MODULE_KEYS.has(propertyName(inner))) return;
-							walkDesignValues(inner.value, seen, (literal) => {
-								if (looksLikeDesignValue(literal.value)) return;
-								context.report({
-									node: literal,
-									message:
-										'pandwind: "{{value}}" is not part of the design system — use a $token, a scale value or a number',
-									data: { value: literal.value },
-								});
+			const policy = tokenPolicy(context);
+			return withResolver((node, api) => {
+				if (policy === undefined || !isTokenLane(api)) return;
+				for (const arg of node.arguments) {
+					const seen = new Set();
+					walkNode(arg, (inner) => {
+						if (inner.type !== "Property" || !DESIGN_MODULE_KEYS.has(propertyName(inner))) return;
+						walkDesignValues(inner.value, seen, (literal) => {
+							if (policy.allows(literal.value)) return;
+							context.report({
+								node: literal,
+								message:
+									'pandwind: "{{value}}" is not part of the configured design system — use a verified token or extend the project policy',
+								data: { value: literal.value },
 							});
 						});
-					}
-				},
-			};
+					});
+				}
+			});
 		},
 	},
 	"no-spreads": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isCxCall(node)) return;
-					for (const arg of node.arguments) {
-						if (arg.type === "SpreadElement") {
-							context.report({
-								node: arg,
-								message:
-									"pandwind: spread argument in {{name}}() can never be statically folded — pass explicit arguments",
-								data: { name: node.callee.name },
-							});
-						}
-					}
-				},
-			};
+			return withResolver((node, api) => {
+				if (!isStaticLane(api)) return;
+				for (const arg of node.arguments) {
+					if (arg.type !== "SpreadElement") continue;
+					context.report({
+						node: arg,
+						message:
+							"pandwind: spread argument in {{name}}() can never be statically folded — pass explicit arguments",
+						data: { name: callName(api) },
+					});
+				}
+			});
 		},
 	},
 	"no-dynamic-values": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isCxCall(node)) return;
-					for (const arg of node.arguments) {
-						let bad;
-						if (arg.type === "TemplateLiteral" && arg.expressions?.length) {
-							bad = "template interpolation";
-						} else if (arg.type === "MemberExpression") {
-							bad = "member expression value";
-						} else if (
-							arg.type === "ArrowFunctionExpression" ||
-							arg.type === "FunctionExpression"
-						) {
-							bad = "function argument";
-						} else if (arg.type === "CallExpression") {
-							bad = "dynamic helper call";
-						}
-						if (bad) {
-							context.report({
-								node: arg,
-								message:
-									"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
-								data: { bad, name: node.callee.name },
-							});
-						}
-					}
-				},
-			};
+			return withResolver((node, api) => {
+				if (!isStaticLane(api)) return;
+				for (const arg of node.arguments) {
+					let bad;
+					if (arg.type === "TemplateLiteral" && arg.expressions?.length)
+						bad = "template interpolation";
+					else if (arg.type === "MemberExpression") bad = "member expression value";
+					else if (arg.type === "ArrowFunctionExpression" || arg.type === "FunctionExpression")
+						bad = "function argument";
+					else if (arg.type === "CallExpression") bad = "dynamic helper call";
+					if (bad === undefined) continue;
+					context.report({
+						node: arg,
+						message:
+							"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+						data: { bad, name: callName(api) },
+					});
+				}
+			});
 		},
 	},
 	"no-multiple-conditionals": {
 		create(context) {
-			return {
-				CallExpression(node) {
-					if (!isCxCall(node)) return;
-					const n = countDynamicConditionals(node.arguments);
-					if (n > 1) {
-						context.report({
-							node,
-							message:
-								"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
-							data: { n, name: node.callee.name },
-						});
-					}
-				},
-			};
+			return withResolver((node, api) => {
+				if (!isStaticLane(api)) return;
+				const count = countDynamicConditionals(node.arguments);
+				if (count <= 1) return;
+				context.report({
+					node,
+					message:
+						"pandwind: {{n}} dynamic conditionals in one {{name}}() call — only one partially folds, split the call",
+					data: { n: count, name: callName(api) },
+				});
+			});
 		},
 	},
 };

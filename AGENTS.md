@@ -95,6 +95,11 @@ which concrete module to import or grow a switch statement in a central runner.
   compatibility projection; Vite, analyze, and Panda compiler paths must use
   the same parser/language-selection service rather than reimplementing
   extension checks.
+- The Oxlint plugin is a source-shape guard, not a project-config evaluator.
+  Its rules must resolve real Pandwind imports (including aliases and
+  namespaces) and must ignore unrelated local functions with the same name.
+  Configuration-sensitive checks require explicit verified policy input; never
+  encode a guessed ecosystem vocabulary as a hardcoded lint allow-list.
 - Adapter migration and Panda project migration are staged pipeline domains.
   Concrete parsers/emitters may remain independently owned modules, while
   orchestration policy belongs to the pipeline interface.

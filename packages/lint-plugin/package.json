@@ -22,6 +22,13 @@
 	"exports": {
 		".": "./src/index.js"
 	},
+	"scripts": {
+		"test": "vitest run"
+	},
+	"devDependencies": {
+		"oxc-parser": "0.144.0",
+		"vitest": "4.1.10"
+	},
 	"publishConfig": {
 		"access": "public",
 		"provenance": true,
