@@ -275,6 +275,7 @@ export function listCodemodAdapterIds(): readonly string[] {
 export type { CodemodAdapterCatalog } from "./adapter-catalog.ts";
 export type {
 	AdapterConfigContext,
+	AdapterConfigGraphPort,
 	AdapterDependencies,
 	AdapterDependency,
 	AdapterDependencyKind,

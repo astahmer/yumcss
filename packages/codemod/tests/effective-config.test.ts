@@ -299,6 +299,22 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 		expect(minimal.jsxStyleProps.matches("color")).toBe(false);
 	});
 
+	test("does not invent Panda JSX style props when no effective config is available", () => {
+		const adapter = createPandaAdapter();
+		const source = 'export const Button = () => <styled.button css={{ color: "red" }} />;';
+		const config = adapter.loadConfig({ file: "src/Button.tsx", source, root: "/project" });
+		const parsed = adapter.parse(source, {
+			file: "src/Button.tsx",
+			source,
+			root: "/project",
+			config,
+		});
+
+		expect(parsed.matches).toHaveLength(0);
+		expect(parsed.residuals).toEqual([]);
+		expect(adapter.officialApi.apis.map(({ name }) => name)).toContain("jsx-style-props");
+	});
+
 	test("loads Chakra systems from discovered theme modules and preserves custom conditions", async () => {
 		const system = {
 			$$chakra: true as const,

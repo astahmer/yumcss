@@ -49,6 +49,64 @@ describe("adapter contract suite", () => {
 		expect(report.passed).toBe(registry.adapters.length);
 	});
 
+	test("requires every adapter to expose normalized project-config provenance", () => {
+		const registry = createBuiltinCodemodCatalog().registry;
+		const fixtures = new Map(adapterContractFixtures.map((fixture) => [fixture.adapter, fixture]));
+		const summaries = registry.adapters.map((adapter) => {
+			const fixture = fixtures.get(adapter.id);
+			expect(fixture).toBeDefined();
+			const config = adapter.loadConfig({
+				file: fixture!.file,
+				source: fixture!.source,
+				...(fixture!.root === undefined ? {} : { root: fixture!.root }),
+			});
+			expect(config.adapter).toBe(adapter.id);
+			expect(config.configuration).toBeDefined();
+			if (config.residuals?.some(({ kind }) => kind === "configuration") === true)
+				expect(config.configuration?.some(({ source }) => source === "unresolved")).toBe(true);
+			return {
+				adapter: adapter.id,
+				files: config.files.length,
+				configuration: config.configuration?.map(({ source, status }) => `${source}:${status}`),
+			};
+		});
+
+		expect(summaries).toHaveLength(registry.adapters.length);
+		expect(summaries.every(({ files }) => files >= 0)).toBe(true);
+		expect(summaries.slice(0, 4)).toMatchInlineSnapshot(`
+			[
+			  {
+			    "adapter": "pandwind",
+			    "configuration": [
+			      "project-source-fallback:resolved",
+			    ],
+			    "files": 1,
+			  },
+			  {
+			    "adapter": "bamboo",
+			    "configuration": [
+			      "project-source-fallback:not-attempted",
+			    ],
+			    "files": 0,
+			  },
+			  {
+			    "adapter": "chakra-ui",
+			    "configuration": [
+			      "project-source-fallback:not-attempted",
+			    ],
+			    "files": 0,
+			  },
+			  {
+			    "adapter": "emotion",
+			    "configuration": [
+			      "project-source-fallback:not-attempted",
+			    ],
+			    "files": 0,
+			  },
+			]
+		`);
+	});
+
 	test("fails explicitly when a registered adapter has no fixture", () => {
 		const catalog = createBuiltinCodemodCatalog();
 		const registry = createStyleAdapterRegistry([catalog.registry.get(CodemodAdapterId.Emotion)!]);

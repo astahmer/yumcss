@@ -91,6 +91,18 @@ export interface AdapterProjectConfig {
 	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
 
+/**
+ * Project configuration is an adapter port, not a central config parser.
+ * Implementations may synchronously inspect source or asynchronously evaluate
+ * the ecosystem's official loader from the host project's root. The async
+ * result must retain provenance and publish failures as configuration
+ * residuals; callers must never substitute a guessed ecosystem default.
+ */
+export interface AdapterConfigGraphPort {
+	loadConfig(context: AdapterConfigContext): AdapterProjectConfig;
+	loadConfigAsync?(context: AdapterConfigContext): Promise<AdapterProjectConfig>;
+}
+
 export const ADAPTER_TOKEN_CATALOG_SCHEMA = "pandwind.adapter-token-catalog/1" as const;
 export const ADAPTER_TOKEN_POLICY_SCHEMA = "pandwind.adapter-token-policy/1" as const;
 
@@ -404,7 +416,7 @@ export interface AdapterValidationResult {
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
-export interface StyleAdapter {
+export interface StyleAdapter extends AdapterConfigGraphPort {
 	readonly schema: typeof ADAPTER_CONTRACT_SCHEMA;
 	readonly id: string;
 	readonly version: string;
@@ -422,9 +434,6 @@ export interface StyleAdapter {
 	readonly lowerings?: readonly StyleLowering[];
 	readonly migration?: AdapterMigrationHooks;
 	detect(context: AdapterDetectionContext): AdapterDetectionResult;
-	loadConfig(context: AdapterConfigContext): AdapterProjectConfig;
-	/** Optional async loader for official host packages and evaluated project config. */
-	loadConfigAsync?(context: AdapterConfigContext): Promise<AdapterProjectConfig>;
 	parse(source: string, context: AdapterParseContext): AdapterParseResult;
 	emit(program: StyleProgram, context: AdapterEmitContext): AdapterEmitResult;
 	validate(

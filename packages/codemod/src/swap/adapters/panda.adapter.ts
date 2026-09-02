@@ -18,7 +18,7 @@ import type { PandaTheme } from "./panda/theme.ts";
 
 const pandaJsxStyleProps = (context: import("../adapter-contract.ts").AdapterParseContext) =>
 	(context.config.values.pandaTheme as PandaTheme | undefined)?.jsxStyleProps.matches ??
-	((name: string) => name === "css");
+	(() => false);
 
 function pandaFactoryHostTag(program: StyleProgram): StyleProgram {
 	const source = program.source;
