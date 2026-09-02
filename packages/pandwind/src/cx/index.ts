@@ -473,6 +473,33 @@ export function createCx(options: CxOptions = {}): CxFn {
 	 * entry could ONLY have missed atoms — never mis-resolved ones).
 	 */
 	const resultCache = new Map<string, { gen: number; out: string }>();
+	/** The common two-class render path avoids even the result-cache key join. */
+	let argumentCacheGeneration = -1;
+	let argumentCacheA: string | undefined;
+	let argumentCacheB: string | undefined;
+	let argumentCacheResult = "";
+	const readArgumentCache = (
+		inputs: Array<CxInput | CxInput[]>,
+		generation: number,
+	): string | undefined => {
+		if (inputs.length !== 2 || generation !== argumentCacheGeneration) return undefined;
+		const a = inputs[0];
+		const b = inputs[1];
+		if (typeof a !== "string" || typeof b !== "string") return undefined;
+		return a === argumentCacheA && b === argumentCacheB ? argumentCacheResult : undefined;
+	};
+	const writeArgumentCache = (
+		inputs: Array<CxInput | CxInput[]>,
+		generation: number,
+		result: string,
+	): void => {
+		if (inputs.length !== 2 || typeof inputs[0] !== "string" || typeof inputs[1] !== "string")
+			return;
+		argumentCacheGeneration = generation;
+		argumentCacheA = inputs[0];
+		argumentCacheB = inputs[1];
+		argumentCacheResult = result;
+	};
 
 	const cachedCompile = (
 		cache: Map<string, CompiledSigs | null>,
@@ -672,11 +699,14 @@ export function createCx(options: CxOptions = {}): CxFn {
 			const plain = fastPlainInputs(inputs);
 			if (plain !== undefined) return plain;
 		}
+		const generation = atoms?.size ?? 0;
+		const argumentCached = readArgumentCache(inputs, generation);
+		if (argumentCached !== undefined) return argumentCached;
 		// Whole-input cache: only when every top-level input is a string (no
 		// arrays to flatten, no css-atom objects whose resolution depends on
 		// live registry state beyond the generation guard).
 		let cacheKey = "";
-		const gen = atoms?.size ?? 0;
+		const gen = generation;
 		let allStrings = inputs.length > 0;
 		for (let i = 0; i < inputs.length; i++) {
 			if (typeof inputs[i] !== "string") {
@@ -712,6 +742,7 @@ export function createCx(options: CxOptions = {}): CxFn {
 			}
 			resultCache.set(cacheKey, { gen, out });
 		}
+		writeArgumentCache(inputs, gen, out);
 		return out;
 	};
 

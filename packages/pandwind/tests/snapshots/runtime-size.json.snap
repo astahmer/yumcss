@@ -24,31 +24,31 @@
     "gz": 2442
   },
   "tw": {
-    "min": 2396,
-    "gz": 1141
+    "min": 2678,
+    "gz": 1237
   },
   "cx": {
-    "min": 12277,
-    "gz": 5174
+    "min": 12586,
+    "gz": 5301
   },
   "all (css+tw+cx)": {
-    "min": 14627,
-    "gz": 6025
+    "min": 15218,
+    "gz": 6242
   },
   "stylesheet generator (build-time only)": {
-    "min": 85791,
-    "gz": 21819
+    "min": 85987,
+    "gz": 21892
   },
   "root barrel, css only": {
     "min": 6495,
     "gz": 2924
   },
   "root barrel, tw only": {
-    "min": 2396,
-    "gz": 1141
+    "min": 2678,
+    "gz": 1237
   },
   "root barrel, cx only": {
-    "min": 12277,
-    "gz": 5179
+    "min": 12586,
+    "gz": 5306
   }
 }

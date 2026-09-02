@@ -184,6 +184,41 @@ nub run test:benchmarks -u
 The historical replay remains a manual evidence tool; it is intentionally not
 called by this fast package test.
 
+## `cn`-inspired consecutive argument cache — 2026-09-02
+
+The official [`cn` implementation](https://github.com/shadcn-ui/cn) uses
+compiled conflict tables, fused token parsing, and whole-input caching. Pandwind
+already had the first two and a bounded whole-input cache, so the useful
+additional lesson was narrower: a configured `cx(a, b)` call should not rebuild
+the `a\0b` cache key when the exact pair is rendered again immediately.
+
+Pandwind now keeps one generation-aware two-argument slot per `createCx()`
+instance. It is deliberately limited to primitive string pairs; arrays, style
+objects, `cx.vars()`, and non-consecutive reuse keep the existing merge/cache
+path. The atom-registry generation guard ensures that a growing CSS atom
+registry cannot make a cached result stale.
+
+The measured bundle change, against the committed pre-change record, is:
+
+| entry | before min/gzip | after min/gzip | change |
+| --- | ---: | ---: | ---: |
+| `cx()` | 12,277 / 5,174 | 12,586 / 5,301 | +309 / +127 |
+| all engines | 14,627 / 6,025 | 15,218 / 6,242 | +591 / +217 |
+
+The focused `cx-bench.mts` shape is configured and repeatedly merges the same
+4+3-token and 13+9-token pairs. The pre-change run measured 6.09M and 2.65M
+ops/sec respectively; three post-change runs measured 25.2–67.8M and
+32.1–87.4M ops/sec. The cold unique-token pair stayed at 111K ops/sec, so the
+optimization targets repeat rendering without claiming to improve the
+allocation-bound first vocabulary pass. The samples are intentionally reported
+as ranges because sub-millisecond local measurements are noisy.
+
+This is a targeted optimization, not a copy of `cn`'s public API. Project
+specialization remains the next larger lesson: generated Pandwind metadata can
+prune unused conflict tables when a compiler build has a trustworthy usage
+graph. That should be implemented only with a separate retained-size and
+missed-candidate proof.
+
 ## Historical optimization replay — 2026-09-02
 
 The recent optimization chain was replayed from the revision immediately before
