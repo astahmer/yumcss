@@ -29,6 +29,10 @@ Wave 4 is complete for the discovered-config failure boundary. Tailwind, UnoCSS,
 
 Wave 5a is complete for the shared CSS extraction scanner. Its parser is now injected through the shared scanner port and cached once per file/content pair, so inspection, import discovery, call-site discovery, authored-import discovery, variable-key discovery, and diagnostics reuse one AST. The cache is bounded and content changes invalidate the entry. The remaining Wave 5 work is AST-owned rewrite coverage across adapter migrations and the other host boundaries.
 
+Wave 5b is complete for migration result bindings. Styled/component host decisions now resolve the binding assigned by an AST-indexed call site instead of inferring a variable declaration with a regular expression. The source-binding contract records exact call ranges and assigned identifiers, with inline snapshot coverage for calls and tagged templates.
+
+Wave 5c is complete for Panda factory-element discovery. `<panda.*>` opening tags, attributes, spread props, literal values, and exact opening ranges now come from the shared Oxc AST. The existing edit engine remains responsible only for target-specific output and source-range edits; malformed or unsupported nodes fail closed. Focused Panda migration tests include AST-shape snapshots and assertions for literal and spread cases.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.
