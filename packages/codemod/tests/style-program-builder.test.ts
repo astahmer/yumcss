@@ -57,7 +57,10 @@ describe("StyleProgramBuilder", () => {
 			"supports",
 			"property",
 		]);
-		expect(program.rules[0]?.declarations[1]?.value).toMatchInlineSnapshot(`
+		expect(
+			program.rules[0]?.declarations.find((declaration) => declaration.property === "padding")
+				?.value,
+		).toMatchInlineSnapshot(`
 			{
 			  "authored": "$space.2",
 			  "kind": "token",
@@ -79,7 +82,7 @@ describe("StyleProgramBuilder", () => {
 			]
 		`);
 		expect(styleProgramToCanonicalCss(program)).toMatchInlineSnapshot(
-			`"&{color:red;padding:0.5rem}:root{--brand:#2563eb}@keyframes fade{from{opacity:0}to{opacity:1}}@font-face{fontFamily:Inter;src:url("/inter.woff2")}@layer components{display:flex}@supports (display: grid){display:grid}@property --progress{syntax:"<number>";inherits:false;initialValue:0}"`,
+			`"&{padding:0.5rem;color:red}:root{--brand:#2563eb}@keyframes fade{from{opacity:0}to{opacity:1}}@font-face{fontFamily:Inter;src:url("/inter.woff2")}@layer components{display:flex}@supports (display: grid){display:grid}@property --progress{inherits:false;initialValue:0;syntax:"<number>"}"`,
 		);
 	});
 
@@ -163,8 +166,8 @@ describe("StyleProgramBuilder", () => {
 		const emitted = createTailwindAdapter({ moduleLoader: null }).emit(program, emitContext);
 
 		expect(emitted.residuals).toEqual([]);
-		expect(emitted.text).toBe(JSON.stringify("[display:flex] [color:red]"));
-		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"[display:flex] [color:red]"`);
+		expect(emitted.text).toBe(JSON.stringify("[color:red] [display:flex]"));
+		expect(JSON.parse(emitted.text)).toMatchInlineSnapshot(`"[color:red] [display:flex]"`);
 	});
 
 	test("can seed a new construction without sharing mutable arrays", () => {

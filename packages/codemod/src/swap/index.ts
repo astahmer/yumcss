@@ -165,6 +165,10 @@ export {
 } from "./semantic-contract-suite.ts";
 export { StyleProgramBuilder } from "./style-program-builder.ts";
 export {
+	createStyleDeclarationOrderingPolicy,
+	type StyleDeclarationOrderingPolicy,
+} from "./style-declaration-order.ts";
+export {
 	STYLE_PROGRAM_ARTIFACT_SCHEMA,
 	STYLE_PROGRAM_CORE_COMPATIBILITY_SCHEMA,
 	STYLE_PROGRAM_CORE_VERSION,

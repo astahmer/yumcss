@@ -34,10 +34,21 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
 		return Array.from(values).toSorted((a, b) => {
 			const priority = a.priority - b.priority;
 			if (priority !== 0) return priority;
-			return responsiveCascadeOrder(a as { css?: string }, b as { css?: string });
+			const responsive = responsiveCascadeOrder(a as { css?: string }, b as { css?: string });
+			if (responsive !== 0) return responsive;
+			// Equal-priority entries otherwise inherit Map insertion order, which
+			// makes equivalent styles differ when source files are scanned in a
+			// different order. Rule identity is stable for both atomic and var
+			// entries; CSS is the deterministic fallback for custom policies.
+			return stableRuleIdentity(a as { id?: string; css?: string }).localeCompare(
+				stableRuleIdentity(b as { id?: string; css?: string }),
+			);
 		});
 	}
 }
+
+const stableRuleIdentity = (value: { id?: string; css?: string }): string =>
+	value.id ?? value.css ?? "";
 
 /**
  * Keep progressively narrower min-width conditions in cascade order. The

@@ -101,7 +101,9 @@ describe("versioned semantic style-program IR", () => {
 		});
 
 		expect(program.declarations).toHaveLength(3);
-		expect(program.declarations[0]).toMatchObject({
+		expect(
+			program.declarations.find((declaration) => declaration.property === "color"),
+		).toMatchObject({
 			property: "color",
 			value: {
 				kind: "dynamic",
@@ -110,11 +112,15 @@ describe("versioned semantic style-program IR", () => {
 				source: { file: "Card.tsx", start: 27, end: 43 },
 			},
 		});
-		expect(program.declarations[1]).toMatchObject({
+		expect(
+			program.declarations.find((declaration) => declaration.property === "backgroundColor"),
+		).toMatchObject({
 			conditions: [{ kind: "pseudo", name: "hover", value: ":hover" }],
 			value: { kind: "dynamic", expression: "palette.accent" },
 		});
-		expect(program.declarations[2]).toMatchObject({
+		expect(
+			program.declarations.find((declaration) => declaration.property === "opacity"),
+		).toMatchObject({
 			conditions: [
 				{ kind: "media", name: "@media (min-width: 40rem)", value: "(min-width: 40rem)" },
 			],
@@ -134,10 +140,12 @@ describe("versioned semantic style-program IR", () => {
 		);
 
 		expect(program.residuals).toEqual([]);
-		expect(program.declarations.map((declaration) => declaration.value)).toEqual([
-			{ kind: "literal", value: "color-mix(in srgb, var(--foreground) 80%, transparent)" },
-			{ kind: "literal", value: "var(--background)" },
-		]);
+		expect(program.declarations.map((declaration) => declaration.value)).toEqual(
+			expect.arrayContaining([
+				{ kind: "literal", value: "color-mix(in srgb, var(--foreground) 80%, transparent)" },
+				{ kind: "literal", value: "var(--background)" },
+			]),
+		);
 	});
 
 	test("accepts TypeScript-asserted literal computed keys", () => {
@@ -161,18 +169,23 @@ describe("versioned semantic style-program IR", () => {
 		);
 
 		expect(program.residuals).toEqual([]);
-		expect(program.declarations).toMatchObject([
-			{
-				property: "display",
-				value: { kind: "literal", value: "block" },
-				conditions: [{ name: "card" }, { name: "@media (max-width: 768px)" }],
-			},
-			{
-				property: "display",
-				value: { kind: "literal", value: "none" },
-				conditions: [{ name: "card" }],
-			},
-		]);
+		expect(program.declarations).toEqual(
+			expect.arrayContaining([
+				{
+					property: "display",
+					value: { kind: "literal", value: "block" },
+					conditions: [
+						{ kind: "named", name: "card" },
+						{ kind: "media", name: "@media (max-width: 768px)" },
+					],
+				},
+				{
+					property: "display",
+					value: { kind: "literal", value: "none" },
+					conditions: [{ kind: "named", name: "card" }],
+				},
+			]),
+		);
 	});
 
 	test("recognizes the base branch in property-value conditions", () => {

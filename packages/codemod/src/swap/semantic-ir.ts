@@ -21,6 +21,9 @@ import {
 	StyleDynamicExpressionKind,
 	type StyleProgramEmissionHint,
 } from "./identifiers.ts";
+import { createStyleDeclarationOrderingPolicy } from "./style-declaration-order.ts";
+
+const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
 export const STYLE_PROGRAM_SCHEMA = "pandwind.style-program/4" as const;
 
@@ -323,10 +326,12 @@ function normalizeDynamicValue(value: StyleValue): StyleValue {
 function normalizeRule(rule: StyleRuleInput, index: number): StyleRule {
 	return {
 		...rule,
-		declarations: rule.declarations.map((declaration) => ({
-			...declaration,
-			value: normalizeDynamicValue(declaration.value),
-		})),
+		declarations: defaultDeclarationOrdering.order(
+			rule.declarations.map((declaration) => ({
+				...declaration,
+				value: normalizeDynamicValue(declaration.value),
+			})),
+		),
 		children: (rule.children ?? []).map((child, childIndex) => normalizeRule(child, childIndex)),
 		order: rule.order ?? index,
 	};
@@ -541,7 +546,8 @@ function cssValue(value: StyleValue): string {
 }
 
 function renderDeclarations(declarations: readonly StyleDeclaration[]): string {
-	return declarations
+	return defaultDeclarationOrdering
+		.order(declarations)
 		.map((declaration) => `${declaration.property}:${cssValue(declaration.value)}`)
 		.join(";");
 }

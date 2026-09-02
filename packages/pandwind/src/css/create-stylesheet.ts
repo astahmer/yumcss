@@ -19,6 +19,7 @@ import {
 import { normalizeCssValue } from "./value-normalization.ts";
 
 export { decodeAtomicPath } from "./stylesheet-lowering.ts";
+export { getPropertyPriority } from "./property-priorities.ts";
 
 type Rule = { id: string; css: string; priority: number };
 const cssVar = {

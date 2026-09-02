@@ -306,6 +306,18 @@ and residual accumulation, then delegates final normalization to the same
 semantic factory used by existing adapters. `StyleProgramBuilder.from()` can
 seed a new program without sharing the source program's rule array.
 
+Declaration order is a semantic policy, not an incidental object-order detail.
+The shared cascade policy uses the StyleX-derived CSS priority catalog: broad
+shorthands are emitted before narrower shorthands, logical longhands before
+physical longhands, and stable property identity breaks equal-priority ties.
+This makes equivalent programs and generated sheets independent of filesystem,
+module, or object insertion order. Duplicate declarations for the same
+property and condition remain stable, preserving authored last-wins behavior.
+CamelCase style-object properties are normalized before priority lookup, so
+`marginTop` and `paddingInline` participate in the same policy as their CSS
+spellings. The flat `SwapIR` projection remains unchanged and cheap; the
+ordering guarantee applies at the semantic/canonical and stylesheet layers.
+
 This is intentionally not a second `StyleNode` hierarchy and not a target
 renderer API. Tailwind, Panda, StyleX, CSS, React Native, and OpenTUI remain
 owners of their own `emit` ports; the core never grows

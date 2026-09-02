@@ -72,7 +72,7 @@ shorthandsOfLonghands.add("border-style");
 shorthandsOfLonghands.add("border-width");
 shorthandsOfShorthands.add("border-block"); // Logical Properties
 longHandLogical.add("border-block-color"); // Logical Properties
-longHandLogical.add("border-block-stylex"); // Logical Properties
+longHandLogical.add("border-block-style"); // Logical Properties
 longHandLogical.add("border-block-width"); // Logical Properties
 shorthandsOfLonghands.add("border-block-start"); // Logical Properties
 shorthandsOfLonghands.add("border-top");
@@ -725,42 +725,52 @@ const AT_RULE_PRIORITIES: AtRulePriorities = {
 const PSEUDO_ELEMENT_PRIORITY: number = 5000;
 
 export function getPropertyPriority(key: string): number {
-	if (key.startsWith("--")) {
+	// Style objects use camelCase while CSS and this catalog use kebab-case.
+	// Selectors and at-rules are condition identifiers, so they stay intact.
+	const property =
+		key.startsWith(":") || key.startsWith("@") || key.startsWith("--")
+			? key
+			: key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+
+	if (property.startsWith("--")) {
 		return 1;
 	}
 
-	if (key.startsWith("@supports")) {
+	if (property.startsWith("@supports")) {
 		return AT_RULE_PRIORITIES["@supports"];
 	}
 
-	if (key.startsWith("@media")) {
+	if (property.startsWith("@media")) {
 		return AT_RULE_PRIORITIES["@media"];
 	}
 
-	if (key.startsWith("@container")) {
+	if (property.startsWith("@container")) {
 		return AT_RULE_PRIORITIES["@container"];
 	}
 
-	if (key.startsWith("::")) {
+	if (property.startsWith("::")) {
 		return PSEUDO_ELEMENT_PRIORITY;
 	}
 
-	if (key.startsWith(":")) {
-		const prop = key.startsWith(":") && key.includes("(") ? key.slice(0, key.indexOf("(")) : key;
+	if (property.startsWith(":")) {
+		const prop =
+			property.startsWith(":") && property.includes("(")
+				? property.slice(0, property.indexOf("("))
+				: property;
 
 		return PSEUDO_CLASS_PRIORITIES[prop as keyof PseudoClassPriorities] ?? 40;
 	}
 
-	if (longHandPhysical.has(key)) {
+	if (longHandPhysical.has(property)) {
 		return 4000;
 	}
-	if (longHandLogical.has(key)) {
+	if (longHandLogical.has(property)) {
 		return 3000;
 	}
-	if (shorthandsOfLonghands.has(key)) {
+	if (shorthandsOfLonghands.has(property)) {
 		return 2000;
 	}
-	if (shorthandsOfShorthands.has(key)) {
+	if (shorthandsOfShorthands.has(property)) {
 		return 1000;
 	}
 	return 3000;
