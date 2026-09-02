@@ -129,11 +129,14 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
 		adapter: CodemodAdapterId.Tailwind,
 		file: "tailwind.tsx",
-		source: "<div className='flex p-4' />",
+		// The dependency-free contract fixture must use syntax the fallback can
+		// prove without inventing Tailwind's default utility catalog. Standard
+		// utilities are covered by the official-loader fixtures.
+		source: "<div className='[color:red] [padding:1rem]' />",
 	},
 	{
 		adapter: CodemodAdapterId.UnoCSS,
 		file: "unocss.tsx",
-		source: '<div className="flex items-center" />',
+		source: '<div className="[color:red] [padding:1rem]" />',
 	},
 ];
