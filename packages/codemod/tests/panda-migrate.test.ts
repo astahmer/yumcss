@@ -97,6 +97,51 @@ describe("factory elements", () => {
 		const src = `<panda.div px="4">x</panda.div>;\n<panda.span {...props} />`;
 		const els = scanFactoryElements(src, () => false);
 		expect(els).toHaveLength(2);
+		expect(
+			els.map(({ start, openEnd, selfClosing, tag, attrs }) => ({
+				start,
+				openEnd,
+				selfClosing,
+				tag,
+				attrs: attrs.map(({ name, valueText, quoted, literal }) => ({
+					name,
+					valueText,
+					quoted,
+					literal,
+				})),
+			})),
+		).toMatchInlineSnapshot(`
+			[
+			  {
+			    "attrs": [
+			      {
+			        "literal": true,
+			        "name": "px",
+			        "quoted": true,
+			        "valueText": "4",
+			      },
+			    ],
+			    "openEnd": 18,
+			    "selfClosing": false,
+			    "start": 0,
+			    "tag": "div",
+			  },
+			  {
+			    "attrs": [
+			      {
+			        "literal": false,
+			        "name": "...spread",
+			        "quoted": false,
+			        "valueText": null,
+			      },
+			    ],
+			    "openEnd": 58,
+			    "selfClosing": true,
+			    "start": 33,
+			    "tag": "span",
+			  },
+			]
+		`);
 		expect(els[0]?.attrs[0]?.name).toBe("px");
 		expect(els[1]?.attrs[0]?.literal).toBe(false);
 	});

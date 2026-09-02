@@ -37,6 +37,8 @@ import { PandaCallKindTag, PandaRecipeKindTag } from "./parse.ts";
 import { discoverPandaMigration, type PandaMigrationFile } from "./migration-discovery.ts";
 import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { walk, type OxcNode } from "pandwind/tw/literal";
 import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
 import {
 	convertPandaRecipe,
@@ -515,132 +517,121 @@ interface FactoryElement {
 	attrs: Array<FactoryAttr>;
 }
 
-/** Scan `<panda.tag …>` opening tags (oxc-masked; spread props bail out). */
+/** Scan `<panda.tag …>` opening tags from the shared AST; spreads bail out. */
 export function scanFactoryElements(
 	source: string,
 	isExcluded: (start: number) => boolean,
 ): Array<FactoryElement> {
 	const out: Array<FactoryElement> = [];
-	for (const m of source.matchAll(/<panda\.([A-Za-z][\w]*)/g)) {
-		const start = m.index ?? 0;
-		if (isExcluded(start)) continue;
-		let i = start + m[0].length;
+	let program: OxcNode;
+	try {
+		program = SOURCE_SCANNER_SERVICE.parse({ file: "panda-factory.tsx", source })
+			.program as unknown as OxcNode;
+	} catch {
+		return out;
+	}
+	walk(program, (node) => {
+		if (node.type !== "JSXElement") return;
+		const opening = (node as { openingElement?: unknown }).openingElement;
+		if (opening === null || typeof opening !== "object") return;
+		const element = opening as {
+			type?: string;
+			name?: { type?: string; object?: { name?: string }; property?: { name?: string } };
+			attributes?: unknown[];
+			selfClosing?: boolean;
+			start?: number;
+			end?: number;
+		};
+		const name = element.name;
+		if (
+			name?.type !== "JSXMemberExpression" ||
+			name.object?.name !== "panda" ||
+			name.property?.name === undefined ||
+			element.start === undefined ||
+			element.end === undefined ||
+			isExcluded(element.start)
+		)
+			return;
 		const attrs: Array<FactoryAttr> = [];
-		let selfClosing = false;
-		let ok = true;
-		const limit = source.length;
-		while (i < limit) {
-			while (i < limit && /\s/.test(source[i] ?? "")) i++;
-			const ch = source[i];
-			if (ch === "/" && source[i + 1] === ">") {
-				selfClosing = true;
-				i += 2;
-				break;
-			}
-			if (ch === ">") {
-				i += 1;
-				break;
-			}
-			if (source.startsWith("{...", i)) {
-				// spread props — record as non-literal so the element gets flagged,
-				// never silently dropped
-				let depth = 0;
-				let j = i;
-				for (; j < limit; j++) {
-					if (source[j] === "{") depth++;
-					else if (source[j] === "}") {
-						depth--;
-						if (depth === 0) break;
-					}
-				}
-				if (depth !== 0) {
-					ok = false;
-					break;
-				}
+		for (const raw of element.attributes ?? []) {
+			if (raw === null || typeof raw !== "object") continue;
+			const attribute = raw as {
+				type?: string;
+				name?: { name?: string };
+				value?: {
+					type?: string;
+					value?: unknown;
+					raw?: string;
+					expression?: { start?: number; end?: number };
+				} | null;
+				start?: number;
+				end?: number;
+			};
+			if (attribute.start === undefined || attribute.end === undefined) continue;
+			if (attribute.type === "JSXSpreadAttribute") {
 				attrs.push({
 					name: "...spread",
-					nameStart: i,
-					attrEnd: j + 1,
+					nameStart: attribute.start,
+					attrEnd: attribute.end,
 					valueText: null,
 					quoted: false,
 					literal: false,
 				});
-				i = j + 1;
 				continue;
 			}
-			const nameMatch = /^([\w$-]+)/.exec(source.slice(i));
-			if (nameMatch === null) {
-				ok = false;
-				break;
-			}
-			const attrName = nameMatch[1]!;
-			const nameStart = i;
-			i += attrName.length;
-			if (source[i] === "=" && source[i + 1] === "{") {
-				i += 2;
-				let depth = 1;
-				let j = i;
-				while (j < limit && depth > 0) {
-					const c = source[j];
-					if (c === "{") depth++;
-					else if (c === "}") depth--;
-					j++;
-				}
-				if (depth !== 0) {
-					ok = false;
-					break;
-				}
-				const inner = source.slice(i, j - 1);
-				const objBody = stripOuterBraces(inner.trim());
-				const lit =
-					(objBody !== null && parseObjectLiteral(objBody) !== null) ||
-					/^"[^"]*"$|^'[^']*'$|^-?\d+(\.\d+)?$|^true$|^false$/.test(inner.trim());
+			const attrName = attribute.name?.name;
+			if (attrName === undefined) continue;
+			const value = attribute.value;
+			if (value === null || value === undefined) {
 				attrs.push({
 					name: attrName,
-					nameStart,
-					attrEnd: j,
-					valueText: inner.trim(),
+					nameStart: attribute.start,
+					attrEnd: attribute.end,
+					valueText: null,
 					quoted: false,
-					literal: lit,
+					literal: true,
 				});
-				i = j;
 				continue;
 			}
-			if (source[i] === "=" && (source[i + 1] === '"' || source[i + 1] === "'")) {
-				const quote = source[i + 1]!;
-				const close = source.indexOf(quote, i + 2);
-				if (close === -1) {
-					ok = false;
-					break;
-				}
+			if (value.type === "Literal" && typeof value.value === "string") {
 				attrs.push({
 					name: attrName,
-					nameStart,
-					attrEnd: close + 1,
-					valueText: source.slice(i + 2, close),
+					nameStart: attribute.start,
+					attrEnd: attribute.end,
+					valueText: value.value,
 					quoted: true,
 					literal: true,
 				});
-				i = close + 1;
 				continue;
 			}
-			if (source[i] === "=") {
-				ok = false; // identifier/binding value
-				break;
+			if (value.type === "JSXExpressionContainer") {
+				const expression = value.expression;
+				const start = expression?.start;
+				const end = expression?.end;
+				const valueText =
+					start === undefined || end === undefined ? "" : source.slice(start, end).trim();
+				const objBody = stripOuterBraces(valueText);
+				const literal =
+					(objBody !== null && parseObjectLiteral(objBody) !== null) ||
+					/^"[^"]*"$|^'[^']*'$|^-?\d+(\.\d+)?$|^true$|^false$/.test(valueText);
+				attrs.push({
+					name: attrName,
+					nameStart: attribute.start,
+					attrEnd: attribute.end,
+					valueText,
+					quoted: false,
+					literal,
+				});
 			}
-			// bare boolean prop
-			attrs.push({
-				name: attrName,
-				nameStart,
-				attrEnd: i,
-				valueText: null,
-				quoted: false,
-				literal: true,
-			});
 		}
-		if (!ok || i > limit) continue;
-		out.push({ start, openEnd: i, selfClosing, tag: m[1]!, attrs });
-	}
+		out.push({
+			start: element.start,
+			openEnd: element.end,
+			selfClosing: element.selfClosing === true,
+			tag: name.property.name,
+			attrs,
+		});
+	});
 	return out;
 }
 
