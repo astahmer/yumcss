@@ -68,6 +68,7 @@ export const enum StyleProgramResidualKindTag {
 	Parse = "parse",
 	Capability = "capability",
 	PluginTransform = "plugin-transform",
+	UnmatchedSource = "unmatched-source",
 }
 
 export interface StyleCondition {
