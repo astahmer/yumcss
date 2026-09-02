@@ -13,7 +13,7 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 ## Execution status
 
 - [x] Wave 1 — registry-derived capability ledger with representation, proof, and evidence rows.
-- [ ] Wave 2 — executable real-repository promotion runner.
+- [x] Wave 2 — executable real-repository promotion runner with injected environment ports.
 - [ ] Wave 3 — generic static-first semantic lowering families.
 - [ ] Wave 4 — complete official project-context loading.
 - [ ] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.

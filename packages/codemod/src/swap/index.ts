@@ -158,6 +158,22 @@ export {
 	type AdapterCapabilityLedgerProof,
 	type CapabilityLedgerOptions,
 } from "./capability-ledger.ts";
+export {
+	REAL_REPOSITORY_PROMOTION_SCHEMA,
+	RealRepositoryPromotionStageTag,
+	createRealRepositoryPromotionRunner,
+	type PromotionCommand,
+	type PromotionCommandResult,
+	type PromotionMigrationResult,
+	type PromotionProofResult,
+	type PromotionWorkspace,
+	type RealRepositoryPromotionDriver,
+	type RealRepositoryPromotionRequest,
+	type RealRepositoryPromotionResult,
+	type RealRepositoryPromotionRunner,
+	type RealRepositoryPromotionStage,
+	type RealRepositoryPromotionStageResult,
+} from "./real-repository-promotion.ts";
 
 export {
 	ADAPTER_CONFORMANCE_SCHEMA,
