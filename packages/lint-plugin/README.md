@@ -14,17 +14,24 @@ codemod adapters and official loaders.
 
 ## Rules
 
-| Rule                       | Default intent                                                                                |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| `no-spreads`               | Finds spread arguments that cannot be statically folded.                                      |
-| `no-dynamic-values`        | Finds interpolations, member expressions, functions, and helper calls that stay runtime-only. |
-| `no-multiple-conditionals` | Finds calls with more than one partially foldable conditional.                                |
-| `no-dollar-raw`            | Finds `$raw` escape hatches in Pandwind style lanes.                                          |
-| `no-arbitrary-values`      | Finds arbitrary class values such as `w-[13px]`.                                              |
-| `design-tokens-only`       | Checks design values against an explicit project policy.                                      |
+| Rule                         | Default intent                                                             |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| `no-spreads`                 | Finds spread arguments that cannot be statically folded.                   |
+| `no-dynamic-values`          | Finds dynamic values in static extraction lanes.                           |
+| `no-multiple-conditionals`   | Finds calls with more than one partially foldable conditional.             |
+| `no-dollar-raw`              | Finds `$raw` escape hatches in Pandwind style lanes.                       |
+| `no-arbitrary-values`        | Finds arbitrary class values such as `w-[13px]`.                           |
+| `design-tokens-only`         | Checks design values against an explicit project policy.                   |
+| `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     |
+| `no-stale-migration-skip`    | Finds skip markers that now precede a statically foldable call.            |
+| `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. |
 
-The first three rules are normally warnings. The strict-token rules can be
-errors when a project intentionally enforces them.
+The extraction rules are normally warnings. Token and migration-hygiene rules
+can be errors when a project wants CI to require verified design values and
+explicit residual accounting. Explicit runtime carriers (`css.vars`,
+`css.props`, `css.group`, `css.input`, and `css.raw`) are intentionally outside
+the static-value rule because they are the documented runtime/escape-hatch
+surfaces.
 
 `design-tokens-only` is deliberately inert unless configured with verified
 values or prefixes. It must not guess a project's theme from a hardcoded list
@@ -40,6 +47,20 @@ of scale words:
 	}
 }
 ```
+
+Migration markers are source-level accounting, not a way to silence an
+unknown failure. They must name the preserved behavior, and a marker becomes
+an error when it is left on a call that is now fully static:
+
+```ts
+// pandwind:migrate-skip (residual: runtime theme lookup)
+tw(theme.colors.brand);
+```
+
+`require-migration-residual` catches an unmarked dynamic static-lane call;
+`no-stale-migration-skip` catches the opposite case after a later compiler
+improvement. Both rules are deliberately conservative when source ranges are
+not available.
 
 For generated project policy, prefer passing values derived from the project's
 official config or `pandwind.interop.json` artifact at the composition boundary.
@@ -58,7 +79,10 @@ file is the runtime plugin entry because Oxlint loads JavaScript plugins:
 		"pandwind-extraction/no-dynamic-values": "warn",
 		"pandwind-extraction/no-multiple-conditionals": "warn",
 		"pandwind-extraction/no-dollar-raw": "error",
-		"pandwind-extraction/no-arbitrary-values": "error"
+		"pandwind-extraction/no-arbitrary-values": "error",
+		"pandwind-extraction/migration-skip-reason": "error",
+		"pandwind-extraction/no-stale-migration-skip": "error",
+		"pandwind-extraction/require-migration-residual": "error"
 	}
 }
 ```

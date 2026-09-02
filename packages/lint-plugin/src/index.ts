@@ -12,6 +12,9 @@
  * - no-dollar-raw: explicit escape hatches from the token lane
  * - no-arbitrary-values: arbitrary class values in static lanes
  * - design-tokens-only: verified project token policy violations
+ * - migration-skip-reason: migration skip markers must explain themselves
+ * - no-stale-migration-skip: static calls must not retain stale skip markers
+ * - require-migration-residual: dynamic static-lane calls need a marker
  */
 
 const SOURCE = Object.freeze({
@@ -28,16 +31,50 @@ const API = Object.freeze({
 	style: "style",
 });
 
+const STYLE_METHOD = Object.freeze({
+	class: "class",
+	vars: "vars",
+	props: "props",
+	group: "group",
+	input: "input",
+	raw: "raw",
+});
+
 const CORE_APIS = new Set<string>([API.cx, API.tw]);
-const STYLE_METHODS = new Set(["class", "vars", "props", "group", "input", "raw"]);
+const STYLE_METHODS = new Set<string>([
+	STYLE_METHOD.class,
+	STYLE_METHOD.vars,
+	STYLE_METHOD.props,
+	STYLE_METHOD.group,
+	STYLE_METHOD.input,
+	STYLE_METHOD.raw,
+]);
+const RUNTIME_STYLE_METHODS = new Set<string>([
+	STYLE_METHOD.vars,
+	STYLE_METHOD.props,
+	STYLE_METHOD.group,
+	STYLE_METHOD.input,
+	STYLE_METHOD.raw,
+]);
 const DESIGN_MODULE_KEYS = new Set(["$frame", "$layout", "$text"]);
+const MIGRATION_MARKER = "pandwind:migrate-skip";
 
 type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
 type AstVisitor = (node: AstNode) => void;
-type ApiReference = { kind: string; name: string };
+type ApiReference = { kind: string; name: string; method?: string };
+type SourceComment = {
+	type: string;
+	value: string;
+	start?: number;
+	end?: number;
+};
 type RuleContext = {
 	readonly options?: readonly unknown[];
+	readonly sourceCode?: {
+		readonly text: string;
+		readonly getAllComments?: () => readonly SourceComment[];
+	};
 	report(payload: {
 		node?: AstNode;
 		message: string;
@@ -109,21 +146,108 @@ const apiFromImport = (
 	return undefined;
 };
 
+type DynamicExpression = { node: AstNode; bad: string };
+
+/**
+ * Check the same value shapes the static compiler can fold. The walk is
+ * iterative because generated style objects can be much deeper than normal
+ * authored code. Conditional branches are inspectable; their runtime test is
+ * handled separately by the conditional-count rule.
+ */
+const findDynamicExpression = (
+	root: AstValue,
+	staticBindings: ReadonlySet<string>,
+): DynamicExpression | undefined => {
+	const stack: AstValue[] = [root];
+	const seen = new Set<AstNode>();
+	while (stack.length > 0) {
+		const value = stack.pop();
+		if (Array.isArray(value)) {
+			for (let index = value.length - 1; index >= 0; index -= 1) stack.push(value[index]);
+			continue;
+		}
+		if (!isNode(value) || seen.has(value)) continue;
+		seen.add(value);
+
+		switch (value.type) {
+			case "Literal":
+				continue;
+			case "Identifier":
+				if (staticBindings.has(value.name)) continue;
+				return { node: value, bad: "unresolved identifier" };
+			case "MemberExpression":
+				return { node: value, bad: "member expression value" };
+			case "TemplateLiteral":
+				if ((value.expressions?.length ?? 0) > 0)
+					return { node: value, bad: "template interpolation" };
+				continue;
+			case "ArrowFunctionExpression":
+			case "FunctionExpression":
+			case "FunctionDeclaration":
+				return { node: value, bad: "function argument" };
+			case "CallExpression":
+			case "NewExpression":
+			case "TaggedTemplateExpression":
+				return { node: value, bad: "dynamic helper call" };
+			case "SpreadElement":
+				return { node: value, bad: "spread argument" };
+			case "Property":
+				if (value.computed) stack.push(value.key);
+				stack.push(value.value);
+				continue;
+			case "ObjectExpression":
+			case "ArrayExpression":
+				for (const child of value.properties ?? value.elements ?? []) stack.push(child);
+				continue;
+			case "ConditionalExpression":
+				stack.push(value.alternate, value.consequent);
+				continue;
+			case "LogicalExpression":
+				stack.push(value.right, value.left);
+				continue;
+			case "UnaryExpression":
+			case "AwaitExpression":
+			case "TSAsExpression":
+			case "TSTypeAssertion":
+			case "TypeCastExpression":
+			case "ChainExpression":
+			case "ParenthesizedExpression":
+				stack.push(value.argument ?? value.expression);
+				continue;
+			case "JSXExpressionContainer":
+				stack.push(value.expression);
+				continue;
+			case "Program":
+			case "ExpressionStatement":
+				stack.push(value.expression ?? value.body);
+				continue;
+			default:
+				continue;
+		}
+	}
+	return undefined;
+};
+
 /**
  * Resolve only real Pandwind bindings. This intentionally rejects unrelated
  * local functions named `cx`, `tw`, or `css`; aliases and namespace imports
  * remain fully supported without putting ecosystem checks in every rule.
  */
 const createApiResolver = () => {
-	const direct = new Map();
-	const namespaces = new Map();
-	const factories = new Map();
+	const direct = new Map<string, string>();
+	const namespaces = new Map<string, string>();
+	const factories = new Map<string, string>();
 	const instances = new Set();
+	const declarations = new Map<string, AstNode>();
+	const staticBindings = new Set<string>();
+	const shadowedCalls = new WeakSet<AstNode>();
 
 	const registerImport = (node: AstNode): void => {
+		if (node.importKind === "type") return;
 		const source = sourceName(node.source);
 		if (source !== SOURCE.core && source !== SOURCE.css && source !== SOURCE.design) return;
 		for (const specifier of node.specifiers ?? []) {
+			if (specifier.importKind === "type") continue;
 			if (specifier.type === "ImportNamespaceSpecifier") {
 				namespaces.set(specifier.local.name, source);
 				continue;
@@ -161,13 +285,75 @@ const createApiResolver = () => {
 		});
 		walkNode(program, (node) => {
 			if (node.type !== "VariableDeclarator" || node.id?.type !== "Identifier") return;
+			if (node.init !== undefined) declarations.set(node.id.name, node.init);
 			const factory = resolveFactory(node.init);
 			if (factory === API.cssFactory || factory === API.designFactory) instances.add(node.id.name);
 		});
+		for (let pass = 0; pass < declarations.size; pass += 1) {
+			for (const [name, value] of declarations) {
+				if (staticBindings.has(name) || findDynamicExpression(value, staticBindings) === undefined)
+					staticBindings.add(name);
+			}
+		}
+
+		const scopedStack: Array<{ value: AstValue; shadowed: ReadonlySet<string> }> = [
+			{ value: program, shadowed: new Set() },
+		];
+		while (scopedStack.length > 0) {
+			const current = scopedStack.pop();
+			if (current === undefined) continue;
+			const value = current.value;
+			if (Array.isArray(value)) {
+				for (let index = value.length - 1; index >= 0; index -= 1)
+					scopedStack.push({ value: value[index], shadowed: current.shadowed });
+				continue;
+			}
+			if (!isNode(value)) continue;
+
+			if (value.type === "CallExpression") {
+				const callee = value.callee;
+				const name =
+					callee?.type === "Identifier"
+						? callee.name
+						: callee?.type === "MemberExpression" && callee.object?.type === "Identifier"
+							? callee.object.name
+							: undefined;
+				if (name !== undefined && current.shadowed.has(name)) shadowedCalls.add(value);
+			}
+
+			if (
+				value.type === "FunctionDeclaration" ||
+				value.type === "FunctionExpression" ||
+				value.type === "ArrowFunctionExpression"
+			) {
+				const shadowed = new Set(current.shadowed);
+				for (const parameter of value.params ?? []) {
+					const patternStack: AstValue[] = [parameter];
+					while (patternStack.length > 0) {
+						const pattern = patternStack.pop();
+						if (!isNode(pattern)) continue;
+						if (pattern.type === "Identifier") shadowed.add(pattern.name);
+						for (const key of Object.keys(pattern)) {
+							if (key !== "parent" && key !== "type") patternStack.push(pattern[key]);
+						}
+					}
+				}
+				scopedStack.push({ value: value.body, shadowed });
+				continue;
+			}
+
+			const keys = Object.keys(value);
+			for (let index = keys.length - 1; index >= 0; index -= 1) {
+				const key = keys[index];
+				if (key !== undefined && key !== "parent" && key !== "type")
+					scopedStack.push({ value: value[key], shadowed: current.shadowed });
+			}
+		}
 	};
 
 	const resolve = (call: AstNode): ApiReference | undefined => {
 		if (call.type !== "CallExpression") return undefined;
+		if (shadowedCalls.has(call)) return undefined;
 		if (call.callee?.type === "Identifier") {
 			const kind = direct.get(call.callee.name);
 			if (kind !== undefined) return { kind, name: call.callee.name };
@@ -176,18 +362,38 @@ const createApiResolver = () => {
 		}
 		const kind = resolveMember(call.callee);
 		if (kind === undefined) return undefined;
-		return { kind, name: `${call.callee.object.name}.${memberName(call.callee)}` };
+		const method = memberName(call.callee);
+		return {
+			kind,
+			name: `${call.callee.object.name}.${method}`,
+			...(instances.has(call.callee.object.name) ? { method } : {}),
+		};
 	};
 
-	return { scan, resolve };
+	return { scan, resolve, staticBindings };
 };
 
-const countDynamicConditionals = (args: readonly AstNode[]): number =>
-	args.filter(
-		(arg) =>
-			arg.type === "ConditionalExpression" ||
-			(arg.type === "LogicalExpression" && ["||", "??"].includes(arg.operator)),
-	).length;
+const countDynamicConditionals = (args: readonly AstNode[]): number => {
+	let count = 0;
+	const stack: AstValue[] = [...args];
+	while (stack.length > 0) {
+		const value = stack.pop();
+		if (Array.isArray(value)) {
+			for (let index = value.length - 1; index >= 0; index -= 1) stack.push(value[index]);
+			continue;
+		}
+		if (!isNode(value)) continue;
+		if (
+			value.type === "ConditionalExpression" ||
+			(value.type === "LogicalExpression" && ["||", "??"].includes(value.operator))
+		)
+			count += 1;
+		for (const key of Object.keys(value)) {
+			if (key !== "parent" && key !== "type") stack.push(value[key]);
+		}
+	}
+	return count;
+};
 
 /** Arbitrary-value class token: `w-[13px]`, `[margin-top:7px]`. */
 const ARBITRARY_RE = /\[[^\]\s]+\]/;
@@ -245,13 +451,24 @@ const tokenPolicy = (context: RuleContext): { allows(value: string): boolean } |
 };
 
 const callName = (api: ApiReference | undefined): string => api?.name ?? "pandwind";
-const isStaticLane = (api: ApiReference | undefined): boolean => api !== undefined;
+const isIntentionalRuntimeLane = (api: ApiReference | undefined): boolean =>
+	api?.kind === API.style && api.method !== undefined && RUNTIME_STYLE_METHODS.has(api.method);
+const isExtractionLane = (api: ApiReference | undefined): boolean =>
+	!isIntentionalRuntimeLane(api) &&
+	(api?.kind === API.cx ||
+		api?.kind === API.tw ||
+		(api?.kind === API.style && (api.method === undefined || api.method === STYLE_METHOD.class)));
+const isStaticLane = isExtractionLane;
 const isTokenLane = (api: ApiReference | undefined): boolean => api !== undefined;
 const isClassLane = (api: ApiReference | undefined): boolean =>
 	api?.kind === API.cx || api?.kind === API.tw;
 
 const withResolver = (
-	onCall: (node: AstNode, api: ApiReference | undefined) => void,
+	onCall: (
+		node: AstNode,
+		api: ApiReference | undefined,
+		staticBindings: ReadonlySet<string>,
+	) => void,
 ): RuleListener => {
 	const resolver = createApiResolver();
 	return {
@@ -259,9 +476,87 @@ const withResolver = (
 			resolver.scan(node);
 		},
 		CallExpression(node) {
-			onCall(node, resolver.resolve(node));
+			onCall(node, resolver.resolve(node), resolver.staticBindings);
 		},
 	};
+};
+
+type MigrationMarker = SourceComment & { reason: string };
+type CallAnalysis = {
+	node: AstNode;
+	api: ApiReference;
+	dynamic?: DynamicExpression;
+};
+
+const migrationMarkerFor = (context: RuleContext): string => {
+	const option = context.options?.[0];
+	if (option === null || typeof option !== "object") return MIGRATION_MARKER;
+	const marker = (option as Record<string, unknown>).marker;
+	return typeof marker === "string" && marker.trim() !== "" ? marker : MIGRATION_MARKER;
+};
+
+const migrationMarkers = (context: RuleContext): MigrationMarker[] => {
+	const comments = context.sourceCode?.getAllComments?.() ?? [];
+	const marker = migrationMarkerFor(context);
+	const markers: MigrationMarker[] = [];
+	for (const comment of comments) {
+		const markerIndex = comment.value.indexOf(marker);
+		if (markerIndex < 0) continue;
+		const reason = comment.value.slice(markerIndex + marker.length).trim();
+		markers.push({ ...comment, reason });
+	}
+	return markers;
+};
+
+const hasMigrationReason = (marker: MigrationMarker): boolean =>
+	marker.reason !== "" && marker.reason !== "()";
+
+const migrationAnalysis = (program: AstNode): CallAnalysis[] => {
+	const resolver = createApiResolver();
+	resolver.scan(program);
+	const calls: CallAnalysis[] = [];
+	walkNode(program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const api = resolver.resolve(node);
+		if (api === undefined) return;
+		const dynamic = isExtractionLane(api)
+			? node.arguments
+					.map((argument: AstNode) => findDynamicExpression(argument, resolver.staticBindings))
+					.find(
+						(issue: DynamicExpression | undefined): issue is DynamicExpression =>
+							issue !== undefined,
+					)
+			: undefined;
+		calls.push({ node, api, dynamic });
+	});
+	return calls;
+};
+
+const markerForCall = (
+	marker: MigrationMarker,
+	call: AstNode,
+	source: string,
+): MigrationMarker | undefined => {
+	if (marker.end === undefined || call.start === undefined || call.start < marker.end)
+		return undefined;
+	const gap = source.slice(marker.end, call.start);
+	if (gap.trim() !== "") return undefined;
+	const lineBreaks = (gap.match(/\n/g) ?? []).length;
+	return lineBreaks <= 1 ? marker : undefined;
+};
+
+const markerForAnyCall = (
+	markers: readonly MigrationMarker[],
+	call: AstNode,
+	source: string,
+): MigrationMarker | undefined => {
+	for (let index = markers.length - 1; index >= 0; index -= 1) {
+		const marker = markers[index];
+		if (marker === undefined) continue;
+		const match = markerForCall(marker, call, source);
+		if (match !== undefined) return match;
+	}
+	return undefined;
 };
 
 const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
@@ -349,22 +644,16 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 	},
 	"no-dynamic-values": {
 		create(context) {
-			return withResolver((node, api) => {
+			return withResolver((node, api, staticBindings) => {
 				if (!isStaticLane(api)) return;
 				for (const arg of node.arguments) {
-					let bad;
-					if (arg.type === "TemplateLiteral" && arg.expressions?.length)
-						bad = "template interpolation";
-					else if (arg.type === "MemberExpression") bad = "member expression value";
-					else if (arg.type === "ArrowFunctionExpression" || arg.type === "FunctionExpression")
-						bad = "function argument";
-					else if (arg.type === "CallExpression") bad = "dynamic helper call";
-					if (bad === undefined) continue;
+					const dynamic = findDynamicExpression(arg, staticBindings);
+					if (dynamic === undefined) continue;
 					context.report({
-						node: arg,
+						node: dynamic.node,
 						message:
 							"pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
-						data: { bad, name: callName(api) },
+						data: { bad: dynamic.bad, name: callName(api) },
 					});
 				}
 			});
@@ -383,6 +672,65 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 					data: { n: count, name: callName(api) },
 				});
 			});
+		},
+	},
+	"migration-skip-reason": {
+		create(context) {
+			return {
+				Program() {
+					for (const marker of migrationMarkers(context)) {
+						if (hasMigrationReason(marker)) continue;
+						context.report({
+							node: marker as AstNode,
+							message:
+								"pandwind: migration skip markers must include a reason describing the preserved residual",
+							data: { marker: migrationMarkerFor(context) },
+						});
+					}
+				},
+			};
+		},
+	},
+	"no-stale-migration-skip": {
+		create(context) {
+			return {
+				Program(node) {
+					const source = context.sourceCode?.text ?? "";
+					const markers = migrationMarkers(context);
+					for (const call of migrationAnalysis(node)) {
+						if (!isExtractionLane(call.api)) continue;
+						if (call.dynamic !== undefined) continue;
+						const marker = markerForAnyCall(markers, call.node, source);
+						if (marker === undefined) continue;
+						context.report({
+							node: marker as AstNode,
+							message:
+								"pandwind: migration skip marker is stale because the following call is statically foldable",
+							data: { name: callName(call.api) },
+						});
+					}
+				},
+			};
+		},
+	},
+	"require-migration-residual": {
+		create(context) {
+			return {
+				Program(node) {
+					const source = context.sourceCode?.text ?? "";
+					const markers = migrationMarkers(context);
+					for (const call of migrationAnalysis(node)) {
+						if (call.dynamic === undefined) continue;
+						if (markerForAnyCall(markers, call.node, source) !== undefined) continue;
+						context.report({
+							node: call.dynamic.node,
+							message:
+								"pandwind: dynamic static-lane output must preserve a typed migration residual with pandwind:migrate-skip",
+							data: { bad: call.dynamic.bad, name: callName(call.api) },
+						});
+					}
+				},
+			};
 		},
 	},
 };

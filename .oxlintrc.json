@@ -20,7 +20,10 @@
 		"pandwind-extraction/no-dynamic-values": "warn",
 		"pandwind-extraction/no-multiple-conditionals": "warn",
 		"pandwind-extraction/no-dollar-raw": "error",
-		"pandwind-extraction/no-arbitrary-values": "error"
+		"pandwind-extraction/no-arbitrary-values": "error",
+		"pandwind-extraction/migration-skip-reason": "error",
+		"pandwind-extraction/no-stale-migration-skip": "error",
+		"pandwind-extraction/require-migration-residual": "error"
 	},
 	"ignorePatterns": [
 		"**/apps/example/src/types.d.ts",
@@ -50,7 +53,10 @@
 				"pandwind-extraction/no-dynamic-values": "off",
 				"pandwind-extraction/no-multiple-conditionals": "off",
 				"pandwind-extraction/no-dollar-raw": "off",
-				"pandwind-extraction/no-arbitrary-values": "off"
+				"pandwind-extraction/no-arbitrary-values": "off",
+				"pandwind-extraction/migration-skip-reason": "off",
+				"pandwind-extraction/no-stale-migration-skip": "off",
+				"pandwind-extraction/require-migration-residual": "off"
 			}
 		}
 	]

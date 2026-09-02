@@ -6,6 +6,15 @@ type AstNode = { type: string; [key: string]: any };
 type AstValue = AstNode | AstValue[] | null | undefined | string | number | boolean;
 type RuleContext = {
 	readonly options?: readonly unknown[];
+	readonly sourceCode?: {
+		readonly text: string;
+		readonly getAllComments?: () => readonly {
+			type: string;
+			value: string;
+			start?: number;
+			end?: number;
+		}[];
+	};
 	report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void;
 };
 type RuleListeners = {
@@ -16,8 +25,6 @@ type Plugin = { rules: Record<string, { create(context: RuleContext): RuleListen
 type Report = { data: Record<string, unknown>; message: string; nodeType?: string };
 
 const typedPlugin = plugin as unknown as Plugin;
-const parse = (code: string): AstNode =>
-	parseSync("fixture.ts", code, { sourceType: "module", lang: "ts" }).program as AstNode;
 
 const visitCalls = (program: AstValue, visit: (node: AstNode) => void): void => {
 	const stack: AstValue[] = [program];
@@ -42,8 +49,19 @@ const runRule = (
 	options: readonly unknown[] = [],
 ): Report[] => {
 	const reports: Report[] = [];
+	const parsed =
+		typeof code === "string"
+			? parseSync("fixture.ts", code, { sourceType: "module", lang: "ts" })
+			: undefined;
 	const context = {
 		options,
+		sourceCode:
+			typeof code === "string"
+				? {
+						text: code,
+						getAllComments: () => parsed?.comments ?? [],
+					}
+				: undefined,
 		report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void {
 			reports.push({
 				data: payload.data ?? {},
@@ -55,9 +73,10 @@ const runRule = (
 	const rule = typedPlugin.rules[ruleName];
 	if (rule === undefined) throw new Error(`unknown rule: ${ruleName}`);
 	const listeners = rule.create(context);
-	const program = typeof code === "string" ? parse(code) : code;
-	listeners.Program?.(program);
-	visitCalls(program, (node) => listeners.CallExpression?.(node));
+	const program = parsed?.program as AstNode | undefined;
+	const sourceProgram: AstNode = program ?? (code as AstNode);
+	listeners.Program?.(sourceProgram);
+	visitCalls(sourceProgram, (node) => listeners.CallExpression?.(node));
 	return reports;
 };
 
@@ -68,6 +87,7 @@ describe("Pandwind Oxlint API binding resolution", () => {
 			`import { cx as merge, tw as utility } from "pandwind";
 import * as pw from "pandwind";
 const cx = (...values) => values;
+function render(cx: unknown) { cx(...items); }
 merge(...items);
 utility(...items);
 pw.cx(...items);
@@ -341,5 +361,151 @@ dcss.class({ $frame: { gap: "space-5" } });`,
 			  "nodeType": "Literal",
 			}
 		`);
+	});
+
+	test("accepts local static constants and keeps explicit runtime carriers quiet", () => {
+		const reports = runRule(
+			"no-dynamic-values",
+			`import { tw } from "pandwind";
+import { createCss } from "pandwind/css";
+const css = createCss();
+const card = { color: "red", padding: "1rem" };
+tw(card);
+css.class(card);
+css.vars({ color: theme.color });
+css.props({ color: theme.color });
+css.group({ color: theme.color });
+css.input("color");
+css.raw({ color: theme.color });`,
+		);
+
+		expect(reports).toEqual([]);
+		expect(reports).toMatchInlineSnapshot(`[]`);
+	});
+
+	test("reports nested dynamic values while allowing one conditional", () => {
+		const dynamicReports = runRule(
+			"no-dynamic-values",
+			`import { tw } from "pandwind";
+tw({ md: { hover: { color: theme.colors.brand } } });`,
+		);
+		const conditionalReports = runRule(
+			"no-multiple-conditionals",
+			`import { tw } from "pandwind";
+tw({ color: active ? "red" : "blue" }, disabled ? "opacity-50" : "opacity-100");`,
+		);
+
+		expect(dynamicReports).toHaveLength(1);
+		expect(dynamicReports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "bad": "member expression value",
+			      "name": "tw",
+			    },
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "nodeType": "MemberExpression",
+			  },
+			]
+		`);
+		expect(conditionalReports).toHaveLength(1);
+		expect(conditionalReports[0]?.data).toEqual({ n: 2, name: "tw" });
+	});
+
+	test("ignores type-only imports and preserves namespace method identity", () => {
+		const reports = runRule(
+			"no-dynamic-values",
+			`import type { tw as TypeOnlyTw } from "pandwind";
+import * as cssApi from "pandwind/css";
+const css = cssApi.createCss();
+TypeOnlyTw(theme.value);
+css.class(theme.value);
+css.vars(theme.value);`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.data).toEqual({ bad: "member expression value", name: "css.class" });
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "bad": "member expression value",
+			      "name": "css.class",
+			    },
+			    "message": "pandwind: {{bad}} in {{name}}() stays at runtime — use a literal, a module constant, or a single conditional",
+			    "nodeType": "MemberExpression",
+			  },
+			]
+		`);
+	});
+});
+
+describe("Pandwind migration hygiene rules", () => {
+	test("requires a reason on migration skip markers", () => {
+		const reports = runRule(
+			"migration-skip-reason",
+			`import { tw } from "pandwind";
+// pandwind:migrate-skip
+tw(theme.color);
+// pandwind:migrate-skip (residual: runtime theme)
+tw(theme.color);`,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "marker": "pandwind:migrate-skip",
+			    },
+			    "message": "pandwind: migration skip markers must include a reason describing the preserved residual",
+			    "nodeType": "Line",
+			  },
+			]
+		`);
+	});
+
+	test("flags stale skips but accepts a marked genuine residual", () => {
+		const staleReports = runRule(
+			"no-stale-migration-skip",
+			`import { tw } from "pandwind";
+// pandwind:migrate-skip (residual: old workaround)
+tw("text-red-500");`,
+		);
+		const residualReports = runRule(
+			"require-migration-residual",
+			`import { tw } from "pandwind";
+// pandwind:migrate-skip (residual: runtime theme)
+tw(theme.color);`,
+		);
+		const missingReports = runRule(
+			"require-migration-residual",
+			`import { tw } from "pandwind";
+tw(theme.color);`,
+		);
+		const runtimeSkipReports = runRule(
+			"no-stale-migration-skip",
+			`import { createCss } from "pandwind/css";
+const css = createCss();
+// pandwind:migrate-skip (residual: runtime value)
+css.vars({ color: theme.color });`,
+		);
+
+		expect(staleReports).toHaveLength(1);
+		expect(staleReports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "name": "tw",
+			    },
+			    "message": "pandwind: migration skip marker is stale because the following call is statically foldable",
+			    "nodeType": "Line",
+			  },
+			]
+		`);
+		expect(residualReports).toEqual([]);
+		expect(runtimeSkipReports).toEqual([]);
+		expect(missingReports).toHaveLength(1);
+		expect(missingReports[0]?.data).toEqual({ bad: "member expression value", name: "tw" });
 	});
 });

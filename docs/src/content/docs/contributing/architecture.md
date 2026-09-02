@@ -1034,3 +1034,30 @@ is transformed to the target adapter's actual output; residuals preserve the
 source body and remain observable; include/exclude and shared-scanner
 eligibility are checked; transformed output is idempotent; generated files are
 deduplicated, resolved, loaded, invalidated, and failed closed on conflicts.
+
+## Lint-plugin boundary
+
+`@pandwind/lint-plugin` is a small source-analysis adapter for Oxlint. Its
+resolver owns Pandwind import identity, including aliases, namespace imports,
+factory-created CSS/design instances, type-only imports, and function-parameter
+shadowing. The rules consume that resolver rather than matching names such as
+`cx` or `tw` in isolation, so an unrelated local helper is not treated as a
+Pandwind call.
+
+Static-value checks use an iterative evaluator for literals, local module
+constants, object/array composition, and one conditional branch. The explicit
+runtime carriers (`vars`, `props`, `group`, `input`, and `raw`) stay outside
+that check because they are intentional Pandwind runtime/escape-hatch APIs;
+the compiler and linter therefore agree about where runtime values are valid.
+The design-token rule is inert without verified project policy supplied by the
+composition root. It never invents a theme from a built-in vocabulary.
+
+Migration hygiene is also source-local: `migration-skip-reason` requires an
+explanation, `no-stale-migration-skip` catches a marker left on a now-static
+call, and `require-migration-residual` requires an explicit marker whenever a
+static-lane call still contains an unresolvable value. These rules require
+source ranges when checking marker-to-call adjacency and fail open when a host
+does not provide them. The package tests keep inline snapshots for diagnostic
+shape and ordinary assertions for safety, including deep ASTs, aliases,
+shadowing, custom token policy, nested dynamics, runtime carriers, and both
+valid and invalid residual markers.
