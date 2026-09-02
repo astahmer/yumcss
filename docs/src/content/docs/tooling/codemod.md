@@ -75,6 +75,46 @@ resolver; unknown preset utilities produce residuals rather than unsafe
 guesses. `createUnoCssResolverFromCss` can consume CSS emitted by a real
 UnoCSS generator.
 
+## Virtual bundler migrations
+
+For a reversible evaluation, the same adapter route can run inside Vite. The
+plugin transforms modules in memory; it does not edit the checkout or create
+files on disk. Generated target modules are served through Vite's virtual
+module hooks.
+
+```ts
+import { pandwindMigrateVite } from "pandwind-codemod/swap/vite";
+import { CodemodAdapterId } from "pandwind-codemod/swap";
+import tailwindcss from "@tailwindcss/vite";
+
+export default {
+	plugins: [
+		pandwindMigrateVite({
+			from: CodemodAdapterId.StyledComponents,
+			to: CodemodAdapterId.Tailwind,
+			onResidual: ({ file, residuals }) =>
+				console.warn(file, residuals),
+		}),
+		tailwindcss(),
+	],
+};
+```
+
+The migration plugin runs with `enforce: "pre"`, so the official target plugin
+sees the migrated module and remains responsible for target CSS generation.
+This composes with Tailwind, StyleX, or another registered target plugin in the
+same way; the route is selected by the adapter registry rather than a
+bundler-specific ecosystem switch.
+
+This lane is useful when a repository is too large for an immediate committed
+codemod, when a team wants to compare target CSS before changing source, or
+when migration should be enabled progressively by package or directory. It
+does not update editor-visible source, package manifests, runtime dependency
+graphs, or a separate SSR build automatically. Configure the plugin in every
+relevant build and treat residual callbacks as a migration worklist. Use the
+CLI codemod once the virtual result is accepted and should become a committed,
+searchable source change.
+
 ## Pandwind API swaps
 
 The same pipeline supports `tw`, `css.class`, `design`, `tailwind`, `panda`,

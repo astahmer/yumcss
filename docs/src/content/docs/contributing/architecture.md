@@ -906,3 +906,32 @@ regressions in
 `packages/codemod/tests/official-token-catalog.test.ts` prove verified
 emission, official custom-config loading, ambiguity rejection, and literal
 fallback.
+
+## Virtual bundler migration boundary
+
+`pandwind-codemod/swap/vite` is a bundler composition root over the existing
+adapter migration use case. It owns only Vite mechanics: eligibility, the
+per-module cache, virtual generated-file storage, invalidation, and residual
+reporting. It delegates scanning, configuration loading, semantic lowering,
+host rewrites, and target emission to the same adapter registry used by the
+CLI.
+
+The plugin runs at `enforce: "pre"`. This is an intentional ordering contract:
+the transformed module becomes the input to the target ecosystem's official
+plugin, so Tailwind, StyleX, or another host remains responsible for its own
+final CSS/compiler semantics. A host composes both plugins; Pandwind does not
+import or emulate the target plugin.
+
+Virtual migration is an evaluation and progressive-adoption lane. It keeps
+source files and package manifests unchanged, while making generated target
+artifacts available through virtual module ids. It must be configured in each
+relevant client and SSR build, and it cannot provide editor-visible source
+parity or remove the old runtime dependency by itself. Once the route is
+accepted, the CLI codemod remains the explicit path to a committed migration.
+
+The contract is intentionally tested at the plugin boundary in
+`packages/codemod/tests/vite-migration.test.ts`: real styled-components syntax
+is transformed to the target adapter's actual output; residuals preserve the
+source body and remain observable; include/exclude and shared-scanner
+eligibility are checked; transformed output is idempotent; generated files are
+deduplicated, resolved, loaded, invalidated, and failed closed on conflicts.

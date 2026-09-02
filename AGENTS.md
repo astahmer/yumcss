@@ -176,6 +176,13 @@ which concrete module to import or grow a switch statement in a central runner.
 - CLI files are composition roots: argument parsing, filesystem providers,
   registry assembly, and reporting are allowed there. Parsing, lowering,
   framework rewrites, and target emission are not.
+- A virtual bundler migration is a composition root over the existing migration
+  use case, not a second adapter engine. It may transform eligible source text
+  in memory and serve adapter-generated files through the host's virtual-module
+  hooks, but must never write the user's source tree. Run it before the target
+  ecosystem's official plugin so that plugin remains authoritative for final
+  CSS. Keep the route, residuals, generated artifacts, and invalidation policy
+  observable through host callbacks and focused inline-snapshot tests.
 - Knip is a required maintenance check. Findings are fixed at the ownership
   boundary where possible. A suppression requires a documented dynamic entry
   point or generated/public contract, never convenience. Public package
