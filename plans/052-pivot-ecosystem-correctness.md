@@ -47,6 +47,21 @@ Wave 7a now has concrete capability-directional proof instead of generic route s
 
 Wave 4a closes the hardcoded-vocabulary regression for Panda and Tokenami. Panda utility and shorthand names now come from the effective `@pandacss/config` result (including resolved presets/plugins) through `PandaUtilityCatalog`; the dependency-free fallback extracts only project-authored utility definitions and otherwise remains empty. Tokenami no longer ships a partial standard-alias table and instead uses aliases from its official config boundary or an empty fallback. The old `PANDA_ALIASES` module and Panda fallback text-style table were deleted. Focused tests prove custom aliases, official-loader precedence, dependency-free extraction, no invented aliases, JSX prop detection, and migration output with inline snapshots plus executable assertions. This is a correctness closure for these two adapter vocabularies, not a claim that every adapter's project configuration has been independently promoted.
 
+## Execution task breakdown
+
+The remaining work is divided into bounded tasks. Each task is one focused JJ revision (or a small, explicitly named pair when the implementation and its evidence cannot be separated). A task is complete only when its acceptance checks pass; a green registry entry or a recorded report is not sufficient evidence.
+
+- [ ] **052-1 — executable promotion driver:** replace source-only promotion claims with a driver that materializes a pinned tree, installs its declared dependencies, runs the project checks, and records every skipped stage as a failure or explicit not-applicable claim.
+- [ ] **052-2 — capability proof model:** derive lane, capability, host, and proof obligations from adapter manifests; reject missing direct fixtures, missing residual assertions, and unsupported proof dimensions at the composition root.
+- [ ] **052-3 — semantic lowering closure:** add target-owned strategies and issue fixtures for themes, runtime interpolations, function values, composition/recipes, plugin output, and styled subjects. Static output is attempted first; runtime carriers and residuals are measurable fallback results.
+- [ ] **052-4 — official configuration closure:** make each project-aware adapter expose one complete config-graph port, provenance, and failure residual. Add custom preset/plugin/token/utility fixtures for every adapter that claims configuration support.
+- [ ] **052-5 — scanner and host closure:** remove remaining direct parser/glob/extension ownership from product paths and complete host dialect adapters for the declared React/Next, Vue, Solid, Astro, Svelte, and native boundaries.
+- [ ] **052-6 — directional matrix:** replace generic route smoke fixtures with adapter-owned, documented API fixtures in every declared direction, including `X → Y → X`, themes/configuration, happy paths, and conservative paths with typed residuals.
+- [ ] **052-7 — real-repository promotion:** add reproducible pinned references for every claimed source adapter and run the strongest applicable build/typecheck/lint/browser/SSR/hydration/RSC/streaming/CSS-size proof. Fixture-only adapters remain explicitly unclaimed until promoted.
+- [ ] **052-8 — enforcement and closeout:** make CI fail on missing capability evidence, silent degradation, unowned exports, Node-only browser paths, and stale docs; regenerate the support matrix and perform the final acceptance audit.
+
+The order is intentionally linear. If a task exposes a genuinely unsupported semantic, the fix is either a target-owned lowering implementation or a manifest change that narrows the declared capability and adds a required residual test; adding another corpus-specific branch does not close the task.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.
