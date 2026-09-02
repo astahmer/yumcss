@@ -47,7 +47,7 @@ describe("theme delta parsing", () => {
 		// compile() needs a valid tailwind entry, so assert the pure regex
 		// contract via the exported report on a hand-built budget instead of
 		// re-testing Tailwind here. The parse logic is covered end-to-end by
-		// the live `pnpm analyze --css` run against apps/example.
+		// the live `nub run analyze -- --css` run against apps/example.
 		const themeCss = `@theme { --color-surface: #fff; }
 
 [data-theme="dark"] {

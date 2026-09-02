@@ -14,7 +14,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const TSX = resolve(import.meta.dirname, "../../analyze/node_modules/.bin/tsx");
+const NUB = process.env.NUB_BIN ?? "nub";
 
 interface Shape {
 	label: string;
@@ -22,7 +22,7 @@ interface Shape {
 }
 
 function runBench(): { output: string; shapes: Array<Shape> } {
-	const output = execFileSync(TSX, [resolve(ROOT, "cx-bench.mts")], {
+	const output = execFileSync(NUB, [resolve(ROOT, "cx-bench.mts")], {
 		cwd: ROOT,
 		encoding: "utf8",
 		timeout: 180_000,

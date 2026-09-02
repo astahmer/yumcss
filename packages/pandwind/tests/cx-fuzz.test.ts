@@ -276,7 +276,7 @@ describe("cx() fuzz — invariants", () => {
 
 // ---------------------------------------------------------------------------
 // Golden block — fixed seeded cases, exact outputs frozen below.
-// Regenerate via: npx tsx scripts/print-cx-golden.mts (imports this builder).
+// Regenerate via: nub scripts/print-cx-golden.mts (imports this builder).
 // ---------------------------------------------------------------------------
 
 export interface GoldenCase {

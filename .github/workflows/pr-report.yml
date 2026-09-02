@@ -34,6 +34,8 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: nubjs/setup-nub@v0
+
       # The base tree is checked out INSIDE the working directory so a single
       # pnpm install serves both measurements: all module resolution happens
       # from the HEAD checkout, the base dir only supplies source files.
@@ -62,8 +64,6 @@ jobs:
           REPO: ${{ github.repository }}
           BASE_REF_NAME: ${{ github.base_ref }}
           BASE_DIR: base-checkout
-        # tsx comes from apps/example's devDependencies; module resolution for
-        # oxc-parser flows through packages/pandwind's own node_modules.
-        run: pnpm --filter example exec tsx ../../.github/scripts/pr-report.mjs
+        run: nub .github/scripts/pr-report.mjs
         # Fail-open: reporting problems must never fail the workflow.
         continue-on-error: true

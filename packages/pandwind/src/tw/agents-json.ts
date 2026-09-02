@@ -111,8 +111,8 @@ export function buildAgentsDocument(options: {
 		themeScopes,
 		semanticTokens,
 		workflows: {
-			verifyTypes: "pnpm typecheck",
-			verifyCoverage: "pnpm analyze --json",
+			verifyTypes: "nub run typecheck",
+			verifyCoverage: "nub run analyze -- --json",
 			missingCssGate: "analyze --json → totalMissingCss must be 0",
 		},
 		constraints:

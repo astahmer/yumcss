@@ -16,6 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: nubjs/setup-nub@v0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -30,25 +32,25 @@ jobs:
       # The runtime-size regression gate (three layers: hard budgets,
       # tolerance guard, exact snapshot) runs inside `pandwind test`.
       - name: Test (includes runtime-size gate)
-        run: pnpm --filter pandwind test
+        run: nub run --filter pandwind test
 
       - name: Codemod and analyzer tests
-        run: pnpm --filter pandwind-codemod test && pnpm --filter pandwind-analyze test
+        run: nub run --filter pandwind-codemod test && nub run --filter pandwind-analyze test
 
       - name: Type tests (tstyche)
-        run: pnpm --filter pandwind test:types
+        run: nub run --filter pandwind test:types
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: nub run typecheck
 
       - name: Lint (oxlint)
-        run: pnpm lint
+        run: nub run lint
 
       - name: Format check (oxfmt)
-        run: pnpm format
+        run: nub run format
 
       - name: Production ownership and pivot gates
-        run: pnpm knip:production && pnpm pivot:proof
+        run: nub run knip:production && nub run pivot:proof
 
   # Preview tarballs for every PR (pkg.pr.new) — installable without merging.
   # Source-published packages need no build step; failures are non-blocking.
@@ -59,6 +61,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: nubjs/setup-nub@v0
       - uses: pnpm/action-setup@v4
         with:
           version: 11.21.0

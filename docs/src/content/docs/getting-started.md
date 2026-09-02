@@ -35,15 +35,15 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "tsx node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:codegen": "nub node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
+		"tw:bridge": "nub node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "nub node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan
+nub run tw:codegen && nub run tw:bridge && nub run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and

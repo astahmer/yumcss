@@ -21,10 +21,10 @@ original behavior.
 From the Pandwind repository:
 
 ```sh
-pnpm exec tsx scripts/migrate-effect-docs.ts tw /tmp/pandwind-effect-tw
+nub scripts/migrate-effect-docs.ts tw /tmp/pandwind-effect-tw
 cd /tmp/pandwind-effect-tw
 pnpm install --no-frozen-lockfile
-pnpm exec vp run build
+nub exec vp run build
 ```
 
 The baseline is built from the read-only clone without migration. Compare the

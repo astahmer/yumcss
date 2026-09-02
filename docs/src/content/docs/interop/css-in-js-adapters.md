@@ -292,7 +292,7 @@ const resolver = createUnoCssResolverFromCss(generatedUnoCss);
 
 The pinned Tokenami and UnoCSS references are source-static corpus evidence.
 Goober is the first external adapter promoted through the installed browser/
-SSR runner; run `pnpm pivot:proof:installed` to reproduce it.
+SSR runner; run `nub run pivot:proof:installed` to reproduce it.
 
 ## Runtime and host boundary
 

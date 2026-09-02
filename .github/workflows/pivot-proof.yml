@@ -16,6 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: nubjs/setup-nub@v0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -30,12 +32,12 @@ jobs:
       - name: Run pinned reference corpus and offline gate
         env:
           PANDWIND_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/real-repository-migrations-v2.json
-        run: pnpm pivot:proof:references
+        run: nub run pivot:proof:references
 
       - name: Run pinned adapter browser proof
         env:
           PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
-        run: pnpm references:deps && pnpm pivot:proof:adapters
+        run: nub run references:deps && nub run pivot:proof:adapters
 
       - name: Upload source-only proof report
         uses: actions/upload-artifact@v4

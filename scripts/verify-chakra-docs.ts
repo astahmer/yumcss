@@ -18,7 +18,7 @@ if (
 	buildAppRoot === undefined
 )
 	throw new Error(
-		"usage: tsx scripts/verify-chakra-docs.ts BASELINE CSS_CLASS DESIGN_CSS BASELINE_NEXT_APP",
+		"usage: nub scripts/verify-chakra-docs.ts BASELINE CSS_CLASS DESIGN_CSS BASELINE_NEXT_APP",
 	);
 
 async function staticRoutes(root: string): Promise<string[]> {

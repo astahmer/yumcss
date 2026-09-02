@@ -1,4 +1,6 @@
 node_modules/
+.direnv/
+result
 dist/
 !apps/playground/src/generated/
 !apps/playground/src/generated/**/

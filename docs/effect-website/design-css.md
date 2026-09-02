@@ -16,10 +16,10 @@ the design façade, while the bridge remains the single target class adapter.
 ## Reproduce
 
 ```sh
-pnpm exec tsx scripts/migrate-effect-docs.ts design-css /tmp/pandwind-effect-design
+nub scripts/migrate-effect-docs.ts design-css /tmp/pandwind-effect-design
 cd /tmp/pandwind-effect-design
 pnpm install --no-frozen-lockfile
-pnpm exec vp run build
+nub exec vp run build
 ```
 
 Run the four-way verifier shown in the [`tw` proof](./tw.md). In the verified

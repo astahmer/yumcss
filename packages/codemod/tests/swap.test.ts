@@ -236,10 +236,8 @@ describe("swap CLI end-to-end", () => {
 		);
 		const repoRoot = resolve(import.meta.dirname, "../../..");
 		execFileSync(
-			"pnpm",
+			"nub",
 			[
-				"exec",
-				"tsx",
 				"src/cli.ts",
 				"swap",
 				"--from=auto",
@@ -602,10 +600,8 @@ test("CLI spawn e2e: --to=panda emits token refs + styled-system import", () => 
 	);
 	const repoRoot = resolve(import.meta.dirname, "../../..");
 	execFileSync(
-		"pnpm",
+		"nub",
 		[
-			"exec",
-			"tsx",
 			"src/cli.ts",
 			"swap",
 			"--from=auto",

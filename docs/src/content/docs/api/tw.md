@@ -123,7 +123,7 @@ font-weight, font, tracking) and injects it while generating types:
 - no `--tokens` flag = byte-identical generated output as before.
 
 ```sh
-pnpm tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
+nub run tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an

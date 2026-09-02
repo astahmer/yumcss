@@ -3,15 +3,15 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"predev": "pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan",
+		"predev": "nub run tw:codegen && nub run tw:bridge && nub run tw:scan",
 		"dev": "vite",
-		"prebuild": "pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan",
+		"prebuild": "nub run tw:codegen && nub run tw:bridge && nub run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:prune": "tsx ../../packages/pandwind/src/tw/prune-theme.ts ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:bridge": "tsx ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
-		"tw:scan": "tsx ../../packages/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:codegen": "nub ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
+		"tw:prune": "nub ../../packages/pandwind/src/tw/prune-theme.ts ./src/pandwind-theme.css ./src/tw.ts ./src",
+		"tw:bridge": "nub ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
+		"tw:scan": "nub ../../packages/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	},
 	"dependencies": {
 		"pandwind": "workspace:*",
@@ -24,7 +24,6 @@
 		"@types/react-dom": "19.2.4",
 		"@vitejs/plugin-react-swc": "4.3.3",
 		"tailwindcss": "4.3.3",
-		"tsx": "4.23.12",
 		"typescript": "7.0.2",
 		"vite": "8.2.1"
 	}

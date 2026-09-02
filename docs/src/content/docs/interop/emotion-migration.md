@@ -51,14 +51,14 @@ hydration behavior remain part of the comparison.
 From the Pandwind checkout:
 
 ```sh
-pnpm exec tsx scripts/migrate-emotion-site.ts /tmp/pandwind-emotion-site-candidate
+nub scripts/migrate-emotion-site.ts /tmp/pandwind-emotion-site-candidate
 ```
 
 Build the candidate app:
 
 ```sh
 cd /tmp/pandwind-emotion-site-candidate/site
-pnpm build
+nub run build
 ```
 
 Run the route, CSS-size, screenshot, and hydration proof:

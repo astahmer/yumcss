@@ -421,7 +421,7 @@ const main = (): void => {
 					readFileSync(join(dependencyOutputRoot, path), "utf8"),
 		);
 	if (!same || !dependenciesSame)
-		throw new Error("Generated playground declarations are stale. Run `pnpm editor:types`.");
+		throw new Error("Generated playground declarations are stale. Run `nub run editor:types`.");
 };
 
 main();

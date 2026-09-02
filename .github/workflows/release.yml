@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: nubjs/setup-nub@v0
       - uses: pnpm/action-setup@v4
         with:
           version: 11
@@ -40,7 +41,7 @@ jobs:
         with:
           title: "chore: version packages"
           commit: "chore: version packages"
-          version: pnpm changeset:version
+          version: nub run changeset:version
 
   # Tagging v* publishes everything (after re-running pack smoke tests).
   publish:
@@ -48,6 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: nubjs/setup-nub@v0
       - uses: pnpm/action-setup@v4
         with:
           version: 11
@@ -61,8 +63,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: typecheck + tests
         run: |
-          pnpm run typecheck
-          pnpm test
+          nub run typecheck
+          nub run test
       - name: publish (provenance via OIDC)
         run: bash scripts/release/publish-all.sh
         env:

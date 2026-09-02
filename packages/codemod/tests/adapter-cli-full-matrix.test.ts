@@ -39,10 +39,8 @@ async function runCliMatrix(
 			return file;
 		});
 		const { stdout } = await execFileAsync(
-			process.execPath,
+			"nub",
 			[
-				"--import",
-				"tsx",
 				"src/cli.ts",
 				"swap",
 				`--from=${sourceAdapter}`,

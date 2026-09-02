@@ -19,7 +19,7 @@
  *    bytes), so zlib/gzip noise of a couple of bytes never fails the gate
  *    but real growth between revisions does.
  * 3. **Exact snapshot** — the record of truth. After an *intentional*
- *    change, run `pnpm test:size -u` (or `vitest run runtime-size -u`).
+ *    change, run `nub run test:size -u` (or `vitest run runtime-size -u`).
  */
 import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -188,11 +188,11 @@ test("runtime entries stay stylex-sized", async () => {
 			const gzCap = base.gz + Math.max(8, Math.round(base.gz * 0.01));
 			expect(
 				size.min,
-				`${name}: min regressed ${base.min} -> ${size.min} (allow up to ${minCap}; run pnpm test:size -u only for an intentional change)`,
+				`${name}: min regressed ${base.min} -> ${size.min} (allow up to ${minCap}; run nub run test:size -u only for an intentional change)`,
 			).toBeLessThanOrEqual(minCap);
 			expect(
 				size.gz,
-				`${name}: gz regressed ${base.gz} -> ${size.gz} (allow up to ${gzCap}; run pnpm test:size -u only for an intentional change)`,
+				`${name}: gz regressed ${base.gz} -> ${size.gz} (allow up to ${gzCap}; run nub run test:size -u only for an intentional change)`,
 			).toBeLessThanOrEqual(gzCap);
 		}
 	}

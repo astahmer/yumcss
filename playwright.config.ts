@@ -28,7 +28,7 @@ export default defineConfig({
 		...devices["Desktop Chrome"],
 	},
 	webServer: {
-		command: `pnpm --filter playground dev --host 127.0.0.1 --port ${playgroundPort}`,
+		command: `nub run --filter playground dev --host 127.0.0.1 --port ${playgroundPort}`,
 		url: `${playgroundUrl}/migrate`,
 		// Reusing an arbitrary process on the fixed port can run a different
 		// workspace's playground and make the BDD suite report misleading UI

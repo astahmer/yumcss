@@ -8,7 +8,7 @@
  * before the next revision is measured.
  *
  * Usage:
- *   pnpm exec tsx scripts/benchmark-perf-history.mts
+ *   nub scripts/benchmark-perf-history.mts
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, symlinkSync } from "node:fs";

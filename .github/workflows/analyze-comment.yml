@@ -87,6 +87,8 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: nubjs/setup-nub@v0
+
       - name: Check out base branch
         uses: actions/checkout@v4
         with:
@@ -111,7 +113,7 @@ jobs:
           WORK_DIR: ${{ inputs.working-directory }}
         run: |
           set -e
-          RUN="pnpm --filter example exec tsx"
+          RUN="nub"
           if [ "$WORK_DIR" != "." ]; then cd "$WORK_DIR"; fi
           "$RUN" ../../packages/analyze/src/cli.ts "$PATTERNS" \
             --tw "../../$APP_DIR/src/tw.ts" --root "../../$APP_DIR" \
@@ -129,6 +131,6 @@ jobs:
           REPO: ${{ github.repository }}
           BASE_REF_NAME: ${{ inputs.base-ref }}
         run: |
-          pnpm --filter example exec tsx ../../.github/scripts/analyze-comment.mjs \
+          nub .github/scripts/analyze-comment.mjs \
             /tmp/analyze-head.json /tmp/analyze-base.json
         continue-on-error: true

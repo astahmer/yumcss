@@ -396,7 +396,7 @@ if (process.argv[1]?.endsWith("migrate-chakra-docs.ts")) {
 		);
 	if (lane === undefined || !ChakraDocsMigration.lanes.includes(lane))
 		throw new Error(
-			`usage: tsx scripts/migrate-chakra-docs.ts ${ChakraDocsMigration.lanes.join("|")} [output-root]`,
+			`usage: nub scripts/migrate-chakra-docs.ts ${ChakraDocsMigration.lanes.join("|")} [output-root]`,
 		);
 	console.log(JSON.stringify(await ChakraDocsMigration.run(lane, { outputRoot }), null, 2));
 }

@@ -2,8 +2,8 @@
  * pandwind-codemod CLI.
  *
  * Usage:
- *   node --import tsx src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
- *   node --import tsx src/cli.ts swap --from=<auto|tw|css|design> \
+ *   nub src/cli.ts <globs...> --to=tw|cx|css|keep [--diff] [--write]
+ *   nub src/cli.ts swap --from=<auto|tw|css|design> \
  *        --to=<css.class|design|dss|tw> [--safe|--partial] [--write] [--diff] [--report[=json]] <globs...>
  *
  * Default is analysis mode: reports what WOULD change without touching
@@ -292,7 +292,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 	} catch (error) {
 		console.error(
 			`codemod swap: failed to load generated metadata from ${metaDir}\n` +
-				"  run `pnpm tw:codegen && pnpm tw:bridge` first, or pass --meta=<dir>\n" +
+				"  run `nub run tw:codegen && nub run tw:bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
 		process.exitCode = 1;
@@ -627,7 +627,7 @@ async function main(): Promise<void> {
 	} catch (error) {
 		console.error(
 			`codemod: failed to load generated metadata from ${metaDir}\n` +
-				"  run `pnpm tw:codegen && pnpm tw:bridge` first, or pass --meta=<dir>\n" +
+				"  run `nub run tw:codegen && nub run tw:bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
 		process.exitCode = 1;

@@ -8,13 +8,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-./node_modules/.bin/tsx scripts/release/check-publish-ready.mjs
+nub scripts/release/check-publish-ready.mjs
 
 ORDER=(pandwind lint-plugin codemod analyze)
 
 echo "== verifying packs before publish =="
 for pkg in "${ORDER[@]}"; do
-	./node_modules/.bin/tsx scripts/release/smoke-pack.mjs "packages/$pkg"
+	nub scripts/release/smoke-pack.mjs "packages/$pkg"
 done
 
 echo "== publishing =="

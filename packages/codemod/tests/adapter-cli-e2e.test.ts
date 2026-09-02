@@ -42,10 +42,8 @@ function runCli(
 	);
 	writeFileSync(file, sourceOverride ?? fixture?.source ?? pandwindSource);
 	const output = execFileSync(
-		"pnpm",
+		"nub",
 		[
-			"exec",
-			"tsx",
 			"src/cli.ts",
 			"swap",
 			`--from=${from}`,
@@ -77,10 +75,8 @@ cliE2e("CLI adapter migration e2e matrix", () => {
 		writeFileSync(file, source);
 		try {
 			const output = execFileSync(
-				"pnpm",
+				"nub",
 				[
-					"exec",
-					"tsx",
 					"src/cli.ts",
 					"swap",
 					`--from=${CodemodAdapterId.VueStyled}`,

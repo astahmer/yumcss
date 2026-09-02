@@ -109,8 +109,7 @@ async function ensureRuntimeStaticCss(
 	const collector = `import { pandwindRuntime } from "./pandwind-runtime";\n${factory}\n${imports}\n${groups}\nprocess.stdout.write(pandwindRuntime.sheet.css());\n`;
 	const collectorFile = join(outputRoot, "src/pandwind-style-collector.ts");
 	await writeFile(collectorFile, collector);
-	const tsx = resolve(process.cwd(), "node_modules/.bin/tsx");
-	const { stdout } = await execFileAsync(tsx, [collectorFile], {
+	const { stdout } = await execFileAsync("nub", [collectorFile], {
 		cwd: outputRoot,
 		maxBuffer: 16 * 1024 * 1024,
 	});
@@ -452,7 +451,7 @@ if (import.meta.main) {
 	const outputRoot = process.argv[4];
 	if (lane === undefined)
 		throw new Error(
-			"Usage: tsx scripts/migrate-stylex-docs.ts <runtime-css|atomic-css|design-dss> [root] [output-root]",
+			"Usage: nub scripts/migrate-stylex-docs.ts <runtime-css|atomic-css|design-dss> [root] [output-root]",
 		);
 	const report = await StylexDocsMigration.run(
 		resolve(root),

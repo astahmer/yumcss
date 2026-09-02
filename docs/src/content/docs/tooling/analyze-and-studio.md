@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-## `pnpm playground` — live editor
+## `nub run playground` — live editor
 
 A local in-browser editor: type `tw()` / `css()` / `cx()` expressions and see
 the merged class string, fold verdict (full/partial/runtime) and
@@ -13,10 +13,10 @@ conflict-merge visualization instantly. Per-example routes, URL-hash sharing,
 Monaco + Shiki. Styled with pandwind itself.
 
 The editor's Pandwind declarations are not copied API typings. The playground
-predev/prebuild hook runs `pnpm editor:types`, which resolves the workspace
+predev/prebuild hook runs `nub run editor:types`, which resolves the workspace
 package through `node_modules/pandwind`, emits its public declaration graph and
 the transitive declaration dependencies it references, and mounts that graph
-into Monaco's virtual filesystem. `pnpm editor:types:check`
+into Monaco's virtual filesystem. `nub run editor:types:check`
 regenerates into a temporary directory and fails if the checked-in graph is
 stale. This keeps `tw`, `css`, `cx`, design presets, and option contracts tied
 to the package exports; the small declarations for unavailable migration
@@ -39,7 +39,7 @@ a safe interactive preview, not a second migration implementation. Source
 adapters that need project configuration still report that limitation as a
 residual until a project-aware CLI migration supplies the configuration.
 
-## `pnpm inspect` — pandwind studio
+## `nub run inspect` — pandwind studio
 
 A local read-only dashboard over the [analyze](#analyze) machinery:
 

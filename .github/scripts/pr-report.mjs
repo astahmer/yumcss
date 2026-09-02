@@ -15,7 +15,7 @@
  * and always exits 0. Set DRY_RUN=1 to print the markdown instead of posting.
  *
  * Invocation (from repo root, see pr-report.yml):
- *   pnpm --filter example exec tsx ../../.github/scripts/pr-report.mjs
+ *   nub .github/scripts/pr-report.mjs
  * Environment:
  *   GH_TOKEN / PR_NUMBER / REPO  — GitHub posting (optional)
  *   BASE_DIR                     — path to the checked-out base branch tree

@@ -397,7 +397,7 @@ if (process.argv[1]?.endsWith("migrate-shadcn-v4.ts")) {
 	const lane = process.argv[2] as ShadcnV4MigrationLane | undefined;
 	if (lane === undefined || !ShadcnV4Migration.lanes.includes(lane))
 		throw new Error(
-			`usage: tsx scripts/migrate-shadcn-v4.ts ${ShadcnV4Migration.lanes.join("|")} [output-root] [--report=path]`,
+			`usage: nub scripts/migrate-shadcn-v4.ts ${ShadcnV4Migration.lanes.join("|")} [output-root] [--report=path]`,
 		);
 	const outputRoot = process.argv.slice(3).find((argument) => !argument.startsWith("--"));
 	const reportArgument = process.argv.slice(3).find((argument) => argument.startsWith("--report="));

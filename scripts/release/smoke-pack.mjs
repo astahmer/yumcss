@@ -1,9 +1,9 @@
 /**
  * Pack smoke test — proves a package's tarball is consumable BEFORE publishing.
  *
- * Usage (from repo root, under tsx so source-imports transform):
+ * Usage (from repo root, under Nub so source imports and TypeScript work):
  *   pnpm release:smoke            (all four publishable packages)
- *   pnpm exec tsx scripts/release/smoke-pack.mjs packages/pandwind
+ *   nub scripts/release/smoke-pack.mjs packages/pandwind
  *
  * Steps:
  *  1. `pnpm pack` the package;
@@ -85,7 +85,7 @@ async function main() {
 		}
 
 		// 4b. whole-tarball module sweep. Codegen CLIs do top-level file IO and are
-		// only ever executed directly (`pnpm tw:bridge`) — excluded.
+		// only ever executed directly (`nub run tw:bridge`) — excluded.
 		const SWEEP_ALLOWLIST = /tw\/generate-bridge\.ts$/;
 		// Sequential imports by design: deterministic error ordering.
 		const broken = [];

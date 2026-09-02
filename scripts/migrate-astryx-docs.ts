@@ -577,7 +577,7 @@ if (import.meta.main) {
 	const lane = process.argv[2] as AstryxDocsLane | undefined;
 	if (lane === undefined)
 		throw new Error(
-			"Usage: tsx scripts/migrate-astryx-docs.ts <runtime-css|static-css|design-dss> [reference-root] [output-root]",
+			"Usage: nub scripts/migrate-astryx-docs.ts <runtime-css|static-css|design-dss> [reference-root] [output-root]",
 		);
 	const report = await AstryxDocsMigration.run(lane, {
 		referenceRoot: process.argv[3],

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Token bridge: generated from the example preset by `pnpm tw:codegen`
+ * Token bridge: generated from the example preset by `nub run tw:codegen`
  * (same preset as apps/example — identical unions). Do not edit by hand.
  */
 @import "./pandwind-theme.css";

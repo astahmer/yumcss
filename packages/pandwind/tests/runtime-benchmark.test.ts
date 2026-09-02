@@ -98,7 +98,7 @@ test("runtime throughput stays within the recorded evidence band", async () => {
 		const reference = baseline[name];
 		expect(
 			reference,
-			`missing ${name} benchmark snapshot; run pnpm test:benchmarks -u`,
+			`missing ${name} benchmark snapshot; run nub run test:benchmarks -u`,
 		).toBeDefined();
 		// Throughput is noisy across machines. A 50% floor catches a real
 		// algorithmic regression without making CI depend on CPU scheduling.

@@ -3,7 +3,7 @@
  * eliminates for the given files.
  *
  * Usage:
- *   pnpm analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>]
+ *   nub run analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>]
  *
  * Defaults: globs = all .ts/.tsx under ./src, tw = "./src/tw.ts", root = cwd.
  */

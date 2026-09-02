@@ -17,10 +17,10 @@ residuals.
 ## Reproduce
 
 ```sh
-pnpm exec tsx scripts/migrate-effect-docs.ts css /tmp/pandwind-effect-css
+nub scripts/migrate-effect-docs.ts css /tmp/pandwind-effect-css
 cd /tmp/pandwind-effect-css
 pnpm install --no-frozen-lockfile
-pnpm exec vp run build
+nub exec vp run build
 ```
 
 Run the four-way verifier shown in the [`tw` proof](./tw.md). In the verified

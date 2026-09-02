@@ -74,12 +74,12 @@ Plans 006, 009–013, 017, and 023 completed the operational layer:
 Reproduce the checked-in corpus setup with:
 
 ```sh
-pnpm references:prepare
-pnpm pivot:proof
-pnpm test:all
-pnpm test:coverage
-pnpm knip
-pnpm release:check
+nub run references:prepare
+nub run pivot:proof
+nub run test:all
+nub run test:coverage
+nub run knip
+nub run release:check
 ```
 
 The reference clones live under

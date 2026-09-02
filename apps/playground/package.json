@@ -3,16 +3,16 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"editor:types": "tsx scripts/generate-editor-types.ts",
-		"editor:types:check": "tsx scripts/generate-editor-types.ts --check",
-		"predev": "pnpm editor:types && pnpm tw:codegen && pnpm tw:bridge",
+		"editor:types": "nub scripts/generate-editor-types.ts",
+		"editor:types:check": "nub scripts/generate-editor-types.ts --check",
+		"predev": "nub run editor:types && nub run tw:codegen && nub run tw:bridge",
 		"dev": "vite",
-		"prebuild": "pnpm editor:types && pnpm tw:codegen && pnpm tw:bridge",
+		"prebuild": "nub run editor:types && nub run tw:codegen && nub run tw:bridge",
 		"build": "tsc --noEmit && vite build",
-		"typecheck": "pnpm editor:types:check && tsc --noEmit",
+		"typecheck": "nub run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:codegen": "tsx ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:bridge": "tsx ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
+		"tw:codegen": "nub ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
+		"tw:bridge": "nub ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
 	},
 	"dependencies": {
 		"@monaco-editor/react": "4.7.0",
@@ -25,14 +25,16 @@
 		"shiki": "4.4.3"
 	},
 	"devDependencies": {
+		"@emotion/react": "11.14.0",
 		"@oxc-parser/binding-wasm32-wasi": "0.144.0",
+		"@playwright/test": "1.61.1",
 		"@tailwindcss/vite": "4.3.3",
 		"@types/node": "26.2.0",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.4",
 		"@vitejs/plugin-react-swc": "4.3.3",
+		"playwright-bdd": "9.2.0",
 		"tailwindcss": "4.3.3",
-		"tsx": "4.23.12",
 		"typescript": "7.0.2",
 		"vite": "8.2.1",
 		"vitest": "4.1.10"

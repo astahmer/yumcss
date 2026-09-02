@@ -178,7 +178,7 @@ runtime change with:
 
 ```sh
 cd packages/pandwind
-pnpm test:benchmarks -u
+nub run test:benchmarks -u
 ```
 
 The historical replay remains a manual evidence tool; it is intentionally not
@@ -265,7 +265,7 @@ Measurement notes from the 2026-08-22 rig:
 
 For pandwind itself, `packages/pandwind/tests/runtime-size.test.ts` is the
 repo-owned size gate, `packages/pandwind/cx-bench.mts` is the repo-owned
-cx microbench (`pnpm tsx ../../packages/pandwind/cx-bench.mts` from
+cx microbench (`nub ../../packages/pandwind/cx-bench.mts` from
 `apps/example`, so the generated config in `apps/example/src/tw.ts`
 resolves), and the benchmark
 entries import `packages/pandwind/src/*` directly plus the generated config

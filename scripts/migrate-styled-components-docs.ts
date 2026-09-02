@@ -580,7 +580,6 @@ async function materialize(
 	}
 	const collectorFile = join(outputRoot, `${supportRoot}/static-style-collector.ts`);
 	await writeFile(collectorFile, staticStyleCollector(files));
-	const tsx = resolve(repositoryRoot, "node_modules/.bin/tsx");
 	const collectorStubs: Array<[string, string]> = [];
 	for (const [file, code] of files) {
 		if (!/\.(?:md|mdx|css)['"]/.test(code)) continue;
@@ -592,7 +591,7 @@ async function materialize(
 	}
 	let staticCss = staticCssFromSource(files);
 	try {
-		const runtimeCss = execFileSync(tsx, [collectorFile], {
+		const runtimeCss = execFileSync("nub", [collectorFile], {
 			cwd: outputRoot,
 			encoding: "utf8",
 			maxBuffer: 16 * 1024 * 1024,
@@ -693,7 +692,7 @@ if (process.argv[1]?.endsWith("migrate-styled-components-docs.ts")) {
 	const outputRoot = process.argv[3];
 	if (lane === undefined || !StyledComponentsDocsMigration.lanes.includes(lane))
 		throw new Error(
-			`usage: tsx scripts/migrate-styled-components-docs.ts ${StyledComponentsDocsMigration.lanes.join("|")} [output-root]`,
+			`usage: nub scripts/migrate-styled-components-docs.ts ${StyledComponentsDocsMigration.lanes.join("|")} [output-root]`,
 		);
 	console.log(
 		JSON.stringify(await StyledComponentsDocsMigration.run(lane, { outputRoot }), null, 2),

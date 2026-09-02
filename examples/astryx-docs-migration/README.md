@@ -22,15 +22,15 @@ and screenshots remain disposable artifacts under `/private/tmp` and `/tmp`.
 Run from the Pandwind repository root:
 
 ```sh
-pnpm exec tsx scripts/migrate-astryx-docs.ts static-css \
+nub scripts/migrate-astryx-docs.ts static-css \
   /Users/astahmer/.references/astryx/apps/docsite \
   /private/tmp/pandwind-astryx-repo/apps/docsite
 
-pnpm exec tsx scripts/migrate-astryx-docs.ts runtime-css \
+nub scripts/migrate-astryx-docs.ts runtime-css \
   /Users/astahmer/.references/astryx/apps/docsite \
   /private/tmp/pandwind-astryx-runtime-final/apps/docsite
 
-pnpm exec tsx scripts/migrate-astryx-docs.ts design-dss \
+nub scripts/migrate-astryx-docs.ts design-dss \
   /Users/astahmer/.references/astryx/apps/docsite \
   /private/tmp/pandwind-astryx-design-final/apps/docsite
 ```

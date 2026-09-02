@@ -617,7 +617,7 @@ if (process.argv[1]?.endsWith("migrate-posthog-docs.ts")) {
 	}
 	if (lane === undefined || !PostHogDocsMigration.lanes.includes(lane)) {
 		throw new Error(
-			`usage: tsx scripts/migrate-posthog-docs.ts baseline [output-root] | ${PostHogDocsMigration.lanes.join("|")} [output-root]`,
+			`usage: nub scripts/migrate-posthog-docs.ts baseline [output-root] | ${PostHogDocsMigration.lanes.join("|")} [output-root]`,
 		);
 	}
 	console.log(

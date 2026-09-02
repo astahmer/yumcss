@@ -19,8 +19,8 @@ the per-backend subset story working as designed.
 ## Run
 
 ```sh
-pnpm test        # browser parity e2e + headless tui parity
-pnpm dev         # web + native page
+nub run test     # browser parity e2e + headless tui parity
+nub run dev      # web + native page
 pnpm tui         # the terminal app (bun)
 ```
 

@@ -21,7 +21,7 @@ and the root export carries only the recommended lane:
 
 `cx()` (`pandwind/cx`) merges across all three; presets live in `pandwind/preset`.
 
-> 📚 **Documentation site**: [`docs/`](./docs) — a Starlight site (`pnpm
+> 📚 **Documentation site**: [`docs/`](./docs) — a Starlight site (`nub run
 --filter pandwind-docs dev`) with guides for every API, the build-time
 > tooling, the non-web backends and the compatibility proofs. Agent skills:
 > [`skills/pandwind`](./skills/pandwind/SKILL.md) and
@@ -58,6 +58,15 @@ compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
 pnpm add pandwind
 ```
 
+For repository development, enter the reproducible shell first. It provides
+the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
+
+```sh
+direnv allow       # automatic, after installing direnv
+# or: nix develop
+nub install --frozen-lockfile
+```
+
 > See [PUBLISHING.md](./PUBLISHING.md) for changesets, provenance, and the
 > release preflight.
 
@@ -72,15 +81,15 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "tsx node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "tsx node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "tsx node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:codegen": "nub node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
+		"tw:bridge": "nub node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "nub node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan
+nub run tw:codegen && nub run tw:bridge && nub run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
@@ -178,12 +187,12 @@ agent ever ships.
 "$color-brand" } }` and codegen emits `.pwc-button { --color-primary:
 … }` scope classes — every existing utility restyles per component, and
   theme scopes compose naturally (`[data-theme]` × `.pwc-*`).
-- **`pnpm playground`** — live in-browser editor: type `tw()` / `css()` /
+- **`nub run playground`** — live in-browser editor: type `tw()` / `css()` /
   `cx()` expressions and see the merged class string, fold verdict
   (full/partial/runtime) and conflict-merge visualization instantly.
   Per-example routes, URL-hash sharing, Monaco + Shiki. Styled with
   pandwind itself.
-- **`pnpm inspect`** — pandwind studio: a local read-only dashboard over the
+- **`nub run inspect`** — pandwind studio: a local read-only dashboard over the
   analyze machinery. Coverage tab (fold elimination, CSS budget, dead
   candidates, missing-css warnings with editor links) + Design-system tab
   (theme vars, typed utility unions, bridge map, preset tokens). Extend the
@@ -227,7 +236,7 @@ than guessed) and injects it while generating types:
   generated output as before.
 
 ```sh
-pnpm tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
+nub run tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an
@@ -622,12 +631,12 @@ apps/example/             Vite + React app: plain Tailwind, tw(), design css() a
 
 ```sh
 pnpm install
-pnpm --filter example dev       # dev server (runs codegen + scan first)
-pnpm test                       # vitest + tstyche
-pnpm typecheck
-pnpm tw:codegen                 # regenerate types.d.ts + tw.ts
-pnpm --filter example tw:scan   # regenerate the safelist
-pnpm --filter example build     # production build (tw() inlined, css() extracted)
+nub run --filter example dev       # dev server (runs codegen + scan first)
+nub run test                       # vitest + tstyche
+nub run typecheck
+nub run tw:codegen                 # regenerate types.d.ts + tw.ts
+nub run --filter example tw:scan   # regenerate the safelist
+nub run --filter example build     # production build (tw() inlined, css() extracted)
 ```
 
 ## Multi-bundler support (unplugin)

@@ -5,13 +5,13 @@ sidebar:
   order: 1
 ---
 
-All commands run on source via `tsx` and are deterministic: identical inputs
+All commands run on source via `nub` and are deterministic: identical inputs
 produce byte-identical outputs.
 
 ## `tw:codegen` — typed runtime from your tailwind.css
 
 ```
-tsx packages/pandwind/src/tw/generate-types.ts <css-entry> <out-dir> [--tokens <module>] [--agents]
+nub packages/pandwind/src/tw/generate-types.ts <css-entry> <out-dir> [--tokens <module>] [--agents]
 ```
 
 Positionals default to `src/tailwind.css` and `src`. Loads the CSS through
@@ -35,7 +35,7 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
 ## `tw:bridge` — the property→utility bridge
 
 ```
-tsx packages/pandwind/src/tw/generate-bridge.ts <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
+nub packages/pandwind/src/tw/generate-bridge.ts <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
 ```
 
 Defaults: `src/tailwind.css src/tw.ts src/bridge.ts`, importing
@@ -46,7 +46,7 @@ preset). CLI-only — it executes on import.
 ## `tw:scan` — safelist from real call sites
 
 ```
-tsx packages/pandwind/src/tw/collect.ts [tw-entry] [src-dir] [out-file]
+nub packages/pandwind/src/tw/collect.ts [tw-entry] [src-dir] [out-file]
 ```
 
 Defaults: `src/tw.ts src src/pandwind.safelist.ts`. Statically evaluates
@@ -60,7 +60,7 @@ selects the mode:
 ## `tw:prune` — drop unused theme variables
 
 ```
-tsx packages/pandwind/src/tw/prune-theme.ts [theme-css] [tw-entry] [src-dir]
+nub packages/pandwind/src/tw/prune-theme.ts [theme-css] [tw-entry] [src-dir]
 ```
 
 Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned
@@ -71,7 +71,7 @@ after `tw:codegen` whenever sources change.
 ## `analyze` — coverage & budget reports
 
 ```
-pnpm analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
+nub run analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
 ```
 
 - `--tw <path>` — generated tw module (default `src/tw.ts` resolved against
@@ -88,5 +88,5 @@ pnpm analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css]
 - `--github-annotations` — emit GitHub annotations.
 - Default patterns when none given: `src/**/*.{ts,tsx}`.
 
-The studio (`pnpm inspect`) renders these same reports read-only — extend the
+The studio (`nub run inspect`) renders these same reports read-only — extend the
 CLI, not the app.

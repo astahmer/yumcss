@@ -286,8 +286,8 @@ analyze          statements 74.07%  ██████████████  
 ```
 
 These are regression floors, not a claim that every environment-only branch
-is covered by a unit test. Run `pnpm test:all` for the complete suite and
-`pnpm test:coverage` for the enforced package thresholds. See [Testing
+is covered by a unit test. Run `nub run test:all` for the complete suite and
+`nub run test:coverage` for the enforced package thresholds. See [Testing
 pandwind](/contributing/testing/).
 
 ## Where to change the system

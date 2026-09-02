@@ -8,7 +8,7 @@
  * survived migration. Both candidate sets compile through REAL Tailwind
  * with 8bit's own theme; rule sets and byte sizes are diffed.
  *
- * Usage: ./node_modules/.bin/tsx css-parity-8bit.mts   (paths below)
+ * Usage: nub css-parity-8bit.mts   (paths below)
  */
 import { globSync, readFileSync, writeFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";

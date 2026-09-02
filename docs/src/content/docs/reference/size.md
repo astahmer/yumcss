@@ -58,7 +58,7 @@ bundlers drop whichever engines you do not import:
 
 ## No silent regressions: the runtime size gate
 
-The numbers above are a _contract_, enforced on every `pnpm test` run by
+The numbers above are a _contract_, enforced on every `nub run test` run by
 `tests/runtime-size.test.ts`. Three layers:
 
 1. **Hard budgets** (`tests/runtime-budget.json`) — ceilings checked first,
@@ -66,7 +66,7 @@ The numbers above are a _contract_, enforced on every `pnpm test` run by
 2. **Regression guard** — current sizes compared against the committed
    snapshot with a small tolerance (1%, floored at 16 min / 8 gz bytes).
 3. **Exact snapshot** — record of truth, updated only via
-   `pnpm test:size -u`, reserved for deliberate growth.
+   `nub run test:size -u`, reserved for deliberate growth.
 
 ## Real CSS output (example app)
 

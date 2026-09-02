@@ -123,6 +123,14 @@ which concrete module to import or grow a switch statement in a central runner.
   `StyleProgram` transformations, backend renderers, or browser bundles. Do
   not use `effect/unstable/*`; the adapter must remain replaceable by the
   existing synchronous ports.
+- Repository JavaScript tooling is run through the pinned Nub executable from
+  `flake.lock`: use `nub run <script>` for package scripts, `nub <file>` for
+  TypeScript/ESM utilities, and `nub exec <bin>` for local binaries. Do not add
+  `tsx`, `node --import tsx`, or direct `pnpm exec` wrappers back to active
+  scripts. `pnpm-lock.yaml` remains the package-manager lockfile; `nub
+  install` may update it compatibly. CI must provision Nub before invoking
+  repository scripts. File-language values such as `.tsx` and `lang: "tsx"`
+  are source-format metadata and are not tooling references.
 - Official config loaders should expose custom design values through the
   neutral `AdapterTokenCatalog` contract when the ecosystem provides them.
   Target policies consume that catalog only after exact, property-aware,

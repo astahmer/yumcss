@@ -413,7 +413,7 @@ if (process.argv[1]?.endsWith("migrate-tailwind-docs.ts")) {
 	const lane = process.argv[2] as TailwindDocsLane | undefined;
 	if (lane === undefined || !TailwindDocsMigration.lanes.includes(lane)) {
 		throw new Error(
-			`usage: tsx scripts/migrate-tailwind-docs.ts ${TailwindDocsMigration.lanes.join("|")} [output-root]`,
+			`usage: nub scripts/migrate-tailwind-docs.ts ${TailwindDocsMigration.lanes.join("|")} [output-root]`,
 		);
 	}
 	const report = await TailwindDocsMigration.run(lane, {

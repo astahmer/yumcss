@@ -54,13 +54,13 @@ never hand-maintained tables.
 
 ```sh
 # analysis only (default): reports what WOULD change
-pnpm codemod "src/**/*.tsx" --to=tw
+nub run codemod "src/**/*.tsx" --to=tw
 
 # preview exact diffs, then apply
-pnpm codemod "src/**/*.tsx" --to=tw --diff --write
+nub run codemod "src/**/*.tsx" --to=tw --diff --write
 
 # also migrate away from a source library (repeatable / comma-separated)
-pnpm codemod "src/**/*.tsx" --from=styled-components,stylex --to=css --diff --write
+nub run codemod "src/**/*.tsx" --from=styled-components,stylex --to=css --diff --write
 ```
 
 ## Source libraries (`--from=`)
@@ -100,15 +100,15 @@ metadata. Every conversion goes through a neutral IR (resolved declarations
 
 ```sh
 # tw() objects -> css.class() literals (auto-detects the source shape)
-pnpm codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
+nub run codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
 
 # design vocabulary -> typed tw objects
-pnpm codemod swap --from=design --to=tw "src/**/*.tsx" --write
+nub run codemod swap --from=design --to=tw "src/**/*.tsx" --write
 
 # export OUT of pandwind entirely
-pnpm codemod swap --from=css --to=tailwind "src/**/*.tsx" --write   # class strings
-pnpm codemod swap --from=auto --to=panda "src/**/*.tsx" --write     # styled-system/css css()
-pnpm codemod swap --from=auto --to=stylex "src/**/*.tsx" --write    # stylex.create + props
+nub run codemod swap --from=css --to=tailwind "src/**/*.tsx" --write   # class strings
+nub run codemod swap --from=auto --to=panda "src/**/*.tsx" --write     # styled-system/css css()
+nub run codemod swap --from=auto --to=stylex "src/**/*.tsx" --write    # stylex.create + props
 ```
 
 | `--to=`     | output shape                                                                                               |
@@ -137,7 +137,7 @@ resolved literals, derived from your app's DTCG preset:
 | `off`   | resolved/authoried literals verbatim |
 
 ```sh
-pnpm codemod swap --from=auto --to=panda --token-refs=group "src/**/*.tsx" --write
+nub run codemod swap --from=auto --to=panda --token-refs=group "src/**/*.tsx" --write
 ```
 
 Emitted calls are always SINGLE-LINE — the codemod never pretty-prints;
@@ -150,13 +150,13 @@ TokenSet IR in between, so each new format is one importer + one exporter:
 
 ```sh
 # DTCG JSON -> tailwind @theme css
-pnpm codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
+nub run codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
 
 # panda.config.ts tokens -> DTCG json
-pnpm codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
+nub run codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
 
 # a pandwind definePreset file -> panda snippet (stdout)
-pnpm codemod tokens --from=preset --to=panda src/preset.ts
+nub run codemod tokens --from=preset --to=panda src/preset.ts
 ```
 
 | format    | direction     | shape                                                           |

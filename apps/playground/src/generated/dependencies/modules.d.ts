@@ -89,11 +89,9 @@ declare module "@zag-js/tour" { export * from "./@zag-js/tour/dist/index.d.ts"; 
 declare module "@zag-js/hotkeys" { export * from "./@zag-js/hotkeys/dist/index.d.ts"; }
 declare module "@zag-js/focus-visible" { export * from "./@zag-js/focus-visible/dist/index.d.ts"; }
 declare module "@mantine/core" { export * from "./@mantine/core/lib/index.d.ts"; }
-declare module "type-fest" { export * from "./type-fest/index.d.ts"; }
 declare module "@pandacss/config" { export * from "./@pandacss/config/dist/index.d.ts"; }
 declare module "@pandacss/types" { export * from "./@pandacss/types/dist/index.d.ts"; }
 declare module "@tokenami/config" { export * from "./@tokenami/config/dist/index.d.ts"; }
-declare module "@emotion/hash" { export * from "./@emotion/hash/dist/emotion-hash.cjs.d.ts"; }
 declare module "@unocss/config" { export * from "./@unocss/config/dist/index.d.mts"; }
 declare module "unconfig" { export * from "./unconfig/dist/index.d.mts"; }
 declare module "unconfig-core" { export * from "./unconfig-core/dist/index.d.mts"; }

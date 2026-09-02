@@ -10,7 +10,7 @@
 		"typecheck": "tsc --noEmit",
 		"test": "node test/e2e.mjs",
 		"test:hmr": "node test/hmr-e2e.mjs",
-		"test:rollup": "tsx test/rollup-e2e.ts"
+		"test:rollup": "nub test/rollup-e2e.ts"
 	},
 	"dependencies": {
 		"class-variance-authority": "0.7.1",
@@ -26,7 +26,6 @@
 		"esbuild": "0.28.2",
 		"playwright-core": "1.61.1",
 		"rollup": "4.62.5",
-		"tsx": "4.23.12",
 		"typescript": "7.0.2",
 		"vite": "8.2.1"
 	}

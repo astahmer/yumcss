@@ -14,8 +14,8 @@ The same Chakra source adapter is routed through two target dialects:
 Run a lane and optionally materialize a buildable disposable worktree:
 
 ```sh
-pnpm exec tsx scripts/migrate-chakra-docs.ts css-class /tmp/pandwind-chakra-css
-pnpm exec tsx scripts/migrate-chakra-docs.ts design-css /tmp/pandwind-chakra-dcss
+nub scripts/migrate-chakra-docs.ts css-class /tmp/pandwind-chakra-css
+nub scripts/migrate-chakra-docs.ts design-css /tmp/pandwind-chakra-dcss
 ```
 
 The runner scans the full `apps/www` source tree, preserves non-style Chakra
@@ -32,7 +32,7 @@ The current run converted 661 call sites in 91 source files for each lane.
 After building both materialized lanes, run the exhaustive static-route check:
 
 ```sh
-pnpm exec tsx scripts/verify-chakra-docs.ts \
+nub scripts/verify-chakra-docs.ts \
   http://127.0.0.1:4340 \
   http://127.0.0.1:4349 \
   http://127.0.0.1:4350 \

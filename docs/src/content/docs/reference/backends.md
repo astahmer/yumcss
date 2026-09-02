@@ -151,7 +151,7 @@ stylesheet handles them natively.
   `tests/backends-react-native.test.ts`, `tests/backends-opentui.test.ts`,
   `tests/backends-object.test.ts`.
 - **E2E is real, per target** — each backend has a sandbox app that consumes
-  it and asserts rendered output on a genuine host (`pnpm test` inside each):
+  it and asserts rendered output on a genuine host (`nub run test` inside each):
 
   | App                    | Host                                                                      | Proves                                                                                                                          |
   | ---------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
