@@ -43,11 +43,21 @@ matrixFixtures.set(CodemodAdapterId.SolidStyled, {
 matrixFixtures.set(CodemodAdapterId.VueStyled, {
 	adapter: CodemodAdapterId.VueStyled,
 	file: "App.vue",
-	source:
-		"<script setup>\n" +
-		'import styled from "vue-styled-components";\n' +
-		'const Card = styled.div({ color: "red" });\n' +
-		"</script>\n<template><Card /></template>",
+		source:
+			"<script setup>\n" +
+			'import styled from "vue-styled-components";\n' +
+			'const Card = styled.div({ color: "red" });\n' +
+			"</script>\n<template><Card /></template>",
+});
+matrixFixtures.set(CodemodAdapterId.Tailwind, {
+	adapter: CodemodAdapterId.Tailwind,
+	file: "App.tsx",
+	source: '<div className="[display:flex] [padding:1rem]" />',
+});
+matrixFixtures.set(CodemodAdapterId.UnoCSS, {
+	adapter: CodemodAdapterId.UnoCSS,
+	file: "App.tsx",
+	source: '<div className="[display:flex] [align-items:center]" />',
 });
 
 function fixtureFor(adapter: string) {
@@ -457,7 +467,7 @@ describe("composed cross-ecosystem routes", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.skipped).toBe(0);
 		expect(result.code).toContain("<chakra.div");
-		expect(result.code).toContain('css={{ color: "red", padding: "1rem" }}');
+		expect(result.code).toContain('css={{ padding: "1rem", color: "red" }}');
 		expect(result.code).not.toMatch(/^\s*css\(\{/u);
 	});
 });
