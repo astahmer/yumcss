@@ -27,7 +27,7 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
@@ -35,7 +35,11 @@ import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
-import { parse, type AtRule, type ChildNode } from "postcss";
+import {
+	parseGeneratedCss,
+	type GeneratedCssAtRule,
+	type GeneratedCssNode,
+} from "../generated-css-parser.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -608,7 +612,7 @@ function tailwindTokenCatalog(
 	return TokenCatalog.fromGroups(groups);
 }
 
-function generatedAtRuleCondition(rule: AtRule): StyleCondition | undefined {
+function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | undefined {
 	const params = rule.params.trim();
 	if (params === "") return undefined;
 	if (rule.name === "media") return { kind: "media", name: params, value: params };
@@ -645,15 +649,10 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 
 function parseEngineCss(css: string, token: string): readonly StyleDeclaration[] | undefined {
 	if (css.trim() === "") return undefined;
-	let root: ReturnType<typeof parse>;
-	try {
-		root = parse(css);
-	} catch {
-		return undefined;
-	}
+	const root = parseGeneratedCss(css);
 	const declarations: StyleDeclaration[] = [];
 	const walk = (
-		nodes: readonly ChildNode[],
+		nodes: readonly GeneratedCssNode[],
 		inherited: readonly StyleCondition[],
 		insideStyleRule: boolean,
 	): void => {
@@ -686,7 +685,7 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 			}
 		}
 	};
-	walk(root.nodes, [], false);
+	walk(root, [], false);
 	return declarations.length === 0 ? undefined : declarations;
 }
 
@@ -798,10 +797,7 @@ async function officialConfig(
 
 export function createTailwindAdapter(options: TailwindAdapterOptions = {}): StyleAdapter {
 	const fallbackResolver = options.resolver ?? { resolve: defaultResolve };
-	const moduleLoader =
-		options.moduleLoader === null
-			? undefined
-			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.Tailwind,

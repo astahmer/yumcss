@@ -17,7 +17,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
@@ -780,10 +780,7 @@ function rewriteChakraStyledSubject({
 export function createChakraAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
-	const moduleLoader =
-		options.moduleLoader === null
-			? undefined
-			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.ChakraUi,
 		officialApi: {

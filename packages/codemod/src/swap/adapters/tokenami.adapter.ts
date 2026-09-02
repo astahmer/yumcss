@@ -20,7 +20,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 
@@ -278,10 +278,7 @@ const sourceOptions: AdapterSourceObjectOptions = {
 export function createTokenamiAdapter(
 	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
 ) {
-	const moduleLoader =
-		options.moduleLoader === null
-			? undefined
-			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Tokenami,
 		officialApi: {

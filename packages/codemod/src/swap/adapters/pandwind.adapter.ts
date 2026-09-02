@@ -35,7 +35,7 @@ import {
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 import { TokenCatalog } from "../tokens.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
@@ -1216,10 +1216,7 @@ export interface PandwindAdapterOptions {
 }
 
 export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
-	const moduleLoader =
-		options.moduleLoader === null
-			? undefined
-			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Pandwind,
 		officialApi: {

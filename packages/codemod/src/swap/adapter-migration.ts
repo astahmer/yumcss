@@ -15,7 +15,7 @@ import {
 	type SourceScanResult,
 } from "pandwind/source";
 import type { PandwindMeta } from "../meta.ts";
-import { dirname, resolve as resolvePath } from "node:path";
+import { dirnameDocumentPath, joinDocumentPath } from "../path-utils.ts";
 import {
 	inspectAdapterCapabilities,
 	AdapterCapabilityLevelTag,
@@ -478,7 +478,7 @@ function runAdapterMigrationInternal(
 				},
 				resolve: (importer, specifier) => {
 					if (!specifier.startsWith(".")) return undefined;
-					const base = resolvePath(dirname(importer), specifier);
+					const base = joinDocumentPath(dirnameDocumentPath(importer), specifier);
 					const candidates = [
 						base,
 						`${base}.ts`,

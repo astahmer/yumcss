@@ -12,7 +12,7 @@ import {
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import { TokenCatalog } from "../tokens.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
 
@@ -82,9 +82,7 @@ export interface PandaAdapterOptions {
 }
 
 function createPandaConfigLoader(options: PandaAdapterOptions): ProjectModuleLoader | undefined {
-	return options.moduleLoader === null
-		? undefined
-		: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	return options.moduleLoader === null ? undefined : options.moduleLoader;
 }
 
 async function officialPandaConfig(

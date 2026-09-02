@@ -9,6 +9,7 @@ import {
 	runAdapterMigrationAsync,
 } from "../src/swap/index.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+import { NODE_PROJECT_MODULE_LOADER } from "../src/swap/project-module-loader.ts";
 import { createTokenamiAdapter } from "../src/swap/adapters/tokenami.adapter.ts";
 import {
 	createUnoCssAdapter,
@@ -236,7 +237,7 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 				join(root, "uno.config.ts"),
 				"export default { rules: [['brand', { color: 'rebeccapurple' }]] }",
 			);
-			const adapter = createUnoCssAdapter();
+			const adapter = createUnoCssAdapter({ moduleLoader: NODE_PROJECT_MODULE_LOADER });
 			const source = '<div className="brand" />';
 			const config = await adapter.loadConfigAsync?.({
 				file: "App.tsx",

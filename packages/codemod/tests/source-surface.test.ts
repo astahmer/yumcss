@@ -1,4 +1,6 @@
 import { describe, expect, test } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog as createBrowserCodemodCatalog,
@@ -21,6 +23,16 @@ describe("codemod public source surfaces", () => {
 		expect(catalog.adapters.length).toBeGreaterThan(1);
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
+	});
+
+	test("keeps the browser migration use case free of node-only imports", () => {
+		const migration = readFileSync(
+			resolve(import.meta.dirname, "../src/swap/adapter-migration.ts"),
+			"utf8",
+		);
+
+		expect(migration).not.toMatch(/from\s+["']node:/u);
+		expect(migration).not.toContain("node:path");
 	});
 
 	test("keeps type-only swap ports part of the compile-time contract", () => {

@@ -25,13 +25,17 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
-import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { TokenCatalog } from "../tokens.ts";
-import { parse, type AtRule, type ChildNode } from "postcss";
+import {
+	parseGeneratedCss,
+	type GeneratedCssAtRule,
+	type GeneratedCssNode,
+} from "../generated-css-parser.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -52,7 +56,7 @@ const unescapeUnoCssSelector = (value: string): string =>
 const cssPropertyToStyleProperty = (value: string): string =>
 	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
-function generatedAtRuleCondition(rule: AtRule): StyleCondition | undefined {
+function generatedAtRuleCondition(rule: GeneratedCssAtRule): StyleCondition | undefined {
 	const params = rule.params.trim();
 	if (params === "") return undefined;
 	if (rule.name === "media") return { kind: "media", name: params, value: params };
@@ -88,14 +92,9 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 /** Build a resolver from CSS emitted by the real UnoCSS generator. */
 export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 	const entries = new Map<string, readonly StyleDeclaration[]>();
-	let root: ReturnType<typeof parse>;
-	try {
-		root = parse(css);
-	} catch {
-		return { resolve: (token) => entries.get(token) };
-	}
+	const root = parseGeneratedCss(css);
 	const walk = (
-		nodes: readonly ChildNode[],
+		nodes: readonly GeneratedCssNode[],
 		inherited: readonly StyleCondition[],
 		insideStyleRule: boolean,
 	): void => {
@@ -156,7 +155,7 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 		}
 	};
 	let currentRules: readonly { token: string; conditions: readonly StyleCondition[] }[] = [];
-	walk(root.nodes, [], false);
+	walk(root, [], false);
 	return { resolve: (token) => entries.get(token) };
 }
 
@@ -846,10 +845,7 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 	const fallbackResolver = options.resolver ?? {
 		resolve: (token: string) => defaultResolve(token),
 	};
-	const moduleLoader =
-		options.moduleLoader === null
-			? undefined
-			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.UnoCSS,
