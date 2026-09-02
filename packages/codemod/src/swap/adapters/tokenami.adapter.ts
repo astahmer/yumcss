@@ -147,6 +147,11 @@ async function officialTokenamiConfig(
 		}
 	>("@tokenami/config", context.root);
 	if (packageModule === undefined) return fallback;
+	const discovered = context
+		.listFiles?.(context.root)
+		.filter((candidate) =>
+			/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
+		);
 	const candidates = [
 		".tokenami/tokenami.config.ts",
 		".tokenami/tokenami.config.js",
@@ -154,9 +159,13 @@ async function officialTokenamiConfig(
 		"tokenami.config.ts",
 		"tokenami.config.js",
 		"tokenami.config.cjs",
+		"tokenami.config.mjs",
+		...(discovered ?? []),
 	];
-	for (const candidate of candidates) {
-		const path = joinDocumentPath(context.root, candidate);
+	for (const candidate of new Set(candidates)) {
+		const path = candidate.startsWith(context.root)
+			? candidate
+			: joinDocumentPath(context.root, candidate);
 		// Preserve candidate priority: the first project config wins.
 		const module = await loader.importFile<Record<string, unknown>>(path);
 		if (module === undefined) continue;
@@ -176,6 +185,23 @@ async function officialTokenamiConfig(
 				tokenamiConfig: normalized,
 				officialConfigPackage: "@tokenami/config",
 			},
+		};
+	}
+	const hasConfigFile = context
+		.listFiles?.(context.root)
+		.some((candidate) =>
+			/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
+		);
+	if (hasConfigFile === true) {
+		return {
+			...fallback,
+			residuals: [
+				{
+					kind: "configuration",
+					text: "Tokenami project configuration",
+					hint: "Tokenami configuration was not found or could not be loaded",
+				},
+			],
 		};
 	}
 	return fallback;

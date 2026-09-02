@@ -97,8 +97,21 @@ async function officialPandaConfig(
 	// async path so the browser catalog can still ship the same adapter without
 	// pulling Panda's filesystem/config implementation into the client bundle.
 	const { loadPandaTheme } = await import(/* @vite-ignore */ "./panda/theme.ts");
-	for (const candidate of ["panda.config.ts", "panda.config.js", "panda.config.mjs"]) {
-		const path = joinDocumentPath(context.root, candidate);
+	const discovered = context
+		.listFiles?.(context.root)
+		.filter((candidate) => /(?:^|[\\/])panda\.config\.(?:ts|tsx|js|mjs|cjs)$/u.test(candidate));
+	const candidates = [
+		"panda.config.ts",
+		"panda.config.tsx",
+		"panda.config.js",
+		"panda.config.mjs",
+		"panda.config.cjs",
+		...(discovered ?? []),
+	];
+	for (const candidate of new Set(candidates)) {
+		const path = candidate.startsWith(context.root)
+			? candidate
+			: joinDocumentPath(context.root, candidate);
 		if (context.readFile(path) === undefined) continue;
 		try {
 			const theme = await loadPandaTheme(path, loader);
@@ -106,6 +119,17 @@ async function officialPandaConfig(
 				...fallback,
 				files: [...fallback.files, path],
 				tokenCatalog: theme.tokenCatalog,
+				...(theme.officialConfigError === undefined
+					? {}
+					: {
+							residuals: [
+								{
+									kind: "configuration" as const,
+									text: "Panda project configuration",
+									hint: theme.officialConfigError,
+								},
+							],
+						}),
 				values: {
 					pandaTheme: theme,
 					officialConfigPackage: "@pandacss/config",

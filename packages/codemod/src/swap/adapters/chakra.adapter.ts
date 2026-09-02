@@ -1,4 +1,9 @@
-import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import {
+	inferSemanticConditionKind,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+	type SemanticConditionKind,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -451,7 +456,15 @@ interface ChakraPackage {
 function chakraConfigCandidate(value: unknown): Record<string, unknown> | undefined {
 	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
 	const candidate = value as Record<string, unknown>;
-	return candidate.theme !== undefined || candidate.conditions !== undefined
+	return [
+		"theme",
+		"conditions",
+		"globalCss",
+		"preflight",
+		"cssVarsPrefix",
+		"cssVarsRoot",
+		"strictTokens",
+	].some((key) => candidate[key] !== undefined)
 		? candidate
 		: undefined;
 }
@@ -469,6 +482,13 @@ async function officialChakraConfig(
 	if (context.root === undefined) return fallback;
 	const chakra = await loader.importPackage<ChakraPackage>("@chakra-ui/react", context.root);
 	if (chakra === undefined) return fallback;
+	const discovered = context
+		.listFiles?.(context.root)
+		.filter((candidate) =>
+			/(?:^|[\\/])(?:src[\\/])?theme(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+				candidate,
+			),
+		);
 	const candidates = [
 		"src/theme.ts",
 		"src/theme.tsx",
@@ -478,9 +498,12 @@ async function officialChakraConfig(
 		"theme.tsx",
 		"theme.js",
 		"theme.mjs",
+		...(discovered ?? []),
 	];
-	for (const candidate of candidates) {
-		const path = joinDocumentPath(context.root, candidate);
+	for (const candidate of new Set(candidates)) {
+		const path = candidate.startsWith(context.root)
+			? candidate
+			: joinDocumentPath(context.root, candidate);
 		// Preserve candidate priority: the first project theme wins.
 		const module = await loader.importFile<Record<string, unknown>>(path);
 		if (module === undefined) continue;
@@ -889,17 +912,30 @@ export function createChakraAdapter(
 						officialChakraConfig(context, moduleLoader),
 				}),
 		sourceObjectOptions: (source, context) => ({
+			...(() => {
+				const configured = context.config.values.chakraConfig as
+					| { readonly conditions?: Record<string, unknown> }
+					| undefined;
+				const conditionValues: Record<string, string> = {};
+				const conditionKinds: Record<string, SemanticConditionKind> = {
+					sm: "named",
+					md: "named",
+					lg: "named",
+					xl: "named",
+					"2xl": "named",
+				};
+				for (const [name, value] of Object.entries(configured?.conditions ?? {})) {
+					if (typeof value !== "string") continue;
+					const normalized = name.replace(/^_/, "");
+					conditionValues[normalized] = value;
+					conditionKinds[normalized] = inferSemanticConditionKind(value);
+				}
+				return { conditionKinds, conditionValues };
+			})(),
 			propertyAliases,
 			objectReferences: objectReferences(source),
 			unwrapNestedObjectKeys: ["css"],
 			propertyValueConditions: true,
-			conditionKinds: {
-				sm: "named",
-				md: "named",
-				lg: "named",
-				xl: "named",
-				"2xl": "named",
-			},
 			valueTransforms: Object.fromEntries(
 				[...new Set([...styleProps, ...Object.keys(propertyAliases)])].map((property) => [
 					property,

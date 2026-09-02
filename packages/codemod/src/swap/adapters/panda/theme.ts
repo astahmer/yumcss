@@ -51,6 +51,8 @@ export interface PandaTheme {
 	customPatterns: ReadonlyMap<string, PandaCustomPattern>;
 	/** Normalized string-valued tokens for downstream target policies. */
 	readonly tokenCatalog?: AdapterTokenCatalog;
+	/** Set when the official config loader failed and the deterministic fallback was used. */
+	readonly officialConfigError?: string;
 }
 
 interface ValueBox {
@@ -186,6 +188,8 @@ function addDefaultTextStyles(textStyles: Map<string, Record<string, unknown>>):
 type AnyModule = Record<string, unknown>;
 
 interface PandaConfigShape {
+	presets?: unknown;
+	plugins?: unknown;
 	theme?: { extend?: Record<string, unknown>; tokens?: Record<string, unknown> } & Record<
 		string,
 		unknown
@@ -204,8 +208,18 @@ export async function loadPandaTheme(
 	configPath: string,
 	loader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
 ): Promise<PandaTheme> {
-	const official = await loadPandaThemeByOfficialPackage(configPath, loader);
-	if (official !== undefined) return official;
+	try {
+		const official = await loadPandaThemeByOfficialPackage(configPath, loader);
+		if (official !== undefined) return official;
+	} catch (error) {
+		const fallback = await loadPandaThemeByImport(configPath).catch(() =>
+			loadPandaThemeFromDisk(configPath),
+		);
+		return {
+			...fallback,
+			officialConfigError: error instanceof Error ? error.message : String(error),
+		};
+	}
 	try {
 		return await loadPandaThemeByImport(configPath);
 	} catch {
@@ -223,9 +237,15 @@ async function loadPandaThemeByOfficialPackage(
 	if (packageModule?.loadConfig === undefined) return undefined;
 	try {
 		const result = await packageModule.loadConfig({ cwd: dirname(configPath), file: configPath });
-		return pandaThemeFromConfig(result.config);
-	} catch {
-		return undefined;
+		// The official loader returns Panda's effective config, including preset and
+		// plugin decisions. Never inject built-in values on top of that result:
+		// an explicit `presets: []` or feature-removing plugin must remain authoritative.
+		return pandaThemeFromConfig(result.config, false);
+	} catch (error) {
+		throw new Error(
+			`official Panda config loading failed: ${error instanceof Error ? error.message : String(error)}`,
+			{ cause: error },
+		);
 	}
 }
 
@@ -237,10 +257,13 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	// Panda's theme; otherwise every generated migration silently gets an
 	// empty preset.
 	const unwrapped = config?.default ?? config;
-	return pandaThemeFromConfig(unwrapped);
+	return pandaThemeFromConfig(unwrapped, unwrapped?.presets === undefined);
 }
 
-function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaTheme {
+function pandaThemeFromConfig(
+	unwrapped: PandaConfigShape | undefined,
+	includeBuiltInDefaults = false,
+): PandaTheme {
 	const theme = unwrapped?.theme ?? {};
 	const extend = theme.extend ?? theme;
 	const tokens: Record<string, Record<string, unknown>> = {};
@@ -268,7 +291,7 @@ function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaThe
 	const textStyles = new Map<string, Record<string, unknown>>();
 	const tsSection = extend["textStyles"];
 	if (isPlainObject(tsSection)) collectTextStyles(tsSection, [], textStyles);
-	addDefaultTextStyles(textStyles);
+	if (includeBuiltInDefaults) addDefaultTextStyles(textStyles);
 	const customPatterns = new Map<string, PandaCustomPattern>();
 	const patternSection = unwrapped?.patterns?.extend ?? unwrapped?.patterns;
 	if (isPlainObject(patternSection)) {

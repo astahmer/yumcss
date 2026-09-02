@@ -179,13 +179,22 @@ that root. The migration CLI and other project-aware runners use
 deterministic fast path for callers that already provide config or do not need
 host evaluation.
 
-| Ecosystem | Official integration              | What it contributes                                                  |
-| --------- | --------------------------------- | -------------------------------------------------------------------- |
-| Panda     | `@pandacss/config`                | resolved config, presets, plugins, merged theme/conditions/patterns  |
-| Tailwind  | `@tailwindcss/node`               | loaded design system and generated utility/token view                |
-| UnoCSS    | `@unocss/config` + `@unocss/core` | project config, presets, rules, shortcuts, and generated utility CSS |
-| Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                   |
-| Tokenami  | `@tokenami/config`                | normalized project config and aliases                                |
+The config context also exposes an optional `listFiles(root)` port. It is a
+composition-root concern: the CLI/Vite host supplies the project workspace,
+while each adapter owns discovery rules for its own graph. This keeps filename
+guesses out of the migration runner and lets CSS-first systems discover entries
+such as `src/index.css` or imported local files. If a project-aware run has a
+file list but no usable official entry, the adapter returns a configuration
+residual instead of silently claiming that its default resolver represents the
+project.
+
+| Ecosystem | Official integration              | What it contributes                                                                                               |
+| --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Panda     | `@pandacss/config`                | effective config, presets, plugins, merged theme/conditions/patterns; loader failures remain visible as residuals |
+| Tailwind  | `@tailwindcss/node`               | loaded design system and generated utility/token view                                                             |
+| UnoCSS    | `@unocss/config` + `@unocss/core` | project config, presets, rules, shortcuts, and generated utility CSS                                              |
+| Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                                                                |
+| Tokenami  | `@tokenami/config`                | normalized project config and aliases                                                                             |
 
 Pandwind is the target-side exception: its async adapter loader discovers the
 project's generated `pandwind.interop.json` and `bridge.ts`, then imports the
@@ -210,6 +219,14 @@ The assertions require conversion, no residuals, target-native spelling, and
 absence of the replaced raw value. Adapters without an official design-system
 loader must preserve authored expressions or report a structured residual; the
 core never invents a target token path from a matching string alone.
+
+Tailwind and UnoCSS generated candidate output is parsed with a structural CSS
+parser. Flat declaration splitting is unsafe because values may contain
+semicolons and because the official engines wrap candidates in media,
+supports, container, layer, or selector rules. The parser retains only
+candidate style rules; global/keyframe/font-face side effects are not coerced
+into a style utility. Their rule-level migration must be represented by the
+semantic program or reported as a residual.
 
 ## Boundaries
 
