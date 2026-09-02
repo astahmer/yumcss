@@ -1,7 +1,9 @@
 # Runtime benchmarks — measured, not guessed
 
-Last measured: **2026-09-01** for the runtime hot-path pass and **2026-08-23** for `cx()` (v3 whole-input cache — see the
-section below), **2026-08-22** for the competitor table. Local macOS (arm64),
+Last measured: **2026-09-02** for the historical optimization replay and
+**2026-09-01** for the runtime hot-path pass, **2026-08-23** for `cx()` (v3
+whole-input cache — see the section below), **2026-08-22** for the competitor
+table. Local macOS (arm64),
 Node v24.19.0. Entries were bundled with esbuild (node platform, no minify —
 irrelevant to timing) and run in-process: warmup, then interleaved rounds
 (rotated order) of ~250–300 ms samples with batched clock checks; the table
@@ -164,6 +166,74 @@ The earlier runtime-sheet cache remains part of the same pass:
 These optimizations preserve the static-first delivery path: literal calls are
 still erased by the Vite compiler, so the runtime bundle is only paid for
 dynamic or unsupported calls.
+
+The package-level runtime throughput record lives in
+[`packages/pandwind/tests/snapshots/runtime-benchmark.json.snap`](./packages/pandwind/tests/snapshots/runtime-benchmark.json.snap)
+and is exercised by `packages/pandwind/tests/runtime-benchmark.test.ts`. It
+records the current `css()`, `tw()`, and `cx()` median/p10/p90 measurements.
+Because throughput is not deterministic like bundle bytes, normal runs compare
+against the recorded median with a broad slowdown floor and retain ordinary
+assertions for output correctness. Refresh it deliberately after a meaningful
+runtime change with:
+
+```sh
+cd packages/pandwind
+pnpm test:benchmarks -u
+```
+
+The historical replay remains a manual evidence tool; it is intentionally not
+called by this fast package test.
+
+## Historical optimization replay — 2026-09-02
+
+The recent optimization chain was replayed from the revision immediately before
+the first runtime optimization through every perf checkpoint. The committed
+harness is [`scripts/benchmark-perf-history.mts`](./scripts/benchmark-perf-history.mts).
+It creates disposable Git worktrees at pinned commit IDs, links only the local
+dependency store, runs the same probes, and removes each worktree in a `finally`
+block. It does not move JJ workspaces or modify the source tree.
+
+This is a bounded local replay: five timed samples per probe on macOS arm64,
+Node v24.19.0. Values are ops/sec and should be compared within this table,
+not treated as portable CI performance numbers. The probes are deliberately
+named after the affected mechanism:
+
+- `tokens` — repeated immutable stylesheet token serialization;
+- `sheet` — repeated stylesheet processing through the path canonicalizer;
+- `pruner` — runtime CSS AST pruning;
+- `edit` — one source edit through the codemod source-pass primitive;
+- `engine` — repeated resolution of one Tailwind engine miss;
+- `tw`, `cx`, and `css` — control paths for unrelated runtime behavior.
+
+| checkpoint | css | tw | cx | sheet | tokens | pruner | edit | engine |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| baseline (`b33a64c`) | 368K | 1.30M | 6.19M | 429K | 96K | 28K | 20.7M | 731K |
+| `perf/runtime` (`a8d5baf`) | 377K | 1.24M | 6.72M | 425K | **183.2M** | 28K | 19.5M | 581K |
+| `perf/tw` (`2506a5f`) | 372K | **1.06M** | 6.61M | 445K | 178.1M | 28K | 17.8M | 856K |
+| `perf/codemod-edit` (`1e2eaeb`) | 381K | 1.21M | 7.34M | 444K | 185.9M | 29K | **87.2M** | 776K |
+| `perf/codemod-engine` (`b030d01`) | 379K | 1.23M | 7.43M | 450K | 187.2M | 30K | 76.9M | **56.0M** |
+| `perf/css` (`f03e586`) | 381K | 1.23M | 7.60M | **529K** | 190.9M | 30K | 76.3M | 91.8M |
+| `perf/vite` (`fa0dea2`) | 381K | 1.22M | 7.50M | 530K | 183.8M | **49K** | 78.1M | 62.4M |
+| `docs/perf` (`8034414`) | 388K | 1.24M | 7.45M | 533K | 187.4M | 46K | 75.9M | 88.6M |
+
+The attributable deltas are:
+
+| revision | measured result |
+| --- | --- |
+| `perf/runtime` | Immutable token serialization: **96K → 183M ops/sec (~1,900×)**. This is the expected cache hit after the first call; the other columns are controls. |
+| `perf/tw` | Conflict-free compilation: **1.30M → 1.06M ops/sec** versus the immediately previous point (~18% faster). |
+| `perf/codemod-edit` | One-edit source rewrite: **17.8M → 87.2M ops/sec (~4.9×)**. |
+| `perf/codemod-engine` | Repeated engine miss lookup: **776K → 56.0M ops/sec (~72×)**. |
+| `perf/css` | Stylesheet path processing: **450K → 529K ops/sec (~18% faster)**. |
+| `perf/vite` | Runtime-pruner traversal: **30K → 49K ops/sec (~63% faster)**. |
+| `docs/perf` | Documentation/comment-only checkpoint; no algorithmic gain is claimed. The small movement is measurement noise. |
+
+The `css`, `cx`, and unrelated columns are controls, not claims that those
+revisions improved those APIs. The two large cache results are intentionally
+reported separately from cold/first-render behavior: they describe repeated
+steady-state calls, while cache growth and cold misses remain bounded by the
+existing runtime and engine cache limits. The harness is evidence tooling, not
+a new production size or throughput gate.
 
 ## Re-running
 
