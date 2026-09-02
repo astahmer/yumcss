@@ -33,6 +33,8 @@ Wave 5b is complete for migration result bindings. Styled/component host decisio
 
 Wave 5c is complete for Panda factory-element discovery. `<panda.*>` opening tags, attributes, spread props, literal values, and exact opening ranges now come from the shared Oxc AST. The existing edit engine remains responsible only for target-specific output and source-range edits; malformed or unsupported nodes fail closed. Focused Panda migration tests include AST-shape snapshots and assertions for literal and spread cases.
 
+Wave 5d is complete for shared JSX host decisions across script and framework-embedded documents. `SourceBindings` now indexes component uses, attribute expression uses, and embedded Vue script/template islands with source offsets. Adapter migration consumes those port methods instead of regex checks for host/component usage. The focused source-binding suite covers TSX aliases, shadowing, tagged templates, Vue SFCs, inline snapshots, and conservative malformed-source handling; the migration host matrix remains green across Vue/Solid/React cases.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.
