@@ -44,19 +44,28 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			for (const argument of call.arguments) {
 				const literal = evalLiteral(argument as never);
 				if (typeof literal !== "object" || literal === null) continue;
-				const before = code.slice(0, call.start);
-				const provenance: CssSourceProvenance = {
-					file: id,
-					start: call.start,
-					end: call.end,
-					line: before.split("\n").length,
-					column: call.start - (before.lastIndexOf("\n") + 1) + 1,
-					callKind: kind,
-				};
-				sources.push({
-					style: resolveDesignStyle(literal as Record<string, unknown>, this.preset.tokens),
-					provenance,
-				});
+				const styles =
+					kind === "css.group"
+						? Object.values(literal).filter(
+								(value): value is Record<string, unknown> =>
+									typeof value === "object" && value !== null,
+							)
+						: [literal as Record<string, unknown>];
+				for (const style of styles) {
+					const before = code.slice(0, call.start);
+					const provenance: CssSourceProvenance = {
+						file: id,
+						start: call.start,
+						end: call.end,
+						line: before.split("\n").length,
+						column: call.start - (before.lastIndexOf("\n") + 1) + 1,
+						callKind: kind,
+					};
+					sources.push({
+						style: resolveDesignStyle(style, this.preset.tokens),
+						provenance,
+					});
+				}
 			}
 		});
 		for (const pattern of this.patterns) sources.push(...pattern.extract(code, id, this.preset));
@@ -87,7 +96,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		const member = (callee as { property?: { name?: string } | null }).property?.name;
 		return object?.type === "Identifier" &&
 			names.has((object as { name?: string }).name ?? "") &&
-			(member === "class" || member === "raw")
+			(member === "class" || member === "raw" || member === "group")
 			? `css.${member}`
 			: undefined;
 	}

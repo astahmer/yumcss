@@ -78,7 +78,7 @@ const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boole
 	return (
 		object?.type === "Identifier" &&
 		names.has((object as { name?: string }).name ?? "") &&
-		(property?.name === "class" || property?.name === "raw")
+		(property?.name === "class" || property?.name === "raw" || property?.name === "group")
 	);
 };
 
@@ -91,7 +91,7 @@ const callKind = (
 	}
 	if (!isMemberCall(callee, names)) return undefined;
 	const member = memberName(callee);
-	return member === "class" || member === "raw" ? `css.${member}` : undefined;
+	return member === "class" || member === "raw" || member === "group" ? `css.${member}` : undefined;
 };
 
 const isObjectLiteral = (argument: unknown): boolean => {

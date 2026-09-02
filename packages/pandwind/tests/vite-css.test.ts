@@ -516,6 +516,52 @@ test("default stylesheet mode rewrites literal css calls", () => {
 	expect(result.code).not.toContain("css({");
 });
 
+test("static extraction includes and rewrites literal css groups", () => {
+	const dir = makeProject({
+		"src/css.ts": 'import { createCss } from "pandwind/css"; export const css = createCss();',
+		"src/app.tsx": `
+			import { css } from "./css";
+			import "pandwind:css";
+			export const styles = css.group({
+				button: { color: "red", padding: "1rem" },
+				label: { fontWeight: 600 },
+			});
+		`,
+	});
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const source = readFileSync(join(dir, "src/app.tsx"), "utf8");
+		const transformed = (plugin.transform as (code: string, id: string) => { code: string } | null)(
+			source,
+			join(dir, "src/app.tsx"),
+		);
+		const generated = loadGenerated(plugin);
+
+		expect(transformed?.code).not.toContain("css.group(");
+		expect(transformed?.code).toContain('"button"');
+		expect(generated).toContain("color:red");
+		expect(generated).toContain("padding:1rem");
+		expect(generated).toContain("font-weight:600");
+		expect({
+			transformed: transformed?.code,
+			rules: relevantCss(generated, ["color:red", "padding:1rem", "font-weight:600"]),
+		}).toMatchInlineSnapshot(`
+			{
+			  "rules": ".\\31 macb5i{padding:1rem}
+			.\\31 nmpgqu{color:red}
+			.\\31 r2drmp{font-weight:600}",
+			  "transformed": "
+						import { css } from "./css";
+						import "pandwind:css";
+						export const styles = {"button":{"color":"1nmpgqu","padding":"1macb5i"},"label":{"fontWeight":"1r2drmp"}};
+					",
+			}
+		`);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
 test("static direct factory calls are marked pure for bundler elimination", () => {
 	const code = `
 		import { createCss } from "../../src/css/index.ts";

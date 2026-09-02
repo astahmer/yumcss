@@ -36,7 +36,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				if (node.type !== "CallExpression") return;
 				const call = node as CallNode;
 				const callee = call.callee;
-				let kind: "map" | "class" | undefined;
+				let kind: "map" | "class" | "group" | undefined;
 				if (callee?.type === "Identifier" && names.has((callee as { name?: string }).name ?? ""))
 					kind = "map";
 				else if (callee?.type === "MemberExpression") {
@@ -45,11 +45,25 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					if (
 						object?.type === "Identifier" &&
 						names.has((object as { name?: string }).name ?? "") &&
-						member === "class"
+						(member === "class" || member === "group")
 					)
-						kind = "class";
+						kind = member as "class" | "group";
 				}
 				if (kind === undefined || call.arguments.length === 0) return;
+				if (kind === "group") {
+					const group = literalGroup(call.arguments[0]);
+					if (group === undefined) return;
+					try {
+						edits.push({
+							start: call.start,
+							end: call.end,
+							text: JSON.stringify(engine.group(group)),
+						});
+					} catch {
+						/* dynamic/unrepresentable groups stay on the runtime path */
+					}
+					return;
+				}
 				const styles = call.arguments.flatMap((argument) => {
 					const literal = evalLiteral(argument as never);
 					return typeof literal === "object" && literal !== null
@@ -80,6 +94,16 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		return { code: output, inlined: edits.length };
 	}
 }
+
+const literalGroup = (argument: unknown): Record<string, Record<string, unknown>> | undefined => {
+	const value = evalLiteral(argument as never);
+	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
+	const entries = Object.entries(value).filter(
+		(entry): entry is [string, Record<string, unknown>] =>
+			typeof entry[1] === "object" && entry[1] !== null,
+	);
+	return entries.length === Object.keys(value).length ? Object.fromEntries(entries) : undefined;
+};
 
 const CSS_FACTORY_NAMES = new Set(["createCss"]);
 
