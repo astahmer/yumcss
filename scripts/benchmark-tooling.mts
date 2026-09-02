@@ -143,7 +143,7 @@ async function benchmarkAnalyzer(repository: {
 }
 
 async function benchmarkCodemod(inputBytes: number): Promise<Measurement> {
-	const source = `import { css } from "styled-components";\nexport const Card = css.div\`color: red; padding: 1rem;\`;`;
+	const source = `import styled from "styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });`;
 	let latest = 0;
 	const run = () => {
 		const result = runAdapterMigration(source, {

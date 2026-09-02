@@ -65,14 +65,45 @@ const nodeFileSystem: SourceWorkspaceFileSystem = {
 		}).filter((entry): entry is string => typeof entry === "string"),
 };
 
+type WorkspaceCache = Map<string, SourceWorkspaceFile>;
+
+/**
+ * Default workspaces are short-lived composition objects created by several
+ * consumers. Keep their scan result cache outside the object so analyzer,
+ * codemod, collection, and bundler paths can reuse an unchanged document.
+ * The source itself is part of the key check: mtime is only metadata and is
+ * not trusted for correctness when a file changes between reads.
+ */
+const sharedCaches = new WeakMap<object, WeakMap<object, WorkspaceCache>>();
+const SHARED_CACHE_LIMIT = 4096;
+
+function cacheFor(
+	fileSystem: SourceWorkspaceFileSystem,
+	scanner: SourceScannerService,
+): WorkspaceCache {
+	let scannerCaches = sharedCaches.get(fileSystem as object);
+	if (scannerCaches === undefined) {
+		scannerCaches = new WeakMap<object, WorkspaceCache>();
+		sharedCaches.set(fileSystem as object, scannerCaches);
+	}
+	let cache = scannerCaches.get(scanner as object);
+	if (cache === undefined) {
+		cache = new Map<string, SourceWorkspaceFile>();
+		scannerCaches.set(scanner as object, cache);
+	}
+	return cache;
+}
+
 class NodeSourceWorkspace implements SourceWorkspace {
 	readonly schema = SOURCE_WORKSPACE_SCHEMA;
 	private readonly fileSystem: SourceWorkspaceFileSystem;
 	private readonly scanner: SourceScannerService;
+	private readonly cache: WorkspaceCache;
 
 	constructor(options: SourceWorkspaceOptions = {}) {
 		this.fileSystem = options.fileSystem ?? nodeFileSystem;
 		this.scanner = options.scanner ?? SOURCE_SCANNER_SERVICE;
+		this.cache = cacheFor(this.fileSystem, this.scanner);
 	}
 
 	private expandPattern(pattern: string, root: string): readonly string[] {
@@ -126,9 +157,18 @@ class NodeSourceWorkspace implements SourceWorkspace {
 		for (const path of paths) {
 			try {
 				const source = this.fileSystem.readFile(path);
+				const cached = this.cache.get(path);
+				if (cached?.source === source) {
+					files.push(cached);
+					continue;
+				}
 				const mtimeMs = this.fileSystem.stat(path).mtimeMs;
 				const document = { file: path, source } satisfies SourceDocument;
-				files.push({ path, source, mtimeMs, document, scan: this.scanner.scan(document) });
+				const entry = { path, source, mtimeMs, document, scan: this.scanner.scan(document) };
+				if (this.cache.size >= SHARED_CACHE_LIMIT)
+					this.cache.delete(this.cache.keys().next().value!);
+				this.cache.set(path, entry);
+				files.push(entry);
 			} catch {
 				// Discovery is best-effort; higher-level reports own omission diagnostics.
 			}

@@ -80,4 +80,82 @@ describe("source workspace", () => {
 
 		expect(documents.map(({ path, scan }) => [path, scan.framework])).toEqual([[file, "custom"]]);
 	});
+
+	test("shares unchanged scan results across short-lived workspace façades", () => {
+		const root = "/virtual-cached-project";
+		const file = `${root}/Card.virtual`;
+		let scans = 0;
+		const fileSystem: SourceWorkspaceFileSystem = {
+			readFile: (path) => (path === file ? "export const Card = 1;" : ""),
+			stat: (path) => ({
+				isFile: () => path === file,
+				isDirectory: () => path === root,
+				mtimeMs: 1,
+			}),
+			glob: () => ["Card.virtual"],
+		};
+		const scanner = {
+			registry: {} as SourceScannerService["registry"],
+			languageForFile: () => "typescript" as const,
+			isSupportedFile: () => true,
+			isScriptFile: () => true,
+			isTypeScriptFile: () => true,
+			scan: (document) => {
+				scans += 1;
+				return {
+					document,
+					language: "typescript" as const,
+					excluded: [],
+					diagnostics: [],
+					isExcluded: () => false,
+				};
+			},
+			parse: () => undefined as never,
+		} satisfies SourceScannerService;
+
+		const first = createSourceWorkspace({ fileSystem, scanner }).collect(["**/*"], root);
+		const second = createSourceWorkspace({ fileSystem, scanner }).collect(["**/*"], root);
+
+		expect(first).toHaveLength(1);
+		expect(second).toHaveLength(1);
+		expect(scans).toBe(1);
+		expect(second[0]).toBe(first[0]);
+	});
+
+	test("invalidates a shared entry when the exact source changes", () => {
+		const root = "/virtual-changing-project";
+		const file = `${root}/Card.virtual`;
+		let source = "export const Card = 1;";
+		let scans = 0;
+		const fileSystem: SourceWorkspaceFileSystem = {
+			readFile: () => source,
+			stat: () => ({ isFile: () => true, isDirectory: () => false }),
+			glob: () => ["Card.virtual"],
+		};
+		const scanner = {
+			registry: {} as SourceScannerService["registry"],
+			languageForFile: () => "typescript" as const,
+			isSupportedFile: () => true,
+			isScriptFile: () => true,
+			isTypeScriptFile: () => true,
+			scan: (document) => {
+				scans += 1;
+				return {
+					document,
+					language: "typescript" as const,
+					excluded: [],
+					diagnostics: [],
+					isExcluded: () => false,
+				};
+			},
+			parse: () => undefined as never,
+		} satisfies SourceScannerService;
+		const workspace = createSourceWorkspace({ fileSystem, scanner });
+
+		workspace.collect(["**/*"], root);
+		source = "export const Card = 2;";
+		workspace.collect(["**/*"], root);
+
+		expect(scans).toBe(2);
+	});
 });
