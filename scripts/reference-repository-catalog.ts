@@ -1,4 +1,4 @@
-import { createRealRepositoryCorpus } from "../packages/codemod/src/swap/real-repository-corpus.ts";
+import { createRealRepositoryCorpus } from "pandwind-codemod/swap/corpus";
 
 export interface PinnedReferenceRepository {
 	readonly id: string;

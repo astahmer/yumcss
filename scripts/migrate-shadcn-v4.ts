@@ -11,16 +11,16 @@ import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/pr
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
-import { buildPandwindInteropArtifact } from "../packages/pandwind/src/tw/interop-artifact.ts";
-import { generateUtilityBridge } from "../packages/pandwind/src/tw/bridge.ts";
-import { generateDesignSystem } from "../packages/pandwind/src/tw/generate-types.ts";
-import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
-import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
-import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
-import { pandwindPreset } from "../packages/pandwind/src/preset/index.ts";
-import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
-import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
-import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
+import { buildPandwindInteropArtifact } from "pandwind/tw/interop";
+import { generateUtilityBridge } from "pandwind/codegen/bridge";
+import { generateDesignSystem } from "pandwind/codegen/types";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { createStylesheet } from "pandwind/css/create-stylesheet";
+import { createCssExtractionService } from "pandwind/vite/css-extract";
+import { pandwindPreset } from "pandwind/preset";
+import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
+import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);

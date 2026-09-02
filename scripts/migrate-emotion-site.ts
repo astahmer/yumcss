@@ -11,11 +11,11 @@ import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
-} from "../packages/codemod/src/swap/index.ts";
-import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.ts";
-import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
-import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
-import type { StyleObject } from "../packages/pandwind/src/types/typings.ts";
+} from "pandwind-codemod/swap";
+import type { AdapterMigrationResult } from "pandwind-codemod/swap";
+import { createCssExtractionService } from "pandwind/vite/css-extract";
+import { createStylesheet } from "pandwind/css/create-stylesheet";
+import type { StyleObject } from "pandwind/types/typings";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum EmotionSiteMigrationLane {
@@ -296,6 +296,9 @@ async function packagePandwind(outputRoot: string): Promise<void> {
 	const packageRoot = join(outputRoot, "site/node_modules/pandwind");
 	await rm(packageRoot, { recursive: true, force: true });
 	await mkdir(packageRoot, { recursive: true });
+	// This is an intentional package-assembly boundary: the proof materializer
+	// bundles the current local package into the disposable output so the
+	// cloned reference repository remains reproducible without vendoring it.
 	const entries = {
 		css: "packages/pandwind/src/css/index.ts",
 		runtime: "packages/pandwind/src/css/runtime.ts",

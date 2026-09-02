@@ -14,7 +14,7 @@ import {
 	requiredAdapterCapabilities,
 	type AdapterCoverageEvidence,
 	type AdapterContractFixture,
-} from "../packages/codemod/src/swap/index.ts";
+} from "pandwind-codemod/swap";
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 import { completeAdapterMatrixFixtures } from "../packages/codemod/proof/adapter-matrix-fixtures.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";

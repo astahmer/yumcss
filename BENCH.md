@@ -267,6 +267,7 @@ For pandwind itself, `packages/pandwind/tests/runtime-size.test.ts` is the
 repo-owned size gate, `packages/pandwind/cx-bench.mts` is the repo-owned
 cx microbench (`nub ../../packages/pandwind/cx-bench.mts` from
 `apps/example`, so the generated config in `apps/example/src/tw.ts`
-resolves), and the benchmark
-entries import `packages/pandwind/src/*` directly plus the generated config
-in `apps/example/src/tw.ts`.
+resolves), and the benchmark entries import the published `pandwind/*`
+subpaths plus the generated config in `apps/example/src/tw.ts`. The only
+source-addressed imports in the perf-history harness are intentional: each
+run loads the exact historical worktree revision being measured.

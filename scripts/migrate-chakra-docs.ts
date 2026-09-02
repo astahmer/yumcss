@@ -9,9 +9,9 @@
 import { execFileSync } from "node:child_process";
 import { cp, mkdir, readFile, readdir, symlink, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { CodemodAdapterId, runAdapterMigrationAsync } from "../packages/codemod/src/swap/index.ts";
-import type { AdapterMigrationResult } from "../packages/codemod/src/swap/index.ts";
-import { relativeModuleImport } from "../packages/codemod/src/shared.ts";
+import { CodemodAdapterId, runAdapterMigrationAsync } from "pandwind-codemod/swap";
+import type { AdapterMigrationResult } from "pandwind-codemod/swap";
+import { relativeModuleImport } from "pandwind-codemod/migration/shared";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum ChakraDocsLane {

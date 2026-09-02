@@ -1,3 +1,4 @@
+#!/usr/bin/env nub
 /**
  * pandwind bridge codegen — generates `bridge.ts` for the tailwind css()
  * adapter.
@@ -9,7 +10,7 @@
  * can emit — literal values (flex, relative, ...) always stay.
  *
  * Usage:
- *   tsx generate-bridge.ts <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
+ *   nub exec pandwind-tw-bridge <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
  *
  * Example:
  *   tsx generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts

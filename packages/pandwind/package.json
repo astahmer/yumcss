@@ -7,6 +7,12 @@
 		"url": "git+https://github.com/astahmer/pandwind.git",
 		"directory": "packages/pandwind"
 	},
+	"bin": {
+		"pandwind-tw-bridge": "./src/tw/generate-bridge.ts",
+		"pandwind-tw-codegen": "./src/tw/generate-types.ts",
+		"pandwind-tw-collect": "./src/tw/collect.ts",
+		"pandwind-tw-prune": "./src/tw/prune-theme.ts"
+	},
 	"files": [
 		"src",
 		"README.md",
@@ -46,6 +52,7 @@
 		"./codegen/types": "./src/tw/generate-types.ts",
 		"./codegen/theme": "./src/tw/generate-theme.ts",
 		"./codegen/collect": "./src/tw/collect.ts",
+		"./codegen/bridge": "./src/tw/bridge.ts",
 		"./react-native": "./src/rn.ts",
 		"./types/typings": "./src/types/typings.ts",
 		"./opentui": "./src/opentui.ts",

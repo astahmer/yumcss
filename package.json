@@ -49,6 +49,8 @@
 		"knip": "^6.32.3",
 		"oxfmt": "0.63.0",
 		"oxlint": "1.78.0",
+		"pandwind": "workspace:*",
+		"pandwind-codemod": "workspace:*",
 		"pixelmatch": "7.2.0",
 		"playwright-bdd": "9.2.0",
 		"playwright-core": "1.61.1",

@@ -8,7 +8,15 @@
  */
 import { strict as assert } from "node:assert";
 import { createRequire } from "node:module";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	realpathSync,
+	rmSync,
+	symlinkSync,
+	utimesSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { createServer } from "vite";
@@ -21,7 +29,7 @@ const entry = join(root, "src/app.tsx");
 const browserRoot = new URL("../node_modules/", import.meta.url);
 const requireFromExample = createRequire(browserRoot);
 const chromium = requireFromExample("playwright-core").chromium;
-const pandwindRoot = new URL("../../../packages/pandwind/src/", import.meta.url).pathname;
+const pandwindPackageRoot = new URL("../../../packages/pandwind/", import.meta.url).pathname;
 const reactRoot = dirname(requireFromExample.resolve("react"));
 const reactDomRoot = dirname(requireFromExample.resolve("react-dom"));
 
@@ -76,13 +84,14 @@ const waitForServerUrl = async (server) => {
 let server;
 let browser;
 try {
+	mkdirSync(join(root, "node_modules"), { recursive: true });
+	symlinkSync(pandwindPackageRoot, join(root, "node_modules/pandwind"), "dir");
 	writeFixture("$blue-500");
 	server = await createServer({
 		root,
 		plugins: [pandwindCssVite(examplePreset, { root }), react()],
 		resolve: {
 			alias: [
-				{ find: "pandwind", replacement: pandwindRoot },
 				{ find: "react-dom", replacement: reactDomRoot },
 				{ find: "react", replacement: reactRoot },
 			],
@@ -91,7 +100,7 @@ try {
 			host: "127.0.0.1",
 			port: 0,
 			strictPort: false,
-			fs: { allow: [root, pandwindRoot, reactRoot, reactDomRoot] },
+			fs: { allow: [root, pandwindPackageRoot, reactRoot, reactDomRoot] },
 		},
 	});
 	await server.listen();

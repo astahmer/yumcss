@@ -3,7 +3,7 @@ import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
 import type { ExampleDef } from "../lib/examples.ts";
 import { evalPlayground } from "../lib/eval-playground.ts";
-import { resolveDesignStyle } from "../../../../packages/pandwind/src/design/resolve.ts";
+import { resolveDesignStyle } from "pandwind/design/resolve";
 import { css as designCss } from "../css.ts";
 import { examplePreset } from "pandwind/preset";
 import { EditorPane } from "./EditorPane.tsx";

@@ -1,6 +1,6 @@
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CodemodAdapterId } from "../packages/codemod/src/swap/index.ts";
+import { CodemodAdapterId } from "pandwind-codemod/swap";
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 
 const routeDirectory = resolve(import.meta.dirname, "../packages/codemod/tests/routes");

@@ -12,11 +12,11 @@ import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
-import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
-import { mapClassList } from "../packages/codemod/src/map.ts";
-import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
-import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
-import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
+import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
+import { mapClassList } from "pandwind-codemod/migration/map";
+import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
+import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);

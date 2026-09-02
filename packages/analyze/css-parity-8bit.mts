@@ -95,7 +95,7 @@ const migFiles = (globSync(`${MIG}/**/*.tsx`) as string[]).toSorted();
 console.log("collecting candidates…");
 const T_orig = [...staticClassStrings(origFiles)];
 // migrated side: evaluated tw() calls + every static string that survived
-const { collectTwClasses } = await import("../pandwind/src/tw/collect.ts");
+const { collectTwClasses } = await import("pandwind/tw/collect");
 const T_tw = await collectTwClasses(migFiles, TW_ENTRY);
 const T_verbatim = staticClassStrings(migFiles);
 const T_after = [...new Set([...T_tw, ...T_verbatim])];

@@ -51,7 +51,13 @@ export const flattenNested = (
 };
 
 export const importModule = async (path: string): Promise<Record<string, unknown>> =>
-	(await import(pathToFileURL(path).href)) as Record<string, unknown>;
+	(await import(isPackageSpecifier(path) ? path : pathToFileURL(path).href)) as Record<
+		string,
+		unknown
+	>;
+
+const isPackageSpecifier = (path: string): boolean =>
+	!path.startsWith("/") && !path.startsWith(".");
 
 export const findPresetTokens = (
 	module: Record<string, unknown>,

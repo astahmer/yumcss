@@ -128,7 +128,7 @@ which concrete module to import or grow a switch statement in a central runner.
   TypeScript/ESM utilities, and `nub exec <bin>` for local binaries. Do not add
   `tsx`, `node --import tsx`, or direct `pnpm exec` wrappers back to active
   scripts. `pnpm-lock.yaml` remains the package-manager lockfile; `nub
-  install` may update it compatibly. CI must provision Nub before invoking
+install` may update it compatibly. CI must provision Nub before invoking
   repository scripts. File-language values such as `.tsx` and `lang: "tsx"`
   are source-format metadata and are not tooling references.
 - Official config loaders should expose custom design values through the
@@ -189,6 +189,14 @@ which concrete module to import or grow a switch statement in a central runner.
 - CLI files are composition roots: argument parsing, filesystem providers,
   registry assembly, and reporting are allowed there. Parsing, lowering,
   framework rewrites, and target emission are not.
+- Code outside a package's own source tree must consume that package through
+  its declared package name and subpath exports. Do not import
+  `packages/*/src/*` or `node_modules/*/src/*` from applications, scripts,
+  tests, examples, or documentation. Build-time commands use the package's
+  declared binaries (for example, `pandwind-tw-codegen`) rather than reaching
+  into source files. Direct source paths are allowed only when a harness must
+  load an exact historical worktree revision or intentionally bundles a
+  package from the current repository; those sites must document that reason.
 - A virtual bundler migration is a composition root over the existing migration
   use case, not a second adapter engine. It may transform eligible source text
   in memory and serve adapter-generated files through the host's virtual-module

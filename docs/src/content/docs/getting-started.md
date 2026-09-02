@@ -23,7 +23,7 @@ the complete compiler, runtime, adapter, and backend surface.
 
 Define your design system once in `src/preset.ts` — tokens, radii,
 conditions. See
-[`packages/pandwind/src/preset/example-preset.ts`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/src/preset/example-preset.ts)
+[`pandwind/preset/example-preset`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/src/preset/example-preset.ts)
 for a complete example using `defineTokens` / `defineTheme` / `definePreset`.
 
 ## 2. Codegen
@@ -35,9 +35,9 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "nub node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "nub node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "nub node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens ./src/preset.ts",
+		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
@@ -110,7 +110,8 @@ a visible import decision:
 Runtime subpaths: `pandwind/css`, `pandwind/tw`, `pandwind/cx`,
 `pandwind/preset`, `pandwind/design`, `pandwind/vite`; generic bundler
 adapters under `pandwind/unplugin`; build-time codegen helpers under
-`pandwind/codegen/{types,theme,collect}`; non-web backends
+`pandwind/codegen/{types,theme,collect,bridge}` and the `pandwind-tw-*`
+binaries; non-web backends
 `pandwind/react-native`, `pandwind/opentui`, plus the render-agnostic
 `pandwind/stack` (+ `pandwind/stack/react`). `generate-bridge` stays CLI-only
 (it executes on import).

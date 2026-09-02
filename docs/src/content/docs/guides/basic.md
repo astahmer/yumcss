@@ -43,8 +43,8 @@ Add scripts to `package.json`:
 ```json
 {
 	"scripts": {
-		"tw:codegen": "nub node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src",
-		"tw:scan": "nub node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src",
+		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	}
 }
 ```

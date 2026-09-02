@@ -5,11 +5,10 @@ import { transformSync } from "esbuild";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { rollup, type Plugin } from "rollup";
 import { chromium } from "playwright-core";
-import { examplePreset } from "../../../packages/pandwind/src/preset/example-preset.ts";
-import { pandwindRollupCss } from "../../../packages/pandwind/src/unplugin.ts";
+import { examplePreset } from "pandwind/preset/example-preset";
+import { pandwindRollupCss } from "pandwind/unplugin";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
-const sourceRoot = resolve(repoRoot, "packages/pandwind/src");
 
 const tsPlugin: Plugin = {
 	name: "rollup-e2e-typescript",
@@ -70,8 +69,8 @@ mkdirSync(source, { recursive: true });
 writeFileSync(
 	join(source, "design.ts"),
 	[
-		`import { createDesignCss } from ${JSON.stringify(resolve(sourceRoot, "design/index.ts"))};`,
-		`import { examplePreset } from ${JSON.stringify(resolve(sourceRoot, "preset/example-preset.ts"))};`,
+		'import { createDesignCss } from "pandwind/design";',
+		'import { examplePreset } from "pandwind/preset/example-preset";',
 		"export const dcss = createDesignCss(examplePreset);",
 	].join("\n"),
 );

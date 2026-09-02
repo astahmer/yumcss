@@ -27,6 +27,13 @@
 	"exports": {
 		".": "./src/cli.ts",
 		"./swap": "./src/swap/index.ts",
+		"./swap/identifiers": "./src/swap/identifiers.ts",
+		"./swap/corpus": "./src/swap/real-repository-corpus.ts",
+		"./migration/meta": "./src/meta.ts",
+		"./migration/map": "./src/map.ts",
+		"./migration/source": "./src/migrate.ts",
+		"./migration/shared": "./src/shared.ts",
+		"./migration/tokens": "./src/tokens.ts",
 		"./swap/unplugin": "./src/swap/unplugin.ts",
 		"./swap/vite": "./src/swap/vite.ts",
 		"./swap/browser": "./src/swap/browser.ts",
@@ -55,6 +62,7 @@
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {
+		"@chakra-ui/react": "3.37.0",
 		"@mantine/core": "^9.5.2",
 		"@types/node": "26.2.0",
 		"@vitest/coverage-v8": "4.1.10",

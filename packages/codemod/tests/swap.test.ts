@@ -405,9 +405,7 @@ describe("TokenSet conversions", () => {
 	});
 
 	test("definePreset imports via dynamic import of the real preset", async () => {
-		const set = await T.fromDefinePreset(
-			resolve(import.meta.dirname, "../../../packages/pandwind/src/preset/example-preset.ts"),
-		);
+		const set = await T.fromDefinePreset("pandwind/preset/example-preset");
 		expect(set.groups.colors?.["$blue-500"]).toBe("#3182ce");
 	});
 

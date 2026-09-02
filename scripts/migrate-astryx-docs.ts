@@ -6,7 +6,7 @@ import {
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	type AdapterMigrationResult,
-} from "../packages/codemod/src/swap/index.ts";
+} from "pandwind-codemod/swap";
 
 /** Public migration lanes for the pinned Astryx docsite corpus. */
 export enum AstryxDocsLane {
@@ -18,7 +18,6 @@ export enum AstryxDocsLane {
 export interface AstryxDocsMigrationOptions {
 	readonly referenceRoot?: string;
 	readonly outputRoot?: string;
-	readonly pandwindRoot?: string;
 }
 
 export interface AstryxDocsLaneReport {
@@ -405,14 +404,14 @@ function hasAstryxDynamicHostFallback(file: string): boolean {
 	].some((suffix) => file.endsWith(suffix));
 }
 
-function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string): Promise<void> {
+function installStaticExtractorConfig(outputRoot: string): Promise<void> {
 	return (async () => {
 		await Promise.all([
 			(async () => {
 				const configFile = join(outputRoot, "next.config.mjs");
 				let config = await readFile(configFile, "utf8");
 				if (!config.includes("pandwindWebpackCss")) {
-					config = `import { pandwindWebpackCss } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/unplugin.ts"))};\nimport { pandwindPreset } from ${JSON.stringify(join(pandwindRoot, "packages/pandwind/src/preset/preset.ts"))};\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
+					config = `import { pandwindWebpackCss } from "pandwind/unplugin";\nimport { pandwindPreset } from "pandwind/preset";\nconst pandwindCssPlugin = pandwindWebpackCss({ preset: pandwindPreset, root: resolve(import.meta.dirname, "../.."), cssSources: [/pandwind\\/(?:css|design)/], exclude: [/node_modules/, /(^|\\/)dist(\\/|$)/, /\\.git/, /src\\/generated\\/examples/] });\n${config}`;
 					config = config.replace(
 						"    return config;",
 						"    config.plugins.push(pandwindCssPlugin);\n    return config;",
@@ -460,6 +459,15 @@ function installStaticExtractorConfig(outputRoot: string, pandwindRoot: string):
 				await writeFile(babelFile, babel);
 			})(),
 		]);
+		const packageFile = join(outputRoot, "package.json");
+		const packageJson = JSON.parse(await readFile(packageFile, "utf8")) as {
+			dependencies?: Record<string, string>;
+		};
+		packageJson.dependencies = {
+			...packageJson.dependencies,
+			pandwind: `file:${repositoryRoot}/packages/pandwind`,
+		};
+		await writeFile(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`);
 	})();
 }
 
@@ -476,7 +484,6 @@ export class AstryxDocsMigration {
 	): Promise<AstryxDocsLaneReport> {
 		const referenceRoot = resolve(options.referenceRoot ?? defaultReferenceRoot);
 		const outputRoot = options.outputRoot === undefined ? undefined : resolve(options.outputRoot);
-		const pandwindRoot = resolve(options.pandwindRoot ?? repositoryRoot);
 		const adapter = this.lanes.find((candidate) => candidate.lane === lane);
 		if (adapter === undefined) throw new Error(`Unknown Astryx docs lane: ${lane}`);
 		const files = await collectSourceFiles(referenceRoot);
@@ -538,7 +545,7 @@ export class AstryxDocsMigration {
 				await writeFile(outputFile, result.code);
 			}
 		}
-		if (outputRoot !== undefined) await installStaticExtractorConfig(outputRoot, pandwindRoot);
+		if (outputRoot !== undefined) await installStaticExtractorConfig(outputRoot);
 		const report: AstryxDocsLaneReport = {
 			schema: "pandwind.astryx-docs-migration/1",
 			lane,

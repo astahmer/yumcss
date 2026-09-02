@@ -2,11 +2,8 @@ import { execFile } from "node:child_process";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
-import {
-	runAdapterMigrationAsync,
-	type AdapterMigrationResult,
-} from "../packages/codemod/src/swap/index.ts";
-import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
+import { runAdapterMigrationAsync, type AdapterMigrationResult } from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 export enum StylexDocsLane {

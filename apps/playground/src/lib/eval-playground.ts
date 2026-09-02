@@ -12,8 +12,8 @@
  * boundary and must never run third-party code.
  */
 import { parseSync } from "oxc-parser";
-import { collectModuleConstants } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
-import type { ConstantScope } from "../../../../packages/pandwind/src/vite/cx-inline.ts";
+import { collectModuleConstants } from "pandwind/vite/cx-inline";
+import type { ConstantScope } from "pandwind/vite/cx-inline";
 
 interface PlaygroundSuccess {
 	ok: true;

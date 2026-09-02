@@ -9,10 +9,10 @@ import { createRequire } from "node:module";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
-import { createCss } from "../packages/pandwind/src/css/create-css.ts";
-import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
-import { getCodemodAdapter, runAdapterMigration } from "../packages/codemod/src/swap/index.ts";
+import { createStylesheet } from "pandwind/css/create-stylesheet";
+import { createCss } from "pandwind/css";
+import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
+import { getCodemodAdapter, runAdapterMigration } from "pandwind-codemod/swap";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");

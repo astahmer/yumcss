@@ -118,10 +118,10 @@ export function resolveComponents(
 }
 
 export async function loadThemeBlock(modulePath: string, base: string): Promise<string> {
-	const module = (await import(pathToFileURL(resolveModulePath(modulePath, base)).href)) as Record<
-		string,
-		unknown
-	>;
+	const specifier = isPackageSpecifier(modulePath)
+		? modulePath
+		: pathToFileURL(resolveModulePath(modulePath, base)).href;
+	const module = (await import(specifier)) as Record<string, unknown>;
 	const groups = resolveTokenGroups(module);
 	const conditions = resolvePresetConditions(module);
 	if (groups === undefined) {
@@ -155,3 +155,6 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 
 const resolveModulePath = (modulePath: string, base: string): string =>
 	modulePath.startsWith("/") ? modulePath : resolve(base, modulePath);
+
+const isPackageSpecifier = (modulePath: string): boolean =>
+	!modulePath.startsWith("/") && !modulePath.startsWith(".");

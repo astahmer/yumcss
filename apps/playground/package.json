@@ -11,8 +11,8 @@
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "nub run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:codegen": "nub ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:bridge": "nub ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
+		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens pandwind/preset/example-preset && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
+		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
 	},
 	"dependencies": {
 		"@monaco-editor/react": "4.7.0",

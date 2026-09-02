@@ -8,10 +8,10 @@
 		"prebuild": "nub run tw:codegen && nub run tw:bridge && nub run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:codegen": "nub ../../packages/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:prune": "nub ../../packages/pandwind/src/tw/prune-theme.ts ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:bridge": "nub ../../packages/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
-		"tw:scan": "nub ../../packages/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens pandwind/preset/example-preset && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
+		"tw:prune": "nub exec pandwind-tw-prune ./src/pandwind-theme.css ./src/tw.ts ./src",
+		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
+		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	},
 	"dependencies": {
 		"pandwind": "workspace:*",

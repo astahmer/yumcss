@@ -71,7 +71,7 @@ nub install --frozen-lockfile
 > release preflight.
 
 **1. Preset** — define your design system once (`src/preset.ts`): tokens,
-radii, conditions. See `packages/pandwind/src/preset/example-preset.ts` for a
+radii, conditions. See the `pandwind/preset/example-preset` export for a
 complete example (`defineTokens` / `defineTheme` / `definePreset`).
 
 **2. Codegen** — generate the typed `tw()` runtime + `@theme` bridge from your
@@ -81,9 +81,9 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "nub node_modules/pandwind/src/tw/generate-types.ts ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "nub node_modules/pandwind/src/tw/generate-bridge.ts ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "nub node_modules/pandwind/src/tw/collect.ts ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens ./src/preset.ts",
+		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
+		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
@@ -124,8 +124,8 @@ same API either way.
 atomic styles, `cx()` to merge both. Plain strings keep working everywhere.
 
 Subpath map: `pandwind/css`, `/tw`, `/cx`, `/preset`, `/design`, `/vite`
-(runtime); `pandwind/codegen/{types,theme,collect}` and `/tw/generate`,
-`/tw/collect` (build-time codegen helpers); `pandwind/unplugin` (generic
+(runtime); `pandwind/codegen/{types,theme,collect,bridge}` and the
+`pandwind-tw-*` binaries (build-time codegen helpers); `pandwind/unplugin` (generic
 bundler adapters); non-web backends `pandwind/react-native`, `/opentui` and
 the render-agnostic `pandwind/stack` (+ `pandwind/stack/react`) — see
 [BACKENDS.md](./BACKENDS.md). `generate-bridge` stays CLI-only (it executes
@@ -236,7 +236,7 @@ than guessed) and injects it while generating types:
   generated output as before.
 
 ```sh
-nub run tw:codegen -- ./src/tailwind.css ./src --tokens ../../packages/pandwind/src/preset/example-preset.ts
+nub run tw:codegen -- ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an

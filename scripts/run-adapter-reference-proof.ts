@@ -6,7 +6,7 @@ import {
 	CodemodAdapterId,
 	createRealRepositoryCorpus,
 	runAdapterMigrationAsync,
-} from "../packages/codemod/src/swap/index.ts";
+} from "pandwind-codemod/swap";
 import { createEffectToolingTaskRunner } from "./effect-tooling.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 

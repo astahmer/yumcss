@@ -13,9 +13,11 @@
  *     must have zero broken specifiers anywhere (deep-relative imports into
  *     sibling packages are the classic failure mode).
  *
- * Extraction happens inside `<pkg>/node_modules/.pw-smoke/` so bare-specifier
- * dependencies resolve against the workspace while the tarball contents stay
- * byte-isolated.
+ * Extraction happens in `<pkg>/.pw-smoke/`, outside any `node_modules`
+ * directory. Node's strip-only TypeScript loader refuses to execute package
+ * files beneath `node_modules`; keeping the disposable tarball outside that
+ * boundary preserves the source-published package contract while bare
+ * dependencies still resolve through the package's normal node_modules.
  */
 import { execSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
@@ -26,7 +28,7 @@ async function main() {
 	const pkgDir = resolve(process.argv[2] ?? ".");
 	const manifest = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
 
-	const smokeRoot = join(pkgDir, "node_modules", ".pw-smoke");
+	const smokeRoot = join(pkgDir, ".pw-smoke");
 	rmSync(smokeRoot, { recursive: true, force: true });
 	mkdirSync(smokeRoot, { recursive: true });
 	const workdir = mkdtempSync(join(smokeRoot, "run-"));

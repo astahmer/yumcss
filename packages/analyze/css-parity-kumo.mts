@@ -16,9 +16,9 @@ import { gzipSync } from "node:zlib";
 import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
 import { parseSync } from "oxc-parser";
-import { evalLiteral } from "../pandwind/src/tw/literal.ts";
-import { createTw } from "../pandwind/src/tw/runtime.ts";
-import { extractTwConfig } from "../pandwind/src/vite/inline.ts";
+import { evalLiteral } from "pandwind/tw/literal";
+import { createTw } from "pandwind/tw";
+import { extractTwConfig } from "pandwind/vite/inline";
 
 const KUMO = "/tmp/pandwind-kumo-dogfood/packages/kumo/src";
 const BEFORE = "/tmp/kumo-src-before";

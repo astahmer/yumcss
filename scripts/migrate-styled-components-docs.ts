@@ -14,12 +14,12 @@ import {
 	StyleProgramEmissionHint,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
-} from "../packages/codemod/src/swap/index.ts";
-import type { AdapterMigrationResult, StyleProgram } from "../packages/codemod/src/swap/index.ts";
-import { createCssExtractionService } from "../packages/pandwind/src/vite/css-extract.ts";
-import { createCssSourceScanner } from "../packages/pandwind/src/vite/css-extract.ts";
-import { createStylesheet } from "../packages/pandwind/src/css/create-stylesheet.ts";
-import type { StyleObject } from "../packages/pandwind/src/types/typings.ts";
+} from "pandwind-codemod/swap";
+import type { AdapterMigrationResult, StyleProgram } from "pandwind-codemod/swap";
+import { createCssExtractionService } from "pandwind/vite/css-extract";
+import { createCssSourceScanner } from "pandwind/vite/css-extract";
+import { createStylesheet } from "pandwind/css/create-stylesheet";
+import type { StyleObject } from "pandwind/types/typings";
 
 export enum StyledComponentsDocsLane {
 	RuntimeCss = "runtime-css",

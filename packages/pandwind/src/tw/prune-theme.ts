@@ -1,3 +1,4 @@
+#!/usr/bin/env nub
 /**
  * @theme var pruning — keep only the theme variables the app's scanned
  * sources actually use (plans/012 §1a, pandabox unused-variable pruning).

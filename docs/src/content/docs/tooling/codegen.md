@@ -11,7 +11,7 @@ produce byte-identical outputs.
 ## `tw:codegen` — typed runtime from your tailwind.css
 
 ```
-nub packages/pandwind/src/tw/generate-types.ts <css-entry> <out-dir> [--tokens <module>] [--agents]
+nub exec pandwind-tw-codegen <css-entry> <out-dir> [--tokens <module>] [--agents]
 ```
 
 Positionals default to `src/tailwind.css` and `src`. Loads the CSS through
@@ -35,7 +35,7 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
 ## `tw:bridge` — the property→utility bridge
 
 ```
-nub packages/pandwind/src/tw/generate-bridge.ts <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
+nub exec pandwind-tw-bridge <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
 ```
 
 Defaults: `src/tailwind.css src/tw.ts src/bridge.ts`, importing
@@ -46,7 +46,7 @@ preset). CLI-only — it executes on import.
 ## `tw:scan` — safelist from real call sites
 
 ```
-nub packages/pandwind/src/tw/collect.ts [tw-entry] [src-dir] [out-file]
+nub exec pandwind-tw-collect [tw-entry] [src-dir] [out-file]
 ```
 
 Defaults: `src/tw.ts src src/pandwind.safelist.ts`. Statically evaluates
@@ -60,7 +60,7 @@ selects the mode:
 ## `tw:prune` — drop unused theme variables
 
 ```
-nub packages/pandwind/src/tw/prune-theme.ts [theme-css] [tw-entry] [src-dir]
+nub exec pandwind-tw-prune [theme-css] [tw-entry] [src-dir]
 ```
 
 Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned

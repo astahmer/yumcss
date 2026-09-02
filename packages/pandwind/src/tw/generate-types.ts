@@ -1,3 +1,4 @@
+#!/usr/bin/env nub
 /**
  * pandwind codegen — generates a typed `tw()` from a real Tailwind design system.
  *
@@ -10,7 +11,7 @@
  * - `tw.ts` — a typed `tw` instance wired with the design-system variant metadata.
  *
  * Usage:
- *   tsx generate-types.ts [css-entry] [out-dir]
+ *   nub exec pandwind-tw-codegen [css-entry] [out-dir]
  *
  * Both args default relative to the current working directory:
  *   src/tailwind.css -> src/types.d.ts + src/tw.ts

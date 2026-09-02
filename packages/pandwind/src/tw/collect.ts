@@ -1,3 +1,4 @@
+#!/usr/bin/env nub
 /**
  * pandwind scanner — extracts the classes used by `tw()` calls and writes them
  * to a safelist file that Tailwind's file scanner can see.
@@ -17,7 +18,7 @@
  * compiler API: several times faster, and the only thing we need is the AST.
  *
  * Usage:
- *   tsx collect.ts [tw-entry] [src-dir] [out-file]
+ *   nub exec pandwind-tw-collect [tw-entry] [src-dir] [out-file]
  *
  * All paths are resolved relative to the current working directory.
  */

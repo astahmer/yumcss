@@ -161,6 +161,9 @@ const removeWorktree = (worktree: string): void => {
 };
 
 const runRevision = async (worktree: string): Promise<BenchmarkResult> => {
+	// These are deliberately resolved inside the isolated historical worktree;
+	// using today's package exports here would benchmark the current tip rather
+	// than the revision named by the benchmark record.
 	const cssModule = await importFrom(worktree, "packages/pandwind/src/css/create-css.ts");
 	const presetModule = await importFrom(worktree, "packages/pandwind/src/preset/example-preset.ts");
 	const stylesheetModule = await importFrom(

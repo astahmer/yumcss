@@ -11,17 +11,14 @@ import { cp, mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from "n
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
-import {
-	buildPandwindInteropArtifact,
-	type PandwindInteropArtifact,
-} from "../packages/pandwind/src/tw/interop-artifact.ts";
-import { generateUtilityBridge } from "../packages/pandwind/src/tw/bridge.ts";
-import { generateDesignSystem } from "../packages/pandwind/src/tw/generate-types.ts";
-import { SOURCE_SCANNER_SERVICE } from "../packages/pandwind/src/source-scanner.ts";
-import { loadMetaFromSources, type PandwindMeta } from "../packages/codemod/src/meta.ts";
-import { mapClassList } from "../packages/codemod/src/map.ts";
-import { transformSource, type TransformResult } from "../packages/codemod/src/migrate.ts";
-import { ensureImport, relativeModuleImport } from "../packages/codemod/src/shared.ts";
+import { buildPandwindInteropArtifact, type PandwindInteropArtifact } from "pandwind/tw/interop";
+import { generateUtilityBridge } from "pandwind/codegen/bridge";
+import { generateDesignSystem } from "pandwind/codegen/types";
+import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { loadMetaFromSources, type PandwindMeta } from "pandwind-codemod/migration/meta";
+import { mapClassList } from "pandwind-codemod/migration/map";
+import { transformSource, type TransformResult } from "pandwind-codemod/migration/source";
+import { ensureImport, relativeModuleImport } from "pandwind-codemod/migration/shared";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const execFileAsync = promisify(execFile);

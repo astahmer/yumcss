@@ -47,6 +47,12 @@ importers:
       oxlint:
         specifier: 1.78.0
         version: 1.78.0
+      pandwind:
+        specifier: workspace:*
+        version: link:packages/pandwind
+      pandwind-codemod:
+        specifier: workspace:*
+        version: link:packages/codemod
       pixelmatch:
         specifier: 7.2.0
         version: 7.2.0
@@ -402,6 +408,9 @@ importers:
         specifier: 3.3.0
         version: 3.3.0(esbuild@0.28.2)(rolldown@1.2.4)(rollup@4.62.5)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.0)(tsx@4.23.12)(yaml@2.9.0))(webpack@5.101.3(@swc/core@1.15.47(@swc/helpers@0.5.23))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.26))
     devDependencies:
+      '@chakra-ui/react':
+        specifier: 3.37.0
+        version: 3.37.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@mantine/core':
         specifier: ^9.5.2
         version: 9.5.2(@mantine/hooks@9.5.2(react@19.2.8))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

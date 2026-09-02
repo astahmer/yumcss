@@ -2,15 +2,15 @@ import { mkdtempSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "nod
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import type { PandwindMeta } from "../packages/codemod/src/meta.ts";
+import type { PandwindMeta } from "pandwind-codemod/migration/meta";
 import {
 	classifyRealRepositoryProof,
 	createRealRepositoryCorpus,
 	getCodemodAdapter,
 	runAdapterMigrationAsync,
 	runPandaMigration,
-} from "../packages/codemod/src/swap/index.ts";
-import { CodemodAdapterId } from "../packages/codemod/src/swap/identifiers.ts";
+} from "pandwind-codemod/swap";
+import { CodemodAdapterId } from "pandwind-codemod/swap/identifiers";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 
 const referenceRoot = createReferenceWorkspace().root;

@@ -17,7 +17,8 @@ Automation in place:
       pkg.pr.new (non-blocking `preview` job in ci.yml).
 - [x] Per-package hygiene: `files` (src/README/LICENSE), `publishConfig`
       (public access + registry + provenance), `engines.node >= 20`,
-      repository/keywords/license metadata, `bin` entries for the two CLIs.
+      repository/keywords/license metadata, `bin` entries for the four
+      Tailwind codegen CLIs.
 - [x] Source-publishing verified by pack smoke tests:
       `scripts/release/smoke-pack.mjs` packs each package, asserts every
       exports/bin target exists in the tarball, then dynamically imports EVERY

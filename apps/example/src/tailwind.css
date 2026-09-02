@@ -2,8 +2,8 @@
 
 /*
  * Token bridge: generated from the example preset's DTCG token groups by
- * `nub run tw:codegen -- --tokens <preset>` (see packages/pandwind/src/tw/
- * generate-theme.ts). The preset is the single source of truth for both
+ * `nub run tw:codegen -- --tokens <preset>` (see the codegen guide). The
+ * preset is the single source of truth for both
  * engines — do not edit by hand; regenerate instead.
  */
 @import "./pandwind-theme.css";

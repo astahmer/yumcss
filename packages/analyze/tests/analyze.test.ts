@@ -14,7 +14,7 @@ import {
 	summarize,
 	type FileFoldStats,
 } from "../src/analyze.ts";
-import { inlineCxCalls } from "../../pandwind/src/vite/cx-inline.ts";
+import { inlineCxCalls } from "pandwind/vite/cx-inline";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const config = loadTwConfig(resolve(app, "src/tw.ts"));
