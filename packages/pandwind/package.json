@@ -8,10 +8,7 @@
 		"directory": "packages/pandwind"
 	},
 	"bin": {
-		"pandwind-tw-bridge": "./src/tw/generate-bridge.ts",
-		"pandwind-tw-codegen": "./src/tw/generate-types.ts",
-		"pandwind-tw-collect": "./src/tw/collect.ts",
-		"pandwind-tw-prune": "./src/tw/prune-theme.ts"
+		"pandwind-tw": "./src/tw/cli.ts"
 	},
 	"files": [
 		"src",

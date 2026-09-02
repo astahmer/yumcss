@@ -37,7 +37,7 @@ export class CodegenArtifactWriter {
 		if (options.agents === true) {
 			const config = extractTwConfig(artifacts.twTs);
 			if (config === undefined)
-				throw new Error("pandwind tw:codegen: could not extract config for agents.json");
+				throw new Error("pandwind-tw generate: could not extract config for agents.json");
 			const doc = buildAgentsDocument({
 				typesDts: artifacts.typesDts,
 				config,

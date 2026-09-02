@@ -1,4 +1,3 @@
-#!/usr/bin/env nub
 /**
  * @theme var pruning — keep only the theme variables the app's scanned
  * sources actually use (plans/012 §1a, pandabox unused-variable pruning).
@@ -12,13 +11,13 @@
  * Documented caveat (same as pandabox): pruning breaks DYNAMIC token
  * access — code that builds utility names at runtime (`bg-${color}`) or
  * reads vars via token()-style helpers will reference pruned variables.
- * Opt-in via `--prune-theme <glob...>` on tw:codegen.
+ * Opt-in via `pandwind-tw prune` after `pandwind-tw generate`.
  */
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
 import { compile } from "@tailwindcss/node";
 import { parse } from "postcss";
-import { collectTwClasses, walkDir } from "./collect.ts";
+import { collectTwClasses } from "./collect.ts";
+import { createSourceWorkspace } from "../source-workspace.ts";
 
 const PRUNABLE_VAR = /--[\w-]+/g;
 
@@ -61,11 +60,25 @@ export interface PruneOptions {
 	/** Full generated bridge (@theme block + optional override rules). */
 	themeBlock: string;
 	/** Source files to scan for tw() class usage. */
-	files: Array<string>;
+	files: readonly string[];
 	/** The app's generated tw.ts entry (exact runtime instance). */
 	twEntry: string;
 	/** Base directory for Tailwind module resolution. */
 	base: string;
+}
+
+export interface TwPruneOptions {
+	readonly themeCss: string;
+	readonly twEntry: string;
+	readonly srcDir: string;
+	readonly base: string;
+}
+
+export interface TwPruneResult {
+	readonly themeCss: string;
+	readonly beforeVariables: number;
+	readonly afterVariables: number;
+	readonly scannedFiles: number;
 }
 
 /**
@@ -96,24 +109,22 @@ export async function pruneThemeBlock(options: PruneOptions): Promise<string> {
 	return filterBridgeByUsedVars(options.themeBlock, used);
 }
 
-if (process.argv[1]?.endsWith("prune-theme.ts")) {
-	const [themeCssArg, twEntryArg, srcDirArg] = process.argv.slice(2);
-	const base = process.cwd();
-	const themeCssPath = resolve(base, themeCssArg ?? "src/pandwind-theme.css");
-	const twEntry = resolve(base, twEntryArg ?? "src/tw.ts");
-	const srcDir = resolve(base, srcDirArg ?? "src");
-
-	const { writeFileSync } = await import("node:fs");
-	const before = readFileSync(themeCssPath, "utf8");
+export async function runTwPrune(options: TwPruneOptions): Promise<TwPruneResult> {
+	const before = readFileSync(options.themeCss, "utf8");
+	const files = createSourceWorkspace().files(["**/*"], options.srcDir);
 	const after = await pruneThemeBlock({
 		themeBlock: before,
-		files: walkDir(srcDir),
-		twEntry,
-		base,
+		files,
+		twEntry: options.twEntry,
+		base: options.base,
 	});
-	writeFileSync(themeCssPath, `${after}\n`);
-	console.log(
-		`pandwind: pruned ${themeCssPath} ` +
-			`(${(before.match(/\n\t--/g) ?? []).length} -> ${(after.match(/\n\t--/g) ?? []).length} theme vars from ${walkDir(srcDir).length} scanned files)`,
-	);
+	const beforeVariables = (before.match(/\n\t--/g) ?? []).length;
+	const afterVariables = (after.match(/\n\t--/g) ?? []).length;
+	writeFileSync(options.themeCss, `${after}\n`);
+	return {
+		themeCss: options.themeCss,
+		beforeVariables,
+		afterVariables,
+		scannedFiles: files.length,
+	};
 }
