@@ -54,6 +54,8 @@ export interface CxCompilerOptions {
 	/** Replace one dynamic conditional with a decision over premerged strings. */
 	readonly partialFold?: boolean;
 	readonly onUnresolved?: OnUnresolved;
+	/** Reuse a program parsed by import discovery or a preceding fold pass. */
+	readonly parsedProgram?: OxcNode;
 }
 
 export interface CxRewriteResult {
@@ -102,8 +104,9 @@ export class CxCallRewriter {
 	): CxRewriteResult {
 		const fold = options.fold;
 		if (cxNames.size === 0 && fold === undefined) return { code, inlined: 0 };
-		const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
-			.program as unknown as OxcNode;
+		const program =
+			options.parsedProgram ??
+			(SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program as unknown as OxcNode);
 		const constants =
 			options.constants === false
 				? new Map<string, KnownConstant>()

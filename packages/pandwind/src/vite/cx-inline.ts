@@ -38,8 +38,9 @@ export function findCxImports(
 	code: string,
 	id: string,
 	isCxSource: (source: string) => boolean,
+	parsedProgram?: import("../tw/literal.ts").OxcNode,
 ): CxImportInfo {
-	return cxImportScanner.find(code, id, isCxSource);
+	return cxImportScanner.find(code, id, isCxSource, parsedProgram);
 }
 
 export function inlineCxCalls(

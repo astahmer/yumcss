@@ -4,17 +4,25 @@ import type { OxcNode } from "../tw/literal.ts";
 export interface CxImportInfo {
 	readonly localNames: Set<string>;
 	readonly sources: string[];
+	readonly program: OxcNode;
 }
 
 /** Source-language-neutral import discovery for the cx compiler. */
 class CxImportScanner {
-	find(code: string, id: string, matches: (source: string) => boolean): CxImportInfo {
-		const info: CxImportInfo = { localNames: new Set(), sources: [] };
-		const program = SOURCE_SCANNER_SERVICE.parse({
-			file: id,
-			source: code,
-			language: SOURCE_SCANNER_SERVICE.languageForFile(id),
-		}).program;
+	find(
+		code: string,
+		id: string,
+		matches: (source: string) => boolean,
+		parsedProgram?: OxcNode,
+	): CxImportInfo {
+		const program =
+			parsedProgram ??
+			(SOURCE_SCANNER_SERVICE.parse({
+				file: id,
+				source: code,
+				language: SOURCE_SCANNER_SERVICE.languageForFile(id),
+			}).program as unknown as OxcNode);
+		const info = { localNames: new Set<string>(), sources: [] as string[] };
 		const queue: unknown[] = [program];
 		for (let head = 0; head < queue.length; head++) {
 			const current = queue[head];
@@ -48,7 +56,7 @@ class CxImportScanner {
 			}
 			queue.push(...Object.values(node));
 		}
-		return info;
+		return { ...info, program };
 	}
 }
 

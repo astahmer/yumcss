@@ -23,7 +23,7 @@ import { createCx } from "../src/cx/index.ts";
 import type { CxInput } from "../src/cx/index.ts";
 import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
 import { findCxImports, inlineCxCalls } from "../src/vite/cx-inline.ts";
-import { pandwindVite } from "../src/vite/index.ts";
+import { createInlineTwPluginCore, pandwindVite } from "../src/vite/index.ts";
 
 const twSource = readFileSync(
 	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
@@ -264,6 +264,25 @@ describe("pandwindVite end-to-end transform", () => {
 		const source = ['import { cx } from "./cx";', 'export const cls = cx("flex");'].join("\n");
 		const result = await plugin.transform.call(resolver, source, "/src/app.ts");
 		expect(result).toBeNull();
+	});
+
+	test("reuses an unchanged transform and drops it on invalidation", async () => {
+		const core = createInlineTwPluginCore();
+		const source = [
+			'import { tw } from "./tw";',
+			'export const cls = tw({ display: "flex", p: "4" });',
+		].join("\n");
+		const first = await core.transform(source, "/src/cache.ts", resolver);
+		const second = await core.transform(source, "/src/cache.ts", resolver);
+
+		expect(second).toBe(first);
+		expect(first?.code).toContain('"display-flex p-4"');
+
+		core.invalidate("/src/cache.ts");
+		const afterInvalidation = await core.transform(source, "/src/cache.ts", resolver);
+
+		expect(afterInvalidation).not.toBe(second);
+		expect(afterInvalidation?.code).toBe(first?.code);
 	});
 });
 

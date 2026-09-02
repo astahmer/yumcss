@@ -103,6 +103,7 @@ export interface Resolver {
 interface ImportInfo {
 	localNames: Set<string>;
 	sources: string[];
+	program: OxcNode;
 }
 
 /** Collect local bindings imported from tw modules in `code`. */
@@ -111,11 +112,17 @@ function findTwImports(
 	id: string,
 	isTwSource: (source: string) => boolean,
 ): ImportInfo {
-	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id)) return { localNames: new Set(), sources: [] };
+	if (!SOURCE_SCANNER_SERVICE.isScriptFile(id))
+		return {
+			localNames: new Set(),
+			sources: [],
+			program: { type: "Program", body: [] } as unknown as OxcNode,
+		};
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
-	const info: ImportInfo = { localNames: new Set(), sources: [] };
+	const program = result.program as unknown as OxcNode;
+	const info = { localNames: new Set<string>(), sources: [] as string[] };
 
-	walk(result.program, (node) => {
+	walk(program, (node) => {
 		if (node.type !== "ImportDeclaration") return;
 		const source = (node as { source?: { value?: string } }).source?.value;
 		if (typeof source !== "string" || !isTwSource(source)) return;
@@ -129,20 +136,11 @@ function findTwImports(
 			}
 		}
 	});
-	return info;
+	return { ...info, program };
 }
 
 interface OxcSpecifier {
 	type: string;
-}
-
-/** Source-matcher shared by the tw and cx import detection. */
-/** Parse a module and return its program node (for const-binding scans). */
-function parseProgramForConsts(code: string, id: string): OxcNode {
-	const parsed = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }) as unknown as {
-		program: OxcNode;
-	};
-	return parsed.program;
 }
 
 function matchesSource(
@@ -199,6 +197,21 @@ const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnr
 
 export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
+	const transformCache = new Map<string, { result: { code: string; map: null } | null }>();
+	const configIds = new WeakMap<object, number>();
+	let nextConfigId = 0;
+	const cacheKeyFor = (id: string, code: string, config: TwConfig): string => {
+		let configId = configIds.get(config);
+		if (configId === undefined) {
+			configId = nextConfigId++;
+			configIds.set(config, configId);
+		}
+		return `${id}\0${configId}\0${code}`;
+	};
+	const remember = (key: string, result: { code: string; map: null } | null): void => {
+		if (transformCache.size >= 2048) transformCache.clear();
+		transformCache.set(key, { result });
+	};
 	const sourceWorkspace = createSourceWorkspace();
 
 	const cssFold = options.css
@@ -265,29 +278,30 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				if (config !== undefined) break;
 			}
 			if (config === undefined) return null;
+			const cacheKey = cacheKeyFor(id, code, config);
+			const cached = transformCache.get(cacheKey);
+			if (cached !== undefined) return cached.result;
 
 			let working = code;
 			// Cross-module constant propagation: resolve this module's import
 			// bindings against the per-build exported-const registry (HMR-aware).
-			const importedConstants = crossModuleResolver.importedScope(
-				id,
-				parseProgramForConsts(working, id),
-			);
-			const result = inlineTwCalls(
-				working,
-				id,
-				config,
-				imports.localNames,
-				importedConstants,
-				unresolvedOptions,
-			);
+			const importedConstants = crossModuleResolver.importedScope(id, imports.program);
+			const result = inlineTwCalls(working, id, config, imports.localNames, importedConstants, {
+				...unresolvedOptions,
+				parsedProgram: imports.program,
+			});
 			working = result.code;
 
 			// cx pass runs on the post-tw code: folded tw() strings then
 			// participate as plain string arguments to cx(). With css folding
 			// configured, literal css()/css.class() atoms compile through the
 			// shared engine context and merge via its registry.
-			const cxImports = findCxImports(working, id, isCxSource);
+			const cxImports = findCxImports(
+				working,
+				id,
+				isCxSource,
+				result.inlined === 0 ? imports.program : undefined,
+			);
 			let inlined = result.inlined;
 			let cxUnresolved: UnresolvedToken[] = [];
 			if (cxImports.localNames.size > 0) {
@@ -304,7 +318,10 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 						};
 					}
 				}
-				const cxResult = inlineCxCalls(working, id, config, cxImports.localNames, cxOptions);
+				const cxResult = inlineCxCalls(working, id, config, cxImports.localNames, {
+					...cxOptions,
+					parsedProgram: cxImports.program,
+				});
 				working = cxResult.code;
 				inlined += cxResult.inlined;
 				cxUnresolved = cxResult.unresolved ?? [];
@@ -313,17 +330,31 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 			const optimized = runtimePruner.transform(working, id);
 			if (optimized !== null) working = optimized.code;
 
-			return inlined === 0 && optimized === null
-				? null
-				: (() => {
-						if (unresolvedMode !== OnUnresolvedTag.Off) {
-							reportUnresolved(id, [...(result.unresolved ?? []), ...cxUnresolved], unresolvedMode);
-						}
-						return { code: working, map: null } as const;
-					})();
+			const transformed =
+				inlined === 0 && optimized === null
+					? null
+					: (() => {
+							if (unresolvedMode !== OnUnresolvedTag.Off) {
+								reportUnresolved(
+									id,
+									[...(result.unresolved ?? []), ...cxUnresolved],
+									unresolvedMode,
+								);
+							}
+							return { code: working, map: null } as const;
+						})();
+			remember(cacheKey, transformed);
+			return transformed;
 		},
 		invalidate(file: string) {
 			crossModuleResolver.invalidate(file);
+			configCache.delete(file);
+			// A changed module may be an imported constant or a generated tw
+			// module, so its dependants cannot be identified from the transformed
+			// module id alone. Clear the bounded result cache at the dependency
+			// boundary; the next transform rebuilds only the modules requested by
+			// the host.
+			transformCache.clear();
 		},
 		resolveId(source: string) {
 			return runtimePruner.resolveId(source);
