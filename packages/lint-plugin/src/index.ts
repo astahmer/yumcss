@@ -84,11 +84,16 @@ type RuleContext = {
 	}): void;
 };
 type RuleFixer = {
+	insertTextBefore(node: AstNode, text: string): unknown;
 	removeRange(range: readonly [number, number]): unknown;
 };
 type RuleListener = {
 	Program?: (node: AstNode) => void;
 	CallExpression?: (node: AstNode) => void;
+};
+type RuleDefinition = {
+	create(context: RuleContext): RuleListener;
+	meta?: { fixable?: "code" | "whitespace" };
 };
 const isNode = (value: unknown): value is AstNode =>
 	value !== null && typeof value === "object" && "type" in value && typeof value.type === "string";
@@ -564,7 +569,7 @@ const markerForAnyCall = (
 	return undefined;
 };
 
-const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
+const rules: Record<string, RuleDefinition> = {
 	"no-dollar-raw": {
 		create(context) {
 			return withResolver((node, api) => {
@@ -697,6 +702,7 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 		},
 	},
 	"no-stale-migration-skip": {
+		meta: { fixable: "code" },
 		create(context) {
 			return {
 				Program(node) {
@@ -723,19 +729,30 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 		},
 	},
 	"require-migration-residual": {
+		meta: { fixable: "code" },
 		create(context) {
 			return {
 				Program(node) {
 					const source = context.sourceCode?.text ?? "";
 					const markers = migrationMarkers(context);
 					for (const call of migrationAnalysis(node)) {
-						if (call.dynamic === undefined) continue;
+						const dynamic = call.dynamic;
+						if (dynamic === undefined) continue;
 						if (markerForAnyCall(markers, call.node, source) !== undefined) continue;
 						context.report({
-							node: call.dynamic.node,
+							node: dynamic.node,
 							message:
 								"pandwind: dynamic static-lane output must preserve a typed migration residual with pandwind:migrate-skip",
-							data: { bad: call.dynamic.bad, name: callName(call.api) },
+							data: { bad: dynamic.bad, name: callName(call.api) },
+							...(call.node.start === undefined
+								? {}
+								: {
+									fix: (fixer: RuleFixer) =>
+										fixer.insertTextBefore(
+											call.node,
+											`/* ${migrationMarkerFor(context)} (residual: ${dynamic.bad}) */ `,
+										),
+								}),
 						});
 					}
 				},

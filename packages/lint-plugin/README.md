@@ -14,18 +14,18 @@ codemod adapters and official loaders.
 
 ## Rules
 
-| Rule                         | Default intent                                                             |
-| ---------------------------- | -------------------------------------------------------------------------- |
-| `no-spreads`                 | Finds spread arguments that cannot be statically folded.                   |
-| `no-dynamic-values`          | Finds dynamic values in static extraction lanes.                           |
-| `no-multiple-conditionals`   | Finds calls with more than one partially foldable conditional.             |
-| `no-dollar-raw`              | Finds `$raw` escape hatches in Pandwind style lanes.                       |
-| `no-arbitrary-values`        | Finds arbitrary class values such as `w-[13px]`.                           |
-| `design-tokens-only`         | Checks design values against an explicit project policy.                   |
-| `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     |
-| `no-stale-migration-skip`    | Finds skip markers that now precede a statically foldable call.            |
-| `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. |
-| `no-conflicting-style-props` | Finds explicit `className`/`style` props that conflict with `css.props()`. |
+| Rule                         | Default intent                                                             | Fix |
+| ---------------------------- | -------------------------------------------------------------------------- | --- |
+| `no-spreads`                 | Finds spread arguments that cannot be statically folded.                   | — |
+| `no-dynamic-values`          | Finds dynamic values in static extraction lanes.                           | — |
+| `no-multiple-conditionals`   | Finds calls with more than one partially foldable conditional.             | — |
+| `no-dollar-raw`              | Finds `$raw` escape hatches in Pandwind style lanes.                       | — |
+| `no-arbitrary-values`        | Finds arbitrary class values such as `w-[13px]`.                           | — |
+| `design-tokens-only`         | Checks design values against an explicit project policy.                   | — |
+| `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     | — |
+| `no-stale-migration-skip`    | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker |
+| `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker |
+| `no-conflicting-style-props` | Finds explicit `className`/`style` props that conflict with `css.props()`. | — |
 
 The extraction rules are normally warnings. Token and migration-hygiene rules
 can be errors when a project wants CI to require verified design values and
@@ -58,12 +58,15 @@ an error when it is left on a call that is now fully static:
 tw(theme.colors.brand);
 ```
 
-`require-migration-residual` catches an unmarked dynamic static-lane call;
+`require-migration-residual` catches an unmarked dynamic static-lane call and
+offers a safe fixer that inserts a typed marker containing the detected reason.
 `no-stale-migration-skip` catches the opposite case after a later compiler
-improvement. The stale-marker rule also offers a safe local fixer that removes
-only the obsolete comment. `no-conflicting-style-props` is report-only because
+improvement and offers a safe fixer that removes only the obsolete comment.
+The other rules are report-only because their fixes require token/config
+knowledge or could alter style behavior. `no-conflicting-style-props` is
+report-only because
 deleting an explicit host prop would change behavior; the Pandwind codemod must
-merge those values through the target host semantics. All three rules are
+merge those values through the target host semantics. All rules are
 deliberately conservative when source ranges are not available.
 
 For generated project policy, prefer passing values derived from the project's

@@ -23,6 +23,7 @@ type RuleContext = {
 	}): void;
 };
 type RuleFixer = {
+	insertTextBefore(node: AstNode, text: string): { text: string };
 	removeRange(range: readonly [number, number]): { range: readonly [number, number] };
 };
 type RuleListeners = {
@@ -35,6 +36,7 @@ type Report = {
 	message: string;
 	nodeType?: string;
 	fixRange?: readonly [number, number];
+	fixText?: string;
 };
 
 const typedPlugin = plugin as unknown as Plugin;
@@ -82,6 +84,9 @@ const runRule = (
 			fix?: (fixer: RuleFixer) => unknown;
 		}): void {
 			const fix = payload.fix?.({
+				insertTextBefore(_node, text) {
+					return { text };
+				},
 				removeRange(range) {
 					return { range };
 				},
@@ -92,6 +97,9 @@ const runRule = (
 				nodeType: payload.node?.type,
 				...(typeof fix === "object" && fix !== null && "range" in fix
 					? { fixRange: (fix as { range: readonly [number, number] }).range }
+					: {}),
+				...(typeof fix === "object" && fix !== null && "text" in fix
+					? { fixText: (fix as { text: string }).text }
 					: {}),
 			});
 		},
@@ -570,5 +578,38 @@ css.vars({ color: theme.color });`,
 		expect(runtimeSkipReports).toEqual([]);
 		expect(missingReports).toHaveLength(1);
 		expect(missingReports[0]?.data).toEqual({ bad: "member expression value", name: "tw" });
+	});
+
+	test("offers a safe fixer that records an unmarked residual", () => {
+		const code = `import { tw } from "pandwind";
+tw(theme.color);`;
+		const reports = runRule(
+			"require-migration-residual",
+			code,
+		);
+
+		expect(reports).toHaveLength(1);
+		expect(reports[0]?.fixText).toBe(
+			"/* pandwind:migrate-skip (residual: member expression value) */ ",
+		);
+		const fixed = code.replace(
+			"tw(theme.color)",
+			`${reports[0]?.fixText ?? ""}tw(theme.color)`,
+		);
+		expect(runRule("require-migration-residual", fixed)).toEqual([]);
+		expect(runRule("migration-skip-reason", fixed)).toEqual([]);
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "bad": "member expression value",
+			      "name": "tw",
+			    },
+			    "fixText": "/* pandwind:migrate-skip (residual: member expression value) */ ",
+			    "message": "pandwind: dynamic static-lane output must preserve a typed migration residual with pandwind:migrate-skip",
+			    "nodeType": "MemberExpression",
+			  },
+			]
+		`);
 	});
 });
