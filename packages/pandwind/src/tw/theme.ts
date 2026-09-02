@@ -23,6 +23,8 @@ export function themeVariables(root: Root): Map<string, string> {
 
 type VarResolver = (name: string) => string | undefined;
 
+const VARIABLE_REFERENCE = /var\((--[a-zA-Z0-9-]+)(?:,\s*([^)]*))?\)/g;
+
 /**
  * Resolve `var(--x)` chains against a theme, honoring fallbacks. Accepts
  * either a `Map` (from `themeVariables`) or any resolver function — the
@@ -30,11 +32,21 @@ type VarResolver = (name: string) => string | undefined;
  */
 export function resolveVar(value: string, vars: Map<string, string> | VarResolver): string {
 	const resolve: VarResolver = typeof vars === "function" ? vars : (name) => vars.get(name);
-	return value.replace(/var\((--[a-zA-Z0-9-]+)(?:,\s*([^)]*))?\)/g, (_match, name, fallback) => {
-		const resolved = resolve(name);
-		if (resolved === undefined) return fallback?.trim() ?? "";
-		return resolveVar(resolved, vars);
-	});
+	let current = value;
+	const seen = new Set<string>();
+	for (;;) {
+		if (seen.has(current)) return current;
+		seen.add(current);
+		let changed = false;
+		const next = current.replace(VARIABLE_REFERENCE, (match, name, fallback) => {
+			const resolved = resolve(name);
+			const replacement = resolved === undefined ? (fallback?.trim() ?? "") : resolved;
+			if (replacement !== match) changed = true;
+			return replacement;
+		});
+		if (!changed) return next;
+		current = next;
+	}
 }
 
 const LENGTH_UNIT = /^([+-]?(?:\d+|\d*\.\d+))(rem|px|em|%)$/;

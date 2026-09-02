@@ -21,7 +21,12 @@
  *   textStyle is bundled utilities); unknown names are residuals.
  */
 import type { SwapEntry, SwapIR, SwapResidual } from "../../ir.ts";
-import { parseObjectLiteral, type LiteralObject, type LitValue } from "../../parse.ts";
+import {
+	literalValueToPlain,
+	parseObjectLiteral,
+	type LiteralObject,
+	type LitValue,
+} from "../../parse.ts";
 import type { PandaTheme } from "./theme.ts";
 import { emptyPandaTheme } from "./theme.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
@@ -114,34 +119,59 @@ const RADIUS_EXPANSIONS: ReadonlyMap<string, string[]> = new Map([
  * rerun never leaves Panda-only keys behind in a Pandwind style object.
  */
 export function normalizePandaStyleObject(style: Record<string, unknown>): Record<string, unknown> {
-	const out: Record<string, unknown> = {};
-	const add = (key: string, value: unknown): void => {
-		const current = out[key];
-		if (isPlainObject(current) && isPlainObject(value)) out[key] = { ...current, ...value };
-		else out[key] = value;
+	type Frame = {
+		readonly entries: readonly [string, unknown][];
+		index: number;
+		readonly target: Record<string, unknown>;
+		readonly commit?: { readonly target: Record<string, unknown>; readonly key: string };
 	};
-	for (const [rawKey, rawValue] of Object.entries(style)) {
+	const out: Record<string, unknown> = {};
+	const add = (target: Record<string, unknown>, key: string, value: unknown): void => {
+		const current = target[key];
+		if (isPlainObject(current) && isPlainObject(value)) target[key] = { ...current, ...value };
+		else target[key] = value;
+	};
+	const frames: Frame[] = [{ entries: Object.entries(style), index: 0, target: out }];
+	while (frames.length > 0) {
+		const frame = frames.at(-1)!;
+		const entry = frame.entries[frame.index++];
+		if (entry === undefined) {
+			frames.pop();
+			if (frame.commit !== undefined) add(frame.commit.target, frame.commit.key, frame.target);
+			continue;
+		}
+		const [rawKey, rawValue] = entry;
 		const key = canonicalProp(rawKey);
 		if (key === "hideFrom" || key === "hideBelow") {
 			if (typeof rawValue === "string") {
-				add(key === "hideFrom" ? rawValue : `${rawValue}Down`, { display: "none" });
+				add(frame.target, key === "hideFrom" ? rawValue : `${rawValue}Down`, { display: "none" });
 			} else {
-				add(key, rawValue);
+				add(frame.target, key, rawValue);
 			}
 			continue;
 		}
 		if (key === "boxSize") {
-			add("width", rawValue);
-			add("height", rawValue);
+			add(frame.target, "width", rawValue);
+			add(frame.target, "height", rawValue);
 			continue;
 		}
 		const radius = RADIUS_EXPANSIONS.get(key);
 		if (radius !== undefined) {
-			for (const property of radius) add(property, rawValue);
+			for (const property of radius) add(frame.target, property, rawValue);
 			continue;
 		}
 		const property = CSS_PROPERTY_ALIASES.get(key) ?? key;
-		add(property, isPlainObject(rawValue) ? normalizePandaStyleObject(rawValue) : rawValue);
+		if (isPlainObject(rawValue)) {
+			const nested: Record<string, unknown> = {};
+			frames.push({
+				entries: Object.entries(rawValue),
+				index: 0,
+				target: nested,
+				commit: { target: frame.target, key: property },
+			});
+		} else {
+			add(frame.target, property, rawValue);
+		}
 	}
 	return out;
 }
@@ -261,19 +291,44 @@ function pushEntries(ir: SwapIR, entries: Array<SwapEntry>): void {
 	ir.entries.push(...entries);
 }
 
+type StyleTask =
+	| {
+			readonly kind: "style";
+			readonly style: Record<string, unknown>;
+			readonly conditions: string[];
+	  }
+	| {
+			readonly kind: "entry";
+			readonly key: string;
+			readonly raw: unknown;
+			readonly conditions: string[];
+	  };
+
 function walkStyle(
 	style: Record<string, unknown>,
 	conditions: string[],
 	ir: SwapIR,
 	theme: PandaTheme,
 ): void {
-	for (const [key, raw] of Object.entries(style)) {
+	const tasks: StyleTask[] = [{ kind: "style", style, conditions }];
+	while (tasks.length > 0) {
+		const task = tasks.pop()!;
+		if (task.kind === "style") {
+			const entries = Object.entries(task.style);
+			for (let index = entries.length - 1; index >= 0; index--) {
+				const [key, raw] = entries[index]!;
+				tasks.push({ kind: "entry", key, raw, conditions: task.conditions });
+			}
+			continue;
+		}
+
+		const { key, raw, conditions: activeConditions } = task;
 		if (key.startsWith("&") || key.startsWith("@")) {
 			if (isPlainObject(raw)) {
 				// Pandwind's stylesheet engine can preserve nested selectors and
 				// at-rules as condition paths; keep walking so Panda aliases inside
 				// them are canonicalized instead of leaving a runtime Panda call.
-				walkStyle(raw, [...conditions, key], ir, theme);
+				tasks.push({ kind: "style", style: raw, conditions: [...activeConditions, key] });
 			} else {
 				ir.residuals.push({
 					kind: "unrepresentable",
@@ -294,107 +349,105 @@ function walkStyle(
 			}
 			// A literal `base:` key applies declarations under the current chain.
 			if (key === "base") {
-				walkStyle(raw, conditions, ir, theme);
+				tasks.push({ kind: "style", style: raw, conditions: activeConditions });
 				continue;
 			}
 			const condition = key.startsWith("_") ? key.slice(1) : key;
-			walkStyle(raw, [...conditions, condition], ir, theme);
+			tasks.push({ kind: "style", style: raw, conditions: [...activeConditions, condition] });
 			continue;
 		}
-		walkDeclaration(key, raw, conditions, ir, theme);
-	}
-}
 
-function walkDeclaration(
-	key: string,
-	raw: unknown,
-	conditions: string[],
-	ir: SwapIR,
-	theme: PandaTheme,
-): void {
-	const prop = canonicalProp(key);
+		const prop = canonicalProp(key);
 
-	if (prop === "hideFrom" || prop === "hideBelow") {
-		if (typeof raw === "string") {
-			walkDeclaration(
-				"display",
-				"none",
-				[...conditions, prop === "hideFrom" ? raw : `${raw}Down`],
-				ir,
-				theme,
-			);
-		} else {
-			ir.residuals.push({
-				kind: "dynamic",
-				text: `${key}: {...}`,
-				hint: `${key} must use a literal breakpoint name`,
-			});
+		if (prop === "hideFrom" || prop === "hideBelow") {
+			if (typeof raw === "string") {
+				tasks.push({
+					kind: "entry",
+					key: "display",
+					raw: "none",
+					conditions: [...activeConditions, prop === "hideFrom" ? raw : `${raw}Down`],
+				});
+			} else {
+				ir.residuals.push({
+					kind: "dynamic",
+					text: `${key}: {...}`,
+					hint: `${key} must use a literal breakpoint name`,
+				});
+			}
+			continue;
 		}
-		return;
-	}
 
-	if (prop === "boxSize") {
-		walkDeclaration("width", raw, conditions, ir, theme);
-		walkDeclaration("height", raw, conditions, ir, theme);
-		return;
-	}
-
-	const radius = RADIUS_EXPANSIONS.get(prop);
-	if (radius !== undefined) {
-		for (const property of radius) walkDeclaration(property, raw, conditions, ir, theme);
-		return;
-	}
-
-	// textStyle expands to its bundled declarations.
-	if (prop === "textStyle" && typeof raw === "string") {
-		const textStyle = theme.textStyles.get(raw);
-		if (textStyle === undefined) {
-			ir.residuals.push({
-				kind: "unknown-value",
-				text: `textStyle: '${raw}'`,
-				hint: `textStyle "${raw}" not in ingested panda theme — lift textStyles in pass 1 or migrate manually`,
-			});
-			return;
+		if (prop === "boxSize") {
+			tasks.push({ kind: "entry", key: "height", raw, conditions: activeConditions });
+			tasks.push({ kind: "entry", key: "width", raw, conditions: activeConditions });
+			continue;
 		}
-		walkStyle(textStyle, conditions, ir, theme);
-		return;
-	}
 
-	// Per-property conditional fan-out: mt: { base: '6', _first: '0' }.
-	if (isPlainObject(raw) && Object.keys(raw).length > 0 && isConditionishMap(raw, theme)) {
-		for (const [cond, value] of Object.entries(raw)) {
-			if (cond === "base") {
-				walkDeclaration(key, value, conditions, ir, theme);
+		const radius = RADIUS_EXPANSIONS.get(prop);
+		if (radius !== undefined) {
+			for (let index = radius.length - 1; index >= 0; index--)
+				tasks.push({ kind: "entry", key: radius[index]!, raw, conditions: activeConditions });
+			continue;
+		}
+
+		// textStyle expands to its bundled declarations.
+		if (prop === "textStyle" && typeof raw === "string") {
+			const textStyle = theme.textStyles.get(raw);
+			if (textStyle === undefined) {
+				ir.residuals.push({
+					kind: "unknown-value",
+					text: `textStyle: '${raw}'`,
+					hint: `textStyle "${raw}" not in ingested panda theme — lift textStyles in pass 1 or migrate manually`,
+				});
 				continue;
 			}
-			const nested = cond.startsWith("_") ? cond.slice(1) : cond;
-			walkDeclaration(key, value, [...conditions, nested], ir, theme);
+			tasks.push({ kind: "style", style: textStyle, conditions: activeConditions });
+			continue;
 		}
-		return;
-	}
 
-	if (
-		raw === null ||
-		raw === undefined ||
-		(typeof raw !== "string" && typeof raw !== "number" && raw !== true)
-	) {
-		ir.residuals.push({
-			kind: "dynamic",
-			text: `${key}: ${isPlainObject(raw) || Array.isArray(raw) ? "{...}" : JSON.stringify(raw)}`,
-			hint: "non-literal or unsupported value shape",
-		});
-		return;
-	}
+		// Per-property conditional fan-out: mt: { base: '6', _first: '0' }.
+		if (isPlainObject(raw) && Object.keys(raw).length > 0 && isConditionishMap(raw, theme)) {
+			const branches = Object.entries(raw);
+			for (let index = branches.length - 1; index >= 0; index--) {
+				const [cond, value] = branches[index]!;
+				if (cond === "base") {
+					tasks.push({ kind: "entry", key, raw: value, conditions: activeConditions });
+					continue;
+				}
+				const nested = cond.startsWith("_") ? cond.slice(1) : cond;
+				tasks.push({
+					kind: "entry",
+					key,
+					raw: value,
+					conditions: [...activeConditions, nested],
+				});
+			}
+			continue;
+		}
 
-	const resolved = resolveValue(raw, prop, theme);
-	if (resolved.residual !== undefined) ir.residuals.push(resolved.residual);
-	pushEntries(ir, [
-		{
-			conditions,
-			prop,
-			value: resolved.value,
-		},
-	]);
+		if (
+			raw === null ||
+			raw === undefined ||
+			(typeof raw !== "string" && typeof raw !== "number" && raw !== true)
+		) {
+			ir.residuals.push({
+				kind: "dynamic",
+				text: `${key}: ${isPlainObject(raw) || Array.isArray(raw) ? "{...}" : JSON.stringify(raw)}`,
+				hint: "non-literal or unsupported value shape",
+			});
+			continue;
+		}
+
+		const resolved = resolveValue(raw, prop, theme);
+		if (resolved.residual !== undefined) ir.residuals.push(resolved.residual);
+		pushEntries(ir, [
+			{
+				conditions: activeConditions,
+				prop,
+				value: resolved.value,
+			},
+		]);
+	}
 }
 
 /** Is every key of this object a condition-ish branch (base/_cond/breakpoint)? */
@@ -419,17 +472,7 @@ export function pandaStyleToIr(
 
 /** LitValue -> plain JS value (deep); caller guarantees literalness. */
 export function literalToPlain(value: LitValue): unknown {
-	return toPlain(value);
-}
-
-function toPlain(value: LitValue): unknown {
-	if (Array.isArray(value)) return value.map(toPlain);
-	if (typeof value === "object" && value !== null) {
-		const out: Record<string, unknown> = {};
-		for (const { key, value: nested } of value.keys) out[key] = toPlain(nested);
-		return out;
-	}
-	return value;
+	return literalValueToPlain(value);
 }
 
 /* ------------------------------------------------------------------ */
@@ -490,7 +533,7 @@ export function pandaRecipeToIr(
 		defaultVariants: {},
 		residuals: [],
 	};
-	const plain = toPlain(body) as Record<string, unknown>;
+	const plain = literalValueToPlain(body) as Record<string, unknown>;
 
 	if (kind === PandaRecipeKindTag.Sva && Array.isArray(plain["slots"])) {
 		recipe.slots = plain["slots"].map(String);
@@ -689,7 +732,7 @@ export function parsePandaCalls(
 				start: match.index,
 				end: block.end,
 				kind: PandaCallKindTag.Css,
-				ir: pandaStyleToIr(toPlain(parsed) as never, theme),
+				ir: pandaStyleToIr(literalValueToPlain(parsed) as never, theme),
 			};
 		},
 		calls,

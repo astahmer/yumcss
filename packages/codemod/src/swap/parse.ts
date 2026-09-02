@@ -84,12 +84,11 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		}
 		return null;
 	};
-	const parseValue = (): LitValue | LiteralParserValueTag | null => {
+	const parseScalar = (): LitValue | LiteralParserValueTag | null => {
 		skipWsAndComments();
 		if (i >= body.length) return null;
 		const ch = body[i]!;
 		if (ch === '"' || ch === "'" || ch === "`") return parseString();
-		if (ch === "{" || ch === "[") return parseContainer();
 		const numeric = /^-?\d+(?:\.\d+)?/.exec(body.slice(i));
 		if (numeric !== null) {
 			i += numeric[0].length;
@@ -111,84 +110,159 @@ export function parseObjectLiteral(body: string): LiteralObject | null {
 		return LiteralParserValueTag.Dynamic;
 	};
 
+	type ContainerFrame =
+		| {
+				readonly kind: "object";
+				readonly value: LiteralObject;
+				state: "key" | "colon" | "value" | "after";
+				pendingKey?: string;
+		  }
+		| { readonly kind: "array"; readonly value: LitValue[]; state: "value" | "after" };
+
 	const parseContainer = (): LitValue | LiteralParserValueTag | null => {
-		const isOpenBrace = body[i] === "{";
+		const opening = body[i];
+		if (opening !== "{" && opening !== "[") return null;
 		i++;
-		skipWsAndComments();
-		if (isOpenBrace && body[i] === "}") {
-			i++;
-			return { keys: [] };
-		}
-		if (!isOpenBrace && body[i] === "]") {
-			i++;
-			return [];
-		}
-		if (isOpenBrace) {
-			const obj: LiteralObject = { keys: [] };
-			for (;;) {
-				skipWsAndComments();
-				if (i >= body.length) return null;
-				if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic; // spread
-				let key: string;
-				const quote = body[i];
-				if (quote === '"' || quote === "'" || quote === "`") {
-					const parsed = parseString();
-					if (parsed === null) return null;
-					key = parsed;
+		const stack: ContainerFrame[] = [
+			opening === "{"
+				? { kind: "object", value: { keys: [] }, state: "key" }
+				: { kind: "array", value: [], state: "value" },
+		];
+		let completed: LitValue | LiteralParserValueTag | null | undefined;
+		while (stack.length > 0) {
+			if (completed !== undefined) {
+				const parent = stack.at(-1);
+				if (parent === undefined) return completed;
+				if (parent.kind === "object") {
+					const key = parent.pendingKey;
+					if (
+						key === undefined ||
+						completed === null ||
+						completed === LiteralParserValueTag.Dynamic
+					)
+						return completed === LiteralParserValueTag.Dynamic ? completed : null;
+					if (parent.value.keys.some((entry) => entry.key === key)) return "dynamic";
+					parent.value.keys.push({ key, value: completed });
+					parent.pendingKey = undefined;
+					parent.state = "after";
 				} else {
-					const start = i;
-					while (i < body.length && /[\w$-]/.test(body[i]!)) i++;
-					key = body.slice(start, i);
+					if (completed === null || completed === LiteralParserValueTag.Dynamic) return completed;
+					parent.value.push(completed);
+					parent.state = "after";
 				}
-				if (key === "") return null;
-				skipWsAndComments();
-				if (body[i] !== ":") return null;
-				i++;
-				const value = parseValue();
-				if (value === LiteralParserValueTag.Dynamic) return LiteralParserValueTag.Dynamic;
-				if (value === null) return null;
-				if (obj.keys.some((k) => k.key === key)) return "dynamic"; // duplicate key
-				obj.keys.push({ key, value });
-				skipWsAndComments();
-				if (body[i] === ",") {
-					i++;
-					// tolerate trailing commas before the closing brace
-					const lookahead = i;
-					skipWsAndComments();
+				completed = undefined;
+				continue;
+			}
+
+			const frame = stack.at(-1)!;
+			skipWsAndComments();
+			if (frame.kind === "object") {
+				if (frame.state === "key") {
+					if (i >= body.length) return null;
 					if (body[i] === "}") {
 						i++;
-						return obj;
+						stack.pop();
+						completed = frame.value;
+						continue;
 					}
-					i = lookahead;
+					if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic;
+					const quote = body[i];
+					let key: string;
+					if (quote === '"' || quote === "'" || quote === "`") {
+						const parsed = parseString();
+						if (parsed === null) return null;
+						key = parsed;
+					} else {
+						const start = i;
+						while (i < body.length && /[\w$-]/.test(body[i]!)) i++;
+						key = body.slice(start, i);
+					}
+					if (key === "") return null;
+					frame.pendingKey = key;
+					frame.state = "colon";
+					continue;
+				}
+				if (frame.state === "colon") {
+					if (body[i] !== ":") return null;
+					i++;
+					frame.state = "value";
+					continue;
+				}
+				if (frame.state === "value") {
+					if (i >= body.length) return null;
+					if (body[i] === "{" || body[i] === "[") {
+						stack.push(
+							body[i] === "{"
+								? { kind: "object", value: { keys: [] }, state: "key" }
+								: { kind: "array", value: [], state: "value" },
+						);
+						i++;
+						continue;
+					}
+					const value = parseScalar();
+					if (value === null || value === LiteralParserValueTag.Dynamic) return value;
+					frame.value.keys.push({ key: frame.pendingKey!, value });
+					frame.pendingKey = undefined;
+					frame.state = "after";
+					continue;
+				}
+				if (body[i] === ",") {
+					i++;
+					frame.state = "key";
 					continue;
 				}
 				if (body[i] === "}") {
 					i++;
-					return obj;
+					stack.pop();
+					completed = frame.value;
+					continue;
 				}
 				return null;
 			}
-		}
-		const arr: LitValue[] = [];
-		for (;;) {
-			skipWsAndComments();
-			if (i >= body.length) return null;
-			if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic; // spread
-			const v = parseValue();
-			if (v === LiteralParserValueTag.Dynamic) return LiteralParserValueTag.Dynamic;
-			if (v === null) return null;
-			arr.push(v);
-			skipWsAndComments();
+
+			if (frame.state === "value") {
+				if (i >= body.length) return null;
+				if (body[i] === "]") {
+					i++;
+					stack.pop();
+					completed = frame.value;
+					continue;
+				}
+				if (body.startsWith("...", i)) return LiteralParserValueTag.Dynamic;
+				if (body[i] === "{" || body[i] === "[") {
+					stack.push(
+						body[i] === "{"
+							? { kind: "object", value: { keys: [] }, state: "key" }
+							: { kind: "array", value: [], state: "value" },
+					);
+					i++;
+					continue;
+				}
+				const value = parseScalar();
+				if (value === null || value === LiteralParserValueTag.Dynamic) return value;
+				frame.value.push(value);
+				frame.state = "after";
+				continue;
+			}
 			if (body[i] === ",") {
 				i++;
+				frame.state = "value";
 				continue;
 			}
 			if (body[i] === "]") {
 				i++;
-				return arr;
+				stack.pop();
+				completed = frame.value;
+				continue;
 			}
 			return null;
 		}
+		return completed ?? null;
+	};
+
+	const parseValue = (): LitValue | LiteralParserValueTag | null => {
+		skipWsAndComments();
+		return body[i] === "{" || body[i] === "[" ? parseContainer() : parseScalar();
 	};
 
 	// top level: the body IS the inside of `{ ... }`
@@ -361,14 +435,53 @@ const CSS_CALL_REGEX = /(?<![\w.])(\w+)\s*\.\s*class\s*\(\s*\{/g;
 const BARE_CSS_CALL_REGEX = /(?<![\w.])css\s*\(\s*\{/g;
 
 /** LiteralObject -> plain JS object (deep), ready for resolveDesignStyle. */
-function toPlain(value: LitValue): unknown {
-	if (Array.isArray(value)) return value.map((v) => toPlain(v));
+export function literalValueToPlain(value: LitValue): unknown {
+	type Container = unknown[] | Record<string, unknown>;
+	type Frame = { readonly value: LitValue; readonly output: Container; index: number };
+	const container = (input: LitValue): Container => (Array.isArray(input) ? [] : {});
+	const set = (output: Container, key: string | number, value: unknown): void => {
+		if (Array.isArray(output)) output[key as number] = value;
+		else output[key as string] = value;
+	};
+	const assign = (
+		output: Container,
+		key: string | number,
+		child: LitValue,
+		stack: Frame[],
+	): void => {
+		if (typeof child !== "object" || child === null) {
+			set(output, key, child);
+			return;
+		}
+		const nested = container(child);
+		set(output, key, nested);
+		stack.push({ value: child, output: nested, index: 0 });
+	};
+	let root: unknown;
+	const stack: Frame[] = [];
 	if (typeof value === "object" && value !== null) {
-		const out: Record<string, unknown> = {};
-		for (const { key, value: nested } of value.keys) out[key] = toPlain(nested);
-		return out;
+		const output = container(value);
+		root = output;
+		stack.push({ value, output, index: 0 });
+	} else {
+		root = value;
 	}
-	return value;
+	while (stack.length > 0) {
+		const frame = stack.pop()!;
+		if (typeof frame.value !== "object" || frame.value === null) continue;
+		if (Array.isArray(frame.value)) {
+			while (frame.index < frame.value.length) {
+				const index = frame.index++;
+				assign(frame.output, index, frame.value[index]!, stack);
+			}
+			continue;
+		}
+		while (frame.index < frame.value.keys.length) {
+			const entry = frame.value.keys[frame.index++]!;
+			assign(frame.output, entry.key, entry.value, stack);
+		}
+	}
+	return root;
 }
 
 function flattenToIr(flat: Record<string, unknown>): SwapIR {
@@ -422,7 +535,7 @@ export function parseCssLiterals(
 				continue;
 			}
 			const style: Record<string, unknown> = {};
-			for (const { key, value } of parsed.keys) style[key] = toPlain(value);
+			for (const { key, value } of parsed.keys) style[key] = literalValueToPlain(value);
 			const design = Object.keys(style).some((k) => k.startsWith("$"));
 			let ir = design
 				? flattenToIr(resolveDesignStyle(style, options.tokens) as never)

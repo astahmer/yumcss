@@ -352,14 +352,15 @@ function collectSources(
 	add(root);
 	for (const theme of themes ?? []) add(theme.source);
 	for (const composition of compositions ?? []) add(composition.source);
-	const visit = (rule: StyleRule): void => {
+	const work = [...rules].toReversed();
+	while (work.length > 0) {
+		const rule = work.pop()!;
 		add(rule.source);
 		for (const declaration of rule.declarations) {
 			if (declaration.value.kind === StyleValueKindTag.Dynamic) add(declaration.value.source);
 		}
-		for (const child of rule.children) visit(child);
-	};
-	for (const rule of rules) visit(rule);
+		for (const child of rule.children.toReversed()) work.push(child);
+	}
 	return [...sources.values()];
 }
 
@@ -512,14 +513,42 @@ export function styleProgramFromRules(
 
 /** Stable ordering for rules and nested at-rule children. */
 export function orderStyleRules(rules: readonly StyleRule[]): StyleRule[] {
-	return [...rules]
-		.toSorted(
+	const ordered = (input: readonly StyleRule[]): StyleRule[] =>
+		[...input].toSorted(
 			(a, b) =>
 				a.order - b.order ||
 				compareCodeUnits(a.kind, b.kind) ||
 				compareCodeUnits(a.name ?? "", b.name ?? ""),
-		)
-		.map((rule) => ({ ...rule, children: orderStyleRules(rule.children) }));
+		);
+	type Frame = {
+		readonly rules: StyleRule[];
+		index: number;
+		readonly result: StyleRule[];
+		readonly resume?: { readonly parent: Frame; readonly rule: StyleRule };
+	};
+	const root: Frame = { rules: ordered(rules), index: 0, result: [] };
+	const frames: Frame[] = [root];
+	while (frames.length > 0) {
+		const frame = frames.at(-1)!;
+		const rule = frame.rules[frame.index++];
+		if (rule !== undefined) {
+			if (rule.children.length === 0) {
+				frame.result.push({ ...rule, children: [] });
+			} else {
+				frames.push({
+					rules: ordered(rule.children),
+					index: 0,
+					result: [],
+					resume: { parent: frame, rule },
+				});
+			}
+			continue;
+		}
+		frames.pop();
+		if (frame.resume !== undefined)
+			frame.resume.parent.result.push({ ...frame.resume.rule, children: frame.result });
+	}
+	return root.result;
 }
 
 function compareCodeUnits(left: string, right: string): number {

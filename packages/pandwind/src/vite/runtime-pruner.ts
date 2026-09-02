@@ -1,5 +1,5 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
-import type { OxcNode } from "../tw/literal.ts";
+import { walkWithParent, type OxcNode } from "../tw/literal.ts";
 
 const CssRuntimeMethodTag = {
 	Class: "class",
@@ -60,28 +60,6 @@ interface Usage {
 	readonly methods: Set<CssRuntimeMethodTag>;
 	readonly escaped: boolean;
 }
-
-const walkWithParent = (
-	node: unknown,
-	visit: (node: OxcNode, parent: OxcNode | undefined, ancestors: readonly OxcNode[]) => void,
-	parent?: OxcNode,
-	ancestors: OxcNode[] = [],
-): void => {
-	if (Array.isArray(node)) {
-		for (const item of node) walkWithParent(item, visit, parent, ancestors);
-		return;
-	}
-	if (node === null || typeof node !== "object") return;
-	const current = node as OxcNode;
-	if (typeof current.type !== "string") {
-		for (const value of Object.values(current)) walkWithParent(value, visit, parent, ancestors);
-		return;
-	}
-	visit(current, parent, ancestors);
-	ancestors.push(current);
-	for (const value of Object.values(current)) walkWithParent(value, visit, current, ancestors);
-	ancestors.pop();
-};
 
 const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNode): boolean =>
 	declaration.importKind !== "type" &&

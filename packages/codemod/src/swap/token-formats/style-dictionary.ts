@@ -1,18 +1,10 @@
-import { createTokenSet, putToken, exportNested } from "../token-format-support.ts";
 import {
-	TokenFormatId,
-	type TokenFormatAdapter,
-	type TokenSet,
-} from "../token-format-contracts.ts";
-const walk = (node: unknown, path: string[], out: TokenSet): void => {
-	if (typeof node !== "object" || node === null) return;
-	const value = (node as { value?: unknown }).value;
-	if (typeof value === "string") {
-		putToken(out, path[0] ?? "misc", path.slice(1).join("-"), value);
-		return;
-	}
-	for (const [key, child] of Object.entries(node)) walk(child, [...path, key], out);
-};
+	createTokenSet,
+	putToken,
+	exportNested,
+	TokenTreeWalker,
+} from "../token-format-support.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 export const styleDictionaryTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
 	id: TokenFormatId.StyleDictionary,
@@ -20,7 +12,12 @@ export const styleDictionaryTokenFormat: TokenFormatAdapter = {
 	canExport: true,
 	importText(text) {
 		const out = createTokenSet();
-		walk(JSON.parse(text), [], out);
+		TokenTreeWalker.visit(JSON.parse(text), (record, path) => {
+			const value = record.value;
+			if (typeof value !== "string") return;
+			putToken(out, path[0] ?? "misc", path.slice(1).join("-"), value);
+			return true;
+		});
 		return out;
 	},
 	export(set) {

@@ -93,69 +93,76 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 	const entries = new Map<string, readonly StyleDeclaration[]>();
 	const root = parseGeneratedCss(css);
-	const walk = (
-		nodes: readonly GeneratedCssNode[],
-		inherited: readonly StyleCondition[],
-		insideStyleRule: boolean,
-	): void => {
-		for (const node of nodes) {
-			if (node.type === "decl") {
-				if (!insideStyleRule) continue;
-				const name = cssPropertyToStyleProperty(node.prop.trim());
-				const value = node.value.trim();
-				if (name === "" || value === "") continue;
-				for (const entry of currentRules) {
-					const existing = entries.get(entry.token) ?? [];
-					entries.set(entry.token, [
-						...existing,
-						{ ...literal(name, value), conditions: entry.conditions },
-					]);
-				}
-				continue;
+	const work: Array<{
+		node: GeneratedCssNode;
+		conditions: readonly StyleCondition[];
+		insideStyleRule: boolean;
+		currentRules: readonly { token: string; conditions: readonly StyleCondition[] }[];
+	}> = root.toReversed().map((node) => ({
+		node,
+		conditions: [],
+		insideStyleRule: false,
+		currentRules: [],
+	}));
+	while (work.length > 0) {
+		const current = work.pop()!;
+		const node = current.node;
+		if (node.type === "decl") {
+			if (!current.insideStyleRule) continue;
+			const name = cssPropertyToStyleProperty(node.prop.trim());
+			const value = node.value.trim();
+			if (name === "" || value === "") continue;
+			for (const entry of current.currentRules) {
+				const existing = entries.get(entry.token) ?? [];
+				entries.set(entry.token, [
+					...existing,
+					{ ...literal(name, value), conditions: entry.conditions },
+				]);
 			}
-			if (node.type === "atrule") {
-				if (node.name === "theme") {
-					for (const child of node.nodes ?? []) {
-						if (child.type !== "decl") continue;
-						const value = child.value.trim();
-						const match = /^--color-(.+)$/u.exec(child.prop);
-						if (match?.[1] === undefined || value === "") continue;
-						entries.set(`bg-${match[1]}`, [literal("backgroundColor", value)]);
-						entries.set(`text-${match[1]}`, [literal("color", value)]);
-					}
-					continue;
-				}
-				const atRuleCondition = generatedAtRuleCondition(node);
-				walk(
-					node.nodes ?? [],
-					atRuleCondition === undefined ? inherited : [...inherited, atRuleCondition],
-					insideStyleRule,
-				);
-				continue;
-			}
-			if (node.type === "rule") {
-				const rules = [...node.selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].flatMap(
-					(match) => {
-						const raw = match[1];
-						if (raw === undefined) return [];
-						const token = unescapeUnoCssSelector(raw);
-						return [
-							{
-								token,
-								conditions: [...inherited, ...generatedSelectorConditions(node.selector, token)],
-							},
-						];
-					},
-				);
-				const previousRules = currentRules;
-				currentRules = rules;
-				walk(node.nodes ?? [], inherited, true);
-				currentRules = previousRules;
-			}
+			continue;
 		}
-	};
-	let currentRules: readonly { token: string; conditions: readonly StyleCondition[] }[] = [];
-	walk(root, [], false);
+		const children = node.nodes ?? [];
+		if (node.type === "atrule") {
+			if (node.name === "theme") {
+				for (const child of children) {
+					if (child.type !== "decl") continue;
+					const value = child.value.trim();
+					const match = /^--color-(.+)$/u.exec(child.prop);
+					if (match?.[1] === undefined || value === "") continue;
+					entries.set(`bg-${match[1]}`, [literal("backgroundColor", value)]);
+					entries.set(`text-${match[1]}`, [literal("color", value)]);
+				}
+				continue;
+			}
+			const atRuleCondition = generatedAtRuleCondition(node);
+			const conditions =
+				atRuleCondition === undefined
+					? current.conditions
+					: [...current.conditions, atRuleCondition];
+			for (let index = children.length - 1; index >= 0; index--)
+				work.push({ ...current, node: children[index]!, conditions });
+			continue;
+		}
+
+		const rules = [...node.selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].flatMap((match) => {
+			const raw = match[1];
+			if (raw === undefined) return [];
+			const token = unescapeUnoCssSelector(raw);
+			return [
+				{
+					token,
+					conditions: [...current.conditions, ...generatedSelectorConditions(node.selector, token)],
+				},
+			];
+		});
+		for (let index = children.length - 1; index >= 0; index--)
+			work.push({
+				node: children[index]!,
+				conditions: current.conditions,
+				insideStyleRule: true,
+				currentRules: rules,
+			});
+	}
 	return { resolve: (token) => entries.get(token) };
 }
 

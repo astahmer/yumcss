@@ -8,17 +8,44 @@ export const putToken = (set: TokenSet, group: string, key: string, value: strin
 	if (values[key] === undefined) values[key] = value;
 };
 
+export class TokenTreeWalker {
+	static visit(
+		root: unknown,
+		visitor: (node: Record<string, unknown>, path: readonly string[]) => boolean | void,
+	): void {
+		const stack: Array<{ node: unknown; path: string[] }> = [{ node: root, path: [] }];
+		while (stack.length > 0) {
+			const current = stack.pop()!;
+			if (typeof current.node !== "object" || current.node === null) continue;
+			const node = current.node as Record<string, unknown>;
+			if (visitor(node, current.path) === true) continue;
+			const entries = Object.entries(node);
+			for (let index = entries.length - 1; index >= 0; index--) {
+				const [key, child] = entries[index]!;
+				stack.push({ node: child, path: [...current.path, key] });
+			}
+		}
+	}
+}
+
 export const flattenNested = (
 	node: Record<string, unknown>,
 	prefix: string[],
 	out: Record<string, string>,
 ): void => {
-	for (const [key, value] of Object.entries(node)) {
-		if (typeof value === "string") out[[...prefix, key].join("-")] = value;
-		else if (typeof value === "object" && value !== null) {
-			const leaf = (value as { value?: unknown }).value;
-			if (typeof leaf === "string") out[[...prefix, key].join("-")] = leaf;
-			else flattenNested(value as Record<string, unknown>, [...prefix, key], out);
+	const stack: Array<{ node: Record<string, unknown>; prefix: string[] }> = [{ node, prefix }];
+	while (stack.length > 0) {
+		const current = stack.pop()!;
+		const entries = Object.entries(current.node);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const [key, value] = entries[index]!;
+			const path = [...current.prefix, key];
+			if (typeof value === "string") out[path.join("-")] = value;
+			else if (typeof value === "object" && value !== null) {
+				const leaf = (value as { value?: unknown }).value;
+				if (typeof leaf === "string") out[path.join("-")] = leaf;
+				else stack.push({ node: value as Record<string, unknown>, prefix: path });
+			}
 		}
 	}
 };

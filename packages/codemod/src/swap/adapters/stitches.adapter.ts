@@ -13,15 +13,9 @@ import {
 	StyleProgramCompositionKind,
 } from "../identifiers.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
-import { parseObjectLiteral, type LitValue } from "../parse.ts";
+import { literalValueToPlain, parseObjectLiteral } from "../parse.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { TokenCatalog } from "../tokens.ts";
-
-function literalValue(value: LitValue): unknown {
-	if (Array.isArray(value)) return value.map(literalValue);
-	if (typeof value !== "object" || value === null) return value;
-	return Object.fromEntries(value.keys.map(({ key, value: child }) => [key, literalValue(child)]));
-}
 
 function stitchesTheme(source: string): TokenCatalog | undefined {
 	for (const match of source.matchAll(/\bcreateStitches\s*\(/g)) {
@@ -32,7 +26,7 @@ function stitchesTheme(source: string): TokenCatalog | undefined {
 		const config = parseObjectLiteral(block.body);
 		const theme = config?.keys.find((entry) => entry.key === "theme")?.value;
 		if (theme !== undefined && typeof theme === "object" && !Array.isArray(theme))
-			return TokenCatalog.fromNested(literalValue(theme) as Record<string, unknown>);
+			return TokenCatalog.fromNested(literalValueToPlain(theme) as Record<string, unknown>);
 	}
 	return undefined;
 }
@@ -52,7 +46,9 @@ function stitchesValue(value: StyleValue, catalog: TokenCatalog | undefined): St
 
 function stitchesTransform(program: StyleProgram): StyleProgram {
 	const unresolved = new Set<string>();
-	const visit = (rule: StyleProgram["rules"][number]): void => {
+	const work = [...program.rules].toReversed();
+	while (work.length > 0) {
+		const rule = work.pop()!;
 		for (const declaration of rule.declarations) {
 			if (
 				declaration.value.kind === StyleValueKindTag.Literal &&
@@ -62,9 +58,8 @@ function stitchesTransform(program: StyleProgram): StyleProgram {
 				if (/^\$[^$]+\$.+/u.test(value)) unresolved.add(value);
 			}
 		}
-		for (const child of rule.children) visit(child);
-	};
-	for (const rule of program.rules) visit(rule);
+		for (const child of rule.children.toReversed()) work.push(child);
+	}
 	return unresolved.size === 0
 		? program
 		: {

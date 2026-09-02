@@ -70,15 +70,22 @@ function flattenTokenSection(
 	prefix: string[],
 	out: Record<string, Record<string, unknown>>,
 ): void {
-	for (const [key, child] of Object.entries(node)) {
-		if (!isPlainObject(child)) continue;
-		const box = child as ValueBox;
-		if ("value" in box) {
-			const path = prefix.concat(key === "DEFAULT" ? [] : [key]).join(".");
-			if (path !== "") (out[group] ??= {})[path] = box.value;
-			continue;
+	const stack: Array<{ node: Record<string, unknown>; prefix: string[] }> = [{ node, prefix }];
+	while (stack.length > 0) {
+		const current = stack.pop()!;
+		const entries = Object.entries(current.node);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const [key, child] = entries[index]!;
+			if (!isPlainObject(child)) continue;
+			const box = child as ValueBox;
+			const nextPrefix = current.prefix.concat(key === "DEFAULT" ? [] : [key]);
+			if ("value" in box) {
+				const path = nextPrefix.join(".");
+				if (path !== "") (out[group] ??= {})[path] = box.value;
+				continue;
+			}
+			stack.push({ node: child, prefix: nextPrefix });
 		}
-		flattenTokenSection(child, group, prefix.concat(key === "DEFAULT" ? [] : [key]), out);
 	}
 }
 
@@ -91,35 +98,72 @@ function collectTokenValues(section: unknown, out: Record<string, Record<string,
 
 function resolveTokenReferences(tokens: Record<string, Record<string, unknown>>): void {
 	const resolving = new Set<string>();
-	const resolve = (value: unknown): unknown => {
-		if (typeof value === "string") {
-			const ref = /^\{([^}]+)\}$/.exec(value)?.[1];
-			if (ref === undefined) return value;
-			const dot = ref.indexOf(".");
-			if (dot === -1) return value;
-			const group = ref.slice(0, dot);
-			const key = ref.slice(dot + 1);
-			const id = `${group}.${key}`;
-			const candidate = tokens[group]?.[key];
-			if (candidate === undefined || resolving.has(id)) return value;
-			resolving.add(id);
-			const result = resolve(candidate);
-			resolving.delete(id);
-			return result;
+	type Task =
+		| { readonly kind: "value"; readonly value: unknown; readonly assign: (value: unknown) => void }
+		| { readonly kind: "leave"; readonly id: string };
+	const resolve = (value: unknown, assign: (result: unknown) => void): void => {
+		const stack: Task[] = [{ kind: "value", value, assign }];
+		while (stack.length > 0) {
+			const task = stack.pop()!;
+			if (task.kind === "leave") {
+				resolving.delete(task.id);
+				continue;
+			}
+			if (typeof task.value === "string") {
+				const ref = /^\{([^}]+)\}$/.exec(task.value)?.[1];
+				const dot = ref?.indexOf(".") ?? -1;
+				if (ref === undefined || dot === -1) {
+					task.assign(task.value);
+					continue;
+				}
+				const group = ref.slice(0, dot);
+				const key = ref.slice(dot + 1);
+				const id = `${group}.${key}`;
+				const candidate = tokens[group]?.[key];
+				if (candidate === undefined || resolving.has(id)) {
+					task.assign(task.value);
+					continue;
+				}
+				resolving.add(id);
+				stack.push({ kind: "leave", id });
+				stack.push({ kind: "value", value: candidate, assign: task.assign });
+				continue;
+			}
+			if (Array.isArray(task.value)) {
+				const output: unknown[] = [];
+				task.assign(output);
+				for (let index = task.value.length - 1; index >= 0; index--) {
+					const child = task.value[index]!;
+					stack.push({
+						kind: "value",
+						value: child,
+						assign: (result) => (output[index] = result),
+					});
+				}
+				continue;
+			}
+			if (isPlainObject(task.value)) {
+				const output: Record<string, unknown> = {};
+				task.assign(output);
+				for (const [key, child] of Object.entries(task.value).toReversed()) {
+					stack.push({
+						kind: "value",
+						value: child,
+						assign: (result) => (output[key] = result),
+					});
+				}
+				continue;
+			}
+			task.assign(task.value);
 		}
-		if (Array.isArray(value)) return value.map(resolve);
-		if (isPlainObject(value)) {
-			return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, resolve(child)]));
-		}
-		return value;
 	};
-	for (const [group, values] of Object.entries(tokens)) {
-		for (const [key, value] of Object.entries(values)) values[key] = resolve(value);
-		void group;
+	for (const values of Object.values(tokens)) {
+		for (const [key, value] of Object.entries(values))
+			resolve(value, (result) => (values[key] = result));
 	}
 }
 
-/** Recurse a panda token tree until `{ value: ... }` leaves; collect paths. */
+/** Traverse a Panda token tree until `{ value: ... }` leaves; collect paths. */
 const dashSegment = (segment: string): string =>
 	segment.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
 
@@ -129,38 +173,60 @@ function collectTokenPaths(
 	group: string | null,
 	out: Map<string, string>,
 ): void {
-	for (const [key, child] of Object.entries(node)) {
-		if (!isPlainObject(child)) continue;
-		const box = child as ValueBox;
-		if ("value" in box) {
-			const segments = prefix.concat(key === "DEFAULT" ? [] : [key]);
-			if (segments.length === 0) continue;
-			const path = segments.join(".");
-			const dashed = segments.map(dashSegment).join("-");
-			const varGroup = group === null ? "" : `${dashSegment(group)}-`;
-			out.set(path, `--${varGroup}${dashed}`);
-			continue;
+	const stack: Array<{
+		node: Record<string, unknown>;
+		prefix: string[];
+		group: string | null;
+	}> = [{ node, prefix, group }];
+	while (stack.length > 0) {
+		const current = stack.pop()!;
+		const entries = Object.entries(current.node);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const [key, child] = entries[index]!;
+			if (!isPlainObject(child)) continue;
+			const box = child as ValueBox;
+			if ("value" in box) {
+				const segments = current.prefix.concat(key === "DEFAULT" ? [] : [key]);
+				if (segments.length === 0) continue;
+				const path = segments.join(".");
+				const dashed = segments.map(dashSegment).join("-");
+				const varGroup = current.group === null ? "" : `${dashSegment(current.group)}-`;
+				out.set(path, `--${varGroup}${dashed}`);
+				continue;
+			}
+			// First nesting level names the GROUP; paths are relative to it.
+			const nextPrefix =
+				key === "DEFAULT"
+					? current.prefix
+					: current.group === null
+						? []
+						: current.prefix.concat(key);
+			stack.push({ node: child, prefix: nextPrefix, group: current.group ?? key });
 		}
-		// First nesting level names the GROUP; paths are relative to it.
-		const nextPrefix = key === "DEFAULT" ? prefix : group === null ? [] : prefix.concat(key);
-		collectTokenPaths(child, nextPrefix, group ?? key, out);
 	}
 }
 
-/** Recurse textStyles until `{ value: <declarations> }` leaves. */
+/** Traverse textStyles until `{ value: <declarations> }` leaves. */
 function collectTextStyles(
 	node: Record<string, unknown>,
 	prefix: string[],
 	out: Map<string, Record<string, unknown>>,
 ): void {
-	for (const [key, child] of Object.entries(node)) {
-		if (!isPlainObject(child)) continue;
-		const box = child as ValueBox;
-		if ("value" in box && isPlainObject(box.value)) {
-			out.set(prefix.concat(key).join("."), box.value);
-			continue;
+	const stack: Array<{ node: Record<string, unknown>; prefix: string[] }> = [{ node, prefix }];
+	while (stack.length > 0) {
+		const current = stack.pop()!;
+		const entries = Object.entries(current.node);
+		for (let index = entries.length - 1; index >= 0; index--) {
+			const [key, child] = entries[index]!;
+			if (!isPlainObject(child)) continue;
+			const box = child as ValueBox;
+			const nextPrefix = current.prefix.concat(key);
+			if ("value" in box && isPlainObject(box.value)) {
+				out.set(nextPrefix.join("."), box.value);
+				continue;
+			}
+			stack.push({ node: child, prefix: nextPrefix });
 		}
-		collectTextStyles(child, prefix.concat(key), out);
 	}
 }
 

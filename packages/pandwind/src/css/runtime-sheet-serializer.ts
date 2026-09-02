@@ -43,9 +43,31 @@ const selector = (
 
 export class SemanticRuleSerializer implements RuntimeRuleSerializer {
 	serialize(rule: RuntimeSemanticRule): string {
-		const body =
-			declarations(rule.declarations) +
-			(rule.children ?? []).map((child) => this.serialize(child)).join("");
+		type Frame = {
+			readonly rule: RuntimeSemanticRule;
+			readonly parts: string[];
+			index: number;
+		};
+		const frames: Frame[] = [{ rule, parts: [declarations(rule.declarations)], index: 0 }];
+		let output = "";
+		while (frames.length > 0) {
+			const frame = frames.at(-1)!;
+			const child = frame.rule.children?.[frame.index++];
+			if (child !== undefined) {
+				frames.push({ rule: child, parts: [declarations(child.declarations)], index: 0 });
+				continue;
+			}
+			frames.pop();
+			const body = frame.parts.join("");
+			const serialized = this.serializeRule(frame.rule, body);
+			const parent = frames.at(-1);
+			if (parent === undefined) output = serialized;
+			else parent.parts.push(serialized);
+		}
+		return output;
+	}
+
+	private serializeRule(rule: RuntimeSemanticRule, body: string): string {
 		let output: string;
 		switch (rule.kind) {
 			case RuntimeSemanticRuleKindTag.Style:

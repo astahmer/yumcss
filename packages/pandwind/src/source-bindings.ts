@@ -1,6 +1,6 @@
 import type { ParseResult } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE, type SourceDocument, type SourceRange } from "./source-scanner.ts";
-import type { OxcNode } from "./tw/literal.ts";
+import { walkWithParent, type OxcNode } from "./tw/literal.ts";
 
 /** Runtime-safe typed identity values used by source adapters. */
 export const SourceBindingKind = {
@@ -75,25 +75,6 @@ interface ShadowedScope {
 	readonly range: SourceRange;
 }
 
-const walkWithParent = (
-	node: unknown,
-	visit: (node: AstNode, parent: AstNode | undefined) => void,
-	parent?: AstNode,
-): void => {
-	if (Array.isArray(node)) {
-		for (const item of node) walkWithParent(item, visit, parent);
-		return;
-	}
-	if (node === null || typeof node !== "object") return;
-	const current = node as AstNode;
-	if (typeof current.type !== "string") {
-		for (const value of Object.values(current)) walkWithParent(value, visit, parent);
-		return;
-	}
-	visit(current, parent);
-	for (const value of Object.values(current)) walkWithParent(value, visit, current);
-};
-
 const nodeName = (node: unknown): string | undefined => {
 	if (node === null || typeof node !== "object") return undefined;
 	const value = node as { name?: unknown; value?: unknown };
@@ -116,39 +97,37 @@ const sourceOf = (node: unknown): string | undefined => {
 };
 
 const bindingNames = (node: unknown, names: string[]): void => {
-	if (node === null || typeof node !== "object") return;
-	const value = node as {
-		type?: string;
-		name?: string;
-		id?: unknown;
-		left?: unknown;
-		right?: unknown;
-		argument?: unknown;
-		elements?: unknown[];
-		properties?: unknown[];
-	};
-	switch (value.type) {
-		case "Identifier":
-			if (typeof value.name === "string") names.push(value.name);
-			return;
-		case "RestElement":
-			bindingNames(value.argument, names);
-			return;
-		case "AssignmentPattern":
-			bindingNames(value.left, names);
-			return;
-		case "ArrayPattern":
-			for (const element of value.elements ?? []) bindingNames(element, names);
-			return;
-		case "ObjectPattern":
-			for (const property of value.properties ?? []) {
-				if (property === null || typeof property !== "object") continue;
-				const entry = property as { type?: string; value?: unknown; argument?: unknown };
-				bindingNames(entry.type === "RestElement" ? entry.argument : entry.value, names);
-			}
-			return;
-		default:
-			return;
+	const stack: unknown[] = [node];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (current === null || typeof current !== "object") continue;
+		const value = current as {
+			type?: string;
+			name?: string;
+			left?: unknown;
+			argument?: unknown;
+			elements?: unknown[];
+			properties?: unknown[];
+		};
+		switch (value.type) {
+			case "Identifier":
+				if (typeof value.name === "string") names.push(value.name);
+				break;
+			case "RestElement":
+			case "AssignmentPattern":
+				stack.push(value.type === "RestElement" ? value.argument : value.left);
+				break;
+			case "ArrayPattern":
+				for (const element of (value.elements ?? []).toReversed()) stack.push(element);
+				break;
+			case "ObjectPattern":
+				for (const property of (value.properties ?? []).toReversed()) {
+					if (property === null || typeof property !== "object") continue;
+					const entry = property as { type?: string; value?: unknown; argument?: unknown };
+					stack.push(entry.type === "RestElement" ? entry.argument : entry.value);
+				}
+				break;
+		}
 	}
 };
 

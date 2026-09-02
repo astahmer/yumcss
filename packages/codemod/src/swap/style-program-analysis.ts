@@ -5,9 +5,14 @@ import { StyleDynamicExpressionKind } from "./identifiers.ts";
 /** Read-only semantic queries shared by lowering and adapter projections. */
 export class StyleProgramAnalysis {
 	static rules(program: StyleProgram): readonly StyleRule[] {
-		return program.rules.flatMap(function flatten(rule): StyleRule[] {
-			return [rule, ...rule.children.flatMap(flatten)];
-		});
+		const result: StyleRule[] = [];
+		const stack = [...program.rules].toReversed();
+		while (stack.length > 0) {
+			const rule = stack.pop()!;
+			result.push(rule);
+			for (const child of rule.children.toReversed()) stack.push(child);
+		}
+		return result;
 	}
 
 	static declarations(program: StyleProgram): readonly StyleDeclaration[] {

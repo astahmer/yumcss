@@ -283,4 +283,29 @@ describe("effective ecosystem configuration", () => {
 			}),
 		]);
 	});
+
+	test("resolves a deep Panda token alias chain without recursion", async () => {
+		const depth = 2_000;
+		const colors: Record<string, { value: string }> = {};
+		for (let index = 0; index < depth; index++) {
+			colors[`level-${index}`] = {
+				value: index === depth - 1 ? "#123456" : `{colors.level-${index + 1}}`,
+			};
+		}
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName !== "@pandacss/config") return undefined;
+				return {
+					loadConfig: async () => ({ config: { presets: [], theme: { tokens: { colors } } } }),
+				} as never;
+			},
+			async importFile() {
+				throw new Error("direct config import must not run");
+			},
+		};
+
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+
+		expect(theme.tokens.colors?.[`level-0`]).toBe("#123456");
+	});
 });

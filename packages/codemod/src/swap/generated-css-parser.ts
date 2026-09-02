@@ -104,14 +104,47 @@ function parseNodes(
 	readonly nodes: readonly GeneratedCssNode[];
 	readonly end: number;
 } {
-	const nodes: GeneratedCssNode[] = [];
+	type Frame = {
+		readonly nodes: GeneratedCssNode[];
+		readonly parent?: Frame;
+		readonly prelude?: string;
+	};
+
+	let frame: Frame = { nodes: [] };
 	let index = start;
-	while (index < css.length) {
+	for (;;) {
 		index = skipTrivia(css, index);
-		if (index >= css.length) break;
-		if (css[index] === "}") {
-			return { nodes, end: stopAtClosingBrace ? index + 1 : index };
+		if (index >= css.length) {
+			if (frame.parent === undefined) return { nodes: frame.nodes, end: index };
+			const parent = frame.parent;
+			const parsed = frame.prelude?.startsWith("@")
+				? atRule(frame.prelude, frame.nodes)
+				: ({
+						type: "rule",
+						selector: frame.prelude ?? "",
+						nodes: frame.nodes,
+					} satisfies GeneratedCssRule);
+			if (parsed !== undefined) parent.nodes.push(parsed);
+			frame = parent;
+			continue;
 		}
+		if (css[index] === "}") {
+			if (frame.parent === undefined)
+				return { nodes: frame.nodes, end: stopAtClosingBrace ? index + 1 : index };
+			const parent = frame.parent;
+			const parsed = frame.prelude?.startsWith("@")
+				? atRule(frame.prelude, frame.nodes)
+				: ({
+						type: "rule",
+						selector: frame.prelude ?? "",
+						nodes: frame.nodes,
+					} satisfies GeneratedCssRule);
+			if (parsed !== undefined) parent.nodes.push(parsed);
+			frame = parent;
+			index++;
+			continue;
+		}
+
 		const prelude = scanPrelude(css, index);
 		if (prelude.text === "") {
 			index = prelude.end + (css[prelude.end] === ";" ? 1 : 0);
@@ -120,30 +153,32 @@ function parseNodes(
 		const delimiter = css[prelude.end];
 		if (delimiter === ";") {
 			const parsed = declaration(prelude.text);
-			if (parsed !== undefined) nodes.push(parsed);
+			if (parsed !== undefined) frame.nodes.push(parsed);
 			index = prelude.end + 1;
 			continue;
 		}
 		if (delimiter !== "{") {
 			const parsed = declaration(prelude.text);
-			if (parsed !== undefined) nodes.push(parsed);
-			return {
-				nodes,
-				end: delimiter === "}" ? prelude.end + 1 : prelude.end,
-			};
+			if (parsed !== undefined) frame.nodes.push(parsed);
+			const end = delimiter === "}" ? prelude.end + 1 : prelude.end;
+			if (frame.parent === undefined) return { nodes: frame.nodes, end };
+			const parent = frame.parent;
+			const completed = frame.prelude?.startsWith("@")
+				? atRule(frame.prelude, frame.nodes)
+				: ({
+						type: "rule",
+						selector: frame.prelude ?? "",
+						nodes: frame.nodes,
+					} satisfies GeneratedCssRule);
+			if (completed !== undefined) parent.nodes.push(completed);
+			frame = parent;
+			index = end;
+			continue;
 		}
-		const children = parseNodes(css, prelude.end + 1, true);
-		const parsed = prelude.text.startsWith("@")
-			? atRule(prelude.text, children.nodes)
-			: ({
-					type: "rule",
-					selector: prelude.text,
-					nodes: children.nodes,
-				} satisfies GeneratedCssRule);
-		if (parsed !== undefined) nodes.push(parsed);
-		index = children.end;
+
+		frame = { nodes: [], parent: frame, prelude: prelude.text };
+		index = prelude.end + 1;
 	}
-	return { nodes, end: index };
 }
 
 export function parseGeneratedCss(css: string): readonly GeneratedCssNode[] {

@@ -639,41 +639,46 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 	if (css.trim() === "") return undefined;
 	const root = parseGeneratedCss(css);
 	const declarations: StyleDeclaration[] = [];
-	const walk = (
-		nodes: readonly GeneratedCssNode[],
-		inherited: readonly StyleCondition[],
-		insideStyleRule: boolean,
-	): void => {
-		for (const node of nodes) {
-			if (node.type === "decl") {
-				const property = node.prop.trim();
-				const value = node.value.trim();
-				if (insideStyleRule && property !== "" && value !== "")
-					declarations.push({
-						...literal(cssProperty(property), value),
-						conditions: inherited,
-					});
-				continue;
-			}
-			if (node.type === "atrule") {
-				const atRuleCondition = generatedAtRuleCondition(node);
-				walk(
-					node.nodes ?? [],
-					atRuleCondition === undefined ? inherited : [...inherited, atRuleCondition],
-					insideStyleRule,
-				);
-				continue;
-			}
-			if (node.type === "rule") {
-				walk(
-					node.nodes ?? [],
-					[...inherited, ...generatedSelectorConditions(node.selector, token)],
-					insideStyleRule || node.selector.includes("."),
-				);
-			}
+	const work: Array<{
+		node: GeneratedCssNode;
+		conditions: readonly StyleCondition[];
+		insideStyleRule: boolean;
+	}> = root.toReversed().map((node) => ({ node, conditions: [], insideStyleRule: false }));
+	while (work.length > 0) {
+		const current = work.pop()!;
+		const node = current.node;
+		if (node.type === "decl") {
+			const property = node.prop.trim();
+			const value = node.value.trim();
+			if (current.insideStyleRule && property !== "" && value !== "")
+				declarations.push({
+					...literal(cssProperty(property), value),
+					conditions: current.conditions,
+				});
+			continue;
 		}
-	};
-	walk(root, [], false);
+		const children = node.nodes ?? [];
+		if (node.type === "atrule") {
+			const atRuleCondition = generatedAtRuleCondition(node);
+			const conditions =
+				atRuleCondition === undefined
+					? current.conditions
+					: [...current.conditions, atRuleCondition];
+			for (let index = children.length - 1; index >= 0; index--)
+				work.push({ node: children[index]!, conditions, insideStyleRule: current.insideStyleRule });
+			continue;
+		}
+		const conditions = [
+			...current.conditions,
+			...generatedSelectorConditions(node.selector, token),
+		];
+		for (let index = children.length - 1; index >= 0; index--)
+			work.push({
+				node: children[index]!,
+				conditions,
+				insideStyleRule: current.insideStyleRule || node.selector.includes("."),
+			});
+	}
 	return declarations.length === 0 ? undefined : declarations;
 }
 

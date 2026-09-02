@@ -71,17 +71,18 @@ interface CallNode {
 }
 
 const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
-	const queue: unknown[] = [root];
-	for (let head = 0; head < queue.length; head++) {
-		const current = queue[head];
+	const stack: unknown[] = [root];
+	while (stack.length > 0) {
+		const current = stack.pop();
 		if (Array.isArray(current)) {
-			queue.push(...current);
+			for (let index = current.length - 1; index >= 0; index--) stack.push(current[index]);
 			continue;
 		}
 		if (current === null || typeof current !== "object") continue;
 		const node = current as { type?: string };
 		if (node.type === "CallExpression") visit(current as CallNode);
-		queue.push(...Object.values(current));
+		const values = Object.values(current);
+		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
 	}
 };
 

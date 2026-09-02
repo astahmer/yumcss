@@ -305,6 +305,23 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+## Stack-safe tree processing
+
+Input-shaped trees are traversed iteratively with explicit depth-first stacks.
+This applies to the shared Oxc AST walker, parent-aware source analysis,
+generated CSS, Panda style/config trees, token catalogs, token-format imports,
+Tailwind/UnoCSS generated rules, StyleProgram rule collection, and token-graph
+cycle detection. The stacks preserve authored order and therefore do not alter
+cascade or emitted-source behavior; they also avoid retaining a breadth-first
+queue and remain safe for unusually deep user configuration or generated CSS.
+
+Small bounded filesystem scripts and local semantic helpers may still use
+recursion when the recursive form is clearer and the input depth is controlled.
+The performance regression is covered by
+`packages/pandwind/tests/stack-traversal.bench.ts`: the explicit AST walk is
+benchmarked against the former recursive shape on a representative tree, while
+the stack traversal tests exercise 2,000–12,000-level inputs.
+
 ## Static-first runtime delivery
 
 The browser runtime is a fallback, not a tax on every static call. The CSS

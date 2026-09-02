@@ -131,11 +131,42 @@ const valueText = (value: StyleProgram["declarations"][number]["value"]): string
 type ObjectNode = { values: Array<[string, string]>; children: Map<string, ObjectNode> };
 
 const renderObjectNode = (node: ObjectNode): string => {
-	const values = node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`);
-	const children = [...node.children].map(
-		([key, child]) => `${JSON.stringify(key)}: ${renderObjectNode(child)}`,
-	);
-	return `{ ${[...values, ...children].join(", ")} }`;
+	type Frame = {
+		readonly node: ObjectNode;
+		readonly edge?: string;
+		readonly children: readonly [string, ObjectNode][];
+		readonly parts: string[];
+		index: number;
+	};
+	const frames: Frame[] = [
+		{
+			node,
+			children: [...node.children],
+			parts: node.values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`),
+			index: 0,
+		},
+	];
+	let result = "";
+	while (frames.length > 0) {
+		const frame = frames.at(-1)!;
+		const child = frame.children[frame.index++];
+		if (child !== undefined) {
+			frames.push({
+				node: child[1],
+				edge: child[0],
+				children: [...child[1].children],
+				parts: child[1].values.map(([key, value]) => `${JSON.stringify(key)}: ${value}`),
+				index: 0,
+			});
+			continue;
+		}
+		frames.pop();
+		const serialized = `{ ${frame.parts.join(", ")} }`;
+		const parent = frames.at(-1);
+		if (parent === undefined) result = serialized;
+		else parent.parts.push(`${JSON.stringify(frame.edge)}: ${serialized}`);
+	}
+	return result;
 };
 
 const objectText = (program: StyleProgram): string => {
@@ -145,23 +176,31 @@ const objectText = (program: StyleProgram): string => {
 		declaration: StyleProgram["declarations"][number],
 		index: number,
 	): void => {
-		const condition = declaration.conditions[index];
-		if (condition === undefined) {
-			node.values.push([declaration.property, valueText(declaration.value)]);
-			return;
+		const work: Array<{ node: ObjectNode; index: number }> = [{ node, index }];
+		while (work.length > 0) {
+			const current = work.pop()!;
+			const condition = declaration.conditions[current.index];
+			if (condition === undefined) {
+				current.node.values.push([declaration.property, valueText(declaration.value)]);
+				continue;
+			}
+			const key = condition.raw ?? condition.value ?? condition.name;
+			const child = current.node.children.get(key) ?? { values: [], children: new Map() };
+			current.node.children.set(key, child);
+			work.push({ node: child, index: current.index + 1 });
 		}
-		const key = condition.raw ?? condition.value ?? condition.name;
-		const child = node.children.get(key) ?? { values: [], children: new Map() };
-		node.children.set(key, child);
-		add(child, declaration, index + 1);
 	};
 	const addRule = (node: ObjectNode, rule: StyleProgram["rules"][number]): void => {
-		for (const declaration of rule.declarations) add(node, declaration, 0);
-		for (const child of rule.children) {
-			const key = child.name ?? child.selector ?? child.kind;
-			const nested = node.children.get(key) ?? { values: [], children: new Map() };
-			node.children.set(key, nested);
-			addRule(nested, child);
+		const work: Array<{ node: ObjectNode; rule: StyleProgram["rules"][number] }> = [{ node, rule }];
+		while (work.length > 0) {
+			const current = work.pop()!;
+			for (const declaration of current.rule.declarations) add(current.node, declaration, 0);
+			for (const child of current.rule.children.toReversed()) {
+				const key = child.name ?? child.selector ?? child.kind;
+				const nested = current.node.children.get(key) ?? { values: [], children: new Map() };
+				current.node.children.set(key, nested);
+				work.push({ node: nested, rule: child });
+			}
 		}
 	};
 	if (program.rules.some((rule) => rule.name !== undefined)) {

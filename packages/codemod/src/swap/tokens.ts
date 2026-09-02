@@ -85,25 +85,37 @@ export class TokenCatalog {
 	): TokenCatalog | undefined {
 		if (groups === undefined) return undefined;
 		const flattened: Record<string, Record<string, string>> = {};
-		const visit = (group: string, value: unknown, path: string[]): void => {
-			const scalar = normalizedTokenValue(value);
-			if (scalar !== undefined) {
-				(flattened[group] ??= {})[path.join(".")] = scalar;
-				return;
+		for (const [group, values] of Object.entries(groups)) {
+			const stack: Array<{ value: unknown; path: string[] }> = [{ value: values, path: [] }];
+			while (stack.length > 0) {
+				const current = stack.pop()!;
+				const scalar = normalizedTokenValue(current.value);
+				if (scalar !== undefined) {
+					(flattened[group] ??= {})[current.path.join(".")] = scalar;
+					continue;
+				}
+				if (
+					typeof current.value !== "object" ||
+					current.value === null ||
+					Array.isArray(current.value)
+				)
+					continue;
+				const record = current.value as Record<string, unknown>;
+				if (Object.prototype.hasOwnProperty.call(record, "value")) {
+					const boxed = normalizedTokenValue(record.value);
+					if (boxed !== undefined) (flattened[group] ??= {})[current.path.join(".")] = boxed;
+					// Conditional token values are intentionally not flattened. Their
+					// active value depends on runtime theme state and cannot be safely
+					// emitted as one static target reference.
+					continue;
+				}
+				const entries = Object.entries(record);
+				for (let index = entries.length - 1; index >= 0; index--) {
+					const [key, child] = entries[index]!;
+					stack.push({ value: child, path: [...current.path, key] });
+				}
 			}
-			if (typeof value !== "object" || value === null || Array.isArray(value)) return;
-			const record = value as Record<string, unknown>;
-			if (Object.prototype.hasOwnProperty.call(record, "value")) {
-				const boxed = normalizedTokenValue(record.value);
-				if (boxed !== undefined) (flattened[group] ??= {})[path.join(".")] = boxed;
-				// Conditional token values are intentionally not flattened. Their
-				// active value depends on runtime theme state and cannot be safely
-				// emitted as one static target reference.
-				return;
-			}
-			for (const [key, child] of Object.entries(record)) visit(group, child, [...path, key]);
-		};
-		for (const [group, values] of Object.entries(groups)) visit(group, values, []);
+		}
 		return TokenCatalog.fromGroups(flattened);
 	}
 

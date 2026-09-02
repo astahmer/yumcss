@@ -137,34 +137,34 @@ function statIsFile(path: string): boolean {
 export function crawlCssImports(entryPaths: string[], root: string): CrawledCss {
 	const out: CrawledCss = { files: [], contents: [], unresolved: [] };
 	const visited = new Set<string>();
-
-	const visit = (path: string, depth: number): void => {
-		const real = resolve(path);
-		if (visited.has(real) || depth > MAX_DEPTH) return;
+	const work: Array<{ path: string; depth: number }> = entryPaths
+		.toReversed()
+		.map((path) => ({ path, depth: 0 }));
+	while (work.length > 0) {
+		const current = work.pop()!;
+		const real = resolve(current.path);
+		if (visited.has(real) || current.depth > MAX_DEPTH) continue;
 		visited.add(real);
 		let content: string;
 		try {
 			content = readFileSync(real, "utf8");
 		} catch {
-			return;
+			continue;
 		}
 		out.files.push(real);
 		out.contents.push({ path: real, content });
-		for (const match of content.matchAll(IMPORT_REGEX)) {
+		const imports = [...content.matchAll(IMPORT_REGEX)];
+		for (let index = imports.length - 1; index >= 0; index--) {
+			const match = imports[index]!;
 			const specifier = (match[1] ?? match[2] ?? "").trim();
 			if (specifier === "" || isUrl(specifier)) continue;
-			const target =
-				specifier.startsWith(".") || isAbsolute(specifier)
-					? resolveSpecifier(specifier, real, root)
-					: resolveSpecifier(specifier, real, root);
+			const target = resolveSpecifier(specifier, real, root);
 			if (target === null) {
 				out.unresolved.push({ from: real, specifier });
 				continue;
 			}
-			visit(target, depth + 1);
+			work.push({ path: target, depth: current.depth + 1 });
 		}
-	};
-
-	for (const entry of entryPaths) visit(entry, 0);
+	}
 	return out;
 }

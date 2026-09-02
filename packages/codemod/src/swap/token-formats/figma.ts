@@ -1,9 +1,10 @@
-import { createTokenSet, putToken, exportNested } from "../token-format-support.ts";
 import {
-	TokenFormatId,
-	type TokenFormatAdapter,
-	type TokenSet,
-} from "../token-format-contracts.ts";
+	createTokenSet,
+	putToken,
+	exportNested,
+	TokenTreeWalker,
+} from "../token-format-support.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 const types: Record<string, string> = {
 	color: "colors",
 	spacing: "spacing",
@@ -12,20 +13,6 @@ const types: Record<string, string> = {
 	fontWeights: "fontWeights",
 };
 const reverse = Object.fromEntries(Object.entries(types).map(([key, value]) => [value, key]));
-const walk = (node: unknown, path: string[], out: TokenSet): void => {
-	if (typeof node !== "object" || node === null) return;
-	const record = node as { value?: unknown; type?: unknown };
-	if (typeof record.value === "string") {
-		putToken(
-			out,
-			types[String(record.type)] ?? path[0] ?? "misc",
-			path.slice(1).join("-"),
-			record.value,
-		);
-		return;
-	}
-	for (const [key, child] of Object.entries(node)) walk(child, [...path, key], out);
-};
 export const figmaTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
 	id: TokenFormatId.Figma,
@@ -33,7 +20,16 @@ export const figmaTokenFormat: TokenFormatAdapter = {
 	canExport: true,
 	importText(text) {
 		const out = createTokenSet();
-		walk(JSON.parse(text), [], out);
+		TokenTreeWalker.visit(JSON.parse(text), (record, path) => {
+			if (typeof record.value !== "string") return;
+			putToken(
+				out,
+				types[String(record.type)] ?? path[0] ?? "misc",
+				path.slice(1).join("-"),
+				record.value,
+			);
+			return true;
+		});
 		return out;
 	},
 	export(set) {

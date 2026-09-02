@@ -1,19 +1,10 @@
-import { createTokenSet, exportNested, putToken } from "../token-format-support.ts";
 import {
-	TokenFormatId,
-	type TokenFormatAdapter,
-	type TokenSet,
-} from "../token-format-contracts.ts";
-
-const walk = (node: unknown, path: string[], out: TokenSet): void => {
-	if (typeof node !== "object" || node === null) return;
-	const record = node as Record<string, unknown>;
-	if (typeof record.$value === "string") {
-		putToken(out, path[0] ?? "misc", path.slice(1).join("-"), record.$value);
-		return;
-	}
-	for (const [key, child] of Object.entries(record)) walk(child, [...path, key], out);
-};
+	createTokenSet,
+	exportNested,
+	putToken,
+	TokenTreeWalker,
+} from "../token-format-support.ts";
+import { TokenFormatId, type TokenFormatAdapter } from "../token-format-contracts.ts";
 
 export const dtcgTokenFormat: TokenFormatAdapter = {
 	schema: "pandwind.token-format/1",
@@ -22,7 +13,11 @@ export const dtcgTokenFormat: TokenFormatAdapter = {
 	canExport: true,
 	importText(text) {
 		const out = createTokenSet();
-		walk(JSON.parse(text), [], out);
+		TokenTreeWalker.visit(JSON.parse(text), (record, path) => {
+			if (typeof record.$value !== "string") return;
+			putToken(out, path[0] ?? "misc", path.slice(1).join("-"), record.$value);
+			return true;
+		});
 		return out;
 	},
 	export(set) {

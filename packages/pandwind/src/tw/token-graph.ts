@@ -193,27 +193,35 @@ export function buildTokenGraph(input: TokenGraphInput): TokenGraph {
 		if (target !== undefined && target.tier === "raw") target.tier = "semantic";
 	}
 
-	// --- cycles: iterative-free recursive DFS with color marking.
+	// --- cycles: explicit DFS frames keep very deep token graphs stack-safe.
 	const color = new Map<string, number>();
-	const stack: Array<string> = [];
+	const path: Array<string> = [];
 	const cycles: Array<Array<string>> = [];
-	const visit = (id: string): void => {
+	type Frame = { readonly id: string; readonly neighbors: readonly string[]; index: number };
+	for (const id of [...nodes.keys()].toSorted()) {
+		if ((color.get(id) ?? 0) !== 0) continue;
 		color.set(id, CYCLE);
-		stack.push(id);
-		for (const next of adjacency.get(id) ?? []) {
+		path.push(id);
+		const frames: Frame[] = [{ id, neighbors: [...(adjacency.get(id) ?? [])], index: 0 }];
+		while (frames.length > 0) {
+			const frame = frames.at(-1)!;
+			const next = frame.neighbors[frame.index++];
+			if (next === undefined) {
+				frames.pop();
+				path.pop();
+				color.set(frame.id, DONE);
+				continue;
+			}
 			const state = color.get(next) ?? 0;
 			if (state === CYCLE) {
-				const start = stack.indexOf(next);
-				cycles.push([...stack.slice(start), next]);
+				const start = path.indexOf(next);
+				if (start >= 0) cycles.push([...path.slice(start), next]);
 			} else if (state === 0) {
-				visit(next);
+				color.set(next, CYCLE);
+				path.push(next);
+				frames.push({ id: next, neighbors: [...(adjacency.get(next) ?? [])], index: 0 });
 			}
 		}
-		stack.pop();
-		color.set(id, DONE);
-	};
-	for (const id of [...nodes.keys()].toSorted()) {
-		if ((color.get(id) ?? 0) === 0) visit(id);
 	}
 
 	// --- orphans: raw-tier nodes nothing depends on.

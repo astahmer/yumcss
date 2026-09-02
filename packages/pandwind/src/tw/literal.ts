@@ -12,14 +12,80 @@ export interface OxcNode {
 
 /** Depth-first walk over an oxc AST node, visiting every typed child once. */
 export function walk(node: unknown, visit: (node: OxcNode) => void): void {
-	if (Array.isArray(node)) {
-		for (const item of node) walk(item, visit);
-		return;
+	const stack: unknown[] = [node];
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (Array.isArray(current)) {
+			for (let index = current.length - 1; index >= 0; index--) stack.push(current[index]);
+			continue;
+		}
+		if (current === null || typeof current !== "object") continue;
+		const typed = current as OxcNode;
+		if (typeof typed.type === "string") visit(typed);
+		const values = Object.values(typed);
+		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
 	}
-	if (node === null || typeof node !== "object") return;
-	const current = node as OxcNode;
-	if (typeof current.type === "string") visit(current);
-	for (const value of Object.values(current)) walk(value, visit);
+}
+
+export type OxcParentVisitor = (
+	node: OxcNode,
+	parent: OxcNode | undefined,
+	ancestors: readonly OxcNode[],
+) => void;
+
+/** Iterative depth-first AST walk for consumers that need parent context. */
+export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
+	type Frame =
+		| {
+				readonly kind: "enter";
+				readonly node: unknown;
+				readonly parent: OxcNode | undefined;
+				readonly depth: number;
+		  }
+		| { readonly kind: "leave"; readonly depth: number };
+
+	const frames: Frame[] = [{ kind: "enter", node, parent: undefined, depth: 0 }];
+	const ancestors: OxcNode[] = [];
+	while (frames.length > 0) {
+		const frame = frames.pop()!;
+		if (frame.kind === "leave") {
+			ancestors.length = frame.depth;
+			continue;
+		}
+
+		const current = frame.node;
+		if (Array.isArray(current)) {
+			for (let index = current.length - 1; index >= 0; index--)
+				frames.push({
+					kind: "enter",
+					node: current[index],
+					parent: frame.parent,
+					depth: frame.depth,
+				});
+			continue;
+		}
+		if (current === null || typeof current !== "object") continue;
+		const typed = current as OxcNode;
+		if (typeof typed.type !== "string") {
+			const values = Object.values(typed);
+			for (let index = values.length - 1; index >= 0; index--)
+				frames.push({
+					kind: "enter",
+					node: values[index],
+					parent: frame.parent,
+					depth: frame.depth,
+				});
+			continue;
+		}
+
+		ancestors.length = frame.depth;
+		visit(typed, frame.parent, ancestors);
+		frames.push({ kind: "leave", depth: frame.depth });
+		ancestors.push(typed);
+		const values = Object.values(typed);
+		for (let index = values.length - 1; index >= 0; index--)
+			frames.push({ kind: "enter", node: values[index], parent: typed, depth: frame.depth + 1 });
+	}
 }
 
 /**

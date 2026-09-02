@@ -136,27 +136,37 @@ function visit(
 	prefix: string,
 	parentName: string | undefined,
 ): void {
-	for (const key of Object.keys(styles)) {
-		const value = styles[key]!;
+	const frames: Array<{
+		styles: TwNestedStyles;
+		keys: string[];
+		index: number;
+		prefix: string;
+		parentName: string | undefined;
+	}> = [{ styles, keys: Object.keys(styles), index: 0, prefix, parentName }];
+	while (frames.length > 0) {
+		const frame = frames.at(-1)!;
+		const key = frame.keys[frame.index++];
+		if (key === undefined) {
+			frames.pop();
+			continue;
+		}
+		const value = frame.styles[key]!;
 		if (isNestedStyles(value)) {
 			// A nested object is a variant stack. The child is joined to the
 			// parent with the parent's join separator (e.g. `group` -> `-`).
-			const join = parentName === undefined ? ":" : (variants[parentName]?.join ?? ":");
+			const join = frame.parentName === undefined ? ":" : (variants[frame.parentName]?.join ?? ":");
 			const dashed = dashCase(key);
-			visit(
-				value,
-				variants,
-				conflicts,
-				compose,
-				classes,
-				signatures,
-				prefix ? `${prefix}${join}${dashed}` : dashed,
-				key,
-			);
+			frames.push({
+				styles: value,
+				keys: Object.keys(value),
+				index: 0,
+				prefix: frame.prefix ? `${frame.prefix}${join}${dashed}` : dashed,
+				parentName: key,
+			});
 			continue;
 		}
 
-		if (parentName !== undefined && (variants[parentName]?.join ?? ":") !== ":") {
+		if (frame.parentName !== undefined && (variants[frame.parentName]?.join ?? ":") !== ":") {
 			throw new Error(
 				`tw: variant '${parentName}' requires a nested variant, e.g. { ${parentName}: { hover: { ... } } }`,
 			);
@@ -165,17 +175,17 @@ function visit(
 		// Sub-keys resolve onto their base utility: `textSize` emits `text-*`
 		// classes and shares the base's conflict-map entries.
 		const utility = UTILITY_SUBKEYS[key] ?? dashCase(key);
-		const className = prefix ? `${prefix}:${utility}` : utility;
+		const className = frame.prefix ? `${frame.prefix}:${utility}` : utility;
 
 		if (typeof value === "boolean") {
 			if (value) {
-				push(classes, signatures, conflicts, compose, className, prefix, utility, "");
+				push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
 			}
 			continue;
 		}
 
 		if (value === "" || value == null) {
-			push(classes, signatures, conflicts, compose, className, prefix, utility, "");
+			push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
 			continue;
 		}
 
@@ -189,7 +199,7 @@ function visit(
 		const parts = rawParts.filter((part) => typeof part !== "boolean").map(String);
 		const compound = COMPOUND_BASES[key];
 		if (hasBareFlag || (compound && parts.some((part) => compound.has(part)))) {
-			push(classes, signatures, conflicts, compose, className, prefix, utility, "");
+			push(classes, signatures, conflicts, compose, className, frame.prefix, utility, "");
 		}
 
 		for (const part of parts) {
@@ -199,7 +209,7 @@ function visit(
 				conflicts,
 				compose,
 				part ? `${className}-${part}` : className,
-				prefix,
+				frame.prefix,
 				utility,
 				part,
 			);
