@@ -5,13 +5,14 @@ sidebar:
   order: 1
 ---
 
-All commands run on source via `nub` and are deterministic: identical inputs
-produce byte-identical outputs.
+These are published package binaries and are deterministic: identical inputs
+produce byte-identical outputs. The examples use `pnpm`, but any package
+manager's equivalent executable command works.
 
 ## `pandwind-tw generate` — typed runtime from your tailwind.css
 
 ```
-nub exec pandwind-tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
+pnpm exec pandwind-tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
                          [--bridge] [--bridge-file <path>]
                          [--preset-import <module>] [--preset-export <name>]
 ```
@@ -41,7 +42,7 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
 ## `pandwind-tw scan` — safelist from real call sites
 
 ```
-nub exec pandwind-tw scan [tw-entry] [src-dir] [out-file]
+pnpm exec pandwind-tw scan [tw-entry] [src-dir] [out-file]
 ```
 
 Defaults: `src/tw.ts src src/pandwind.safelist.ts`. Statically evaluates
@@ -55,7 +56,7 @@ selects the mode:
 ## `pandwind-tw prune` — drop unused theme variables
 
 ```
-nub exec pandwind-tw prune [theme-css] [tw-entry] [src-dir]
+pnpm exec pandwind-tw prune [theme-css] [tw-entry] [src-dir]
 ```
 
 Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned
@@ -66,7 +67,7 @@ after `pandwind-tw generate` whenever sources change.
 ## `analyze` — coverage & budget reports
 
 ```
-nub run analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
+pnpm exec pandwind-analyze [globs...] [--tw <generated-tw.ts>] [--json] [--root <dir>] [--css] [--constants <path>] [--github-annotations]
 ```
 
 - `--tw <path>` — generated tw module (default `src/tw.ts` resolved against

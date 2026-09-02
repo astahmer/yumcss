@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * `pandwind analyze` CLI — reports how much class-merging work the build
  * eliminates for the given files.

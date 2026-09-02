@@ -9,18 +9,25 @@
  *  1. `pnpm pack` the package;
  *  2. untar and read the SHIPPED package.json;
  *  3. assert every `exports`/`bin`/`main` target exists in the tarball;
- *  4. dynamically import EVERY shipped module — source-published packages
+ *  4. dynamically import EVERY shipped JavaScript module — built packages
  *     must have zero broken specifiers anywhere (deep-relative imports into
  *     sibling packages are the classic failure mode).
  *
  * Extraction happens in `<pkg>/.pw-smoke/`, outside any `node_modules`
- * directory. Node's strip-only TypeScript loader refuses to execute package
- * files beneath `node_modules`; keeping the disposable tarball outside that
- * boundary preserves the source-published package contract while bare
- * dependencies still resolve through the package's normal node_modules.
+ * directory. The dev-only `pandwind` export condition intentionally points
+ * at workspace TypeScript and is not part of the published tarball; the
+ * default import/types conditions must resolve to built `dist` artifacts.
  */
 import { execSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	statSync,
+	symlinkSync,
+} from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -48,6 +55,16 @@ async function main() {
 		execSync(`tar -xzf ${tarballPath} --strip-components 1 -C ${extracted}`);
 
 		const shipped = JSON.parse(readFileSync(join(extracted, "package.json"), "utf8"));
+		// Resolve optional peer imports (for example React Native's React host)
+		// against the workspace installation while smoke-testing the tarball.
+		// The link is outside the tarball and is never part of the published files.
+		const workspaceNodeModules = [
+			resolve(pkgDir, "../../node_modules"),
+			resolve(pkgDir, "../../apps/example/node_modules"),
+		].find((candidate) => statMaybe(join(candidate, "react")));
+		if (statMaybe(workspaceNodeModules)) {
+			symlinkSync(workspaceNodeModules, join(extracted, "node_modules"), "dir");
+		}
 
 		// 3. every declared target must exist inside the tarball
 		const exists = (rel) => {
@@ -60,7 +77,12 @@ async function main() {
 		};
 		const missing = [];
 		for (const [key, value] of Object.entries(shipped.exports ?? {})) {
-			const targets = typeof value === "string" ? [value] : Object.values(value ?? {});
+			const targets =
+				typeof value === "string"
+					? [value]
+					: Object.entries(value ?? {})
+							.filter(([condition]) => condition !== "pandwind")
+							.map(([, target]) => target);
 			for (const target of targets) {
 				if (typeof target === "string" && !exists(target)) missing.push(`${key} -> ${target}`);
 			}
@@ -92,11 +114,12 @@ async function main() {
 		const broken = [];
 		const walkModules = async (dir) => {
 			for (const dirEntry of readdirSync(dir, { withFileTypes: true })) {
+				if (dirEntry.name === "node_modules") continue;
 				const path = join(dir, dirEntry.name);
 				if (dirEntry.isDirectory()) {
 					await walkModules(path);
-				} else if (/\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) {
-					if (/\.(test|spec)\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) continue;
+				} else if (/\.(js|mjs)$/.test(dirEntry.name)) {
+					if (/\.(test|spec)\.(js|mjs)$/.test(dirEntry.name)) continue;
 					try {
 						await import(pathToFileURL(path).href);
 					} catch (error) {
@@ -121,6 +144,15 @@ async function main() {
 		);
 	} finally {
 		rmSync(smokeRoot, { recursive: true, force: true });
+	}
+}
+
+function statMaybe(path) {
+	try {
+		statSync(path);
+		return true;
+	} catch {
+		return false;
 	}
 }
 

@@ -392,6 +392,9 @@ importers:
       oxc-parser:
         specifier: 0.144.0
         version: 0.144.0
+      tsdown:
+        specifier: 0.22.14
+        version: 0.22.14(tsx@4.23.12)(typescript@7.0.2)
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -426,6 +429,9 @@ importers:
       jss:
         specifier: ^10.10.0
         version: 10.10.0
+      tsdown:
+        specifier: 0.22.14
+        version: 0.22.14(tsx@4.23.12)(typescript@7.0.2)
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -496,6 +502,9 @@ importers:
       tailwind-merge:
         specifier: 3.6.0
         version: 3.6.0
+      tsdown:
+        specifier: 0.22.14
+        version: 0.22.14(tsx@4.23.12)(typescript@7.0.2)
       tstyche:
         specifier: 7.2.2
         version: 7.2.2(typescript@7.0.2)

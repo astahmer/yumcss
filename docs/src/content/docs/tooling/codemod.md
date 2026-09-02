@@ -13,13 +13,13 @@ each pair.
 
 ```sh
 # analysis only (default): reports what WOULD change
-nub run codemod "src/**/*.tsx" --to=tw
+pnpm exec pandwind-codemod "src/**/*.tsx" --to=tw
 
 # preview exact diffs, then apply
-nub run codemod "src/**/*.tsx" --to=tw --diff --write
+pnpm exec pandwind-codemod "src/**/*.tsx" --to=tw --diff --write
 
 # migrate away from a source library through the adapter contract
-nub run codemod swap --from=styled-components --to=css.class \
+pnpm exec pandwind-codemod swap --from=styled-components --to=css.class \
   "src/**/*.{ts,tsx}" --diff --write
 ```
 
@@ -54,11 +54,11 @@ source families:
 | `stylex`, `solid-styled`, `vue-styled`, `react-native`                                                                                        | compatible Pandwind target lanes                         | host/framework semantics and runtime carriers where static extraction is not safe                 |
 
 ```sh
-nub run codemod swap --from=emotion --to=css.class --safe --diff \
+pnpm exec pandwind-codemod swap --from=emotion --to=css.class --safe --diff \
   "src/**/*.{js,jsx,ts,tsx}"
-nub run codemod swap --from=stylex --to=css.class --safe --diff \
+pnpm exec pandwind-codemod swap --from=stylex --to=css.class --safe --diff \
   "src/**/*.{js,jsx,ts,tsx}"
-nub run codemod swap --from=chakra-ui --to=css.class --diff \
+pnpm exec pandwind-codemod swap --from=chakra-ui --to=css.class --diff \
   "src/**/*.{ts,tsx}"
 ```
 
@@ -140,9 +140,9 @@ The same pipeline supports `tw`, `css.class`, `design`, `tailwind`, `panda`,
 and `stylex` target dialects:
 
 ```sh
-nub run codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
-nub run codemod swap --from=design --to=tw "src/**/*.tsx" --diff --write
-nub run codemod swap --from=css --to=tailwind "src/**/*.tsx" --diff --write
+pnpm exec pandwind-codemod swap --from=auto --to=css.class "src/**/*.tsx" --diff --write
+pnpm exec pandwind-codemod swap --from=design --to=tw "src/**/*.tsx" --diff --write
+pnpm exec pandwind-codemod swap --from=css --to=tailwind "src/**/*.tsx" --diff --write
 ```
 
 Literal declarations use the flat `SwapIR` fast path. Rich rules use the
@@ -152,7 +152,7 @@ ordering, dynamic metadata, and provenance.
 Panda project migration is the staged variant of this workflow:
 
 ```sh
-nub exec pandwind-codemod swap --from=panda --to=css.class \
+pnpm exec pandwind-codemod swap --from=panda --to=css.class \
   --out=pandwind --diff --report \
   'src/**/*.{ts,tsx}'
 ```
@@ -167,9 +167,9 @@ as target modules; unsupported plugin or runtime behavior remains explicit.
 The `tokens` subcommand converts through one normalized token-set IR:
 
 ```sh
-nub run codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
-nub run codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
-nub run codemod tokens --from=preset --to=panda src/preset.ts
+pnpm exec pandwind-codemod tokens --from=dtcg --to=theme tokens.json --out=theme.css
+pnpm exec pandwind-codemod tokens --from=panda --to=dtcg panda.config.ts --out=tokens.json
+pnpm exec pandwind-codemod tokens --from=preset --to=panda src/preset.ts
 ```
 
 Supported format adapters are DTCG, Tailwind `@theme`, Panda, Pandwind

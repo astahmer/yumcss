@@ -5,8 +5,9 @@ sidebar:
   order: 1
 ---
 
-pandwind ships **source** (`.ts` entry points) and expects a bundler that
-compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
+pandwind ships compiled ESM and TypeScript declarations. Import public APIs
+through the package subpaths; published applications do not need the
+repository source tree or a special TypeScript runner.
 
 ```sh
 pnpm add pandwind
@@ -21,10 +22,9 @@ the complete compiler, runtime, adapter, and backend surface.
 
 ## 1. Preset
 
-Define your design system once in `src/preset.ts` — tokens, radii,
-conditions. See
-[`pandwind/preset/example-preset`](https://github.com/astahmer/pandwind/blob/main/packages/pandwind/src/preset/example-preset.ts)
-for a complete example using `defineTokens` / `defineTheme` / `definePreset`.
+Define your design system once in `src/preset.ts` — tokens, radii, and
+conditions. See the [design-system guide](/guides/design-system/) for a
+complete example using `defineTokens` / `defineTheme` / `definePreset`.
 
 ## 2. Codegen
 
@@ -35,14 +35,14 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 // package.json
 {
 	"scripts": {
-		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-nub run tw:generate && nub run tw:scan
+pnpm run tw:generate && pnpm run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and

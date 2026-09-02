@@ -18,8 +18,8 @@ By the end of this guide, a Vite app will:
 3. keep dynamic calls working through the runtime and safelist scanner; and
 4. produce CSS through Tailwind, with no Pandwind runtime cost for static calls.
 
-You need Node.js, Nub, a package manager, a Vite app, and Tailwind CSS. React is used in the
-examples, but the generated helpers are not tied to React.
+You need Node.js, a package manager, a Vite app, and Tailwind CSS. React is
+used in the examples, but the generated helpers are not tied to React.
 
 ## 1. Install
 
@@ -43,8 +43,8 @@ Add scripts to `package.json`:
 ```json
 {
 	"scripts": {
-		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	}
 }
 ```
@@ -53,8 +53,8 @@ Run them once, and again whenever the Tailwind theme or source-file set
 changes:
 
 ```sh
-nub run tw:generate
-nub run tw:scan
+pnpm run tw:generate
+pnpm run tw:scan
 ```
 
 This creates the typed `src/tw.ts`, declarations, and a safelist module. If
@@ -108,8 +108,8 @@ export function App() {
 Import `src/tailwind.css` from your application entry point. Start the app:
 
 ```sh
-nub run dev
-nub run build
+pnpm run dev
+pnpm run build
 ```
 
 TypeScript now catches invalid utility values. Literal styles compile away;

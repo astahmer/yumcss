@@ -15,17 +15,15 @@ Automation in place:
 - [x] Registry strategy: npm + OIDC provenance (`id-token: write` in the
       workflow, `--provenance` on publish). Preview builds per PR via
       pkg.pr.new (non-blocking `preview` job in ci.yml).
-- [x] Per-package hygiene: `files` (src/README/LICENSE), `publishConfig`
+- [x] Per-package hygiene: `files` (dist/README/LICENSE), `publishConfig`
       (public access + registry + provenance), `engines.node >= 20`,
-      repository/keywords/license metadata, `bin` entries for the four
-      Tailwind codegen CLIs.
-- [x] Source-publishing verified by pack smoke tests:
+      repository/keywords/license metadata, and built CLI `bin` entries.
+- [x] Built-package publishing verified by pack smoke tests:
       `scripts/release/smoke-pack.mjs` packs each package, asserts every
-      exports/bin target exists in the tarball, then dynamically imports EVERY
-      shipped module (catches deep-relative imports into sibling packages —
-      this is why the explicit `pandwind/*` tooling subpath exports exist;
-      codemod and analyze must import pandwind through those specifiers, never
-      `../../pandwind/src/*` relative paths).
+      published exports/bin target exists in the tarball, then dynamically
+      imports every shipped module (catches deep-relative imports into sibling
+      packages). The `pandwind` export condition is development-only; normal
+      consumers resolve built `dist` files.
 - [x] Publish order enforced in one script: `scripts/release/publish-all.sh`
       (pandwind → lint-plugin → codemod → analyze) after re-running smokes.
 - [x] Workflow: `.github/workflows/release.yml` — changesets action opens a

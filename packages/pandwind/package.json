@@ -8,61 +8,286 @@
 		"directory": "packages/pandwind"
 	},
 	"bin": {
-		"pandwind-tw": "./src/tw/cli.ts"
+		"pandwind-tw": "./dist/tw/cli.js"
 	},
 	"files": [
-		"src",
+		"dist",
 		"README.md",
 		"LICENSE"
 	],
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
-		".": "./src/index.ts",
-		"./css": "./src/css/index.ts",
-		"./css/runtime": "./src/css/runtime.ts",
-		"./cx": "./src/cx/index.ts",
-		"./preset": "./src/preset/index.ts",
-		"./stack": "./src/stack/index.ts",
-		"./stack/react": "./src/stack/react.tsx",
-		"./design": "./src/design/index.ts",
-		"./recipe": "./src/recipe/index.ts",
-		"./host": "./src/host/index.ts",
-		"./tw": "./src/tw/index.ts",
-		"./tw/generate": "./src/tw/generate-types.ts",
-		"./tw/collect": "./src/tw/collect.ts",
-		"./vite": "./src/vite/index.ts",
-		"./vite/css-extract": "./src/vite/css-extract.ts",
-		"./vite/cross-module-consts": "./src/vite/cross-module-consts.ts",
-		"./vite/cx-inline": "./src/vite/cx-inline.ts",
-		"./vite/inline": "./src/vite/inline.ts",
-		"./vite/stack-fold": "./src/vite/stack-fold.ts",
-		"./unplugin": "./src/unplugin.ts",
-		"./css/create-stylesheet": "./src/css/create-stylesheet.ts",
-		"./design/resolve": "./src/design/resolve.ts",
-		"./lib/utils": "./src/lib/utils.ts",
-		"./preset/example-preset": "./src/preset/example-preset.ts",
-		"./tw/compile": "./src/tw/compile.ts",
-		"./tw/interop": "./src/tw/interop-artifact.ts",
-		"./tw/literal": "./src/tw/literal.ts",
-		"./tw/token-graph": "./src/tw/token-graph.ts",
-		"./codegen/types": "./src/tw/generate-types.ts",
-		"./codegen/theme": "./src/tw/generate-theme.ts",
-		"./codegen/collect": "./src/tw/collect.ts",
-		"./codegen/bridge": "./src/tw/bridge.ts",
-		"./react-native": "./src/rn.ts",
-		"./types/typings": "./src/types/typings.ts",
-		"./opentui": "./src/opentui.ts",
-		"./backends": "./src/backends/index.ts",
-		"./source": "./src/source-scanner.ts",
-		"./source/workspace": "./src/source-workspace.ts",
-		"./_runtime/css-base": "./src/css/runtime-base.ts",
-		"./_runtime/css-class": "./src/css/runtime-method-class.ts",
-		"./_runtime/css-vars": "./src/css/runtime-method-vars.ts",
-		"./_runtime/css-raw": "./src/css/runtime-method-raw.ts",
-		"./_runtime/css-props": "./src/css/runtime-method-props.ts",
-		"./_runtime/css-group": "./src/css/runtime-method-group.ts",
-		"./_runtime/css-input": "./src/css/runtime-method-input.ts",
+		".": {
+			"pandwind": "./src/index.ts",
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./css": {
+			"pandwind": "./src/css/index.ts",
+			"types": "./dist/css/index.d.ts",
+			"import": "./dist/css/index.js",
+			"default": "./dist/css/index.js"
+		},
+		"./css/runtime": {
+			"pandwind": "./src/css/runtime.ts",
+			"types": "./dist/css/runtime.d.ts",
+			"import": "./dist/css/runtime.js",
+			"default": "./dist/css/runtime.js"
+		},
+		"./cx": {
+			"pandwind": "./src/cx/index.ts",
+			"types": "./dist/cx/index.d.ts",
+			"import": "./dist/cx/index.js",
+			"default": "./dist/cx/index.js"
+		},
+		"./preset": {
+			"pandwind": "./src/preset/index.ts",
+			"types": "./dist/preset/index.d.ts",
+			"import": "./dist/preset/index.js",
+			"default": "./dist/preset/index.js"
+		},
+		"./stack": {
+			"pandwind": "./src/stack/index.ts",
+			"types": "./dist/stack/index.d.ts",
+			"import": "./dist/stack/index.js",
+			"default": "./dist/stack/index.js"
+		},
+		"./stack/react": {
+			"pandwind": "./src/stack/react.tsx",
+			"types": "./dist/stack/react.d.ts",
+			"import": "./dist/stack/react.js",
+			"default": "./dist/stack/react.js"
+		},
+		"./design": {
+			"pandwind": "./src/design/index.ts",
+			"types": "./dist/design/index.d.ts",
+			"import": "./dist/design/index.js",
+			"default": "./dist/design/index.js"
+		},
+		"./recipe": {
+			"pandwind": "./src/recipe/index.ts",
+			"types": "./dist/recipe/index.d.ts",
+			"import": "./dist/recipe/index.js",
+			"default": "./dist/recipe/index.js"
+		},
+		"./host": {
+			"pandwind": "./src/host/index.ts",
+			"types": "./dist/host/index.d.ts",
+			"import": "./dist/host/index.js",
+			"default": "./dist/host/index.js"
+		},
+		"./tw": {
+			"pandwind": "./src/tw/index.ts",
+			"types": "./dist/tw/index.d.ts",
+			"import": "./dist/tw/index.js",
+			"default": "./dist/tw/index.js"
+		},
+		"./tw/generate": {
+			"pandwind": "./src/tw/generate-types.ts",
+			"types": "./dist/tw/generate-types.d.ts",
+			"import": "./dist/tw/generate-types.js",
+			"default": "./dist/tw/generate-types.js"
+		},
+		"./tw/collect": {
+			"pandwind": "./src/tw/collect.ts",
+			"types": "./dist/tw/collect.d.ts",
+			"import": "./dist/tw/collect.js",
+			"default": "./dist/tw/collect.js"
+		},
+		"./vite": {
+			"pandwind": "./src/vite/index.ts",
+			"types": "./dist/vite/index.d.ts",
+			"import": "./dist/vite/index.js",
+			"default": "./dist/vite/index.js"
+		},
+		"./vite/css-extract": {
+			"pandwind": "./src/vite/css-extract.ts",
+			"types": "./dist/vite/css-extract.d.ts",
+			"import": "./dist/vite/css-extract.js",
+			"default": "./dist/vite/css-extract.js"
+		},
+		"./vite/cross-module-consts": {
+			"pandwind": "./src/vite/cross-module-consts.ts",
+			"types": "./dist/vite/cross-module-consts.d.ts",
+			"import": "./dist/vite/cross-module-consts.js",
+			"default": "./dist/vite/cross-module-consts.js"
+		},
+		"./vite/cx-inline": {
+			"pandwind": "./src/vite/cx-inline.ts",
+			"types": "./dist/vite/cx-inline.d.ts",
+			"import": "./dist/vite/cx-inline.js",
+			"default": "./dist/vite/cx-inline.js"
+		},
+		"./vite/inline": {
+			"pandwind": "./src/vite/inline.ts",
+			"types": "./dist/vite/inline.d.ts",
+			"import": "./dist/vite/inline.js",
+			"default": "./dist/vite/inline.js"
+		},
+		"./vite/stack-fold": {
+			"pandwind": "./src/vite/stack-fold.ts",
+			"types": "./dist/vite/stack-fold.d.ts",
+			"import": "./dist/vite/stack-fold.js",
+			"default": "./dist/vite/stack-fold.js"
+		},
+		"./unplugin": {
+			"pandwind": "./src/unplugin.ts",
+			"types": "./dist/unplugin.d.ts",
+			"import": "./dist/unplugin.js",
+			"default": "./dist/unplugin.js"
+		},
+		"./css/create-stylesheet": {
+			"pandwind": "./src/css/create-stylesheet.ts",
+			"types": "./dist/css/create-stylesheet.d.ts",
+			"import": "./dist/css/create-stylesheet.js",
+			"default": "./dist/css/create-stylesheet.js"
+		},
+		"./design/resolve": {
+			"pandwind": "./src/design/resolve.ts",
+			"types": "./dist/design/resolve.d.ts",
+			"import": "./dist/design/resolve.js",
+			"default": "./dist/design/resolve.js"
+		},
+		"./lib/utils": {
+			"pandwind": "./src/lib/utils.ts",
+			"types": "./dist/lib/utils.d.ts",
+			"import": "./dist/lib/utils.js",
+			"default": "./dist/lib/utils.js"
+		},
+		"./preset/example-preset": {
+			"pandwind": "./src/preset/example-preset.ts",
+			"types": "./dist/preset/example-preset.d.ts",
+			"import": "./dist/preset/example-preset.js",
+			"default": "./dist/preset/example-preset.js"
+		},
+		"./tw/compile": {
+			"pandwind": "./src/tw/compile.ts",
+			"types": "./dist/tw/compile.d.ts",
+			"import": "./dist/tw/compile.js",
+			"default": "./dist/tw/compile.js"
+		},
+		"./tw/interop": {
+			"pandwind": "./src/tw/interop-artifact.ts",
+			"types": "./dist/tw/interop-artifact.d.ts",
+			"import": "./dist/tw/interop-artifact.js",
+			"default": "./dist/tw/interop-artifact.js"
+		},
+		"./tw/literal": {
+			"pandwind": "./src/tw/literal.ts",
+			"types": "./dist/tw/literal.d.ts",
+			"import": "./dist/tw/literal.js",
+			"default": "./dist/tw/literal.js"
+		},
+		"./tw/token-graph": {
+			"pandwind": "./src/tw/token-graph.ts",
+			"types": "./dist/tw/token-graph.d.ts",
+			"import": "./dist/tw/token-graph.js",
+			"default": "./dist/tw/token-graph.js"
+		},
+		"./codegen/types": {
+			"pandwind": "./src/tw/generate-types.ts",
+			"types": "./dist/tw/generate-types.d.ts",
+			"import": "./dist/tw/generate-types.js",
+			"default": "./dist/tw/generate-types.js"
+		},
+		"./codegen/theme": {
+			"pandwind": "./src/tw/generate-theme.ts",
+			"types": "./dist/tw/generate-theme.d.ts",
+			"import": "./dist/tw/generate-theme.js",
+			"default": "./dist/tw/generate-theme.js"
+		},
+		"./codegen/collect": {
+			"pandwind": "./src/tw/collect.ts",
+			"types": "./dist/tw/collect.d.ts",
+			"import": "./dist/tw/collect.js",
+			"default": "./dist/tw/collect.js"
+		},
+		"./codegen/bridge": {
+			"pandwind": "./src/tw/bridge.ts",
+			"types": "./dist/tw/bridge.d.ts",
+			"import": "./dist/tw/bridge.js",
+			"default": "./dist/tw/bridge.js"
+		},
+		"./react-native": {
+			"pandwind": "./src/rn.ts",
+			"types": "./dist/rn.d.ts",
+			"import": "./dist/rn.js",
+			"default": "./dist/rn.js"
+		},
+		"./types/typings": {
+			"pandwind": "./src/types/typings.ts",
+			"types": "./dist/types/typings.d.ts",
+			"import": "./dist/types/typings.js",
+			"default": "./dist/types/typings.js"
+		},
+		"./opentui": {
+			"pandwind": "./src/opentui.ts",
+			"types": "./dist/opentui.d.ts",
+			"import": "./dist/opentui.js",
+			"default": "./dist/opentui.js"
+		},
+		"./backends": {
+			"pandwind": "./src/backends/index.ts",
+			"types": "./dist/backends/index.d.ts",
+			"import": "./dist/backends/index.js",
+			"default": "./dist/backends/index.js"
+		},
+		"./source": {
+			"pandwind": "./src/source-scanner.ts",
+			"types": "./dist/source-scanner.d.ts",
+			"import": "./dist/source-scanner.js",
+			"default": "./dist/source-scanner.js"
+		},
+		"./source/workspace": {
+			"pandwind": "./src/source-workspace.ts",
+			"types": "./dist/source-workspace.d.ts",
+			"import": "./dist/source-workspace.js",
+			"default": "./dist/source-workspace.js"
+		},
+		"./_runtime/css-base": {
+			"pandwind": "./src/css/runtime-base.ts",
+			"types": "./dist/css/runtime-base.d.ts",
+			"import": "./dist/css/runtime-base.js",
+			"default": "./dist/css/runtime-base.js"
+		},
+		"./_runtime/css-class": {
+			"pandwind": "./src/css/runtime-method-class.ts",
+			"types": "./dist/css/runtime-method-class.d.ts",
+			"import": "./dist/css/runtime-method-class.js",
+			"default": "./dist/css/runtime-method-class.js"
+		},
+		"./_runtime/css-vars": {
+			"pandwind": "./src/css/runtime-method-vars.ts",
+			"types": "./dist/css/runtime-method-vars.d.ts",
+			"import": "./dist/css/runtime-method-vars.js",
+			"default": "./dist/css/runtime-method-vars.js"
+		},
+		"./_runtime/css-raw": {
+			"pandwind": "./src/css/runtime-method-raw.ts",
+			"types": "./dist/css/runtime-method-raw.d.ts",
+			"import": "./dist/css/runtime-method-raw.js",
+			"default": "./dist/css/runtime-method-raw.js"
+		},
+		"./_runtime/css-props": {
+			"pandwind": "./src/css/runtime-method-props.ts",
+			"types": "./dist/css/runtime-method-props.d.ts",
+			"import": "./dist/css/runtime-method-props.js",
+			"default": "./dist/css/runtime-method-props.js"
+		},
+		"./_runtime/css-group": {
+			"pandwind": "./src/css/runtime-method-group.ts",
+			"types": "./dist/css/runtime-method-group.d.ts",
+			"import": "./dist/css/runtime-method-group.js",
+			"default": "./dist/css/runtime-method-group.js"
+		},
+		"./_runtime/css-input": {
+			"pandwind": "./src/css/runtime-method-input.ts",
+			"types": "./dist/css/runtime-method-input.d.ts",
+			"import": "./dist/css/runtime-method-input.js",
+			"default": "./dist/css/runtime-method-input.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
@@ -71,6 +296,7 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
+		"build": "nub exec tsdown",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run --exclude tests/runtime-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts",
 		"test:coverage": "vitest run --coverage",
@@ -96,6 +322,7 @@
 		"react-dom": "19.2.8",
 		"rollup": "4.62.5",
 		"tailwind-merge": "3.6.0",
+		"tsdown": "0.22.14",
 		"tstyche": "7.2.2",
 		"typescript": "7.0.2",
 		"vite": "8.2.1",

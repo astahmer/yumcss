@@ -100,15 +100,15 @@ an explicit `$raw`/escape lane so they are visible to review and analysis.
 ```json
 {
 	"scripts": {
-		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	}
 }
 ```
 
 ```sh
-nub run tw:generate
-nub run tw:scan
+pnpm run tw:generate
+pnpm run tw:scan
 ```
 
 The bridge lets the same semantic style code lower to Tailwind. You can use

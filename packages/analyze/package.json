@@ -15,18 +15,27 @@
 		"directory": "packages/pandwind-analyze"
 	},
 	"bin": {
-		"pandwind-analyze": "./src/cli.ts"
+		"pandwind-analyze": "./dist/cli.js"
 	},
 	"files": [
-		"src",
-		"!src/**/*.test.ts",
+		"dist",
 		"README.md",
 		"LICENSE"
 	],
 	"type": "module",
 	"exports": {
-		".": "./src/cli.ts",
-		"./collect": "./src/collect/index.ts",
+		".": {
+			"pandwind": "./src/cli.ts",
+			"types": "./dist/cli.d.ts",
+			"import": "./dist/cli.js",
+			"default": "./dist/cli.js"
+		},
+		"./collect": {
+			"pandwind": "./src/collect/index.ts",
+			"types": "./dist/collect/index.d.ts",
+			"import": "./dist/collect/index.js",
+			"default": "./dist/collect/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
@@ -35,6 +44,7 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
+		"build": "nub exec tsdown",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
@@ -50,6 +60,7 @@
 		"@types/node": "26.2.0",
 		"@vitest/coverage-v8": "4.1.10",
 		"oxc-parser": "0.144.0",
+		"tsdown": "0.22.14",
 		"typescript": "7.0.2",
 		"vitest": "4.1.10"
 	},

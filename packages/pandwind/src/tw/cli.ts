@@ -1,4 +1,4 @@
-#!/usr/bin/env nub
+#!/usr/bin/env node
 /**
  * The one user-facing Tailwind tooling command.
  *
@@ -237,7 +237,7 @@ export const createTwCli = (
 	cwd = process.cwd(),
 ): TwCli => new DefaultTwCli(handlers, cwd);
 
-if (process.argv[1]?.endsWith("cli.ts")) {
+if (process.argv[1] !== undefined && /cli\.[cm]?[jt]sx?$/.test(process.argv[1])) {
 	try {
 		await createTwCli().run(process.argv.slice(2));
 	} catch (error) {

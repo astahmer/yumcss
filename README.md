@@ -51,14 +51,15 @@ export function Card() {
 
 ## Quickstart (fresh app)
 
-pandwind ships **source** (`.ts` entry points) and expects a bundler that
-compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
+pandwind ships compiled ESM and TypeScript declarations. Import public APIs
+through the package subpaths; published applications do not need the
+repository source tree or a special TypeScript runner.
 
 ```sh
 pnpm add pandwind
 ```
 
-For repository development, enter the reproducible shell first. It provides
+For repository development only, enter the reproducible shell first. It provides
 the pinned Nub TypeScript runner, Node, pnpm, and the formatting utilities:
 
 ```sh
@@ -81,14 +82,14 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 // package.json
 {
 	"scripts": {
-		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-nub run tw:generate && nub run tw:scan
+pnpm run tw:generate && pnpm run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
@@ -234,7 +235,7 @@ than guessed) and injects it while generating types:
   generated output as before.
 
 ```sh
-nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
+pnpm exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an

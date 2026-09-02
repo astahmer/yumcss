@@ -16,27 +16,87 @@
 		"directory": "packages/pandwind-codemod"
 	},
 	"bin": {
-		"pandwind-codemod": "./src/cli.ts"
+		"pandwind-codemod": "./dist/cli.js"
 	},
 	"files": [
-		"src",
+		"dist",
 		"README.md",
 		"LICENSE"
 	],
 	"type": "module",
 	"exports": {
-		".": "./src/cli.ts",
-		"./swap": "./src/swap/index.ts",
-		"./swap/identifiers": "./src/swap/identifiers.ts",
-		"./swap/corpus": "./src/swap/real-repository-corpus.ts",
-		"./migration/meta": "./src/meta.ts",
-		"./migration/map": "./src/map.ts",
-		"./migration/source": "./src/migrate.ts",
-		"./migration/shared": "./src/shared.ts",
-		"./migration/tokens": "./src/tokens.ts",
-		"./swap/unplugin": "./src/swap/unplugin.ts",
-		"./swap/vite": "./src/swap/vite.ts",
-		"./swap/browser": "./src/swap/browser.ts",
+		".": {
+			"pandwind": "./src/cli.ts",
+			"types": "./dist/cli.d.ts",
+			"import": "./dist/cli.js",
+			"default": "./dist/cli.js"
+		},
+		"./swap": {
+			"pandwind": "./src/swap/index.ts",
+			"types": "./dist/swap/index.d.ts",
+			"import": "./dist/swap/index.js",
+			"default": "./dist/swap/index.js"
+		},
+		"./swap/identifiers": {
+			"pandwind": "./src/swap/identifiers.ts",
+			"types": "./dist/swap/identifiers.d.ts",
+			"import": "./dist/swap/identifiers.js",
+			"default": "./dist/swap/identifiers.js"
+		},
+		"./swap/corpus": {
+			"pandwind": "./src/swap/real-repository-corpus.ts",
+			"types": "./dist/swap/real-repository-corpus.d.ts",
+			"import": "./dist/swap/real-repository-corpus.js",
+			"default": "./dist/swap/real-repository-corpus.js"
+		},
+		"./migration/meta": {
+			"pandwind": "./src/meta.ts",
+			"types": "./dist/meta.d.ts",
+			"import": "./dist/meta.js",
+			"default": "./dist/meta.js"
+		},
+		"./migration/map": {
+			"pandwind": "./src/map.ts",
+			"types": "./dist/map.d.ts",
+			"import": "./dist/map.js",
+			"default": "./dist/map.js"
+		},
+		"./migration/source": {
+			"pandwind": "./src/migrate.ts",
+			"types": "./dist/migrate.d.ts",
+			"import": "./dist/migrate.js",
+			"default": "./dist/migrate.js"
+		},
+		"./migration/shared": {
+			"pandwind": "./src/shared.ts",
+			"types": "./dist/shared.d.ts",
+			"import": "./dist/shared.js",
+			"default": "./dist/shared.js"
+		},
+		"./migration/tokens": {
+			"pandwind": "./src/tokens.ts",
+			"types": "./dist/tokens.d.ts",
+			"import": "./dist/tokens.js",
+			"default": "./dist/tokens.js"
+		},
+		"./swap/unplugin": {
+			"pandwind": "./src/swap/unplugin.ts",
+			"types": "./dist/swap/unplugin.d.ts",
+			"import": "./dist/swap/unplugin.js",
+			"default": "./dist/swap/unplugin.js"
+		},
+		"./swap/vite": {
+			"pandwind": "./src/swap/vite.ts",
+			"types": "./dist/swap/vite.d.ts",
+			"import": "./dist/swap/vite.js",
+			"default": "./dist/swap/vite.js"
+		},
+		"./swap/browser": {
+			"pandwind": "./src/swap/browser.ts",
+			"types": "./dist/swap/browser.d.ts",
+			"import": "./dist/swap/browser.js",
+			"default": "./dist/swap/browser.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
@@ -45,6 +105,7 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
+		"build": "nub exec tsdown",
 		"cli": "nub src/cli.ts",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
@@ -67,6 +128,7 @@
 		"@types/node": "26.2.0",
 		"@vitest/coverage-v8": "4.1.10",
 		"jss": "^10.10.0",
+		"tsdown": "0.22.14",
 		"typescript": "7.0.2",
 		"vitest": "4.1.10"
 	},
