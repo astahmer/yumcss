@@ -49,12 +49,27 @@ export interface SourceCallSite {
 	readonly assignedBinding?: string;
 }
 
+export const SourceHostUseKind = {
+	Component: "component",
+	Attribute: "attribute",
+} as const;
+export type SourceHostUseKind = (typeof SourceHostUseKind)[keyof typeof SourceHostUseKind];
+
+export interface SourceHostUse {
+	readonly kind: SourceHostUseKind;
+	readonly localName: string;
+	readonly start: number;
+	readonly end: number;
+}
+
 export interface SourceBindingIndex {
 	readonly bindings: readonly SourceBinding[];
 	readonly reexports: readonly SourceReexport[];
 	readonly exportAllSources: readonly SourceExportAll[];
 	/** AST-owned calls and tagged templates with resolved imported bindings. */
 	readonly callSites: readonly SourceCallSite[];
+	/** JSX component and attribute uses resolved from AST ranges. */
+	readonly hostUses: readonly SourceHostUse[];
 	/** Resolve the authored local name to its imported module binding. */
 	binding(localName: string): SourceBinding | undefined;
 	/** Return all imports from one module, preserving authored order. */
@@ -65,6 +80,12 @@ export interface SourceBindingIndex {
 	isShadowed(localName: string): boolean;
 	/** Check whether an imported name is shadowed at a specific source offset. */
 	isShadowedAt(localName: string, offset: number): boolean;
+	/** Check whether a binding is used as a JSX component element. */
+	hasComponentUse(localName: string): boolean;
+	/** Check whether a binding is used as a JSX style/class attribute expression. */
+	hasAttributeUse(localName: string): boolean;
+	/** Check whether an offset is inside a JSX attribute expression. */
+	hasInlineAttributeUse(offset: number): boolean;
 }
 
 interface AstNode extends OxcNode {
@@ -96,6 +117,74 @@ const sourceOf = (node: unknown): string | undefined => {
 	if (node === null || typeof node !== "object") return undefined;
 	const value = node as { source?: { value?: unknown } };
 	return typeof value.source?.value === "string" ? value.source.value : undefined;
+};
+
+interface EmbeddedProgram {
+	readonly program: OxcNode;
+	readonly hostUses: readonly SourceHostUse[];
+}
+
+/** Parse framework-embedded script/template islands with original source offsets. */
+const embeddedPrograms = (document: SourceDocument): readonly EmbeddedProgram[] => {
+	const programs: EmbeddedProgram[] = [];
+	const source = document.source;
+	const scriptPattern = /<script\b[^>]*>([\s\S]*?)<\/script\s*>/giu;
+	for (const match of source.matchAll(scriptPattern)) {
+		const body = match[1];
+		const matchStart = match.index;
+		if (body === undefined || matchStart === undefined) continue;
+		const bodyStart = matchStart + match[0].indexOf(body);
+		try {
+			const parsed = SOURCE_SCANNER_SERVICE.parse({
+				file: `${document.file}.tsx`,
+				source: `${" ".repeat(bodyStart)}${body}`,
+				language: "tsx",
+			});
+			programs.push({
+				program: parsed.program as unknown as OxcNode,
+				hostUses: collectHostUses(parsed.program as unknown as OxcNode),
+			});
+		} catch {
+			// A malformed script island remains unindexed and therefore unrewritten.
+		}
+	}
+	const templatePattern = /<template\b[^>]*>([\s\S]*?)<\/template\s*>/giu;
+	for (const match of source.matchAll(templatePattern)) {
+		const body = match[1];
+		const matchStart = match.index;
+		if (body === undefined || matchStart === undefined) continue;
+		const bodyStart = matchStart + match[0].indexOf(body);
+		const prefix = `const __pandwind_template = <>`;
+		const normalizedBody = body.replace(
+			/:([A-Za-z_$][\w$-]*)="([^"]*)"/gu,
+			(full, name: string, expression: string) => {
+				const replacement = `${name}={${expression}}`;
+				return replacement.length < full.length
+					? `${replacement}${" ".repeat(full.length - replacement.length)}`
+					: replacement;
+			},
+		);
+		try {
+			const parsed = SOURCE_SCANNER_SERVICE.parse({
+				file: `${document.file}.tsx`,
+				source: `${" ".repeat(bodyStart)}${prefix}${normalizedBody}</>;`,
+				language: "tsx",
+			});
+			const prefixLength = prefix.length;
+			const hostUses = collectHostUses(parsed.program as unknown as OxcNode).map((use) => ({
+				...use,
+				start: use.start - prefixLength,
+				end: use.end - prefixLength,
+			}));
+			programs.push({
+				program: parsed.program as unknown as OxcNode,
+				hostUses,
+			});
+		} catch {
+			// Unsupported template syntax is intentionally handled by its host adapter.
+		}
+	}
+	return programs;
 };
 
 const bindingNames = (node: unknown, names: string[]): void => {
@@ -366,12 +455,64 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 	return sites.toSorted((a, b) => a.start - b.start);
 }
 
+function collectHostUses(program: OxcNode): SourceHostUse[] {
+	const uses: SourceHostUse[] = [];
+	walkWithParent(program, (node) => {
+		if (node.type !== "JSXOpeningElement") return;
+		const element = node as {
+			name?: { type?: string; name?: string };
+			attributes?: unknown[];
+			start?: number;
+			end?: number;
+		};
+		const name = element.name;
+		if (
+			name?.type === "JSXIdentifier" &&
+			typeof name.name === "string" &&
+			element.start !== undefined &&
+			element.end !== undefined
+		)
+			uses.push({
+				kind: SourceHostUseKind.Component,
+				localName: name.name,
+				start: element.start,
+				end: element.end,
+			});
+		for (const rawAttribute of element.attributes ?? []) {
+			if (rawAttribute === null || typeof rawAttribute !== "object") continue;
+			const attribute = rawAttribute as {
+				type?: string;
+				start?: number;
+				end?: number;
+				value?: { type?: string; expression?: { type?: string; name?: string } } | null;
+			};
+			const expression = attribute.value?.expression;
+			if (
+				attribute.type !== "JSXAttribute" ||
+				expression?.type !== "Identifier" ||
+				typeof expression.name !== "string" ||
+				attribute.start === undefined ||
+				attribute.end === undefined
+			)
+				continue;
+			uses.push({
+				kind: SourceHostUseKind.Attribute,
+				localName: expression.name,
+				start: attribute.start,
+				end: attribute.end,
+			});
+		}
+	});
+	return uses.toSorted((a, b) => a.start - b.start || a.end - b.end);
+}
+
 /** Immutable AST import index shared by codemod, Vite, analyzer, and hosts. */
 export class SourceBindings {
 	private readonly entries: readonly SourceBinding[];
 	private readonly exported: readonly SourceReexport[];
 	private readonly exportedAll: readonly SourceExportAll[];
 	private readonly calls: readonly SourceCallSite[];
+	private readonly hosts: readonly SourceHostUse[];
 	private readonly shadowed: ReadonlySet<string>;
 	private readonly shadowedScopes: readonly ShadowedScope[];
 
@@ -380,6 +521,7 @@ export class SourceBindings {
 		exported: readonly SourceReexport[],
 		exportedAll: readonly SourceExportAll[],
 		calls: readonly SourceCallSite[],
+		hosts: readonly SourceHostUse[],
 		shadowed: ReadonlySet<string>,
 		shadowedScopes: readonly ShadowedScope[],
 	) {
@@ -387,6 +529,7 @@ export class SourceBindings {
 		this.exported = exported;
 		this.exportedAll = exportedAll;
 		this.calls = calls;
+		this.hosts = hosts;
 		this.shadowed = shadowed;
 		this.shadowedScopes = shadowedScopes;
 	}
@@ -400,6 +543,7 @@ export class SourceBindings {
 			collected.reexports,
 			collected.exportAllSources,
 			collectCallSites(program, collected.bindings),
+			collectHostUses(program),
 			shadowed,
 			collected.shadowedScopes,
 		);
@@ -410,11 +554,39 @@ export class SourceBindings {
 	}
 
 	static fromDocument(document: SourceDocument): SourceBindingIndex {
-		return SourceBindings.fromParseResult(recoverableParse(document));
+		try {
+			return SourceBindings.fromParseResult(recoverableParse(document));
+		} catch {
+			const embedded = embeddedPrograms(document);
+			if (embedded.length === 0) throw new Error(`unable to parse ${document.file}`);
+			return SourceBindings.fromPrograms(
+				embedded.map(({ program }) => program),
+				embedded.flatMap(({ hostUses }) => hostUses),
+			);
+		}
 	}
 
 	static parse(document: SourceDocument): SourceBindingIndex {
-		return SourceBindings.fromParseResult(recoverableParse(document));
+		return SourceBindings.fromDocument(document);
+	}
+
+	private static fromPrograms(
+		programs: readonly OxcNode[],
+		extraHosts: readonly SourceHostUse[] = [],
+	): SourceBindingIndex {
+		const collected = programs.map(collectBindings);
+		const bindings = collected.flatMap(({ bindings }) => bindings);
+		const importedNames = new Set(bindings.map((binding) => binding.localName));
+		const declared = new Set(collected.flatMap(({ declared }) => [...declared]));
+		return new SourceBindings(
+			bindings,
+			collected.flatMap(({ reexports }) => reexports),
+			collected.flatMap(({ exportAllSources }) => exportAllSources),
+			programs.flatMap((program) => collectCallSites(program, bindings)),
+			[...programs.flatMap((program) => collectHostUses(program)), ...extraHosts],
+			new Set([...importedNames].filter((name) => declared.has(name))),
+			collected.flatMap(({ shadowedScopes }) => shadowedScopes),
+		);
 	}
 
 	get bindings(): readonly SourceBinding[] {
@@ -431,6 +603,10 @@ export class SourceBindings {
 
 	get callSites(): readonly SourceCallSite[] {
 		return this.calls;
+	}
+
+	get hostUses(): readonly SourceHostUse[] {
+		return this.hosts;
 	}
 
 	binding(localName: string): SourceBinding | undefined {
@@ -459,6 +635,24 @@ export class SourceBindings {
 		return this.shadowedScopes.some(
 			(scope) =>
 				scope.name === localName && offset >= scope.range.start && offset < scope.range.end,
+		);
+	}
+
+	hasComponentUse(localName: string): boolean {
+		return this.hosts.some(
+			(use) => use.kind === SourceHostUseKind.Component && use.localName === localName,
+		);
+	}
+
+	hasAttributeUse(localName: string): boolean {
+		return this.hosts.some(
+			(use) => use.kind === SourceHostUseKind.Attribute && use.localName === localName,
+		);
+	}
+
+	hasInlineAttributeUse(offset: number): boolean {
+		return this.hosts.some(
+			(use) => use.kind === SourceHostUseKind.Attribute && offset >= use.start && offset < use.end,
 		);
 	}
 }

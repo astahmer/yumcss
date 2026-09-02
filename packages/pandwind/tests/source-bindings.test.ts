@@ -160,4 +160,70 @@ describe("source binding index", () => {
 			'css({ color: "red" })',
 		]);
 	});
+
+	test("indexes JSX component and attribute uses without spelling heuristics", () => {
+		const source = [
+			'import { css as makeCss } from "@emotion/react";',
+			'const Card = makeCss({ color: "red" });',
+			"export const App = () => <Card className={Card} css={Card} />;",
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "hosts.tsx", source });
+
+		expect(index.hostUses).toMatchInlineSnapshot(`
+			[
+			  {
+			    "end": 150,
+			    "kind": "component",
+			    "localName": "Card",
+			    "start": 114,
+			  },
+			  {
+			    "end": 136,
+			    "kind": "attribute",
+			    "localName": "Card",
+			    "start": 120,
+			  },
+			  {
+			    "end": 147,
+			    "kind": "attribute",
+			    "localName": "Card",
+			    "start": 137,
+			  },
+			]
+		`);
+		expect(index.hasComponentUse("Card")).toBe(true);
+		expect(index.hasAttributeUse("Card")).toBe(true);
+		expect(index.hasInlineAttributeUse(source.indexOf("Card} />"))).toBe(true);
+	});
+
+	test("indexes script bindings and template hosts in a Vue SFC", () => {
+		const source = [
+			"<script setup>",
+			'import { css as makeCss } from "@emotion/react";',
+			'const Card = makeCss({ color: "red" });',
+			"</script>",
+			'<template><Card :class="Card" /></template>',
+		].join("\n");
+		const index = SourceBindings.fromDocument({ file: "Card.vue", source });
+
+		expect(index.bindings).toMatchInlineSnapshot(`
+			[
+			  {
+			    "importedName": "css",
+			    "kind": "named",
+			    "localName": "makeCss",
+			    "range": {
+			      "end": 38,
+			      "start": 24,
+			    },
+			    "source": "@emotion/react",
+			  },
+			]
+		`);
+		expect(
+			index.callSites.map(({ localName, assignedBinding }) => ({ localName, assignedBinding })),
+		).toEqual([{ localName: "makeCss", assignedBinding: "Card" }]);
+		expect(index.hasComponentUse("Card")).toBe(true);
+		expect(index.hasAttributeUse("Card")).toBe(true);
+	});
 });
