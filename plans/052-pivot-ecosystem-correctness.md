@@ -10,6 +10,19 @@ The current evidence is documented in the [official API matrix](/Users/astahmer/
 
 This plan preserves the audit findings nearly verbatim, then turns each remaining boundary into an implementation and proof obligation. It does not promise universal compatibility where the source library owns behavior outside styling, such as React Native platform layout or component-library interaction behavior.
 
+## Execution status
+
+- [x] Wave 1 — registry-derived capability ledger with representation, proof, and evidence rows.
+- [ ] Wave 2 — executable real-repository promotion runner.
+- [ ] Wave 3 — generic static-first semantic lowering families.
+- [ ] Wave 4 — complete official project-context loading.
+- [ ] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.
+- [ ] Wave 6 — real-repository adapter promotion waves.
+- [ ] Wave 7 — capability-specific directional and round-trip proof matrix.
+- [ ] Wave 8 — CI gates, documentation regeneration, and final acceptance audit.
+
+Wave 1 intentionally delivers the ledger boundary first; it does not claim that the existing fixture or source-only evidence has been promoted.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.

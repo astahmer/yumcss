@@ -134,6 +134,8 @@ export {
 	PandaMigrationStageId,
 	CodemodCallPatternFormTag,
 	CodemodCallPatternKindTag,
+	AdapterCapabilityTag,
+	AdapterCapabilityEvidenceStatusTag,
 	DifferentialExpectedTag,
 	externalIdentifier,
 } from "./identifiers.ts";
@@ -147,6 +149,16 @@ export type {
 	AdapterMatrixReport,
 	BidirectionalAdapterMatrix,
 } from "./adapter-matrix.ts";
+export {
+	ADAPTER_CAPABILITY_LEDGER_SCHEMA,
+	createAdapterCapabilityLedger,
+	type AdapterCapabilityLedger,
+	type AdapterCapabilityLedgerEntry,
+	type AdapterCapabilityLedgerEvidence,
+	type AdapterCapabilityLedgerProof,
+	type CapabilityLedgerOptions,
+} from "./capability-ledger.ts";
+
 export {
 	ADAPTER_CONFORMANCE_SCHEMA,
 	createAdapterConformanceSuite,
@@ -219,6 +231,7 @@ export { TokenFormatId } from "./token-format-contracts.ts";
 export { BUILTIN_CODEMOD_ADAPTER_IDS, BUILTIN_STYLE_VALIDATOR_IDS } from "./identifiers.ts";
 export {
 	ADAPTER_CAPABILITIES_SCHEMA,
+	AdapterCapabilityLevelTag,
 	createAdapterCapabilityMatrix,
 	inspectAdapterCapabilities,
 	requiredAdapterCapabilities,

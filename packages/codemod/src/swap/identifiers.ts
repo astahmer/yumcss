@@ -87,6 +87,43 @@ export const enum CodemodCallPatternFormTag {
 	Residual = "residual",
 }
 
+/** Stable capability identities used by manifests, ledgers, and validators. */
+export const enum AdapterCapabilityTag {
+	Declarations = "declarations",
+	TokenValues = "token-values",
+	CustomProperties = "custom-properties",
+	DynamicValues = "dynamic-values",
+	FunctionValues = "function-values",
+	NamedConditions = "named-conditions",
+	NamedRules = "named-rules",
+	PseudoConditions = "pseudo-conditions",
+	SelectorConditions = "selector-conditions",
+	MediaConditions = "media-conditions",
+	ContainerConditions = "container-conditions",
+	SupportsConditions = "supports-conditions",
+	RuleLevel = "rule-level",
+	GlobalRules = "global-rules",
+	Keyframes = "keyframes",
+	FontFace = "font-face",
+	Layers = "layers",
+	SupportsRules = "supports-rules",
+	PropertyRules = "property-rules",
+	Selectors = "selectors",
+	Nesting = "nesting",
+	Ordering = "ordering",
+	Recipes = "recipes",
+	Components = "components",
+	HostFramework = "host-framework",
+	Ssr = "ssr",
+	Hydration = "hydration",
+	BrowserDifferential = "browser-differential",
+	ThemeContext = "theme-context",
+	Composition = "composition",
+	RuntimeContext = "runtime-context",
+	PluginTransforms = "plugin-transforms",
+	FrameworkSemantics = "framework-semantics",
+}
+
 /** Built-in source dialects accepted by the flat SwapIR path. */
 export const enum SwapSourceId {
 	Auto = "auto",
@@ -259,6 +296,24 @@ export const enum RealRepositoryProofDimension {
 	RscStreaming = "rsc-streaming",
 	Dependencies = "dependencies",
 	CssSize = "css-size",
+}
+
+/** Ordered dimensions used when a capability ledger is rendered or serialized. */
+export const REAL_REPOSITORY_PROOF_DIMENSIONS = [
+	RealRepositoryProofDimension.CanonicalCss,
+	RealRepositoryProofDimension.BrowserStates,
+	RealRepositoryProofDimension.SsrHydration,
+	RealRepositoryProofDimension.RscStreaming,
+	RealRepositoryProofDimension.Dependencies,
+	RealRepositoryProofDimension.CssSize,
+] as const;
+
+/** Evidence level for one adapter/capability claim. */
+export const enum AdapterCapabilityEvidenceStatusTag {
+	Missing = "missing",
+	Fixture = "fixture",
+	Repository = "real-repository",
+	Promoted = "promoted",
 }
 
 export const enum RealRepositoryProofDimensionStatus {
