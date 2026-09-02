@@ -1,5 +1,5 @@
-import { dirname, join } from "node:path";
 import type { ProjectModuleLoader } from "../../project-module-loader.ts";
+import { dirnameDocumentPath, joinDocumentPath } from "../../../path-utils.ts";
 
 /** Panda's documented JSX style-prop mode from the effective config. */
 export const enum PandaJsxStylePropsModeTag {
@@ -25,6 +25,23 @@ interface PandaStylePropConfig {
 	readonly outdir?: string;
 }
 
+export const normalizePandaStylePropsMode = (
+	mode: PandaStylePropConfig["jsxStyleProps"],
+): PandaJsxStylePropsModeTag => {
+	switch (mode) {
+		case "none":
+		case PandaJsxStylePropsModeTag.None:
+			return PandaJsxStylePropsModeTag.None;
+		case "minimal":
+		case PandaJsxStylePropsModeTag.Minimal:
+			return PandaJsxStylePropsModeTag.Minimal;
+		case "all":
+		case PandaJsxStylePropsModeTag.All:
+		default:
+			return PandaJsxStylePropsModeTag.All;
+	}
+};
+
 interface PandaValidPropPackage {
 	readonly isCssProperty?: (value: string) => boolean;
 }
@@ -49,8 +66,8 @@ const generatedStylePropFiles = (
 ): readonly string[] => {
 	const outdir = config.outdir ?? "styled-system";
 	return [
-		join(dirname(configPath), outdir, "types", "system.d.ts"),
-		join(dirname(configPath), outdir, "types", "system-types.d.ts"),
+		joinDocumentPath(dirnameDocumentPath(configPath), outdir, "types", "system.d.ts"),
+		joinDocumentPath(dirnameDocumentPath(configPath), outdir, "types", "system-types.d.ts"),
 	];
 };
 
@@ -84,7 +101,7 @@ export async function resolvePandaStylePropContract(
 	loader: ProjectModuleLoader,
 	readFile: (file: string) => string | undefined,
 ): Promise<PandaStylePropContract> {
-	const mode = config.jsxStyleProps ?? PandaJsxStylePropsModeTag.All;
+	const mode = normalizePandaStylePropsMode(config.jsxStyleProps);
 	if (mode === PandaJsxStylePropsModeTag.None)
 		return { mode, evidence: ["config"], matches: () => false };
 	if (mode === PandaJsxStylePropsModeTag.Minimal)
@@ -93,7 +110,7 @@ export async function resolvePandaStylePropContract(
 	const names = new Set(["css", ...aliases, ...conditions]);
 	const validPropPackage = await loader.importPackage<PandaValidPropPackage>(
 		"@pandacss/is-valid-prop",
-		dirname(configPath),
+		dirnameDocumentPath(configPath),
 	);
 	if (validPropPackage?.isCssProperty !== undefined)
 		return {

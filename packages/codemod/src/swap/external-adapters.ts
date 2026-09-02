@@ -96,7 +96,7 @@ type CallPattern = {
 	/** Optional source syntax immediately following the balanced call body. */
 	readonly suffix?: RegExp;
 	readonly styleProps?:
-		| JsxStylePropSelector
+		| readonly string[]
 		| ((context: AdapterParseContext) => JsxStylePropSelector);
 	/** Source-specific host props that must remain for component semantics. */
 	readonly preserveHostStyleProps?: (host: JsxStyleHostMatch) => readonly string[];

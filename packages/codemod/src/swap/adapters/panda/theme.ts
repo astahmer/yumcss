@@ -15,25 +15,22 @@
  * stay symbolic so dark-mode switching survives migration (pass 1 lifts the
  * tokens themselves into a pandwind preset).
  */
-import { dirname, join } from "node:path";
-import { pathToFileURL } from "node:url";
 import { SourcePass } from "../../../source-pass-utils.ts";
+import { dirnameDocumentPath, joinDocumentPath } from "../../../path-utils.ts";
 import { parseObjectLiteral, literalToPlain } from "./parse.ts";
 import {
 	NODE_PROJECT_MODULE_LOADER,
 	type ProjectModuleLoader,
 } from "../../project-module-loader.ts";
-import { createSourceWorkspace } from "pandwind/source/workspace";
 import { TokenCatalog } from "../../tokens.ts";
 import type { AdapterTokenCatalog } from "../../adapter-contract.ts";
 import { PANDA_ALIASES } from "./parse.ts";
 import {
 	PandaJsxStylePropsModeTag,
+	normalizePandaStylePropsMode,
 	resolvePandaStylePropContract,
 	type PandaStylePropContract,
 } from "./style-props.ts";
-
-const sourceWorkspace = createSourceWorkspace();
 
 interface PandaCustomPattern {
 	/** Runtime transform from pattern props to a style object. */
@@ -280,22 +277,29 @@ interface PandaConfigShape {
 }
 
 async function importModule(path: string): Promise<AnyModule> {
+	const { pathToFileURL } = await import(/* @vite-ignore */ "node:url");
 	return (await import(pathToFileURL(path).href)) as AnyModule;
+}
+
+async function createDefaultReadFile(): Promise<(file: string) => string | undefined> {
+	const { createSourceWorkspace } = await import(/* @vite-ignore */ "pandwind/source/workspace");
+	const workspace = createSourceWorkspace();
+	return (file) => workspace.read([file])[0]?.source;
 }
 
 /** Load semanticTokens/tokens/textStyles from a host panda.config.ts. */
 export async function loadPandaTheme(
 	configPath: string,
 	loader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
-	readFile: (file: string) => string | undefined = (file) =>
-		sourceWorkspace.read([file])[0]?.source,
+	readFile?: (file: string) => string | undefined,
 ): Promise<PandaTheme> {
+	const read = readFile ?? (await createDefaultReadFile());
 	try {
 		const official = await loadPandaThemeByOfficialPackage(configPath, loader);
-		if (official !== undefined) return withPandaStyleProps(official, configPath, loader, readFile);
+		if (official !== undefined) return withPandaStyleProps(official, configPath, loader, read);
 	} catch (error) {
 		const fallback = await loadPandaThemeByImport(configPath).catch(() =>
-			loadPandaThemeFromDisk(configPath),
+			loadPandaThemeFromDisk(configPath, read),
 		);
 		return withPandaStyleProps(
 			{
@@ -304,18 +308,13 @@ export async function loadPandaTheme(
 			},
 			configPath,
 			loader,
-			readFile,
+			read,
 		);
 	}
 	try {
-		return withPandaStyleProps(
-			await loadPandaThemeByImport(configPath),
-			configPath,
-			loader,
-			readFile,
-		);
+		return withPandaStyleProps(await loadPandaThemeByImport(configPath), configPath, loader, read);
 	} catch {
-		return withPandaStyleProps(loadPandaThemeFromDisk(configPath), configPath, loader, readFile);
+		return withPandaStyleProps(loadPandaThemeFromDisk(configPath, read), configPath, loader, read);
 	}
 }
 
@@ -344,10 +343,13 @@ async function loadPandaThemeByOfficialPackage(
 ): Promise<PandaTheme | undefined> {
 	const packageModule = await loader.importPackage<{
 		loadConfig?: (options: { cwd: string; file: string }) => Promise<{ config: PandaConfigShape }>;
-	}>("@pandacss/config", dirname(configPath));
+	}>("@pandacss/config", dirnameDocumentPath(configPath));
 	if (packageModule?.loadConfig === undefined) return undefined;
 	try {
-		const result = await packageModule.loadConfig({ cwd: dirname(configPath), file: configPath });
+		const result = await packageModule.loadConfig({
+			cwd: dirnameDocumentPath(configPath),
+			file: configPath,
+		});
 		// The official loader returns Panda's effective config, including preset and
 		// plugin decisions. Never inject built-in values on top of that result:
 		// an explicit `presets: []` or feature-removing plugin must remain authoritative.
@@ -430,7 +432,7 @@ function pandaThemeFromConfig(
 		plugins: Array.isArray(unwrapped?.plugins) ? unwrapped.plugins : undefined,
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
 		jsxStyleProps: {
-			mode: unwrapped?.jsxStyleProps ?? PandaJsxStylePropsModeTag.All,
+			mode: normalizePandaStylePropsMode(unwrapped?.jsxStyleProps),
 			evidence: ["config"],
 			matches: () => false,
 		},
@@ -442,9 +444,12 @@ function pandaThemeFromConfig(
  * Offline loader: reads the config + sibling theme files and extracts the
  * sections from source text (no module evaluation, no deps required).
  */
-function loadPandaThemeFromDisk(configPath: string): PandaTheme {
-	const dir = dirname(configPath);
-	const configSource = sourceWorkspace.read([configPath])[0]?.source;
+function loadPandaThemeFromDisk(
+	configPath: string,
+	readFile: (file: string) => string | undefined,
+): PandaTheme {
+	const dir = dirnameDocumentPath(configPath);
+	const configSource = readFile(configPath);
 	if (configSource === undefined) return emptyPandaTheme;
 	const extra: Array<string> = [];
 	// follow local `import { x } from './y'` references used by the sections
@@ -454,8 +459,8 @@ function loadPandaThemeFromDisk(configPath: string): PandaTheme {
 			.map((n) => n.trim().split(/\s+as\s+/)[0]!)
 			.filter(Boolean);
 		void names;
-		const candidate = join(dir, `${m[2]}.ts`);
-		const source = sourceWorkspace.read([candidate])[0]?.source;
+		const candidate = joinDocumentPath(dir, `${m[2]}.ts`);
+		const source = readFile(candidate);
 		if (source !== undefined) extra.push(source);
 	}
 	const mode = /\bjsxStyleProps\s*:\s*["'](all|minimal|none)["']/u.exec(configSource)?.[1] as
