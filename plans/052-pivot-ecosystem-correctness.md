@@ -37,6 +37,8 @@ Wave 5d is complete for shared JSX host decisions across script and framework-em
 
 Wave 5e is complete for Panda discovery reuse. Discovered Panda files now retain their shared `SourceScanResult`, and the staged source-scanning/rewrite pipeline reuses that result rather than invoking a second scan for the same document. The boundary is now: `SourceWorkspace → SourceScanResult → adapter stages`; filesystem/glob/parser ownership remains in the workspace/scanner providers, while migration modules consume their ports and records.
 
+Wave 6 has started with a repository-agnostic materialization/migration harness at `scripts/migrate-reference-repository.ts` (`nub run pivot:migrate:reference -- --reference <id>`). It verifies the pinned checkout, copies it to a disposable directory, discovers supported source files through `SourceWorkspace`, routes every file through the real asynchronous adapter path, writes target artifacts safely, and records changed files, conversions, residual kinds, and the remaining proof stages. This is intentionally migration preparation rather than promotion: the report keeps install/build/typecheck/lint/SSR/hydration/browser/CSS-size as explicit follow-up gates instead of overstating source conversion as application proof.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.
