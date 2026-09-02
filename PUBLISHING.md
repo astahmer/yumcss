@@ -1,4 +1,4 @@
-# PUBLISHING.md — source package release
+# PUBLISHING.md — package release
 
 Everything in this file touches the outside world. **Execute only with
 maintainer approval.** Local preflight and pack smoke checks are safe to run;

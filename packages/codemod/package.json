@@ -106,7 +106,7 @@
 	},
 	"scripts": {
 		"build": "nub exec tsdown",
-		"cli": "nub src/cli.ts",
+		"cli": "node dist/cli.js",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:routes": "vitest run tests/routes",

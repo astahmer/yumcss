@@ -48,7 +48,7 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
-		"cli": "nub src/cli.ts",
+		"cli": "node dist/cli.js",
 		"corpus": "nub run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
 	},
 	"dependencies": {
