@@ -383,6 +383,24 @@ const reactNative = makeExtraAdapter({
 	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],
 	call: /\bStyleSheet\.create\s*\(\s*\{/g,
 	prefix: "StyleSheet.create(",
+	jsxStyle: {
+		regex: /<[A-Za-z_$][\w$.-]*\b/g,
+		props: ["style"],
+		shouldParse: (match) =>
+			match.styleAttributes.every((attribute) => {
+				if (!attribute.expression || typeof attribute.value !== "string") return false;
+				const expression = attribute.value.trim();
+				return expression.startsWith("{") || expression.startsWith("[");
+			}),
+	},
+	residualPatterns: [
+		{
+			name: "Platform.select",
+			regex: /\bPlatform\.select\s*\(/g,
+			kind: "framework-semantics",
+			hint: "React Native Platform.select requires platform-aware target lowering",
+		},
+	],
 	targetImports: ['import { StyleSheet } from "react-native";'],
 	namedObjects: true,
 	sourceObjectOptions: { namedRuleObjects: true },

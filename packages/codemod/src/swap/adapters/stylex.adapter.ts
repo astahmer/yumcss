@@ -782,6 +782,15 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 				regex: /\bstylex\.defineVars\s*\(\s*\{/g,
 				transform: normalizeStyleXVariables,
 			},
+			{
+				name: "stylex-create-theme",
+				regex: /\bstylex\.createTheme\s*\(/g,
+				form: "residual",
+				residual: {
+					kind: "configuration",
+					hint: "StyleX createTheme requires variable-aware theme lowering",
+				},
+			},
 		],
 		packages: CodemodAdapterKit.dependency("@stylexjs/stylex", "peer"),
 		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.StyleX, "partial", {

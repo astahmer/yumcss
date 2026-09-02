@@ -227,15 +227,17 @@ class OfficialAdapterApiCatalog {
 				adapter: CodemodAdapterId.UnoCSS,
 				name: "UnoCSS utility classes",
 				file: "App.tsx",
-				source: 'export const App = () => <div className="flex items-center gap-4" />;',
+				source:
+					'export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;',
 				documentation: "https://unocss.dev/",
 			},
 			{
 				adapter: CodemodAdapterId.Tailwind,
-				name: "Tailwind utility classes",
+				name: "Tailwind arbitrary utility classes",
 				file: "App.tsx",
-				source: 'export const App = () => <div className="flex items-center gap-4" />;',
-				documentation: "https://tailwindcss.com/docs/styling-with-utility-classes",
+				source:
+					'export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;',
+				documentation: "https://tailwindcss.com/docs/adding-custom-styles#using-arbitrary-values",
 			},
 		];
 	}
@@ -283,7 +285,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red", padding: 8 } });",
+			export const styles = css.group({ card: { padding: 8, color: "red" } });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -329,7 +331,7 @@ describe("official primary API forms", () => {
 			    "code": "import { Box } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ backgroundColor: "var(--chakra-colors-red-200)", padding: "var(--chakra-spacing-4)" })}/>;",
+			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -352,7 +354,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: 8 });",
+			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -375,7 +377,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: "1rem" });",
+			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -422,7 +424,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: "1rem" });",
+			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -468,7 +470,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: "1rem" });",
+			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -491,7 +493,7 @@ describe("official primary API forms", () => {
 			    "code": "import { Box } from "@mantine/core";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
+			export const App = () => <Box className={css.class({ color: "blue.6", marginLeft: "var(--mantine-spacing-auto)", marginRight: "var(--mantine-spacing-auto)", maxWidth: 400 })}/>;",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -514,7 +516,7 @@ describe("official primary API forms", () => {
 			    "code": "import { Box } from "@mui/material";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ color: "red", padding: "16px" })}/>;",
+			export const App = () => <Box className={css.class({ padding: "16px", color: "red" })}/>;",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -537,7 +539,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: "1rem" });",
+			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -605,7 +607,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red", padding: 8 } });",
+			export const styles = css.group({ card: { padding: 8, color: "red" } });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -630,7 +632,7 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const Card = (() => { const style = css.class({ color: "red", padding: "1rem" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-t6bw3o", props.className)} />; }; component.__pandwindClassName = "pw-t6bw3o"; return component; })();",
+			export const Card = (() => { const style = css.class({ padding: "1rem", color: "red" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-t6bw3o", props.className)} />; }; component.__pandwindClassName = "pw-t6bw3o"; return component; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -653,7 +655,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: "1rem" });",
+			export const card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -703,7 +705,7 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const Card = (() => { const style = css.class({ color: "red", padding: "1rem" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = (() => { const style = css.class({ padding: "1rem", color: "red" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -726,7 +728,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red", padding: "8px" } });",
+			export const styles = css.group({ card: { padding: "8px", color: "red" } });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -744,11 +746,11 @@ describe("official primary API forms", () => {
 			      },
 			    ],
 			  },
-			  "tailwind/Tailwind utility classes": {
+			  "tailwind/Tailwind arbitrary utility classes": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <div  className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
+			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -771,7 +773,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", cardGap: "1rem" });",
+			export const card = css.class({ cardGap: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -794,7 +796,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: 8 });",
+			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -816,7 +818,7 @@ describe("official primary API forms", () => {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <div  className={css.class({ display: "flex", alignItems: "center", gap: "1rem" })}/>;",
+			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -839,7 +841,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "red", padding: 8 });",
+			export const card = css.class({ padding: 8, color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -862,7 +864,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const Card = css.class({ color: "red", padding: "1rem" });",
+			export const Card = css.class({ padding: "1rem", color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {

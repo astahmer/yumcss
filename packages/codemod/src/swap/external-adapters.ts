@@ -74,7 +74,13 @@ type CallPattern = {
 	/** Resolve authored aliases through the shared AST binding index. */
 	readonly semanticBindings?: readonly { source: string; imported: string }[];
 	readonly regexForBinding?: (binding: SourceBinding) => RegExp;
-	readonly form?: "object" | "template" | "reference" | "jsx-style" | "residual";
+	readonly form?:
+		| "object"
+		| "template"
+		| "reference"
+		| "jsx-style"
+		| CodemodCallPatternFormTag.JsxGlobal
+		| "residual";
 	readonly residual?: Pick<StyleProgramResidual, "kind" | "hint">;
 	readonly functionCall?: Pick<
 		import("./function-style-parser.ts").FunctionStyleCallParserOptions,
@@ -955,7 +961,11 @@ function parseCalls(
 		// modules; the adapter remains conservative through its balanced matcher.
 	}
 	const hostRanges = patterns.flatMap((pattern) => {
-		if (pattern.form !== CodemodCallPatternFormTag.JsxStyle) return [];
+		if (
+			pattern.form !== CodemodCallPatternFormTag.JsxStyle &&
+			pattern.form !== CodemodCallPatternFormTag.JsxGlobal
+		)
+			return [];
 		if (pattern.sourceGuard !== undefined && !pattern.sourceGuard(source, context)) return [];
 		return regexesFor(pattern)
 			.flatMap(matchesFor)
@@ -1004,7 +1014,10 @@ function parseCalls(
 				)
 					continue;
 				if (mask?.isExcluded(start)) continue;
-				if (pattern.form === CodemodCallPatternFormTag.JsxStyle) {
+				if (
+					pattern.form === CodemodCallPatternFormTag.JsxStyle ||
+					pattern.form === CodemodCallPatternFormTag.JsxGlobal
+				) {
 					const initialTag = JsxStyleHost.parse(
 						source,
 						start,
@@ -1013,6 +1026,16 @@ function parseCalls(
 						adapterSource(context, start),
 					);
 					if (initialTag !== undefined) {
+						if (
+							pattern.form === CodemodCallPatternFormTag.JsxGlobal &&
+							initialTag.styleAttributes.some(
+								(attribute) =>
+									!attribute.expression ||
+									typeof attribute.value !== "string" ||
+									!attribute.value.trim().startsWith("{"),
+							)
+						)
+							continue;
 						const preserved = new Set(pattern.preserveHostStyleProps?.(initialTag) ?? []);
 						const tag =
 							preserved.size === 0
@@ -1027,12 +1050,14 @@ function parseCalls(
 						if (tag === undefined) continue;
 						const program =
 							tag.template === undefined
-								? styleProgramFromSourceObject(tag.body, {
-										...resolvedObjectOptions,
-										...patternObjectOptions,
-										source: tag.source,
-										sourceOffset: start,
-									})
+								? pattern.form === CodemodCallPatternFormTag.JsxGlobal
+									? parseGlobalProgram(tag.body, context, start)
+									: styleProgramFromSourceObject(tag.body, {
+											...resolvedObjectOptions,
+											...patternObjectOptions,
+											source: tag.source,
+											sourceOffset: start,
+										})
 								: parseTemplateProgram(tag.template, context, start);
 						const hostProgram = {
 							...program,

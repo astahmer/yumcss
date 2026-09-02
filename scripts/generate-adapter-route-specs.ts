@@ -183,12 +183,25 @@ function tokenSource(adapter: CodemodAdapterId, source: string): string {
 }
 
 function edgeSource(adapter: CodemodAdapterId, source: string): string {
+	if (adapter === CodemodAdapterId.Tailwind)
+		return source.replace(
+			'className="flex gap-4 p-4 text-black"',
+			"className={`[display:flex] [gap:1rem] ${runtimeClass}`}",
+		);
+	if (adapter === CodemodAdapterId.UnoCSS)
+		return source.replace(
+			'className="flex items-center gap-4"',
+			"className={`[display:flex] [gap:1rem] ${runtimeClass}`}",
+		);
 	if (adapter === CodemodAdapterId.Mantine && source.includes("c='red'"))
 		return source.replace("c='red'", "c={theme.foreground}");
 	if (source.includes("'red'")) return source.replaceAll("'red'", "theme.foreground");
 	if (source.includes('"red"')) return source.replaceAll('"red"', "theme.foreground");
 	if (source.includes("color: red"))
-		return source.replaceAll("color: red", "color: ${theme.foreground}");
+		return source.replaceAll(
+			"color: red",
+			source.includes("`") ? "color: ${theme.foreground}" : "color: theme.foreground",
+		);
 	if (source.includes("bg='tomato'")) return source.replace("bg='tomato'", "bg={theme.foreground}");
 	if (adapter === CodemodAdapterId.UnoCSS)
 		return '<div className="flex unknown-project-utility" />';

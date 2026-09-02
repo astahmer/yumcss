@@ -239,6 +239,25 @@ export default defineCodemodAdapter({
 			styleProps,
 		},
 		{ name: "mui-styled", kind: "styled", regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*\{/g },
+		{
+			name: "mui-styled-theme-callback",
+			regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
+			form: "residual",
+			residual: {
+				kind: "runtime-context",
+				hint: "MUI styled theme callbacks require target-aware theme lowering",
+			},
+		},
+		{
+			name: "runtime-context",
+			regex:
+				/(?:import[^;\n]*\b(?:ThemeProvider|StyledEngineProvider)\b[^;\n]*;|<(?:ThemeProvider|StyledEngineProvider)\b[^>]*>)/g,
+			form: "residual",
+			residual: {
+				kind: "runtime-context",
+				hint: "MUI providers require target-aware theme and style-engine lowering",
+			},
+		},
 	],
 	packages: {
 		packages: [

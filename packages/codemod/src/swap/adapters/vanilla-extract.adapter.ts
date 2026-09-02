@@ -66,8 +66,23 @@ export default defineCodemodAdapter({
 				hint: "Vanilla Extract assignVars requires contract-aware variable lowering",
 			},
 		},
+		{
+			name: "create-var",
+			regex: /\bcreateVar\s*\(/g,
+			sourceGuard: (source) => !/\b(?:style|globalStyle|keyframes|fontFace)\s*\(/u.test(source),
+			form: "residual",
+			residual: {
+				kind: "configuration",
+				hint: "Vanilla Extract createVar requires contract-aware variable lowering",
+			},
+		},
 	],
-	packages: CodemodAdapterKit.dependency("@vanilla-extract/css", "runtime"),
+	packages: {
+		packages: [
+			{ name: "@vanilla-extract/css", kind: "runtime" },
+			{ name: "@vanilla-extract/recipes", kind: "runtime" },
+		],
+	},
 	capabilities: CodemodAdapterKit.allRuleCapabilities(
 		CodemodAdapterId.VanillaExtract,
 		"unsupported",
@@ -78,8 +93,11 @@ export default defineCodemodAdapter({
 		},
 	),
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	detectPatterns: [/@vanilla-extract\/css/, /\b(?:style|globalStyle|keyframes)\s*\(/],
-	sourceModules: ["@vanilla-extract/css"],
+	detectPatterns: [
+		/@vanilla-extract\/(?:css|recipes)/,
+		/\b(?:style|globalStyle|keyframes|styleVariants|recipe|createRecipe)\s*\(/,
+	],
+	sourceModules: ["@vanilla-extract/css", "@vanilla-extract/recipes"],
 	configFiles: ["package.json"],
 	migration: {
 		targetPolicy: {

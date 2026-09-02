@@ -28,6 +28,16 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 			text: `${element}.classList.add(${sheet}.${rule})`,
 		});
 	}
+	for (const sheet of context.convertedBindings) {
+		const attach = new RegExp(
+			`\\b${sheet.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\.attach\\(\\)\\s*;?`,
+			"g",
+		);
+		for (const match of context.code.matchAll(attach)) {
+			const start = match.index ?? 0;
+			edits.push({ start, end: start + match[0].length, text: "" });
+		}
+	}
 	return { code: SourcePass.applyEdits(context.code, edits), residuals: [] };
 }
 

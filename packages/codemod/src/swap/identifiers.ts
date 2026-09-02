@@ -83,6 +83,7 @@ export const enum CodemodCallPatternFormTag {
 	Template = "template",
 	Reference = "reference",
 	JsxStyle = "jsx-style",
+	JsxGlobal = "jsx-global",
 	Residual = "residual",
 }
 

@@ -1,6 +1,11 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { StyleRuleKindTag } from "../semantic-ir.ts";
-import { StyleHostRepresentationKind, StyleNamedRuleStrategy } from "../identifiers.ts";
+import {
+	CodemodCallPatternFormTag,
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
+} from "../identifiers.ts";
 import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import type {
 	AdapterDetectionContext,
@@ -8,7 +13,6 @@ import type {
 	AdapterParseContext,
 } from "../adapter-contract.ts";
 import { SourceBindingKind, type SourceBinding } from "pandwind/source";
-import { CodemodAdapterId } from "../identifiers.ts";
 
 function importedModulePath(context: AdapterParseContext, specifier: string): string {
 	const directory = dirnameDocumentPath(context.file);
@@ -175,6 +179,12 @@ export default defineCodemodAdapter({
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 		{ name: "global", kind: "global", regex: /\b(?:injectGlobal|global)\s*\(\s*\{/g },
 		{
+			name: "Global",
+			regex: /<\s*Global\b/g,
+			form: CodemodCallPatternFormTag.JsxGlobal,
+			styleProps: ["styles"],
+		},
+		{
 			name: "runtime-context",
 			regex:
 				/(?:import[^;\n]*\b(?:ThemeProvider|CacheProvider)\b[^;\n]*;|<(?:ThemeProvider|CacheProvider)\b[^>]*>)/g,
@@ -227,7 +237,12 @@ export default defineCodemodAdapter({
 		rewrite: ({ code, targetId, complete }) => {
 			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
 			return {
-				code: code.replace(/<Global\s+styles=\{[^{}]+\}\s*\/>/g, "<></>"),
+				code: code
+					.replace(/<Global\s+styles=\{(?:\{[\s\S]*\}|[^{}]+)\}\s*\/>/g, "<></>")
+					.replace(
+						/(export const [A-Za-z_$][\w$]*\s*=\s*\(\)\s*=>)\s*\(\)\s*=>\s*(\(css\.sheet\.registerSemanticRules)/g,
+						"$1 $2",
+					),
 				residuals: [],
 			};
 		},

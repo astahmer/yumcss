@@ -21,10 +21,14 @@ const compiled = makeExtraAdapter({
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
 	detect: [
 		/from\s+["']@compiled\/(?:react|css-in-js)["']/g,
-		/\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(/g,
+		/\b(?:css|styled\.[A-Za-z_$][\w$]*|ClassNames)\s*[(\{]/g,
 	],
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",
+	jsxStyle: {
+		regex: /<[A-Za-z_$][\w$.-]*\b/g,
+		props: ["css"],
+	},
 	residualPatterns: [
 		{
 			name: "cssMap",
@@ -43,6 +47,12 @@ const compiled = makeExtraAdapter({
 			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*`(?:\\.|[^`])*`/g,
 			kind: "component",
 			hint: "Compiled styled subjects require host/component lowering",
+		},
+		{
+			name: "ClassNames",
+			regex: /<\s*ClassNames\b[^>]*>(?:[\s\S]*?)<\/\s*ClassNames\s*>/g,
+			kind: "component",
+			hint: "Compiled ClassNames requires a host-aware render-prop lowering",
 		},
 	],
 	targetImports: ['import { css } from "@compiled/react";'],

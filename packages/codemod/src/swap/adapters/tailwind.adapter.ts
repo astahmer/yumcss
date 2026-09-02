@@ -101,9 +101,8 @@ function arbitraryUtility(
 }
 
 function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
-	const arbitrary = arbitraryUtility(token, []);
-	if (arbitrary !== undefined) return arbitrary;
 	const prefixes = splitUtilityToken(token);
+	if (prefixes.length === 1) return arbitraryUtility(token, []);
 	const utility = prefixes.pop();
 	if (utility === undefined) return undefined;
 	return arbitraryUtility(utility, prefixes);

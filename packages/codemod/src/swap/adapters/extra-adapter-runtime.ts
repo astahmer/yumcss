@@ -1,6 +1,7 @@
 import {
 	StyleRuleKindTag,
 	StyleValueKindTag,
+	styleProgramFromRules,
 	styleProgramFromSourceObject,
 	styleProgramToCanonicalCss,
 	type StyleProgram,
@@ -32,6 +33,7 @@ import {
 } from "../identifiers.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
+import { JsxStyleHost, type JsxStyleHostMatch } from "../jsx-style-host.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
 import {
@@ -49,6 +51,16 @@ export interface ExtraAdapterOptions {
 	readonly detect: readonly RegExp[];
 	readonly call: RegExp;
 	readonly form?: "object" | "template";
+	/** Multiple static carriers may share one public function, e.g. Goober's css. */
+	readonly forms?: readonly ("object" | "template")[];
+	/** Optional JSX host carrier for adapters with inline style attributes. */
+	readonly jsxStyle?: {
+		readonly regex: RegExp;
+		readonly props: readonly string[];
+		readonly shouldParse?: (match: JsxStyleHostMatch) => boolean;
+	};
+	/** Optional JSX host carrier whose object is emitted as global rules. */
+	readonly jsxGlobalStyle?: { readonly regex: RegExp; readonly props: readonly string[] };
 	/** Optional function-valued style call syntax, e.g. styled.div(props => ({})). */
 	readonly functionCall?: RegExp;
 	readonly prefix: string;
@@ -375,6 +387,83 @@ function parseTemplateCalls(
 	return { matches, residuals };
 }
 
+function parseJsxStyles(
+	id: string,
+	source: string,
+	context: AdapterParseContext,
+	options: ExtraAdapterOptions,
+): AdapterParseResult {
+	const definition = options.jsxStyle;
+	if (definition === undefined) return { matches: [], residuals: [] };
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const mask = context.document?.isExcluded ?? (() => false);
+	definition.regex.lastIndex = 0;
+	for (const match of source.matchAll(definition.regex)) {
+		const start = match.index ?? 0;
+		if (mask(start)) continue;
+		const tag = JsxStyleHost.parse(source, start, context, definition.props, {
+			file: context.file,
+			start,
+			end: start,
+			adapter: id,
+		});
+		if (tag === undefined) continue;
+		if (definition.shouldParse !== undefined && !definition.shouldParse(tag)) continue;
+		const program = styleProgramFromSourceObject(tag.body, {
+			source: tag.source,
+			sourceOffset: start,
+			...options.sourceObjectOptions,
+		});
+		matches.push({
+			start,
+			end: tag.end,
+			program: { ...program, source: { ...program.source, ...tag.source } },
+			sourceText: tag.openingTag,
+		});
+	}
+	return { matches, residuals: [] };
+}
+
+function parseJsxGlobalStyles(
+	id: string,
+	source: string,
+	context: AdapterParseContext,
+	options: ExtraAdapterOptions,
+): AdapterParseResult {
+	const definition = options.jsxGlobalStyle;
+	if (definition === undefined) return { matches: [], residuals: [] };
+	const matches: Array<AdapterParseResult["matches"][number]> = [];
+	const mask = context.document?.isExcluded ?? (() => false);
+	definition.regex.lastIndex = 0;
+	for (const match of source.matchAll(definition.regex)) {
+		const start = match.index ?? 0;
+		if (mask(start)) continue;
+		const tag = JsxStyleHost.parse(source, start, context, definition.props, {
+			file: context.file,
+			start,
+			end: start,
+			adapter: id,
+		});
+		if (tag === undefined) continue;
+		const program = styleProgramFromSourceObject(tag.body, {
+			source: tag.source,
+			sourceOffset: start,
+			nestedObjectKind: "selector",
+		});
+		const globalProgram = styleProgramFromRules(
+			program.rules.map((rule) => ({ ...rule, kind: StyleRuleKindTag.Global })),
+			{ source: program.source, residuals: program.residuals },
+		);
+		matches.push({
+			start,
+			end: tag.end,
+			program: globalProgram,
+			sourceText: tag.openingTag,
+		});
+	}
+	return { matches, residuals: [] };
+}
+
 /**
  * Class-valued targets can preserve a styled subject by lowering the
  * declaration to their normal class carrier and rewriting the host use to the
@@ -442,17 +531,48 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 		},
 		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(options.id, context)),
 		parse: (source, context) => {
-			const parsed =
-				options.form === CodemodCallPatternFormTag.Template
-					? parseTemplateCalls(options.id, source, context, options)
-					: parseObjectCalls(options.id, source, context, options);
+			const forms = options.forms ?? [options.form ?? CodemodCallPatternFormTag.Object];
+			const parsed = forms.reduce<AdapterParseResult>(
+				(result, form) => {
+					const parsedForm =
+						form === CodemodCallPatternFormTag.Template
+							? parseTemplateCalls(options.id, source, context, options)
+							: parseObjectCalls(options.id, source, context, options);
+					return {
+						matches: [...result.matches, ...parsedForm.matches],
+						residuals: [...result.residuals, ...parsedForm.residuals],
+					};
+				},
+				{ matches: [], residuals: [] },
+			);
 			const functionParsed = parseFunctionCalls(options.id, source, context, options);
+			const jsxParsed = parseJsxStyles(options.id, source, context, options);
+			const jsxGlobalParsed = parseJsxGlobalStyles(options.id, source, context, options);
+			const jsxRanges = [...jsxParsed.matches, ...jsxGlobalParsed.matches].map(
+				({ start, end }) => ({
+					start,
+					end,
+				}),
+			);
+			const parsedOutsideJsx = parsed.matches.filter(
+				(match) => !jsxRanges.some((range) => match.start > range.start && match.start < range.end),
+			);
 			const residualParsed = parseResidualPatterns(source, context, options.residualPatterns);
 			return {
-				matches: [...parsed.matches, ...functionParsed.matches, ...residualParsed.matches].toSorted(
-					(a, b) => a.start - b.start,
-				),
-				residuals: [...parsed.residuals, ...functionParsed.residuals, ...residualParsed.residuals],
+				matches: [
+					...parsedOutsideJsx,
+					...functionParsed.matches,
+					...jsxParsed.matches,
+					...jsxGlobalParsed.matches,
+					...residualParsed.matches,
+				].toSorted((a, b) => a.start - b.start),
+				residuals: [
+					...parsed.residuals,
+					...functionParsed.residuals,
+					...jsxParsed.residuals,
+					...jsxGlobalParsed.residuals,
+					...residualParsed.residuals,
+				],
 			};
 		},
 		emit: (program, context) => {

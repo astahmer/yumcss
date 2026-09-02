@@ -173,7 +173,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 	test("projects Tailwind classes through the semantic boundary in both directions", () => {
 		const catalog = createBuiltinCodemodCatalog();
 		const toPandwind = runAdapterMigration(
-			'import "tailwindcss";\nexport const Card = () => <div className="flex p-4" />;',
+			'export const Card = () => <div className="[display:flex] [padding:1rem]" />;',
 			{
 				from: "tailwind",
 				to: "pandwind",
@@ -1158,8 +1158,8 @@ describe("CSS-in-JS adapter contract v2", () => {
 			[CodemodAdapterId.ChakraUi]: 'import { Box } from "@chakra-ui/react"; <Box bg="tomato" />',
 			[CodemodAdapterId.Mui]: 'import { Box } from "@mui/material"; <Box sx={{ color: "red" }} />',
 			[CodemodAdapterId.Mantine]: 'import { Box } from "@mantine/core"; <Box c="red" />',
-			[CodemodAdapterId.Tailwind]: 'import "tailwindcss"; <div className="flex p-4" />',
-			[CodemodAdapterId.UnoCSS]: '<div className="flex items-center" />',
+			[CodemodAdapterId.Tailwind]: '<div className="[display:flex] [padding:1rem]" />',
+			[CodemodAdapterId.UnoCSS]: '<div className="[display:flex] [align-items:center]" />',
 		}[sourceAdapter];
 		const result = runAdapterMigration(fixture, {
 			from: sourceAdapter,

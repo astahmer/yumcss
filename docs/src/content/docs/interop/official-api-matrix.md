@@ -32,7 +32,11 @@ source. A form is one of:
 The executable contract is
 `packages/codemod/tests/official-adapter-api-matrix.test.ts`. Chakra's deeper
 API-specific assertions remain in
-`packages/codemod/tests/chakra-official-api.test.ts`.
+`packages/codemod/tests/chakra-official-api.test.ts`. The secondary syntax
+families for every adapter are exercised by
+`packages/codemod/tests/official-adapter-api-families.test.ts`; those cases use
+the actual package syntax and classify static carriers, runtime/context APIs,
+and source-preserving residuals separately.
 
 ## Core and popular web systems
 
@@ -76,8 +80,8 @@ API-specific assertions remain in
 
 ## What the snapshots guarantee
 
-For each registered adapter, the matrix tests source-specific examples rather
-than a generic route label. Every converted case asserts a conversion count,
+For each registered adapter, the primary and secondary matrix tests use
+source-specific examples rather than a generic route label. Every converted case asserts a conversion count,
 zero skips, zero residuals, and the emitted code. Every residual case asserts
 that the source is preserved, the residual has a typed kind and hint, and the
 result contains the migration marker. The inline snapshots expose the exact

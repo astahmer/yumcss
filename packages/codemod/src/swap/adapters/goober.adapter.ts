@@ -19,8 +19,9 @@ const goober = makeExtraAdapter({
 	},
 	modules: ["goober"],
 	packages: { packages: [{ name: "goober", kind: "runtime" }] },
-	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],
-	call: /\bcss\s*\(\s*\{/g,
+	detect: [/from\s+["']goober["']/g, /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*(?:\(\s*\{|`)/g],
+	call: /\b(?:css\s*(?:\(\s*\{|`)|styled\.[A-Za-z_$][\w$]*\s*`)/g,
+	forms: ["object", "template"],
 	prefix: "css(",
 	residualPatterns: [
 		{
@@ -28,12 +29,6 @@ const goober = makeExtraAdapter({
 			regex: /\bsetup\s*\(/g,
 			kind: "configuration",
 			hint: "Goober setup changes runtime rendering and requires target-aware lowering",
-		},
-		{
-			name: "styled-template",
-			regex: /\bstyled\.[A-Za-z_$][\w$]*\s*`(?:\\.|[^`])*`/g,
-			kind: "component",
-			hint: "Goober styled subjects require host/component lowering",
 		},
 	],
 	targetImports: ['import { css } from "goober";'],

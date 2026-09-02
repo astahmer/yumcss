@@ -617,33 +617,9 @@ function runAdapterMigrationInternal(
 	const unpreservedParseResiduals = parsed.residuals.filter(
 		(residual) => residual.preserved !== true,
 	);
-	if (parsed.matches.length === 0 && parsed.residuals.length === 0) {
-		const unmatchedSource = {
-			kind: StyleProgramResidualKindTag.UnmatchedSource,
-			text: sourceAdapter.id,
-			hint: "source adapter detected this ecosystem but found no supported style construct",
-		} as const;
-		skipped++;
-		residuals.push(unmatchedSource);
-		outcomes.push({
-			sourceStart: 0,
-			sourceText: source,
-			outcome: StyleMigrationOutcome.Residual,
-			representation: StyleRepresentationKind.Residual,
-			detail: unmatchedSource.hint,
-		});
-		edits.push({
-			start: 0,
-			end: 0,
-			text:
-				MigrationDiagnostics.skipMarker({
-					marker,
-					sourceAdapter: sourceAdapter.id,
-					targetAdapter: targetAdapter.id,
-					loweringResiduals: [unmatchedSource],
-				}) + "\n",
-		});
-	}
+	// A recognized package import is not itself a style construct. Leave files
+	// that contain only ordinary host components/config imports unchanged; the
+	// adapter's explicit residual patterns own unsupported semantics.
 	if (unpreservedParseResiduals.length > 0) {
 		skipped++;
 		outcomes.push({

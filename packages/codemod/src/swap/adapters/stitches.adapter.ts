@@ -125,7 +125,33 @@ export default defineCodemodAdapter({
 		ssrHooks: ["getCssText"],
 	},
 	patterns: [
-		{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: stitchesTransform },
+		{
+			name: "css",
+			regex: /\bcss\s*\(\s*\{/g,
+			transform: stitchesTransform,
+		},
+		{
+			name: "styled",
+			kind: "styled",
+			regex: /\bstyled\s*\(\s*[^,]+,\s*\{/g,
+			transform: (program, context) => {
+				if (program.source === undefined) return program;
+				const subject = context.source
+					.slice(program.source.start)
+					.match(/^styled\s*\(\s*([^,]+?)\s*,/u)?.[1]
+					?.trim();
+				return subject === undefined
+					? program
+					: {
+							...program,
+							source: {
+								...program.source,
+								subject: `styled(${subject})`,
+								subjectKind: "call",
+							},
+						};
+			},
+		},
 		{ name: "globalCss", kind: "global", regex: /\bglobalCss\s*\(\s*\{/g },
 		{ name: "keyframes", kind: "keyframes", regex: /\bkeyframes\s*\(\s*\{/g },
 	],

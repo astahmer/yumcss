@@ -58,7 +58,12 @@ export class JsxStyleHost {
 				template = taggedTemplate[1] ?? "";
 				continue;
 			}
-			if (this.isObject(expression) && ["css", "sx", "style"].includes(attribute.name)) {
+			const objectCall = /^(?:css|style)\s*\(([\s\S]*)\)$/u.exec(expression);
+			if (objectCall?.[1] !== undefined && this.isObject(objectCall[1].trim())) {
+				parts.push(objectCall[1].trim().slice(1, -1).replace(/,\s*$/, ""));
+				continue;
+			}
+			if (this.isObject(expression) && ["css", "sx", "style", "styles"].includes(attribute.name)) {
 				parts.push(expression.slice(1, -1).replace(/,\s*$/, ""));
 			} else {
 				parts.push(`${attribute.name}: ${expression}`);
@@ -107,9 +112,10 @@ export class JsxStyleHost {
 		);
 		const insertAttribute = (value: string): void => {
 			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
+			const renderedValue = hostTag === undefined && !value.startsWith(" ") ? ` ${value}` : value;
 			text =
 				hostTag === undefined
-					? `${text.slice(0, insertion)}${value}${text.slice(insertion)}`
+					? `${text.slice(0, insertion)}${renderedValue}${text.slice(insertion)}`
 					: `${text.slice(0, insertion).trimEnd()} ${value.trimStart()}${text.slice(insertion)}`;
 		};
 		const existing = classPattern.exec(text);
@@ -138,13 +144,12 @@ export class JsxStyleHost {
 		if (styleExpression !== undefined && !/\bstyle\s*=/.test(text)) {
 			insertAttribute(`style={${styleExpression}}`);
 		}
+		text = text.replace(/^([\s\S]*?<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s{2,}/u, "$1 ");
 		if (hostTag !== undefined)
-			// Factory tags are newly projected to intrinsic hosts. Normalize only
-			// that generated fragment; existing component-host formatting remains
-			// byte-for-byte stable for other adapters.
-			text = text
-				.replace(/^(\s*<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s{2,}/u, "$1 ")
-				.replace(/\s*\/>$/u, " />");
+			// Factory tags are newly projected to intrinsic hosts. Normalize the
+			// closing fragment while the shared pass above removes whitespace left
+			// by any host style attribute.
+			text = text.replace(/\s*\/>$/u, " />");
 		return { text, needsCx };
 	}
 

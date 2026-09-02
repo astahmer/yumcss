@@ -36,7 +36,7 @@ describe("remaining adapter-owned custom semantics", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.class({ color: "#123456", padding: "0.5rem" });"
+			export const card = css.class({ padding: "0.5rem", color: "#123456" });"
 		`);
 	});
 
@@ -110,7 +110,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			const css = createCss();
 
 			export const accent = "--pw-accent";
-			export const card = css.class({ color: "var(--pw-accent)", "--pw-accent": "#123456" });"
+			export const card = css.class({ "--pw-accent": "#123456", color: "var(--pw-accent)" });"
 		`);
 	});
 
@@ -217,7 +217,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 			const theme = createTheme({ palette: { primary: { main: "#123456" } } });
-			export const App = () => <Box  className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style}/>;"
+			export const App = () => <Box className={css.vars({ color: theme.palette.primary.main }).class} style={css.vars({ color: theme.palette.primary.main }).style}/>;"
 		`);
 	});
 
@@ -241,7 +241,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 			const theme = createTheme({ colors: { brand: ["#123456"] } });
-			export const App = () => <Box  className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style}/>;"
+			export const App = () => <Box className={css.vars({ backgroundColor: theme.colors.brand[0] }).class} style={css.vars({ backgroundColor: theme.colors.brand[0] }).style}/>;"
 		`);
 	});
 

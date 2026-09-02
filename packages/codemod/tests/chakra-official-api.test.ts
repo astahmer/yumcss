@@ -42,7 +42,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { Box } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
+			export const App = () => <Box className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 			  "converted": 1,
 			  "outcomes": [
 			    {
@@ -76,7 +76,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { Box } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ color: "var(--chakra-colors-red-200)", "& svg": { color: "var(--chakra-colors-blue-200)" } })}/>;",
+			export const App = () => <Box className={css.class({ color: "var(--chakra-colors-red-200)", "& svg": { color: "var(--chakra-colors-blue-200)" } })}/>;",
 			  "converted": 1,
 			  "outcomes": [
 			    {
@@ -110,7 +110,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { chakra } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <chakra.button  className={css.class({ backgroundColor: "var(--chakra-colors-blue-500)", color: "white" })}/>;",
+			export const App = () => <chakra.button className={css.class({ backgroundColor: "var(--chakra-colors-blue-500)", color: "white" })}/>;",
 			  "converted": 1,
 			  "outcomes": [
 			    {

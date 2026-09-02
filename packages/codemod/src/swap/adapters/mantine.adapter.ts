@@ -256,6 +256,15 @@ export default defineCodemodAdapter({
 				hint: "Mantine styles, classNames, and vars require component-aware host lowering",
 			},
 		},
+		{
+			name: "runtime-context",
+			regex: /(?:import[^;\n]*\bMantineProvider\b[^;\n]*;|<MantineProvider\b[^>]*>)/g,
+			form: "residual",
+			residual: {
+				kind: "runtime-context",
+				hint: "MantineProvider requires target-aware theme and runtime-context lowering",
+			},
+		},
 	],
 	packages: CodemodAdapterKit.dependency("@mantine/core", "peer"),
 	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mantine, "partial", {
