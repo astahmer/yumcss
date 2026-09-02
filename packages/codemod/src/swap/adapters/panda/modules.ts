@@ -15,7 +15,7 @@
 import type { SwapIR } from "../../ir.ts";
 import { emitCssClass } from "../../emit.ts";
 import type { PandwindMeta } from "../../../meta.ts";
-import { PANDA_ALIASES, PandaRecipeKindTag, type PandaRecipeIR } from "./parse.ts";
+import { PandaRecipeKindTag, type PandaRecipeIR } from "./parse.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
 import { expandBuiltinPattern } from "./patterns.ts";
 import type { PandaTheme } from "./theme.ts";
@@ -238,7 +238,7 @@ export const preset = {
 
 /** `<outDir>/internal.ts` — runtime shorthand/canonicalization for pattern modules. */
 export function renderInternalHelpers(theme: PandaTheme): string {
-	const entries = [...PANDA_ALIASES.entries()]
+	const entries = [...theme.utilityCatalog.propertyAliases.entries()]
 		.map(([k, v]) => `\t${q(k)}: ${q(CSS_PROPERTY_ALIASES.get(v) ?? v)},`)
 		.join("\n");
 	const generatedTextStyles = JSON.stringify(Object.fromEntries(theme.textStyles), null, "\t");

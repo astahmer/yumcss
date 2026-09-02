@@ -48,12 +48,7 @@ import {
 	validatePandaSource,
 } from "./migration-stages.ts";
 import type { PandaTheme } from "./theme.ts";
-import {
-	literalToPlain,
-	PANDA_ALIASES,
-	normalizePandaStyleObject,
-	parsePandaCalls,
-} from "./parse.ts";
+import { literalToPlain, normalizePandaStyleObject, parsePandaCalls } from "./parse.ts";
 
 export interface PandaMigrateOptions {
 	projectRoot: string;
@@ -717,12 +712,15 @@ export function factoryEdits(
 	if (!/^[A-Za-z][\w]*$/.test(el.tag)) return null;
 
 	const styleObj: Record<string, unknown> = {};
-	for (const [k, v] of styleEntries) styleObj[PANDA_ALIASES.get(k) ?? k] = v;
+	for (const [k, v] of styleEntries) styleObj[theme.utilityCatalog.resolveProperty(k) ?? k] = v;
 	const ir = convertPandaStyle(styleObj, theme);
 	const text = irToText(ir, meta);
 	if (text === "") return null;
 
-	const normalizedStyle = normalizePandaStyleObject(Object.fromEntries(styleEntries));
+	const normalizedStyle = normalizePandaStyleObject(
+		Object.fromEntries(styleEntries),
+		theme.utilityCatalog,
+	);
 	const classCallArgs = [
 		`{ ${Object.entries(normalizedStyle)
 			.map(([k, v]) => `${JSON.stringify(k)}: ${renderStyleValue(v)}`)
@@ -1171,7 +1169,7 @@ export async function runPandaMigration(options: PandaMigrateOptions): Promise<P
 					el.attrs
 						.filter((attr) => !DOM_ATTR_RE.test(attr.name) && attr.valueText !== null)
 						.map((attr) => [
-							PANDA_ALIASES.get(attr.name) ?? attr.name,
+							theme.utilityCatalog.resolveProperty(attr.name) ?? attr.name,
 							attr.quoted ? attr.valueText : (styleScalarOf(attr.valueText!) ?? attr.valueText),
 						]),
 				),

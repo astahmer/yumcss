@@ -9,7 +9,8 @@
  *   plus the generated CSS-var name each maps to (`--colors-fg-muted`) for
  *   the CSS-variable fallback;
  * - textStyles -> name -> plain declaration object, expanded inline by the
- *   parser (a textStyle is bundled utilities).
+ *   parser (a textStyle is bundled utilities);
+ * - utilities -> the effective project shorthand/property vocabulary.
  *
  * Nothing here resolves conditional `{ base, _dark }` VALUES — references
  * stay symbolic so dark-mode switching survives migration (pass 1 lifts the
@@ -24,7 +25,7 @@ import {
 } from "../../project-module-loader.ts";
 import { TokenCatalog } from "../../tokens.ts";
 import type { AdapterTokenCatalog } from "../../adapter-contract.ts";
-import { PANDA_ALIASES } from "./parse.ts";
+import { PandaUtilityCatalog } from "./utilities.ts";
 import {
 	PandaJsxStylePropsModeTag,
 	normalizePandaStylePropsMode,
@@ -52,6 +53,8 @@ export interface PandaTheme {
 	textStyles: ReadonlyMap<string, Record<string, unknown>>;
 	/** Custom pattern definitions loaded from panda.config.ts. */
 	customPatterns: ReadonlyMap<string, PandaCustomPattern>;
+	/** Utility/shorthand vocabulary from Panda's effective config. */
+	readonly utilityCatalog: PandaUtilityCatalog;
 	/** Configured plugin values retained for evidence; opaque values stay unresolved. */
 	readonly plugins?: readonly unknown[];
 	/** Normalized string-valued tokens for downstream target policies. */
@@ -237,29 +240,6 @@ function collectTextStyles(
 	}
 }
 
-// These are supplied by Panda's built-in preset even when a project only
-// declares custom text styles in panda.config.ts.
-const DEFAULT_PANDA_TEXT_STYLES: Record<string, Record<string, unknown>> = {
-	xs: { fontSize: "0.75rem", lineHeight: "calc(1 / 0.75)" },
-	sm: { fontSize: "0.875rem", lineHeight: "calc(1.25 / 0.875)" },
-	md: { fontSize: "1rem", lineHeight: "calc(1.5 / 1)" },
-	lg: { fontSize: "1.125rem", lineHeight: "calc(1.75 / 1.125)" },
-	xl: { fontSize: "1.25rem", lineHeight: "calc(1.75 / 1.25)" },
-	"2xl": { fontSize: "1.5rem", lineHeight: "calc(2 / 1.5)" },
-	"3xl": { fontSize: "1.875rem", lineHeight: "calc(2.25 / 1.875)" },
-	"4xl": { fontSize: "2.25rem", lineHeight: "calc(2.5 / 2.25)" },
-	"5xl": { fontSize: "3rem", lineHeight: "1" },
-	"6xl": { fontSize: "3.75rem", lineHeight: "1" },
-	"7xl": { fontSize: "4.5rem", lineHeight: "1" },
-	"8xl": { fontSize: "6rem", lineHeight: "1" },
-};
-
-function addDefaultTextStyles(textStyles: Map<string, Record<string, unknown>>): void {
-	for (const [name, style] of Object.entries(DEFAULT_PANDA_TEXT_STYLES)) {
-		if (!textStyles.has(name)) textStyles.set(name, style);
-	}
-}
-
 type AnyModule = Record<string, unknown>;
 
 interface PandaConfigShape {
@@ -270,6 +250,7 @@ interface PandaConfigShape {
 		unknown
 	>;
 	conditions?: { extend?: Record<string, unknown> } & Record<string, unknown>;
+	utilities?: { extend?: Record<string, unknown> } & Record<string, unknown>;
 	patterns?: { extend?: Record<string, unknown> } & Record<string, unknown>;
 	default?: PandaConfigShape;
 	jsxStyleProps?: "all" | "minimal" | "none";
@@ -329,7 +310,7 @@ async function withPandaStyleProps(
 		jsxStyleProps: await resolvePandaStylePropContract(
 			configPath,
 			{ jsxStyleProps: theme.jsxStyleProps.mode, outdir: theme.outdir },
-			[...PANDA_ALIASES.keys()],
+			[...theme.utilityCatalog.utilityNames],
 			Object.keys(theme.conditions),
 			loader,
 			readFile,
@@ -353,7 +334,7 @@ async function loadPandaThemeByOfficialPackage(
 		// The official loader returns Panda's effective config, including preset and
 		// plugin decisions. Never inject built-in values on top of that result:
 		// an explicit `presets: []` or feature-removing plugin must remain authoritative.
-		return pandaThemeFromConfig(result.config, false);
+			return pandaThemeFromConfig(result.config);
 	} catch (error) {
 		throw new Error(
 			`official Panda config loading failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -367,16 +348,12 @@ async function loadPandaThemeByImport(configPath: string): Promise<PandaTheme> {
 	const config = (mod.default ?? Object.values(mod)[0]) as PandaConfigShape | undefined;
 	// tsx can wrap an ESM default export one extra time when the imported
 	// config is compiled as CommonJS. Unwrap that boundary before inspecting
-	// Panda's theme; otherwise every generated migration silently gets an
-	// empty preset.
+	// Panda's theme; otherwise custom project context is silently missed.
 	const unwrapped = config?.default ?? config;
-	return pandaThemeFromConfig(unwrapped, unwrapped?.presets === undefined);
+	return pandaThemeFromConfig(unwrapped);
 }
 
-function pandaThemeFromConfig(
-	unwrapped: PandaConfigShape | undefined,
-	includeBuiltInDefaults = false,
-): PandaTheme {
+function pandaThemeFromConfig(unwrapped: PandaConfigShape | undefined): PandaTheme {
 	const theme = unwrapped?.theme ?? {};
 	const extend = theme.extend ?? theme;
 	const tokens: Record<string, Record<string, unknown>> = {};
@@ -404,7 +381,7 @@ function pandaThemeFromConfig(
 	const textStyles = new Map<string, Record<string, unknown>>();
 	const tsSection = extend["textStyles"];
 	if (isPlainObject(tsSection)) collectTextStyles(tsSection, [], textStyles);
-	if (includeBuiltInDefaults) addDefaultTextStyles(textStyles);
+	const utilityCatalog = PandaUtilityCatalog.fromConfig(unwrapped?.utilities);
 	const customPatterns = new Map<string, PandaCustomPattern>();
 	const patternSection = unwrapped?.patterns?.extend ?? unwrapped?.patterns;
 	if (isPlainObject(patternSection)) {
@@ -429,6 +406,7 @@ function pandaThemeFromConfig(
 		tokenVars,
 		textStyles,
 		customPatterns,
+		utilityCatalog,
 		plugins: Array.isArray(unwrapped?.plugins) ? unwrapped.plugins : undefined,
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
 		jsxStyleProps: {
@@ -477,6 +455,7 @@ export const emptyPandaTheme: PandaTheme = {
 	tokenVars: new Map(),
 	textStyles: new Map(),
 	customPatterns: new Map(),
+	utilityCatalog: PandaUtilityCatalog.empty(),
 	plugins: [],
 	jsxStyleProps: {
 		mode: PandaJsxStylePropsModeTag.All,
@@ -503,10 +482,11 @@ function loadPandaThemeFromSource(
 	const tokenVars = new Map<string, string>();
 	const tokens: Record<string, Record<string, unknown>> = {};
 	const textStyles = new Map<string, Record<string, unknown>>();
+	let utilityCatalog = PandaUtilityCatalog.empty();
 	const chunks: Array<string> = [configSource, ...extraSources];
 	for (const chunk of chunks) {
 		for (const m of chunk.matchAll(
-			/(?:semanticTokens|tokens|textStyles)\s*[:=]\s*(?:defineSemanticTokens|defineTokens|defineTextStyles)?\s*\(\s*\{/g,
+			/(?:semanticTokens|tokens|textStyles|utilities)\s*[:=]\s*(?:defineSemanticTokens|defineTokens|defineTextStyles|defineUtility)?\s*(?:\(\s*)?\{/g,
 		)) {
 			const section = /^(\w+)/.exec(m[0].trim())?.[1] ?? "";
 			const open = (m.index ?? 0) + m[0].length - 1;
@@ -518,6 +498,8 @@ function loadPandaThemeFromSource(
 			if (!isPlainObject(plain)) continue;
 			if (section === "textStyles") {
 				collectTextStyles(plain, [], textStyles);
+			} else if (section === "utilities") {
+				utilityCatalog = PandaUtilityCatalog.fromConfig(plain);
 			} else {
 				// top-level keys are the panda groups (colors, shadows…)
 				for (const [group, subtree] of Object.entries(plain)) {
@@ -529,13 +511,13 @@ function loadPandaThemeFromSource(
 		}
 	}
 	resolveTokenReferences(tokens);
-	addDefaultTextStyles(textStyles);
 	return {
 		tokens,
 		conditions: {},
 		tokenVars,
 		textStyles,
 		customPatterns: new Map(),
+		utilityCatalog,
 		plugins: [],
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
 		jsxStyleProps: {

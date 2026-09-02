@@ -15,11 +15,10 @@ import { TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
-import { PANDA_ALIASES } from "./panda/parse.ts";
 
 const pandaJsxStyleProps = (context: import("../adapter-contract.ts").AdapterParseContext) =>
 	(context.config.values.pandaTheme as PandaTheme | undefined)?.jsxStyleProps.matches ??
-	((name: string) => name === "css" || PANDA_ALIASES.has(name));
+	((name: string) => name === "css");
 
 function pandaFactoryHostTag(program: StyleProgram): StyleProgram {
 	const source = program.source;
@@ -275,7 +274,12 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
-			propertyAliases: Object.fromEntries(PANDA_ALIASES),
+			propertyAliases: Object.fromEntries(
+				(
+					(context.config.values.pandaTheme as PandaTheme | undefined)?.utilityCatalog
+						.propertyAliases ?? new Map()
+				).entries(),
+			),
 			valueTransforms: {
 				"*": (value, property) => pandaSourceValue(value, property ?? "", context),
 			},

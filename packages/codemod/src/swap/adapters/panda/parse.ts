@@ -31,7 +31,7 @@ import type { PandaTheme } from "./theme.ts";
 import { emptyPandaTheme } from "./theme.ts";
 import { SourcePass } from "../../../source-pass-utils.ts";
 import { CSS_PROPERTY_ALIASES } from "../../property-aliases.ts";
-import { PANDA_ALIASES } from "./aliases.ts";
+import { PandaUtilityCatalog } from "./utilities.ts";
 
 // Re-exported for tests/consumers that only import this module.
 export { parseObjectLiteral } from "../../parse.ts";
@@ -54,16 +54,13 @@ const isPlainObject = (v: unknown): v is Record<string, unknown> =>
 /* tables                                                              */
 /* ------------------------------------------------------------------ */
 
-/** panda shorthand / alias key -> canonical camelCase CSS property. */
-export { PANDA_ALIASES } from "./aliases.ts";
-
 const camelProp = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
-/** Canonical property for a style key (alias expansion + dash-casing). */
-function canonicalProp(key: string): string {
+/** Canonical property for a style key (project alias expansion + dash-casing). */
+function canonicalProp(key: string, utilities: PandaUtilityCatalog): string {
 	if (key.startsWith("--")) return key; // CSS custom property — verbatim
-	const alias = PANDA_ALIASES.get(key);
+	const alias = utilities.resolveProperty(key);
 	if (alias !== undefined) return alias;
 	return camelProp(key);
 }
@@ -82,7 +79,10 @@ const RADIUS_EXPANSIONS: ReadonlyMap<string, string[]> = new Map([
  * shared by factory output and generated runtime pattern modules so a
  * rerun never leaves Panda-only keys behind in a Pandwind style object.
  */
-export function normalizePandaStyleObject(style: Record<string, unknown>): Record<string, unknown> {
+export function normalizePandaStyleObject(
+	style: Record<string, unknown>,
+	utilities: PandaUtilityCatalog = PandaUtilityCatalog.empty(),
+): Record<string, unknown> {
 	type Frame = {
 		readonly entries: readonly [string, unknown][];
 		index: number;
@@ -105,7 +105,7 @@ export function normalizePandaStyleObject(style: Record<string, unknown>): Recor
 			continue;
 		}
 		const [rawKey, rawValue] = entry;
-		const key = canonicalProp(rawKey);
+		const key = canonicalProp(rawKey, utilities);
 		if (key === "hideFrom" || key === "hideBelow") {
 			if (typeof rawValue === "string") {
 				add(frame.target, key === "hideFrom" ? rawValue : `${rawValue}Down`, { display: "none" });
@@ -301,7 +301,7 @@ function walkStyle(
 			continue;
 		}
 
-		const prop = canonicalProp(key);
+		const prop = canonicalProp(key, theme.utilityCatalog);
 
 		if (prop === "hideFrom" || prop === "hideBelow") {
 			if (typeof raw === "string") {

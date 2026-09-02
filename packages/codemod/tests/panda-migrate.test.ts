@@ -25,6 +25,7 @@ import { detectAlias } from "../src/swap/adapters/panda/project.ts";
 import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/parse.ts";
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
+import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { parseSwapArgs } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
@@ -58,6 +59,7 @@ function makeProject(): string {
 		[
 			"export default {",
 			"  theme: { extend: { semanticTokens: { colors: { fg: { DEFAULT: { value: '#111' } } } } } },",
+			"  utilities: { bg: { property: 'backgroundColor', shorthand: 'bg' }, px: { property: 'paddingX', shorthand: 'px' }, py: { property: 'paddingY', shorthand: 'py' } },",
 			"};",
 		].join("\n"),
 	);
@@ -161,6 +163,9 @@ describe("factory elements", () => {
 			tokenVars: new Map(),
 			textStyles: new Map(),
 			customPatterns: new Map(),
+			utilityCatalog: PandaUtilityCatalog.fromConfig({
+				paddingInline: { property: "paddingX", shorthand: "px" },
+			}),
 			jsxStyleProps: {
 				mode: PandaJsxStylePropsModeTag.All,
 				evidence: ["fallback"],

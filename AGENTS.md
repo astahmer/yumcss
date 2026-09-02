@@ -115,6 +115,13 @@ which concrete module to import or grow a switch statement in a central runner.
   structured diagnostics/residuals; never silently treat an unevaluated
   custom preset as the complete project configuration. Do not bundle optional
   ecosystem packages into Pandwind's runtime dependencies.
+- Never create an adapter-owned partial copy of an ecosystem's default utility,
+  shorthand, condition, variant, or style-prop vocabulary. Load the effective
+  project configuration (including the library's presets/plugins) and derive
+  the vocabulary from that result. If the official package/config is
+  unavailable, use only a neutral empty vocabulary and preserve or residualize
+  the source; a hardcoded fallback that happens to satisfy one corpus is a
+  correctness bug.
 - Effect 4 is tooling infrastructure, not a Pandwind domain contract. Keep it
   behind internal script-level ports for long-running repository/proof work:
   bounded task batches, cancellation, and Node filesystem/path access may use

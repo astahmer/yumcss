@@ -35,10 +35,83 @@ describe("effective ecosystem configuration", () => {
 		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
 
 		expect(theme.textStyles.has("md")).toBe(false);
+		expect(theme.utilityCatalog.has("px")).toBe(false);
+		expect(theme.utilityCatalog.resolveProperty("px")).toBeUndefined();
 		expect(theme.tokenCatalog?.groups).toMatchInlineSnapshot(`
 			{
 			  "colors": {
 			    "brand": "#123456",
+			  },
+			}
+		`);
+	});
+
+	test("resolves Panda utility aliases from the effective official config", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				if (packageName !== "@pandacss/config") return undefined;
+				return {
+					loadConfig: async () => ({
+						config: {
+							utilities: {
+								paddingInline: { property: "paddingX", shorthand: "px" },
+								cardInset: { property: "inset", shorthand: "ci" },
+							},
+						},
+					}),
+				} as never;
+			},
+			async importFile() {
+				throw new Error("direct config import must not run");
+			},
+		};
+
+		const theme = await loadPandaTheme("/project/panda.config.ts", loader);
+
+		expect(theme.utilityCatalog.resolveProperty("px")).toBe("paddingX");
+		expect(theme.utilityCatalog.resolveProperty("ci")).toBe("inset");
+		expect(theme.utilityCatalog.has("notAProjectUtility")).toBe(false);
+		expect([...theme.utilityCatalog.propertyAliases.entries()]).toMatchInlineSnapshot(`
+			[
+			  [
+			    "px",
+			    "paddingX",
+			  ],
+			  [
+			    "ci",
+			    "inset",
+			  ],
+			]
+		`);
+	});
+
+	test("extracts custom Panda utilities in the dependency-free fallback", async () => {
+		const configPath = "/project/panda.config.ts";
+		const theme = await loadPandaTheme(
+			configPath,
+			{
+				async importPackage() {
+					return undefined;
+				},
+				async importFile() {
+					return undefined;
+				},
+			},
+			(file) =>
+				file === configPath
+					? "export default { utilities: { extend: { cardInset: { property: 'inset', shorthand: 'ci' } } } }"
+					: undefined,
+		);
+
+		expect(theme.utilityCatalog.resolveProperty("ci")).toBe("inset");
+		expect(theme.utilityCatalog).toMatchInlineSnapshot(`
+			PandaUtilityCatalog {
+			  "propertyAliases": Map {
+			    "ci" => "inset",
+			  },
+			  "utilityNames": Set {
+			    "cardInset",
+			    "ci",
 			  },
 			}
 		`);
@@ -234,6 +307,7 @@ export const Button = () => <styled.button brandShadow="soft" data-testid="butto
 				theme: { tokens: { colors: { brand: { "500": { value: "#123456" } } } } },
 			},
 			token: { var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})` },
+			isValidProperty: (property: string) => ["css", "_midnight", "color"].includes(property),
 		};
 		const loader: ProjectModuleLoader = {
 			async importPackage() {

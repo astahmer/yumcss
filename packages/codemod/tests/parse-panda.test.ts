@@ -12,7 +12,6 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { existsSync } from "node:fs";
 import {
-	PANDA_ALIASES,
 	normalizePandaStyleObject,
 	pandaRecipeToIr,
 	pandaStyleToIr,
@@ -22,6 +21,7 @@ import {
 } from "../src/swap/adapters/panda/parse.ts";
 import { loadPandaTheme, type PandaTheme } from "../src/swap/adapters/panda/theme.ts";
 import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
+import { PandaUtilityCatalog } from "../src/swap/adapters/panda/utilities.ts";
 import { emitCssClass } from "../src/swap/emit.ts";
 import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
 
@@ -48,6 +48,35 @@ const siteTheme: PandaTheme = {
 		["panda.h4", { fontSize: "1.625rem", lineHeight: "1.2", letterSpacing: "tight" }],
 	]),
 	customPatterns: new Map(),
+	utilityCatalog: PandaUtilityCatalog.fromConfig({
+		padding: { property: "padding", shorthand: "p" },
+		paddingInline: { property: "paddingX", shorthand: "px" },
+		paddingBlock: { property: "paddingY", shorthand: "py" },
+		paddingTop: { property: "paddingTop", shorthand: "pt" },
+		paddingRight: { property: "paddingRight", shorthand: "pr" },
+		paddingBottom: { property: "paddingBottom", shorthand: "pb" },
+		paddingLeft: { property: "paddingLeft", shorthand: "pl" },
+		margin: { property: "margin", shorthand: "m" },
+		marginInline: { property: "marginX", shorthand: ["mx", "ms", "me"] },
+		marginBlock: { property: "marginY", shorthand: "my" },
+		marginTop: { property: "marginTop", shorthand: "mt" },
+		marginBottom: { property: "marginBottom", shorthand: "mb" },
+		backgroundColor: { property: "backgroundColor", shorthand: "bg" },
+		color: { property: "color", shorthand: "c" },
+		borderRadius: { property: "borderRadius", shorthand: "rounded" },
+		borderStartRadius: { property: "borderStartRadius", shorthand: "roundedStart" },
+		borderTopRadius: { property: "borderTopRadius", shorthand: "roundedTop" },
+		insetInlineStart: { property: "insetInlineStart", shorthand: "insetStart" },
+		insetInlineEnd: { property: "insetInlineEnd", shorthand: "insetEnd" },
+		maxWidth: { property: "maxWidth", shorthand: "maxW" },
+		maxHeight: { property: "maxHeight", shorthand: "maxH" },
+		minWidth: { property: "minWidth", shorthand: "minW" },
+		minHeight: { property: "minHeight", shorthand: "minH" },
+		width: { property: "width", shorthand: "w" },
+		height: { property: "height", shorthand: "h" },
+		paddingInlineStart: { property: "paddingInlineStart", shorthand: "ps" },
+		paddingInlineEnd: { property: "paddingInlineEnd", shorthand: "pe" },
+	}),
 	jsxStyleProps: {
 		mode: PandaJsxStylePropsModeTag.All,
 		evidence: ["fallback"],
@@ -71,8 +100,8 @@ describe("panda css.class emission", () => {
 	});
 });
 
-describe("PANDA_ALIASES coverage", () => {
-	it("covers every shorthand observed on the website", () => {
+describe("PandaUtilityCatalog", () => {
+	it("uses utility definitions supplied by the effective project config", () => {
 		for (const key of [
 			"bg",
 			"py",
@@ -101,19 +130,121 @@ describe("PANDA_ALIASES coverage", () => {
 			"roundedTop",
 			"roundedStart",
 		]) {
-			expect(PANDA_ALIASES.has(key), key).toBe(true);
+			expect(siteTheme.utilityCatalog.has(key), key).toBe(true);
 		}
+		expect(siteTheme.utilityCatalog.resolveProperty("px")).toBe("paddingX");
+		expect(siteTheme.utilityCatalog.resolveProperty("projectOnly")).toBeUndefined();
+		expect(siteTheme.utilityCatalog).toMatchInlineSnapshot(`
+			PandaUtilityCatalog {
+			  "propertyAliases": Map {
+			    "p" => "padding",
+			    "px" => "paddingX",
+			    "py" => "paddingY",
+			    "pt" => "paddingTop",
+			    "pr" => "paddingRight",
+			    "pb" => "paddingBottom",
+			    "pl" => "paddingLeft",
+			    "m" => "margin",
+			    "mx" => "marginX",
+			    "ms" => "marginX",
+			    "me" => "marginX",
+			    "my" => "marginY",
+			    "mt" => "marginTop",
+			    "mb" => "marginBottom",
+			    "bg" => "backgroundColor",
+			    "c" => "color",
+			    "rounded" => "borderRadius",
+			    "roundedStart" => "borderStartRadius",
+			    "roundedTop" => "borderTopRadius",
+			    "insetStart" => "insetInlineStart",
+			    "insetEnd" => "insetInlineEnd",
+			    "maxW" => "maxWidth",
+			    "maxH" => "maxHeight",
+			    "minW" => "minWidth",
+			    "minH" => "minHeight",
+			    "w" => "width",
+			    "h" => "height",
+			    "ps" => "paddingInlineStart",
+			    "pe" => "paddingInlineEnd",
+			  },
+			  "utilityNames": Set {
+			    "padding",
+			    "p",
+			    "paddingInline",
+			    "px",
+			    "paddingBlock",
+			    "py",
+			    "paddingTop",
+			    "pt",
+			    "paddingRight",
+			    "pr",
+			    "paddingBottom",
+			    "pb",
+			    "paddingLeft",
+			    "pl",
+			    "margin",
+			    "m",
+			    "marginInline",
+			    "mx",
+			    "ms",
+			    "me",
+			    "marginBlock",
+			    "my",
+			    "marginTop",
+			    "mt",
+			    "marginBottom",
+			    "mb",
+			    "backgroundColor",
+			    "bg",
+			    "color",
+			    "c",
+			    "borderRadius",
+			    "rounded",
+			    "borderStartRadius",
+			    "roundedStart",
+			    "borderTopRadius",
+			    "roundedTop",
+			    "insetInlineStart",
+			    "insetStart",
+			    "insetInlineEnd",
+			    "insetEnd",
+			    "maxWidth",
+			    "maxW",
+			    "maxHeight",
+			    "maxH",
+			    "minWidth",
+			    "minW",
+			    "minHeight",
+			    "minH",
+			    "width",
+			    "w",
+			    "height",
+			    "h",
+			    "paddingInlineStart",
+			    "ps",
+			    "paddingInlineEnd",
+			    "pe",
+			  },
+			}
+		`);
 	});
 
-	it("lowers Panda transforms instead of leaving Panda-only keys", () => {
+	it("does not invent aliases when the project catalog is unavailable", () => {
+		expect(normalizePandaStyleObject({ px: "2" })).toEqual({ px: "2" });
+	});
+
+	it("lowers Panda transforms using the project catalog", () => {
 		expect(
-			normalizePandaStyleObject({
-				boxSize: "5",
-				ps: "2",
-				insetEnd: "3",
-				borderStartRadius: "lg",
-				hideBelow: "md",
-			}),
+			normalizePandaStyleObject(
+				{
+					boxSize: "5",
+					ps: "2",
+					insetEnd: "3",
+					borderStartRadius: "lg",
+					hideBelow: "md",
+				},
+				siteTheme.utilityCatalog,
+			),
 		).toEqual({
 			width: "5",
 			height: "5",

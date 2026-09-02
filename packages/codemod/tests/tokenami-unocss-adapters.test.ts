@@ -24,7 +24,10 @@ describe("Tokenami and UnoCSS semantic adapters", () => {
 		const parsed = adapter.parse(source, {
 			file: "button.tsx",
 			source,
-			config: adapter.loadConfig({ file: "button.tsx", source }),
+			config: {
+				...adapter.loadConfig({ file: "button.tsx", source }),
+				values: { tokenamiAliases: { bg: "backgroundColor", px: "paddingInline" } },
+			},
 		});
 		const declarations = parsed.matches[0]?.program.declarations ?? [];
 		expect(declarations).toEqual(

@@ -2188,12 +2188,10 @@ describe("official adapter API families", () => {
 			  "styled-components/styled component subject": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
-			import { createCx } from "pandwind/cx";
-			const cx = createCx();
 			const css = createCss();
 
 			const Link = (props: { href: string }) => <a {...props} />;
-			export const Card = (() => { const style = css.class({ color: "red" }); const component = (props) => { const Component = props.as ?? (Link); const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = css.class({ color: "red" });",
 			    "converted": 1,
 			    "outcomes": [
 			      {

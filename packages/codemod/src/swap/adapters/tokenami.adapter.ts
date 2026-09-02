@@ -25,29 +25,6 @@ import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 
-/** Tokenami property aliases that are part of its standard design-system vocabulary. */
-const STANDARD_ALIASES: Readonly<Record<string, string | readonly string[]>> = {
-	p: "padding",
-	px: "paddingInline",
-	py: "paddingBlock",
-	pt: "paddingTop",
-	pr: "paddingRight",
-	pb: "paddingBottom",
-	pl: "paddingLeft",
-	m: "margin",
-	mx: "marginInline",
-	my: "marginBlock",
-	mt: "marginTop",
-	mr: "marginRight",
-	mb: "marginBottom",
-	ml: "marginLeft",
-	bg: "backgroundColor",
-	c: "color",
-	br: "borderRadius",
-	shadow: "boxShadow",
-	font: "font",
-};
-
 function camelCase(property: string): string {
 	return property.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 }
@@ -55,7 +32,7 @@ function camelCase(property: string): string {
 function readAliases(
 	context: AdapterConfigContext,
 ): Readonly<Record<string, string | readonly string[]>> {
-	const aliases: Record<string, string | readonly string[]> = { ...STANDARD_ALIASES };
+	const aliases: Record<string, string | readonly string[]> = {};
 	if (context.readFile === undefined || context.root === undefined) return aliases;
 	const candidates = [
 		".tokenami/tokenami.config.ts",
@@ -195,7 +172,7 @@ async function officialTokenamiConfig(
 			tokenCatalog: TokenCatalog.fromNested(normalized.tokens)?.contract,
 			values: {
 				...fallback.values,
-				tokenamiAliases: normalized.aliases ?? STANDARD_ALIASES,
+				tokenamiAliases: normalized.aliases ?? {},
 				tokenamiConfig: normalized,
 				officialConfigPackage: "@tokenami/config",
 			},
@@ -244,7 +221,7 @@ function decodeProperty(
 }
 
 function normalizeProgram(program: StyleProgram, context: AdapterParseContext): StyleProgram {
-	const aliases = (context.config.values.tokenamiAliases ?? STANDARD_ALIASES) as Readonly<
+	const aliases = (context.config.values.tokenamiAliases ?? {}) as Readonly<
 		Record<string, string | readonly string[]>
 	>;
 	const normalize = (declaration: StyleDeclaration): StyleDeclaration => {
