@@ -40,7 +40,8 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
 			// makes equivalent styles differ when source files are scanned in a
 			// different order. Rule identity is stable for both atomic and var
 			// entries; CSS is the deterministic fallback for custom policies.
-			return stableRuleIdentity(a as { id?: string; css?: string }).localeCompare(
+			return compareCodeUnits(
+				stableRuleIdentity(a as { id?: string; css?: string }),
 				stableRuleIdentity(b as { id?: string; css?: string }),
 			);
 		});
@@ -49,6 +50,9 @@ class PriorityStylesheetOrderingPolicy implements StylesheetOrderingPolicy {
 
 const stableRuleIdentity = (value: { id?: string; css?: string }): string =>
 	value.id ?? value.css ?? "";
+
+const compareCodeUnits = (left: string, right: string): number =>
+	left < right ? -1 : left > right ? 1 : 0;
 
 /**
  * Keep progressively narrower min-width conditions in cascade order. The
