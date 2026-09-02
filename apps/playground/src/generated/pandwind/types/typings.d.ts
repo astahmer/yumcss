@@ -8,6 +8,10 @@ export interface AnyCssConfig {
 interface AnyCssPropConf<TConfig, TName extends keyof TConfig> extends Record<string, TConfig[TName]> {
 }
 type CssValuesOf<TConfig, TName extends keyof TConfig> = AnyCssPropConf<TConfig, TName>;
+type ColorPropertyName = "color" | "background" | "backgroundColor" | "borderColor" | "borderTopColor" | "borderRightColor" | "borderBottomColor" | "borderLeftColor" | "outlineColor" | "textDecorationColor" | "textEmphasisColor" | "fill" | "stroke";
+type OpacityModifier = "0" | "5" | "10" | "15" | "20" | "25" | "30" | "35" | "40" | "45" | "50" | "55" | "60" | "65" | "70" | "75" | "80" | "85" | "90" | "95" | "100";
+type WithOpacityModifiers<Value> = Value extends string ? Value | `${Value}/${OpacityModifier}` : Value;
+type MaybeColorOpacity<TName, Value> = TName extends ColorPropertyName ? WithOpacityModifiers<Value> : Value;
 type PropConfigValues<TConfig, TName extends keyof TConfig, Value extends CssValuesOf<TConfig, TName>> = Value | true;
 export type AnyPresetProperties<TConfig, TTokens> = {
     [PropName in keyof TConfig]?: PropConfigValues<TConfig, PropName, CssValuesOf<TConfig, PropName>> & {
@@ -55,7 +59,7 @@ type InferPropValues<TTokens, Value> = Value extends {
 } ? TTokenName extends keyof TTokens ? keyof TTokens[TTokenName] | Exclude<keyof Value, "$strictness" | "$tokens"> : Exclude<keyof Value, "$strictness" | "$tokens"> : Exclude<keyof Value, "$strictness" | "$tokens">;
 type StrictValue<TConfig, TTokens, TName extends keyof TConfig, Value> = Value extends {
     $strictness: infer TStrictness;
-} ? TStrictness extends "inherits" ? InferPropValues<TTokens, Value> | TConfig[TName] : InferPropValues<TTokens, Value> : InferPropValues<TTokens, Value>;
+} ? TStrictness extends "inherits" ? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | TConfig[TName] : MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> : MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>;
 type PropValue<TConfig, TTokens, TName extends keyof TConfig, Value, Strict> = (Value extends boolean ? TConfig[TName] : Strict extends true | undefined ? StrictValue<TConfig, TTokens, TName, Value> : InferPropValues<TTokens, Value> | TConfig[TName]) | null;
 type ConditionalValue<V, TConds extends string> = V | {
     [K in TConds]?: ConditionalValue<V, TConds>;

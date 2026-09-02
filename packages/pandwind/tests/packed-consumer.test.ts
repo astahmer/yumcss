@@ -44,7 +44,6 @@ describe("packed Pandwind consumer", () => {
 			for (const dependency of [
 				"@tailwindcss",
 				"csstype",
-				"flattie",
 				"oxc-parser",
 				"postcss-selector-parser",
 				"tailwindcss",

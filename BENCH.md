@@ -127,7 +127,7 @@ Five narrow optimizations were measured against the existing size gate:
   style objects are not copied before flattening. A representative CSS object
   moved from ~552K to ~617K calls/sec (+12%). Null-reset and nested-condition
   behavior remain covered by runtime tests.
-- Flat CSS objects bypass `flattie` when they contain no nested, null, or
+- Flat CSS objects bypass the owned flattener when they contain no nested, null, or
   undefined values; conditional and array styles still use the general
   flattener. Atomic property extraction also avoids a split allocation for
   flat keys.

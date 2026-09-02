@@ -13,7 +13,7 @@
  *   `_condition` nesting; values stay AS WRITTEN (the engine resolves
  *   preset tokens at runtime; no app-preset properties config is loaded).
  * - design-vocabulary `css.class({ $frame: ... })` — lowered offline via
- *   resolveDesignStyle + flattie, so entries carry concrete values.
+ *   resolveDesignStyle + the owned flattener, so entries carry concrete values.
  */
 import type { PandwindMeta } from "../meta.ts";
 import { UTILITY_SUBKEYS } from "pandwind/tw/compile";

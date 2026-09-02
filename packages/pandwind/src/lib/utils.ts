@@ -1,4 +1,3 @@
-import { flattie } from "flattie";
 import type { StyleObject } from "../types/typings.ts";
 
 export const assign = <T>(...arr: Array<T>) =>
@@ -8,20 +7,45 @@ export const cssVar = (key: string) => `--${key}`;
 const separator = "__";
 
 export type FlatStyles = Record<string, string>;
-export const flattenStyle = (style: StyleObject) => {
-	// `flattie` is still required for conditions and array values, but the
-	// overwhelmingly common flat object does not need a new object at all.
-	// Null/undefined deliberately stay on the general path because flattie
-	// omits them; false and numeric values are preserved for downstream policy.
-	for (const value of Object.values(style)) {
-		if (value === null || value === undefined || typeof value === "object") {
-			return flattie(style, separator) as FlatStyles;
+
+const flattenInto = (output: Record<string, unknown>, value: unknown, prefix: string): void => {
+	if (value == null) return;
+	if (typeof value !== "object") {
+		output[prefix] = value;
+		return;
+	}
+
+	if (Array.isArray(value)) {
+		for (let index = 0; index < value.length; index++) {
+			flattenInto(output, value[index], prefix ? `${prefix}${separator}${index}` : `${index}`);
 		}
+		return;
+	}
+
+	const record = value as Record<string, unknown>;
+	for (const key in record) {
+		flattenInto(output, record[key], prefix ? `${prefix}${separator}${key}` : key);
+	}
+};
+
+const flattenObject = (value: object): FlatStyles => {
+	const output: Record<string, unknown> = {};
+	flattenInto(output, value, "");
+	return output as FlatStyles;
+};
+
+export const flattenStyle = (style: StyleObject) => {
+	// Flat declarations are the dominant path. Keep their identity and avoid
+	// allocation; nested values and nullish entries need the general traversal.
+	for (const key in style) {
+		const value = style[key];
+		if (value == null || typeof value === "object") return flattenObject(style);
 	}
 	return style as FlatStyles;
 };
 
-export const flatten = <T>(obj: T) => flattie(obj, separator);
+export const flatten = <T>(obj: T) =>
+	typeof obj === "object" && obj !== null ? flattenObject(obj) : ({} as FlatStyles);
 
 export const concatPair = (key: string, value: string) => `${key}${separator}${value}`;
 const splitPair = (pair: string) => pair.split(separator);

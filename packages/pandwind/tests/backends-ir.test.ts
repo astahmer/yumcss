@@ -37,12 +37,12 @@ describe("style IR (flattened style object)", () => {
 		expect(key.split("__")).toEqual(["_hover", "_dark", "color"]);
 	});
 
-	test("null / undefined / empty objects disappear (false is kept for flattie, dropped upstream)", () => {
+	test("null / undefined / empty objects disappear (false is kept here, dropped upstream)", () => {
 		expect(flattenStyle({ a: null, c: undefined, d: {}, e: "kept" } as never)).toEqual({
 			e: "kept",
 		});
 		// The design layer (resolveDesignStyle) drops false before flattening;
-		// raw css() callers see flattie's pass-through.
+		// Raw css() callers preserve false for downstream backend policy.
 		expect(flattenStyle({ b: false } as never)).toEqual({ b: false });
 	});
 

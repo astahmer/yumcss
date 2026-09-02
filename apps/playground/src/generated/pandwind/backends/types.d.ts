@@ -19,7 +19,7 @@
  *   OUTERMOST condition first: `_hover___dark__color` (inner conditions
  *   keep their `_` prefix, so the separator run between them is three
  *   underscores). The trailing segment is always the property.
- * - Produced by `flattenStyle` (flattie): nested objects/arrays flatten
+ * - Produced by the owned `flattenStyle` traversal: nested objects/arrays flatten
  *   (arrays get index keys), `null`/`undefined`/empty-object entries
  *   disappear, `false`/`true` and numbers pass through unstringified (the
  *   design layer drops `false` upstream; raw `css()` callers see the

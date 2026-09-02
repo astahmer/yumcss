@@ -47,7 +47,7 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
   keep their `_`, so the separator run between them is three underscores);
 - values are already token-resolved — a backend never sees `$surface`,
   only the concrete value;
-- produced by flattie semantics: nested objects/arrays flatten,
+- produced by the owned flattener: nested objects/arrays flatten,
   `null`/empty entries disappear.
 
 ## Targets

@@ -437,9 +437,6 @@ importers:
       csstype:
         specifier: 3.2.3
         version: 3.2.3
-      flattie:
-        specifier: 1.1.1
-        version: 1.1.1
       oxc-parser:
         specifier: 0.144.0
         version: 0.144.0

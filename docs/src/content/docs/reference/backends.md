@@ -48,7 +48,7 @@ The IR is today's flat style object, pinned by `FlatStyleIR`
   **outermost condition first**: `_hover___dark__color`;
 - values are already token-resolved — a backend never sees `$surface`, only
   the concrete value;
-- produced by flattie semantics: nested objects/arrays flatten,
+- produced by the owned flattener: nested objects/arrays flatten,
   `null`/empty entries disappear.
 
 ## Targets
