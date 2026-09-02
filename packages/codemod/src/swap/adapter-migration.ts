@@ -103,22 +103,22 @@ function frameworkForHost(
 	);
 }
 
-function hasHostBindingUse(source: string, binding: string | undefined): boolean {
-	if (binding === undefined) return false;
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(
-		`(?:<\\s*${escaped}\\b|\\b(?:class|className|style|css)\\s*=\\s*\\{\\s*${escaped}\\s*\\})`,
-	).test(source);
+function hasHostBindingUse(
+	bindings: SourceBindingIndex | undefined,
+	binding: string | undefined,
+): boolean {
+	return binding !== undefined && bindings?.hasAttributeUse(binding) === true;
 }
 
-function hasComponentBindingUse(source: string, binding: string | undefined): boolean {
-	if (binding === undefined) return false;
-	const escaped = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-	return new RegExp(`<\\s*${escaped}\\b`).test(source);
+function hasComponentBindingUse(
+	bindings: SourceBindingIndex | undefined,
+	binding: string | undefined,
+): boolean {
+	return binding !== undefined && bindings?.hasComponentUse(binding) === true;
 }
 
-function hasInlineHostUse(source: string, start: number): boolean {
-	return /(?:class|className|style|css)\s*=\s*\{\s*$/.test(source.slice(0, start));
+function hasInlineHostUse(bindings: SourceBindingIndex | undefined, start: number): boolean {
+	return bindings?.hasInlineAttributeUse(start) === true;
 }
 
 function classExpressionFromEmission(emitted: string): string | undefined {
@@ -676,9 +676,9 @@ function runAdapterMigrationInternal(
 		const bindingBeforeMatch = bindingForMatch(bindings, match.start);
 		const hasHostContext =
 			program.source?.hostOpenTag !== undefined ||
-			hasHostBindingUse(source, bindingBeforeMatch) ||
-			hasInlineHostUse(source, match.start) ||
-			hasComponentBindingUse(source, bindingBeforeMatch);
+			hasHostBindingUse(bindings, bindingBeforeMatch) ||
+			hasInlineHostUse(bindings, match.start) ||
+			hasComponentBindingUse(bindings, bindingBeforeMatch);
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
 			bindingBeforeMatch === undefined &&
