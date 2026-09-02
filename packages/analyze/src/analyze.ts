@@ -17,7 +17,7 @@
  * - "full"/"partial" totals are cross-checked against the actual passes'
  *   eliminated counts (see analyze.test.ts).
  */
-import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { bindingIsShadowedOrWritten } from "pandwind/vite/cross-module-consts";
 import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwind/vite/cx-inline";
@@ -50,6 +50,8 @@ export interface AnalyzeOptions {
 	 * or foreign classes deliberately passed through cx()).
 	 */
 	missingCssIgnore?: ReadonlySet<string>;
+	/** Parsed document supplied by the shared workspace scanner when available. */
+	sourceScan?: Pick<SourceScanResult, "program">;
 }
 
 interface CallSite {
@@ -139,9 +141,9 @@ function parseModule(
 	file: string,
 	config: TwConfig,
 	importedConstants?: Readonly<Record<string, string>>,
+	parsedProgram?: OxcNode,
 ): ParsedModule {
-	const parsed = SOURCE_SCANNER_SERVICE.parse({ file, source });
-	const program = parsed.program as unknown as OxcNode;
+	const program = parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as unknown as OxcNode);
 
 	const imported = new Map<string, string>();
 	walk(program, (node) => {
@@ -371,7 +373,13 @@ export function analyzeSource(
 	options: AnalyzeOptions,
 	dependencies: AnalyzeSourceDependencies = {},
 ): FileFoldStats {
-	const mod = parseModule(source, file, options.config, options.importedConstants);
+	const mod = parseModule(
+		source,
+		file,
+		options.config,
+		options.importedConstants,
+		options.sourceScan?.program,
+	);
 
 	const runtimeSites: Array<CallSite> = [];
 	let cxFoldedFull = 0;

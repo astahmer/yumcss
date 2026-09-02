@@ -33,6 +33,8 @@ describe("source workspace", () => {
 		expect(files).toEqual([join(root, "Card.tsx"), join(root, "nested", "Card.vue")]);
 		expect(streamed).toEqual(files);
 		expect(documents.map((document) => document.scan.framework)).toEqual(["react", "vue"]);
+		expect(documents[0]?.scan.program?.type).toBe("Program");
+		expect(documents[1]?.scan.program).toBeUndefined();
 	});
 
 	test("can discover non-script assets without changing the default source query", () => {

@@ -71,6 +71,8 @@ export interface SourceScanDiagnostic {
 export interface SourceScanResult {
 	readonly document: SourceDocument;
 	readonly language: SourceLanguage;
+	/** Parsed program shared by AST consumers when the language exposes one. */
+	readonly program?: OxcNode;
 	readonly excluded: readonly SourceRange[];
 	readonly diagnostics: readonly SourceScanDiagnostic[];
 	readonly framework?: SourceFramework;
@@ -323,6 +325,7 @@ export function computeExcludedRanges(
 function scanDocument(document: SourceDocument): SourceScanResult {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	const diagnostics: SourceScanDiagnostic[] = [];
+	let program: OxcNode | undefined;
 	const runtimeBoundary =
 		document.runtimeBoundary ??
 		(/^[\s\S]*['"]use client['"]/.test(document.source)
@@ -333,6 +336,7 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	let excluded: SourceRange[] = [];
 	if (isOxcLanguage(language)) {
 		try {
+			program = parseSourceProgram({ ...document, language }).program as unknown as OxcNode;
 			excluded = computeExcludedRanges(document.source, document.file).excluded.map(
 				([start, end]) => ({ start, end }),
 			);
@@ -353,6 +357,7 @@ function scanDocument(document: SourceDocument): SourceScanResult {
 	return {
 		document,
 		language,
+		...(program === undefined ? {} : { program }),
 		excluded,
 		diagnostics,
 		runtimeBoundary,

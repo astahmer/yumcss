@@ -166,7 +166,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
 	const stats: ReturnType<typeof analysis.analyze>[] = [];
 	const cssCollector = createCssReportCollector();
-	workspace.forEachFile(files, ({ file: absoluteFile, content }) => {
+	workspace.forEachFile(files, ({ path: absoluteFile, source: content, scan }) => {
 		const file = absoluteFile.startsWith(`${args.root}/`)
 			? absoluteFile.slice(args.root.length + 1)
 			: absoluteFile;
@@ -174,6 +174,7 @@ export async function runCli(argv: Array<string>): Promise<string> {
 			analysis.analyze(content, file, {
 				config,
 				importedConstants,
+				sourceScan: scan,
 			}),
 		);
 		cssCollector.add({ file, content });

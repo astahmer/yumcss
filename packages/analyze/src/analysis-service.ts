@@ -8,7 +8,7 @@ import {
 	type FoldSummary,
 } from "./analyze.ts";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import { createSourceWorkspace } from "pandwind/source/workspace";
+import { createSourceWorkspace, type SourceWorkspaceFile } from "pandwind/source/workspace";
 import type { CssResidualCollector } from "./css-residual-collector.ts";
 import { CssBudgetEvaluator } from "./css-budget-evaluator.ts";
 import type { CssBudget } from "./css-budget-contracts.ts";
@@ -143,7 +143,7 @@ export interface AnalysisWorkspacePort {
 	collectFiles(patterns: readonly string[], root: string): readonly string[];
 	forEachFile(
 		paths: readonly string[],
-		visit: (file: { file: string; content: string }) => void,
+		visit: (file: Pick<SourceWorkspaceFile, "path" | "source" | "scan">) => void,
 	): void;
 	readFiles(paths: readonly string[]): readonly { file: string; content: string }[];
 }
@@ -163,10 +163,10 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 
 	forEachFile(
 		paths: readonly string[],
-		visit: (file: { file: string; content: string }) => void,
+		visit: (file: Pick<SourceWorkspaceFile, "path" | "source" | "scan">) => void,
 	): void {
-		this.sourceWorkspace.forEach(paths, ({ path: file, source: content }) =>
-			visit({ file, content }),
+		this.sourceWorkspace.forEach(paths, ({ path, source, scan }) =>
+			visit({ path, source, scan }),
 		);
 	}
 
