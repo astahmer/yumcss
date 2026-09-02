@@ -68,6 +68,7 @@ export const enum StyleProgramResidualKindTag {
 	RuntimeContext = "runtime-context",
 	Parse = "parse",
 	Capability = "capability",
+	Configuration = "configuration",
 	Composition = "composition",
 	PluginTransform = "plugin-transform",
 	UnmatchedSource = "unmatched-source",
