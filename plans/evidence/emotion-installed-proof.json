@@ -1,0 +1,39 @@
+{
+  "schema": "pandwind.installed-adapter-proof/1",
+  "adapter": "emotion",
+  "referenceCommit": "b882bcba85132554992e4bd49e94c95939bbf810",
+  "sourcePath": "packages/babel-plugin/__tests__/__fixtures__/core-with-css-import.js",
+  "install": {
+    "checked": true,
+    "packages": {
+      "@emotion/cache": "11.14.0",
+      "@emotion/react": "11.14.0",
+      "@emotion/server": "11.11.0",
+      "react": "19.2.8",
+      "react-dom": "19.2.8"
+    }
+  },
+  "migration": {
+    "converted": 1,
+    "skipped": 0,
+    "residuals": 0,
+    "outputContainsPandwind": true,
+    "sourceImportRemoved": true
+  },
+  "ssr": {
+    "checked": true,
+    "markupEquivalent": true,
+    "sourceCssBytes": 32,
+    "targetCssBytes": 27,
+    "notLarger": true
+  },
+  "browser": {
+    "checked": true,
+    "equivalent": true,
+    "changedPixels": 0,
+    "states": [
+      "base"
+    ],
+    "errors": []
+  }
+}

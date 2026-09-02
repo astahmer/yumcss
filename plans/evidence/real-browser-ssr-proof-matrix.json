@@ -102,6 +102,21 @@
 				"notLarger": true,
 				"note": "The source CSS is produced by installed Goober 2.1.19; the target uses Pandwind extracted CSS. Base and hover states are pixel-identical."
 			}
+		},
+		{
+			"id": "emotion-installed-fixture",
+			"sourceAdapter": "emotion",
+			"referenceCommit": "b882bcba85132554992e4bd49e94c95939bbf810",
+			"report": "plans/evidence/emotion-installed-proof.json",
+			"server": { "checked": true, "routes": 1, "failures": 0 },
+			"browser": { "checked": true, "routes": 1, "equivalent": true, "errors": 0 },
+			"css": {
+				"metric": "installed-fixture-ssr-css",
+				"baselineBytes": 32,
+				"migratedBytes": 27,
+				"notLarger": true,
+				"note": "The source CSS is produced by installed Emotion 11.14.0 and Emotion SSR extraction; the target uses Pandwind extracted CSS."
+			}
 		}
 	],
 	"boundedProofs": [
@@ -130,7 +145,6 @@
 		}
 	],
 	"fixtureOnlyAdapters": [
-		"emotion",
 		"vanilla-extract",
 		"stitches",
 		"linaria",

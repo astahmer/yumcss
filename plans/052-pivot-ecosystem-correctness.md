@@ -41,6 +41,8 @@ Wave 6 has started with a repository-agnostic materialization/migration harness 
 
 Wave 6a has been exercised against the pinned Emotion repository at commit `b882bcba85132554992e4bd49e94c95939bbf810`. The harness scanned 146 supported files, changed 51, converted 55 call sites, and surfaced 22 explicit dynamic residuals across 8 skipped files. This is useful executable evidence that the full-tree materialization and migration path runs; it is not yet a promotion because dependency installation, build, lint, SSR, hydration, browser, and CSS-size stages remain unexecuted by that command.
 
+Wave 6b promotes the same pinned Emotion fixture through installed public packages. `scripts/promote-emotion-reference.ts` installs Emotion cache/react/server plus React in a disposable project, migrates the exact upstream fixture, renders the source through Emotion SSR extraction, renders the target through Pandwind's static stylesheet, and compares normalized SSR markup, computed color, Chromium pixels, and CSS bytes. The proof passed with 1 conversion, 0 residuals, 0 skipped sites, 0 changed pixels, and CSS shrinking from 32 to 27 bytes. This promotes one bounded Emotion fixture/API claim; it does not promote every Emotion interpolation, cache, framework, or streaming behavior.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.
