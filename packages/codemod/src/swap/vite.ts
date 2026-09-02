@@ -1,11 +1,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
-import type {
-	AdapterGeneratedFile,
-	AdapterMigrationOptions,
-	AdapterMigrationResult,
-} from "./adapter-migration.ts";
+import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
+import type { AdapterGeneratedFile } from "./adapter-contract.ts";
 import { runAdapterMigrationAsync } from "./adapter-migration.ts";
 import type { AdapterCapabilityMode } from "./capabilities.ts";
 import type { StyleLoweringRegistry } from "./lowering.ts";
