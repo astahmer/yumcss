@@ -58,6 +58,13 @@ function stripQuery(id: string): string {
 	return query < 0 ? id : id.slice(0, query);
 }
 
+function matchesAny(patterns: readonly RegExp[], value: string): boolean {
+	return patterns.some((pattern) => {
+		pattern.lastIndex = 0;
+		return pattern.test(value);
+	});
+}
+
 function isEligible(
 	id: string,
 	include: readonly RegExp[] | undefined,
@@ -68,8 +75,8 @@ function isEligible(
 		!physical.includes("node_modules") &&
 		!physical.startsWith(VIRTUAL_PREFIX) &&
 		SOURCE_SCANNER_SERVICE.isScriptFile(physical) &&
-		(include === undefined || include.some((pattern) => pattern.test(physical))) &&
-		(exclude === undefined || !exclude.some((pattern) => pattern.test(physical)))
+		(include === undefined || matchesAny(include, physical)) &&
+		(exclude === undefined || !matchesAny(exclude, physical))
 	);
 }
 
