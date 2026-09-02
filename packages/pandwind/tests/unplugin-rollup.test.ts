@@ -66,6 +66,45 @@ describe("pandwindRollup", () => {
 		}
 	});
 
+	test("erases cross-file static style calls from the final bundle", async () => {
+		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-rollup-static-"));
+		try {
+			const twModule = writeJsTwModule(dir);
+			const constants = join(dir, "tokens.js");
+			const entry = join(dir, "entry.js");
+			writeFileSync(constants, 'export const P = "6";');
+			writeFileSync(
+				entry,
+				[
+					`import { tw } from ${JSON.stringify(twModule)};`,
+					'import { P } from "./tokens.js";',
+					"export const cls = tw({ p: P });",
+				].join("\n"),
+			);
+
+			const bundle = await rollup({ input: entry, plugins: [pandwindRollup({})] });
+			const { output } = await bundle.generate({ format: "es" });
+			const code = output
+				.filter(
+					(chunkOrAsset): chunkOrAsset is Extract<typeof chunkOrAsset, { type: "chunk" }> =>
+						chunkOrAsset.type === "chunk",
+				)
+				.map((chunk) => chunk.code)
+				.join("\n");
+
+			expect(code).toMatchInlineSnapshot(`
+				"const cls = "p-6";
+
+				export { cls };
+				"
+			`);
+			expect(code).toContain('"p-6"');
+			expect(code).not.toMatch(/\b(?:createTw|tw|P)\b/u);
+		} finally {
+			rmSync(dir, { recursive: true, force: true });
+		}
+	});
+
 	test("watchChange invalidates inline cross-module constants", async () => {
 		const dir = mkdtempSync(join(tmpdir(), "pandwind-unplugin-rollup-inline-watch-"));
 		try {

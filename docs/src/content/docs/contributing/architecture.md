@@ -285,6 +285,13 @@ exposes every method to TypeScript and the package entry remains fully capable
 without a plugin. The runtime-size matrix proves static extraction, fallback
 behavior, and the reduced call/class/vars bundles.
 
+Cross-module constants use the same conservative rule. The scanner resolves
+literal exports through relative modules and one barrel level, folds their
+`tw()`/`cx()` consumers, and leaves unresolved or shadowed bindings untouched.
+The final bundler output is therefore plain class data with the source token
+module and styling runtime tree-shaken away; a focused Rollup proof snapshots
+that bundle and asserts the absence of `tw`, `cx`, and factory identifiers.
+
 `StyleProgram` is also the semantic AST construction boundary. Adapter authors
 and semantic tests may use the scoped `StyleProgramBuilder` from the codemod
 `swap` surface when low-level rule object literals would repeat invariants:
