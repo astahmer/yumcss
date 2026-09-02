@@ -90,6 +90,13 @@ executed; source-static evidence is intentionally not mislabeled as full
 production proof. See [testing](/contributing/testing/) and
 [adoption](/reference/adoption/).
 
+The long-running reference workflows also have an optional Effect 4 tooling
+implementation. It adapts Pandwind-owned task and filesystem ports to the
+official Node services, providing bounded ordered batches, cancellation, and
+task-scoped failures without adding Effect to the shipped runtime or Vite hot
+path. This remains an internal tooling choice and can be replaced without
+changing adapter or scanner contracts.
+
 ## Multi-target and migration contracts
 
 ### Backends — plan 021
