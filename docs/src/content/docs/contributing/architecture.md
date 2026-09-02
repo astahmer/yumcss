@@ -179,14 +179,14 @@ nonexistent bare `css` export.
 The same adapter config result carries ordered project evidence:
 
 ```text
-official loader -> generated artifact -> project source fallback -> unresolved
+official loader -> generated artifact -> explicitly supplied resolver -> residual
 ```
 
 Each source also records whether it resolved, failed, or was not attempted.
 This matters when an official package is installed but a custom preset or
-plugin cannot be evaluated: the fallback may still make a safe partial
-conversion possible, but the failed official attempt remains visible as a
-configuration residual.
+plugin cannot be evaluated: the failed official attempt remains visible as a
+configuration residual, and the source is preserved unless an explicit
+resolver can prove a safe conversion.
 
 Configured plugin chains are first-class evidence. A statically named package
 is resolved evidence; an opaque function or computed plugin is explicitly
@@ -262,6 +262,15 @@ supports, container, layer, or selector rules. The parser retains only
 candidate style rules; global/keyframe/font-face side effects are not coerced
 into a style utility. Their rule-level migration must be represented by the
 semantic program or reported as a residual.
+
+Compiler-driven adapters do not ship partial hand-maintained utility catalogs.
+Tailwind and UnoCSS resolve ordinary utilities, custom rules, shortcuts,
+variants, presets, and theme values through their official project engines (or
+an explicitly supplied generated-CSS resolver). The no-config/browser path
+handles only syntax-level arbitrary properties; unknown utilities produce a
+typed residual. Variant names are not classified from a guessed list: authored
+variants remain named conditions, while pseudo conditions come from the
+selectors emitted by the official engine.
 
 ## Boundaries
 

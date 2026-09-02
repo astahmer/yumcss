@@ -59,38 +59,32 @@ const literal = (property: string, value: string | number): StyleDeclaration => 
 const cssProperty = (value: string): string =>
 	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
-const condition = (prefix: string): StyleCondition => {
-	if (["hover", "focus", "active", "visited", "disabled", "checked"].includes(prefix))
-		return { kind: "pseudo", name: prefix };
-	return { kind: "named", name: prefix };
-};
+const authoredVariantCondition = (name: string): StyleCondition => ({
+	kind: "named",
+	name,
+});
 
-const BASIC_UTILITIES: Readonly<Record<string, readonly StyleDeclaration[]>> = {
-	block: [literal("display", "block")],
-	flex: [literal("display", "flex")],
-	"inline-flex": [literal("display", "inline-flex")],
-	"flex-col": [literal("flexDirection", "column")],
-	"items-center": [literal("alignItems", "center")],
-	"items-start": [literal("alignItems", "flex-start")],
-	"justify-center": [literal("justifyContent", "center")],
-	"justify-between": [literal("justifyContent", "space-between")],
-	"text-center": [literal("textAlign", "center")],
-	"font-semibold": [literal("fontWeight", 600)],
-	"min-h-screen": [literal("minHeight", "100vh")],
-	"w-full": [literal("width", "100%")],
-	"max-w-3xl": [literal("maxWidth", "48rem")],
-	"gap-4": [literal("gap", "1rem")],
-	"gap-6": [literal("gap", "1.5rem")],
-	"p-4": [literal("padding", "1rem")],
-	"px-4": [literal("paddingInline", "1rem")],
-	"py-4": [literal("paddingBlock", "1rem")],
-	"rounded-full": [literal("borderRadius", "9999px")],
-	"bg-white": [literal("backgroundColor", "#fff")],
-	"bg-black": [literal("backgroundColor", "#000")],
-	"text-black": [literal("color", "#000")],
-	"text-white": [literal("color", "#fff")],
-	"text-zinc-600": [literal("color", "#52525b")],
-};
+const generatedPseudoCondition = (name: string): StyleCondition => ({
+	kind: "pseudo",
+	name,
+});
+
+function splitUtilityToken(token: string): string[] {
+	const parts: string[] = [];
+	let start = 0;
+	let brackets = 0;
+	for (let index = 0; index < token.length; index++) {
+		const character = token[index]!;
+		if (character === "[") brackets++;
+		else if (character === "]" && brackets > 0) brackets--;
+		else if (character === ":" && brackets === 0) {
+			parts.push(token.slice(start, index));
+			start = index + 1;
+		}
+	}
+	parts.push(token.slice(start));
+	return parts;
+}
 
 function arbitraryUtility(
 	value: string,
@@ -101,7 +95,7 @@ function arbitraryUtility(
 	return [
 		{
 			...literal(cssProperty(match[1]), match[2].replaceAll("_", " ")),
-			conditions: prefixes.map(condition),
+			conditions: prefixes.map(authoredVariantCondition),
 		},
 	];
 }
@@ -109,15 +103,9 @@ function arbitraryUtility(
 function defaultResolve(token: string): readonly StyleDeclaration[] | undefined {
 	const arbitrary = arbitraryUtility(token, []);
 	if (arbitrary !== undefined) return arbitrary;
-	const prefixes = token.split(":");
+	const prefixes = splitUtilityToken(token);
 	const utility = prefixes.pop();
 	if (utility === undefined) return undefined;
-	const known = BASIC_UTILITIES[utility];
-	if (known !== undefined)
-		return known.map((declaration) => ({
-			...declaration,
-			conditions: [...prefixes.map(condition), ...declaration.conditions],
-		}));
 	return arbitraryUtility(utility, prefixes);
 }
 
@@ -626,7 +614,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 	const conditions: StyleCondition[] = [];
 	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];
-		if (name !== undefined) conditions.push(condition(name));
+		if (name !== undefined) conditions.push(generatedPseudoCondition(name));
 	}
 	const normalized = selector.trim();
 	if (
@@ -636,7 +624,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 			/[>&+~\s]/u.test(normalized) ||
 			!/^\.?[\\A-Za-z0-9_-]+$/u.test(normalized))
 	) {
-		const utility = token.split(":").at(-1) ?? token;
+		const utility = splitUtilityToken(token).at(-1) ?? token;
 		const escapedUtility = utility.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 		const relative = normalized.replace(
 			new RegExp(`\\.${escapedUtility}(?=[\\s:#.\\[>,+~]|$)`, "u"),
@@ -689,35 +677,11 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 	return declarations.length === 0 ? undefined : declarations;
 }
 
-function withTailwindVariantConditions(
-	declarations: readonly StyleDeclaration[],
-	token: string,
-): readonly StyleDeclaration[] {
-	const variants = token.split(":").slice(0, -1).map(condition);
-	return declarations.map((declaration) => {
-		const conditions = [...declaration.conditions];
-		for (const variant of variants) {
-			if (
-				!conditions.some(
-					(existing) => existing.kind === variant.kind && existing.name === variant.name,
-				)
-			)
-				conditions.unshift(variant);
-		}
-		return { ...declaration, conditions };
-	});
-}
-
 function tailwindCssFiles(
 	context: AdapterConfigContext,
 ): readonly { file: string; text: string }[] {
 	if (context.root === undefined || context.readFile === undefined) return [];
-	const discovered = context.listFiles?.(context.root) ?? [
-		"tailwind.css",
-		"src/app/globals.css",
-		"app/globals.css",
-		"styles/globals.css",
-	];
+	const discovered = context.listFiles?.(context.root) ?? [];
 	const candidates = discovered
 		.map((file) => ({
 			file,
@@ -755,18 +719,28 @@ async function officialConfig(
 	const cssFiles = tailwindCssFiles(context);
 	const cssFile = cssFiles[0];
 	if (cssFile === undefined) {
-		// A missing discoverable entry is not an official-loader failure. The
-		// fallback resolver still emits safe arbitrary utilities, while unknown
-		// project utilities remain visible as parse residuals. Reserve a
-		// configuration residual for an actual loader error below.
+		// An async official loader without the filesystem discovery port cannot
+		// establish which CSS graph defines the project. Preserve source and make
+		// that missing evidence visible instead of pretending the fallback is the
+		// project's Tailwind configuration.
+		if (context.listFiles === undefined)
+			return {
+				...fallback,
+				residuals: [
+					{
+						kind: "configuration",
+						text: "Tailwind project CSS graph",
+						hint: "project file discovery is required to load the official Tailwind engine",
+					},
+				],
+			};
 		return fallback;
 	}
 	try {
 		const system = await module.__unstable__loadDesignSystem(cssFile.text, { base: context.root });
 		const resolver: TailwindUtilityResolver = {
 			resolve(token) {
-				const result = parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
-				return result === undefined ? undefined : withTailwindVariantConditions(result, token);
+				return parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
 			},
 		};
 		return {

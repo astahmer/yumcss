@@ -69,7 +69,7 @@ function generatedSelectorConditions(selector: string, token: string): readonly 
 	const conditions: StyleCondition[] = [];
 	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
 		const name = match[1];
-		if (name !== undefined) conditions.push(condition(name));
+		if (name !== undefined) conditions.push(generatedPseudoCondition(name));
 	}
 	if (conditions.length > 0) return conditions;
 	const normalized = selector.trim();
@@ -162,12 +162,7 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 function projectThemeCss(context: AdapterConfigContext): string {
 	if (context.root === undefined || context.readFile === undefined) return "";
 	const readFile = context.readFile;
-	const files = context.listFiles?.(context.root) ?? [
-		"app/globals.css",
-		"src/app/globals.css",
-		"styles/globals.css",
-		"src/styles/globals.css",
-	];
+	const files = context.listFiles?.(context.root) ?? [];
 	return files
 		.map((file) =>
 			readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
@@ -183,46 +178,15 @@ const literal = (property: string, value: string | number): StyleDeclaration => 
 	value: { kind: "literal", value },
 });
 
-const condition = (prefix: string): StyleCondition => {
-	if (prefix === "hover" || prefix === "focus" || prefix === "active")
-		return { kind: "pseudo", name: prefix };
-	if (/^\d+xl$|^sm$|^md$|^lg$|^xl$|^2xl$/.test(prefix)) return { kind: "named", name: prefix };
-	return { kind: "named", name: prefix };
-};
+const authoredVariantCondition = (name: string): StyleCondition => ({
+	kind: "named",
+	name,
+});
 
-const BASIC_TOKENS: Readonly<Record<string, readonly StyleDeclaration[]>> = {
-	block: [literal("display", "block")],
-	flex: [literal("display", "flex")],
-	"inline-flex": [literal("display", "inline-flex")],
-	"flex-col": [literal("flexDirection", "column")],
-	"items-center": [literal("alignItems", "center")],
-	"items-start": [literal("alignItems", "flex-start")],
-	"justify-center": [literal("justifyContent", "center")],
-	"justify-between": [literal("justifyContent", "space-between")],
-	"text-center": [literal("textAlign", "center")],
-	"font-sans": [literal("fontFamily", "ui-sans-serif, system-ui, sans-serif")],
-	"font-semibold": [literal("fontWeight", 600)],
-	"leading-8": [literal("lineHeight", 2)],
-	"leading-10": [literal("lineHeight", 2.5)],
-	"min-h-screen": [literal("minHeight", "100vh")],
-	"w-full": [literal("width", "100%")],
-	"max-w-3xl": [literal("maxWidth", "48rem")],
-	"gap-4": [literal("gap", "1rem")],
-	"gap-6": [literal("gap", "1.5rem")],
-	"py-32": [literal("paddingBlock", "8rem")],
-	"px-16": [literal("paddingInline", "4rem")],
-	"rounded-full": [literal("borderRadius", "9999px")],
-	"bg-white": [literal("backgroundColor", "#fff")],
-	"bg-black": [literal("backgroundColor", "#000")],
-	"bg-red-500": [literal("backgroundColor", "#ef4444")],
-	"bg-zinc-50": [literal("backgroundColor", "#fafafa")],
-	"text-black": [literal("color", "#000")],
-	"text-red-500": [literal("color", "#ef4444")],
-	"text-zinc-50": [literal("color", "#fafafa")],
-	"text-zinc-600": [literal("color", "#52525b")],
-	"text-zinc-400": [literal("color", "#a1a1aa")],
-	"p-4": [literal("padding", "1rem")],
-};
+const generatedPseudoCondition = (name: string): StyleCondition => ({
+	kind: "pseudo",
+	name,
+});
 
 function splitUtilityToken(token: string): string[] {
 	const parts: string[] = [];
@@ -253,24 +217,18 @@ function defaultResolve(token: string): readonly StyleDeclaration[] | undefined 
 	const parts = splitUtilityToken(token);
 	const utility = parts.pop();
 	if (utility === undefined) return undefined;
-	const declarations = BASIC_TOKENS[utility];
-	if (declarations === undefined) {
-		const arbitrary = /^\[([\w-]+):(.+)\]$/.exec(utility);
-		if (arbitrary?.[1] === undefined || arbitrary[2] === undefined) return undefined;
-		return [
-			{
-				...literal(
-					arbitrary[1]!.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
-					arbitrary[2],
-				),
-				conditions: parts.map(condition),
-			},
-		];
-	}
-	return declarations.map((declaration) => ({
-		...declaration,
-		conditions: [...parts.map(condition), ...declaration.conditions],
-	}));
+	const arbitraryUtilityMatch = /^\[([\w-]+):(.+)\]$/.exec(utility);
+	if (arbitraryUtilityMatch?.[1] === undefined || arbitraryUtilityMatch[2] === undefined)
+		return undefined;
+	return [
+		{
+			...literal(
+				arbitraryUtilityMatch[1]!.replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase()),
+				arbitraryUtilityMatch[2],
+			),
+			conditions: parts.map(authoredVariantCondition),
+		},
+	];
 }
 
 function unoProperty(property: string): string {

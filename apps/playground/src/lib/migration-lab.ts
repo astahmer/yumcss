@@ -188,7 +188,7 @@ const card = css({
 	"--color": "red",
 	"--padding": "1rem",
 });`,
-	[CodemodAdapterId.UnoCSS]: `<div class="text-red-500 p-4" />`,
+	[CodemodAdapterId.UnoCSS]: `<div class="[color:#ef4444] [padding:1rem]" />`,
 	[CodemodAdapterId.Tailwind]: `import "tailwindcss";
 
 <div className="text-white bg-black p-4" />`,

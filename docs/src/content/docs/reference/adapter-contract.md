@@ -37,10 +37,11 @@ const result = await runAdapterMigrationAsync(source, {
 ```
 
 The official loader is optional and injectable. Missing packages use the
-adapter's deterministic fallback; an installed loader that cannot evaluate a
-custom configuration produces a structured configuration residual. This keeps
-presets, plugins, merged themes, shortcuts, and generated tokens from being
-silently mistaken for a small handwritten approximation. The Pandwind target
+adapter's syntax-level fallback or an explicitly supplied resolver; an
+installed loader that cannot evaluate a custom configuration produces a
+structured configuration residual. This keeps presets, plugins, merged themes,
+shortcuts, and generated tokens from being silently mistaken for a small
+handwritten approximation. The Pandwind target
 also discovers `pandwind.interop.json` and its generated bridge/preset during
 async migration, so code emission consumes the same project token context as
 the generated runtime. An unreadable artifact is reported as a configuration

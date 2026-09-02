@@ -919,13 +919,7 @@ export function createChakraAdapter(
 					| { readonly conditions?: Record<string, unknown> }
 					| undefined;
 				const conditionValues: Record<string, string> = {};
-				const conditionKinds: Record<string, SemanticConditionKind> = {
-					sm: "named",
-					md: "named",
-					lg: "named",
-					xl: "named",
-					"2xl": "named",
-				};
+				const conditionKinds: Record<string, SemanticConditionKind> = {};
 				for (const [name, value] of Object.entries(configured?.conditions ?? {})) {
 					if (typeof value !== "string") continue;
 					const normalized = name.replace(/^_/, "");

@@ -44,6 +44,7 @@ async function migrateTo(target: CustomTarget, files: Readonly<Record<string, st
 			file,
 			root,
 			readFile: projectFiles(files),
+			listFiles: () => Object.keys(files),
 			adapterRegistry: registryFor(target),
 		},
 	);
@@ -180,7 +181,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "styled-system/css";
 
-			export const card = css({ color: "brand.500", padding: "17px" });"
+			export const card = css({ padding: "17px", color: "brand.500" });"
 		`);
 	});
 
@@ -219,11 +220,11 @@ describe("custom design-system context resolution", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"text-brand p-card"');
+		expect(result.code).toContain('"p-card text-brand"');
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
 			"
-			export const card = "text-brand p-card";"
+			export const card = "p-card text-brand";"
 		`);
 
 		const source = await runAdapterMigrationAsync(
@@ -234,6 +235,7 @@ describe("custom design-system context resolution", () => {
 				file,
 				root,
 				readFile: projectFiles({ [`${root}/tailwind.css`]: '@import "tailwindcss";' }),
+				listFiles: () => [`${root}/tailwind.css`],
 				adapterRegistry: createStyleAdapterRegistry([
 					target,
 					createPandwindAdapter({ moduleLoader: null }),
@@ -290,11 +292,11 @@ describe("custom design-system context resolution", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"text-brand p-card"');
+		expect(result.code).toContain('"p-card text-brand"');
 		expect(result.code).not.toContain("#123456");
 		expect(result.code).toMatchInlineSnapshot(`
 			"
-			export const card = "text-brand p-card";"
+			export const card = "p-card text-brand";"
 		`);
 
 		const source = await runAdapterMigrationAsync(
@@ -344,7 +346,7 @@ describe("custom design-system context resolution", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { css } from "@tokenami/css";
 
-			export const card = css({ color: "$colors.brand", padding: "17px" });"
+			export const card = css({ padding: "17px", color: "$colors.brand" });"
 		`);
 	});
 });

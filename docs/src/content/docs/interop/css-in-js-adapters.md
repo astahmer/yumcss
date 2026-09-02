@@ -277,10 +277,11 @@ pandwind-codemod swap --from=tokenami --to=css.class --safe --diff \
 
 UnoCSS is a class/compiler dialect rather than an object-style runtime.
 Literal `class`/`className` attributes are parsed through an injectable
-project resolver. The default resolver intentionally handles only a small
-utility subset; production migrations should load the project's generated
-UnoCSS CSS and presets. Unknown utilities remain residuals instead of being
-guessed.
+project resolver. The no-config resolver handles only syntax-level arbitrary
+properties; production migrations should load the project's official UnoCSS
+config/generator or generated CSS so custom rules, shortcuts, presets, theme
+tokens, and variants are authoritative. Unknown utilities remain residuals
+instead of being guessed.
 
 ```ts
 import { createUnoCssResolverFromCss } from "pandwind-codemod/swap";

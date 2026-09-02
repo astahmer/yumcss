@@ -29,7 +29,7 @@ const WEBSITE = `${process.env.HOME}/dev/panda/website`;
 /** Theme mirroring what loadPandaTheme produces for the website config. */
 const siteTheme: PandaTheme = {
 	tokens: {},
-	conditions: {},
+	conditions: { midnight: "&:where([data-theme=midnight] *)" },
 	tokenVars: new Map([
 		["fg", "--colors-fg"],
 		["fg.muted", "--colors-fg-muted"],
@@ -133,6 +133,26 @@ describe("pandaStyleToIr — navbar.tsx shapes", () => {
 	it("chains nested conditions outermost-first (_dark -> _hover)", () => {
 		const ir = pandaStyleToIr({ _dark: { _hover: { color: "white" } } }, siteTheme);
 		expect(ir.entries).toEqual([{ conditions: ["dark", "hover"], prop: "color", value: "white" }]);
+	});
+
+	it("recognizes configured custom conditions instead of a built-in breakpoint list", () => {
+		const ir = pandaStyleToIr({ midnight: { color: "white" } }, siteTheme);
+		expect(ir.residuals).toEqual([]);
+		expect(ir.entries).toEqual([{ conditions: ["midnight"], prop: "color", value: "white" }]);
+		expect(ir).toMatchInlineSnapshot(`
+			{
+			  "entries": [
+			    {
+			      "conditions": [
+			        "midnight",
+			      ],
+			      "prop": "color",
+			      "value": "white",
+			    },
+			  ],
+			  "residuals": [],
+			}
+		`);
 	});
 
 	it("expands textStyle into its bundled declarations", () => {

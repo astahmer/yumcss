@@ -88,11 +88,6 @@ export const PANDA_ALIASES: ReadonlyMap<string, string> = new Map([
 	["roundedEnd", "borderEndRadius"],
 ]);
 
-/** Top-level keys that open a condition scope instead of declaring. */
-function isConditionKey(key: string): boolean {
-	return key.startsWith("_") || key === "base";
-}
-
 const camelProp = (prop: string): string =>
 	prop.replace(/-(\w|$)/g, (_m, char: string) => char.toUpperCase());
 
@@ -259,9 +254,8 @@ function resolveValue(
 /* style walker                                                        */
 /* ------------------------------------------------------------------ */
 
-const BREAKPOINT_RE = /^(?:sm|md|lg|xl|2xl|3xl|4xl|5xl)$/;
-const isConditionishKey = (key: string): boolean =>
-	key === "base" || key.startsWith("_") || BREAKPOINT_RE.test(key);
+const isConditionishKey = (key: string, theme: PandaTheme): boolean =>
+	key === "base" || key.startsWith("_") || theme.conditions[key] !== undefined;
 
 function pushEntries(ir: SwapIR, entries: Array<SwapEntry>): void {
 	ir.entries.push(...entries);
@@ -289,7 +283,7 @@ function walkStyle(
 			}
 			continue;
 		}
-		if (isConditionKey(key) || BREAKPOINT_RE.test(key)) {
+		if (isConditionishKey(key, theme)) {
 			if (!isPlainObject(raw)) {
 				ir.residuals.push({
 					kind: "dynamic",
@@ -367,7 +361,7 @@ function walkDeclaration(
 	}
 
 	// Per-property conditional fan-out: mt: { base: '6', _first: '0' }.
-	if (isPlainObject(raw) && Object.keys(raw).length > 0 && isConditionishMap(raw)) {
+	if (isPlainObject(raw) && Object.keys(raw).length > 0 && isConditionishMap(raw, theme)) {
 		for (const [cond, value] of Object.entries(raw)) {
 			if (cond === "base") {
 				walkDeclaration(key, value, conditions, ir, theme);
@@ -404,9 +398,9 @@ function walkDeclaration(
 }
 
 /** Is every key of this object a condition-ish branch (base/_cond/breakpoint)? */
-function isConditionishMap(raw: Record<string, unknown>): boolean {
+function isConditionishMap(raw: Record<string, unknown>, theme: PandaTheme): boolean {
 	const keys = Object.keys(raw);
-	return keys.length > 0 && keys.every((k) => isConditionishKey(k));
+	return keys.length > 0 && keys.every((key) => isConditionishKey(key, theme));
 }
 
 /* ------------------------------------------------------------------ */
