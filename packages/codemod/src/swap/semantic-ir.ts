@@ -184,6 +184,8 @@ export interface StyleProgramSource {
 	readonly framework?: string;
 	/** Original JSX opening element when a source adapter owns style props. */
 	readonly hostOpenTag?: string;
+	/** Canonical intrinsic tag for factory JSX hosts such as `<styled.button>`. */
+	readonly hostTag?: string;
 	/** Source attributes consumed by the style-prop adapter. */
 	readonly hostStyleAttributes?: readonly string[];
 	/** Marks a style program that must be rendered back into its host element. */

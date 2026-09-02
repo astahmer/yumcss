@@ -86,8 +86,12 @@ export class JsxStyleHost {
 		classExpression: string,
 		framework: string | undefined,
 		styleExpression?: string,
+		hostTag?: string,
 	): JsxStyleHostRenderResult {
-		let text = openingTag;
+		let text =
+			hostTag === undefined
+				? openingTag
+				: openingTag.replace(/^<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?/u, `<${hostTag}`);
 		for (const raw of styleAttributes) {
 			const index = text.indexOf(raw);
 			if (index !== -1) {
@@ -101,6 +105,13 @@ export class JsxStyleHost {
 		const classPattern = new RegExp(
 			`(\\s)${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\\{([\\s\\S]*?)\\})`,
 		);
+		const insertAttribute = (value: string): void => {
+			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
+			text =
+				hostTag === undefined
+					? `${text.slice(0, insertion)}${value}${text.slice(insertion)}`
+					: `${text.slice(0, insertion).trimEnd()} ${value.trimStart()}${text.slice(insertion)}`;
+		};
 		const existing = classPattern.exec(text);
 		const spread = [...text.matchAll(/\{\s*\.\.\.([A-Za-z_$][\w$]*)\s*\}/g)].at(-1);
 		if (existing !== null) {
@@ -113,24 +124,27 @@ export class JsxStyleHost {
 				const renderedIndex = text.indexOf(replacement);
 				if (renderedIndex !== -1) {
 					text = `${text.slice(0, renderedIndex)}${text.slice(renderedIndex + replacement.length)}`;
-					const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
-					text = `${text.slice(0, insertion)}${replacement}${text.slice(insertion)}`;
+					insertAttribute(hostTag === undefined ? replacement : replacement.trimStart());
 				}
 			}
 			needsCx = true;
 		} else if (spread !== undefined) {
 			const rendered = ` ${attribute}={cx(${classExpression}, ${spread[1]}.className)}`;
-			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
-			text = `${text.slice(0, insertion)}${rendered}${text.slice(insertion)}`;
+			insertAttribute(hostTag === undefined ? rendered : rendered.trimStart());
 			needsCx = true;
 		} else {
-			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
-			text = `${text.slice(0, insertion)} ${attribute}={${classExpression}}${text.slice(insertion)}`;
+			insertAttribute(`${attribute}={${classExpression}}`);
 		}
 		if (styleExpression !== undefined && !/\bstyle\s*=/.test(text)) {
-			const insertion = text.endsWith("/>") ? text.length - 2 : text.length - 1;
-			text = `${text.slice(0, insertion)} style={${styleExpression}}${text.slice(insertion)}`;
+			insertAttribute(`style={${styleExpression}}`);
 		}
+		if (hostTag !== undefined)
+			// Factory tags are newly projected to intrinsic hosts. Normalize only
+			// that generated fragment; existing component-host formatting remains
+			// byte-for-byte stable for other adapters.
+			text = text
+				.replace(/^(\s*<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)\s{2,}/u, "$1 ")
+				.replace(/\s*\/>$/u, " />");
 		return { text, needsCx };
 	}
 

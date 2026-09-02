@@ -18,28 +18,46 @@ function migrate(source: string, from: CodemodAdapterId) {
 }
 
 describe("reference-repository migration safety", () => {
-	test("preserves Panda JSX style-prop sources as an explicit residual", () => {
+	test("lowers Panda JSX style-prop hosts to intrinsic Pandwind hosts", () => {
 		const source = `import React from "react";
 import { styled } from "styled-system/jsx";
 
 const Button = () => <styled.button color="red" />;`;
 		const result = migrate(source, CodemodAdapterId.Panda);
 
-		expect(result.converted).toBe(0);
-		expect(result.skipped).toBe(1);
-		expect(result.residuals).toEqual([
-			expect.objectContaining({
-				kind: "unmatched-source",
-				hint: expect.stringContaining("no supported style construct"),
-			}),
-		]);
-		expect(result.code).toContain('import { styled } from "styled-system/jsx";');
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain('from "styled-system/jsx"');
+		expect(result.code).toContain('<button className={css.class({ color: "red" })} />');
 		expect(result.code).toMatchInlineSnapshot(`
-		"// pandwind:migrate-skip (route: panda -> pandwind | lowering-residual: unmatched-source)
-		import React from \"react\";
-		import { styled } from \"styled-system/jsx\";
+		"import React from \"react\";
+		import { createCss } from \"pandwind/css\";
+		const css = createCss();
 
-		const Button = () => <styled.button color=\"red\" />;"
+
+		const Button = () => <button className={css.class({ color: \"red\" })} />;"
+	`);
+	});
+
+	test("handles aliased Panda styled factories and preserves ordinary JSX attributes", () => {
+		const source = `import { styled as pandaStyled } from "styled-system/jsx";
+
+export const Button = () =>
+		<pandaStyled.button bg="tomato" color="red" _hover={{ color: "blue" }} data-testid="button" disabled />;`;
+		const result = migrate(source, CodemodAdapterId.Panda);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).not.toContain("pandaStyled");
+		expect(result.code).toMatchInlineSnapshot(`
+		"import { createCss } from \"pandwind/css\";
+		const css = createCss();
+
+
+		export const Button = () =>
+		\t\t<button data-testid=\"button\" disabled className={css.class({ backgroundColor: \"tomato\", color: \"red\", \"&:hover\": { color: \"blue\" } })} />;"
 	`);
 	});
 

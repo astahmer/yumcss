@@ -5,7 +5,7 @@ import type {
 	AdapterProjectConfig,
 	AdapterTokenPolicy,
 } from "../adapter-contract.ts";
-import type { StyleValue } from "../semantic-ir.ts";
+import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -15,6 +15,57 @@ import { TokenCatalog } from "../tokens.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import type { PandaTheme } from "./panda/theme.ts";
+import { PANDA_ALIASES } from "./panda/parse.ts";
+
+const PANDA_JSX_STYLE_PROPS = [
+	"css",
+	"color",
+	"background",
+	"backgroundColor",
+	"border",
+	"borderColor",
+	"borderRadius",
+	"boxShadow",
+	"display",
+	"flex",
+	"flexDirection",
+	"fontFamily",
+	"fontSize",
+	"fontWeight",
+	"gap",
+	"gridTemplateColumns",
+	"height",
+	"justifyContent",
+	"lineHeight",
+	"margin",
+	"maxWidth",
+	"minHeight",
+	"opacity",
+	"padding",
+	"position",
+	"textAlign",
+	"textDecoration",
+	"transform",
+	"width",
+	"zIndex",
+	"_active",
+	"_before",
+	"_disabled",
+	"_focus",
+	"_hover",
+	"_after",
+] as const;
+
+const pandaJsxStyleProps = [...new Set([...PANDA_JSX_STYLE_PROPS, ...PANDA_ALIASES.keys()])];
+
+function pandaFactoryHostTag(program: StyleProgram): StyleProgram {
+	const source = program.source;
+	const openingTag = source?.hostOpenTag;
+	if (source === undefined || openingTag === undefined || source.hostTag !== undefined)
+		return program;
+	const tag = /^<\s*[A-Za-z_$][\w$]*\.([a-z][\w-]*)\b/u.exec(openingTag)?.[1];
+	return tag === undefined ? program : { ...program, source: { ...source, hostTag: tag } };
+}
 
 /**
  * Panda's generated `styled-system/css` object dialect is a normal pivot
@@ -161,6 +212,19 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 			{
+				name: "jsx-style-props",
+				regex: /<\s*styled\.[A-Za-z_$][\w$]*\b/g,
+				form: "jsx-style",
+				styleProps: pandaJsxStyleProps,
+				semanticBindings: [{ source: "styled-system/jsx", imported: "styled" }],
+				regexForBinding: (binding) =>
+					new RegExp(
+						`<\\s*${binding.localName.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\.[A-Za-z_$][\\w$]*\\b`,
+						"g",
+					),
+				transform: pandaFactoryHostTag,
+			},
+			{
 				name: "cva",
 				regex: /\bcva\s*\(\s*\{/g,
 				form: "residual",
@@ -245,6 +309,7 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		tokenPolicy: PANDA_TOKEN_POLICY,
 		sourceObjectOptions: (_source, context) => ({
+			propertyAliases: Object.fromEntries(PANDA_ALIASES),
 			valueTransforms: {
 				"*": (value, property) => pandaSourceValue(value, property ?? "", context),
 			},

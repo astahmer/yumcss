@@ -972,6 +972,8 @@ function runtimeHostTemplateExpression(
 		host.hostStyleAttributes,
 		classExpression,
 		framework,
+		undefined,
+		host.hostTag,
 	);
 	return {
 		text: rendered.text,
@@ -1362,6 +1364,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					dynamicHost ? `css.vars(${programObjectText}).class` : `css.class(${programObjectText})`,
 					framework,
 					dynamicHost ? `css.vars(${programObjectText}).style` : undefined,
+					host.hostTag,
 				);
 				return finalize({
 					text: rendered.text,
