@@ -92,8 +92,7 @@ export default {
 		pandwindMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
-			onResidual: ({ file, residuals }) =>
-				console.warn(file, residuals),
+			onResidual: ({ file, residuals }) => console.warn(file, residuals),
 		}),
 		tailwindcss(),
 	],

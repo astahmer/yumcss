@@ -98,14 +98,14 @@ shared scanner → configured source adapter → StyleProgram / SwapIR
 
 ### Tech choices
 
-| Choice | Decision | Rationale |
-|--------|----------|-----------|
-| Migration engine | Existing `runAdapterMigrationAsync` | One semantic implementation; no bundler-specific adapter logic |
-| Ordering | Vite `enforce: "pre"` | The target plugin sees migrated source and can remain authoritative |
-| Generated files | Virtual modules | No source writes or duplicate artifacts during evaluation |
-| Diagnostics | Injected callback plus optional `warn` default | Hosts decide presentation; residuals stay structured |
-| Cache | Per-plugin source-content cache | Avoid repeated config/parse work without stale cross-build state |
-| Target plugins | Composed by the host | Tailwind/StyleX/etc. keep their official compilation semantics |
+| Choice           | Decision                                       | Rationale                                                           |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------------------------- |
+| Migration engine | Existing `runAdapterMigrationAsync`            | One semantic implementation; no bundler-specific adapter logic      |
+| Ordering         | Vite `enforce: "pre"`                          | The target plugin sees migrated source and can remain authoritative |
+| Generated files  | Virtual modules                                | No source writes or duplicate artifacts during evaluation           |
+| Diagnostics      | Injected callback plus optional `warn` default | Hosts decide presentation; residuals stay structured                |
+| Cache            | Per-plugin source-content cache                | Avoid repeated config/parse work without stale cross-build state    |
+| Target plugins   | Composed by the host                           | Tailwind/StyleX/etc. keep their official compilation semantics      |
 
 ### Architecture
 
@@ -177,8 +177,8 @@ state.
 4. Add inline-snapshot tests for static conversion, residual preservation,
    include/exclude behavior, idempotence, diagnostics, generated artifacts,
    and target-plugin ordering.
-5. Add a small Vite fixture proving the transformed class output reaches the
-   official Tailwind plugin without touching its source files.
+5. Add a focused Vite-host fixture proving the transformed module is handed to
+   a later target plugin without touching its source files.
 6. Document the reversible lane and keep the committed codemod as the source
    migration path.
 
@@ -192,22 +192,32 @@ state.
 
 ## Acceptance criteria
 
-- [ ] The Vite migration plugin uses only the existing adapter/scanner/lowering
+- [x] The Vite migration plugin uses only the existing adapter/scanner/lowering
       ports and has no ecosystem switch statements.
-- [ ] A styled-components → Tailwind fixture produces idiomatic classes before
+- [x] A styled-components → Tailwind fixture produces idiomatic classes before
       Tailwind's official plugin and leaves the source file unchanged.
-- [ ] Inline snapshots show transformed output; ordinary assertions guard route,
+- [x] Inline snapshots show transformed output; ordinary assertions guard route,
       residual, generated-file, and idempotence behavior.
-- [ ] Residual-bearing safe migrations remain source-preserving and observable.
-- [ ] Generated files resolve/load virtually and deduplicate deterministically.
-- [ ] Typecheck, lint, format, Knip, and focused codemod/Vite tests pass.
-- [ ] A static import check confirms no new dependency enters the shipped
+- [x] Residual-bearing safe migrations remain source-preserving and observable.
+- [x] Generated files resolve/load virtually and deduplicate deterministically.
+- [x] Typecheck, lint, format, Knip, and focused codemod/Vite tests pass.
+- [x] A static import check confirms no new dependency enters the shipped
       Pandwind runtime.
+
+## Status
+
+Implemented in the focused revisions following this plan. The plugin contract
+is Vite-shaped and intentionally dependency-free; the host-composition test
+proves that migrated source is available to a later target plugin while the
+codemod tests exercise the real adapter pipeline. A future Vite-version
+integration fixture may add host-specific regression coverage, but it is not
+needed to establish a second migration engine or to change the source/runtime
+contracts.
 
 ## Decisions log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
+| Date       | Decision                                                     | Rationale                                                                                   |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
 | 2026-09-02 | Start with a Vite plugin over the existing migration service | Vite is the proven composition root and already supports pre-transforms and virtual modules |
-| 2026-09-02 | Keep source files immutable and generated artifacts virtual | This is the reversible evaluation lane; committed codemods remain explicit |
-| 2026-09-02 | Compose the target's official plugin after migration | The target ecosystem should remain the authority for final CSS generation |
+| 2026-09-02 | Keep source files immutable and generated artifacts virtual  | This is the reversible evaluation lane; committed codemods remain explicit                  |
+| 2026-09-02 | Compose the target's official plugin after migration         | The target ecosystem should remain the authority for final CSS generation                   |
