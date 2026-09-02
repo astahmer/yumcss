@@ -16,7 +16,7 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 - [x] Wave 2 — executable real-repository promotion runner with injected environment ports.
 - [x] Wave 3 — generic static-first semantic lowering families.
 - [x] Wave 4 — complete official project-context loading.
-- [ ] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.
+- [x] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.
 - [ ] Wave 6 — real-repository adapter promotion waves.
 - [ ] Wave 7 — capability-specific directional and round-trip proof matrix.
 - [ ] Wave 8 — CI gates, documentation regeneration, and final acceptance audit.
@@ -34,6 +34,8 @@ Wave 5b is complete for migration result bindings. Styled/component host decisio
 Wave 5c is complete for Panda factory-element discovery. `<panda.*>` opening tags, attributes, spread props, literal values, and exact opening ranges now come from the shared Oxc AST. The existing edit engine remains responsible only for target-specific output and source-range edits; malformed or unsupported nodes fail closed. Focused Panda migration tests include AST-shape snapshots and assertions for literal and spread cases.
 
 Wave 5d is complete for shared JSX host decisions across script and framework-embedded documents. `SourceBindings` now indexes component uses, attribute expression uses, and embedded Vue script/template islands with source offsets. Adapter migration consumes those port methods instead of regex checks for host/component usage. The focused source-binding suite covers TSX aliases, shadowing, tagged templates, Vue SFCs, inline snapshots, and conservative malformed-source handling; the migration host matrix remains green across Vue/Solid/React cases.
+
+Wave 5e is complete for Panda discovery reuse. Discovered Panda files now retain their shared `SourceScanResult`, and the staged source-scanning/rewrite pipeline reuses that result rather than invoking a second scan for the same document. The boundary is now: `SourceWorkspace → SourceScanResult → adapter stages`; filesystem/glob/parser ownership remains in the workspace/scanner providers, while migration modules consume their ports and records.
 
 ## Goal
 
