@@ -12,6 +12,7 @@ import type {
 } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 import {
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
@@ -480,15 +481,14 @@ async function officialChakraConfig(
 		values: {},
 	};
 	if (context.root === undefined) return fallback;
-	const chakra = await loader.importPackage<ChakraPackage>("@chakra-ui/react", context.root);
-	if (chakra === undefined) return fallback;
-	const discovered = context
-		.listFiles?.(context.root)
-		.filter((candidate) =>
-			/(?:^|[\\/])(?:src[\\/])?theme(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
-				candidate,
-			),
-		);
+	const discovered =
+		context
+			.listFiles?.(context.root)
+			.filter((candidate) =>
+				/(?:^|[\\/])(?:src[\\/])?theme(?:[\\/](?:index\.)?(?:ts|tsx|js|mjs|cjs)|\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+					candidate,
+				),
+			) ?? [];
 	const candidates = [
 		"src/theme.ts",
 		"src/theme.tsx",
@@ -500,6 +500,22 @@ async function officialChakraConfig(
 		"theme.mjs",
 		...(discovered ?? []),
 	];
+	const chakra = await loader.importPackage<ChakraPackage>("@chakra-ui/react", context.root);
+	if (chakra === undefined)
+		return candidates.some(
+			(candidate) =>
+				context.readFile?.(
+					candidate.startsWith(context.root!)
+						? candidate
+						: joinDocumentPath(context.root!, candidate),
+				) !== undefined,
+		)
+			? AdapterEvidence.configurationFailure(
+					fallback,
+					"Chakra project configuration",
+					"the official @chakra-ui/react package is unavailable for a discovered theme module",
+				)
+			: fallback;
 	for (const candidate of new Set(candidates)) {
 		const path = candidate.startsWith(context.root)
 			? candidate

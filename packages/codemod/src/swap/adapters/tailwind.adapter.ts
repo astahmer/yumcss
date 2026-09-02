@@ -715,12 +715,25 @@ async function officialConfig(
 ): Promise<AdapterProjectConfig> {
 	const fallback = config(context);
 	if (context.root === undefined || context.readFile === undefined) return fallback;
+	const cssFiles = tailwindCssFiles(context);
 	const module = await loader.importPackage<TailwindEnginePackage>(
 		"@tailwindcss/node",
 		context.root,
 	);
-	if (module?.__unstable__loadDesignSystem === undefined) return fallback;
-	const cssFiles = tailwindCssFiles(context);
+	if (module?.__unstable__loadDesignSystem === undefined) {
+		const hasTailwindConfiguration = cssFiles.some(({ text }) =>
+			/@(?:import|tailwind|theme|utility|plugin|config|custom-variant|source|reference)\b/u.test(
+				text,
+			),
+		);
+		return hasTailwindConfiguration
+			? AdapterEvidence.configurationFailure(
+					fallback,
+					"Tailwind project configuration",
+					"the official @tailwindcss/node loader is unavailable for a discovered Tailwind CSS graph",
+				)
+			: fallback;
+	}
 	const cssFile = cssFiles[0];
 	if (cssFile === undefined) {
 		// An async official loader without the filesystem discovery port cannot

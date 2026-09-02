@@ -135,6 +135,7 @@ describe("official custom-token loaders", () => {
 		};
 		const config = await createTailwindAdapter({ moduleLoader: loader }).loadConfigAsync?.({
 			...context,
+			listFiles: () => ["/project/tailwind.css"],
 			readFile: (file: string) =>
 				file.endsWith("tailwind.css") ? '@import "tailwindcss";' : undefined,
 		});

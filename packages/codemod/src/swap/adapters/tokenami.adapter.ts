@@ -20,6 +20,7 @@ import {
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
@@ -141,12 +142,25 @@ async function officialTokenamiConfig(
 ): Promise<AdapterProjectConfig> {
 	const fallback = tokenamiConfig(context);
 	if (context.root === undefined) return fallback;
+	const configFiles =
+		context
+			.listFiles?.(context.root)
+			.filter((candidate) =>
+				/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
+			) ?? [];
 	const packageModule = await loader.importPackage<
 		Record<string, unknown> & {
 			createConfig?: (config: TokenamiConfigShape) => unknown;
 		}
 	>("@tokenami/config", context.root);
-	if (packageModule === undefined) return fallback;
+	if (packageModule === undefined)
+		return configFiles.length > 0
+			? AdapterEvidence.configurationFailure(
+					fallback,
+					"Tokenami project configuration",
+					"the official @tokenami/config package is unavailable for a discovered config",
+				)
+			: fallback;
 	const discovered = context
 		.listFiles?.(context.root)
 		.filter((candidate) =>
@@ -187,12 +201,7 @@ async function officialTokenamiConfig(
 			},
 		};
 	}
-	const hasConfigFile = context
-		.listFiles?.(context.root)
-		.some((candidate) =>
-			/(?:^|[\\/])(?:\.tokenami[\\/])?tokenami\.config\.(?:ts|js|cjs|mjs)$/u.test(candidate),
-		);
-	if (hasConfigFile === true) {
+	if (configFiles.length > 0) {
 		return {
 			...fallback,
 			residuals: [

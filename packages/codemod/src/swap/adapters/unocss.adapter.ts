@@ -502,12 +502,22 @@ async function officialConfig(
 ): Promise<AdapterProjectConfig> {
 	const fallback = config(context);
 	if (context.root === undefined) return fallback;
+	const configFiles =
+		context
+			.listFiles?.(context.root)
+			.filter((candidate) => /(?:^|[\\/])uno\.config\.(?:ts|js|mjs|cjs)$/u.test(candidate)) ?? [];
 	const [configPackage, corePackage] = await Promise.all([
 		loader.importPackage<UnoConfigPackage>("@unocss/config", context.root),
 		loader.importPackage<UnoCorePackage>("@unocss/core", context.root),
 	]);
 	if (configPackage?.loadConfig === undefined || corePackage?.createGenerator === undefined)
-		return fallback;
+		return configFiles.length > 0
+			? AdapterEvidence.configurationFailure(
+					fallback,
+					"UnoCSS project configuration",
+					"the official UnoCSS config and generator packages are unavailable for a discovered config",
+				)
+			: fallback;
 	try {
 		const loaded = await configPackage.loadConfig(context.root, context.root);
 		const generator = await corePackage.createGenerator(loaded.config);

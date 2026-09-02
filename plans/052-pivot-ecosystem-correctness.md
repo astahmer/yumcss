@@ -15,7 +15,7 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 - [x] Wave 1 — registry-derived capability ledger with representation, proof, and evidence rows.
 - [x] Wave 2 — executable real-repository promotion runner with injected environment ports.
 - [x] Wave 3 — generic static-first semantic lowering families.
-- [ ] Wave 4 — complete official project-context loading.
+- [x] Wave 4 — complete official project-context loading.
 - [ ] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.
 - [ ] Wave 6 — real-repository adapter promotion waves.
 - [ ] Wave 7 — capability-specific directional and round-trip proof matrix.
@@ -24,6 +24,8 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 Wave 1 intentionally delivers the ledger boundary first; it does not claim that the existing fixture or source-only evidence has been promoted.
 
 Wave 3 is complete for the generic lowering core. The planner now uses enum-backed capability identities at every target-policy boundary, and direct `StyleProgramBuilder` cases prove verified theme inlining, deterministic scalar custom-property fallback, function-valued residuals, embedded composition flattening, and plugin normalization. The tests retain inline snapshots for diagnosis plus ordinary assertions for representation, residual kind, applied strategy, and generated metadata.
+
+Wave 4 is complete for the discovered-config failure boundary. Tailwind, UnoCSS, Tokenami, and Chakra now publish a typed configuration residual when a project config/theme surface is present but the corresponding official loader cannot be used. Projects without a discovered config continue through the deterministic fallback. Focused tests cover all four adapters and retain inline evidence for the exact residual and loader guidance.
 
 ## Goal
 

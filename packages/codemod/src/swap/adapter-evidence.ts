@@ -1,4 +1,5 @@
 import type { AdapterDependencies, AdapterProjectConfig } from "./adapter-contract.ts";
+import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import {
 	AdapterConfigEvidenceSourceTag,
 	AdapterEvidenceStatusTag,
@@ -79,6 +80,20 @@ type AdapterLike = {
 
 /** Scoped constructor/normalizer for adapter evidence; no ecosystem logic lives here. */
 export class AdapterEvidence {
+	static configurationFailure(
+		config: AdapterProjectConfig,
+		text: string,
+		hint: string,
+	): AdapterProjectConfig {
+		return {
+			...config,
+			residuals: [
+				...(config.residuals ?? []),
+				{ kind: StyleProgramResidualKindTag.Configuration, text, hint },
+			],
+		};
+	}
+
 	static manifest(input: AdapterOfficialApiManifestInput): AdapterOfficialApiManifest {
 		return {
 			schema: ADAPTER_EVIDENCE_SCHEMA,
