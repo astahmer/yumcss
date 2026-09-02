@@ -20,6 +20,52 @@ interface AnyCssPropConf<TConfig, TName extends keyof TConfig> extends Record<
 
 type CssValuesOf<TConfig, TName extends keyof TConfig> = AnyCssPropConf<TConfig, TName>;
 
+type ColorPropertyName =
+	| "color"
+	| "background"
+	| "backgroundColor"
+	| "borderColor"
+	| "borderTopColor"
+	| "borderRightColor"
+	| "borderBottomColor"
+	| "borderLeftColor"
+	| "outlineColor"
+	| "textDecorationColor"
+	| "textEmphasisColor"
+	| "fill"
+	| "stroke";
+
+type OpacityModifier =
+	| "0"
+	| "5"
+	| "10"
+	| "15"
+	| "20"
+	| "25"
+	| "30"
+	| "35"
+	| "40"
+	| "45"
+	| "50"
+	| "55"
+	| "60"
+	| "65"
+	| "70"
+	| "75"
+	| "80"
+	| "85"
+	| "90"
+	| "95"
+	| "100";
+
+type WithOpacityModifiers<Value> = Value extends string
+	? Value | `${Value}/${OpacityModifier}`
+	: Value;
+
+type MaybeColorOpacity<TName, Value> = TName extends ColorPropertyName
+	? WithOpacityModifiers<Value>
+	: Value;
+
 type PropConfigValues<
 	TConfig,
 	TName extends keyof TConfig,
@@ -110,9 +156,9 @@ type StrictValue<TConfig, TTokens, TName extends keyof TConfig, Value> = Value e
 	$strictness: infer TStrictness;
 }
 	? TStrictness extends "inherits"
-		? InferPropValues<TTokens, Value> | TConfig[TName]
-		: InferPropValues<TTokens, Value>
-	: InferPropValues<TTokens, Value>;
+		? MaybeColorOpacity<TName, InferPropValues<TTokens, Value>> | TConfig[TName]
+		: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>
+	: MaybeColorOpacity<TName, InferPropValues<TTokens, Value>>;
 
 type PropValue<TConfig, TTokens, TName extends keyof TConfig, Value, Strict> =
 	| (Value extends boolean

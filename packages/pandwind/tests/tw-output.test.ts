@@ -275,7 +275,7 @@ describe("css with custom tailwind hashFn", () => {
 		);
 	});
 
-	test.skip("utilities.color + color opacity modifier", () => {
+	test("utilities.color + color opacity modifier", () => {
 		const sheet = createStylesheet(preset, {
 			debug: true,
 			hashFn: tailwindHashFn,
@@ -284,22 +284,16 @@ describe("css with custom tailwind hashFn", () => {
 			debug: true,
 			hashFn: tailwindHashFn,
 		});
-		// @ts-expect-error TODO
 		const styles = css.raw({ color: "sky-600/50" });
 
 		expect(css(styles as never)).toMatchInlineSnapshot(`
-      {
-        "color": "text-sky-600",
-      }
-    `);
+			{
+			  "color": "text-sky-600/50",
+			}
+		`);
 
 		sheet.process([styles]);
-		expect(sheet.gen.atomic()).toMatchInlineSnapshot(
-			`
-      ".text-sky-600{color:var(--colors__sky-600)}
-      .hover:text-red-500:hover{color:var(--colors__red-500)}"
-    `,
-		);
+		expect(sheet.gen.atomic()).toMatchInlineSnapshot(`".text-sky-600\\/50{color:sky-600/50}"`);
 	});
 
 	test("utilities.padding", () => {
