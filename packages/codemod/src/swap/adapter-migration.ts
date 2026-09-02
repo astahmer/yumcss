@@ -73,8 +73,11 @@ function isStandaloneDefaultExport(source: string, start: number): boolean {
 	return /export\s+default\s*$/.test(source.slice(0, start));
 }
 
-function bindingForMatch(source: string, start: number): string | undefined {
-	return source.slice(0, start).match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/)?.[1];
+function bindingForMatch(
+	bindings: SourceBindingIndex | undefined,
+	start: number,
+): string | undefined {
+	return bindings?.callSites.find((site) => site.start === start)?.assignedBinding;
 }
 
 function frameworkForHost(
@@ -670,7 +673,7 @@ function runAdapterMigrationInternal(
 		let emittedHostRepresentation: StyleHostRepresentationKind | undefined;
 		let targetRepresentationKind = lowering.representation;
 		let dynamicCarrier: { binding?: string; framework: string } | undefined;
-		const bindingBeforeMatch = bindingForMatch(source, match.start);
+		const bindingBeforeMatch = bindingForMatch(bindings, match.start);
 		const hasHostContext =
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(source, bindingBeforeMatch) ||

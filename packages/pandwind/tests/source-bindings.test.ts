@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { SourceBindingKind, SourceCallSiteKind, SourceBindings } from "pandwind/source";
+import { SourceBindingKind, SourceCallSiteKind, SourceBindings } from "../src/source-bindings.ts";
 
 describe("source binding index", () => {
 	test("resolves named aliases, default imports, and namespace imports", () => {
@@ -120,6 +120,30 @@ describe("source binding index", () => {
 				localName: "makeCss",
 				text: "makeCss`color: blue;`",
 			},
+		]);
+		expect(
+			index.callSites.map(({ kind, localName, assignedBinding }) => ({
+				kind,
+				localName,
+				assignedBinding,
+			})),
+		).toMatchInlineSnapshot(`
+			[
+			  {
+			    "assignedBinding": "card",
+			    "kind": "call",
+			    "localName": "makeCss",
+			  },
+			  {
+			    "assignedBinding": "label",
+			    "kind": "tagged-template",
+			    "localName": "makeCss",
+			  },
+			]
+		`);
+		expect(index.callSites.map(({ assignedBinding }) => assignedBinding)).toEqual([
+			"card",
+			"label",
 		]);
 	});
 

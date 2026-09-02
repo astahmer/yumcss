@@ -45,6 +45,8 @@ export interface SourceCallSite {
 	readonly localName: string;
 	readonly property?: string;
 	readonly binding?: SourceBinding;
+	/** Identifier bound to the call result when the call initializes a variable. */
+	readonly assignedBinding?: string;
 }
 
 export interface SourceBindingIndex {
@@ -183,7 +185,7 @@ function collectBindings(program: OxcNode): {
 		if (range.end <= range.start) return;
 		for (const name of names) shadowedScopes.push({ name, range });
 	};
-	walkWithParent(program, (node) => {
+	walkWithParent(program, (node, parent) => {
 		if (isImportNode(node)) {
 			if ((node as { importKind?: string }).importKind === "type") return;
 			const source = sourceOf(node);
@@ -319,10 +321,20 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 	const sites: SourceCallSite[] = [];
 	const bindingFor = (localName: string): SourceBinding | undefined =>
 		bindings.find((binding) => binding.localName === localName);
-	const add = (kind: SourceCallSiteKind, node: AstNode, callee: unknown): void => {
+	const add = (
+		kind: SourceCallSiteKind,
+		node: AstNode,
+		callee: unknown,
+		parent: OxcNode | undefined,
+		ancestors: readonly OxcNode[],
+	): void => {
 		const shape = memberCallee(callee);
 		const range = rangeOf(node, { start: 0, end: 0 });
 		if (shape === undefined || range.end <= range.start) return;
+		const assignment =
+			parent?.type === "VariableDeclarator"
+				? parent
+				: [...ancestors].toReversed().find((ancestor) => ancestor.type === "VariableDeclarator");
 		sites.push({
 			kind,
 			...range,
@@ -330,13 +342,26 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 			...(bindingFor(shape.localName) === undefined
 				? {}
 				: { binding: bindingFor(shape.localName) }),
+			...(assignment !== undefined &&
+			rangeOf((assignment as { init?: unknown }).init, { start: -1, end: -1 }).start ===
+				range.start &&
+			rangeOf((assignment as { init?: unknown }).init, { start: -1, end: -1 }).end === range.end &&
+			nodeName((assignment as { id?: unknown }).id) !== undefined
+				? { assignedBinding: nodeName((assignment as { id?: unknown }).id) }
+				: {}),
 		});
 	};
-	walkWithParent(program, (node) => {
+	walkWithParent(program, (node, parent, ancestors) => {
 		if (node.type === "CallExpression")
-			add(SourceCallSiteKind.Call, node, (node as { callee?: unknown }).callee);
+			add(SourceCallSiteKind.Call, node, (node as { callee?: unknown }).callee, parent, ancestors);
 		else if (node.type === "TaggedTemplateExpression")
-			add(SourceCallSiteKind.TaggedTemplate, node, (node as { tag?: unknown }).tag);
+			add(
+				SourceCallSiteKind.TaggedTemplate,
+				node,
+				(node as { tag?: unknown }).tag,
+				parent,
+				ancestors,
+			);
 	});
 	return sites.toSorted((a, b) => a.start - b.start);
 }
