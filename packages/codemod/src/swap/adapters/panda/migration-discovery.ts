@@ -1,6 +1,6 @@
 /** Independently testable Panda migration discovery stage. */
 import { resolve } from "node:path";
-import { SOURCE_SCANNER_SERVICE, type SourceScanResult } from "pandwind/source";
+import type { SourceScanResult } from "pandwind/source";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import type { PandaMigrateOptions } from "./panda-migrate.ts";
 import { detectAlias, scanProjectUsage, type AliasInfo, type ProjectUsage } from "./project.ts";
@@ -11,6 +11,7 @@ export const PANDA_DISCOVERY_SCHEMA = "pandwind.panda-discovery/2" as const;
 export interface PandaMigrationFile {
 	readonly path: string;
 	readonly source: string;
+	readonly scan: SourceScanResult;
 }
 
 export interface PandaMigrationSource {
@@ -36,7 +37,7 @@ export function discoverPandaFiles(
 ): PandaMigrationFile[] {
 	return createSourceWorkspace()
 		.collect(patterns, projectRoot)
-		.map(({ path, source }) => ({ path, source }));
+		.map(({ path, source, scan }) => ({ path, source, scan }));
 }
 
 /** Load only the project theme/config layer; failures intentionally degrade to an empty theme. */
@@ -62,7 +63,7 @@ export function scanPandaMigrationSources(
 ): readonly PandaMigrationSource[] {
 	return files.map((file) => ({
 		path: file.path,
-		scan: SOURCE_SCANNER_SERVICE.scan({ file: file.path, source: file.source }),
+		scan: file.scan,
 	}));
 }
 
