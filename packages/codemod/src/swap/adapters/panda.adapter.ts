@@ -253,6 +253,9 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			"styled-system/jsx",
 			"styled-system/recipes",
 		],
+		sourceModuleMatchers: [
+			(moduleSpecifier) => /(?:^|[\\/])styled-system\/(?:css|jsx|recipes)$/u.test(moduleSpecifier),
+		],
 		configFiles: ["panda.config.ts", "panda.config.js", "panda.config.mjs"],
 		loadConfig: pandaConfig,
 		...(moduleLoader === undefined

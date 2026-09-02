@@ -1642,15 +1642,21 @@ function runAdapterMigrationInternal(
 	// source runtime. Removing them would turn a safe residual into broken code.
 	let code =
 		converted > 0 && skipped === 0 && residuals.length === 0
-			? MigrationOutput.removeSourceImports(runtimeEdited, [
-					...sourceAdapter.sourceModules,
-					...sourceModulesToRemove,
-				])
+			? MigrationOutput.removeSourceImports(
+					runtimeEdited,
+					[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
+					sourceAdapter.sourceModuleMatchers,
+				)
 			: runtimeEdited;
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");
 	}
+	const targetUsesPandwindCss =
+		imports.has('import { createCss } from "pandwind/css";') ||
+		imports.has('import { createRuntimeCss } from "pandwind/css/runtime";');
+	if (!targetUsesPandwindCss)
+		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	const outputFile = fileWithExtension(options.file, outputExtension);
 	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = ensureGeneratedStatement(code, statement, outputFile);

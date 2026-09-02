@@ -128,4 +128,51 @@ describe("adapter route round-trip contract", () => {
 		expect(reverse.residuals).toEqual([]);
 		expect(reverse.code).toContain("button");
 	});
+
+	test("removes an aliased Panda generated import without shadowing Pandwind css", () => {
+		const result = migrate(
+			'import { css } from "@/styled-system/css";\n' + 'const card = css({ color: "red" });',
+			CodemodAdapterId.Panda,
+			CodemodAdapterId.Pandwind,
+			"Card.tsx",
+			undefined,
+		);
+
+		expect(result.residuals).toEqual([]);
+		expect(result.skipped).toBe(0);
+		expect(result.code).not.toContain("styled-system/css");
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createCss } from \"pandwind/css\";
+			const css = createCss();
+
+			const card = css.class({ color: \"red\" });"
+		`);
+	});
+
+	test("removes the Pandwind helper when returning to Emotion's css binding", () => {
+		const forward = migrate(
+			'import { css } from "@emotion/css";\n' + 'const card = css({ color: "red" });',
+			CodemodAdapterId.Emotion,
+			CodemodAdapterId.Pandwind,
+			"Card.tsx",
+			undefined,
+		);
+		const reverse = migrate(
+			forward.code,
+			CodemodAdapterId.Pandwind,
+			CodemodAdapterId.Emotion,
+			"Card.tsx",
+			undefined,
+		);
+
+		expect(forward.residuals).toEqual([]);
+		expect(reverse.residuals).toEqual([]);
+		expect(reverse.skipped).toBe(0);
+		expect(reverse.code).not.toContain("createCss");
+		expect(reverse.code).toMatchInlineSnapshot(`
+			"import { css } from "@emotion/css";
+
+			const card = css({ color: "red" });"
+		`);
+	});
 });

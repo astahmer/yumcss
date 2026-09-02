@@ -3,16 +3,21 @@ import { StyleRuleKindTag, type StyleProgram } from "./semantic-ir.ts";
 
 /** Output mechanics shared by migration and differential proof use cases. */
 export class MigrationOutput {
-	static removeSourceImports(code: string, modules: readonly string[]): string {
-		let result = code;
-		for (const module of modules) {
-			const quoted = module.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-			result = MigrationOutput.removeExcludedMatches(
-				result,
-				new RegExp(`\\bimport\\s+(?:[^;]*?\\s+from\\s+)?["']${quoted}["']\\s*;?`, "g"),
+	static removeSourceImports(
+		code: string,
+		modules: readonly string[],
+		moduleMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+	): string {
+		const ownedModules = new Set(modules);
+		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["']\s*;?/g;
+		return MigrationOutput.removeExcludedMatchesByPredicate(code, imports, (match) => {
+			const moduleSpecifier = match[1];
+			return (
+				moduleSpecifier !== undefined &&
+				(ownedModules.has(moduleSpecifier) ||
+					moduleMatchers.some((matcher) => matcher(moduleSpecifier)))
 			);
-		}
-		return result;
+		});
 	}
 
 	static consolidateImports(statements: Iterable<string>): string[] {
@@ -54,6 +59,18 @@ export class MigrationOutput {
 		];
 	}
 
+	static removeGeneratedStatements(code: string, statements: readonly string[]): string {
+		let result = code;
+		for (const statement of statements) {
+			const escaped = statement.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			result = MigrationOutput.removeExcludedMatches(
+				result,
+				new RegExp(`^[ \\t]*${escaped}[ \\t]*(?:\\n[ \\t]*)+`, "gm"),
+			);
+		}
+		return result;
+	}
+
 	static validationSource(text: string, program: StyleProgram): string {
 		const rule = program.rules[0];
 		return rule?.kind === StyleRuleKindTag.Keyframes && rule.name !== undefined
@@ -62,6 +79,14 @@ export class MigrationOutput {
 	}
 
 	private static removeExcludedMatches(source: string, pattern: RegExp): string {
+		return MigrationOutput.removeExcludedMatchesByPredicate(source, pattern, () => true);
+	}
+
+	private static removeExcludedMatchesByPredicate(
+		source: string,
+		pattern: RegExp,
+		shouldRemove: (match: RegExpMatchArray) => boolean,
+	): string {
 		let mask: ReturnType<typeof SourcePass.computeExcludedRanges> | undefined;
 		try {
 			mask = SourcePass.computeExcludedRanges(source, "pandwind-migration-output.ts");
@@ -71,7 +96,7 @@ export class MigrationOutput {
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		for (const match of source.matchAll(pattern)) {
 			const start = match.index ?? 0;
-			if (mask?.isExcluded(start)) continue;
+			if (mask?.isExcluded(start) || !shouldRemove(match)) continue;
 			edits.push({ start, end: start + match[0].length, text: "" });
 		}
 		return SourcePass.applyEdits(source, edits);

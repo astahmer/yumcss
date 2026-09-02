@@ -410,6 +410,8 @@ export interface StyleAdapter {
 	readonly version: string;
 	/** Package entry points this adapter owns and may remove during migration. */
 	readonly sourceModules: readonly string[];
+	/** Adapter-owned matcher for project-local aliases of those entry points. */
+	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
 	/** Documentation-driven source surface owned by this adapter. */

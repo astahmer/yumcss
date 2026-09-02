@@ -154,6 +154,7 @@ export interface CodemodAdapterSpec {
 	readonly capabilities: AdapterCapabilities;
 	readonly detectPatterns: readonly RegExp[];
 	readonly sourceModules: readonly string[];
+	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	readonly lowerings?: readonly StyleLowering[];
 	readonly configFiles?: readonly string[];
 	readonly detect?: (
@@ -1366,6 +1367,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			});
 		})(),
 		sourceModules: spec.sourceModules,
+		...(spec.sourceModuleMatchers === undefined
+			? {}
+			: { sourceModuleMatchers: spec.sourceModuleMatchers }),
 		capabilities: capabilitiesWithRepresentations,
 		dependencies: spec.packages,
 		...(spec.tokenPolicy === undefined ? {} : { tokenPolicy: spec.tokenPolicy }),
