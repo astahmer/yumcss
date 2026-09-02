@@ -64,8 +64,10 @@ export interface RealRepositoryPromotionDriver {
 
 export interface RealRepositoryPromotionRequest {
 	readonly reference: RealRepositoryReference;
-	readonly install?: readonly PromotionCommand[];
-	readonly checks?: readonly PromotionCommand[];
+	/** Explicit dependency installation commands; an empty list is a failed proof. */
+	readonly install: readonly PromotionCommand[];
+	/** Explicit build/typecheck/lint (or equivalent) commands; an empty list is a failed proof. */
+	readonly checks: readonly PromotionCommand[];
 	readonly requireStreamingProof?: boolean;
 }
 
@@ -97,6 +99,37 @@ function errorText(error: unknown): string {
 
 function commandDetail(command: PromotionCommand, result: PromotionCommandResult): string {
 	return `${command.name} ${command.args.join(" ")} exited with ${result.code}`;
+}
+
+async function runCommands(
+	driver: RealRepositoryPromotionDriver,
+	commands: readonly PromotionCommand[],
+	stage: RealRepositoryPromotionStage,
+	errors: string[],
+): Promise<RealRepositoryPromotionStageResult> {
+	if (commands.length === 0) {
+		const detail = `${stage} stage has no executable commands`;
+		errors.push(detail);
+		return { stage, passed: false, detail };
+	}
+	let passed = true;
+	for (const command of commands) {
+		try {
+			const result = await driver.run(command);
+			if (result.code !== 0) {
+				passed = false;
+				errors.push(commandDetail(command, result));
+			}
+		} catch (error) {
+			passed = false;
+			errors.push(errorText(error));
+		}
+	}
+	return {
+		stage,
+		passed,
+		...(passed ? {} : { detail: `${stage} commands failed` }),
+	};
 }
 
 /**
@@ -135,25 +168,14 @@ export function createRealRepositoryPromotionRunner(
 					errors,
 				};
 
-			const commands = request.install ?? [];
-			let commandsPassed = true;
-			for (const command of commands) {
-				try {
-					const result = await driver.run(command);
-					if (result.code !== 0) {
-						commandsPassed = false;
-						errors.push(commandDetail(command, result));
-					}
-				} catch (error) {
-					commandsPassed = false;
-					errors.push(errorText(error));
-				}
-			}
-			stages.push({
-				stage: RealRepositoryPromotionStageTag.Install,
-				passed: commandsPassed,
-				...(commandsPassed ? {} : { detail: "dependency installation failed" }),
-			});
+			const install = await runCommands(
+				driver,
+				request.install,
+				RealRepositoryPromotionStageTag.Install,
+				errors,
+			);
+			stages.push(install);
+			const commandsPassed = install.passed;
 			if (!commandsPassed) return failedResult(reference, stages, errors);
 
 			try {
@@ -175,19 +197,14 @@ export function createRealRepositoryPromotionRunner(
 				return failedResult(reference, stages, errors, migration);
 
 			let checksPassed = true;
-			for (const command of request.checks ?? []) {
-				try {
-					const result = await driver.run(command);
-					if (result.code !== 0) {
-						checksPassed = false;
-						errors.push(commandDetail(command, result));
-					}
-				} catch (error) {
-					checksPassed = false;
-					errors.push(errorText(error));
-				}
-			}
-			stages.push({ stage: RealRepositoryPromotionStageTag.Checks, passed: checksPassed });
+			const checks = await runCommands(
+				driver,
+				request.checks,
+				RealRepositoryPromotionStageTag.Checks,
+				errors,
+			);
+			checksPassed = checks.passed;
+			stages.push(checks);
 			if (!checksPassed) return failedResult(reference, stages, errors, migration);
 
 			try {

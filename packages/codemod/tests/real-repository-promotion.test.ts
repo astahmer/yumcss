@@ -111,7 +111,7 @@ describe("real repository promotion runner", () => {
 			driver({
 				migrate: async () => ({ converted: 1, skipped: 1, residuals: 1, manualChanges: 0 }),
 			}),
-		).run({ reference });
+		).run({ reference, install: [command], checks: [command] });
 
 		expect(result.status).toBe("failed");
 		expect(result.proof).toBeUndefined();
@@ -125,11 +125,35 @@ describe("real repository promotion runner", () => {
 	test("requires streaming proof only when the host claims it", async () => {
 		const result = await createRealRepositoryPromotionRunner(driver()).run({
 			reference,
+		install: [command],
+		checks: [command],
 			requireStreamingProof: true,
 		});
 
 		expect(result.status).toBe("failed");
 		expect(result.proof?.streamingEquivalent).toBeNull();
 		expect(result.errors).toEqual(["differential proof requirements failed"]);
+	});
+
+	test("fails closed when install or project checks are not configured", async () => {
+		const result = await createRealRepositoryPromotionRunner(driver()).run({
+			reference,
+		install: [],
+		checks: [],
+		});
+
+		expect(result.status).toBe("failed");
+		expect(result.stages).toEqual([
+			{
+				stage: RealRepositoryPromotionStageTag.Materialize,
+				passed: true,
+			},
+			{
+				stage: RealRepositoryPromotionStageTag.Install,
+				passed: false,
+				detail: "install stage has no executable commands",
+			},
+		]);
+		expect(result.errors).toEqual(["install stage has no executable commands"]);
 	});
 });
