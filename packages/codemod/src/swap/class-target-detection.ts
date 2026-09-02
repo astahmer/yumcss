@@ -1,5 +1,5 @@
 const classAttribute =
-	/\b(className|class)\s*=\s*(?:(["'])([^"']*)\2|\{\s*([A-Za-z_$][\w$]*)\s*\})/g;
+	/\b(className|class)\s*=\s*(?:(["'])([^"']*)\2|\{\s*(["'])([^"']*)\4\s*\}|\{\s*([A-Za-z_$][\w$]*)\s*\})/g;
 const classAssignment = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(["'])([^"']*)\2/g;
 const classLiteral = /(["'])([^"']*\[[^"']*)\1/g;
 const classMapAssignment =

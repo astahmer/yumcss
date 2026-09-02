@@ -29,6 +29,7 @@ import { detectStaticClassTarget } from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { TokenCatalog } from "../tokens.ts";
+import { parse, type AtRule, type ChildNode } from "postcss";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -49,63 +50,130 @@ const unescapeUnoCssSelector = (value: string): string =>
 const cssPropertyToStyleProperty = (value: string): string =>
 	value.replace(/-([a-z])/g, (_match, letter: string) => letter.toUpperCase());
 
+function generatedAtRuleCondition(rule: AtRule): StyleCondition | undefined {
+	const params = rule.params.trim();
+	if (params === "") return undefined;
+	if (rule.name === "media") return { kind: "media", name: params, value: params };
+	if (rule.name === "supports") return { kind: "supports", name: params, value: params };
+	if (rule.name === "container") return { kind: "container", name: params, value: params };
+	return undefined;
+}
+
+function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
+	const conditions: StyleCondition[] = [];
+	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
+		const name = match[1];
+		if (name !== undefined) conditions.push(condition(name));
+	}
+	if (conditions.length > 0) return conditions;
+	const normalized = selector.trim();
+	if (
+		!normalized.includes("[") &&
+		!normalized.includes("]") &&
+		!/[>&+~\s]/u.test(normalized) &&
+		/^\.?[\\A-Za-z0-9_-]+$/u.test(normalized)
+	)
+		return [];
+	const utility = splitUtilityToken(token).at(-1) ?? token;
+	const escapedUtility = utility.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const relative = normalized.replace(
+		new RegExp(`\\.${escapedUtility}(?=[\\s:#.\\[>,+~]|$)`, "u"),
+		"&",
+	);
+	return [{ kind: "selector", name: relative, value: relative }];
+}
+
 /** Build a resolver from CSS emitted by the real UnoCSS generator. */
 export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 	const entries = new Map<string, readonly StyleDeclaration[]>();
-	for (const rule of css.matchAll(/([^{}]+)\{([^{}]+)\}/g)) {
-		const selector = rule[1];
-		const body = rule[2];
-		if (selector === undefined || body === undefined) continue;
-		const declarations: StyleDeclaration[] = [];
-		for (const declaration of body.split(";")) {
-			const colon = declaration.indexOf(":");
-			if (colon <= 0) continue;
-			const name = cssPropertyToStyleProperty(declaration.slice(0, colon).trim());
-			const value = declaration.slice(colon + 1).trim();
-			if (name !== "" && value !== "") declarations.push(literal(name, value));
-		}
-		if (declarations.length === 0) continue;
-		for (const classMatch of selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)) {
-			const rawToken = classMatch[1];
-			if (rawToken === undefined) continue;
-			const token = unescapeUnoCssSelector(rawToken);
-			const prefixes = token.split(":");
-			const utility = prefixes.pop();
-			if (utility === undefined) continue;
-			entries.set(
-				token,
-				declarations.map((declaration) => ({
-					...declaration,
-					conditions: prefixes.map(condition),
-				})),
-			);
-		}
+	let root: ReturnType<typeof parse>;
+	try {
+		root = parse(css);
+	} catch {
+		return { resolve: (token) => entries.get(token) };
 	}
-	for (const theme of css.matchAll(/@theme[^{}]*\{([^{}]*)\}/gs)) {
-		const body = theme[1] ?? "";
-		for (const variable of body.matchAll(/--color-([\w-]+)\s*:\s*([^;]+);?/g)) {
-			const name = variable[1];
-			const value = variable[2]?.trim();
-			if (name === undefined || value === undefined || value === "") continue;
-			entries.set(`bg-${name}`, [literal("backgroundColor", value)]);
-			entries.set(`text-${name}`, [literal("color", value)]);
+	const walk = (
+		nodes: readonly ChildNode[],
+		inherited: readonly StyleCondition[],
+		insideStyleRule: boolean,
+	): void => {
+		for (const node of nodes) {
+			if (node.type === "decl") {
+				if (!insideStyleRule) continue;
+				const name = cssPropertyToStyleProperty(node.prop.trim());
+				const value = node.value.trim();
+				if (name === "" || value === "") continue;
+				for (const entry of currentRules) {
+					const existing = entries.get(entry.token) ?? [];
+					entries.set(entry.token, [
+						...existing,
+						{ ...literal(name, value), conditions: entry.conditions },
+					]);
+				}
+				continue;
+			}
+			if (node.type === "atrule") {
+				if (node.name === "theme") {
+					for (const child of node.nodes ?? []) {
+						if (child.type !== "decl") continue;
+						const value = child.value.trim();
+						const match = /^--color-(.+)$/u.exec(child.prop);
+						if (match?.[1] === undefined || value === "") continue;
+						entries.set(`bg-${match[1]}`, [literal("backgroundColor", value)]);
+						entries.set(`text-${match[1]}`, [literal("color", value)]);
+					}
+					continue;
+				}
+				const atRuleCondition = generatedAtRuleCondition(node);
+				walk(
+					node.nodes ?? [],
+					atRuleCondition === undefined ? inherited : [...inherited, atRuleCondition],
+					insideStyleRule,
+				);
+				continue;
+			}
+			if (node.type === "rule") {
+				const rules = [...node.selector.matchAll(/\.((?:\\.|[A-Za-z0-9_-])+)/g)].flatMap(
+					(match) => {
+						const raw = match[1];
+						if (raw === undefined) return [];
+						const token = unescapeUnoCssSelector(raw);
+						return [
+							{
+								token,
+								conditions: [...inherited, ...generatedSelectorConditions(node.selector, token)],
+							},
+						];
+					},
+				);
+				const previousRules = currentRules;
+				currentRules = rules;
+				walk(node.nodes ?? [], inherited, true);
+				currentRules = previousRules;
+			}
 		}
-	}
-	return {
-		resolve(token) {
-			return entries.get(token);
-		},
 	};
+	let currentRules: readonly { token: string; conditions: readonly StyleCondition[] }[] = [];
+	walk(root.nodes, [], false);
+	return { resolve: (token) => entries.get(token) };
 }
 
 function projectThemeCss(context: AdapterConfigContext): string {
 	if (context.root === undefined || context.readFile === undefined) return "";
 	const readFile = context.readFile;
-	return (
-		["app/globals.css", "src/app/globals.css", "styles/globals.css", "src/styles/globals.css"]
-			.map((file) => readFile(joinDocumentPath(context.root!, file)))
-			.find((source) => source !== undefined) ?? ""
-	);
+	const files = context.listFiles?.(context.root) ?? [
+		"app/globals.css",
+		"src/app/globals.css",
+		"styles/globals.css",
+		"src/styles/globals.css",
+	];
+	return files
+		.map((file) =>
+			readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
+		)
+		.filter((source): source is string => source !== undefined)
+		.filter((source) => /@(?:theme|unocss|apply|shortcut)\b/u.test(source))
+		.join("\n");
 }
 
 const literal = (property: string, value: string | number): StyleDeclaration => ({
@@ -381,13 +449,18 @@ type UnoCorePackage = {
 };
 
 function staticUnoTokens(source: string): readonly string[] {
-	return [
-		...new Set(
-			[...source.matchAll(/\b(?:className|class)\s*=\s*(["'])([^"']*)\1/g)].flatMap((match) =>
-				(match[2] ?? "").split(/\s+/).filter(Boolean),
-			),
-		),
-	];
+	const tokens = new Set<string>();
+	const add = (value: string | undefined): void => {
+		for (const token of value?.split(/\s+/).filter(Boolean) ?? []) tokens.add(token);
+	};
+	for (const match of source.matchAll(
+		/\b(?:className|class)\s*=\s*(?:(["'])([^"']*)\1|\{\s*(["'])([^"']*)\3\s*\})/g,
+	))
+		add(match[2] ?? match[4]);
+	for (const match of staticClassAssignments(source)) add(match[3] ?? match[5]);
+	for (const match of namedClassMapEntries(source)) add(match[4]);
+	for (const match of classLiteralExpressions(source)) add(match[2]);
+	return [...tokens];
 }
 
 function staticClassAssignments(source: string): readonly RegExpExecArray[] {
@@ -579,7 +652,12 @@ function parseUnoCss(
 		const binding = assignment[1];
 		const quote = assignment[2] ?? assignment[4];
 		const value = assignment[3] ?? assignment[5];
-		if (binding === undefined || value === undefined || !value.includes("[")) continue;
+		if (binding === undefined || value === undefined) continue;
+		const escapedBinding = binding.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const isUsedAsClass = new RegExp(
+			`\\b(?:className|class)\\s*=\\s*\\{\\s*${escapedBinding}\\s*\\}`,
+		).test(source.slice((assignment.index ?? 0) + assignment[0].length));
+		if (!value.includes("[") && !isUsedAsClass) continue;
 		const start = (assignment.index ?? 0) + assignment[0].lastIndexOf(`${quote ?? '"'}${value}`);
 		const declarations: StyleDeclaration[] = [];
 		const unknown: string[] = [];

@@ -33,7 +33,7 @@ import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
-import { parse, type AtRule } from "postcss";
+import { parse, type AtRule, type ChildNode } from "postcss";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -651,7 +651,7 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 	}
 	const declarations: StyleDeclaration[] = [];
 	const walk = (
-		nodes: readonly postcss.ChildNode[],
+		nodes: readonly ChildNode[],
 		inherited: readonly StyleCondition[],
 		insideStyleRule: boolean,
 	): void => {
