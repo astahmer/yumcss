@@ -7,6 +7,19 @@ import {
 import type { ModulePathResolver, ModuleSourceReader } from "../src/vite/module-ports.ts";
 
 describe("cross-module resolver ports", () => {
+	test("shares unchanged parsed programs across tooling consumers", () => {
+		const document = {
+			file: "shared-cache-fixture.ts",
+			source: 'export const className = "text-sm";',
+		};
+		const first = parseSourceProgram(document);
+		const second = parseSourceProgram(document);
+		const changed = parseSourceProgram({ ...document, source: `${document.source}\n` });
+
+		expect(second).toBe(first);
+		expect(changed).not.toBe(first);
+	});
+
 	test("accepts a bundler-owned reader and path resolver", () => {
 		const modules = new Map([["constants.ts", 'export const P6 = "p-6";']]);
 		const reader: ModuleSourceReader = {

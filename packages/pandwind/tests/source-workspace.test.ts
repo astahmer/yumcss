@@ -26,9 +26,12 @@ describe("source workspace", () => {
 		const workspace = createSourceWorkspace();
 		const files = workspace.files(["**/*"], root);
 		const documents = workspace.collect(["**/*"], root);
+		const streamed: string[] = [];
+		workspace.forEach(files, ({ path }) => streamed.push(path));
 
 		expect(workspace.schema).toBe("pandwind.source-workspace/1");
 		expect(files).toEqual([join(root, "Card.tsx"), join(root, "nested", "Card.vue")]);
+		expect(streamed).toEqual(files);
 		expect(documents.map((document) => document.scan.framework)).toEqual(["react", "vue"]);
 	});
 
@@ -157,5 +160,55 @@ describe("source workspace", () => {
 		workspace.collect(["**/*"], root);
 
 		expect(scans).toBe(2);
+	});
+
+	test("incremental invalidation rereads only the changed document", () => {
+		const root = "/virtual-incremental-project";
+		const first = `${root}/first.ts`;
+		const second = `${root}/second.ts`;
+		const sources = new Map([
+			[first, "export const first = 1;"],
+			[second, "export const second = 1;"],
+		]);
+		const reads = new Map<string, number>();
+		const fileSystem: SourceWorkspaceFileSystem = {
+			readFile: (path) => {
+				reads.set(path, (reads.get(path) ?? 0) + 1);
+				return sources.get(path) ?? "";
+			},
+			stat: (path) => ({
+				isFile: () => sources.has(path),
+				isDirectory: () => path === root,
+			}),
+			glob: () => ["first.ts", "second.ts"],
+		};
+		const scanner = {
+			registry: {} as SourceScannerService["registry"],
+			languageForFile: () => "typescript" as const,
+			isSupportedFile: () => true,
+			isScriptFile: () => true,
+			isTypeScriptFile: () => true,
+			scan: (document) => ({
+				document,
+				language: "typescript" as const,
+				excluded: [],
+				diagnostics: [],
+				isExcluded: () => false,
+			}),
+			parse: () => undefined as never,
+		} satisfies SourceScannerService;
+		const workspace = createSourceWorkspace({ fileSystem, scanner });
+
+		workspace.collect(["**/*"], root);
+		sources.set(first, "export const first = 2;");
+		workspace.invalidate(first);
+		workspace.collect(["**/*"], root);
+
+		expect(reads).toEqual(
+			new Map([
+				[first, 2],
+				[second, 1],
+			]),
+		);
 	});
 });

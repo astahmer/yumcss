@@ -30,6 +30,8 @@ type Measurement = {
 	rssDeltaMiB: number;
 	outputCount: number;
 	inputBytes: number;
+	incrementalMs?: number;
+	incrementalOutputCount?: number;
 };
 
 type Repository = {
@@ -65,6 +67,7 @@ async function measure<T>(
 	warm: () => T | Promise<T>,
 	output: (value: T) => number,
 	inputBytes: number,
+	incremental?: () => T | Promise<T>,
 ): Promise<Measurement> {
 	const before = rssMiB();
 	const coldStart = performance.now();
@@ -79,7 +82,7 @@ async function measure<T>(
 	}
 	const sorted = [...samples].sort((left, right) => left - right);
 	const p95Index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1);
-	return {
+	const measurement: Measurement = {
 		coldMs: round(coldMs),
 		warmMs: round(samples.reduce((sum, sample) => sum + sample, 0) / samples.length),
 		p50Ms: round(sorted[Math.floor(sorted.length / 2)] ?? 0),
@@ -88,6 +91,13 @@ async function measure<T>(
 		outputCount: output(value),
 		inputBytes,
 	};
+	if (incremental !== undefined) {
+		const incrementalStart = performance.now();
+		const incrementalValue = await incremental();
+		measurement.incrementalMs = round(performance.now() - incrementalStart);
+		measurement.incrementalOutputCount = output(incrementalValue);
+	}
+	return measurement;
 }
 
 function createRepository(fileCount: number): Repository {
@@ -111,6 +121,7 @@ function createRepository(fileCount: number): Repository {
 async function benchmarkScanner(repository: Repository): Promise<Measurement> {
 	let latest = 0;
 	const warmWorkspace = createSourceWorkspace();
+	const changed = repository.files[0]!;
 	return measure(
 		() => {
 			const workspace = createSourceWorkspace();
@@ -125,23 +136,51 @@ async function benchmarkScanner(repository: Repository): Promise<Measurement> {
 		},
 		() => latest,
 		repository.inputBytes,
+		() => {
+			writeFileSync(changed.path, `${changed.source}\nexport const changed = true;`);
+			warmWorkspace.invalidate(changed.path);
+			try {
+				const files = warmWorkspace.collect(["**/*"], repository.root);
+				latest = files.length;
+				return files;
+			} finally {
+				writeFileSync(changed.path, changed.source);
+				warmWorkspace.invalidate(changed.path);
+			}
+		},
 	);
 }
 
 async function benchmarkAnalyzer(repository: Repository): Promise<Measurement> {
 	const config = loadTwConfig(EXAMPLE_TW);
 	const workspace = createSourceWorkspace();
-	const sourceFiles = workspace.collect(["**/*"], repository.root);
+	const paths = workspace.files(["**/*"], repository.root);
+	const changed = repository.files[0]!;
 	let latest = 0;
 	const run = () => {
 		latest = 0;
-		for (const file of sourceFiles) {
-			analyzeSource(file.source, file.path, { config });
+		workspace.forEach(paths, ({ path, source }) => {
+			analyzeSource(source, path, { config });
 			latest += 1;
-		}
+		});
 		return latest;
 	};
-	return measure(run, run, (value) => value, repository.inputBytes);
+	return measure(
+		run,
+		run,
+		(value) => value,
+		repository.inputBytes,
+		() => {
+			writeFileSync(changed.path, `${changed.source}\nexport const changed = true;`);
+			workspace.invalidate(changed.path);
+			try {
+				return run();
+			} finally {
+				writeFileSync(changed.path, changed.source);
+				workspace.invalidate(changed.path);
+			}
+		},
+	);
 }
 
 async function benchmarkCodemod(repository: Repository): Promise<Measurement> {
@@ -150,6 +189,7 @@ async function benchmarkCodemod(repository: Repository): Promise<Measurement> {
 		source: `import styled from "styled-components";\nexport const Card${index} = styled.div({ color: "red", padding: "1rem" });`,
 	}));
 	const inputBytes = sources.reduce((total, file) => total + Buffer.byteLength(file.source), 0);
+	const changed = sources[0]!;
 	let latest = 0;
 	const run = () => {
 		latest = 0;
@@ -163,7 +203,21 @@ async function benchmarkCodemod(repository: Repository): Promise<Measurement> {
 		}
 		return latest;
 	};
-	return measure(run, run, (value) => value, inputBytes);
+	return measure(
+		run,
+		run,
+		(value) => value,
+		inputBytes,
+		() => {
+			const original = changed.source;
+			changed.source = `${original}\nexport const changed = true;`;
+			try {
+				return run();
+			} finally {
+				changed.source = original;
+			}
+		},
+	);
 }
 
 async function benchmarkUnplugin(repository: Repository): Promise<Measurement> {
@@ -171,6 +225,7 @@ async function benchmarkUnplugin(repository: Repository): Promise<Measurement> {
 	const resolver = {
 		resolve: async () => ({ id: EXAMPLE_TW }),
 	};
+	const changed = repository.files[0]!;
 	let latest = 0;
 	const run = async () => {
 		latest = 0;
@@ -180,7 +235,23 @@ async function benchmarkUnplugin(repository: Repository): Promise<Measurement> {
 		}
 		return latest;
 	};
-	return measure(run, run, (value) => value, repository.inputBytes);
+	return measure(
+		run,
+		run,
+		(value) => value,
+		repository.inputBytes,
+		async () => {
+			return (
+				(
+					await plugin.transform(
+						`${changed.source}\nexport const changed = true;`,
+						changed.path,
+						resolver,
+					)
+				)?.code.length ?? changed.source.length
+			);
+		},
+	);
 }
 
 const repository = createRepository(options.files);

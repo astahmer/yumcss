@@ -141,6 +141,10 @@ class CssBudgetService implements CssBudgetPort {
 export interface AnalysisWorkspacePort {
 	loadConfig(twPath: string): ReturnType<typeof loadTwConfig>;
 	collectFiles(patterns: readonly string[], root: string): readonly string[];
+	forEachFile(
+		paths: readonly string[],
+		visit: (file: { file: string; content: string }) => void,
+	): void;
 	readFiles(paths: readonly string[]): readonly { file: string; content: string }[];
 }
 
@@ -155,6 +159,15 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 		return this.sourceWorkspace
 			.files(patterns, root)
 			.filter((file) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(file));
+	}
+
+	forEachFile(
+		paths: readonly string[],
+		visit: (file: { file: string; content: string }) => void,
+	): void {
+		this.sourceWorkspace.forEach(paths, ({ path: file, source: content }) =>
+			visit({ file, content }),
+		);
 	}
 
 	readFiles(paths: readonly string[]): readonly { file: string; content: string }[] {

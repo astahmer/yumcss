@@ -92,16 +92,16 @@ test("css gen simple prop", () => {
 	expect(sheet.generate([styles])).toMatchInlineSnapshot(`
 		"
 		.border__1px\\ solid\\ red{border:1px solid red}
-		.color__blue\\.300{color:#0000ff}
-		.caretColor__blue{caret-color:blue}
 		.backgroundColor__blue\\.300{background-color:blue.300}
+		.caretColor__blue{caret-color:blue}
+		.color__blue\\.300{color:#0000ff}
 		.fontSize__xs{font-size:xs}
 		._hover__caretColor__red:hover{caret-color:red}
 		._hover__fontSize__md:hover{font-size:md}
-		@media (min-width: 640px){.fontSize__sm__sm{font-size:sm}}
 		@media (prefers-color-scheme: dark){._dark__fontSize__2xl{font-size:2xl}}
-		@media (min-width: 640px){.color__sm__yellow{color:yellow}}
 		@media (min-width: 640px){.backgroundColor__sm__red{background-color:red}}
+		@media (min-width: 640px){.color__sm__yellow{color:yellow}}
+		@media (min-width: 640px){.fontSize__sm__sm{font-size:sm}}
 		._focus___hover__fontSize__xl:focus:hover{font-size:xl}
 		@media (min-width: 640px){._hover__backgroundColor__sm__green:hover{background-color:green}}
 		@media (min-width: 768px){._hover__fontSize__md__lg:hover{font-size:lg}}
@@ -115,16 +115,16 @@ test("css gen simple prop", () => {
 	expect(createStylesheet(preset, { debug: false }).generate([styles])).toMatchInlineSnapshot(`
 		"
 		.\\31 an2x2b{border:1px solid red}
-		.o3b2cm{color:#0000ff}
-		.\\31 trwkxl{caret-color:blue}
 		.\\31 i3nmbr{background-color:blue.300}
+		.\\31 trwkxl{caret-color:blue}
+		.o3b2cm{color:#0000ff}
 		.\\31 ccalyg{font-size:xs}
 		.todh53:hover{caret-color:red}
 		.\\31 5jkarc:hover{font-size:md}
-		@media (min-width: 640px){.d7l77k{font-size:sm}}
 		@media (prefers-color-scheme: dark){.\\31 h7ra8l{font-size:2xl}}
-		@media (min-width: 640px){.\\39 y7qdf{color:yellow}}
 		@media (min-width: 640px){.\\31 u09me2{background-color:red}}
+		@media (min-width: 640px){.\\39 y7qdf{color:yellow}}
+		@media (min-width: 640px){.d7l77k{font-size:sm}}
 		.\\31 8j82hb:focus:hover{font-size:xl}
 		@media (min-width: 640px){.lk2n4:hover{background-color:green}}
 		@media (min-width: 768px){.\\31 dw8wnh:hover{font-size:lg}}

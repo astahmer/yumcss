@@ -178,6 +178,19 @@ const isOxcLanguage = (language: SourceLanguage): boolean =>
 	language === "javascript" ||
 	language === "jsx";
 
+/**
+ * Shared parsed-program cache for the document boundary. Analyzer, codemod,
+ * Vite, and collection may all inspect the same unchanged module during one
+ * build. Keep one bounded entry per file and replace it when either source or
+ * language changes; this shares AST work without retaining an unbounded
+ * repository or trusting filesystem mtimes for correctness.
+ */
+const SOURCE_PARSE_CACHE_CAP = 512;
+const sourceParseCache = new Map<
+	string,
+	{ readonly source: string; readonly language: SourceLanguage; readonly result: ParseResult }
+>();
+
 function lexicalExcludedRanges(source: string): SourceRange[] {
 	const ranges: SourceRange[] = [];
 	const pattern =
@@ -221,10 +234,18 @@ export function parseSourceProgram(document: SourceDocument): ParseResult {
 	const language = document.language ?? sourceLanguageForFile(document.file);
 	if (!isOxcLanguage(language))
 		throw new Error(`source language ${language} does not expose an oxc program`);
-	return parseSync(document.file, document.source, {
+	const cached = sourceParseCache.get(document.file);
+	if (cached?.source === document.source && cached.language === language) return cached.result;
+	const result = parseSync(document.file, document.source, {
 		sourceType: "module",
 		lang: language === "tsx" || language === "jsx" ? "tsx" : "ts",
 	});
+	if (sourceParseCache.size >= SOURCE_PARSE_CACHE_CAP) {
+		const oldest = sourceParseCache.keys().next().value;
+		if (oldest !== undefined) sourceParseCache.delete(oldest);
+	}
+	sourceParseCache.set(document.file, { source: document.source, language, result });
+	return result;
 }
 
 /** Mask comments and literal strings while keeping supported style templates actionable. */

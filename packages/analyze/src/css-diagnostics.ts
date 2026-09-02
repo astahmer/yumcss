@@ -23,6 +23,11 @@ export interface CssAnalysisReport {
 	cssDiagnostics: Array<CssDiagnostic>;
 }
 
+export interface CssReportCollector {
+	add(file: AnalyzeSourceFile): void;
+	finish(): CssAnalysisReport;
+}
+
 const DEFAULT_MATCHERS = ["css", "design"] as const;
 
 /** Collect all CSS observations while parsing each source file only once. */
@@ -30,17 +35,31 @@ export function collectCssReport(
 	files: ReadonlyArray<AnalyzeSourceFile>,
 	matchers: ReadonlyArray<string | RegExp> = DEFAULT_MATCHERS,
 ): CssAnalysisReport {
-	return files.reduce<CssAnalysisReport>(
-		(report, { file, content }) => {
-			const inspection = createCssSourceScanner(matchers).inspect(content, file);
+	const collector = createCssReportCollector(matchers);
+	for (const file of files) collector.add(file);
+	return collector.finish();
+}
+
+export function createCssReportCollector(
+	matchers: ReadonlyArray<string | RegExp> = DEFAULT_MATCHERS,
+): CssReportCollector {
+	const scanner = createCssSourceScanner(matchers);
+	const report: CssAnalysisReport = {
+		authoredCss: [],
+		cssNamesByFile: new Map(),
+		cssSources: [],
+		cssDiagnostics: [],
+	};
+	return {
+		add({ file, content }) {
+			const inspection = scanner.inspect(content, file);
 			report.cssNamesByFile.set(file, inspection.cssNames);
 			report.authoredCss.push(...inspection.authoredCss);
 			report.cssSources.push(...inspection.cssSources);
 			report.cssDiagnostics.push(...inspection.cssDiagnostics);
-			return report;
 		},
-		{ authoredCss: [], cssNamesByFile: new Map(), cssSources: [], cssDiagnostics: [] },
-	);
+		finish: () => report,
+	};
 }
 
 /** Collect explicit web stylesheet imports without parsing their CSS. */

@@ -272,10 +272,18 @@ describe("pandwindVite end-to-end transform", () => {
 			'import { tw } from "./tw";',
 			'export const cls = tw({ display: "flex", p: "4" });',
 		].join("\n");
-		const first = await core.transform(source, "/src/cache.ts", resolver);
-		const second = await core.transform(source, "/src/cache.ts", resolver);
+		let resolveCalls = 0;
+		const countingResolver = {
+			resolve: async (...args: Parameters<typeof resolver.resolve>) => {
+				resolveCalls += 1;
+				return resolver.resolve(...args);
+			},
+		};
+		const first = await core.transform(source, "/src/cache.ts", countingResolver);
+		const second = await core.transform(source, "/src/cache.ts", countingResolver);
 
 		expect(second).toBe(first);
+		expect(resolveCalls).toBe(1);
 		expect(first?.code).toContain('"display-flex p-4"');
 
 		core.invalidate("/src/cache.ts");

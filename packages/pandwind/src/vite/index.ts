@@ -198,16 +198,7 @@ const reportUnresolved = (id: string, unresolved: UnresolvedToken[], mode: OnUnr
 export function createInlineTwPluginCore(options: PandwindViteOptions = {}): InlineTwPluginCore {
 	const configCache = new Map<string, TwConfig>();
 	const transformCache = new Map<string, { result: { code: string; map: null } | null }>();
-	const configIds = new WeakMap<object, number>();
-	let nextConfigId = 0;
-	const cacheKeyFor = (id: string, code: string, config: TwConfig): string => {
-		let configId = configIds.get(config);
-		if (configId === undefined) {
-			configId = nextConfigId++;
-			configIds.set(config, configId);
-		}
-		return `${id}\0${configId}\0${code}`;
-	};
+	const cacheKeyFor = (id: string, code: string): string => `${id}\0${code}`;
 	const remember = (key: string, result: { code: string; map: null } | null): void => {
 		if (transformCache.size >= 2048) transformCache.clear();
 		transformCache.set(key, { result });
@@ -259,14 +250,23 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 		async transform(code: string, id: string, resolver?: Resolver) {
 			if (id.includes("node_modules")) return null;
 			if (options.exclude?.some((pattern) => pattern.test(id))) return null;
-			if (!/\b(tw|cx)\b/.test(code)) return runtimePruner.transform(code, id);
+			const cacheKey = cacheKeyFor(id, code);
+			const cached = transformCache.get(cacheKey);
+			if (cached !== undefined) return cached.result;
+			if (!/\b(tw|cx)\b/.test(code)) {
+				const result = runtimePruner.transform(code, id);
+				remember(cacheKey, result);
+				return result;
+			}
 
 			const imports = findTwImports(code, id, isTwSource);
 			if (imports.localNames.size === 0 && imports.sources.length === 0) {
 				// A cx import without a tw import can't be folded safely: the
 				// generated conflict/compose metadata is what makes build-time
 				// output provably identical to the runtime merge.
-				return runtimePruner.transform(code, id);
+				const result = runtimePruner.transform(code, id);
+				remember(cacheKey, result);
+				return result;
 			}
 			if (resolver === undefined) return null;
 
@@ -278,9 +278,6 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				if (config !== undefined) break;
 			}
 			if (config === undefined) return null;
-			const cacheKey = cacheKeyFor(id, code, config);
-			const cached = transformCache.get(cacheKey);
-			if (cached !== undefined) return cached.result;
 
 			let working = code;
 			// Cross-module constant propagation: resolve this module's import

@@ -77,10 +77,6 @@ function createFsResolver(): Resolver {
 	};
 }
 
-// One fs resolver per plugin instance keeps behavior predictable; the core's
-// config cache is per-instance anyway.
-const inlineFsResolver = createFsResolver();
-
 export type PandwindUnpluginOptions = PandwindViteOptions;
 
 /**
@@ -89,11 +85,12 @@ export type PandwindUnpluginOptions = PandwindViteOptions;
  */
 export const pandwindUnplugin = createUnplugin((options: PandwindUnpluginOptions = {}) => {
 	const core = createInlineTwPluginCore(options);
+	const resolver = createFsResolver();
 	return {
 		name: core.name,
 		enforce: "pre" as const,
 		transform(code: string, id: string) {
-			return core.transform(code, id, inlineFsResolver);
+			return core.transform(code, id, resolver);
 		},
 		resolveId(source: string) {
 			return core.resolveId(source);

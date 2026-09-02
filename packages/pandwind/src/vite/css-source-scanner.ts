@@ -121,6 +121,53 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 	return names;
 };
 
+const findCallSites = (
+	code: string,
+	id: string,
+	names: ReadonlySet<string>,
+	program: OxcNode,
+): readonly CssCallSite[] => {
+	if (names.size === 0) return [];
+	const sites: CssCallSite[] = [];
+	walk(program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		const kind = callKind(call.callee, names);
+		if (kind === undefined) return;
+		const staticArguments = call.arguments.filter(isObjectLiteral).length;
+		sites.push({
+			file: id,
+			start: call.start,
+			end: call.end,
+			...location(code, call.start),
+			callKind: kind,
+			staticArguments,
+			dynamicArguments: call.arguments.length - staticArguments,
+		});
+	});
+	return sites;
+};
+
+const findVarKeys = (names: ReadonlySet<string>, program: OxcNode): readonly string[] => {
+	if (names.size === 0) return [];
+	const keys = new Set<string>();
+	walk(program, (node) => {
+		if (node.type !== "CallExpression") return;
+		const call = node as CallNode;
+		if (call.callee?.type !== "MemberExpression") return;
+		const object = (call.callee as { object?: OxcNode | null }).object;
+		const property = (call.callee as { property?: { name?: string } | null }).property;
+		if (
+			object?.type !== "Identifier" ||
+			!names.has((object as { name?: string }).name ?? "") ||
+			property?.name !== "vars"
+		)
+			return;
+		for (const argument of call.arguments) collectObjectKeys(argument as OxcNode, "", keys);
+	});
+	return [...keys];
+};
+
 const authoredImports = (code: string, id: string, program: OxcNode): AuthoredCssImport[] => {
 	const imports: AuthoredCssImport[] = [];
 	walk(program, (node) => {
@@ -169,24 +216,7 @@ export class CssSourceScannerService implements CssSourceScanner {
 
 	findCallSites(code: string, id: string, names: ReadonlySet<string>): readonly CssCallSite[] {
 		if (names.size === 0 || !canParse(id)) return [];
-		const sites: CssCallSite[] = [];
-		walk(parse(id, code).program, (node) => {
-			if (node.type !== "CallExpression") return;
-			const call = node as CallNode;
-			const kind = callKind(call.callee, names);
-			if (kind === undefined) return;
-			const staticArguments = call.arguments.filter(isObjectLiteral).length;
-			sites.push({
-				file: id,
-				start: call.start,
-				end: call.end,
-				...location(code, call.start),
-				callKind: kind,
-				staticArguments,
-				dynamicArguments: call.arguments.length - staticArguments,
-			});
-		});
-		return sites;
+		return findCallSites(code, id, names, parse(id, code).program as unknown as OxcNode);
 	}
 
 	inspect(code: string, id: string): CssSourceInspection {
@@ -194,33 +224,18 @@ export class CssSourceScannerService implements CssSourceScanner {
 			return { authoredCss: [], cssNames: new Set(), cssSources: [], cssDiagnostics: [] };
 		const program = parse(id, code).program as unknown as OxcNode;
 		const cssNames = collectNames(program, this.matchers);
-		const cssSources = this.findCallSites(code, id, cssNames);
+		const cssSources = findCallSites(code, id, cssNames, program);
 		return {
 			authoredCss: authoredImports(code, id, program),
 			cssNames,
 			cssSources,
-			cssDiagnostics: new CssDiagnosticScanner().diagnose(code, id, cssNames),
+			cssDiagnostics: new CssDiagnosticScanner().diagnose(code, id, cssNames, program),
 		};
 	}
 
 	findVarKeys(code: string, id: string, names: ReadonlySet<string>): readonly string[] {
 		if (names.size === 0 || !canParse(id)) return [];
-		const keys = new Set<string>();
-		walk(parse(id, code).program, (node) => {
-			if (node.type !== "CallExpression") return;
-			const call = node as CallNode;
-			if (call.callee?.type !== "MemberExpression") return;
-			const object = (call.callee as { object?: OxcNode | null }).object;
-			const property = (call.callee as { property?: { name?: string } | null }).property;
-			if (
-				object?.type !== "Identifier" ||
-				!names.has((object as { name?: string }).name ?? "") ||
-				property?.name !== "vars"
-			)
-				return;
-			for (const argument of call.arguments) collectObjectKeys(argument as OxcNode, "", keys);
-		});
-		return [...keys];
+		return findVarKeys(names, parse(id, code).program as unknown as OxcNode);
 	}
 }
 
@@ -249,7 +264,12 @@ const collectObjectKeys = (
 };
 
 export class CssDiagnosticScanner implements CssDiagnosticReporter {
-	diagnose(code: string, id: string, names: ReadonlySet<string>): readonly CssDiagnostic[] {
+	diagnose(
+		code: string,
+		id: string,
+		names: ReadonlySet<string>,
+		program?: OxcNode,
+	): readonly CssDiagnostic[] {
 		if (names.size === 0) return [];
 		const diagnostics: CssDiagnostic[] = [];
 		const unsupported = new Map([
@@ -260,7 +280,7 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			["supports", "Authored @supports rules are not extracted yet."],
 			["property", "Authored @property rules are not extracted yet."],
 		]);
-		walk(parse(id, code).program, (node) => {
+		walk(program ?? (parse(id, code).program as unknown as OxcNode), (node) => {
 			if (node.type !== "CallExpression") return;
 			const call = node as CallNode;
 			if (call.callee?.type !== "MemberExpression") return;

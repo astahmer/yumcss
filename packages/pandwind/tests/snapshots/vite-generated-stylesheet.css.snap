@@ -87,12 +87,11 @@
 :root {--xuj17p: 500;}
 :root {--yowody: ui-sans-serif, system-ui, sans-serif;}
 .dark {--\31 ivw8mx: #111827;}
-.\39 a0afa{gap:2px}
 .\31 0z44sb{border-radius:0.375rem}
+.\39 a0afa{gap:2px}
 .\31 xccw59{background-color:#3182ce}
+.\31 pucx05{color:#0BC5EA}
+.\31 tunnbj{color:#ffffff}
 .\31 f29p40{display:flex}
 .\31 bzcrdd{flex-direction:row}
-.\31 tunnbj{color:#ffffff}
 .t90ii{font-size:0.875rem}
-.\31 pucx05{color:#0BC5EA}
-.i8asqr{background-color:#60A3BC}

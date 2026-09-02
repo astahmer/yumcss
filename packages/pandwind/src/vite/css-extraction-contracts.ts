@@ -90,7 +90,12 @@ export interface CssCallRewriter {
 }
 
 export interface CssDiagnosticReporter {
-	diagnose(code: string, id: string, names: ReadonlySet<string>): readonly CssDiagnostic[];
+	diagnose(
+		code: string,
+		id: string,
+		names: ReadonlySet<string>,
+		program?: OxcNode,
+	): readonly CssDiagnostic[];
 }
 
 export interface CssPatternAdapter {

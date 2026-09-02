@@ -18,7 +18,7 @@ import {
 } from "./analysis-service.ts";
 import { collectAnnotations, formatAnnotations } from "./github-annotations.ts";
 import {
-	collectCssReport,
+	createCssReportCollector,
 	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
@@ -163,19 +163,22 @@ export async function runCli(argv: Array<string>): Promise<string> {
 	const files = workspace
 		.collectFiles(patterns, args.root)
 		.filter((f) => SOURCE_SCANNER_SERVICE.isTypeScriptFile(f));
-	const sourceFiles = workspace.readFiles(files).map(({ file, content }) => ({
-		file: file.startsWith(`${args.root}/`) ? file.slice(args.root.length + 1) : file,
-		content,
-	}));
-
-	const stats = sourceFiles.map(({ file, content }) =>
-		analysis.analyze(content, file, {
-			config,
-			importedConstants,
-		}),
-	);
+	const stats: ReturnType<typeof analysis.analyze>[] = [];
+	const cssCollector = createCssReportCollector();
+	workspace.forEachFile(files, ({ file: absoluteFile, content }) => {
+		const file = absoluteFile.startsWith(`${args.root}/`)
+			? absoluteFile.slice(args.root.length + 1)
+			: absoluteFile;
+		stats.push(
+			analysis.analyze(content, file, {
+				config,
+				importedConstants,
+			}),
+		);
+		cssCollector.add({ file, content });
+	});
 	const summary: FoldSummary = analysis.summarize(stats);
-	const cssReport = collectCssReport(sourceFiles);
+	const cssReport = cssCollector.finish();
 	const { authoredCss, cssSources, cssDiagnostics } = cssReport;
 
 	if (args.json) {

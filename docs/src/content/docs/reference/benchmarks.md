@@ -106,36 +106,48 @@ throughput. The competitor rig lives outside the repo; rebuild instructions are 
 
 ## Repository-scale tooling benchmark — 2026-09-02
 
-The committed harness at `scripts/benchmark-tooling.mts` runs the same 250-file
-synthetic repository through the shared source workspace, analyzer, codemod,
-and unplugin transform. It reports cold time, warm mean, p50/p95 warm samples,
-RSS growth, processed output count, and input bytes. The reference run was the
-pre-optimization benchmark revision `b6538c880a95170572079505b2a9b459a55467a8`;
-the current run was `66120db9d577149346cb4c98d8339ab4c0c824e6`.
+The committed harness at `scripts/benchmark-tooling.mts` runs a synthetic
+repository through the shared source workspace, analyzer, codemod, and
+unplugin transform. It reports cold time, warm mean, p50/p95 warm samples,
+RSS growth, processed output count, input bytes, and an explicit one-file
+incremental run after invalidation. The current 250-file run used five warm
+samples:
 
-| pipeline | cold before | cold after | warm p50 before | warm p50 after | p95 before | p95 after |
-| -------- | ---------: | --------: | --------------: | ------------: | ---------: | --------: |
-| scanner | 175.13 ms | 52.46 ms | 191.41 ms | 8.54 ms | 209.64 ms | 8.97 ms |
-| analyzer | 130.16 ms | 14.43 ms | 55.06 ms | 11.10 ms | 66.22 ms | 13.21 ms |
-| codemod | 313.50 ms | 83.59 ms | 193.80 ms | 50.90 ms | 329.77 ms | 76.01 ms |
-| unplugin | 281.46 ms | 56.98 ms | 111.10 ms | 6.07 ms | 139.10 ms | 11.43 ms |
+| pipeline |     cold | warm p50 | warm p95 | one-file incremental |
+| -------- | -------: | -------: | -------: | -------------------: |
+| scanner  | 35.18 ms | 16.44 ms | 21.99 ms |              2.95 ms |
+| analyzer | 26.66 ms | 21.22 ms | 25.49 ms |              9.43 ms |
+| codemod  | 86.23 ms | 65.75 ms | 69.29 ms |             49.33 ms |
+| unplugin | 58.84 ms |  0.16 ms |  0.27 ms |              0.20 ms |
 
-The scanner improvement comes from a bounded cross-workspace cache of exact
-scan results. Analyzer avoids parsing the same module twice. Unplugin reuses
-the parsed program and memoizes unchanged transforms; invalidation clears the
-result cache so imported constants and generated configuration remain correct.
+The incremental improvement comes from three bounded mechanisms: exact
+parsed-program reuse, shared source-workspace entries, and watcher-directed
+invalidation that avoids re-globbing/re-reading unchanged files. The analyzer
+also consumes files one at a time, so it does not retain a second repository-
+wide source array. Unplugin checks its content-keyed transform cache before
+parsing or resolving configuration. Codemod remains a pure, uncached
+single-file use case; repository callers can add bounded orchestration caching
+without making the migration API retain source state.
 
 Run it with:
 
 ```sh
-nub scripts/benchmark-tooling.mts --files 250 --samples 7
+nub scripts/benchmark-tooling.mts --files 250 --samples 5
+nub scripts/benchmark-tooling.mts --files 1000 --samples 3
 ```
+
+The larger 1,000-file run is a scaling check, not a release budget:
+
+| pipeline |      cold |  warm p50 |  warm p95 | one-file incremental |
+| -------- | --------: | --------: | --------: | -------------------: |
+| scanner  | 108.33 ms |  34.31 ms |  48.23 ms |              6.58 ms |
+| analyzer |  89.11 ms |  89.71 ms | 115.62 ms |             56.12 ms |
+| codemod  | 237.86 ms | 153.28 ms | 255.62 ms |            151.13 ms |
+| unplugin | 184.59 ms |   0.60 ms |   0.85 ms |              0.18 ms |
 
 These are local evidence, not universal performance claims. V8 compilation,
 filesystem cache state, and garbage collection can move individual samples;
-RSS deltas are especially noisy. The harness is intentionally not a CI gate.
-
-A current 1,000-file scaling smoke (`--samples 3`) completed with warm p50 of
-48.68 ms for scanning, 55.52 ms for analysis, 183.53 ms for codemod, and
-23.42 ms for unplugin transforms. This larger run is a scaling check only; the
-before/after table above remains the controlled comparison.
+RSS deltas are especially noisy. The incremental column is the useful HMR
+signal: the changed file is invalidated while unchanged files remain cache
+hits. Codemod has no such stateful watcher boundary, so its incremental value
+is a full migration run.

@@ -72,11 +72,11 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
+		"test": "vitest run --exclude tests/runtime-benchmark.test.ts && vitest run --pool forks --maxWorkers 1 tests/runtime-benchmark.test.ts",
 		"test:coverage": "vitest run --coverage",
 		"test:watch": "vitest",
 		"test:size": "vitest run runtime-size",
-		"test:benchmarks": "vitest run runtime-benchmark",
+		"test:benchmarks": "vitest run --pool forks --maxWorkers 1 runtime-benchmark",
 		"test:types": "tstyche --target 6.0.3"
 	},
 	"dependencies": {

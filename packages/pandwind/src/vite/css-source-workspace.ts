@@ -3,6 +3,7 @@ import type { CssSourceService } from "./css-source-service.ts";
 import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
 
 interface CssSourceWorkspaceEntry {
+	readonly source: string;
 	readonly mtimeMs: number;
 	readonly sources: ReturnType<CssSourceService["extract"]>;
 	readonly varKeys: string[];
@@ -58,14 +59,14 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 		if (document === undefined) throw new Error(`Unable to read CSS source: ${file}`);
 		const mtimeMs = document.mtimeMs ?? -1;
 		const cached = this.cache.get(file);
-		if (cached?.mtimeMs === mtimeMs) return cached;
+		if (cached?.mtimeMs === mtimeMs && cached.source === document.source) return cached;
 		const extracted = this.options.sourceService.extractFile(
 			document.source,
 			file,
 			this.options.matchers,
 			this.options.preset,
 		);
-		const entry = { mtimeMs, ...extracted };
+		const entry = { source: document.source, mtimeMs, ...extracted };
 		this.cache.set(file, entry);
 		return entry;
 	}
@@ -77,7 +78,9 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 			if (file !== cachedFiles[index] || this.cache.get(file) === undefined) return false;
 			const document = this.sourceWorkspace.read([file])[0];
 			if (document === undefined) return false;
-			if (this.cache.get(file)!.mtimeMs !== (document.mtimeMs ?? -1)) return false;
+			const entry = this.cache.get(file)!;
+			if (entry.mtimeMs !== (document.mtimeMs ?? -1) || entry.source !== document.source)
+				return false;
 		}
 		return true;
 	}
@@ -92,6 +95,7 @@ class NodeCssSourceWorkspace implements CssSourceWorkspace {
 
 	invalidate(file: string): void {
 		this.cache.delete(file);
+		this.sourceWorkspace.invalidate(file);
 	}
 }
 

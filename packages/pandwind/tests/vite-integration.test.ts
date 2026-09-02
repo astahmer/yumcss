@@ -208,21 +208,26 @@ describe("HMR", () => {
 		expect(before).not.toContain("background-color:#60A3BC");
 
 		const extra = join(project.dir, "src/extra.ts");
-		writeFileSync(
-			extra,
-			'import { css } from "./design";\ncss({ $frame: { fill: "$green-500" } });\n',
-		);
+		try {
+			writeFileSync(
+				extra,
+				'import { css } from "./design";\ncss({ $frame: { fill: "$green-500" } });\n',
+			);
 
-		// The same hook vite calls on file change.
-		project.cssPlugin.handleHotUpdate({ file: extra });
+			// The same hook vite calls on file change.
+			project.cssPlugin.handleHotUpdate({ file: extra });
 
-		const after = project.cssPlugin.load("\0pandwind:css.css") as string;
-		expect(after).toContain("background-color:#60A3BC");
+			const after = project.cssPlugin.load("\0pandwind:css.css") as string;
+			expect(after).toContain("background-color:#60A3BC");
 
-		// And the served virtual module reflects it after invalidation.
-		server.moduleGraph.invalidateAll();
-		const served = await server.transformRequest(virtualId);
-		expect(served!.code).toContain("background-color:#60A3BC");
+			// And the served virtual module reflects it after invalidation.
+			server.moduleGraph.invalidateAll();
+			const served = await server.transformRequest(virtualId);
+			expect(served!.code).toContain("background-color:#60A3BC");
+		} finally {
+			rmSync(extra, { force: true });
+			project.cssPlugin.handleHotUpdate({ file: extra });
+		}
 	});
 
 	test("a file ADDED to the scanned tree appears on the next load", async () => {
@@ -396,9 +401,14 @@ describe("post-plugin snapshots", () => {
 	});
 
 	test("generated stylesheet", async () => {
-		const css = project.cssPlugin.load("\0pandwind:css.css") as string;
-		await expect(css).toMatchFileSnapshot(
-			join(import.meta.dirname, "snapshots", "vite-generated-stylesheet.css.snap"),
-		);
+		const snapshotProject = makeProject();
+		try {
+			const css = snapshotProject.cssPlugin.load("\0pandwind:css.css") as string;
+			await expect(css).toMatchFileSnapshot(
+				join(import.meta.dirname, "snapshots", "vite-generated-stylesheet.css.snap"),
+			);
+		} finally {
+			rmSync(snapshotProject.dir, { recursive: true, force: true });
+		}
 	});
 });

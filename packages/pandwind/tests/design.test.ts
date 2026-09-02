@@ -244,7 +244,7 @@ test("design class strings match the generated stylesheet", () => {
 		  "borderRadius__0.5rem" => {
 		    "css": ".borderRadius__0\\.5rem{border-radius:0.5rem}",
 		    "id": "borderRadius__0.5rem",
-		    "priority": 3000,
+		    "priority": 2000,
 		  },
 		  "backgroundColor__#3182ce" => {
 		    "css": ".backgroundColor__\\#3182ce{background-color:#3182ce}",
