@@ -1,0 +1,156 @@
+import { describe, expect, test } from "vitest";
+import {
+	CodemodAdapterId,
+	createPandwindAdapter,
+	createStyleAdapterRegistry,
+	createTailwindAdapter,
+	runAdapterMigrationAsync,
+} from "../src/swap/index.ts";
+import type { ProjectModuleLoader } from "../src/swap/project-module-loader.ts";
+
+const root = "/project";
+const file = "src/App.tsx";
+const cssFile = `${root}/src/index.css`;
+
+function files(css = '@import "tailwindcss";') {
+	return {
+		[cssFile]: css,
+	};
+}
+
+function loader(): ProjectModuleLoader {
+	return {
+		async importPackage(packageName) {
+			if (packageName !== "@tailwindcss/node") return undefined;
+			return {
+				__unstable__loadDesignSystem: async () => ({
+					candidatesToCss: (candidates: readonly string[]) =>
+						candidates.map((candidate) => {
+							if (candidate === "tab-4") return "@layer utilities { .tab-4 { tab-size: 4; } }";
+							if (candidate === "hover:tab-4")
+								return "@layer utilities { .hover\\:tab-4:hover { tab-size: 4; } }";
+							if (candidate === "prose")
+								return "@layer utilities { @media (min-width: 48rem) { .prose { max-width: 65ch; } } }";
+							if (candidate === "theme-tab-4")
+								return "@layer utilities { [data-theme=midnight] .theme-tab-4 { tab-size: 4; } }";
+							return null;
+						}),
+					theme: {
+						entries: () => new Map([["--spacing-4", { value: "1rem" }]]),
+					},
+				}),
+			} as never;
+		},
+		async importFile() {
+			return undefined;
+		},
+	};
+}
+
+function migrate(source: string, projectFiles: Readonly<Record<string, string>>) {
+	const target = createPandwindAdapter({ moduleLoader: null });
+	return runAdapterMigrationAsync(source, {
+		from: CodemodAdapterId.Tailwind,
+		to: CodemodAdapterId.Pandwind,
+		file,
+		root,
+		readFile: (path) => projectFiles[path],
+		listFiles: () => Object.keys(projectFiles),
+		adapterRegistry: createStyleAdapterRegistry([
+			createTailwindAdapter({ moduleLoader: loader() }),
+			target,
+		]),
+	});
+}
+
+describe("Tailwind official CSS context", () => {
+	test("discovers a non-standard CSS entry and preserves nested engine semantics", async () => {
+		const result = await migrate(
+			'export const App = () => <div className="tab-4 hover:tab-4 prose" />;',
+			files(`
+@import "tailwindcss";
+@utility tab-4 { tab-size: 4; }
+@plugin "./typography-plugin.js";
+`),
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('tabSize: "4"');
+		expect(result.code).toContain('maxWidth: "65ch"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const App = () => <div  className={css.class({ tabSize: "4", "&:hover": { tabSize: "4" }, "@media (min-width: 48rem)": { maxWidth: "65ch" } })}/>;"
+		`);
+	});
+
+	test("retains a custom selector variant instead of flattening it", async () => {
+		const result = await migrate(
+			'export const App = () => <div className="theme-tab-4" />;',
+			files(`
+@import "tailwindcss";
+@custom-variant midnight (&:where([data-theme=midnight] *));
+@utility theme-tab-4 { tab-size: 4; }
+`),
+		);
+
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('tabSize: "4"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const App = () => <div  className={css.class({ "[data-theme=midnight] &": { tabSize: "4" } })}/>;"
+		`);
+	});
+
+	test("reports a missing project CSS graph instead of silently using fallback utilities", async () => {
+		const result = await migrate('export const App = () => <div className="tab-4" />;', {});
+
+		expect(result.converted).toBe(0);
+		expect(result.code).toContain('className="tab-4"');
+		expect(result.residuals).toEqual([
+			expect.objectContaining({
+				kind: "configuration",
+				text: "Tailwind CSS configuration graph",
+			}),
+		]);
+	});
+
+	test("reports official engine failures as configuration residuals", async () => {
+		const target = createPandwindAdapter({ moduleLoader: null });
+		const brokenLoader: ProjectModuleLoader = {
+			async importPackage() {
+				return {
+					__unstable__loadDesignSystem: async () => {
+						throw new Error("missing plugin");
+					},
+				} as never;
+			},
+			async importFile() {
+				return undefined;
+			},
+		};
+		const source = 'export const App = () => <div className="tab-4" />;';
+		const projectFiles = files();
+		const result = await runAdapterMigrationAsync(source, {
+			from: CodemodAdapterId.Tailwind,
+			to: CodemodAdapterId.Pandwind,
+			file,
+			root,
+			readFile: (path) => projectFiles[path as keyof typeof projectFiles],
+			listFiles: () => [cssFile],
+			adapterRegistry: createStyleAdapterRegistry([
+				createTailwindAdapter({ moduleLoader: brokenLoader }),
+				target,
+			]),
+		});
+
+		expect(result.converted).toBe(0);
+		expect(result.code).toContain("pandwind:migrate-skip (configuration-residual: configuration)");
+		expect(result.code).toContain(source);
+		expect(result.residuals[0]).toEqual(expect.objectContaining({ kind: "configuration" }));
+	});
+});

@@ -572,10 +572,10 @@ function conditionedSelector(
 			condition.kind === SemanticConditionKindTag.Pseudo
 				? (condition.value ?? condition.name)
 				: (condition.value ?? condition.raw ?? condition.name);
-		const normalizedSelectorValue =
-			condition.kind === SemanticConditionKindTag.Selector && selectorValue.endsWith(" &")
-				? `&${selectorValue.slice(0, -2)}`
-				: selectorValue;
+		// A parent selector such as `[data-theme=dark] &` is already a
+		// complete nesting expression. Reordering it to `&[data-theme=dark]`
+		// changes an ancestor condition into an element condition.
+		const normalizedSelectorValue = selectorValue;
 		if (normalizedSelectorValue.includes("&"))
 			selector = normalizedSelectorValue.replaceAll("&", selector);
 		else if (condition.kind === SemanticConditionKindTag.Pseudo)

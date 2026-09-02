@@ -344,7 +344,6 @@ function conditionKey(condition: StyleProgram["rules"][number]["conditions"][num
 	if (condition.kind === SemanticConditionKindTag.Supports)
 		return condition.value === undefined ? condition.name : `@supports ${condition.value}`;
 	if (condition.kind === SemanticConditionKindTag.Selector) {
-		if (condition.name.endsWith(" &")) return `&${condition.name.slice(0, -2)}`;
 		if (!condition.name.includes("&"))
 			return condition.name.startsWith(":") || condition.name.startsWith("[")
 				? `&${condition.name}`

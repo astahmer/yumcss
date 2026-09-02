@@ -407,6 +407,9 @@ importers:
       pandwind:
         specifier: workspace:*
         version: link:../pandwind
+      postcss:
+        specifier: 8.5.26
+        version: 8.5.26
     devDependencies:
       '@mantine/core':
         specifier: ^9.5.2

@@ -177,6 +177,7 @@ export interface AdapterMigrationOptions {
 	readonly meta?: PandwindMeta;
 	readonly packageJson?: Readonly<Record<string, unknown>>;
 	readonly readFile?: (file: string) => string | undefined;
+	readonly listFiles?: (root: string) => readonly string[];
 	readonly mode?: AdapterCapabilityMode;
 	readonly skipMarker?: string;
 	/** Optional registry for third-party or core dialect routes. */
@@ -223,6 +224,7 @@ function migrationContext(source: string, options: AdapterMigrationOptions) {
 		root: options.root,
 		packageJson: options.packageJson,
 		readFile: options.readFile,
+		listFiles: options.listFiles,
 	};
 }
 

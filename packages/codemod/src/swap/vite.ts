@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
+import { createSourceWorkspace } from "pandwind/source/workspace";
 import type { AdapterMigrationOptions, AdapterMigrationResult } from "./adapter-migration.ts";
 import type { AdapterGeneratedFile } from "./adapter-contract.ts";
 import { runAdapterMigrationAsync } from "./adapter-migration.ts";
@@ -26,6 +27,7 @@ export interface PandwindMigrateViteOptions {
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	readonly loweringRegistry?: StyleLoweringRegistry;
 	readonly readFile?: (file: string) => string | undefined;
+	readonly listFiles?: (root: string) => readonly string[];
 	readonly onResidual?: (event: VirtualMigrationResidual) => void;
 }
 
@@ -105,6 +107,14 @@ export function pandwindMigrateVite(
 	const generatedByPath = new Map<string, { readonly id: string; readonly content: string }>();
 	const generatedById = new Map<string, string>();
 	const readFile = options.readFile ?? readNodeFile;
+	const sourceWorkspace = createSourceWorkspace();
+	let listedFiles: readonly string[] | undefined;
+	const listFiles =
+		options.listFiles ??
+		((projectRoot: string) => {
+			listedFiles ??= sourceWorkspace.files(["**/*"], projectRoot, { includeUnsupported: true });
+			return listedFiles;
+		});
 
 	const emitGeneratedFiles = (files: readonly AdapterGeneratedFile[], sourceFile: string): void => {
 		for (const file of files) {
@@ -137,6 +147,7 @@ export function pandwindMigrateVite(
 			adapterRegistry: options.adapterRegistry,
 			loweringRegistry: options.loweringRegistry,
 			readFile,
+			listFiles,
 		});
 		cache.set(key, { result });
 		return result;
@@ -147,6 +158,7 @@ export function pandwindMigrateVite(
 		enforce: "pre",
 		configResolved(config) {
 			root = resolve(config.root);
+			listedFiles = undefined;
 			cache.clear();
 			generatedByPath.clear();
 			generatedById.clear();

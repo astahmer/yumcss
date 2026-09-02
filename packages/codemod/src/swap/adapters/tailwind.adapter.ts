@@ -33,6 +33,7 @@ import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import { TokenCatalog } from "../tokens.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
+import { parse, type AtRule } from "postcss";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -605,18 +606,138 @@ function tailwindTokenCatalog(
 	return TokenCatalog.fromGroups(groups);
 }
 
-function parseEngineCss(css: string): readonly StyleDeclaration[] | undefined {
-	const body = css.slice(css.indexOf("{") + 1, css.lastIndexOf("}"));
-	if (body === css || body.trim() === "") return undefined;
-	const declarations: StyleDeclaration[] = [];
-	for (const statement of body.split(";")) {
-		const separator = statement.indexOf(":");
-		if (separator <= 0) continue;
-		const property = statement.slice(0, separator).trim();
-		const value = statement.slice(separator + 1).trim();
-		if (property !== "" && value !== "") declarations.push(literal(cssProperty(property), value));
+function generatedAtRuleCondition(rule: AtRule): StyleCondition | undefined {
+	const params = rule.params.trim();
+	if (params === "") return undefined;
+	if (rule.name === "media") return { kind: "media", name: params, value: params };
+	if (rule.name === "supports") return { kind: "supports", name: params, value: params };
+	if (rule.name === "container") return { kind: "container", name: params, value: params };
+	if (rule.name === "scope") return { kind: "selector", name: "scope", value: params };
+	return undefined;
+}
+
+function generatedSelectorConditions(selector: string, token: string): readonly StyleCondition[] {
+	const conditions: StyleCondition[] = [];
+	for (const match of selector.matchAll(/(?<!\\):([a-z-]+)(?:\([^)]*\))?/giu)) {
+		const name = match[1];
+		if (name !== undefined) conditions.push(condition(name));
 	}
+	const normalized = selector.trim();
+	if (
+		conditions.length === 0 &&
+		(normalized.includes("[") ||
+			normalized.includes("]") ||
+			/[>&+~\s]/u.test(normalized) ||
+			!/^\.?[\\A-Za-z0-9_-]+$/u.test(normalized))
+	) {
+		const utility = token.split(":").at(-1) ?? token;
+		const escapedUtility = utility.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const relative = normalized.replace(
+			new RegExp(`\\.${escapedUtility}(?=[\\s:#.\\[>,+~]|$)`, "u"),
+			"&",
+		);
+		conditions.push({ kind: "selector", name: relative, value: relative });
+	}
+	return conditions;
+}
+
+function parseEngineCss(css: string, token: string): readonly StyleDeclaration[] | undefined {
+	if (css.trim() === "") return undefined;
+	let root: ReturnType<typeof parse>;
+	try {
+		root = parse(css);
+	} catch {
+		return undefined;
+	}
+	const declarations: StyleDeclaration[] = [];
+	const walk = (
+		nodes: readonly postcss.ChildNode[],
+		inherited: readonly StyleCondition[],
+		insideStyleRule: boolean,
+	): void => {
+		for (const node of nodes) {
+			if (node.type === "decl") {
+				const property = node.prop.trim();
+				const value = node.value.trim();
+				if (insideStyleRule && property !== "" && value !== "")
+					declarations.push({
+						...literal(cssProperty(property), value),
+						conditions: inherited,
+					});
+				continue;
+			}
+			if (node.type === "atrule") {
+				const atRuleCondition = generatedAtRuleCondition(node);
+				walk(
+					node.nodes ?? [],
+					atRuleCondition === undefined ? inherited : [...inherited, atRuleCondition],
+					insideStyleRule,
+				);
+				continue;
+			}
+			if (node.type === "rule") {
+				walk(
+					node.nodes ?? [],
+					[...inherited, ...generatedSelectorConditions(node.selector, token)],
+					insideStyleRule || node.selector.includes("."),
+				);
+			}
+		}
+	};
+	walk(root.nodes, [], false);
 	return declarations.length === 0 ? undefined : declarations;
+}
+
+function withTailwindVariantConditions(
+	declarations: readonly StyleDeclaration[],
+	token: string,
+): readonly StyleDeclaration[] {
+	const variants = token.split(":").slice(0, -1).map(condition);
+	return declarations.map((declaration) => {
+		const conditions = [...declaration.conditions];
+		for (const variant of variants) {
+			if (
+				!conditions.some(
+					(existing) => existing.kind === variant.kind && existing.name === variant.name,
+				)
+			)
+				conditions.unshift(variant);
+		}
+		return { ...declaration, conditions };
+	});
+}
+
+function tailwindCssFiles(
+	context: AdapterConfigContext,
+): readonly { file: string; text: string }[] {
+	if (context.root === undefined || context.readFile === undefined) return [];
+	const discovered = context.listFiles?.(context.root) ?? [
+		"tailwind.css",
+		"src/app/globals.css",
+		"app/globals.css",
+		"styles/globals.css",
+	];
+	const candidates = discovered
+		.map((file) => ({
+			file,
+			text: context.readFile?.(
+				file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file),
+			),
+		}))
+		.filter(
+			(candidate): candidate is { file: string; text: string } => candidate.text !== undefined,
+		)
+		.filter(({ text }) =>
+			/@(?:import|tailwind|theme|utility|plugin|config|custom-variant|source|reference)\b/u.test(
+				text,
+			),
+		)
+		.toSorted((left, right) => {
+			const score = (text: string): number =>
+				/@(?:import|tailwind)\s+(?:["']tailwindcss|base|components|utilities)/u.test(text) ? 0 : 1;
+			return score(left.text) - score(right.text) || left.file.localeCompare(right.file);
+		});
+	return candidates;
 }
 
 async function officialConfig(
@@ -630,24 +751,35 @@ async function officialConfig(
 		context.root,
 	);
 	if (module?.__unstable__loadDesignSystem === undefined) return fallback;
-	const cssFile = ["tailwind.css", "src/app/globals.css", "app/globals.css", "styles/globals.css"]
-		.map((file) => ({ file, text: context.readFile?.(joinDocumentPath(context.root!, file)) }))
-		.find((candidate) => candidate.text !== undefined);
-	if (cssFile?.text === undefined) return fallback;
+	const cssFiles = tailwindCssFiles(context);
+	const cssFile = cssFiles[0];
+	if (cssFile === undefined) {
+		if (context.listFiles !== undefined)
+			return {
+				...fallback,
+				residuals: [
+					{
+						kind: "configuration",
+						text: "Tailwind CSS configuration graph",
+						hint: "No project CSS entry containing Tailwind directives was found",
+					},
+				],
+			};
+		return fallback;
+	}
 	try {
 		const system = await module.__unstable__loadDesignSystem(cssFile.text, { base: context.root });
 		const resolver: TailwindUtilityResolver = {
 			resolve(token) {
-				const result = parseEngineCss(system.candidatesToCss([token])[0] ?? "");
-				return result?.map((declaration) => ({
-					...declaration,
-					conditions: token.split(":").slice(0, -1).map(condition),
-				}));
+				const result = parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
+				return result === undefined ? undefined : withTailwindVariantConditions(result, token);
 			},
 		};
 		return {
 			...fallback,
-			files: [joinDocumentPath(context.root, cssFile.file)],
+			files: cssFiles.map(({ file }) =>
+				file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file),
+			),
 			tokenCatalog: tailwindTokenCatalog(system)?.contract,
 			values: {
 				...fallback.values,

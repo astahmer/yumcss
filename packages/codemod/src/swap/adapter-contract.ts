@@ -90,6 +90,8 @@ export interface AdapterTokenCatalog {
 
 export interface AdapterConfigContext extends AdapterDetectionContext {
 	readonly readFile?: (file: string) => string | undefined;
+	/** Optional project filesystem port used to discover the effective config graph. */
+	readonly listFiles?: (root: string) => readonly string[];
 }
 
 export interface AdapterParseContext extends AdapterDetectionContext {

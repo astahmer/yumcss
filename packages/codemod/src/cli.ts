@@ -495,6 +495,7 @@ async function runExternalAdapterSwap(
 		residuals: number;
 	}> = [];
 	const plannedGeneratedFiles = new Map<string, string>();
+	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 	const pendingWrites: Array<{
 		file: string;
 		outputFile: string;
@@ -528,6 +529,7 @@ async function runExternalAdapterSwap(
 					return undefined;
 				}
 			},
+			listFiles: () => projectFiles,
 			mode: args.capabilityMode ?? "safe",
 			skipMarker: args.skipMarker,
 			meta,
