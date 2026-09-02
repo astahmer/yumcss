@@ -103,3 +103,34 @@ browser fixtures cover generated stylesheet behavior and integration; and
 `packages/pandwind/cx-bench.mts` plus its smoke test cover composition
 throughput. The competitor rig lives outside the repo; rebuild instructions are in
 [BENCH.md](https://github.com/astahmer/pandwind/blob/main/BENCH.md#re-running).
+
+## Repository-scale tooling benchmark — 2026-09-02
+
+The committed harness at `scripts/benchmark-tooling.mts` runs the same 250-file
+synthetic repository through the shared source workspace, analyzer, codemod,
+and unplugin transform. It reports cold time, warm mean, p50/p95 warm samples,
+RSS growth, processed output count, and input bytes. The reference run was the
+pre-optimization benchmark revision `b6538c880a95170572079505b2a9b459a55467a8`;
+the current run was `66120db9d577149346cb4c98d8339ab4c0c824e6`.
+
+| pipeline | cold before | cold after | warm p50 before | warm p50 after | p95 before | p95 after |
+| -------- | ---------: | --------: | --------------: | ------------: | ---------: | --------: |
+| scanner | 175.13 ms | 52.46 ms | 191.41 ms | 8.54 ms | 209.64 ms | 8.97 ms |
+| analyzer | 130.16 ms | 14.43 ms | 55.06 ms | 11.10 ms | 66.22 ms | 13.21 ms |
+| codemod | 313.50 ms | 83.59 ms | 193.80 ms | 50.90 ms | 329.77 ms | 76.01 ms |
+| unplugin | 281.46 ms | 56.98 ms | 111.10 ms | 6.07 ms | 139.10 ms | 11.43 ms |
+
+The scanner improvement comes from a bounded cross-workspace cache of exact
+scan results. Analyzer avoids parsing the same module twice. Unplugin reuses
+the parsed program and memoizes unchanged transforms; invalidation clears the
+result cache so imported constants and generated configuration remain correct.
+
+Run it with:
+
+```sh
+nub scripts/benchmark-tooling.mts --files 250 --samples 7
+```
+
+These are local evidence, not universal performance claims. V8 compilation,
+filesystem cache state, and garbage collection can move individual samples;
+RSS deltas are especially noisy. The harness is intentionally not a CI gate.

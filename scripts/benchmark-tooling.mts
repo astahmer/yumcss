@@ -32,6 +32,12 @@ type Measurement = {
 	inputBytes: number;
 };
 
+type Repository = {
+	root: string;
+	inputBytes: number;
+	files: readonly { path: string; source: string }[];
+};
+
 const ROOT = resolve(import.meta.dirname, "..");
 const EXAMPLE_TW = resolve(ROOT, "apps/example/src/tw.ts");
 
@@ -84,9 +90,10 @@ async function measure<T>(
 	};
 }
 
-function createRepository(fileCount: number): { root: string; inputBytes: number } {
+function createRepository(fileCount: number): Repository {
 	const root = mkdtempSync(join(tmpdir(), "pandwind-tooling-benchmark-"));
 	let inputBytes = 0;
+	const files: Array<{ path: string; source: string }> = [];
 	for (let index = 0; index < fileCount; index += 1) {
 		const file = join(root, `src-${index}.tsx`);
 		const source = [
@@ -96,14 +103,12 @@ function createRepository(fileCount: number): { root: string; inputBytes: number
 		].join("\n");
 		writeFileSync(file, source);
 		inputBytes += Buffer.byteLength(source);
+		files.push({ path: file, source });
 	}
-	return { root, inputBytes };
+	return { root, inputBytes, files };
 }
 
-async function benchmarkScanner(repository: {
-	root: string;
-	inputBytes: number;
-}): Promise<Measurement> {
+async function benchmarkScanner(repository: Repository): Promise<Measurement> {
 	let latest = 0;
 	const warmWorkspace = createSourceWorkspace();
 	return measure(
@@ -123,10 +128,7 @@ async function benchmarkScanner(repository: {
 	);
 }
 
-async function benchmarkAnalyzer(repository: {
-	root: string;
-	inputBytes: number;
-}): Promise<Measurement> {
+async function benchmarkAnalyzer(repository: Repository): Promise<Measurement> {
 	const config = loadTwConfig(EXAMPLE_TW);
 	const workspace = createSourceWorkspace();
 	const sourceFiles = workspace.collect(["**/*"], repository.root);
@@ -142,39 +144,43 @@ async function benchmarkAnalyzer(repository: {
 	return measure(run, run, (value) => value, repository.inputBytes);
 }
 
-async function benchmarkCodemod(inputBytes: number): Promise<Measurement> {
-	const source = `import styled from "styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });`;
+async function benchmarkCodemod(repository: Repository): Promise<Measurement> {
+	const sources = repository.files.map((file, index) => ({
+		path: file.path,
+		source: `import styled from "styled-components";\nexport const Card${index} = styled.div({ color: "red", padding: "1rem" });`,
+	}));
+	const inputBytes = sources.reduce((total, file) => total + Buffer.byteLength(file.source), 0);
 	let latest = 0;
 	const run = () => {
-		const result = runAdapterMigration(source, {
-			from: "styled-components",
-			to: "pandwind",
-			file: "Card.tsx",
-		});
-		latest = result.code.length;
-		return result;
+		latest = 0;
+		for (const file of sources) {
+			const result = runAdapterMigration(file.source, {
+				from: "styled-components",
+				to: "pandwind",
+				file: file.path,
+			});
+			latest += result.converted;
+		}
+		return latest;
 	};
-	return measure(run, run, (value) => value.converted, inputBytes);
+	return measure(run, run, (value) => value, inputBytes);
 }
 
-async function benchmarkUnplugin(repository: {
-	root: string;
-	inputBytes: number;
-}): Promise<Measurement> {
-	const file = join(repository.root, "hot.tsx");
-	const source = `import { tw } from "./tw";\nexport const className = tw({ display: "flex", p: "4", text: "sm" });`;
-	writeFileSync(file, source);
+async function benchmarkUnplugin(repository: Repository): Promise<Measurement> {
 	const plugin = createInlineTwPluginCore();
 	const resolver = {
 		resolve: async () => ({ id: EXAMPLE_TW }),
 	};
 	let latest = 0;
 	const run = async () => {
-		const result = await plugin.transform(source, file, resolver);
-		latest = result?.code.length ?? source.length;
-		return result;
+		latest = 0;
+		for (const file of repository.files) {
+			const result = await plugin.transform(file.source, file.path, resolver);
+			latest += result?.code.length ?? file.source.length;
+		}
+		return latest;
 	};
-	return measure(run, run, (value) => value?.code.length ?? latest, repository.inputBytes);
+	return measure(run, run, (value) => value, repository.inputBytes);
 }
 
 const repository = createRepository(options.files);
@@ -184,7 +190,7 @@ try {
 		samples: options.samples,
 		scanner: await benchmarkScanner(repository),
 		analyzer: await benchmarkAnalyzer(repository),
-		codemod: await benchmarkCodemod(repository.inputBytes),
+		codemod: await benchmarkCodemod(repository),
 		unplugin: await benchmarkUnplugin(repository),
 	};
 	console.log(JSON.stringify(results, null, 2));
