@@ -18,9 +18,15 @@ import type { SourceBinding, SourceBindingIndex, SourceScanResult } from "pandwi
 import type { StyleLowering } from "./lowering.ts";
 import type { StyleHostRepresentationKind, StyleRepresentationKind } from "./identifiers.ts";
 import type { HostFramework } from "./host-adapters.ts";
+import type {
+	AdapterConfigEvidence,
+	AdapterGeneratedArtifactEvidence,
+	AdapterOfficialApiManifest,
+	AdapterPluginChain,
+} from "./adapter-evidence.ts";
 
 /** Versioned source/target adapter protocol for the migration pivot. */
-export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/2" as const;
+export const ADAPTER_CONTRACT_SCHEMA = "pandwind.style-adapter/3" as const;
 
 export type AdapterDependencyKind = "runtime" | "development" | "peer" | "config";
 
@@ -77,6 +83,12 @@ export interface AdapterProjectConfig {
 	readonly tokenCatalog?: AdapterTokenCatalog;
 	/** Configuration-loading failures are semantic residuals, never silent fallback. */
 	readonly residuals?: readonly StyleProgramResidual[];
+	/** Ordered evidence for how project semantics were resolved. */
+	readonly configuration?: readonly AdapterConfigEvidence[];
+	/** Configured source plugin chain; incomplete chains are not silently flattened. */
+	readonly plugins?: AdapterPluginChain;
+	/** Generated artifacts that are authoritative over source re-interpretation. */
+	readonly artifacts?: readonly AdapterGeneratedArtifactEvidence[];
 }
 
 export const ADAPTER_TOKEN_CATALOG_SCHEMA = "pandwind.adapter-token-catalog/1" as const;
@@ -400,6 +412,8 @@ export interface StyleAdapter {
 	readonly sourceModules: readonly string[];
 	readonly capabilities: AdapterCapabilities;
 	readonly dependencies: AdapterDependencies;
+	/** Documentation-driven source surface owned by this adapter. */
+	readonly officialApi: AdapterOfficialApiManifest;
 	/** Optional target-owned policy for verified custom-token recovery. */
 	readonly tokenPolicy?: AdapterTokenPolicy;
 	/** Adapter-owned semantic strategies; the runner only composes these ports. */

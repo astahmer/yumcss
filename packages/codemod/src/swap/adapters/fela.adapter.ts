@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -7,6 +8,15 @@ import {
 
 const fela = makeExtraAdapter({
 	id: CodemodAdapterId.Fela,
+	officialApi: {
+		apis: [
+			{ name: "renderer.renderRule", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "createRenderer", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "createComponent", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		pluginSystems: ["plugins", "enhancers"],
+		ssrHooks: ["renderer.renderToMarkup", "renderer.renderToSheetList"],
+	},
 	modules: ["fela", "react-fela"],
 	packages: {
 		packages: [

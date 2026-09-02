@@ -6,7 +6,12 @@ import {
 	rewriteVueSfcToJsx,
 } from "../host-adapters.ts";
 import type { AdapterHostFrameworkConversion } from "../adapter-contract.ts";
-import { CodemodAdapterId, StyleHostRepresentationKind, StyleLoweringId } from "../identifiers.ts";
+import {
+	AdapterOfficialApiStatusTag,
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+	StyleLoweringId,
+} from "../identifiers.ts";
 import { STYLE_LOWERING_SCHEMA, type StyleLowering } from "../lowering.ts";
 import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
 import { intrinsicTagForSubject } from "../host-component-rewriter.ts";
@@ -367,6 +372,12 @@ function rewriteReactHost(
 
 const reactNative = makeExtraAdapter({
 	id: CodemodAdapterId.ReactNative,
+	officialApi: {
+		apis: [
+			{ name: "StyleSheet.create", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "style", status: AdapterOfficialApiStatusTag.Supported },
+		],
+	},
 	modules: ["react-native"],
 	packages: { packages: [{ name: "react-native", kind: "peer" }] },
 	detect: [/from\s+["']react-native["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],

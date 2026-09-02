@@ -1,6 +1,7 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -9,6 +10,12 @@ import {
 
 const treat = makeExtraAdapter({
 	id: CodemodAdapterId.Treat,
+	officialApi: {
+		apis: [
+			{ name: "style", status: AdapterOfficialApiStatusTag.CompatibilityOnly },
+			{ name: "createTheme", status: AdapterOfficialApiStatusTag.CompatibilityOnly },
+		],
+	},
 	modules: ["@/styles.treat", "treat"],
 	packages: { packages: [{ name: "treat", kind: "development" }] },
 	detect: [/from\s+["'](?:treat|[^"']+\.treat)["']/g, /\b(?:style|createTheme)\s*\(\s*\{/g],

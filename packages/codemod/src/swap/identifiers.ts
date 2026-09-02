@@ -107,6 +107,32 @@ export const enum CodemodPluginId {
 	BuiltinAdapters = "pandwind-builtin-adapters",
 }
 
+/** Resolution evidence for project configuration, ordered by authority. */
+export const enum AdapterConfigEvidenceSourceTag {
+	OfficialLoader = "official-loader",
+	GeneratedArtifact = "generated-artifact",
+	ProjectSourceFallback = "project-source-fallback",
+	Unresolved = "unresolved",
+}
+
+export const enum AdapterEvidenceStatusTag {
+	Resolved = "resolved",
+	Failed = "failed",
+	NotAttempted = "not-attempted",
+}
+
+export const enum AdapterPluginResolutionTag {
+	Resolved = "resolved",
+	Unresolved = "unresolved",
+}
+
+export const enum AdapterOfficialApiStatusTag {
+	Supported = "supported",
+	Deprecated = "deprecated",
+	Internal = "internal",
+	CompatibilityOnly = "compatibility-only",
+}
+
 export const enum StyleProgramEmissionHint {
 	GlobalVariables = "global-variables",
 	RuntimeClass = "runtime-class",

@@ -1,5 +1,6 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -10,6 +11,13 @@ import { StyleProgramAnalysis } from "../style-program-analysis.ts";
 /** Next-yak's extracted css and styled template dialects share one adapter. */
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.NextYak,
+	officialApi: {
+		apis: [
+			{ name: "css", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		compilerIntegrations: ["next-yak/swc", "next-yak/vite"],
+	},
 	patterns: [
 		{
 			name: "jsx-css",

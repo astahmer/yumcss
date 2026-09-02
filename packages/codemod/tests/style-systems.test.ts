@@ -8,6 +8,8 @@ import {
 	PANDA_STYLE_SYSTEM,
 	PANDWIND_STYLE_SYSTEM,
 	STYLE_SYSTEMS,
+	AdapterEvidence,
+	AdapterOfficialApiStatusTag,
 	asStyleDialect,
 	createStyleSystem,
 	createStyleSystemRegistry as registry,
@@ -25,6 +27,9 @@ const stub = (id: string) => ({
 		capabilities: {},
 	},
 	dependencies: { packages: [] },
+	officialApi: AdapterEvidence.manifest({
+		apis: [{ name: id, status: AdapterOfficialApiStatusTag.Supported }],
+	}),
 	detect: () => ({ matched: true, confidence: 1, evidence: [id] }),
 	loadConfig: () => ({ adapter: id, files: [], values: {} }),
 	parse: () => ({ matches: [], residuals: [] }),

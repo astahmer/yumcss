@@ -25,7 +25,11 @@ import {
 	type AdapterCapabilityLevel,
 } from "../capabilities.ts";
 import { ADAPTER_CONTRACT_SCHEMA } from "../adapter-contract.ts";
-import { CodemodCallPatternFormTag } from "../identifiers.ts";
+import {
+	AdapterOfficialApiStatusTag,
+	CodemodCallPatternFormTag,
+	StyleRepresentationKind,
+} from "../identifiers.ts";
 import type { StyleLowering } from "../lowering.ts";
 import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
@@ -35,8 +39,8 @@ import {
 	projectPortableDynamicMigration,
 	projectStaticSubjectMigration,
 } from "../adapter-projections.ts";
-import { StyleRepresentationKind } from "../identifiers.ts";
 import { PortableStyleArtifact } from "../portable-artifact.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 
 export interface ExtraAdapterOptions {
 	readonly id: string;
@@ -73,6 +77,8 @@ export interface ExtraAdapterOptions {
 	) => AdapterEmitResult | undefined;
 	/** How a target preserves named style maps when it has no native map API. */
 	readonly namedRuleStrategy?: StyleNamedRuleStrategy;
+	/** Documentation-driven public API surface. */
+	readonly officialApi?: import("../adapter-evidence.ts").AdapterOfficialApiManifestOptions;
 }
 
 interface ExtraAdapterResidualPattern {
@@ -339,10 +345,25 @@ function parseTemplateCalls(
  */
 export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 	const targetPolicy = options.targetPolicy ?? options.migration?.targetPolicy;
+	const defaultOfficialApi = AdapterEvidence.manifest({
+		apis: [
+			{
+				name: options.id,
+				status: AdapterOfficialApiStatusTag.Supported,
+				forms: [options.form ?? "style"],
+			},
+		],
+		compilerIntegrations: options.modules,
+	});
 	return {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: options.id,
 		version: "2",
+		officialApi: AdapterEvidence.manifest({
+			...defaultOfficialApi,
+			...options.officialApi,
+			apis: options.officialApi?.apis ?? defaultOfficialApi.apis,
+		}),
 		sourceModules: options.modules,
 		capabilities: capabilities(
 			options.id,
@@ -380,7 +401,7 @@ export function makeExtraAdapter(options: ExtraAdapterOptions): StyleAdapter {
 			});
 			return { matched: evidence.length > 0, confidence: evidence.length ? 0.8 : 0, evidence };
 		},
-		loadConfig: (context) => config(options.id, context),
+		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(options.id, context)),
 		parse: (source, context) => {
 			const parsed =
 				options.form === CodemodCallPatternFormTag.Template

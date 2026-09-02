@@ -19,10 +19,12 @@ import {
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
@@ -852,6 +854,17 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.UnoCSS,
 		version: "2",
+		officialApi: AdapterEvidence.manifest({
+			apis: [
+				{ name: "rules", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "shortcuts", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "themes", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "variants", status: AdapterOfficialApiStatusTag.Supported },
+			],
+			configEntrypoints: ["uno.config.ts", "uno.config.js"],
+			pluginSystems: ["presets", "transformers", "extractors"],
+			compilerIntegrations: ["@unocss/config", "@unocss/core"],
+		}),
 		sourceModules: ["unocss", "@unocss/core", "@unocss/preset-wind"],
 		dependencies: { packages: [{ name: "unocss", kind: "development" }] },
 		capabilities: {
@@ -878,11 +891,12 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				evidence: matched ? ["literal-class-attribute"] : [],
 			};
 		},
-		loadConfig: (context) => config(context),
+		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(context)),
 		...(moduleLoader === undefined
 			? {}
 			: {
-					loadConfigAsync: (context: AdapterConfigContext) => officialConfig(context, moduleLoader),
+					loadConfigAsync: async (context: AdapterConfigContext) =>
+						AdapterEvidence.normalizeConfig(await officialConfig(context, moduleLoader)),
 				}),
 		parse: (source, context) =>
 			parseUnoCss(

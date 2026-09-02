@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -7,6 +8,15 @@ import {
 
 const compiled = makeExtraAdapter({
 	id: CodemodAdapterId.Compiled,
+	officialApi: {
+		apis: [
+			{ name: "css", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "cssMap", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Deprecated },
+			{ name: "ClassNames", status: AdapterOfficialApiStatusTag.Deprecated },
+		],
+		compilerIntegrations: ["@compiled/babel-plugin", "@compiled/webpack-loader"],
+	},
 	modules: ["@compiled/react", "@compiled/css-in-js"],
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
 	detect: [

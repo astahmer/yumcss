@@ -1,5 +1,6 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -7,6 +8,13 @@ import {
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Linaria,
+	officialApi: {
+		apis: [
+			{ name: "css", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		compilerIntegrations: ["@linaria/babel-preset", "@linaria/webpack-loader"],
+	},
 	patterns: [
 		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
 		{

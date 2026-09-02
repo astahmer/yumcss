@@ -125,6 +125,10 @@ function removeStitchesBootstrap(code: string): string {
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Stitches,
+	officialApi: {
+		pluginSystems: ["tokens", "variants", "compoundVariants", "utils", "themes"],
+		ssrHooks: ["getCssText"],
+	},
 	patterns: [
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: stitchesTransform },
 		{ name: "globalCss", kind: "global", regex: /\bglobalCss\s*\(\s*\{/g },

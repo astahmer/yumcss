@@ -8,7 +8,7 @@ injected loader.
 
 ## Contract
 
-The current protocol is `pandwind.style-adapter/2`. An adapter owns five
+The current protocol is `pandwind.style-adapter/3`. An adapter owns five
 operations:
 
 1. `detect` identifies source code and reports evidence and confidence.
@@ -48,7 +48,7 @@ The package may advertise the same entry points in `package.json`:
 }
 ```
 
-The manifest is `pandwind.style-adapter-manifest/1` and records each adapter's
+The manifest is `pandwind.style-adapter-manifest/2` and records each adapter's
 ID, implementation version, contract version, capabilities, and dependencies.
 It also carries a `pandwind.style-program-core-compatibility/1` requirement,
 for example `{ schema: "pandwind.style-program-core-compatibility/1",
@@ -56,6 +56,30 @@ versionRange: "^1" }`. Hosts can inspect it before loading code and the
 registry verifies the core range and capability declarations again at
 registration time. A plugin built for an incompatible core is rejected before
 its adapter participates in a migration.
+
+Each adapter manifest also includes a versioned official-API evidence profile:
+
+```ts
+officialApi: {
+	apis: [{ name: "css", status: AdapterOfficialApiStatusTag.Supported }],
+	configEntrypoints: ["panda.config.ts"],
+	pluginSystems: ["presets", "plugins"],
+	compilerIntegrations: ["@pandacss/config"],
+	ssrHooks: [],
+}
+```
+
+The API list is the documented user surface, not an inventory of callable
+internals. `supported`, `deprecated`, `internal`, and `compatibility-only` are
+distinct statuses. The built-in Chakra adapter, for example, records its
+documented `system.css()` source form without claiming a bare `css` export.
+
+Project configuration results carry the matching evidence chain. The ordered
+sources are official loader, generated artifact, project-source fallback, and
+unresolved; every entry says whether it resolved, failed, or was not attempted.
+Configured plugin chains and authoritative generated artifacts are retained in
+the same result. Opaque plugin values remain unresolved and therefore cannot be
+silently flattened into a supposedly complete semantic configuration.
 
 Discovery is deliberately explicit. The host decides how package names are
 resolved, which makes the same registry safe for CLIs, bundlers, tests, and

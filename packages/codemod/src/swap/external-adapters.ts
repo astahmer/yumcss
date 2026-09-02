@@ -61,6 +61,7 @@ import {
 	projectStaticSubjectMigration,
 } from "./adapter-projections.ts";
 import { PortableStyleArtifact } from "./portable-artifact.ts";
+import { AdapterEvidence, type AdapterOfficialApiManifestOptions } from "./adapter-evidence.ts";
 
 /** Adapter ids are registry-defined so adding an adapter does not require a central union edit. */
 export type ExternalAdapterId = string;
@@ -156,6 +157,8 @@ export interface CodemodAdapterSpec {
 	) => CodemodAdapterEmission;
 	readonly sourceObjectOptions?: AdapterSourceObjectOptionsProvider;
 	readonly migration?: AdapterMigrationHooks;
+	/** Documentation-driven public API surface. */
+	readonly officialApi?: AdapterOfficialApiManifestOptions;
 	/** Target-owned policy for verified custom-token recovery. */
 	readonly tokenPolicy?: AdapterTokenPolicy;
 	/** Target-owned policy for preserving named style maps without source branches. */
@@ -1302,6 +1305,18 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: spec.id,
 		version: "2",
+		officialApi: (() => {
+			const defaults = AdapterEvidence.defaultManifest({
+				patterns: spec.patterns,
+				configFiles: spec.configFiles,
+				sourceModules: spec.sourceModules,
+			});
+			return AdapterEvidence.manifest({
+				...defaults,
+				...spec.officialApi,
+				apis: spec.officialApi?.apis ?? defaults.apis,
+			});
+		})(),
 		sourceModules: spec.sourceModules,
 		capabilities: capabilitiesWithRepresentations,
 		dependencies: spec.packages,
@@ -1312,8 +1327,15 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 			spec.detect?.(context, () => detectBy(spec.detectPatterns, context)) ??
 			detectBy(spec.detectPatterns, context),
 		loadConfig: (context) =>
-			spec.loadConfig?.(context) ?? configFor(spec.id, spec.configFiles ?? [], context),
-		...(spec.loadConfigAsync === undefined ? {} : { loadConfigAsync: spec.loadConfigAsync }),
+			AdapterEvidence.normalizeConfig(
+				spec.loadConfig?.(context) ?? configFor(spec.id, spec.configFiles ?? [], context),
+			),
+		...(spec.loadConfigAsync === undefined
+			? {}
+			: {
+					loadConfigAsync: async (context: AdapterConfigContext) =>
+						AdapterEvidence.normalizeConfig(await spec.loadConfigAsync!(context)),
+				}),
 		parse: (source, context) =>
 			spec.parse?.(source, context) ??
 			parseCalls(source, context, spec.patterns, spec.sourceObjectOptions),

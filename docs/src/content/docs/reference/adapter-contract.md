@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 
-pandwind adapters implement `pandwind.style-adapter/2`. An adapter is both a
+pandwind adapters implement `pandwind.style-adapter/3`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
 Our own `/2` contract is intentionally breaking; adapters should declare their
 version rather than silently accepting a different schema.

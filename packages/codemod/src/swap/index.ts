@@ -106,6 +106,10 @@ export {
 } from "./semantic-ir.ts";
 export {
 	CodemodAdapterId,
+	AdapterConfigEvidenceSourceTag,
+	AdapterEvidenceStatusTag,
+	AdapterOfficialApiStatusTag,
+	AdapterPluginResolutionTag,
 	CodemodPatternId,
 	CodemodPluginId,
 	SwapSourceId,
@@ -159,6 +163,19 @@ export type {
 	MigrationSkipDiagnosticInput,
 } from "./migration-diagnostics.ts";
 export type { ExternalIdentifier } from "./identifiers.ts";
+export {
+	ADAPTER_EVIDENCE_SCHEMA,
+	AdapterEvidence,
+	type AdapterConfigEvidence,
+	type AdapterEvidenceProfile,
+	type AdapterGeneratedArtifactEvidence,
+	type AdapterOfficialApi,
+	type AdapterOfficialApiManifest,
+	type AdapterOfficialApiManifestInput,
+	type AdapterOfficialApiManifestOptions,
+	type AdapterPluginChain,
+	type AdapterPluginEvidence,
+} from "./adapter-evidence.ts";
 export {
 	SEMANTIC_CONTRACT_SUITE_SCHEMA,
 	createSemanticContractSuite,

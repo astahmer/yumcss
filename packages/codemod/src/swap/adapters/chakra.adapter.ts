@@ -786,6 +786,11 @@ export function createChakraAdapter(
 			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.ChakraUi,
+		officialApi: {
+			pluginSystems: ["presets", "recipes", "slot-recipes", "conditions", "globalCss"],
+			compilerIntegrations: ["@chakra-ui/react"],
+			ssrHooks: ["ChakraProvider"],
+		},
 		patterns: [
 			{
 				name: "chakra-style-props",

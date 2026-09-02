@@ -1,6 +1,7 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -8,6 +9,13 @@ import {
 
 const style9 = makeExtraAdapter({
 	id: CodemodAdapterId.Style9,
+	officialApi: {
+		apis: [
+			{ name: "style9.create", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "style9", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		compilerIntegrations: ["style9/babel", "style9/webpack"],
+	},
 	modules: ["style9"],
 	packages: { packages: [{ name: "style9", kind: "runtime" }] },
 	detect: [/from\s+["']style9["']/g, /\bstyle9\.create\s*\(\s*\{/g],

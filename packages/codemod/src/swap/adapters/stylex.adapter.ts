@@ -762,6 +762,10 @@ function normalizeStyleXVariables(program: StyleProgram): StyleProgram {
 export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.StyleX,
+		officialApi: {
+			pluginSystems: ["defineVars", "createTheme", "conditionalStyles"],
+			compilerIntegrations: ["@stylexjs/babel-plugin"],
+		},
 		patterns: [
 			{
 				name: CodemodPatternId.StyleXCreate,

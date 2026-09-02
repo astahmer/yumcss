@@ -13,7 +13,7 @@ const registry = createStyleAdapterRegistry();
 await registry.discover(["my-pandwind-adapter"]);
 ```
 
-Adapters implement the versioned `pandwind.style-adapter/2` contract and are
+Adapters implement the versioned `pandwind.style-adapter/3` contract and are
 routed through the semantic style-program IR. Unsupported capabilities produce
 residual reports instead of silent partial rewrites.
 

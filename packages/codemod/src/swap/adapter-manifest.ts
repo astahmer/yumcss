@@ -8,9 +8,10 @@ import {
 	StyleProgramCompatibility,
 	type StyleProgramCoreRequirement,
 } from "./style-program-core.ts";
+import type { AdapterOfficialApiManifest } from "./adapter-evidence.ts";
 
 /** Package metadata convention consumed before an adapter is registered. */
-export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/1" as const;
+export const ADAPTER_MANIFEST_SCHEMA = "pandwind.style-adapter-manifest/2" as const;
 export const ADAPTER_PACKAGE_FIELD = "pandwind" as const;
 
 export interface StyleAdapterManifestEntry {
@@ -19,6 +20,7 @@ export interface StyleAdapterManifestEntry {
 	readonly contract: typeof ADAPTER_CONTRACT_SCHEMA;
 	readonly capabilities: Readonly<Partial<Record<string, AdapterCapabilityLevel>>>;
 	readonly dependencies: AdapterDependencies;
+	readonly officialApi: AdapterOfficialApiManifest;
 }
 
 export interface StyleAdapterManifest {
@@ -50,6 +52,7 @@ export function createStyleAdapterManifest(
 			contract: ADAPTER_CONTRACT_SCHEMA,
 			capabilities: adapter.capabilities.capabilities,
 			dependencies: adapter.dependencies,
+			officialApi: adapter.officialApi,
 		})),
 	};
 }
@@ -85,6 +88,8 @@ export function validateStyleAdapterManifest(
 			throw new Error(`adapter ${adapter.id} manifest version does not match implementation`);
 		if (!sameCapabilities(entry.capabilities, adapter.capabilities.capabilities))
 			throw new Error(`adapter ${adapter.id} manifest capabilities do not match implementation`);
+		if (!sameOfficialApi(entry.officialApi, adapter.officialApi))
+			throw new Error(`adapter ${adapter.id} manifest official API does not match implementation`);
 	}
 }
 
@@ -98,4 +103,11 @@ function sameCapabilities(
 		leftKeys.length === rightKeys.length &&
 		leftKeys.every((key, index) => key === rightKeys[index] && left[key] === right[key])
 	);
+}
+
+function sameOfficialApi(
+	left: AdapterOfficialApiManifest,
+	right: AdapterOfficialApiManifest,
+): boolean {
+	return JSON.stringify(left) === JSON.stringify(right);
 }

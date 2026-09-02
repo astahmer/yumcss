@@ -284,6 +284,10 @@ export function createTokenamiAdapter(
 			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Tokenami,
+		officialApi: {
+			pluginSystems: ["aliases", "conditions", "themes", "composition", "variants"],
+			compilerIntegrations: ["@tokenami/config"],
+		},
 		packages: {
 			packages: [
 				{ name: "@tokenami/css", kind: "runtime" },

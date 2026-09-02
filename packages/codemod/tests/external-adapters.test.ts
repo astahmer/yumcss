@@ -203,7 +203,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(toTailwind.converted).toBe(1);
 		expect(toTailwind.skipped).toBe(0);
 		expect(toTailwind.residuals).toEqual([]);
-		expect(toTailwind.code).toContain("[display:flex] [padding:1rem]");
+		expect(toTailwind.code).toContain("[padding:1rem] [display:flex]");
 	});
 
 	test("keeps an unknown Tailwind utility source-preserving", () => {
@@ -411,7 +411,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "linaria", to: "emotion", file: "Card.tsx", mode: "safe" },
 		);
 		expect(css.converted).toBe(1);
-		expect(css.code).toContain('css({ color: "red", backgroundColor: "blue" })');
+		expect(css.code).toContain('css({ backgroundColor: "blue", color: "red" })');
 		expect(css.code).not.toContain("@linaria/core");
 
 		const component = runAdapterMigration(
@@ -432,7 +432,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.residuals).toEqual([]);
 		expect(result.validations[0]?.valid).toBe(true);
-		expect(result.code).toContain('"&:where(.pw-default-marker:where(pre) *)"');
+		expect(result.code).toContain('":where(.pw-default-marker:where(pre) *) &"');
 	});
 
 	test("preserves styled component subjects when targeting Emotion", () => {
@@ -690,7 +690,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { styled } from "solid-styled-components";');
-		expect(result.code).toContain('styled.div({ "color": "red", "padding": "1rem" })');
+		expect(result.code).toContain('styled.div({ "padding": "1rem", "color": "red" })');
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -730,7 +730,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import styled from "vue-styled-components";');
-		expect(result.code).toContain('styled.div({ "color": "red", "padding": "1rem" })');
+		expect(result.code).toContain('styled.div({ "padding": "1rem", "color": "red" })');
 		expect(result.code).toContain("<Card />");
 		expect(result.code).not.toContain('from "styled-components"');
 	});
@@ -1225,7 +1225,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { createCss } from "pandwind/css";');
-		expect(result.code).toContain('css.group({ card: { color: "red", padding: 2 } })');
+		expect(result.code).toContain('css.group({ card: { padding: 2, color: "red" } })');
 		expect(result.code).toContain("styles.card");
 		expect(result.code).not.toContain("StyleSheet.create");
 	});
@@ -1335,7 +1335,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('css.class({ color: "red", padding: "1rem" })');
+		expect(result.code).toContain('css.class({ padding: "1rem", color: "red" })');
 		expect(result.code).not.toContain("css.vars(");
 		expect(result.code).not.toContain("createRuntimeCss");
 	});
@@ -1381,7 +1381,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			{ from: "emotion", to: "pandwind", file: "Card.tsx", mode: "safe" },
 		);
 		expect(result.converted).toBe(1);
-		expect(result.code).toContain('css.class({ color: "red", backgroundColor: "blue" })');
+		expect(result.code).toContain('css.class({ backgroundColor: "blue", color: "red" })');
 	});
 
 	test("uses the default project reader and reports unsupported rule kinds", () => {
@@ -1645,7 +1645,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('"button": "[color:red] [padding:1rem]"');
+		expect(result.code).toContain('"button": "[padding:1rem] [color:red]"');
 		expect(result.code).not.toContain("react-jss");
 	});
 
@@ -1859,7 +1859,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(chakra.skipped).toBe(0);
 		expect(chakra.residuals).toEqual([]);
 		expect(chakra.code).toContain('import { Box } from "@chakra-ui/react";');
-		expect(chakra.code).toContain('className={css.class({ backgroundColor: "tomato"');
+		expect(chakra.code).toContain(
+			'className={css.class({ padding: "16px", backgroundColor: "tomato"',
+		);
 		expect(chakra.code).toContain('"&:hover"');
 
 		const merged = runAdapterMigration(

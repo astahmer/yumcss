@@ -100,6 +100,11 @@ function detectEmotion(
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Emotion,
+	officialApi: {
+		pluginSystems: ["@emotion/babel-plugin", "importMap", "macros"],
+		compilerIntegrations: ["@emotion/babel-plugin"],
+		ssrHooks: ["extractCritical", "renderStylesToString", "renderStylesToNodeStream"],
+	},
 	patterns: [
 		{
 			name: "jsx-css",

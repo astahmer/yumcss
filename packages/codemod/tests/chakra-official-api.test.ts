@@ -42,7 +42,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { Box } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <Box  className={css.class({ backgroundColor: "var(--chakra-colors-red-200)", padding: "var(--chakra-spacing-4)" })}/>;",
+			export const App = () => <Box  className={css.class({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--chakra-colors-red-200)" })}/>;",
 			  "converted": 1,
 			  "outcomes": [
 			    {
@@ -144,7 +144,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { defaultSystem } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.class({ color: "var(--chakra-colors-red-200)", padding: "var(--chakra-spacing-4)" });",
+			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
 			  "converted": 1,
 			  "outcomes": [
 			    {
@@ -179,7 +179,7 @@ describe("Chakra UI official API forms", () => {
 			import { createCss } from "pandwind/css";
 			const css = createCss();
 			const system = createSystem(defaultConfig);
-			export const card = css.class({ color: "var(--chakra-colors-red-200)", padding: "var(--chakra-spacing-4)" });",
+			export const card = css.class({ padding: "var(--chakra-spacing-4)", color: "var(--chakra-colors-red-200)" });",
 			  "converted": 1,
 			  "outcomes": [
 			    {
@@ -223,7 +223,7 @@ describe("Chakra UI official API forms", () => {
 			  "code": "import { defaultSystem } from "@chakra-ui/react";
 			import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const card = css.vars({ color: defaultSystem.token("colors.red.200"), backgroundColor: defaultSystem.token.var("colors.blue.200") });",
+			export const card = css.vars({ backgroundColor: defaultSystem.token.var("colors.blue.200"), color: defaultSystem.token("colors.red.200") });",
 			  "converted": 1,
 			  "outcomes": [
 			    {

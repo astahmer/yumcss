@@ -9,6 +9,11 @@ import {
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.StyledComponents,
+	officialApi: {
+		pluginSystems: ["babel-plugin-styled-components", "attrs", "ThemeProvider"],
+		compilerIntegrations: ["babel-plugin-styled-components", "@swc/plugin-styled-components"],
+		ssrHooks: ["ServerStyleSheet", "interleaveWithNodeStream"],
+	},
 	patterns: [
 		{
 			name: "styled",

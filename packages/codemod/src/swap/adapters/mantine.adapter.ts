@@ -228,6 +228,10 @@ function mantineValue(property: string, value: StyleValue): StyleValue {
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Mantine,
+	officialApi: {
+		pluginSystems: ["theme.components", "style", "styles", "classNames", "vars"],
+		ssrHooks: ["MantineProvider"],
+	},
 	patterns: [
 		{
 			name: "mantine-style-props",

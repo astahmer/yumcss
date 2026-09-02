@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -7,6 +8,15 @@ import {
 
 const goober = makeExtraAdapter({
 	id: CodemodAdapterId.Goober,
+	officialApi: {
+		apis: [
+			{ name: "css", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "setup", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "extractCss", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		ssrHooks: ["extractCss"],
+	},
 	modules: ["goober"],
 	packages: { packages: [{ name: "goober", kind: "runtime" }] },
 	detect: [/from\s+["']goober["']/g, /\bcss\s*\(\s*\{/g],

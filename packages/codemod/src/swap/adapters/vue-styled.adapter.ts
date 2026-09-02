@@ -4,6 +4,7 @@ import { BuiltinHostFramework } from "../host-adapters.ts";
 import { canConvertStaticSolidJsx, rewriteSolidJsxToVue } from "../host-adapters.ts";
 import type { AdapterEmitContext, AdapterEmitResult } from "../adapter-contract.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -84,6 +85,13 @@ function supportsStaticOrFunctionProgram(program: StyleProgram): boolean {
 
 const vueStyled = makeExtraAdapter({
 	id: CodemodAdapterId.VueStyled,
+	officialApi: {
+		apis: [
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled.div", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "ThemeProvider", status: AdapterOfficialApiStatusTag.Supported },
+		],
+	},
 	modules: ["vue-styled-components"],
 	packages: { packages: [{ name: "vue-styled-components", kind: "runtime" }] },
 	detect: [

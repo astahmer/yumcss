@@ -1,6 +1,7 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -8,6 +9,15 @@ import {
 
 const aphrodite = makeExtraAdapter({
 	id: CodemodAdapterId.Aphrodite,
+	officialApi: {
+		apis: [
+			{ name: "StyleSheet.create", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "css", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "@font-face", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "keyframes", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		ssrHooks: ["renderStatic", "rehydrate"],
+	},
 	modules: ["aphrodite"],
 	packages: { packages: [{ name: "aphrodite", kind: "runtime" }] },
 	detect: [/from\s+["']aphrodite["']/g, /\bStyleSheet\.create\s*\(\s*\{/g],

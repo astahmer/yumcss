@@ -132,6 +132,7 @@ async function officialPandaConfig(
 						}),
 				values: {
 					pandaTheme: theme,
+					...(theme.plugins === undefined ? {} : { plugins: theme.plugins }),
 					officialConfigPackage: "@pandacss/config",
 				},
 			};
@@ -155,6 +156,10 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 	const moduleLoader = createPandaConfigLoader(options);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Panda,
+		officialApi: {
+			pluginSystems: ["presets", "plugins", "patterns", "recipes", "slot-recipes"],
+			compilerIntegrations: ["@pandacss/config", "@pandacss/dev"],
+		},
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g },
 			{

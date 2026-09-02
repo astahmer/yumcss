@@ -21,10 +21,12 @@ import {
 } from "../adapter-contract.ts";
 import { ADAPTER_CAPABILITIES_SCHEMA } from "../capabilities.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { detectStaticClassTarget } from "../class-target-detection.ts";
@@ -804,6 +806,17 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id: CodemodAdapterId.Tailwind,
 		version: "2",
+		officialApi: AdapterEvidence.manifest({
+			apis: [
+				{ name: "utility-candidates", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "@utility", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "@plugin", status: AdapterOfficialApiStatusTag.Supported },
+				{ name: "@custom-variant", status: AdapterOfficialApiStatusTag.Supported },
+			],
+			configEntrypoints: ["@theme", "@source", "@reference", "@import"],
+			pluginSystems: ["@plugin"],
+			compilerIntegrations: ["@tailwindcss/node"],
+		}),
 		sourceModules: ["tailwindcss", "@tailwindcss/node"],
 		dependencies: { packages: [{ name: "tailwindcss", kind: "development" }] },
 		capabilities: {
@@ -844,11 +857,12 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				evidence: matched ? [configured ? "tailwind-package" : "literal-class-attribute"] : [],
 			};
 		},
-		loadConfig: (context) => config(context),
+		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(context)),
 		...(moduleLoader === undefined
 			? {}
 			: {
-					loadConfigAsync: (context: AdapterConfigContext) => officialConfig(context, moduleLoader),
+					loadConfigAsync: async (context: AdapterConfigContext) =>
+						AdapterEvidence.normalizeConfig(await officialConfig(context, moduleLoader)),
 				}),
 		parse: (source, context) =>
 			parseTailwind(

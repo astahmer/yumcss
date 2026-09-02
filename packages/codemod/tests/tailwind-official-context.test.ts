@@ -113,8 +113,8 @@ describe("Tailwind official CSS context", () => {
 		expect(result.code).toContain('className="tab-4"');
 		expect(result.residuals).toEqual([
 			expect.objectContaining({
-				kind: "configuration",
-				text: "Tailwind CSS configuration graph",
+				kind: "unknown-utility",
+				text: "tab-4",
 			}),
 		]);
 	});

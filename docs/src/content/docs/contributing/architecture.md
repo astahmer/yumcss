@@ -166,6 +166,41 @@ the generic adapter runtime remains conservative by default.
 
 ## Official project configuration
 
+### Adapter evidence is part of the contract
+
+Every registered adapter publishes a versioned official-API manifest. The
+manifest is owned by the adapter and describes the documented user forms,
+configuration entrypoints, plugin systems, compiler integrations, and SSR
+hooks. It is not inferred by the migration runner and it must not list an
+internal helper merely because that helper is callable. For example, Chakra's
+manifest distinguishes the documented `system.css()` style-object form from a
+nonexistent bare `css` export.
+
+The same adapter config result carries ordered project evidence:
+
+```text
+official loader -> generated artifact -> project source fallback -> unresolved
+```
+
+Each source also records whether it resolved, failed, or was not attempted.
+This matters when an official package is installed but a custom preset or
+plugin cannot be evaluated: the fallback may still make a safe partial
+conversion possible, but the failed official attempt remains visible as a
+configuration residual.
+
+Configured plugin chains are first-class evidence. A statically named package
+is resolved evidence; an opaque function or computed plugin is explicitly
+unresolved and cannot be treated as if the adapter understood its transforms.
+Generated files such as interop manifests and compiler-produced style
+artifacts are recorded as authoritative evidence so source re-interpretation
+does not accidentally override the compiler's result.
+
+The registry validates this evidence generically. Adding an adapter requires
+its implementation and its manifest; no central ecosystem switch is needed.
+The focused `adapter-evidence` contract tests cover the built-in catalog,
+official Panda plugin evidence, fallback/artifact/unresolved ordering, and the
+negative Chakra public-API boundary.
+
 Project-aware migration must ask the ecosystem's own packages to interpret
 custom configuration whenever an official loader is available. This preserves
 presets, plugins, merged themes, shortcuts, and generated token semantics that

@@ -25,7 +25,13 @@ import {
 	swapIRFromStyleProgram,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
-import { CodemodAdapterId, SwapSourceId, SwapTargetId } from "../identifiers.ts";
+import {
+	AdapterOfficialApiStatusTag,
+	CodemodAdapterId,
+	SwapSourceId,
+	SwapTargetId,
+} from "../identifiers.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
 
 const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: "runtime" }],
@@ -145,6 +151,10 @@ function makeCoreAdapter(
 		schema: ADAPTER_CONTRACT_SCHEMA,
 		id,
 		version: "1",
+		officialApi: AdapterEvidence.manifest({
+			apis: [{ name: dialect, status: AdapterOfficialApiStatusTag.Supported, forms: [role] }],
+			compilerIntegrations: [dialect],
+		}),
 		sourceModules:
 			dialect === SwapSourceId.Tw
 				? ["pandwind/tw"]

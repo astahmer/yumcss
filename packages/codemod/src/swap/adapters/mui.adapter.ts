@@ -227,6 +227,10 @@ function rewriteMuiIntrinsicHost(
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Mui,
+	officialApi: {
+		pluginSystems: ["theme.components", "styleOverrides", "variants", "sx"],
+		ssrHooks: ["StyledEngineProvider", "ServerStyleSheets"],
+	},
 	patterns: [
 		{
 			name: "mui-sx",

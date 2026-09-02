@@ -12,6 +12,10 @@ const runtimeFallbackVar =
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.VanillaExtract,
+	officialApi: {
+		pluginSystems: ["Sprinkles", "Recipes", "themes", "contracts"],
+		compilerIntegrations: ["@vanilla-extract/vite-plugin", "@vanilla-extract/webpack-plugin"],
+	},
 	patterns: [
 		{ name: "style", regex: /\bstyle\s*\(\s*\{/g },
 		{ name: "globalStyle", kind: "global", regex: /\bglobalStyle\s*\([^,{]+,\s*\{/g },

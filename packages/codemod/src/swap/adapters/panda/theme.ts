@@ -49,6 +49,8 @@ export interface PandaTheme {
 	textStyles: ReadonlyMap<string, Record<string, unknown>>;
 	/** Custom pattern definitions loaded from panda.config.ts. */
 	customPatterns: ReadonlyMap<string, PandaCustomPattern>;
+	/** Configured plugin values retained for evidence; opaque values stay unresolved. */
+	readonly plugins?: readonly unknown[];
 	/** Normalized string-valued tokens for downstream target policies. */
 	readonly tokenCatalog?: AdapterTokenCatalog;
 	/** Set when the official config loader failed and the deterministic fallback was used. */
@@ -316,6 +318,7 @@ function pandaThemeFromConfig(
 		tokenVars,
 		textStyles,
 		customPatterns,
+		plugins: Array.isArray(unwrapped?.plugins) ? unwrapped.plugins : undefined,
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
 	};
 }
@@ -350,6 +353,7 @@ export const emptyPandaTheme: PandaTheme = {
 	tokenVars: new Map(),
 	textStyles: new Map(),
 	customPatterns: new Map(),
+	plugins: [],
 };
 
 /* ------------------------------------------------------------------ */
@@ -399,6 +403,7 @@ function loadPandaThemeFromSource(configSource: string, extraSources: Array<stri
 		tokenVars,
 		textStyles,
 		customPatterns: new Map(),
+		plugins: [],
 		tokenCatalog: TokenCatalog.fromNested(tokens)?.contract,
 	};
 }

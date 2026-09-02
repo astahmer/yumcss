@@ -8,6 +8,10 @@ import {
 /** Bamboo CSS uses the Panda-compatible styled-system object dialect. */
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Bamboo,
+	officialApi: {
+		pluginSystems: ["presets", "plugins", "patterns", "recipes"],
+		compilerIntegrations: ["@bamboocss/dev", "@bamboocss/vite"],
+	},
 	patterns: [{ name: "css", regex: /\bcss\s*\(\s*\{/g }],
 	packages: {
 		packages: [

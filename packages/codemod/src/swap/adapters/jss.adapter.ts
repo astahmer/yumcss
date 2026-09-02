@@ -2,7 +2,11 @@ import { SourcePass } from "../../source-pass-utils.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
-import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
+import {
+	AdapterOfficialApiStatusTag,
+	CodemodAdapterId,
+	StyleHostRepresentationKind,
+} from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
 	if (context.targetId !== CodemodAdapterId.Pandwind || !context.complete) {
@@ -29,6 +33,16 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.Jss,
+	officialApi: {
+		apis: [
+			{ name: "createUseStyles", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "createStyleSheet", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "createRule", status: AdapterOfficialApiStatusTag.Supported },
+		],
+		configEntrypoints: ["jss.config.js"],
+		pluginSystems: ["plugins", "jss.setup"],
+		ssrHooks: ["SheetsRegistry", "JssProvider"],
+	},
 	patterns: [
 		{ name: "jss-useStyles", regex: /\bcreateUseStyles\s*\(\s*\{/g, objectKind: "named" },
 		{

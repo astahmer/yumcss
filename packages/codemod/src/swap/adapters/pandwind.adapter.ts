@@ -1222,6 +1222,11 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			: (options.moduleLoader ?? NODE_PROJECT_MODULE_LOADER);
 	return defineCodemodAdapter({
 		id: CodemodAdapterId.Pandwind,
+		officialApi: {
+			pluginSystems: ["presets", "bridge", "splitByRoute"],
+			compilerIntegrations: ["pandwind/vite", "pandwind/unplugin"],
+			ssrHooks: ["createRuntimeCss", "renderToString"],
+		},
 		patterns: [
 			{ name: "css", regex: /\bcss\.class\s*\(\s*\{/g },
 			{ name: "css-vars", regex: /\bcss\.vars\s*\(\s*\{/g },

@@ -80,6 +80,31 @@ describe("third-party adapter registry", () => {
 		).toThrow(/manifest capabilities/);
 	});
 
+	test("rejects manifests whose documented API evidence drifts from the adapter", () => {
+		const plugin = createStyleAdapterPlugin("drifted-api-evidence", [
+			createBuiltinCodemodCatalog().registry.get("emotion")!,
+		]);
+		const registry = createStyleAdapterRegistry();
+
+		expect(() =>
+			registry.registerPlugin({
+				...plugin,
+				manifest: {
+					...plugin.manifest,
+					adapters: [
+						{
+							...plugin.manifest.adapters[0]!,
+							officialApi: {
+								...plugin.manifest.adapters[0]!.officialApi,
+								apis: [],
+							},
+						},
+					],
+				},
+			}),
+		).toThrow(/manifest official API/);
+	});
+
 	test("ships expanded ecosystem adapters as ordinary registry entries", () => {
 		const registry = createBuiltinCodemodCatalog().registry;
 		expect(registry.get("fela")).toBeDefined();

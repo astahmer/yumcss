@@ -7,6 +7,7 @@ import {
 } from "../host-adapters.ts";
 import type { AdapterEmitContext, AdapterEmitResult } from "../adapter-contract.ts";
 import {
+	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -87,6 +88,13 @@ function supportsStaticOrFunctionProgram(program: StyleProgram): boolean {
 
 const solidStyled = makeExtraAdapter({
 	id: CodemodAdapterId.SolidStyled,
+	officialApi: {
+		apis: [
+			{ name: "styled", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "styled.div", status: AdapterOfficialApiStatusTag.Supported },
+			{ name: "ThemeProvider", status: AdapterOfficialApiStatusTag.Supported },
+		],
+	},
 	modules: ["solid-styled-components"],
 	packages: { packages: [{ name: "solid-styled-components", kind: "runtime" }] },
 	detect: [
