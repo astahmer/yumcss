@@ -1,6 +1,6 @@
 ---
 title: Codegen — commands & flags
-description: tw:codegen / generate-bridge / collect (scan) / prune-theme and the analyze CLI, with every flag.
+description: pandwind-tw generate / scan / prune and the analyze CLI, with every flag.
 sidebar:
   order: 1
 ---
@@ -8,10 +8,12 @@ sidebar:
 All commands run on source via `nub` and are deterministic: identical inputs
 produce byte-identical outputs.
 
-## `tw:codegen` — typed runtime from your tailwind.css
+## `pandwind-tw generate` — typed runtime from your tailwind.css
 
 ```
-nub exec pandwind-tw-codegen <css-entry> <out-dir> [--tokens <module>] [--agents]
+nub exec pandwind-tw generate <css-entry> <out-dir> [--tokens <module>] [--agents]
+                         [--bridge] [--bridge-file <path>]
+                         [--preset-import <module>] [--preset-export <name>]
 ```
 
 Positionals default to `src/tailwind.css` and `src`. Loads the CSS through
@@ -26,27 +28,20 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
   Tailwind v4 `@theme` bridge) and injects token-derived values into the
   generated unions. Accepts a bare groups object, `{ tokens }`, or any export
   carrying a `.tokens` field (a full preset works).
+- With `--bridge` — additionally writes `bridge.ts` and refreshes the bridge
+  section of `pandwind.interop.json`, using the configured preset. `--bridge`
+  can be combined with `--bridge-file`, `--preset-import`, and
+  `--preset-export`.
 - With `--agents` — additionally writes `pandwind.agents.json`, the
   machine-readable capability file: every utility key with its literal value
   union (capped, with counts), variant set, conflict families, compose list,
   theme scopes, semantic tokens, plus the verify commands an agent runs
   (`typecheck`, `analyze --json`, the missing-css gate).
 
-## `tw:bridge` — the property→utility bridge
+## `pandwind-tw scan` — safelist from real call sites
 
 ```
-nub exec pandwind-tw-bridge <css-entry> <tw-file> <out-file> [preset-import] [preset-export]
-```
-
-Defaults: `src/tailwind.css src/tw.ts src/bridge.ts`, importing
-`examplePreset` from `pandwind/preset`. Writes a module exporting `bridge`,
-`variants`, and a ready-made `twAdapter` (`createTwAdapter` bound to the
-preset). CLI-only — it executes on import.
-
-## `tw:scan` — safelist from real call sites
-
-```
-nub exec pandwind-tw-collect [tw-entry] [src-dir] [out-file]
+nub exec pandwind-tw scan [tw-entry] [src-dir] [out-file]
 ```
 
 Defaults: `src/tw.ts src src/pandwind.safelist.ts`. Statically evaluates
@@ -57,16 +52,16 @@ selects the mode:
 - `.css` → Tailwind v4 `@source inline("...")` directives (import from
   `tailwind.css`; no generated JS lands in your source tree)
 
-## `tw:prune` — drop unused theme variables
+## `pandwind-tw prune` — drop unused theme variables
 
 ```
-nub exec pandwind-tw-prune [theme-css] [tw-entry] [src-dir]
+nub exec pandwind-tw prune [theme-css] [tw-entry] [src-dir]
 ```
 
 Defaults: `src/pandwind-theme.css src/tw.ts src`. Re-compiles the scanned
 classes through the real engine and keeps only the `@theme` variables the
 compiled CSS actually references. Opt-in; breaks dynamic token access; run
-after `tw:codegen` whenever sources change.
+after `pandwind-tw generate` whenever sources change.
 
 ## `analyze` — coverage & budget reports
 

@@ -292,7 +292,7 @@ async function mainSwap(argv: string[]): Promise<void> {
 	} catch (error) {
 		console.error(
 			`codemod swap: failed to load generated metadata from ${metaDir}\n` +
-				"  run `nub run tw:codegen && nub run tw:bridge` first, or pass --meta=<dir>\n" +
+				"  run `nub exec pandwind-tw generate --bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
 		process.exitCode = 1;
@@ -627,7 +627,7 @@ async function main(): Promise<void> {
 	} catch (error) {
 		console.error(
 			`codemod: failed to load generated metadata from ${metaDir}\n` +
-				"  run `nub run tw:codegen && nub run tw:bridge` first, or pass --meta=<dir>\n" +
+				"  run `nub exec pandwind-tw generate --bridge` first, or pass --meta=<dir>\n" +
 				`  (${(error as Error).message})`,
 		);
 		process.exitCode = 1;

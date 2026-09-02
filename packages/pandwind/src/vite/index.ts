@@ -15,7 +15,7 @@
  * `tw({ ... })` call with a literal object is replaced by its compiled class
  * string, so the classes are discovered naturally and nothing is paid at
  * runtime. Calls with dynamic arguments keep working through the runtime and
- * can still be covered by the `tw:scan` safelist.
+ * can still be covered by the `pandwind-tw scan` safelist.
  */
 import { basename } from "node:path";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";

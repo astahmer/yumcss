@@ -8,8 +8,8 @@ description: Migrate an app onto pandwind using packages/codemod. Use when conve
 ## Rules
 
 - Codegen first: the codemod is driven by **generated metadata** (`types.d.ts`,
-  `tw.ts`, `bridge.ts`). Run `pnpm tw:codegen && pnpm tw:bridge && pnpm
-tw:scan` before migrating, and pass `--meta=<dir>` pointing at the dir that
+  `tw.ts`, `bridge.ts`). Run `pnpm tw:generate && pnpm tw:scan` before migrating,
+  and pass `--meta=<dir>` pointing at the dir that
   holds those files.
 - Dry-run is the default. Always review with `--diff` before `--write`.
 - Never chase 100% conversion. Arbitrary values, important modifiers,

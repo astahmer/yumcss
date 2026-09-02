@@ -12,7 +12,7 @@ compiles TypeScript (Vite does natively) with `moduleResolution: "bundler"`.
 pnpm add pandwind
 ```
 
-There are four steps: define a preset, run codegen, add vite plugins, and use
+There are three steps: define a preset, generate the Tailwind artifacts, add vite plugins, and use
 the APIs.
 
 If you want the shortest copy-paste path, start with [Basic mode](/guides/basic/).
@@ -35,15 +35,14 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-nub run tw:codegen && nub run tw:bridge && nub run tw:scan
+nub run tw:generate && nub run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
@@ -110,10 +109,9 @@ a visible import decision:
 Runtime subpaths: `pandwind/css`, `pandwind/tw`, `pandwind/cx`,
 `pandwind/preset`, `pandwind/design`, `pandwind/vite`; generic bundler
 adapters under `pandwind/unplugin`; build-time codegen helpers under
-`pandwind/codegen/{types,theme,collect,bridge}` and the `pandwind-tw-*`
-binaries; non-web backends
+`pandwind/codegen/{types,theme,collect,bridge}` and the `pandwind-tw` binary;
+non-web backends
 `pandwind/react-native`, `pandwind/opentui`, plus the render-agnostic
-`pandwind/stack` (+ `pandwind/stack/react`). `generate-bridge` stays CLI-only
-(it executes on import).
+`pandwind/stack` (+ `pandwind/stack/react`).
 
 See [Tooling → Codegen](/tooling/codegen/) for every command and flag.

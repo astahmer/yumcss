@@ -18,7 +18,7 @@
  * ```
  *
  * Source files are scanned directly (like Tailwind's own scanner, and like
- * `tw:scan` for the safelist) rather than collected from transforms — module
+ * `pandwind-tw scan` for the safelist) rather than collected from transforms — module
  * load order varies between dev and build, and the virtual stylesheet must be
  * complete no matter when it is requested. Every `css({ ... })` call with a
  * literal object is resolved through the design layer and its atomic rule is

@@ -220,6 +220,10 @@ class DefaultTwCli implements TwCli {
 	}
 
 	async run(argv: readonly string[]): Promise<void> {
+		if (argv.includes("--help") || argv.includes("-h")) {
+			console.log(TW_USAGE);
+			return;
+		}
 		const invocation = parseTwCommand(argv, this.cwd);
 		if (invocation.command === TwCommand.Generate) return this.handlers.generate(invocation);
 		if (invocation.command === TwCommand.Scan) return this.handlers.scan(invocation);

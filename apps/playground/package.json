@@ -5,14 +5,13 @@
 	"scripts": {
 		"editor:types": "nub scripts/generate-editor-types.ts",
 		"editor:types:check": "nub scripts/generate-editor-types.ts --check",
-		"predev": "nub run editor:types && nub run tw:codegen && nub run tw:bridge",
+		"predev": "nub run editor:types && nub run tw:generate",
 		"dev": "vite",
-		"prebuild": "nub run editor:types && nub run tw:codegen && nub run tw:bridge",
+		"prebuild": "nub run editor:types && nub run tw:generate",
 		"build": "tsc --noEmit && vite build",
 		"typecheck": "nub run editor:types:check && tsc --noEmit",
 		"test": "vitest run --config vitest.config.ts",
-		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens pandwind/preset/example-preset && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts"
+		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens pandwind/preset/example-preset --bridge && oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css"
 	},
 	"dependencies": {
 		"@monaco-editor/react": "4.7.0",

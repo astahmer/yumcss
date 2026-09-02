@@ -86,9 +86,8 @@ async function main() {
 			await import(pathToFileURL(join(extracted, dotExport)).href);
 		}
 
-		// 4b. whole-tarball module sweep. Codegen CLIs do top-level file IO and are
-		// only ever executed directly (`nub run tw:bridge`) — excluded.
-		const SWEEP_ALLOWLIST = /tw\/generate-bridge\.ts$/;
+		// 4b. whole-tarball module sweep. Tooling stages are side-effect free when
+		// imported; only the `pandwind-tw` entry executes as a CLI.
 		// Sequential imports by design: deterministic error ordering.
 		const broken = [];
 		const walkModules = async (dir) => {
@@ -98,7 +97,6 @@ async function main() {
 					await walkModules(path);
 				} else if (/\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) {
 					if (/\.(test|spec)\.(ts|tsx|js|mjs)$/.test(dirEntry.name)) continue;
-					if (SWEEP_ALLOWLIST.test(path)) continue;
 					try {
 						await import(pathToFileURL(path).href);
 					} catch (error) {

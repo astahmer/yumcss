@@ -12,7 +12,7 @@
 		"codemod": "nub run --filter pandwind-codemod cli",
 		"inspect": "nub run --filter inspector dev",
 		"playground": "nub run --filter playground dev",
-		"tw:codegen": "nub run --filter example tw:codegen",
+		"tw:generate": "nub run --filter example tw:generate",
 		"analyze": "nub run --filter pandwind-analyze cli --root \"$PWD\" --tw apps/example/src/tw.ts 'apps/example/src/**/*.ts' 'apps/example/src/**/*.tsx'",
 		"lint": "nub run --filter @pandwind/lint-plugin build && oxlint --deny-warnings --report-unused-disable-directives",
 		"lint:fix": "nub run --filter @pandwind/lint-plugin build && oxlint --fix --deny-warnings --report-unused-disable-directives",

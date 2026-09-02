@@ -3,15 +3,14 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"predev": "nub run tw:codegen && nub run tw:bridge && nub run tw:scan",
+		"predev": "nub run tw:generate && nub run tw:scan",
 		"dev": "vite",
-		"prebuild": "nub run tw:codegen && nub run tw:bridge && nub run tw:scan",
+		"prebuild": "nub run tw:generate && nub run tw:scan",
 		"build": "tsc -b && vite build",
 		"typecheck": "tsc --noEmit",
-		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens pandwind/preset/example-preset && oxfmt ./src/types.d.ts ./src/tw.ts ./src/pandwind-theme.css",
-		"tw:prune": "nub exec pandwind-tw-prune ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts && oxfmt ./src/bridge.ts",
-		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens pandwind/preset/example-preset --bridge && oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css",
+		"tw:prune": "nub exec pandwind-tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
+		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	},
 	"dependencies": {
 		"pandwind": "workspace:*",

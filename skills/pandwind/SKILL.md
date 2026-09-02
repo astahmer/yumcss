@@ -16,7 +16,7 @@ description: Work with pandwind styling in this repository. Use when writing or 
   with `as any` or string casts — extend the preset instead.
 - Run codegen + scan after changing the preset, `tailwind.css`, or adding
   `tw()` calls with values not seen before:
-  `pnpm tw:codegen && pnpm tw:bridge && pnpm tw:scan`.
+  `pnpm tw:generate && pnpm tw:scan`.
 - Prefer static, literal arguments. Literal `tw()`/`css()`/`cx()` calls fold
   at build time via the vite plugins. Dynamic values keep the runtime but
   must be covered by the scan/safelist.

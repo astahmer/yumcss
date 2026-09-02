@@ -22,7 +22,7 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
 
 ## How it works
 
-- **`tw:codegen`** — loads your `tailwind.css` through Tailwind's own design
+- **`pandwind-tw generate`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates two files next to it:
   - `types.d.ts` — one key per utility with literal value unions (including
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and
@@ -34,7 +34,7 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
   (`ring: ["1", "gray-900/5"]`), negative utilities (`"-translateX": "1/2"`),
   compound bases (`flex: "col"` -> `flex flex-col`) and arbitrarily deep
   variant stacks.
-- **`tw:scan`** — Tailwind v4 scans source files for literal candidates, so
+- **`pandwind-tw scan`** — Tailwind v4 scans source files for literal candidates, so
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
@@ -111,7 +111,7 @@ the bundled class strings are already conflict-free.
 ## DTCG design tokens → `@theme`
 
 Your preset's DTCG token groups are the single source of truth for both
-engines. `tw:codegen --tokens <preset-module>` bridges them into a Tailwind v4
+engines. `pandwind-tw generate --tokens <preset-module>` bridges them into a Tailwind v4
 `@theme {}` block (only real theme namespaces: color, radius, text, leading,
 font-weight, font, tracking) and injects it while generating types:
 
@@ -123,7 +123,7 @@ font-weight, font, tracking) and injects it while generating types:
 - no `--tokens` flag = byte-identical generated output as before.
 
 ```sh
-nub run tw:codegen -- ./src/tailwind.css ./src --tokens ./src/preset.ts
+nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an

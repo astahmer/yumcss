@@ -13,7 +13,7 @@ const engine = createPandwindEngineContext({ preset: examplePreset, className: t
 export default defineConfig({
 	// `enforce: "pre"` inlines literal `tw()` calls before Tailwind's scanner,
 	// so statically-used classes are found naturally. Dynamic `tw()` calls
-	// still work through the runtime and stay covered by the `tw:scan`
+	// still work through the runtime and stay covered by the `pandwind-tw scan`
 	// safelist.
 	// `pandwindVite` inlines literal `tw()` calls before Tailwind's scanner;
 	// `pandwindCssVite` extracts literal `css()` calls into a generated

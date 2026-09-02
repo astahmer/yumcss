@@ -81,15 +81,14 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 // package.json
 {
 	"scripts": {
-		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src --tokens ./src/preset.ts",
-		"tw:bridge": "nub exec pandwind-tw-bridge ./src/tailwind.css ./src/tw.ts ./src/bridge.ts",
-		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
+		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
 	},
 }
 ```
 
 ```sh
-nub run tw:codegen && nub run tw:bridge && nub run tw:scan
+nub run tw:generate && nub run tw:scan
 ```
 
 This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
@@ -125,11 +124,10 @@ atomic styles, `cx()` to merge both. Plain strings keep working everywhere.
 
 Subpath map: `pandwind/css`, `/tw`, `/cx`, `/preset`, `/design`, `/vite`
 (runtime); `pandwind/codegen/{types,theme,collect,bridge}` and the
-`pandwind-tw-*` binaries (build-time codegen helpers); `pandwind/unplugin` (generic
+`pandwind-tw` binary (build-time codegen helpers); `pandwind/unplugin` (generic
 bundler adapters); non-web backends `pandwind/react-native`, `/opentui` and
 the render-agnostic `pandwind/stack` (+ `pandwind/stack/react`) — see
-[BACKENDS.md](./BACKENDS.md). `generate-bridge` stays CLI-only (it executes
-on import).
+[BACKENDS.md](./BACKENDS.md).
 
 ## `tw()` — typed Tailwind classes
 
@@ -150,7 +148,7 @@ is _derived from the compiled design system on every run_, contains only what
 provably exists, and wrong classes are caught as TypeScript errors before an
 agent ever ships.
 
-- **`tw:codegen`** — loads your `tailwind.css` through Tailwind's own design
+- **`pandwind-tw generate`** — loads your `tailwind.css` through Tailwind's own design
   system (`@tailwindcss/node`) and generates two files next to it:
   - `types.d.ts` — one key per utility with literal value unions (including
     opacity modifiers like `bg-red-500/50`), recursive variant nesting, and the
@@ -161,7 +159,7 @@ agent ever ships.
   class strings: camelCase keys, array values (`ring: ["1", "gray-900/5"]`),
   negative utilities (`"-translateX": "1/2"`), compound bases
   (`flex: "col"` -> `flex flex-col`) and arbitrarily deep variant stacks.
-- **`tw:scan`** — Tailwind v4 scans source files for literal candidates, so
+- **`pandwind-tw scan`** — Tailwind v4 scans source files for literal candidates, so
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
   safelist file that Tailwind generates CSS for.
@@ -197,16 +195,16 @@ agent ever ships.
   candidates, missing-css warnings with editor links) + Design-system tab
   (theme vars, typed utility unions, bridge map, preset tokens). Extend the
   CLI, not the app, when adding metrics.
-- **`tw:scan` CSS mode** — point the out-file at a `.css` path and the
+- **`pandwind-tw scan` CSS mode** — point the out-file at a `.css` path and the
   scanner emits Tailwind v4 `@source inline(...)` directives instead of a JS
   safelist module; import it from `tailwind.css` and no generated JS lands in
   your source tree. Proven to generate identical rules (see
   `tests/source-inline.test.ts`).
-- **`tw:prune`** — optional post-codegen step: re-compiles the scanned
+- **`pandwind-tw prune`** — optional post-codegen step: re-compiles the scanned
   `tw()` classes through the real Tailwind engine and keeps only the theme
   variables the compiled CSS actually references (the example app drops 82
   vars down to the ~20 its compiled CSS references). Caveat: breaks dynamic
-  token access — opt-in, run after `tw:codegen` whenever sources change.
+  token access — opt-in, run after `pandwind-tw generate` whenever sources change.
 - **`packages/codemod`** — migrate raw Tailwind authoring onto the pandwind
   APIs (`tw` / `cx` / `css` modes; dry-run + diff by default, idempotent,
   driven by the generated metadata). See
@@ -221,7 +219,7 @@ agent ever ships.
 ### DTCG design tokens → `@theme` → generated types
 
 Your preset's DTCG token groups are the single source of truth for both
-engines. `tw:codegen --tokens <preset-module>` bridges them into a Tailwind v4
+engines. `pandwind-tw generate --tokens <preset-module>` bridges them into a Tailwind v4
 `@theme {}` block (only real theme namespaces: color, radius, text, leading,
 font-weight, font, tracking — spacing scales and friends are skipped rather
 than guessed) and injects it while generating types:
@@ -236,7 +234,7 @@ than guessed) and injects it while generating types:
   generated output as before.
 
 ```sh
-nub run tw:codegen -- ./src/tailwind.css ./src --tokens ./src/preset.ts
+nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts
 ```
 
 The generator accepts any module that default-exports groups or exports an
@@ -376,7 +374,7 @@ plugins: [pandwindCssVite(examplePreset), ...];
 import "pandwind:css";
 ```
 
-The plugin scans source files (like Tailwind's own scanner, and like `tw:scan`
+The plugin scans source files (like Tailwind's own scanner, and like `pandwind-tw scan`
 for the safelist) for literal `css(...)` calls, resolves them through the
 design layer and serves the deduped CSS — tokens plus atomic rules. Dynamic
 calls keep working at runtime but are not extracted (same constraint as
@@ -446,7 +444,7 @@ Tailwind-class emitter instead of a hashed-atom emitter:
 ```ts
 import { createTwAdapter } from "pandwind/tw";
 import { examplePreset } from "pandwind/preset";
-import { bridge, variants } from "./bridge"; // generated by `tw:bridge`
+import { bridge, variants } from "./bridge"; // generated by `pandwind-tw generate --bridge`
 
 const twAdapter = createTwAdapter({ preset: examplePreset, variants, bridge });
 const dcss = createDesignCss(examplePreset, { className: twAdapter });
@@ -462,7 +460,7 @@ tokens that equal a `@theme` value yield the short utility (`$blue-500` ->
 declarations — `$input` dynamics, unknown conditions — **throw a clear error**
 instead of silently emitting a class that has no CSS in this mode.
 
-The generator (`tw:bridge`) sweeps Tailwind's own class list and keeps only
+The bridge stage of `pandwind-tw generate --bridge` sweeps Tailwind's own class list and keeps only
 direct-property utilities that resolve against your `@theme`, so the bridge
 stays small (~41 KB for the example preset) and cannot drift from what
 Tailwind actually compiles.
@@ -589,7 +587,7 @@ jobs:
 ```
 
 Inputs: `base-ref`, `working-directory`, `app-dir`, `patterns`, `pr-number`
-(for dispatch runs). Requires the app to have run `tw:codegen`/`tw:bridge`
+(for dispatch runs). Requires the app to have run `pandwind-tw generate --bridge`
 outputs committed (the workflow reads them). Fail-open: reporting problems
 never fail the workflow.
 
@@ -634,8 +632,8 @@ pnpm install
 nub run --filter example dev       # dev server (runs codegen + scan first)
 nub run test                       # vitest + tstyche
 nub run typecheck
-nub run tw:codegen                 # regenerate types.d.ts + tw.ts
-nub run --filter example tw:scan   # regenerate the safelist
+nub run --filter example tw:generate # regenerate types.d.ts + tw.ts (+ bridge)
+nub run --filter example tw:scan   # regenerate the safelist via pandwind-tw scan
 nub run --filter example build     # production build (tw() inlined, css() extracted)
 ```
 

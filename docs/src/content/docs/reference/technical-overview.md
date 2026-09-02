@@ -61,7 +61,7 @@ tw(style object)
 
 The generated runtime is produced by the codegen pipeline, not hand-written by
 the application. Literal calls can be folded by `pandwindVite()`. Dynamic
-values stay on the runtime path and must be discoverable by `tw:scan` or a
+values stay on the runtime path and must be discoverable by `pandwind-tw scan` or a
 safelist.
 
 ### `css()`

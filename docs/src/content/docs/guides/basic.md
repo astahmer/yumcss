@@ -43,8 +43,8 @@ Add scripts to `package.json`:
 ```json
 {
 	"scripts": {
-		"tw:codegen": "nub exec pandwind-tw-codegen ./src/tailwind.css ./src",
-		"tw:scan": "nub exec pandwind-tw-collect ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src",
+		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
 	}
 }
 ```
@@ -53,7 +53,7 @@ Run them once, and again whenever the Tailwind theme or source-file set
 changes:
 
 ```sh
-nub run tw:codegen
+nub run tw:generate
 nub run tw:scan
 ```
 
