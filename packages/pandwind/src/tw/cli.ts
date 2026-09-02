@@ -180,6 +180,7 @@ const defaultHandlers: TwCliHandlers = {
 			{ outDir: command.outDir, agents: command.agents },
 		);
 		if (command.bridge) {
+			mkdirSync(dirname(command.bridgeFile), { recursive: true });
 			const bridge = await generateTwBridge({
 				cssEntry: command.cssEntry,
 				twFile: resolve(command.outDir, "tw.ts"),
