@@ -36,6 +36,12 @@
 			"import": "./dist/css/runtime.js",
 			"default": "./dist/css/runtime.js"
 		},
+		"./css/stylex": {
+			"pandwind": "./src/css/stylex-adapter.ts",
+			"types": "./dist/css/stylex-adapter.d.ts",
+			"import": "./dist/css/stylex-adapter.js",
+			"default": "./dist/css/stylex-adapter.js"
+		},
 		"./cx": {
 			"pandwind": "./src/cx/index.ts",
 			"types": "./dist/cx/index.d.ts",

@@ -12,16 +12,16 @@
     "gz": 2922
   },
   "css, compiler-pruned call": {
-    "min": 3886,
-    "gz": 1850
+    "min": 3882,
+    "gz": 1845
   },
   "css, compiler-pruned class": {
-    "min": 3971,
-    "gz": 1880
+    "min": 3967,
+    "gz": 1875
   },
   "css, compiler-pruned vars": {
-    "min": 5259,
-    "gz": 2442
+    "min": 5255,
+    "gz": 2434
   },
   "tw": {
     "min": 2678,

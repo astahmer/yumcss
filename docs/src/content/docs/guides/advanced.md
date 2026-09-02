@@ -116,9 +116,11 @@ than silently dropping it.
 
 `ClassNameStrategy` is the port between semantic styles and a target naming
 system. `createTwAdapter()` maps declarations to generated Tailwind utilities;
-named or atomic strategies can keep a stylesheet-backed identity. Strategies
-must preserve deterministic identity and expose capability/lossiness behavior
-to compilers and adapters.
+`createStyleXAdapter()` emits StyleX-shaped atomic identities; named or atomic
+strategies can keep a stylesheet-backed identity. Strategies must preserve
+deterministic identity and expose capability/lossiness behavior to compilers
+and adapters. Pass resolved condition metadata to `createStyleXAdapter` when
+custom selectors or at-rules need to participate in the identity hash.
 
 ## Presets and themes
 
