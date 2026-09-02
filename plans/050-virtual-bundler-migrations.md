@@ -15,25 +15,26 @@ tooling-only and does not change the shipped styling runtime.
 
 ## Goal
 
-Allow a Vite build to consume a configured source-adapter → target-adapter
-migration virtually, leaving the user's files unchanged while still allowing
-the target ecosystem's official bundler plugin to process the migrated output.
+Allow any supported bundler to consume a configured source-adapter →
+target-adapter migration virtually, leaving the user's files unchanged while
+still allowing the target ecosystem's official bundler plugin to process the
+migrated output.
 
 The first useful example is styled-components source transformed to Tailwind
 class attributes before the official Tailwind Vite plugin scans and emits CSS.
 
 ## What
 
-Add a Vite migration plugin with one route configuration:
+Add a universal migration plugin with one route configuration:
 
 ```ts
-import { pandwindMigrateVite } from "pandwind-codemod/swap/vite";
+import { pandwindMigrateUnplugin } from "pandwind-codemod/swap/unplugin";
 import tailwindcss from "@tailwindcss/vite";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
 
 export default {
 	plugins: [
-		pandwindMigrateVite({
+		pandwindMigrateUnplugin.vite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 		}),
@@ -87,15 +88,18 @@ shared scanner → configured source adapter → StyleProgram / SwapIR
 
 ### Operations / behavior
 
-- `configResolved` captures the actual project root.
+- Vite's `configResolved` captures the actual project root; other hosts use
+  the configured `root` because they do not expose an equivalent universal
+  lifecycle hook.
 - `transform` runs the existing async adapter migration for eligible modules.
 - unchanged or residual-bearing safe results remain source-preserving and are
   reported without pretending the route succeeded.
 - generated target files are deduplicated by normalized project-relative path,
   stored per plugin instance, and served through `resolveId`/`load`.
 - `watchChange` invalidates transformed modules and generated artifacts.
-- the plugin exposes a Vite implementation first; a later unplugin wrapper can
-  reuse the same core when another bundler has equivalent virtual-module hooks.
+- one `createUnplugin` factory exposes Vite, Rollup, Rolldown, Webpack, Rspack,
+  Rsbuild, esbuild, Farm, Bun, and unloader slices. Every slice delegates to
+  the same virtual migration mechanics.
 
 ### Tech choices
 
@@ -111,7 +115,7 @@ shared scanner → configured source adapter → StyleProgram / SwapIR
 ### Architecture
 
 ```text
-ViteMigrationPlugin
+VirtualMigrationPlugin
   ├─ MigrationRoute (source/target ids)
   ├─ EligibilityPolicy
   ├─ MigrationService (existing adapter ports)
@@ -154,9 +158,9 @@ that is not part of this implementation.
 ## Data model
 
 ```ts
-interface VirtualMigrationOptions {
-	readonly from: CodemodAdapterId;
-	readonly to: CodemodAdapterId;
+interface PandwindMigrateOptions {
+	readonly from: string;
+	readonly to: string;
 	readonly root?: string;
 	readonly include?: readonly RegExp[];
 	readonly exclude?: readonly RegExp[];
@@ -172,8 +176,8 @@ state.
 ## Implementation steps
 
 1. Add the route/options and virtual-artifact ports in the codemod package.
-2. Implement `pandwindMigrateVite` as a pre-transform composition root over
-   `runAdapterMigrationAsync` and the shared scanner.
+2. Implement one `createUnplugin` factory as a pre-transform composition root
+   over `runAdapterMigrationAsync` and the shared scanner.
 3. Add generated-file resolution/loading and cache invalidation.
 4. Add inline-snapshot tests for static conversion, residual preservation,
    include/exclude behavior, idempotence, diagnostics, generated artifacts,
@@ -186,14 +190,15 @@ state.
 ## Open questions
 
 1. Should the universal unplugin wrapper be added now or after the Vite contract
-   is proven? Initial implementation: Vite only.
+   is proven? Decision: add it in the initial implementation so every bundler
+   uses one migration engine.
 2. Should a host opt into virtual generated modules by default? Initial
    implementation: yes, because otherwise generated-file routes cannot work;
    conflicts remain safe failures.
 
 ## Acceptance criteria
 
-- [x] The Vite migration plugin uses only the existing adapter/scanner/lowering
+- [x] The universal migration plugin uses only the existing adapter/scanner/lowering
       ports and has no ecosystem switch statements.
 - [x] A styled-components → Tailwind fixture produces idiomatic classes before
       Tailwind's official plugin and leaves the source file unchanged.
@@ -201,24 +206,23 @@ state.
       residual, generated-file, and idempotence behavior.
 - [x] Residual-bearing safe migrations remain source-preserving and observable.
 - [x] Generated files resolve/load virtually and deduplicate deterministically.
-- [x] Typecheck, lint, format, Knip, and focused codemod/Vite tests pass.
+- [x] Typecheck, lint, format, Knip, and focused codemod/unplugin tests pass.
 - [x] A static import check confirms no new dependency enters the shipped
       Pandwind runtime.
 
 ## Status
 
-Implemented in the focused revisions following this plan. The plugin contract
-is Vite-shaped and intentionally dependency-free; the host-composition test
-proves that migrated source is available to a later target plugin while the
-codemod tests exercise the real adapter pipeline. A future Vite-version
-integration fixture may add host-specific regression coverage, but it is not
-needed to establish a second migration engine or to change the source/runtime
-contracts.
+Implemented in the focused revisions following this plan. The migration
+contract is now one `unplugin` factory with named platform slices; the Vite
+entry remains a narrow platform export. Focused tests exercise the real adapter
+pipeline through Rollup-compatible hooks and verify native platform factories
+are generated from the same implementation. Full browser/SSR host fixtures
+remain the responsibility of each host ecosystem's proof matrix.
 
 ## Decisions log
 
-| Date       | Decision                                                     | Rationale                                                                                   |
-| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| 2026-09-02 | Start with a Vite plugin over the existing migration service | Vite is the proven composition root and already supports pre-transforms and virtual modules |
-| 2026-09-02 | Keep source files immutable and generated artifacts virtual  | This is the reversible evaluation lane; committed codemods remain explicit                  |
-| 2026-09-02 | Compose the target's official plugin after migration         | The target ecosystem should remain the authority for final CSS generation                   |
+| Date       | Decision                                                        | Rationale                                                                                        |
+| ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 2026-09-02 | Expose one unplugin factory over the existing migration service | Every supported bundler should share the migration mechanics and pre-transform ordering contract |
+| 2026-09-02 | Keep source files immutable and generated artifacts virtual     | This is the reversible evaluation lane; committed codemods remain explicit                       |
+| 2026-09-02 | Compose the target's official plugin after migration            | The target ecosystem should remain the authority for final CSS generation                        |

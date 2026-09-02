@@ -754,17 +754,10 @@ async function officialConfig(
 	const cssFiles = tailwindCssFiles(context);
 	const cssFile = cssFiles[0];
 	if (cssFile === undefined) {
-		if (context.listFiles !== undefined)
-			return {
-				...fallback,
-				residuals: [
-					{
-						kind: "configuration",
-						text: "Tailwind CSS configuration graph",
-						hint: "No project CSS entry containing Tailwind directives was found",
-					},
-				],
-			};
+		// A missing discoverable entry is not an official-loader failure. The
+		// fallback resolver still emits safe arbitrary utilities, while unknown
+		// project utilities remain visible as parse residuals. Reserve a
+		// configuration residual for an actual loader error below.
 		return fallback;
 	}
 	try {

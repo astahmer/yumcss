@@ -945,12 +945,13 @@ fallback.
 
 ## Virtual bundler migration boundary
 
-`pandwind-codemod/swap/vite` is a bundler composition root over the existing
-adapter migration use case. It owns only Vite mechanics: eligibility, the
-per-module cache, virtual generated-file storage, invalidation, and residual
-reporting. It delegates scanning, configuration loading, semantic lowering,
-host rewrites, and target emission to the same adapter registry used by the
-CLI.
+`pandwind-codemod/swap/unplugin` is a bundler composition root over the
+existing adapter migration use case. It owns only host mechanics: eligibility,
+the per-module cache, virtual generated-file storage, invalidation, and
+residual reporting. `unplugin` projects this one implementation into Vite,
+Rollup, Rolldown, Webpack, Rspack, Rsbuild, esbuild, Farm, Bun, and unloader.
+It delegates scanning, configuration loading, semantic lowering, host
+rewrites, and target emission to the same adapter registry used by the CLI.
 
 The plugin runs at `enforce: "pre"`. This is an intentional ordering contract:
 the transformed module becomes the input to the target ecosystem's official
@@ -966,7 +967,8 @@ parity or remove the old runtime dependency by itself. Once the route is
 accepted, the CLI codemod remains the explicit path to a committed migration.
 
 The contract is intentionally tested at the plugin boundary in
-`packages/codemod/tests/vite-migration.test.ts`: real styled-components syntax
+`packages/codemod/tests/vite-migration.test.ts` and
+`packages/codemod/tests/unplugin-migration.test.ts`: real styled-components syntax
 is transformed to the target adapter's actual output; residuals preserve the
 source body and remain observable; include/exclude and shared-scanner
 eligibility are checked; transformed output is idempotent; generated files are

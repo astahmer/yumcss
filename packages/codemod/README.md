@@ -21,6 +21,33 @@ Adapter authors should read [ADAPTER_SDK.md](./ADAPTER_SDK.md) for the plugin
 shape, schema versioning, capability declarations, and differential corpus
 requirements.
 
+## Virtual bundler migrations
+
+The same adapter route can be evaluated without changing the source checkout.
+The universal `unplugin` entry exposes platform slices for Vite, Rollup,
+Rolldown, Webpack, Rspack, Rsbuild, esbuild, Farm, Bun, and unloader. The
+migration runs before the target ecosystem's official plugin, which remains
+responsible for final CSS generation.
+
+```ts
+import { pandwindMigrateUnplugin } from "pandwind-codemod/swap/unplugin";
+import { CodemodAdapterId } from "pandwind-codemod/swap";
+
+export default {
+	plugins: [
+		pandwindMigrateUnplugin.vite({
+			from: CodemodAdapterId.StyledComponents,
+			to: CodemodAdapterId.Tailwind,
+		}),
+	],
+};
+```
+
+Use `pandwindMigrateUnplugin.rollup`, `.webpack`, `.esbuild`, or another
+named platform export in the corresponding host configuration. This lane is
+reversible and virtual; use the CLI when the migration should become a
+committed source change.
+
 Migrate raw Tailwind authoring onto the pandwind APIs. Driven entirely by
 your project's **generated metadata** (`types.d.ts`, `tw.ts`, `bridge.ts`) —
 never hand-maintained tables.

@@ -5,7 +5,21 @@ import {
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
 } from "../src/swap/index.ts";
-import { pandwindMigrateVite } from "../src/swap/vite.ts";
+import { pandwindMigrateVite as createVitePlugin } from "../src/swap/unplugin.ts";
+
+type VirtualMigrationTestPlugin = {
+	readonly name: string;
+	readonly enforce: "pre";
+	readonly transform: (code: string, id: string) => Promise<{ code: string; map: null } | null>;
+	readonly resolveId: (source: string, importer?: string) => string | null;
+	readonly load: (id: string) => string | null;
+	readonly watchChange: (id: string) => void;
+	readonly configResolved?: (config: { readonly root: string }) => void;
+};
+
+const pandwindMigrateVite = (
+	options: Parameters<typeof createVitePlugin>[0],
+): VirtualMigrationTestPlugin => createVitePlugin(options) as unknown as VirtualMigrationTestPlugin;
 
 const catalog = createBuiltinCodemodCatalog();
 const virtualPrefix = String.fromCharCode(0);
@@ -50,7 +64,7 @@ describe("virtual Vite migrations", () => {
 			{
 			  "code": "
 
-			const Card = "[color:red] [padding:1rem]";
+			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
 				return <div className={Card}>content</div>;
@@ -60,7 +74,7 @@ describe("virtual Vite migrations", () => {
 			}
 		`);
 		expect(result).not.toBeNull();
-		expect(result?.code).toContain('const Card = "[color:red] [padding:1rem]";');
+		expect(result?.code).toContain('const Card = "[padding:1rem] [color:red]";');
 		expect(result?.code).toContain("<div className={Card}>content</div>");
 		expect(result?.code).not.toContain("styled-components");
 		expect(styledCard).toContain("styled-components");
@@ -148,6 +162,7 @@ export function App() {
 		const plugin = pandwindMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
+			root: "/project",
 		});
 		const received: string[] = [];
 		const targetPlugin = {
@@ -164,7 +179,7 @@ export function App() {
 			[
 			  "
 
-			const Card = "[color:red] [padding:1rem]";
+			const Card = "[padding:1rem] [color:red]";
 
 			export function App() {
 				return <div className={Card}>content</div>;
@@ -181,6 +196,7 @@ export function App() {
 		const plugin = pandwindMigrateVite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
+			root: "/project",
 		});
 		const file = "/project/src/Card.tsx";
 		const first = await plugin.transform(styledCard, file);

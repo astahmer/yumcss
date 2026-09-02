@@ -27,6 +27,7 @@
 	"exports": {
 		".": "./src/cli.ts",
 		"./swap": "./src/swap/index.ts",
+		"./swap/unplugin": "./src/swap/unplugin.ts",
 		"./swap/vite": "./src/swap/vite.ts",
 		"./swap/browser": "./src/swap/browser.ts",
 		"./package.json": "./package.json"
@@ -50,7 +51,8 @@
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
 		"pandwind": "workspace:*",
-		"postcss": "8.5.26"
+		"postcss": "8.5.26",
+		"unplugin": "3.3.0"
 	},
 	"devDependencies": {
 		"@mantine/core": "^9.5.2",

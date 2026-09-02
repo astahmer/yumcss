@@ -77,19 +77,19 @@ UnoCSS generator.
 
 ## Virtual bundler migrations
 
-For a reversible evaluation, the same adapter route can run inside Vite. The
-plugin transforms modules in memory; it does not edit the checkout or create
-files on disk. Generated target modules are served through Vite's virtual
-module hooks.
+For a reversible evaluation, the same adapter route can run inside any bundler
+supported by `unplugin`. The plugin transforms modules in memory; it does not
+edit the checkout or create files on disk. Generated target modules are served
+through the host's virtual-module hooks.
 
 ```ts
-import { pandwindMigrateVite } from "pandwind-codemod/swap/vite";
+import { pandwindMigrateUnplugin } from "pandwind-codemod/swap/unplugin";
 import { CodemodAdapterId } from "pandwind-codemod/swap";
 import tailwindcss from "@tailwindcss/vite";
 
 export default {
 	plugins: [
-		pandwindMigrateVite({
+		pandwindMigrateUnplugin.vite({
 			from: CodemodAdapterId.StyledComponents,
 			to: CodemodAdapterId.Tailwind,
 			onResidual: ({ file, residuals }) => console.warn(file, residuals),
@@ -97,6 +97,26 @@ export default {
 		tailwindcss(),
 	],
 };
+```
+
+Use the matching named platform slice in another bundler configuration:
+
+```ts
+import {
+	pandwindMigrateEsbuild,
+	pandwindMigrateRollup,
+	pandwindMigrateWebpack,
+} from "pandwind-codemod/swap/unplugin";
+import { CodemodAdapterId } from "pandwind-codemod/swap";
+
+const route = {
+	from: CodemodAdapterId.StyledComponents,
+	to: CodemodAdapterId.Tailwind,
+};
+
+// rollup: plugins: [pandwindMigrateRollup(route)]
+// webpack: plugins: [pandwindMigrateWebpack(route)]
+// esbuild: plugins: [pandwindMigrateEsbuild(route)]
 ```
 
 The migration plugin runs with `enforce: "pre"`, so the official target plugin
