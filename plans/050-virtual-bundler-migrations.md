@@ -45,8 +45,9 @@ export default {
 The plugin transforms only source modules claimed by the shared scanner,
 honors include/exclude policies, forwards residuals to a diagnostic callback,
 and exposes target-generated files through virtual module ids. It is
-idempotent, source-map preserving at the bundler boundary, and cacheable by
-module id plus source content.
+idempotent and cacheable by module id plus source content. It does not
+fabricate a source map when the underlying migration engine has not produced
+one.
 
 ## Why
 
