@@ -65,8 +65,10 @@ export const enum StyleProgramResidualKindTag {
 	DynamicCustomProperty = "dynamic-custom-property",
 	DynamicFallback = "dynamic-fallback",
 	DynamicValues = "dynamic-values",
+	RuntimeContext = "runtime-context",
 	Parse = "parse",
 	Capability = "capability",
+	Composition = "composition",
 	PluginTransform = "plugin-transform",
 	UnmatchedSource = "unmatched-source",
 }

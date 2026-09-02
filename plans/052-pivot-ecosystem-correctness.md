@@ -14,7 +14,7 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 
 - [x] Wave 1 — registry-derived capability ledger with representation, proof, and evidence rows.
 - [x] Wave 2 — executable real-repository promotion runner with injected environment ports.
-- [ ] Wave 3 — generic static-first semantic lowering families.
+- [x] Wave 3 — generic static-first semantic lowering families.
 - [ ] Wave 4 — complete official project-context loading.
 - [ ] Wave 5 — AST-owned rewrites and shared host/scanner boundaries.
 - [ ] Wave 6 — real-repository adapter promotion waves.
@@ -22,6 +22,8 @@ This plan preserves the audit findings nearly verbatim, then turns each remainin
 - [ ] Wave 8 — CI gates, documentation regeneration, and final acceptance audit.
 
 Wave 1 intentionally delivers the ledger boundary first; it does not claim that the existing fixture or source-only evidence has been promoted.
+
+Wave 3 is complete for the generic lowering core. The planner now uses enum-backed capability identities at every target-policy boundary, and direct `StyleProgramBuilder` cases prove verified theme inlining, deterministic scalar custom-property fallback, function-valued residuals, embedded composition flattening, and plugin normalization. The tests retain inline snapshots for diagnosis plus ordinary assertions for representation, residual kind, applied strategy, and generated metadata.
 
 ## Goal
 
@@ -583,3 +585,4 @@ erDiagram
 | 2026-09-02 | Derive proof obligations from adapter manifests | A new adapter should declare its claims once and automatically receive the corresponding tests and CI gates |
 | 2026-09-02 | Keep host behavior and native layout explicit | Styling portability does not imply component behavior or cross-platform layout equivalence |
 | 2026-09-02 | Keep this wave implementation-focused and separate from publishing | Public release is a later operational concern; correctness and proof must be complete first |
+| 2026-09-02 | Treat generic static-first lowering as a semantic core concern, not an adapter switchboard | The same `StyleProgram` strategy must be reusable by every source and target adapter; target-specific syntax remains owned by the target adapter |
