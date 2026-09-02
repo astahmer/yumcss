@@ -134,3 +134,8 @@ nub scripts/benchmark-tooling.mts --files 250 --samples 7
 These are local evidence, not universal performance claims. V8 compilation,
 filesystem cache state, and garbage collection can move individual samples;
 RSS deltas are especially noisy. The harness is intentionally not a CI gate.
+
+A current 1,000-file scaling smoke (`--samples 3`) completed with warm p50 of
+48.68 ms for scanning, 55.52 ms for analysis, 183.53 ms for codemod, and
+23.42 ms for unplugin transforms. This larger run is a scaling check only; the
+before/after table above remains the controlled comparison.
