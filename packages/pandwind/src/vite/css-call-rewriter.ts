@@ -4,6 +4,7 @@ import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import type { StyleObject } from "../types/typings.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -95,14 +96,15 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	}
 }
 
-const literalGroup = (argument: unknown): Record<string, Record<string, unknown>> | undefined => {
+const literalGroup = (argument: unknown): Record<string, StyleObject> | undefined => {
 	const value = evalLiteral(argument as never);
 	if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
 	const entries = Object.entries(value).filter(
-		(entry): entry is [string, Record<string, unknown>] =>
-			typeof entry[1] === "object" && entry[1] !== null,
+		(entry): entry is [string, object] => typeof entry[1] === "object" && entry[1] !== null,
 	);
-	return entries.length === Object.keys(value).length ? Object.fromEntries(entries) : undefined;
+	return entries.length === Object.keys(value).length
+		? (Object.fromEntries(entries) as Record<string, StyleObject>)
+		: undefined;
 };
 
 const CSS_FACTORY_NAMES = new Set(["createCss"]);
