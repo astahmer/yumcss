@@ -59,6 +59,7 @@ describe("real repository promotion runner", () => {
 		]);
 		expect(result).toMatchInlineSnapshot(`
 			{
+			  "commit": "abc123",
 			  "errors": [],
 			  "id": "fixture",
 			  "migration": {

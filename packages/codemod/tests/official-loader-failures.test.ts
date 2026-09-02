@@ -61,7 +61,6 @@ describe("official project-context loaders", () => {
 					file: "src/App.tsx",
 					source: "",
 					root: "/project",
-					files,
 					readFile,
 					listFiles: () => files,
 				}),

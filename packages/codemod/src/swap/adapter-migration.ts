@@ -255,7 +255,10 @@ interface LoadedAdapterConfigs {
 const defaultAdapterRegistry = createBrowserCodemodCatalog().registry;
 
 async function resolveNodeAdapterRegistry(): Promise<StyleAdapterRegistry> {
-	const { createBuiltinCodemodCatalog } = await import(/* @vite-ignore */ "./adapter-catalog.ts");
+	// Keep this lazy so the browser catalog never pulls Node module loading into
+	// the playground. The built package must resolve the emitted JavaScript
+	// sibling; importing the source `.ts` path only works before publication.
+	const { createBuiltinCodemodCatalog } = await import(/* @vite-ignore */ "./adapter-catalog.js");
 	return createBuiltinCodemodCatalog().registry;
 }
 

@@ -24,6 +24,7 @@ import { expandBuiltinPattern } from "../src/swap/adapters/panda/patterns.ts";
 import { detectAlias } from "../src/swap/adapters/panda/project.ts";
 import { pandaStyleToIr, type PandaRecipeIR } from "../src/swap/adapters/panda/parse.ts";
 import type { PandaProjectFileSystem } from "../src/swap/adapters/panda/panda-file-system.ts";
+import { PandaJsxStylePropsModeTag } from "../src/swap/adapters/panda/style-props.ts";
 import { parseSwapArgs } from "../src/swap/index.ts";
 import type { PandwindMeta } from "../src/meta.ts";
 
@@ -160,6 +161,11 @@ describe("factory elements", () => {
 			tokenVars: new Map(),
 			textStyles: new Map(),
 			customPatterns: new Map(),
+			jsxStyleProps: {
+				mode: PandaJsxStylePropsModeTag.All,
+				evidence: ["fallback"],
+				matches: () => false,
+			},
 		});
 		expect(edits).not.toBeNull();
 		expect(edits?.some((edit) => edit.text.includes('"foo"'))).toBe(true);

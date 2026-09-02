@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { execFileSync, spawn } from "node:child_process";
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -37,18 +37,6 @@ function argument(name: string): string | undefined {
 	return index < 0 ? undefined : process.argv[index + 1];
 }
 
-function copyFilter(source: string): boolean {
-	const normalized = source.replaceAll("\\", "/");
-	return (
-		!normalized.endsWith("/.git") &&
-		!normalized.includes("/.git/") &&
-		!normalized.includes("/node_modules/") &&
-		!normalized.includes("/.next/") &&
-		!normalized.includes("/dist/") &&
-		!normalized.includes("/build/")
-	);
-}
-
 function projectRootFor(checkout: string, sourcePath: string): string {
 	let directory = dirname(join(checkout, sourcePath));
 	while (directory.startsWith(checkout)) {
@@ -58,6 +46,66 @@ function projectRootFor(checkout: string, sourcePath: string): string {
 		directory = parent;
 	}
 	return checkout;
+}
+
+async function materializePinnedTree(
+	checkout: string,
+	commit: string,
+	target: string,
+): Promise<void> {
+	await new Promise<void>((resolvePromise, rejectPromise) => {
+		const archive = spawn("git", ["-C", checkout, "archive", "--format=tar", commit], {
+			stdio: ["ignore", "pipe", "pipe"],
+		});
+		const extract = spawn("tar", ["-xf", "-", "-C", target], {
+			stdio: ["pipe", "ignore", "pipe"],
+		});
+		let archiveCode: number | null = null;
+		let extractCode: number | null = null;
+		let settled = false;
+		let archiveError = "";
+		let extractError = "";
+
+		archive.stderr.on("data", (chunk: Buffer) => {
+			archiveError += chunk.toString();
+		});
+		extract.stderr.on("data", (chunk: Buffer) => {
+			extractError += chunk.toString();
+		});
+
+		const finish = () => {
+			if (settled || archiveCode === null || extractCode === null) return;
+			settled = true;
+			if (archiveCode === 0 && extractCode === 0) {
+				resolvePromise();
+				return;
+			}
+			rejectPromise(
+				new Error(
+					[
+						`could not materialize pinned repository ${commit}`,
+						archiveError.trim(),
+						extractError.trim(),
+					]
+						.filter(Boolean)
+						.join("\n"),
+				),
+			);
+		};
+
+		archive.once("error", rejectPromise);
+		extract.once("error", rejectPromise);
+		archive.once("close", (code) => {
+			archiveCode = code;
+			if (code !== 0 && extract.exitCode === null) extract.kill();
+			finish();
+		});
+		extract.once("close", (code) => {
+			extractCode = code;
+			finish();
+		});
+		archive.stdout.pipe(extract.stdin);
+	});
 }
 
 function parseReference(id: string) {
@@ -85,10 +133,14 @@ async function migrate(referenceId: string): Promise<MigrationReport> {
 		);
 
 	const workingCopy = mkdtempSync(join(tmpdir(), `pandwind-${reference.id}-`));
-	cpSync(checkout, workingCopy, { recursive: true, filter: copyFilter });
+	await materializePinnedTree(checkout, reference.commit, workingCopy);
 	const projectRoot = projectRootFor(workingCopy, reference.path);
 	const sourceWorkspace = createSourceWorkspace();
 	const files = sourceWorkspace.files(["**/*"], projectRoot);
+	if (files.length === 0)
+		throw new Error(
+			`pinned repository ${reference.id} materialized no supported source files from ${reference.path}`,
+		);
 	const generatedFiles = new Set<string>();
 	const residualKinds = new Map<string, number>();
 	let filesChanged = 0;
