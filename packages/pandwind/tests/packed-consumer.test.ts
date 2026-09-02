@@ -45,6 +45,7 @@ describe("packed Pandwind consumer", () => {
 				"@tailwindcss",
 				"csstype",
 				"oxc-parser",
+				"postcss",
 				"postcss-selector-parser",
 				"tailwindcss",
 				"unplugin",
