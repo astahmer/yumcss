@@ -1,4 +1,4 @@
-import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE, type SourceScannerService } from "../source-scanner.ts";
 import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
 import type {
 	AuthoredCssImport,
@@ -34,15 +34,6 @@ interface CallNode extends OxcNode {
 	callee: OxcNode | null;
 	arguments: unknown[];
 }
-
-const parse = (file: string, source: string) =>
-	SOURCE_SCANNER_SERVICE.parse({
-		file,
-		source,
-		language: SOURCE_SCANNER_SERVICE.languageForFile(file),
-	});
-
-const canParse = (file: string): boolean => SOURCE_SCANNER_SERVICE.isScriptFile(file);
 
 const cssSourceMatches = (source: string, matchers: readonly (string | RegExp)[]): boolean =>
 	matchers.some((matcher) =>
@@ -191,9 +182,44 @@ const authoredImports = (code: string, id: string, program: OxcNode): AuthoredCs
 
 export class CssSourceScannerService implements CssSourceScanner {
 	private readonly matchers: readonly (string | RegExp)[];
+	private readonly sourceScanner: Pick<
+		SourceScannerService,
+		"languageForFile" | "isScriptFile" | "parse"
+	>;
+	private readonly programs = new Map<
+		string,
+		{ readonly source: string; readonly program: OxcNode }
+	>();
 
-	constructor(matchers: readonly (string | RegExp)[]) {
+	private static readonly PROGRAM_CACHE_LIMIT = 256;
+
+	constructor(
+		matchers: readonly (string | RegExp)[],
+		sourceScanner: Pick<
+			SourceScannerService,
+			"languageForFile" | "isScriptFile" | "parse"
+		> = SOURCE_SCANNER_SERVICE,
+	) {
 		this.matchers = matchers;
+		this.sourceScanner = sourceScanner;
+	}
+
+	private canParse(file: string): boolean {
+		return this.sourceScanner.isScriptFile(file);
+	}
+
+	private parseProgram(code: string, id: string): OxcNode {
+		const cached = this.programs.get(id);
+		if (cached?.source === code) return cached.program;
+		const program = this.sourceScanner.parse({
+			file: id,
+			source: code,
+			language: this.sourceScanner.languageForFile(id),
+		}).program as unknown as OxcNode;
+		if (this.programs.size >= CssSourceScannerService.PROGRAM_CACHE_LIMIT)
+			this.programs.delete(this.programs.keys().next().value!);
+		this.programs.set(id, { source: code, program });
+		return program;
 	}
 
 	matches(source: string): boolean {
@@ -201,41 +227,46 @@ export class CssSourceScannerService implements CssSourceScanner {
 	}
 
 	parse(code: string, id: string): OxcNode {
-		return parse(id, code).program as unknown as OxcNode;
+		return this.parseProgram(code, id);
 	}
 
 	findImports(code: string, id: string): ReadonlySet<string> {
-		if (!canParse(id)) return new Set();
-		return collectNames(parse(id, code).program as unknown as OxcNode, this.matchers);
+		if (!this.canParse(id)) return new Set();
+		return collectNames(this.parseProgram(code, id), this.matchers);
 	}
 
 	findAuthoredImports(code: string, id: string): readonly AuthoredCssImport[] {
-		if (!canParse(id)) return [];
-		return authoredImports(code, id, parse(id, code).program as unknown as OxcNode);
+		if (!this.canParse(id)) return [];
+		return authoredImports(code, id, this.parseProgram(code, id));
 	}
 
 	findCallSites(code: string, id: string, names: ReadonlySet<string>): readonly CssCallSite[] {
-		if (names.size === 0 || !canParse(id)) return [];
-		return findCallSites(code, id, names, parse(id, code).program as unknown as OxcNode);
+		if (names.size === 0 || !this.canParse(id)) return [];
+		return findCallSites(code, id, names, this.parseProgram(code, id));
 	}
 
 	inspect(code: string, id: string): CssSourceInspection {
-		if (!canParse(id))
+		if (!this.canParse(id))
 			return { authoredCss: [], cssNames: new Set(), cssSources: [], cssDiagnostics: [] };
-		const program = parse(id, code).program as unknown as OxcNode;
+		const program = this.parseProgram(code, id);
 		const cssNames = collectNames(program, this.matchers);
 		const cssSources = findCallSites(code, id, cssNames, program);
 		return {
 			authoredCss: authoredImports(code, id, program),
 			cssNames,
 			cssSources,
-			cssDiagnostics: new CssDiagnosticScanner().diagnose(code, id, cssNames, program),
+			cssDiagnostics: new CssDiagnosticScanner(this.sourceScanner).diagnose(
+				code,
+				id,
+				cssNames,
+				program,
+			),
 		};
 	}
 
 	findVarKeys(code: string, id: string, names: ReadonlySet<string>): readonly string[] {
-		if (names.size === 0 || !canParse(id)) return [];
-		return findVarKeys(names, parse(id, code).program as unknown as OxcNode);
+		if (names.size === 0 || !this.canParse(id)) return [];
+		return findVarKeys(names, this.parseProgram(code, id));
 	}
 }
 
@@ -264,6 +295,20 @@ const collectObjectKeys = (
 };
 
 export class CssDiagnosticScanner implements CssDiagnosticReporter {
+	private readonly sourceScanner: Pick<
+		SourceScannerService,
+		"languageForFile" | "isScriptFile" | "parse"
+	>;
+
+	constructor(
+		sourceScanner: Pick<
+			SourceScannerService,
+			"languageForFile" | "isScriptFile" | "parse"
+		> = SOURCE_SCANNER_SERVICE,
+	) {
+		this.sourceScanner = sourceScanner;
+	}
+
 	diagnose(
 		code: string,
 		id: string,
@@ -280,48 +325,56 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 			["supports", "Authored @supports rules are not extracted yet."],
 			["property", "Authored @property rules are not extracted yet."],
 		]);
-		walk(program ?? (parse(id, code).program as unknown as OxcNode), (node) => {
-			if (node.type !== "CallExpression") return;
-			const call = node as CallNode;
-			if (call.callee?.type !== "MemberExpression") return;
-			const object = (call.callee as { object?: OxcNode | null }).object;
-			if (object?.type !== "Identifier" || !names.has((object as { name?: string }).name ?? ""))
-				return;
-			const member = memberName(call.callee);
-			const start = call.start;
-			const position = location(code, start);
-			if (member !== undefined && unsupported.has(member)) {
-				diagnostics.push({
-					kind: "unsupported-construct",
+		walk(
+			program ??
+				(this.sourceScanner.parse({
 					file: id,
-					start,
-					end: call.end,
-					...position,
-					message: unsupported.get(member)!,
-					suggestion:
-						"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
-				});
-				return;
-			}
-			const kind = callKind(call.callee, names);
-			if (kind === undefined) return;
-			const staticArguments = call.arguments.filter(isObjectLiteral).length;
-			if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
-				diagnostics.push({
-					kind: "missing-extraction",
-					file: id,
-					start,
-					end: call.end,
-					...position,
-					message:
-						call.arguments.length === 0
-							? `${kind} has no style object to extract.`
-							: `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
-					suggestion:
-						"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
-				});
-			}
-		});
+					source: code,
+					language: this.sourceScanner.languageForFile(id),
+				}).program as unknown as OxcNode),
+			(node) => {
+				if (node.type !== "CallExpression") return;
+				const call = node as CallNode;
+				if (call.callee?.type !== "MemberExpression") return;
+				const object = (call.callee as { object?: OxcNode | null }).object;
+				if (object?.type !== "Identifier" || !names.has((object as { name?: string }).name ?? ""))
+					return;
+				const member = memberName(call.callee);
+				const start = call.start;
+				const position = location(code, start);
+				if (member !== undefined && unsupported.has(member)) {
+					diagnostics.push({
+						kind: "unsupported-construct",
+						file: id,
+						start,
+						end: call.end,
+						...position,
+						message: unsupported.get(member)!,
+						suggestion:
+							"Use css.class/css.raw for declarations, or keep this rule in authored CSS until build-time support is added.",
+					});
+					return;
+				}
+				const kind = callKind(call.callee, names);
+				if (kind === undefined) return;
+				const staticArguments = call.arguments.filter(isObjectLiteral).length;
+				if (call.arguments.length === 0 || staticArguments !== call.arguments.length) {
+					diagnostics.push({
+						kind: "missing-extraction",
+						file: id,
+						start,
+						end: call.end,
+						...position,
+						message:
+							call.arguments.length === 0
+								? `${kind} has no style object to extract.`
+								: `${kind} has dynamic argument(s); only literal style objects enter the generated stylesheet.`,
+						suggestion:
+							"Keep the style shape literal for build-time extraction, or use css.vars for dynamic values and verify the runtime path.",
+					});
+				}
+			},
+		);
 		return diagnostics;
 	}
 }

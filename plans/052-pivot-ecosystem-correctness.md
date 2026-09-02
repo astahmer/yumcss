@@ -27,6 +27,8 @@ Wave 3 is complete for the generic lowering core. The planner now uses enum-back
 
 Wave 4 is complete for the discovered-config failure boundary. Tailwind, UnoCSS, Tokenami, and Chakra now publish a typed configuration residual when a project config/theme surface is present but the corresponding official loader cannot be used. Projects without a discovered config continue through the deterministic fallback. Focused tests cover all four adapters and retain inline evidence for the exact residual and loader guidance.
 
+Wave 5a is complete for the shared CSS extraction scanner. Its parser is now injected through the shared scanner port and cached once per file/content pair, so inspection, import discovery, call-site discovery, authored-import discovery, variable-key discovery, and diagnostics reuse one AST. The cache is bounded and content changes invalidate the entry. The remaining Wave 5 work is AST-owned rewrite coverage across adapter migrations and the other host boundaries.
+
 ## Goal
 
 Make Pandwind a provably reliable, static-first pivot for the declared styling capabilities of every supported ecosystem.

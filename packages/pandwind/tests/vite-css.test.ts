@@ -6,6 +6,8 @@ import { createTwAdapter } from "../src/tw/adapter.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
+import { CssSourceScannerService } from "../src/vite/css-source-scanner.ts";
+import { SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
 import type {
 	CssArtifactExtractor,
 	CssDiagnosticReporter,
@@ -212,6 +214,50 @@ test("the CSS scanner ignores stylesheet and virtual module ids", () => {
 	expect(scanner.findAuthoredImports(source, "styles.css")).toEqual([]);
 	expect(scanner.findCallSites(source, "\0pandwind:css.css", new Set(["css"]))).toEqual([]);
 	expect(scanner.findVarKeys(source, "styles.css", new Set(["css"]))).toEqual([]);
+});
+
+test("shares one parsed document across CSS inspection operations", () => {
+	let parseCount = 0;
+	const sharedScanner = {
+		...SOURCE_SCANNER_SERVICE,
+		parse: (document: Parameters<typeof SOURCE_SCANNER_SERVICE.parse>[0]) => {
+			parseCount++;
+			return SOURCE_SCANNER_SERVICE.parse(document);
+		},
+	};
+	const scanner = new CssSourceScannerService(["design"], sharedScanner);
+	const source = 'import { css } from "./design"; css({ color: "red" });';
+
+	scanner.inspect(source, "src/card.tsx");
+	scanner.findImports(source, "src/card.tsx");
+	scanner.findAuthoredImports(source, "src/card.tsx");
+	scanner.findCallSites(source, "src/card.tsx", new Set(["css"]));
+	scanner.findVarKeys(source, "src/card.tsx", new Set(["css"]));
+
+	expect(parseCount).toBe(1);
+	expect(scanner.inspect(source, "src/card.tsx")).toMatchInlineSnapshot(`
+		{
+		  "authoredCss": [],
+		  "cssDiagnostics": [],
+		  "cssNames": Set {
+		    "css",
+		  },
+		  "cssSources": [
+		    {
+		      "callKind": "css",
+		      "column": 33,
+		      "dynamicArguments": 0,
+		      "end": 53,
+		      "file": "src/card.tsx",
+		      "line": 1,
+		      "start": 32,
+		      "staticArguments": 1,
+		    },
+		  ],
+		}
+	`);
+	scanner.findImports(source.replace("red", "blue"), "src/card.tsx");
+	expect(parseCount).toBe(2);
 });
 
 test("css extraction façade accepts substituted policy ports", () => {
