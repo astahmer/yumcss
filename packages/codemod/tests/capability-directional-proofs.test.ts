@@ -184,10 +184,10 @@ describe("concrete adapter capability proofs", () => {
 			source: { framework: "react" },
 		});
 
-		expect(result.converted + result.skipped).toBeGreaterThan(0);
-		expect(result.residuals.length === 0 || result.code.includes("props => props.color")).toBe(
-			true,
-		);
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("css.vars");
 		expect(result.code).toContain("props => props.color");
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
