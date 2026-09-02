@@ -381,7 +381,14 @@ export function analyzeSource(
 	let twCalls = 0;
 	let twFolded = 0;
 
-	const working = inlineTwCalls(source, file, options.config, options.twNames ?? new Set(["tw"]));
+	const working = inlineTwCalls(
+		source,
+		file,
+		options.config,
+		options.twNames ?? new Set(["tw"]),
+		undefined,
+		{ parsedProgram: mod.program },
+	);
 	twFolded = working.inlined;
 
 	const ignore = options.missingCssIgnore;

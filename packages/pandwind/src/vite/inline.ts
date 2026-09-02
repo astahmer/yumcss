@@ -118,6 +118,8 @@ export const OnUnresolvedTag = {
 export interface UnresolvedOptions {
 	/** Collect unresolved tokens for the plugin's onUnresolved lane. */
 	onUnresolved?: OnUnresolved;
+	/** Reuse a program parsed by a sibling analysis pass. */
+	parsedProgram?: OxcNode;
 }
 
 /**
@@ -136,7 +138,10 @@ export function inlineTwCalls(
 	importedConstants?: ConstantScope,
 	options?: UnresolvedOptions,
 ): InlineResult {
-	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
+	const result =
+		options?.parsedProgram === undefined
+			? SOURCE_SCANNER_SERVICE.parse({ file: id, source: code })
+			: { program: options.parsedProgram };
 	// evalLiteral consumes RAW constant values, not the {value, declStart}
 	// records the cx evaluator uses for its TDZ position guard.
 	const importedScope: ConstantScope = importedConstants ?? new Map();
