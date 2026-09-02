@@ -15,14 +15,27 @@ type RuleContext = {
 			end?: number;
 		}[];
 	};
-	report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void;
+	report(payload: {
+		data?: Record<string, unknown>;
+		message: string;
+		node?: AstNode;
+		fix?: (fixer: RuleFixer) => unknown;
+	}): void;
+};
+type RuleFixer = {
+	removeRange(range: readonly [number, number]): { range: readonly [number, number] };
 };
 type RuleListeners = {
 	Program?: (node: AstNode) => void;
 	CallExpression?: (node: AstNode) => void;
 };
 type Plugin = { rules: Record<string, { create(context: RuleContext): RuleListeners }> };
-type Report = { data: Record<string, unknown>; message: string; nodeType?: string };
+type Report = {
+	data: Record<string, unknown>;
+	message: string;
+	nodeType?: string;
+	fixRange?: readonly [number, number];
+};
 
 const typedPlugin = plugin as unknown as Plugin;
 
@@ -51,7 +64,7 @@ const runRule = (
 	const reports: Report[] = [];
 	const parsed =
 		typeof code === "string"
-			? parseSync("fixture.ts", code, { sourceType: "module", lang: "ts" })
+			? parseSync("fixture.tsx", code, { sourceType: "module", lang: "tsx" })
 			: undefined;
 	const context = {
 		options,
@@ -62,11 +75,24 @@ const runRule = (
 						getAllComments: () => parsed?.comments ?? [],
 					}
 				: undefined,
-		report(payload: { data?: Record<string, unknown>; message: string; node?: AstNode }): void {
+		report(payload: {
+			data?: Record<string, unknown>;
+			message: string;
+			node?: AstNode;
+			fix?: (fixer: RuleFixer) => unknown;
+		}): void {
+			const fix = payload.fix?.({
+				removeRange(range) {
+					return { range };
+				},
+			});
 			reports.push({
 				data: payload.data ?? {},
 				message: payload.message,
 				nodeType: payload.node?.type,
+				...(typeof fix === "object" && fix !== null && "range" in fix
+					? { fixRange: (fix as { range: readonly [number, number] }).range }
+					: {}),
 			});
 		},
 	};
@@ -438,6 +464,38 @@ css.vars(theme.value);`,
 			]
 		`);
 	});
+
+	test("finds host prop conflicts created by css.props spreads", () => {
+		const reports = runRule(
+			"no-conflicting-style-props",
+			`import { createCss } from "pandwind/css";
+const css = createCss();
+export function Card() {
+  return <div {...css.props({ color: "red" })} className="extra" style={inlineStyle} />;
+}`,
+		);
+
+		expect(reports).toHaveLength(2);
+		expect(reports.map(({ data }) => data.prop)).toEqual(["className", "style"]);
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "prop": "className",
+			    },
+			    "message": "pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+			    "nodeType": "JSXAttribute",
+			  },
+			  {
+			    "data": {
+			      "prop": "style",
+			    },
+			    "message": "pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+			    "nodeType": "JSXAttribute",
+			  },
+			]
+		`);
+	});
 });
 
 describe("Pandwind migration hygiene rules", () => {
@@ -492,12 +550,17 @@ css.vars({ color: theme.color });`,
 		);
 
 		expect(staleReports).toHaveLength(1);
+		expect(staleReports[0]?.fixRange).toEqual([31, 82]);
 		expect(staleReports).toMatchInlineSnapshot(`
 			[
 			  {
 			    "data": {
 			      "name": "tw",
 			    },
+			    "fixRange": [
+			      31,
+			      82,
+			    ],
 			    "message": "pandwind: migration skip marker is stale because the following call is statically foldable",
 			    "nodeType": "Line",
 			  },

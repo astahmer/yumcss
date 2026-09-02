@@ -25,6 +25,7 @@ codemod adapters and official loaders.
 | `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     |
 | `no-stale-migration-skip`    | Finds skip markers that now precede a statically foldable call.            |
 | `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. |
+| `no-conflicting-style-props` | Finds explicit `className`/`style` props that conflict with `css.props()`. |
 
 The extraction rules are normally warnings. Token and migration-hygiene rules
 can be errors when a project wants CI to require verified design values and
@@ -59,8 +60,11 @@ tw(theme.colors.brand);
 
 `require-migration-residual` catches an unmarked dynamic static-lane call;
 `no-stale-migration-skip` catches the opposite case after a later compiler
-improvement. Both rules are deliberately conservative when source ranges are
-not available.
+improvement. The stale-marker rule also offers a safe local fixer that removes
+only the obsolete comment. `no-conflicting-style-props` is report-only because
+deleting an explicit host prop would change behavior; the Pandwind codemod must
+merge those values through the target host semantics. All three rules are
+deliberately conservative when source ranges are not available.
 
 For generated project policy, prefer passing values derived from the project's
 official config or `pandwind.interop.json` artifact at the composition boundary.
@@ -82,7 +86,8 @@ file is the runtime plugin entry because Oxlint loads JavaScript plugins:
 		"pandwind-extraction/no-arbitrary-values": "error",
 		"pandwind-extraction/migration-skip-reason": "error",
 		"pandwind-extraction/no-stale-migration-skip": "error",
-		"pandwind-extraction/require-migration-residual": "error"
+		"pandwind-extraction/require-migration-residual": "error",
+		"pandwind-extraction/no-conflicting-style-props": "error"
 	}
 }
 ```

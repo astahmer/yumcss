@@ -1054,10 +1054,14 @@ composition root. It never invents a theme from a built-in vocabulary.
 
 Migration hygiene is also source-local: `migration-skip-reason` requires an
 explanation, `no-stale-migration-skip` catches a marker left on a now-static
-call, and `require-migration-residual` requires an explicit marker whenever a
-static-lane call still contains an unresolvable value. These rules require
-source ranges when checking marker-to-call adjacency and fail open when a host
-does not provide them. The package tests keep inline snapshots for diagnostic
-shape and ordinary assertions for safety, including deep ASTs, aliases,
-shadowing, custom token policy, nested dynamics, runtime carriers, and both
-valid and invalid residual markers.
+call, `require-migration-residual` requires an explicit marker whenever a
+static-lane call still contains an unresolvable value, and
+`no-conflicting-style-props` catches explicit host props that would compete
+with `css.props()` output. The stale-marker rule has a safe Oxlint fixer that
+removes only the obsolete comment; prop conflicts stay report-only because
+their repair requires target-aware merging. These rules require source ranges
+when checking marker-to-call adjacency and fail open when a host does not
+provide them. The package tests keep inline snapshots for diagnostic shape and
+ordinary assertions for safety, including deep ASTs, aliases, shadowing,
+custom token policy, nested dynamics, runtime carriers, JSX prop conflicts,
+and both valid and invalid residual markers.

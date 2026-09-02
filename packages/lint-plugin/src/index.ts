@@ -15,6 +15,7 @@
  * - migration-skip-reason: migration skip markers must explain themselves
  * - no-stale-migration-skip: static calls must not retain stale skip markers
  * - require-migration-residual: dynamic static-lane calls need a marker
+ * - no-conflicting-style-props: css.props() must not compete with host props
  */
 
 const SOURCE = Object.freeze({
@@ -79,7 +80,11 @@ type RuleContext = {
 		node?: AstNode;
 		message: string;
 		data?: Record<string, string | number>;
+		fix?: (fixer: RuleFixer) => unknown;
 	}): void;
+};
+type RuleFixer = {
+	removeRange(range: readonly [number, number]): unknown;
 };
 type RuleListener = {
 	Program?: (node: AstNode) => void;
@@ -702,11 +707,15 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 						if (call.dynamic !== undefined) continue;
 						const marker = markerForAnyCall(markers, call.node, source);
 						if (marker === undefined) continue;
+						const { start, end } = marker;
 						context.report({
 							node: marker as AstNode,
 							message:
 								"pandwind: migration skip marker is stale because the following call is statically foldable",
 							data: { name: callName(call.api) },
+							...(start === undefined || end === undefined
+								? {}
+								: { fix: (fixer: RuleFixer) => fixer.removeRange([start, end]) }),
 						});
 					}
 				},
@@ -729,6 +738,45 @@ const rules: Record<string, { create(context: RuleContext): RuleListener }> = {
 							data: { bad: call.dynamic.bad, name: callName(call.api) },
 						});
 					}
+				},
+			};
+		},
+	},
+	"no-conflicting-style-props": {
+		create(context) {
+			return {
+				Program(node) {
+					const resolver = createApiResolver();
+					resolver.scan(node);
+					walkNode(node, (opening) => {
+						if (opening.type !== "JSXOpeningElement") return;
+						let stylePropsSpread = false;
+						const explicitProps: { name: string; node: AstNode }[] = [];
+						for (const attribute of opening.attributes ?? []) {
+							if (attribute.type === "JSXSpreadAttribute") {
+								const expression = attribute.argument;
+								if (
+									expression?.type === "CallExpression" &&
+									resolver.resolve(expression)?.method === STYLE_METHOD.props
+								)
+									stylePropsSpread = true;
+								continue;
+							}
+							if (attribute.type !== "JSXAttribute") continue;
+							const name = attribute.name?.name;
+							if (name === "className" || name === "style")
+								explicitProps.push({ name, node: attribute });
+						}
+						if (!stylePropsSpread) return;
+						for (const prop of explicitProps) {
+							context.report({
+								node: prop.node,
+								message:
+									"pandwind: explicit {{prop}} conflicts with css.props() output — merge the value before spreading host props",
+								data: { prop: prop.name },
+							});
+						}
+					});
 				},
 			};
 		},

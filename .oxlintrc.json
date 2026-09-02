@@ -23,7 +23,8 @@
 		"pandwind-extraction/no-arbitrary-values": "error",
 		"pandwind-extraction/migration-skip-reason": "error",
 		"pandwind-extraction/no-stale-migration-skip": "error",
-		"pandwind-extraction/require-migration-residual": "error"
+		"pandwind-extraction/require-migration-residual": "error",
+		"pandwind-extraction/no-conflicting-style-props": "error"
 	},
 	"ignorePatterns": [
 		"**/apps/example/src/types.d.ts",
@@ -56,7 +57,8 @@
 				"pandwind-extraction/no-arbitrary-values": "off",
 				"pandwind-extraction/migration-skip-reason": "off",
 				"pandwind-extraction/no-stale-migration-skip": "off",
-				"pandwind-extraction/require-migration-residual": "off"
+				"pandwind-extraction/require-migration-residual": "off",
+				"pandwind-extraction/no-conflicting-style-props": "off"
 			}
 		}
 	]
