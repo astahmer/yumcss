@@ -27,7 +27,10 @@ import {
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { isAbsoluteDocumentPath, joinDocumentPath } from "../../path-utils.ts";
-import { detectStaticClassTarget } from "../class-target-detection.ts";
+import {
+	collectDynamicClassAttributes,
+	detectStaticClassTarget,
+} from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { TokenCatalog } from "../tokens.ts";
@@ -812,6 +815,12 @@ function parseUnoCss(
 			),
 		});
 	}
+	for (const text of collectDynamicClassAttributes(source))
+		residuals.push({
+			kind: "dynamic",
+			text,
+			hint: "UnoCSS dynamic class expressions require runtime-aware target lowering",
+		});
 	return { matches, residuals };
 }
 
@@ -855,11 +864,19 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 			},
 		},
 		detect: (context) => {
-			const matched = detectStaticClassTarget(context.source).matched;
+			const matched =
+				detectStaticClassTarget(context.source).matched ||
+				collectDynamicClassAttributes(context.source).length > 0;
 			return {
 				matched,
 				confidence: /@unocss\/|\bunocss\b|presetWind/.test(context.source) ? 1 : 0.55,
-				evidence: matched ? ["literal-class-attribute"] : [],
+				evidence: matched
+					? [
+						collectDynamicClassAttributes(context.source).length > 0
+							? "dynamic-class-attribute"
+							: "literal-class-attribute",
+					]
+					: [],
 			};
 		},
 		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(context)),

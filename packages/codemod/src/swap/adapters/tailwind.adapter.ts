@@ -29,7 +29,10 @@ import {
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
-import { detectStaticClassTarget } from "../class-target-detection.ts";
+import {
+	collectDynamicClassAttributes,
+	detectStaticClassTarget,
+} from "../class-target-detection.ts";
 import { DynamicClassHost } from "./class-target-dynamic.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
@@ -426,6 +429,12 @@ function parseTailwind(
 			continue;
 		matches.push(parseClassValue(value, context, resolver, start, start + value.length + 2));
 	}
+	for (const text of collectDynamicClassAttributes(source))
+		residuals.push({
+			kind: "dynamic",
+			text,
+			hint: "Tailwind dynamic class expressions require runtime-aware target lowering",
+		});
 	return { matches, residuals };
 }
 
@@ -836,12 +845,22 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 			},
 		},
 		detect: (context) => {
-			const matched = detectStaticClassTarget(context.source).matched;
+			const matched =
+				detectStaticClassTarget(context.source).matched ||
+				collectDynamicClassAttributes(context.source).length > 0;
 			const configured = /(?:tailwindcss|@tailwindcss\/)/u.test(context.source);
 			return {
 				matched,
 				confidence: matched ? (configured ? 1 : 0.6) : 0,
-				evidence: matched ? [configured ? "tailwind-package" : "literal-class-attribute"] : [],
+				evidence: matched
+					? [
+						configured
+							? "tailwind-package"
+							: collectDynamicClassAttributes(context.source).length > 0
+								? "dynamic-class-attribute"
+								: "literal-class-attribute",
+					]
+					: [],
 			};
 		},
 		loadConfig: (context) => AdapterEvidence.normalizeConfig(config(context)),

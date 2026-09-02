@@ -198,6 +198,54 @@ describe("concrete adapter capability proofs", () => {
 			const Card = (() => { const staticClass = ""; const component = (props) => {  const dynamic = css.vars({ color: (props => props.color)(props) }); const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(staticClass, dynamic.class, "pw-1fn70s4", props.className)} style={{ ...props.style, ...dynamic.style }} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
+
+	test.each([
+		{
+			id: "tailwind",
+			from: CodemodAdapterId.Tailwind,
+			attribute: "className",
+			hint: "Tailwind dynamic class expressions require runtime-aware target lowering",
+		},
+		{
+			id: "unocss",
+			from: CodemodAdapterId.UnoCSS,
+			attribute: "class",
+			hint: "UnoCSS dynamic class expressions require runtime-aware target lowering",
+		},
+	] as const)("keeps $id dynamic class bindings visible", ({ from, attribute, hint }) => {
+		const source =
+			'<div ' + attribute + '={["color:red", runtimeClass].join(" ")} />';
+		const result = migrate(source, from, pandwind, "Card.tsx");
+		const dynamicResidual = result.residuals.find((residual) => residual.kind === "dynamic");
+
+		expect(result.converted).toBe(0);
+		expect(result.skipped).toBe(1);
+		expect(dynamicResidual?.hint).toBe(hint);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		const output = {
+			code: result.code
+				.replaceAll(attribute, "className")
+				.replace(/tailwind|unocss/giu, "class-adapter"),
+			residuals: result.residuals.map((residual) => ({
+				...residual,
+				text: residual.text.replaceAll(attribute, "className"),
+				hint: residual.hint?.replace(/tailwind|unocss/giu, "class-adapter"),
+			})),
+		};
+		expect(output).toMatchInlineSnapshot(`
+			{
+			  "code": "// pandwind:migrate-skip (route: class-adapter -> pandwind | parse-residual: dynamic)
+			<div className={["color:red", runtimeClass].join(" ")} />",
+			  "residuals": [
+			    {
+			      "hint": "class-adapter dynamic class expressions require runtime-aware target lowering",
+			      "kind": "dynamic",
+			      "text": "className={["color:red", runtimeClass].join(" ")}",
+			    },
+			  ],
+			}
+		`);
+	});
 });
 
 describe("explicit adapter round trips", () => {
