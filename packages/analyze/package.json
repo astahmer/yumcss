@@ -36,6 +36,12 @@
 			"import": "./dist/collect/index.js",
 			"default": "./dist/collect/index.js"
 		},
+		"./studio": {
+			"pandwind": "./src/studio/index.ts",
+			"types": "./dist/studio/index.d.ts",
+			"import": "./dist/studio/index.js",
+			"default": "./dist/studio/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
