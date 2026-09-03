@@ -20,7 +20,7 @@ section { min-width: 0; border: 1px solid #2a2932; border-radius: 8px; overflow:
 <main>
 <section><div class="heading">workspace</div><div class="body stack"><select id="file"></select><pre id="tree">Open a project to inspect its source tree.</pre></div></section>
 <section><div class="heading">source editor (memory only)</div><div class="body stack"><textarea id="editor" spellcheck="false"></textarea><div class="row"><button id="apply">Apply edit</button><button id="evaluate">Evaluate target</button></div></div></section>
-<section><div class="heading">migration result</div><div class="body stack"><div class="row"><select id="source"></select><select id="target"></select></div><pre id="output">Open a project to load registered adapters.</pre><details><summary>semantic program</summary><pre id="semantic">No semantic program yet.</pre></details><details><summary>themes and tokens</summary><pre id="themes">No theme data yet.</pre></details><details><summary>canonical CSS</summary><pre id="css">No CSS validation yet.</pre></details><details><summary>host preview</summary><pre id="preview">Static mode only.</pre></details><div id="diagnostics" class="muted"></div></div></section>
+<section><div class="heading">migration result</div><div class="body stack"><div class="row"><select id="source"></select><select id="target"></select></div><pre id="output">Open a project to load registered adapters.</pre><details><summary>semantic program</summary><pre id="semantic">No semantic program yet.</pre></details><details><summary>themes and tokens</summary><pre id="themes">No theme data yet.</pre></details><details><summary>canonical CSS</summary><pre id="css">No CSS validation yet.</pre></details><details><summary>artifacts and size</summary><pre id="artifacts">No artifacts yet.</pre></details><details><summary>host preview</summary><pre id="preview">Static mode only.</pre></details><div id="diagnostics" class="muted"></div></div></section>
 </main>
 <script>
 const token = new URL(location.href).searchParams.get("token") || "";
@@ -62,6 +62,7 @@ const render = () => {
   $("themes").textContent = JSON.stringify(snapshot.evaluation?.themes || { scopes: [] }, null, 2);
   const artifacts = snapshot.evaluation?.artifacts || {};
   $("css").textContent = artifacts.targetCss || artifacts.sourceCss || "No CSS validation yet.";
+  $("artifacts").textContent = JSON.stringify({ files: artifacts.files || [], sourceBytes: artifacts.sourceBytes, targetBytes: artifacts.targetBytes }, null, 2);
   $("preview").textContent = JSON.stringify(snapshot.preview || { status: "unavailable", message: "Static mode only." }, null, 2);
   const diagnostics = snapshot.evaluation?.diagnostics || [];
   const conflicts = snapshot.workspace.conflicts || [];
