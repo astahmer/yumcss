@@ -583,14 +583,17 @@ jobs:
       base-ref: main
       app-dir: apps/my-app # dir containing src/ + generated tw.ts
       patterns: "src/**/*.{ts,tsx}"
+      pandwind-version: latest
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 Inputs: `base-ref`, `working-directory`, `app-dir`, `patterns`, `pr-number`
-(for dispatch runs). Requires the app to have run `pandwind-tw generate --bridge`
-outputs committed (the workflow reads them). Fail-open: reporting problems
-never fail the workflow.
+(for dispatch runs), and `pandwind-version`. `working-directory` and `app-dir`
+are relative to the caller checkout; `patterns` is relative to `app-dir`. The
+workflow runs the published `pandwind-analyze` package and requires the app to
+have run `pandwind-tw generate --bridge` outputs committed (the workflow reads
+them). Fail-open: reporting problems never fail the workflow.
 
 ## Why pandwind exists
 

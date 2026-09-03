@@ -44,6 +44,10 @@ on:
         description: PR number for dispatch runs (auto-detected on pull_request)
         type: string
         default: ""
+      pandwind-version:
+        description: Published pandwind-analyze version to execute
+        type: string
+        default: latest
     secrets:
       github-token:
         required: false
@@ -69,6 +73,10 @@ on:
         description: PR number to comment on (empty = report only, no comment)
         type: string
         default: ""
+      pandwind-version:
+        description: Published pandwind-analyze version to execute
+        type: string
+        default: latest
 
 permissions:
   contents: read
@@ -87,8 +95,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: nubjs/setup-nub@v0
-
       - name: Check out base branch
         uses: actions/checkout@v4
         with:
@@ -103,26 +109,37 @@ jobs:
         with:
           version: 11.21.0
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Measure HEAD and base
         env:
           APP_DIR: ${{ inputs.app-dir }}
           PATTERNS: ${{ inputs.patterns }}
           WORK_DIR: ${{ inputs.working-directory }}
+          PANDWIND_VERSION: ${{ inputs.pandwind-version }}
         run: |
           set -e
-          RUN="nub"
-          if [ "$WORK_DIR" != "." ]; then cd "$WORK_DIR"; fi
-          "$RUN" ../../packages/analyze/src/cli.ts "$PATTERNS" \
-            --tw "../../$APP_DIR/src/tw.ts" --root "../../$APP_DIR" \
+          WORK_DIR="${WORK_DIR#./}"
+          if [ "$WORK_DIR" = "." ]; then WORK_DIR=""; fi
+          WORK_ROOT="$GITHUB_WORKSPACE${WORK_DIR:+/$WORK_DIR}"
+          BASE_ROOT="$GITHUB_WORKSPACE/base-checkout${WORK_DIR:+/$WORK_DIR}"
+          HEAD_APP_ROOT="$WORK_ROOT/$APP_DIR"
+          BASE_APP_ROOT="$BASE_ROOT/$APP_DIR"
+          cd "$WORK_ROOT"
+          pnpm dlx --package "pandwind-analyze@$PANDWIND_VERSION" pandwind-analyze \
+            "$PATTERNS" --tw "$HEAD_APP_ROOT/src/tw.ts" --root "$HEAD_APP_ROOT" \
             --json --css > /tmp/analyze-head.json
-          "$RUN" ../../packages/analyze/src/cli.ts "$PATTERNS" \
-            --tw "../../base-checkout/$APP_DIR/src/tw.ts" \
-            --root "../../base-checkout/$APP_DIR" \
+          pnpm dlx --package "pandwind-analyze@$PANDWIND_VERSION" pandwind-analyze \
+            "$PATTERNS" --tw "$BASE_APP_ROOT/src/tw.ts" --root "$BASE_APP_ROOT" \
             --json --css > /tmp/analyze-base.json || \
             echo '{"schema":"pandwind.analyze/1"}' > /tmp/analyze-base.json
+
+      - name: Check out Pandwind comment renderer
+        uses: actions/checkout@v4
+        with:
+          repository: astahmer/pandwind
+          ref: main
+          path: .pandwind-workflow
+          sparse-checkout: .github/scripts/analyze-comment.mjs
+          sparse-checkout-cone-mode: false
 
       - name: Post / update PR comment
         env:
@@ -131,6 +148,6 @@ jobs:
           REPO: ${{ github.repository }}
           BASE_REF_NAME: ${{ inputs.base-ref }}
         run: |
-          nub .github/scripts/analyze-comment.mjs \
+          node .pandwind-workflow/.github/scripts/analyze-comment.mjs \
             /tmp/analyze-head.json /tmp/analyze-base.json
         continue-on-error: true
