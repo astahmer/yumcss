@@ -5,6 +5,10 @@
  */
 import { expect, test } from "tstyche";
 import { createCss } from "../src/css/create-css.ts";
+import type { StackComponentProps as PreactStackProps } from "../src/stack/preact.ts";
+import type { StackComponentProps as ReactStackProps } from "../src/stack/react.tsx";
+import type { StackComponentProps as SolidStackProps } from "../src/stack/solid.tsx";
+import type { StackComponentProps as VueStackProps } from "../src/stack/vue.ts";
 import { stackClasses, type StackProps } from "../src/stack/index.ts";
 
 const css = createCss();
@@ -30,4 +34,15 @@ test("stack direction and alignment values stay constrained", () => {
 	stackClasses({ direction: "diagonal" });
 	// @ts-expect-error is not assignable
 	stackClasses({ align: "middle" });
+});
+
+test("each component renderer accepts its framework-native class prop", () => {
+	const react: ReactStackProps = { className: "custom", id: "react" };
+	const solid: SolidStackProps = { class: "custom", id: "solid" };
+	const vue: VueStackProps = { class: "custom", id: "vue" };
+	const preact: PreactStackProps = { className: "custom", id: "preact" };
+	expect(react).type.toBeAssignableTo<ReactStackProps>();
+	expect(solid).type.toBeAssignableTo<SolidStackProps>();
+	expect(vue).type.toBeAssignableTo<VueStackProps>();
+	expect(preact).type.toBeAssignableTo<PreactStackProps>();
 });

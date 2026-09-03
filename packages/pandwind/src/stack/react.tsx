@@ -8,18 +8,25 @@
  * never install it. There is no package build step — consumer bundlers
  * compile this `.tsx` with their own automatic JSX runtime.
  */
-import type { JSX, ReactNode } from "react";
+import type { HTMLAttributes, JSX, ReactNode } from "react";
 import { stackClasses, type StackProps } from "./index.ts";
 
-export interface StackComponentProps extends StackProps {
+export interface StackComponentProps
+	extends
+		StackProps,
+		Omit<HTMLAttributes<HTMLDivElement>, keyof StackProps | "className" | "children"> {
 	/** Extra classes appended after the mapped ones (last-wins by author). */
 	className?: string;
 	children?: ReactNode;
 }
 
-export function Stack({ className, children, ...stack }: StackComponentProps): JSX.Element {
+export function Stack({ className, children, ...props }: StackComponentProps): JSX.Element {
+	const { direction, gap, padding, align, justify, ...attributes } = props;
+	const stack = { direction, gap, padding, align, justify } satisfies StackProps;
 	const mapped = stackClasses(stack as StackProps);
 	return (
-		<div className={className === undefined ? mapped : `${mapped} ${className}`}>{children}</div>
+		<div {...attributes} className={className === undefined ? mapped : `${mapped} ${className}`}>
+			{children}
+		</div>
 	);
 }

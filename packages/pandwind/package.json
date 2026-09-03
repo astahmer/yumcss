@@ -66,6 +66,24 @@
 			"import": "./dist/stack/react.js",
 			"default": "./dist/stack/react.js"
 		},
+		"./stack/solid": {
+			"pandwind": "./src/stack/solid.tsx",
+			"types": "./dist/stack/solid.d.ts",
+			"import": "./dist/stack/solid.js",
+			"default": "./dist/stack/solid.js"
+		},
+		"./stack/vue": {
+			"pandwind": "./src/stack/vue.ts",
+			"types": "./dist/stack/vue.d.ts",
+			"import": "./dist/stack/vue.js",
+			"default": "./dist/stack/vue.js"
+		},
+		"./stack/preact": {
+			"pandwind": "./src/stack/preact.ts",
+			"types": "./dist/stack/preact.d.ts",
+			"import": "./dist/stack/preact.js",
+			"default": "./dist/stack/preact.js"
+		},
 		"./design": {
 			"pandwind": "./src/design/index.ts",
 			"types": "./dist/design/index.d.ts",
@@ -324,23 +342,40 @@
 		"@types/react": "19.2.8",
 		"@types/react-dom": "19.2.4",
 		"@vitest/coverage-v8": "4.1.10",
+		"@vue/server-renderer": "3.5.42",
 		"esbuild": "0.28.2",
+		"preact": "10.29.8",
+		"preact-render-to-string": "6.7.0",
 		"react-dom": "19.2.8",
 		"rollup": "4.62.5",
+		"solid-js": "1.9.15",
 		"tailwind-merge": "3.6.0",
 		"tsdown": "0.22.14",
 		"tstyche": "7.2.2",
 		"typescript": "7.0.2",
 		"vite": "8.2.1",
 		"vitest": "4.1.10",
+		"vue": "3.5.42",
 		"webpack": "5.101.3"
 	},
 	"peerDependencies": {
+		"preact": ">=10.0.0",
 		"react": ">=18.0.0",
-		"vite": ">=5.0.0"
+		"solid-js": ">=1.8.0",
+		"vite": ">=5.0.0",
+		"vue": ">=3.3.0"
 	},
 	"peerDependenciesMeta": {
+		"preact": {
+			"optional": true
+		},
 		"react": {
+			"optional": true
+		},
+		"solid-js": {
+			"optional": true
+		},
+		"vue": {
 			"optional": true
 		},
 		"vite": {
