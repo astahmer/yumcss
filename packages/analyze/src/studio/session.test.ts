@@ -122,6 +122,25 @@ describe("createStudioSession", () => {
 		`);
 	});
 
+	test("reports static mode when no host preview is available", async () => {
+		const session = createStudioSession({
+			workspace: workspacePort(),
+			evaluation: { evaluate: async () => ({ diagnostics: [] }) },
+			preview: { id: "react-vite", available: false },
+		});
+
+		const snapshot = await session.open({ root: "/project" });
+
+		expect(snapshot.preview).toMatchInlineSnapshot(`
+			{
+			  "host": "react-vite",
+			  "message": "No supported host preview is configured for this project",
+			  "status": "unavailable",
+			}
+		`);
+		await session.close();
+	});
+
 	test("composes workspace edits, selection, target, and theme through one evaluator", async () => {
 		const workspace = workspacePort();
 		const requests: StudioEvaluationRequest[] = [];
