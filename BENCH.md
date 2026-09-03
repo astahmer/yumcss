@@ -200,10 +200,10 @@ registry cannot make a cached result stale.
 
 The measured bundle change, against the committed pre-change record, is:
 
-| entry | before min/gzip | after min/gzip | change |
-| --- | ---: | ---: | ---: |
-| `cx()` | 12,277 / 5,174 | 12,586 / 5,301 | +309 / +127 |
-| all engines | 14,627 / 6,025 | 15,218 / 6,242 | +591 / +217 |
+| entry       | before min/gzip | after min/gzip |      change |
+| ----------- | --------------: | -------------: | ----------: |
+| `cx()`      |  12,277 / 5,174 | 12,586 / 5,301 | +309 / +127 |
+| all engines |  14,627 / 6,025 | 15,218 / 6,242 | +591 / +217 |
 
 The focused `cx-bench.mts` shape is configured and repeatedly merges the same
 4+3-token and 13+9-token pairs. The pre-change run measured 6.09M and 2.65M
@@ -240,28 +240,28 @@ named after the affected mechanism:
 - `engine` — repeated resolution of one Tailwind engine miss;
 - `tw`, `cx`, and `css` — control paths for unrelated runtime behavior.
 
-| checkpoint | css | tw | cx | sheet | tokens | pruner | edit | engine |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| baseline (`b33a64c`) | 368K | 1.30M | 6.19M | 429K | 96K | 28K | 20.7M | 731K |
-| `perf/runtime` (`a8d5baf`) | 377K | 1.24M | 6.72M | 425K | **183.2M** | 28K | 19.5M | 581K |
-| `perf/tw` (`2506a5f`) | 372K | **1.06M** | 6.61M | 445K | 178.1M | 28K | 17.8M | 856K |
-| `perf/codemod-edit` (`1e2eaeb`) | 381K | 1.21M | 7.34M | 444K | 185.9M | 29K | **87.2M** | 776K |
-| `perf/codemod-engine` (`b030d01`) | 379K | 1.23M | 7.43M | 450K | 187.2M | 30K | 76.9M | **56.0M** |
-| `perf/css` (`f03e586`) | 381K | 1.23M | 7.60M | **529K** | 190.9M | 30K | 76.3M | 91.8M |
-| `perf/vite` (`fa0dea2`) | 381K | 1.22M | 7.50M | 530K | 183.8M | **49K** | 78.1M | 62.4M |
-| `docs/perf` (`8034414`) | 388K | 1.24M | 7.45M | 533K | 187.4M | 46K | 75.9M | 88.6M |
+| checkpoint                        |  css |        tw |    cx |    sheet |     tokens |  pruner |      edit |    engine |
+| --------------------------------- | ---: | --------: | ----: | -------: | ---------: | ------: | --------: | --------: |
+| baseline (`b33a64c`)              | 368K |     1.30M | 6.19M |     429K |        96K |     28K |     20.7M |      731K |
+| `perf/runtime` (`a8d5baf`)        | 377K |     1.24M | 6.72M |     425K | **183.2M** |     28K |     19.5M |      581K |
+| `perf/tw` (`2506a5f`)             | 372K | **1.06M** | 6.61M |     445K |     178.1M |     28K |     17.8M |      856K |
+| `perf/codemod-edit` (`1e2eaeb`)   | 381K |     1.21M | 7.34M |     444K |     185.9M |     29K | **87.2M** |      776K |
+| `perf/codemod-engine` (`b030d01`) | 379K |     1.23M | 7.43M |     450K |     187.2M |     30K |     76.9M | **56.0M** |
+| `perf/css` (`f03e586`)            | 381K |     1.23M | 7.60M | **529K** |     190.9M |     30K |     76.3M |     91.8M |
+| `perf/vite` (`fa0dea2`)           | 381K |     1.22M | 7.50M |     530K |     183.8M | **49K** |     78.1M |     62.4M |
+| `docs/perf` (`8034414`)           | 388K |     1.24M | 7.45M |     533K |     187.4M |     46K |     75.9M |     88.6M |
 
 The attributable deltas are:
 
-| revision | measured result |
-| --- | --- |
-| `perf/runtime` | Immutable token serialization: **96K → 183M ops/sec (~1,900×)**. This is the expected cache hit after the first call; the other columns are controls. |
-| `perf/tw` | Conflict-free compilation: **1.30M → 1.06M ops/sec** versus the immediately previous point (~18% faster). |
-| `perf/codemod-edit` | One-edit source rewrite: **17.8M → 87.2M ops/sec (~4.9×)**. |
-| `perf/codemod-engine` | Repeated engine miss lookup: **776K → 56.0M ops/sec (~72×)**. |
-| `perf/css` | Stylesheet path processing: **450K → 529K ops/sec (~18% faster)**. |
-| `perf/vite` | Runtime-pruner traversal: **30K → 49K ops/sec (~63% faster)**. |
-| `docs/perf` | Documentation/comment-only checkpoint; no algorithmic gain is claimed. The small movement is measurement noise. |
+| revision              | measured result                                                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `perf/runtime`        | Immutable token serialization: **96K → 183M ops/sec (~1,900×)**. This is the expected cache hit after the first call; the other columns are controls. |
+| `perf/tw`             | Conflict-free compilation: **1.30M → 1.06M ops/sec** versus the immediately previous point (~18% faster).                                             |
+| `perf/codemod-edit`   | One-edit source rewrite: **17.8M → 87.2M ops/sec (~4.9×)**.                                                                                           |
+| `perf/codemod-engine` | Repeated engine miss lookup: **776K → 56.0M ops/sec (~72×)**.                                                                                         |
+| `perf/css`            | Stylesheet path processing: **450K → 529K ops/sec (~18% faster)**.                                                                                    |
+| `perf/vite`           | Runtime-pruner traversal: **30K → 49K ops/sec (~63% faster)**.                                                                                        |
+| `docs/perf`           | Documentation/comment-only checkpoint; no algorithmic gain is claimed. The small movement is measurement noise.                                       |
 
 The `css`, `cx`, and unrelated columns are controls, not claims that those
 revisions improved those APIs. The two large cache results are intentionally

@@ -583,19 +583,13 @@ css.vars({ color: theme.color });`,
 	test("offers a safe fixer that records an unmarked residual", () => {
 		const code = `import { tw } from "pandwind";
 tw(theme.color);`;
-		const reports = runRule(
-			"require-migration-residual",
-			code,
-		);
+		const reports = runRule("require-migration-residual", code);
 
 		expect(reports).toHaveLength(1);
 		expect(reports[0]?.fixText).toBe(
 			"/* pandwind:migrate-skip (residual: member expression value) */ ",
 		);
-		const fixed = code.replace(
-			"tw(theme.color)",
-			`${reports[0]?.fixText ?? ""}tw(theme.color)`,
-		);
+		const fixed = code.replace("tw(theme.color)", `${reports[0]?.fixText ?? ""}tw(theme.color)`);
 		expect(runRule("require-migration-residual", fixed)).toEqual([]);
 		expect(runRule("migration-skip-reason", fixed)).toEqual([]);
 		expect(reports).toMatchInlineSnapshot(`

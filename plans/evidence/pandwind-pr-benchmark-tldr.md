@@ -99,10 +99,10 @@ cells; the microbench and payload result files were written and are the data
 reported here. WPD/browser rank is therefore intentionally not claimed for
 this repository.
 
-| Lane | Real API exercised | Measured result |
-| ---- | ------------------ | --------------- |
-| `pandwind` | `createCx()` runtime merge | 230,048 renders/sec mean of case medians; mean rank 14.2 across the 10 shared cases |
-| `pandwind-buildtime` | Vite-folded literal `tw()`/`cx()`; `css.class()` in mixed cases | 756,723 renders/sec mean of medians across the 10 shared cases; mean rank 6.3 |
+| Lane                 | Real API exercised                                              | Measured result                                                                     |
+| -------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `pandwind`           | `createCx()` runtime merge                                      | 230,048 renders/sec mean of case medians; mean rank 14.2 across the 10 shared cases |
+| `pandwind-buildtime` | Vite-folded literal `tw()`/`cx()`; `css.class()` in mixed cases | 756,723 renders/sec mean of medians across the 10 shared cases; mean rank 6.3       |
 
 The build-time lane's strongest shared-case results were `compose-6` at rank
 1/18 (2,206,897 renders/sec), `compose-3` at rank 3/18 (1,213,654),
@@ -128,9 +128,9 @@ bytes tool now include all four engines.
 
 | Rank in original arena tally | Engine | Rows won |
 | ---------------------------: | ------ | -------: |
-|                            1 | Bamboo | 23 / 30 |
-|                            2 | Panda  | 13 / 30 |
-|                            3 | StyleX | 10 / 30 |
+|                            1 | Bamboo |  23 / 30 |
+|                            2 | Panda  |  13 / 30 |
+|                            3 | StyleX |  10 / 30 |
 
 The original tally is retained because the arena's scoring tool is still
 three-engine-specific. The four-engine measurements below are the comparable
@@ -138,15 +138,15 @@ Pandwind result; they are not silently folded into the old 30-row score.
 
 The arena's measured headline values include:
 
-| Axis                        |    Bamboo |    StyleX |     Panda |  Pandwind |
-| --------------------------- | --------: | --------: | --------: | --------: |
-| Full first load             | 105,091 B | 106,122 B | 112,835 B | 107,641 B |
-| CSS brotli                  |   6,845 B |   7,008 B |   9,518 B |   6,527 B |
-| Cold production build       |  3,725 ms |  3,507 ms |  2,964 ms |  1,086 ms |
-| Warm production build       |  2,032 ms |  3,303 ms |  2,085 ms |  1,021 ms |
-| Mean SSR HTML gzip          |   5,534 B |   5,531 B |   5,539 B |   5,462 B |
-| CSS rules                   |       525 |       467 |       532 |       457 |
-| Class-attribute bytes       |    93,036 |    70,843 |    92,738 |    64,550 |
+| Axis                  |    Bamboo |    StyleX |     Panda |  Pandwind |
+| --------------------- | --------: | --------: | --------: | --------: |
+| Full first load       | 105,091 B | 106,122 B | 112,835 B | 107,641 B |
+| CSS brotli            |   6,845 B |   7,008 B |   9,518 B |   6,527 B |
+| Cold production build |  3,725 ms |  3,507 ms |  2,964 ms |  1,086 ms |
+| Warm production build |  2,032 ms |  3,303 ms |  2,085 ms |  1,021 ms |
+| Mean SSR HTML gzip    |   5,534 B |   5,531 B |   5,539 B |   5,462 B |
+| CSS rules             |       525 |       467 |       532 |       457 |
+| Class-attribute bytes |    93,036 |    70,843 |    92,738 |    64,550 |
 
 Pandwind ranks first for CSS Brotli, CSS rule count, class-attribute bytes,
 mean SSR HTML gzip, and both build-time columns in this local four-engine
@@ -190,14 +190,14 @@ budget**. This report does not refresh the snapshot or alter runtime code.
 
 ## Final verdict
 
-| Question                                                                 | Answer                                                                                                                                                                     |
-| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Is Pandwind's static strategy competitive with compile-time libraries?   | **Architecturally yes; externally unranked until it is a real benchmark lane.**                                                                                            |
-| Is `tw()` the fastest Pandwind style-object fallback?                    | **Yes in the current local sample.**                                                                                                                                       |
-| Is `dcss()` slower than `tw()`?                                          | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                              |
-| Is `css()` the most flexible fallback?                                   | **Yes; its lower throughput buys general CSS expressiveness.**                                                                                                             |
+| Question                                                                 | Answer                                                                                                                                                                        |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Is Pandwind's static strategy competitive with compile-time libraries?   | **Architecturally yes; externally unranked until it is a real benchmark lane.**                                                                                               |
+| Is `tw()` the fastest Pandwind style-object fallback?                    | **Yes in the current local sample.**                                                                                                                                          |
+| Is `dcss()` slower than `tw()`?                                          | **Yes in the exploratory sample, due to design-token/vocabulary resolution.**                                                                                                 |
+| Is `css()` the most flexible fallback?                                   | **Yes; its lower throughput buys general CSS expressiveness.**                                                                                                                |
 | Can we claim Pandwind wins `css-in-js-bench` or `css-in-js-arena` today? | **We can claim measured wins on specific axes, not a universal win.** The build-time lane ranks strongly; the runtime `cx()` lane is slower than specialized merge libraries. |
-| What remains unmeasured here?                                            | A dedicated `dcss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence. |
+| What remains unmeasured here?                                            | A dedicated `dcss()` workload and a clean WPD/browser rank in `css-in-js-bench`; the arena already has bytes, SSR, build, layout, and screenshot evidence.                    |
 
 The defensible TL;DR is: **Pandwind now has measured local lanes in both
 external harnesses. Its static build-time lane is competitive—rank 1 on some

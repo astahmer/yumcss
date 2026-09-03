@@ -334,7 +334,7 @@ async function loadPandaThemeByOfficialPackage(
 		// The official loader returns Panda's effective config, including preset and
 		// plugin decisions. Never inject built-in values on top of that result:
 		// an explicit `presets: []` or feature-removing plugin must remain authoritative.
-			return pandaThemeFromConfig(result.config);
+		return pandaThemeFromConfig(result.config);
 	} catch (error) {
 		throw new Error(
 			`official Panda config loading failed: ${error instanceof Error ? error.message : String(error)}`,

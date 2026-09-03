@@ -872,10 +872,10 @@ export function createUnoCssAdapter(options: UnoCssAdapterOptions = {}): StyleAd
 				confidence: /@unocss\/|\bunocss\b|presetWind/.test(context.source) ? 1 : 0.55,
 				evidence: matched
 					? [
-						collectDynamicClassAttributes(context.source).length > 0
-							? "dynamic-class-attribute"
-							: "literal-class-attribute",
-					]
+							collectDynamicClassAttributes(context.source).length > 0
+								? "dynamic-class-attribute"
+								: "literal-class-attribute",
+						]
 					: [],
 			};
 		},

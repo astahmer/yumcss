@@ -43,11 +43,11 @@ matrixFixtures.set(CodemodAdapterId.SolidStyled, {
 matrixFixtures.set(CodemodAdapterId.VueStyled, {
 	adapter: CodemodAdapterId.VueStyled,
 	file: "App.vue",
-		source:
-			"<script setup>\n" +
-			'import styled from "vue-styled-components";\n' +
-			'const Card = styled.div({ color: "red" });\n' +
-			"</script>\n<template><Card /></template>",
+	source:
+		"<script setup>\n" +
+		'import styled from "vue-styled-components";\n' +
+		'const Card = styled.div({ color: "red" });\n' +
+		"</script>\n<template><Card /></template>",
 });
 matrixFixtures.set(CodemodAdapterId.Tailwind, {
 	adapter: CodemodAdapterId.Tailwind,

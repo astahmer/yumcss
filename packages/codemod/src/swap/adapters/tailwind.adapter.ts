@@ -854,12 +854,12 @@ export function createTailwindAdapter(options: TailwindAdapterOptions = {}): Sty
 				confidence: matched ? (configured ? 1 : 0.6) : 0,
 				evidence: matched
 					? [
-						configured
-							? "tailwind-package"
-							: collectDynamicClassAttributes(context.source).length > 0
-								? "dynamic-class-attribute"
-								: "literal-class-attribute",
-					]
+							configured
+								? "tailwind-package"
+								: collectDynamicClassAttributes(context.source).length > 0
+									? "dynamic-class-attribute"
+									: "literal-class-attribute",
+						]
 					: [],
 			};
 		},

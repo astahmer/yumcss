@@ -14,18 +14,18 @@ codemod adapters and official loaders.
 
 ## Rules
 
-| Rule                         | Default intent                                                             | Fix |
-| ---------------------------- | -------------------------------------------------------------------------- | --- |
-| `no-spreads`                 | Finds spread arguments that cannot be statically folded.                   | — |
-| `no-dynamic-values`          | Finds dynamic values in static extraction lanes.                           | — |
-| `no-multiple-conditionals`   | Finds calls with more than one partially foldable conditional.             | — |
-| `no-dollar-raw`              | Finds `$raw` escape hatches in Pandwind style lanes.                       | — |
-| `no-arbitrary-values`        | Finds arbitrary class values such as `w-[13px]`.                           | — |
-| `design-tokens-only`         | Checks design values against an explicit project policy.                   | — |
-| `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     | — |
+| Rule                         | Default intent                                                             | Fix                 |
+| ---------------------------- | -------------------------------------------------------------------------- | ------------------- |
+| `no-spreads`                 | Finds spread arguments that cannot be statically folded.                   | —                   |
+| `no-dynamic-values`          | Finds dynamic values in static extraction lanes.                           | —                   |
+| `no-multiple-conditionals`   | Finds calls with more than one partially foldable conditional.             | —                   |
+| `no-dollar-raw`              | Finds `$raw` escape hatches in Pandwind style lanes.                       | —                   |
+| `no-arbitrary-values`        | Finds arbitrary class values such as `w-[13px]`.                           | —                   |
+| `design-tokens-only`         | Checks design values against an explicit project policy.                   | —                   |
+| `migration-skip-reason`      | Requires every `pandwind:migrate-skip` marker to explain its residual.     | —                   |
 | `no-stale-migration-skip`    | Finds skip markers that now precede a statically foldable call.            | Safe: remove marker |
-| `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker |
-| `no-conflicting-style-props` | Finds explicit `className`/`style` props that conflict with `css.props()`. | — |
+| `require-migration-residual` | Requires an explicit skip marker when a static-lane value remains dynamic. | Safe: add marker    |
+| `no-conflicting-style-props` | Finds explicit `className`/`style` props that conflict with `css.props()`. | —                   |
 
 The extraction rules are normally warnings. Token and migration-hygiene rules
 can be errors when a project wants CI to require verified design values and

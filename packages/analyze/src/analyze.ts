@@ -143,7 +143,8 @@ function parseModule(
 	importedConstants?: Readonly<Record<string, string>>,
 	parsedProgram?: OxcNode,
 ): ParsedModule {
-	const program = parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as unknown as OxcNode);
+	const program =
+		parsedProgram ?? (SOURCE_SCANNER_SERVICE.parse({ file, source }).program as unknown as OxcNode);
 
 	const imported = new Map<string, string>();
 	walk(program, (node) => {

@@ -165,9 +165,7 @@ class DefaultAnalysisWorkspace implements AnalysisWorkspacePort {
 		paths: readonly string[],
 		visit: (file: Pick<SourceWorkspaceFile, "path" | "source" | "scan">) => void,
 	): void {
-		this.sourceWorkspace.forEach(paths, ({ path, source, scan }) =>
-			visit({ path, source, scan }),
-		);
+		this.sourceWorkspace.forEach(paths, ({ path, source, scan }) => visit({ path, source, scan }));
 	}
 
 	readFiles(paths: readonly string[]): readonly { file: string; content: string }[] {

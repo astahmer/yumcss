@@ -747,12 +747,12 @@ const rules: Record<string, RuleDefinition> = {
 							...(call.node.start === undefined
 								? {}
 								: {
-									fix: (fixer: RuleFixer) =>
-										fixer.insertTextBefore(
-											call.node,
-											`/* ${migrationMarkerFor(context)} (residual: ${dynamic.bad}) */ `,
-										),
-								}),
+										fix: (fixer: RuleFixer) =>
+											fixer.insertTextBefore(
+												call.node,
+												`/* ${migrationMarkerFor(context)} (residual: ${dynamic.bad}) */ `,
+											),
+									}),
 						});
 					}
 				},
