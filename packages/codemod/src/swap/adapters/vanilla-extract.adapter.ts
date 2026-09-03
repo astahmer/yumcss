@@ -24,10 +24,10 @@ export default defineCodemodAdapter({
 		{
 			name: "styleVariants",
 			regex: /\bstyleVariants\s*\(/g,
-			form: "residual",
-			residual: {
-				kind: "composition",
-				hint: "Vanilla Extract styleVariants require variant-aware target lowering",
+			functionCall: {
+				functionCall: /\bstyleVariants\s*\(/g,
+				namedObjects: true,
+				sourceObjectOptions: { namedRuleObjects: true },
 			},
 		},
 		{

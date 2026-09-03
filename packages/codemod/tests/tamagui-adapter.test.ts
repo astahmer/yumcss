@@ -25,12 +25,14 @@ describe("Tamagui adapter", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('css.class({ padding: 16, color: "red" })');
-		expect(result.code).not.toContain('from "@tamagui/core"');
+		expect(result.code).toContain('import { View } from "@tamagui/core";');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from "pandwind/css";
+			"import { View } from "@tamagui/core";
+			import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
 			const css = createCss();
-
-			export const Card = css.class({ padding: 16, color: "red" });"
+			export const Card = (() => { const style = css.class({ padding: 16, color: "red" }); const component = (props) => { const Component = props.as ?? (View); const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
 		`);
 	});
 

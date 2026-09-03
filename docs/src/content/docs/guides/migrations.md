@@ -384,3 +384,36 @@ Never delete a residual just to make the migration report green. Add a
 fixture, implement the adapter/lowering, or document the intentional manual
 boundary. See [adapter contracts](/reference/adapter-contract/) and
 [compatibility](/interop/compatibility/).
+
+## Tamagui
+
+```sh
+pnpm exec pandwind-codemod swap --from=tamagui --to=css.class \
+  --diff --report 'src/**/*.{ts,tsx,js,jsx}'
+```
+
+Static `styled(View, { ... })` declarations are projected through Pandwind's
+host adapter while preserving the wrapped subject. Tamagui tokens, themes,
+variants, `render`, and function-valued props depend on the project's official
+compiler/configuration context. If that context is unavailable, the adapter
+keeps the source and reports a configuration or dynamic residual.
+
+## CSS Modules, Sass, Less, and authored CSS
+
+```sh
+pnpm exec pandwind-codemod swap --from=css-modules --to=css.class \
+  --diff --report 'src/**/*.module.css'
+pnpm exec pandwind-codemod swap --from=sass --to=authored-css \
+  --diff --report 'src/**/*.{scss,sass}'
+pnpm exec pandwind-codemod swap --from=less --to=authored-css \
+  --diff --report 'src/**/*.less'
+```
+
+CSS Modules local classes can become a typed Pandwind class map; known
+workspace consumers are proposed as atomic import changes. `composes`, global
+selectors, and externally visible hashed class names stay preserved or
+residual until their consumers are proven. Sass and Less use their official
+compiler ports and retain source-map/dependency evidence. Authored CSS is a
+valid target for compiler-generated or cascade-sensitive rules, so the
+migration does not force globals, layers, keyframes, or nesting into a local
+style object.

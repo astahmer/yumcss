@@ -205,6 +205,8 @@ export interface AdapterMigrationResult {
 	readonly dependencies: readonly AdapterDependencies[];
 	/** Target-owned project-relative files emitted with the rewritten module. */
 	readonly generatedFiles: readonly AdapterGeneratedFile[];
+	/** Compiler-produced source maps retained as parity evidence. */
+	readonly sourceMaps?: readonly string[];
 	readonly fileChanges: readonly import("./adapter-contract.ts").AdapterFileChange[];
 	readonly residuals: readonly StyleProgramResidual[];
 	/** One inspectable representation decision for each parsed source match. */
@@ -419,6 +421,7 @@ export async function runAdapterMigrationAsync(
 		return {
 			...result,
 			fileChanges: result.fileChanges ?? [],
+			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
 			validations: [],
 			loweringPlans: [],
@@ -505,6 +508,7 @@ function runAdapterMigrationInternal(
 		return {
 			...result,
 			fileChanges: result.fileChanges ?? [],
+			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
 			validations: [],
 			loweringPlans: [],

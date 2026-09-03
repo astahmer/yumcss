@@ -78,6 +78,20 @@ and source-preserving residuals separately.
 | [Solid Styled Components](https://github.com/solidjs/solid-styled-components)       | `styled` intrinsic/component templates; prop callbacks; Solid host bindings          | static templates can be projected; Solid signals, directives, and reactive callbacks require a Solid host contract.                                                                                                                                                   |
 | [Vue Styled Components](https://github.com/styled-components/vue-styled-components) | `styled` intrinsic/component templates; Vue prop/theme callbacks                     | static templates can be projected; Vue bindings and reactive theme behavior require the Vue host contract.                                                                                                                                                            |
 
+## Static stylesheet and component source systems
+
+These source families use the same adapter contract but are not treated as
+CSS-in-JS. Their natural target may be authored CSS, a generated stylesheet,
+or a Pandwind class map depending on the source semantics.
+
+| Adapter | Official authoring families | Proof interpretation |
+| --- | --- | --- |
+| [Tamagui](https://tamagui.dev/docs/intro/styles) | `styled`; View/Text style props; tokens; themes; variants; media props; `render` | Static `styled` objects can become target-owned component/class carriers. Theme callbacks, function-valued variants, compiler-only configuration, and unresolved style-prop catalogs remain explicit residuals. |
+| [CSS Modules](https://github.com/css-modules/css-modules) | local classes; `composes`; `:global`; `:local`; imported class maps | Simple local classes become a target-owned class map and consumer imports are rewritten atomically. Global scope, composition, and public hash contracts are preserved or reported rather than flattened. |
+| [Sass / SCSS](https://sass-lang.com/documentation/) | variables; nesting; mixins; functions; interpolation; imports; `@use`/`@forward` | The official Sass compiler and source-map output are used when available. Provably static rules can be lowered; preprocessing that affects selector/value generation stays authored CSS with compiler evidence. |
+| [Less](https://lesscss.org/) | variables; mixins; functions; guards; imports; nesting; interpolation | The official Less compiler is a separate port from Sass. Static output can be emitted as authored CSS; Less-specific generation is never interpreted as Sass semantics. |
+| [Authored CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) | classes; selectors; nesting; globals; keyframes; fonts; layers; supports; properties | Rule-level CSS is parsed into `StyleProgram`. Local rules may be lowered; globals, cascade-sensitive constructs, and unsupported at-rules remain authored CSS. |
+
 ## What the snapshots guarantee
 
 For each registered adapter, the primary and secondary matrix tests use

@@ -335,6 +335,8 @@ export interface AdapterFileMigrationResult {
 	readonly converted: number;
 	readonly skipped: number;
 	readonly generatedFiles: readonly AdapterGeneratedFile[];
+	/** Compiler-produced source maps retained as parity evidence. */
+	readonly sourceMaps?: readonly string[];
 	/** Existing project files rewritten atomically with the migrated source. */
 	readonly fileChanges?: readonly AdapterFileChange[];
 	readonly residuals: readonly StyleProgramResidual[];

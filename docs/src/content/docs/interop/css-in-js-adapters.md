@@ -27,6 +27,10 @@ The built-in adapter set covers `emotion`, `styled-components`, `chakra-ui`, `mu
 `vanilla-extract`, `stitches`, `linaria`, `jss`, `fela`, `goober`,
 `aphrodite`, `style9`, `treat`, `compiled`, `stylex`, `solid-styled`,
 `vue-styled`, `bamboo`, `next-yak`, `tokenami`, `unocss`, and `pandwind`.
+Static source adapters additionally cover `tamagui`, `css-modules`, `sass`,
+`less`, and authored `css`. Their stylesheet-aware file migrations can emit
+Pandwind class maps or preserve/emit authored CSS according to the target
+contract; they are not treated as runtime CSS-in-JS libraries.
 Bamboo's object dialect
 and Next-yak's extracted `css`/`styled` template and css-prop lanes share the
 same semantic adapter contract. `--to=css.class` is the pandwind target

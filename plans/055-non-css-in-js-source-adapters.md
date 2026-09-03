@@ -374,6 +374,34 @@ erDiagram
 13. Document source-family boundaries, supported subsets, preservation mode,
     and reproducible proof commands.
 
+## Implementation status
+
+The implementation wave is complete. The source-family adapters are registered
+through the normal plugin boundary; stylesheet parsing, local import traversal,
+CSS Module consumer changes, preprocessor compiler invocation, and target
+emission are owned by the source adapter ports. Tamagui owns component-subject
+and configuration semantics, and Vanilla Extract owns its named-variant
+projection and configuration residuals. Compiler source maps and dependencies
+are retained in migration evidence rather than discarded.
+
+The focused proof set is:
+
+- `stylesheet-source-adapters.test.ts` — rule-level CSS, CSS Modules imports
+  and consumers, Sass/Less compiler ports, authored-CSS output, failures, and
+  inline snapshots;
+- `tamagui-adapter.test.ts` — static subjects, runtime themes, unrelated
+  functions, and configuration residuals;
+- `vanilla-extract-source-adapter.test.ts` — `styleVariants` class maps and
+  unresolved theme contracts;
+- `source-adapter-contract.test.ts` — registry ownership and CSS Module
+  safety boundaries.
+
+The reproducible reference catalog now pins Tamagui, CSS Modules, Sass, Less,
+and Vanilla Extract repositories in addition to the existing ecosystem corpus.
+Real-repository browser/SSR promotion remains an opt-in corpus workflow run by
+the repository-proof scripts; it is not faked by unit snapshots or claimed as
+complete merely because an adapter is registered.
+
 ## Open questions
 
 1. Which Tamagui compiler/config entrypoints are stable enough to make the

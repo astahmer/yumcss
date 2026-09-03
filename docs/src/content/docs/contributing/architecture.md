@@ -712,6 +712,36 @@ they are not split merely to reduce line count. A future split must introduce
 an independently replaceable port, default implementation, and substitution
 test, otherwise it would add indirection without improving the architecture.
 
+### Non-CSS-in-JS source adapters
+
+Static stylesheet sources are first-class adapter families, not special cases
+in the migration runner. `authored-css.adapter.ts`, `css-modules.adapter.ts`,
+`sass.adapter.ts`, and `less.adapter.ts` each expose one registered adapter;
+their shared mechanics live behind `StylesheetSourcePort` and
+`StylesheetCompilerPort` in `packages/codemod/src/swap/stylesheet-source.ts`.
+The Sass and Less adapters load their official compilers through the project
+module-loader port and retain compiler dependencies and source maps as
+evidence. A missing compiler is a configuration residual, never an implicit
+default.
+
+CSS Modules additionally owns the consumer-file change boundary. A converted
+module is emitted once as a typed class map, and import specifiers in known
+workspace consumers are proposed as atomic file changes with expected source
+content. The CLI validates those changes before writing them, so stale or
+conflicting consumers fail closed. Global selectors, composition, and
+cascade-sensitive rules stay residuals until a target contract can preserve
+them.
+
+Tamagui owns component subjects and configuration detection in
+`tamagui.adapter.ts`; static `styled(subject, object)` calls are projected
+through the normal host/target ports. Function-valued styles, theme callbacks,
+variants requiring runtime context, and unresolved compiler configuration are
+kept visible as typed residuals. Vanilla Extract's `styleVariants` is lowered
+to a target-owned named class map, while theme contracts, recipes, and
+contract-dependent variables remain context residuals until a target proves
+their variable semantics. These boundaries are covered by focused
+source-adapter snapshots and assertions in the codemod package.
+
 The codemod registry exposes a derived `capabilityMatrix()` view containing
 each adapter's contract version, source modules, dependencies, and declared
 capabilities. `createAdapterContractSuite()` remains the focused contract

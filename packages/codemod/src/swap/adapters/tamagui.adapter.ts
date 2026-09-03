@@ -170,7 +170,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 				start,
 				end: call.end,
 				adapter: CodemodAdapterId.Tamagui,
-				subject,
+				subject: `styled(${subject})`,
 				subjectKind: "call",
 			},
 			sourceOffset: objectOpen + 1,
@@ -178,6 +178,34 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 		matches.push({ start, end: call.end, program, sourceText: source.slice(start, call.end) });
 	}
 	return { matches, residuals };
+}
+
+function removeStaticStyledBinding(source: string, code: string): string {
+	const styledLocals = new Set<string>();
+	for (const importMatch of source.matchAll(
+		/import\s*\{([^}]*)\}\s*from\s*["'](?:tamagui|@tamagui\/core)["']/gu,
+	)) {
+		for (const specifier of (importMatch[1] ?? "").split(",")) {
+			const parts = specifier.trim().split(/\s+as\s+/u);
+			if (parts[0] === "styled") styledLocals.add(parts[1] ?? parts[0]);
+		}
+	}
+	if (styledLocals.size === 0) return code;
+	return code.replace(
+		/import\s*\{([^}]*)\}\s*from\s*(["'])(tamagui|@tamagui\/core)\2\s*;?/gu,
+		(full, specifiers: string, quote: string, moduleName: string) => {
+			const kept = specifiers
+				.split(",")
+				.map((specifier) => specifier.trim())
+				.filter((specifier) => {
+					const local = specifier.split(/\s+as\s+/u).at(-1);
+					return local === undefined || !styledLocals.has(local);
+				});
+			return kept.length === 0
+				? ""
+				: `import { ${kept.join(", ")} } from ${quote}${moduleName}${quote};`;
+		},
+	);
 }
 
 function config(id: CodemodAdapterId, context: AdapterConfigContext): AdapterProjectConfig {
@@ -224,7 +252,11 @@ export function createTamaguiAdapter(
 			"framework-semantics": "partial",
 		}),
 		detectPatterns: [/@tamagui\/(?:core|static)/u, /from\s+["']tamagui["']/u],
-		sourceModules: ["tamagui", "@tamagui/core", "@tamagui/static"],
+		// Tamagui subjects such as `styled(View, ...)` can carry behavior that
+		// belongs to the imported base component. Keep those imports available to
+		// the generated host wrapper; the styled binding itself becomes unused and
+		// can be removed by the normal import-organizer pass.
+		sourceModules: [],
 		configFiles: ["tamagui.config.ts", "tamagui.config.js", "tamagui.build.ts"],
 		detect: (context) => {
 			const matched =
@@ -257,6 +289,10 @@ export function createTamaguiAdapter(
 				}),
 		parse: parseTamaguiStyles,
 		migration: {
+			rewrite: ({ source, code, complete }) => ({
+				code: complete ? removeStaticStyledBinding(source, code) : code,
+				residuals: [],
+			}),
 			targetPolicy: {
 				handlesHostRewrites: true,
 				handlesFrameworkSemantics: true,

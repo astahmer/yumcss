@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	createLessAdapter,
 	createSassAdapter,
 	runAdapterMigration,
 	runAdapterMigrationAsync,
@@ -482,5 +483,100 @@ describe("stylesheet source adapters", () => {
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
 		);
+	});
+
+	test("can intentionally lower a preprocessor to authored CSS with source-map evidence", async () => {
+		const sass = createSassAdapter({
+			async importPackage<T>() {
+				return {
+					compileString: () => ({
+						css: ".card { color: red; }",
+						sourceMap: '{"version":3,"sources":["styles.scss"]}',
+					}),
+				} as T;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const authored = catalog.registry.get(CodemodAdapterId.AuthoredCss);
+		const result = await runAdapterMigrationAsync(".card { color: $tone; }", {
+			from: CodemodAdapterId.Sass,
+			to: CodemodAdapterId.AuthoredCss,
+			file: "styles.scss",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([sass, authored!]),
+			mode: "safe",
+		});
+
+		expect(result.changed).toBe(true);
+		expect(result.outputExtension).toBe(".css");
+		expect(result.code).toBe(".card { color: red; }");
+		expect(result.sourceMaps).toEqual(['{"version":3,"sources":["styles.scss"]}']);
+		expect(result.residuals).toEqual([]);
+		expect(result).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": ".card { color: red; }",
+			  "converted": 0,
+			  "dependencies": [],
+			  "fileChanges": [],
+			  "generatedFiles": [],
+			  "loweringPlans": [],
+			  "outcomes": [],
+			  "outputExtension": ".css",
+			  "reports": [],
+			  "residuals": [],
+			  "skipped": 0,
+			  "sourceMaps": [
+			    "{"version":3,"sources":["styles.scss"]}",
+			  ],
+			  "validations": [],
+			}
+		`);
+	});
+
+	test("keeps Less official compilation behind the same compiler port", async () => {
+		const less = createLessAdapter({
+			async importPackage<T>() {
+				return {
+					render: async () => ({ css: ".card { color: red; }" }),
+				} as T;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const authored = catalog.registry.get(CodemodAdapterId.AuthoredCss);
+		const result = await runAdapterMigrationAsync(".card { color: @tone; }", {
+			from: CodemodAdapterId.Less,
+			to: CodemodAdapterId.AuthoredCss,
+			file: "styles.less",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([less, authored!]),
+			mode: "safe",
+		});
+
+		expect(result.changed).toBe(true);
+		expect(result.outputExtension).toBe(".css");
+		expect(result.code).toBe(".card { color: red; }");
+		expect(result.residuals).toEqual([]);
+		expect(result).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": ".card { color: red; }",
+			  "converted": 0,
+			  "dependencies": [],
+			  "fileChanges": [],
+			  "generatedFiles": [],
+			  "loweringPlans": [],
+			  "outcomes": [],
+			  "outputExtension": ".css",
+			  "reports": [],
+			  "residuals": [],
+			  "skipped": 0,
+			  "validations": [],
+			}
+		`);
 	});
 });

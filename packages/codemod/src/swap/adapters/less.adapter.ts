@@ -10,14 +10,18 @@ function createLessCompiler(loader: ProjectModuleLoader): StylesheetCompilerPort
 				render?: (
 					source: string,
 					options?: { filename?: string; paths?: readonly string[] },
-				) => Promise<{ css: string; imports?: readonly string[] }>;
+				) => Promise<{ css: string; imports?: readonly string[]; map?: string }>;
 			}>("less", context.root ?? ".");
 			if (module?.render === undefined) throw new Error("less.render is unavailable");
 			const result = await module.render(source, {
 				filename: context.file,
 				...(context.root === undefined ? {} : { paths: [context.root] }),
 			});
-			return { css: result.css, dependencies: result.imports };
+			return {
+				css: result.css,
+				dependencies: result.imports,
+				...(result.map === undefined ? {} : { sourceMap: result.map }),
+			};
 		},
 	};
 }

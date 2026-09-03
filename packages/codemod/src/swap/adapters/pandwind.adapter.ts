@@ -26,6 +26,7 @@ import {
 	StyleProgramCompositionKind,
 	StyleProgramEmissionHint,
 	StyleHostRepresentationKind,
+	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 import { JsxStyleHost } from "../jsx-style-host.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -1241,6 +1242,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			recipes: "exact",
 			components: "exact",
 		}),
+		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 		detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 		sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],

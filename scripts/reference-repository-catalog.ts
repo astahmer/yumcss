@@ -52,6 +52,31 @@ const additionalReferences: readonly PinnedReferenceRepository[] = [
 		repository: "https://github.com/emotion-js/emotion",
 		commit: "b882bcba85132554992e4bd49e94c95939bbf810",
 	},
+	{
+		id: "tamagui",
+		repository: "https://github.com/tamagui/tamagui",
+		commit: "25d97e1ab6bc5d09e83c7776f61d6b0852048678",
+	},
+	{
+		id: "css-modules",
+		repository: "https://github.com/css-modules/css-modules",
+		commit: "c7bf6c02472fdce4dd8e569abc10d2aeb234e1c2",
+	},
+	{
+		id: "sass",
+		repository: "https://github.com/sass/sass",
+		commit: "d6abf810240b13edbd3832058aa5b0d62cb18e75",
+	},
+	{
+		id: "less",
+		repository: "https://github.com/less/less.js",
+		commit: "713331655e437401dfea6cd233893a69762734e1",
+	},
+	{
+		id: "vanilla-extract",
+		repository: "https://github.com/vanilla-extract-css/vanilla-extract",
+		commit: "881c256a867f55386f96a7fe95068300bac720e6",
+	},
 ];
 
 /** One deterministic catalog drives cloning and pin auditing. */

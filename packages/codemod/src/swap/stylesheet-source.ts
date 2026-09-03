@@ -577,7 +577,14 @@ export function createStylesheetFileMigration(
 			if (context.target.id === CodemodAdapterId.AuthoredCss)
 				return {
 					code: context.source,
-					changed: false,
+					outputExtension:
+						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
+						context.sourceConfig.adapter === CodemodAdapterId.Less
+							? ".css"
+							: undefined,
+					changed:
+						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
+						context.sourceConfig.adapter === CodemodAdapterId.Less,
 					converted: 0,
 					skipped: 0,
 					generatedFiles: [],
@@ -779,6 +786,9 @@ export function createPreprocessorFileMigration(
 			const result = base.run({ ...context, source: compiled.css });
 			return {
 				...result,
+				...(compiled.sourceMap === undefined
+					? {}
+					: { sourceMaps: [...(result.sourceMaps ?? []), compiled.sourceMap] }),
 				dependencies: [
 					...result.dependencies,
 					...(compiled.dependencies === undefined

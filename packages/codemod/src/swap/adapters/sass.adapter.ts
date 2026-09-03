@@ -9,17 +9,30 @@ function createSassCompiler(loader: ProjectModuleLoader): StylesheetCompilerPort
 			const module = await loader.importPackage<{
 				compileString?: (
 					source: string,
-					options?: { syntax?: "scss" | "indented"; loadPaths?: readonly string[] },
-				) => { css: string; loadedUrls?: readonly URL[] };
+					options?: {
+						syntax?: "scss" | "indented";
+						loadPaths?: readonly string[];
+						sourceMap?: boolean;
+					},
+				) => { css: string; loadedUrls?: readonly URL[]; sourceMap?: unknown };
 			}>("sass", context.root ?? ".");
 			if (module?.compileString === undefined) throw new Error("sass.compileString is unavailable");
 			const result = module.compileString(source, {
 				syntax: context.file.endsWith(".sass") ? "indented" : "scss",
+				sourceMap: true,
 				...(context.root === undefined ? {} : { loadPaths: [context.root] }),
 			});
 			return {
 				css: result.css,
 				dependencies: result.loadedUrls?.map((url) => url.pathname),
+				...(result.sourceMap === undefined
+					? {}
+					: {
+							sourceMap:
+								typeof result.sourceMap === "string"
+									? result.sourceMap
+									: JSON.stringify(result.sourceMap),
+						}),
 			};
 		},
 	};
