@@ -97,11 +97,12 @@ function resolveSpecifier(specifier: string, fromFile: string, root: string): st
 	}
 	// bare specifiers last chance: package.json exports mapping
 	if (!specifier.startsWith(".") && !isAbsolute(specifier)) {
-		const slash = specifier.indexOf("/");
-		const pkgName = specifier.startsWith("@")
-			? specifier.slice(0, specifier.indexOf("/", 1) + 0)
-			: specifier.slice(0, slash === -1 ? specifier.length : slash);
-		const subpath = slash === -1 ? "" : specifier.slice(slash + 1);
+		let packageEnd = specifier.indexOf("/");
+		if (specifier.startsWith("@") && packageEnd !== -1) {
+			packageEnd = specifier.indexOf("/", packageEnd + 1);
+		}
+		const pkgName = packageEnd === -1 ? specifier : specifier.slice(0, packageEnd);
+		const subpath = packageEnd === -1 ? "" : specifier.slice(packageEnd + 1);
 		let dir = dirname(fromFile);
 		for (;;) {
 			const pkgDir = resolve(dir, "node_modules", pkgName);
