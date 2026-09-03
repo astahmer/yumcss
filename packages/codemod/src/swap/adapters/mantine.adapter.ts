@@ -149,6 +149,7 @@ const styleProps = [
 	"bg",
 	"bd",
 	"radius",
+	"shadow",
 	"fw",
 	"fz",
 	"ff",
@@ -175,6 +176,7 @@ const propertyAliases = {
 	bg: "backgroundColor",
 	bd: "border",
 	radius: "borderRadius",
+	shadow: "boxShadow",
 	fw: "fontWeight",
 	fz: "fontSize",
 	ff: "fontFamily",
@@ -207,6 +209,7 @@ interface MantineThemeLike {
 	readonly lineHeights?: unknown;
 	readonly colors?: unknown;
 	readonly radius?: unknown;
+	readonly shadows?: unknown;
 	readonly headings?: Record<string, unknown>;
 }
 
@@ -220,7 +223,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function mantineThemeCandidate(value: unknown): Record<string, unknown> | undefined {
 	if (!isRecord(value)) return undefined;
-	return ["spacing", "fontSizes", "lineHeights", "colors", "radius", "headings"].some(
+	return ["spacing", "fontSizes", "lineHeights", "colors", "radius", "shadows", "headings"].some(
 		(key) => value[key] !== undefined,
 	)
 		? value
@@ -286,13 +289,17 @@ function resolveMantineValue(
 				? theme?.fontSizes
 				: property === "lineHeight" || property === "lh"
 					? theme?.lineHeights
-					: /^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
-						  property === "margin" ||
-						  property.startsWith("margin") ||
-						  property === "padding" ||
-						  property.startsWith("padding")
-						? theme?.spacing
-						: undefined;
+					: property === "borderRadius" || property === "radius"
+						? theme?.radius
+						: property === "boxShadow" || property === "shadow"
+							? theme?.shadows
+							: /^(?:m|m[trblseixy]|p|p[trblseixy])$/.test(property) ||
+								  property === "margin" ||
+								  property.startsWith("margin") ||
+								  property === "padding" ||
+								  property.startsWith("padding")
+								? theme?.spacing
+								: undefined;
 	const collectionValue = resolveValuePath(collection, value);
 	if (collectionValue !== undefined) return collectionValue;
 	return undefined;
@@ -365,6 +372,7 @@ async function officialMantineConfig(
 				fontSizes: themeCollection(config.fontSizes),
 				lineHeights: themeCollection(config.lineHeights),
 				radii: themeCollection(config.radius),
+				shadows: themeCollection(config.shadows),
 			})?.contract,
 			values: {
 				mantineTheme: theme,

@@ -464,15 +464,21 @@ interface ChakraPackage {
 function chakraSourceVocabulary(context: AdapterParseContext): {
 	readonly styleProps: JsxStylePropSelector;
 	readonly propertyAliases: Readonly<Record<string, string | readonly string[]>>;
+	readonly valueTransformProperties: readonly string[];
 } {
 	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
 	const aliases = system?.utility?.shorthands;
+	const resolvedAliases = aliases === undefined ? propertyAliases : Object.fromEntries(aliases);
+	const resolvedProperties = system?.properties === undefined ? styleProps : [...system.properties];
 	return {
 		styleProps:
 			system?.properties === undefined
 				? styleProps
 				: (property) => system.properties?.has(property) === true,
-		propertyAliases: aliases === undefined ? propertyAliases : Object.fromEntries(aliases),
+		propertyAliases: resolvedAliases,
+		valueTransformProperties: [
+			...new Set([...resolvedProperties, ...Object.keys(resolvedAliases)]),
+		],
 	};
 }
 
@@ -973,12 +979,7 @@ export function createChakraAdapter(
 				unwrapNestedObjectKeys: ["css"],
 				propertyValueConditions: true,
 				valueTransforms: Object.fromEntries(
-					[
-						...new Set([
-							...Object.keys(vocabulary.propertyAliases),
-							...(typeof vocabulary.styleProps === "function" ? [] : vocabulary.styleProps),
-						]),
-					].map((property) => [
+					vocabulary.valueTransformProperties.map((property) => [
 						property,
 						(value: StyleValue) =>
 							chakraOfficialValue(

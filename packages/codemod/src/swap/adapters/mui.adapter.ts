@@ -69,6 +69,8 @@ interface MuiThemeLike {
 	readonly palette?: Record<string, unknown>;
 	readonly shape?: Record<string, unknown>;
 	readonly typography?: Record<string, unknown>;
+	readonly shadows?: unknown;
+	readonly zIndex?: unknown;
 }
 
 interface MuiPackage {
@@ -111,7 +113,40 @@ function resolveMuiValue(
 	if (direct !== undefined) return direct;
 	if (property === "color" || property === "backgroundColor" || property === "borderColor")
 		return resolveThemePath(theme?.palette as MuiThemeLike | undefined, value);
+	if (
+		property === "fontFamily" ||
+		property === "fontSize" ||
+		property === "fontWeight" ||
+		property === "lineHeight" ||
+		property === "letterSpacing"
+	)
+		return resolveThemePath(theme?.typography as MuiThemeLike | undefined, value);
+	if (property === "boxShadow") return resolveValuePath(theme?.shadows, value);
+	if (property === "zIndex") return resolveValuePath(theme?.zIndex, value);
 	return undefined;
+}
+
+function resolveValuePath(root: unknown, path: string): string | number | undefined {
+	let current = root;
+	for (const segment of path.split(".")) {
+		if (Array.isArray(current)) current = current[Number(segment)];
+		else if (isRecord(current)) current = current[segment];
+		else return undefined;
+	}
+	return typeof current === "string" || typeof current === "number" ? current : undefined;
+}
+
+function typographyCollection(value: unknown, field: string): unknown {
+	if (!isRecord(value)) return undefined;
+	return Object.fromEntries(
+		Object.entries(value).flatMap(([key, entry]) => {
+			if (!isRecord(entry)) return [];
+			const fieldValue = entry[field];
+			return typeof fieldValue === "string" || typeof fieldValue === "number"
+				? [[key, fieldValue]]
+				: [];
+		}),
+	);
 }
 
 function themeCollection(value: unknown): unknown {
@@ -185,8 +220,15 @@ async function officialMuiConfig(
 			tokenCatalog: TokenCatalog.fromNested({
 				colors: config.palette,
 				spacing: themeCollection(config.spacing),
-				radii: config.shape?.borderRadius,
-				fontSizes: config.typography?.fontSize,
+				radii:
+					config.shape?.borderRadius === undefined
+						? undefined
+						: { base: config.shape.borderRadius },
+				fontSizes: typographyCollection(config.typography, "fontSize"),
+				fontWeights: typographyCollection(config.typography, "fontWeight"),
+				lineHeights: typographyCollection(config.typography, "lineHeight"),
+				shadows: themeCollection(config.shadows),
+				zIndices: themeCollection(config.zIndex),
 			})?.contract,
 			values: {
 				muiTheme: theme,
@@ -233,7 +275,19 @@ function muiTransforms(
 	theme?: MuiThemeLike,
 ): Readonly<Record<string, (value: StyleValue) => StyleValue>> {
 	return Object.fromEntries(
-		[...spacing, "bgcolor", "backgroundColor", "color", "borderRadius"].map((property) => [
+		[
+			...spacing,
+			"bgcolor",
+			"backgroundColor",
+			"color",
+			"borderRadius",
+			"fontSize",
+			"fontWeight",
+			"lineHeight",
+			"letterSpacing",
+			"boxShadow",
+			"zIndex",
+		].map((property) => [
 			property,
 			(value: StyleValue) => {
 				if (value.kind === StyleValueKindTag.Literal && typeof value.value === "string") {

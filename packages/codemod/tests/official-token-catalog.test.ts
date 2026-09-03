@@ -528,6 +528,9 @@ describe("official custom-token loaders", () => {
 					default: {
 						palette: { brand: { main: "#123456" } },
 						shape: { borderRadius: 6 },
+						typography: { h1: { fontSize: "3rem", fontWeight: 700, lineHeight: 1.2 } },
+						shadows: { card: "0 1px 2px #0003" },
+						zIndex: { modal: 1300 },
 					},
 				} as never;
 			},
@@ -539,7 +542,8 @@ describe("official custom-token loaders", () => {
 			readFile: () => "export default {}",
 			listFiles: () => ["/project/src/theme.ts"],
 		});
-		const source = '<Box sx={{ p: 2, color: "brand.main", borderRadius: 2 }} />';
+		const source =
+			'<Box sx={{ p: 2, color: "brand.main", borderRadius: 2, fontSize: "typography.h1.fontSize", boxShadow: "card", zIndex: "modal" }} />';
 		const parsed = adapter.parse(source, { ...context, source, config: config! });
 
 		expect(config?.values.officialConfigPackage).toBe("@mui/system");
@@ -548,8 +552,23 @@ describe("official custom-token loaders", () => {
 			  "colors": {
 			    "brand.main": "#123456",
 			  },
+			  "fontSizes": {
+			    "h1": "3rem",
+			  },
+			  "fontWeights": {
+			    "h1": "700",
+			  },
+			  "lineHeights": {
+			    "h1": "1.2",
+			  },
 			  "radii": {
-			    "": "6",
+			    "base": "6",
+			  },
+			  "shadows": {
+			    "card": "0 1px 2px #0003",
+			  },
+			  "zIndices": {
+			    "modal": "1300",
 			  },
 			}
 		`);
@@ -573,10 +592,34 @@ describe("official custom-token loaders", () => {
 			  },
 			  {
 			    "conditions": [],
+			    "property": "boxShadow",
+			    "value": {
+			      "kind": "literal",
+			      "value": "0 1px 2px #0003",
+			    },
+			  },
+			  {
+			    "conditions": [],
 			    "property": "color",
 			    "value": {
 			      "kind": "literal",
 			      "value": "#123456",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontSize",
+			    "value": {
+			      "kind": "literal",
+			      "value": "3rem",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "zIndex",
+			    "value": {
+			      "kind": "literal",
+			      "value": 1300,
 			    },
 			  },
 			]
@@ -584,7 +627,10 @@ describe("official custom-token loaders", () => {
 		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
 			"padding",
 			"borderRadius",
+			"boxShadow",
 			"color",
+			"fontSize",
+			"zIndex",
 		]);
 	});
 
@@ -599,6 +645,8 @@ describe("official custom-token loaders", () => {
 						colors: { brand: ["#123456"] },
 						spacing: { card: "13px" },
 						fontSizes: { hero: "2rem" },
+						radius: { card: "10px" },
+						shadows: { card: "0 1px 2px #0003" },
 					},
 				} as never;
 			},
@@ -610,7 +658,7 @@ describe("official custom-token loaders", () => {
 			readFile: () => "export default {}",
 			listFiles: () => ["/project/src/theme.ts"],
 		});
-		const source = '<Box c="brand.0" p="card" fz="hero" />';
+		const source = '<Box c="brand.0" p="card" fz="hero" radius="card" shadow="card" />';
 		const parsed = adapter.parse(source, { ...context, source, config: config! });
 
 		expect(config?.values.officialConfigPackage).toBe("@mantine/core");
@@ -621,6 +669,12 @@ describe("official custom-token loaders", () => {
 			  },
 			  "fontSizes": {
 			    "hero": "2rem",
+			  },
+			  "radii": {
+			    "card": "10px",
+			  },
+			  "shadows": {
+			    "card": "0 1px 2px #0003",
 			  },
 			  "spacing": {
 			    "card": "13px",
@@ -635,6 +689,22 @@ describe("official custom-token loaders", () => {
 			    "value": {
 			      "kind": "literal",
 			      "value": "13px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "borderRadius",
+			    "value": {
+			      "kind": "literal",
+			      "value": "10px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "boxShadow",
+			    "value": {
+			      "kind": "literal",
+			      "value": "0 1px 2px #0003",
 			    },
 			  },
 			  {
@@ -657,6 +727,8 @@ describe("official custom-token loaders", () => {
 		`);
 		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
 			"padding",
+			"borderRadius",
+			"boxShadow",
 			"color",
 			"fontSize",
 		]);
