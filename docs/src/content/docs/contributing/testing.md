@@ -78,6 +78,11 @@ set). It never vendors upstream source into Pandwind. CI runs this workflow on
 schedule and through manual dispatch; the offline gate runs with the regular
 suite.
 
+The scheduled pivot-proof workflow also runs the installed Goober and Emotion
+promotion lanes. Installed promotion requests declare their proof dimensions
+explicitly; the runner rejects an empty or incomplete declaration instead of
+turning a source-only result into a production claim.
+
 `nub run references:check` audits already-materialized checkouts and exits
 non-zero if any pinned commit drifts or is unavailable. `nub run knip:production`
 is the ownership gate for public subpaths and dynamic entry points.

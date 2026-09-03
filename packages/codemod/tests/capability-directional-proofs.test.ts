@@ -213,8 +213,7 @@ describe("concrete adapter capability proofs", () => {
 			hint: "UnoCSS dynamic class expressions require runtime-aware target lowering",
 		},
 	] as const)("keeps $id dynamic class bindings visible", ({ from, attribute, hint }) => {
-		const source =
-			'<div ' + attribute + '={["color:red", runtimeClass].join(" ")} />';
+		const source = "<div " + attribute + '={["color:red", runtimeClass].join(" ")} />';
 		const result = migrate(source, from, pandwind, "Card.tsx");
 		const dynamicResidual = result.residuals.find((residual) => residual.kind === "dynamic");
 

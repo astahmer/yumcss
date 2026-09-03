@@ -236,16 +236,13 @@ export function createRealRepositoryPromotionRunner(
 			try {
 				proof = await driver.prove(reference, workspace, migration);
 				const missing = missingProofDimensions(proof, request.proofDimensions);
-				const passed =
-					missing.length === 0 &&
-					proof.errors.length === 0;
+				const passed = missing.length === 0 && proof.errors.length === 0;
 				stages.push({
 					stage: RealRepositoryPromotionStageTag.Proof,
 					passed,
 					...(passed ? {} : { detail: "differential proof requirements failed" }),
 				});
-				if (missing.length > 0)
-					errors.push(`missing proof dimensions: ${missing.join(", ")}`);
+				if (missing.length > 0) errors.push(`missing proof dimensions: ${missing.join(", ")}`);
 				if (proof.errors.length > 0) errors.push("differential proof reported runtime errors");
 			} catch (error) {
 				const detail = errorText(error);

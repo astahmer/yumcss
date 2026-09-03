@@ -39,6 +39,9 @@ jobs:
           PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
         run: nub run references:deps && nub run pivot:proof:adapters
 
+      - name: Run installed promotion proofs
+        run: nub run pivot:proof:installed && nub run pivot:proof:installed:emotion
+
       - name: Upload source-only proof report
         uses: actions/upload-artifact@v4
         with:

@@ -147,9 +147,9 @@ describe("real repository promotion runner", () => {
 	test("fails closed when install or project checks are not configured", async () => {
 		const result = await createRealRepositoryPromotionRunner(driver()).run({
 			reference,
-		install: [],
-		checks: [],
-		proofDimensions,
+			install: [],
+			checks: [],
+			proofDimensions,
 		});
 
 		expect(result.status).toBe("failed");
