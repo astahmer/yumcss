@@ -131,12 +131,24 @@ export function Card() {
 ```
 
 Solid, Vue, and Preact use the same style props while preserving their native
-component conventions:
+component conventions. Choose the matching entry for your framework:
+
+Solid (uses `class` and reactive props):
 
 ```tsx
-import { Stack } from "pandwind/stack/solid"; // `class`, reactive props
-import { Stack } from "pandwind/stack/vue"; // `class`, attrs and slots
-import { Stack } from "pandwind/stack/preact"; // `className`, children
+import { Stack } from "pandwind/stack/solid";
+```
+
+Vue (uses `class`, attrs, and slots):
+
+```tsx
+import { Stack } from "pandwind/stack/vue";
+```
+
+Preact (uses `className` and children):
+
+```tsx
+import { Stack } from "pandwind/stack/preact";
 ```
 
 The neutral `pandwind/stack` entry contains only the `stackClasses` mapper and

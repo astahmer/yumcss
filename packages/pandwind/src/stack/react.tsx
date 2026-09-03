@@ -5,8 +5,9 @@
  * build time and this module never loads.
  *
  * React is an OPTIONAL peer dependency: apps that only use folded stacks
- * never install it. There is no package build step — consumer bundlers
- * compile this `.tsx` with their own automatic JSX runtime.
+ * never install it. The published entry is compiled with the React automatic
+ * JSX runtime; the workspace `pandwind` condition points at this source file
+ * for local development.
  */
 import type { HTMLAttributes, JSX, ReactNode } from "react";
 import { stackClasses, type StackProps } from "./index.ts";
