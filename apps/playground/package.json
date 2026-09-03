@@ -3,8 +3,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"editor:types": "nub scripts/generate-editor-types.ts",
-		"editor:types:check": "nub scripts/generate-editor-types.ts --check",
+		"editor:types": "nub --node scripts/generate-editor-types.ts",
+		"editor:types:check": "nub --node scripts/generate-editor-types.ts --check",
 		"predev": "nub run editor:types && nub run tw:generate",
 		"dev": "vite",
 		"prebuild": "nub run editor:types && nub run tw:generate",
