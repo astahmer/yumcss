@@ -1,8 +1,28 @@
 # Local codebase studio plan
 
-**Status: PROPOSED.** This plan refines the idea of a CLI-spawned playground
+**Status: IN PROGRESS.** This plan refines the idea of a CLI-spawned playground
 for the current repository. It is a tooling feature; it does not change the
 frozen `tw()` / `css()` / `cx()` / design runtime API.
+
+## Progress
+
+- **Wave 1 — contracts/composition root:** implemented. Studio session,
+  snapshot, adapter-catalog, workspace, evaluator, server, and preview ports
+  are versioned and independently injectable.
+- **Wave 2 — local server/workspace:** implemented with authenticated
+  localhost transport, shared source workspace/scanner reuse, in-memory
+  overlays, watcher refresh, and disk-conflict reporting.
+- **Wave 3 — static surfaces:** implemented for source/target output,
+  semantic `StyleProgram` evidence, canonical CSS, discovered theme scopes,
+  diagnostics, and a registry-driven adapter UI.
+- **Wave 4 — host preview:** boundary and unavailable-state contract are
+  implemented; a real React/Vite host adapter remains before this plan is
+  complete.
+- **Wave 5 — framework expansion:** pending until the first host adapter is
+  proven.
+- **Wave 6 — hardening/documentation:** focused Studio tests, package
+  typecheck/build, and a repository-local benchmark exist; Playwright-BDD,
+  release documentation, and formal performance baselines remain.
 
 ## Context
 
