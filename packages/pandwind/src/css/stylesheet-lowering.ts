@@ -1,4 +1,4 @@
-import parser from "postcss-selector-parser";
+import { splitSelectorList } from "./selector-scan.ts";
 import { pairs } from "../lib/utils.ts";
 import type { AnyConditions } from "../types/typings.ts";
 import { getPropertyPriority } from "./property-priorities.ts";
@@ -70,10 +70,7 @@ export const genCSSRule = (decls: string, conditions: ParsedConditions): string 
 		return atRules.reduce(
 			(acc, atRule) => `${atRule}{${acc}}`,
 			`${selectorLists.map((list) => {
-				const selectors: string[] = [];
-				parser((nodes) => {
-					selectors.push(...nodes.nodes.map((node) => node.toString().trim()));
-				}).processSync(list);
+				const selectors = splitSelectorList(list);
 				return selectors
 					.map((selector) => {
 						const selfs = [...selfSelectors];

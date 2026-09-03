@@ -1,8 +1,8 @@
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { parse } from "postcss";
 import type { Rule } from "postcss";
-import selectorParser from "postcss-selector-parser";
 import { canonicalProps } from "./codegen-conflicts.ts";
+import { selectorClassMatches } from "../css/selector-scan.ts";
 import { resolveVar, simplifyCalc } from "./theme.ts";
 
 export type UtilityBridge = Record<string, Record<string, string>>;
@@ -123,17 +123,9 @@ interface Entry {
  * (`:where(.space-x-4 > :not(...))`) and other wrappers.
  */
 function isDirectClassRule(rule: Rule, className: string): boolean {
-	let direct = false;
-	selectorParser((selectors) => {
-		selectors.each((sel) => {
-			sel.walkClasses((node) => {
-				if (node.value === className && node.parent === sel && node.next() === undefined) {
-					direct = true;
-				}
-			});
-		});
-	}).processSync(rule.selector);
-	return direct;
+	return selectorClassMatches(rule.selector).some(
+		(match) => match.value === className && match.topLayer && match.lastInCompound,
+	);
 }
 
 async function generateUtilityBridge(

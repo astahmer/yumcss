@@ -6,8 +6,8 @@
  */
 import { compile } from "@tailwindcss/node";
 import { parse, type Root, type Rule } from "postcss";
-import selectorParser from "postcss-selector-parser";
 import { themeVariables } from "../../src/tw/theme.ts";
+import { selectorClassMatches } from "../../src/css/selector-scan.ts";
 export { resolveVar } from "../../src/tw/theme.ts";
 
 /** Default Tailwind entry — the same stylesheet the example app imports. */
@@ -17,13 +17,8 @@ export const TW_ENTRY = '@import "tailwindcss";';
 export function rulesForClass(root: Root, className: string): Rule[] {
 	const found: Rule[] = [];
 	root.walkRules((rule) => {
-		let matches = false;
-		selectorParser((selectors) => {
-			selectors.walkClasses((node) => {
-				if (node.value === className) matches = true;
-			});
-		}).processSync(rule.selector);
-		if (matches) found.push(rule);
+		if (selectorClassMatches(rule.selector).some((match) => match.value === className))
+			found.push(rule);
 	});
 	return found;
 }
@@ -34,15 +29,10 @@ export function rulesForClass(root: Root, className: string): Rule[] {
  * css() conditions and tw() variants attach the same pseudo-classes.
  */
 export function selectorTail(selector: string, className: string): string {
-	let tail = "";
-	selectorParser((selectors) => {
-		selectors.walkClasses((node) => {
-			if (node.value === className) {
-				tail = selector.slice(node.sourceIndex + node.toString().length).trim();
-			}
-		});
-	}).processSync(selector);
-	return tail;
+	const matches = selectorClassMatches(selector);
+	const match = matches.find((entry) => entry.value === className) ?? matches.at(-1);
+	if (!match) return "";
+	return selector.slice(match.end).trim();
 }
 
 /** Compile classes with the real Tailwind engine and parse the output. */

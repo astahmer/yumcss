@@ -15,11 +15,26 @@ const pandaLoader: ProjectModuleLoader = {
 	async importPackage(packageName) {
 		if (packageName === "@pandacss/config")
 			return {
-				loadConfig: async () => ({ config: { conditions: { _hover: "&:hover" } } }),
+				// The real loadConfig merges presets/plugins into the returned
+				// config, so preset utility shorthands (bg -> backgroundColor)
+				// are part of the effective evidence a real project exposes.
+				loadConfig: async () => ({
+					config: {
+						conditions: { _hover: "&:hover" },
+						utilities: {
+							extend: {
+								backgroundColor: { property: "backgroundColor", shorthand: ["bg"] },
+							},
+						},
+					},
+				}),
 			} as never;
 		if (packageName === "@pandacss/is-valid-prop")
 			return {
-				isCssProperty: (value: string) => ["color", "backgroundColor"].includes(value),
+				// The real generated validator accepts utility shorthands too:
+				// Panda property map covers every config/preset utility plus
+				// its shorthand entries, so bg is a legal style prop here.
+				isCssProperty: (value: string) => ["color", "backgroundColor", "bg"].includes(value),
 			} as never;
 		return undefined;
 	},

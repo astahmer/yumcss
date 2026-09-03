@@ -334,7 +334,6 @@
 		"csstype": "3.2.3",
 		"oxc-parser": "0.144.0",
 		"postcss": "8.5.26",
-		"postcss-selector-parser": "7.1.5",
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {

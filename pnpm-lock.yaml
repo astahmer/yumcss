@@ -480,9 +480,6 @@ importers:
       postcss:
         specifier: 8.5.26
         version: 8.5.26
-      postcss-selector-parser:
-        specifier: 7.1.5
-        version: 7.1.5
       react:
         specifier: '>=18.0.0'
         version: 19.2.8
@@ -5356,10 +5353,6 @@ packages:
 
   postcss-selector-parser@6.1.4:
     resolution: {integrity: sha512-bIoJLOmjCO1S9XdY/DcnR5hJxvrDir1PbGChrzXG3vw0/FOliy/fA3dmdhQ441kah4gKv+TwckGzex6wNS5cnQ==}
-    engines: {node: '>=4'}
-
-  postcss-selector-parser@7.1.5:
-    resolution: {integrity: sha512-KvvtD7SrlBP7dlgkBghEE3r84CABm5SmV2aNcG4oCA+qDnJ/tvKonFVvwWAyyWUEwxuNawdfEAZKP9zM3oZ2Uw==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -12021,11 +12014,6 @@ snapshots:
       postcss-selector-parser: 6.1.4
 
   postcss-selector-parser@6.1.4:
-    dependencies:
-      cssesc: 3.0.0
-      util-deprecate: 1.0.2
-
-  postcss-selector-parser@7.1.5:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2

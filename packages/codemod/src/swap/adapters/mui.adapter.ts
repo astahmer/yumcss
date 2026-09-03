@@ -154,6 +154,12 @@ function themeCollection(value: unknown): unknown {
 	return Object.fromEntries(value.map((entry, index) => [String(index), entry]));
 }
 
+function muiThemeShape(shape: unknown): unknown {
+	if (shape === null || typeof shape !== "object") return undefined;
+	const borderRadius = (shape as Record<string, unknown>).borderRadius;
+	return borderRadius === undefined ? undefined : { base: borderRadius };
+}
+
 async function officialMuiConfig(
 	context: AdapterConfigContext,
 	loader: ProjectModuleLoader,
@@ -220,10 +226,7 @@ async function officialMuiConfig(
 			tokenCatalog: TokenCatalog.fromNested({
 				colors: config.palette,
 				spacing: themeCollection(config.spacing),
-				radii:
-					config.shape?.borderRadius === undefined
-						? undefined
-						: { base: config.shape.borderRadius },
+				radii: muiThemeShape(config.shape),
 				fontSizes: typographyCollection(config.typography, "fontSize"),
 				fontWeights: typographyCollection(config.typography, "fontWeight"),
 				lineHeights: typographyCollection(config.typography, "lineHeight"),
