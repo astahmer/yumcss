@@ -22,6 +22,7 @@ class DefaultStudioSession implements StudioSession {
 	private revision = 0;
 	private readonly listeners = new Set<(snapshot: StudioSnapshot) => void>();
 	private readonly unsubscribeWorkspace: () => void;
+	private previewStarted = false;
 
 	constructor(private readonly dependencies: StudioSessionDependencies) {
 		this.unsubscribeWorkspace = dependencies.workspace.subscribe((workspace) => {
@@ -69,6 +70,7 @@ class DefaultStudioSession implements StudioSession {
 	async close(): Promise<void> {
 		this.unsubscribeWorkspace();
 		this.listeners.clear();
+		await this.dependencies.preview?.stop?.();
 		await this.dependencies.workspace.close?.();
 	}
 
@@ -84,6 +86,7 @@ class DefaultStudioSession implements StudioSession {
 		};
 		const evaluation = await this.dependencies.evaluation.evaluate(request);
 		const adapters = await this.dependencies.adapters?.list();
+		const preview = await this.previewFor(request, evaluation);
 		const snapshot: StudioSnapshot = {
 			schema: STUDIO_SNAPSHOT_SCHEMA,
 			revision: this.revision,
@@ -93,9 +96,35 @@ class DefaultStudioSession implements StudioSession {
 			theme: this.theme,
 			evaluation,
 			...(adapters === undefined ? {} : { adapters }),
+			...(preview === undefined ? {} : { preview }),
 		};
 		for (const listener of this.listeners) listener(snapshot);
 		return snapshot;
+	}
+
+	private async previewFor(
+		request: StudioEvaluationRequest,
+		evaluation: NonNullable<StudioSnapshot["evaluation"]>,
+	): Promise<StudioSnapshot["preview"]> {
+		const host = this.dependencies.preview;
+		if (host === undefined) return undefined;
+		const previewRequest = { ...request, evaluation };
+		if (!host.available) {
+			return {
+				host: host.id,
+				status: "unavailable",
+				message: "No supported host preview is configured for this project",
+			};
+		}
+		if (!this.previewStarted) {
+			this.previewStarted = true;
+			if (host.start === undefined)
+				return { host: host.id, status: "error", message: "Preview host has no start operation" };
+			return host.start(previewRequest);
+		}
+		if (host.update === undefined)
+			return { host: host.id, status: "ready", message: "Preview host is unchanged" };
+		return host.update(previewRequest);
 	}
 }
 

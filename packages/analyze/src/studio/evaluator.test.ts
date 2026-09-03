@@ -77,6 +77,10 @@ describe("studio codemod evaluator", () => {
 		mkdirSync(join(root, "src"));
 		const file = join(root, "src", "Card.tsx");
 		writeFileSync(
+			join(root, "src", "theme.css"),
+			'@theme { --color-brand: red; }\n[data-theme="dark"] { --color-brand: blue; }',
+		);
+		writeFileSync(
 			file,
 			'import { css } from "@emotion/css";\nexport const card = css({ color: "red" });',
 		);
@@ -88,13 +92,38 @@ describe("studio codemod evaluator", () => {
 			workspace: opened,
 			selection: null,
 			target: { target: "css.class", source: "emotion" },
-			theme: { scope: null },
+			theme: { scope: '[data-theme="dark"]' },
 		};
 		const result = await createStudioCodemodEvaluator().evaluate(request);
 
 		expect(result.artifacts?.targetCode).toContain("css.class");
 		expect(result.artifacts?.sourceCode).toContain("@emotion/css");
 		expect(result.semantic).toHaveProperty("programs");
+		expect(result.themes).toMatchInlineSnapshot(`
+			{
+			  "activeScope": "[data-theme="dark"]",
+			  "scopes": [
+			    {
+			      "selector": ":root",
+			      "variables": [
+			        {
+			          "name": "--color-brand",
+			          "value": "red",
+			        },
+			      ],
+			    },
+			    {
+			      "selector": "[data-theme="dark"]",
+			      "variables": [
+			        {
+			          "name": "--color-brand",
+			          "value": "blue",
+			        },
+			      ],
+			    },
+			  ],
+			}
+		`);
 		expect(result.artifacts?.sourceCss).toBeDefined();
 		expect(result.artifacts?.targetCss).toBeDefined();
 		expect({

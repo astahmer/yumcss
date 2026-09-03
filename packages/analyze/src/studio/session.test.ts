@@ -72,6 +72,56 @@ describe("createStudioSession", () => {
 		await session.close();
 	});
 
+	test("keeps host preview lifecycle behind the preview port", async () => {
+		const calls: string[] = [];
+		const session = createStudioSession({
+			workspace: workspacePort(),
+			evaluation: { evaluate: async () => ({ diagnostics: [] }) },
+			preview: {
+				id: "test-host",
+				available: true,
+				async start() {
+					calls.push("start");
+					return { host: "test-host", status: "ready", url: "http://127.0.0.1:3000" };
+				},
+				async update() {
+					calls.push("update");
+					return { host: "test-host", status: "ready" };
+				},
+				async stop() {
+					calls.push("stop");
+				},
+			},
+		});
+
+		const opened = await session.open({ root: "/project" });
+		const selected = await session.select({ file: "/project/src/App.tsx" });
+		await session.close();
+
+		expect({
+			calls,
+			opened: opened.preview,
+			selected: selected.preview,
+		}).toMatchInlineSnapshot(`
+			{
+			  "calls": [
+			    "start",
+			    "update",
+			    "stop",
+			  ],
+			  "opened": {
+			    "host": "test-host",
+			    "status": "ready",
+			    "url": "http://127.0.0.1:3000",
+			  },
+			  "selected": {
+			    "host": "test-host",
+			    "status": "ready",
+			  },
+			}
+		`);
+	});
+
 	test("composes workspace edits, selection, target, and theme through one evaluator", async () => {
 		const workspace = workspacePort();
 		const requests: StudioEvaluationRequest[] = [];

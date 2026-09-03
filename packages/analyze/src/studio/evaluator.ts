@@ -9,6 +9,8 @@ import {
 } from "pandwind-codemod/swap";
 import { PANDWIND_API_DIALECTS } from "pandwind-codemod/swap/browser";
 import { createSourceWorkspace } from "pandwind/source/workspace";
+import { parseThemeScopes, parseThemeVars } from "../collect/parsers.ts";
+import { crawlCssImports } from "../collect/theme-crawl.ts";
 import type {
 	StudioDiagnostic,
 	StudioAdapterCatalogPort,
@@ -88,6 +90,35 @@ const sourceTree = (
 	});
 };
 
+const projectThemes = (
+	root: string,
+	activeScope: string | null,
+	configWorkspace: ReturnType<typeof createSourceWorkspace>,
+) => {
+	const variables = new Map<string, { name: string; value: string; scope?: string }>();
+	try {
+		const entries = [...configWorkspace.files(["**/*.css"], root, { includeUnsupported: true })];
+		for (const file of crawlCssImports(entries, root).contents) {
+			for (const variable of parseThemeVars(file.content)) variables.set(variable.name, variable);
+			for (const variable of parseThemeScopes(file.content))
+				variables.set(`${variable.scope}\u0000${variable.name}`, variable);
+		}
+	} catch {
+		return { scopes: [], activeScope };
+	}
+	const scopes = new Map<string, Array<{ name: string; value: string }>>();
+	for (const variable of variables.values()) {
+		const selector = variable.scope ?? ":root";
+		const scope = scopes.get(selector) ?? [];
+		scope.push({ name: variable.name, value: variable.value });
+		scopes.set(selector, scope);
+	}
+	return {
+		scopes: [...scopes].map(([selector, variables]) => ({ selector, variables })),
+		activeScope,
+	};
+};
+
 /**
  * Node-side Studio evaluator. It is deliberately a composition adapter over
  * the existing codemod registry: detection, official config loading, parsing,
@@ -132,6 +163,7 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 				return {
 					diagnostics: [diagnostic("Choose a target adapter to evaluate this workspace")],
 					tree: { roots: sourceTree(request.workspace, []) },
+					themes: projectThemes(request.workspace.root, request.theme.scope, configWorkspace),
 				};
 			}
 
@@ -237,6 +269,7 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 			return {
 				diagnostics,
 				tree: { roots: sourceTree(request.workspace, migrations) },
+				themes: projectThemes(request.workspace.root, request.theme.scope, configWorkspace),
 				semantic: { migrations, programs: semanticPrograms },
 				artifacts: {
 					sourceCode: sourceText,

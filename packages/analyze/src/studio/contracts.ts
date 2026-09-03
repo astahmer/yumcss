@@ -113,6 +113,23 @@ export interface StudioThemeScope {
 	readonly variables: readonly { name: string; value: string }[];
 }
 
+export interface StudioPreviewRequest {
+	readonly workspace: StudioWorkspaceSnapshot;
+	readonly selection: StudioSelection | null;
+	readonly target: StudioTargetSelection | null;
+	readonly theme: StudioThemeSelection;
+	readonly evaluation: StudioEvaluationResult;
+}
+
+export type StudioPreviewStatus = "unavailable" | "starting" | "ready" | "error";
+
+export interface StudioPreviewSnapshot {
+	readonly host: string;
+	readonly status: StudioPreviewStatus;
+	readonly message?: string;
+	readonly url?: string;
+}
+
 export interface StudioDiagnostic {
 	readonly kind: "configuration" | "parse" | "lowering" | "validation" | "host" | "workspace";
 	readonly message: string;
@@ -130,6 +147,7 @@ export interface StudioSnapshot {
 	readonly theme: StudioThemeSelection;
 	readonly evaluation: StudioEvaluationResult | null;
 	readonly adapters?: StudioAdapterCatalogSnapshot;
+	readonly preview?: StudioPreviewSnapshot;
 }
 
 export interface StudioWorkspacePort {
@@ -147,12 +165,14 @@ export interface StudioSessionDependencies {
 	readonly workspace: StudioWorkspacePort;
 	readonly evaluation: StudioEvaluationPort;
 	readonly adapters?: StudioAdapterCatalogPort;
+	readonly preview?: StudioPreviewHostPort;
 }
 
 export interface StudioPreviewHostPort {
 	readonly id: string;
 	readonly available: boolean;
-	start?(request: StudioOpenRequest): Promise<void>;
+	start?(request: StudioPreviewRequest): Promise<StudioPreviewSnapshot>;
+	update?(request: StudioPreviewRequest): Promise<StudioPreviewSnapshot>;
 	stop?(): Promise<void>;
 }
 
