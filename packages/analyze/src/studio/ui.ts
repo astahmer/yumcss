@@ -20,7 +20,7 @@ section { min-width: 0; border: 1px solid #2a2932; border-radius: 8px; overflow:
 <main>
 <section><div class="heading">workspace</div><div class="body stack"><select id="file"></select><pre id="tree">Open a project to inspect its source tree.</pre></div></section>
 <section><div class="heading">source editor (memory only)</div><div class="body stack"><textarea id="editor" spellcheck="false"></textarea><div class="row"><button id="apply">Apply edit</button><button id="evaluate">Evaluate target</button></div></div></section>
-<section><div class="heading">migration result</div><div class="body stack"><div class="row"><select id="source"></select><select id="target"></select></div><pre id="output">Open a project to load registered adapters.</pre><details><summary>semantic program</summary><pre id="semantic">No semantic program yet.</pre></details><details><summary>themes and tokens</summary><pre id="themes">No theme data yet.</pre></details><details><summary>canonical CSS</summary><pre id="css">No CSS validation yet.</pre></details><details><summary>artifacts and size</summary><pre id="artifacts">No artifacts yet.</pre></details><details><summary>host preview</summary><pre id="preview">Static mode only.</pre></details><div id="diagnostics" class="muted"></div></div></section>
+<section><div class="heading">migration result</div><div class="body stack"><div class="row"><label for="source">source adapter</label><select id="source"></select><label for="target">target adapter</label><select id="target"></select></div><pre id="output">Open a project to load registered adapters.</pre><details><summary>semantic program</summary><pre id="semantic">No semantic program yet.</pre></details><details><summary>themes and tokens</summary><pre id="themes">No theme data yet.</pre></details><details><summary>canonical CSS</summary><pre id="css">No CSS validation yet.</pre></details><details><summary>artifacts and size</summary><pre id="artifacts">No artifacts yet.</pre></details><details><summary>host preview</summary><pre id="preview">Static mode only.</pre></details><div id="diagnostics" class="muted"></div></div></section>
 </main>
 <script>
 const token = new URL(location.href).searchParams.get("token") || "";
@@ -35,15 +35,15 @@ const call = async (path, body) => {
   if (!response.ok) throw new Error(value.error || "studio request failed");
   snapshot = value; render(); return value;
 };
-const option = (value, label) => { const item = document.createElement("option"); item.value = value; item.textContent = label; return item; };
+const createOption = (value, label) => { const item = window.document.createElement("option"); item.value = value; item.textContent = label; return item; };
 const renderAdapters = () => {
   const adapters = snapshot.adapters || { sources: [], targets: [] };
   const source = $("source");
   const target = $("target");
   const selectedSource = snapshot.target?.source || "";
   const selectedTarget = snapshot.target?.target || adapters.targets[0]?.id || "";
-  source.replaceChildren(option("", "auto-detect source"), ...adapters.sources.map(({ id, label }) => option(id, label)));
-  target.replaceChildren(...adapters.targets.map(({ id, label }) => option(id, label)));
+  source.replaceChildren(createOption("", "auto-detect source"), ...adapters.sources.map(({ id, label }) => createOption(id, label)));
+  target.replaceChildren(...adapters.targets.map(({ id, label }) => createOption(id, label)));
   source.value = selectedSource;
   target.value = selectedTarget;
 };
@@ -51,8 +51,8 @@ const render = () => {
   if (!snapshot) return;
   $("root").value = snapshot.workspace.root;
   const files = snapshot.workspace.files;
-  if (!files.some(({ document }) => document.file === selectedFile)) selectedFile = files[0]?.document.file || "";
-  $("file").replaceChildren(...files.map(({ document }) => { const option = document.createElement("option"); option.value = document.file; option.textContent = document.file.replace(snapshot.workspace.root + "/", ""); return option; }));
+  if (!files.some(({ document: sourceDocument }) => sourceDocument.file === selectedFile)) selectedFile = files[0]?.document.file || "";
+  $("file").replaceChildren(...files.map(({ document: sourceDocument }) => { const option = window.document.createElement("option"); option.value = sourceDocument.file; option.textContent = sourceDocument.file.replace(snapshot.workspace.root + "/", ""); return option; }));
   $("file").value = selectedFile;
   $("editor").value = files.find(({ document }) => document.file === selectedFile)?.document.source || "";
   renderAdapters();

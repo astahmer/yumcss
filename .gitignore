@@ -19,5 +19,6 @@ docs/dist/
 
 # generated Playwright-BDD specs and browser artifacts
 apps/playground/e2e/.features-gen/
+apps/playground/e2e/.studio-features-gen/
 playwright-report/
 test-results/

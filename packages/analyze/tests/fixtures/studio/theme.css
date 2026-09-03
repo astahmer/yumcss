@@ -1,0 +1,7 @@
+@theme {
+	--color-brand: red;
+}
+
+[data-theme="dark"] {
+	--color-brand: blue;
+}
