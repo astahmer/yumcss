@@ -112,6 +112,37 @@ adapters under `pandwind/unplugin`; build-time codegen helpers under
 `pandwind/codegen/{types,theme,collect,bridge}` and the `pandwind-tw` binary;
 non-web backends
 `pandwind/react-native`, `pandwind/opentui`, plus the render-agnostic
-`pandwind/stack` (+ `pandwind/stack/react`).
+`pandwind/stack` and framework renderers under `pandwind/stack/{react,solid,vue,preact}`.
+
+### Stack components
+
+Use the renderer entry for the framework that owns your component tree:
+
+```tsx
+import { Stack } from "pandwind/stack/react";
+
+export function Card() {
+	return (
+		<Stack direction="column" gap="4" padding="6">
+			Content
+		</Stack>
+	);
+}
+```
+
+Solid, Vue, and Preact use the same style props while preserving their native
+component conventions:
+
+```tsx
+import { Stack } from "pandwind/stack/solid"; // `class`, reactive props
+import { Stack } from "pandwind/stack/vue"; // `class`, attrs and slots
+import { Stack } from "pandwind/stack/preact"; // `className`, children
+```
+
+The neutral `pandwind/stack` entry contains only the `stackClasses` mapper and
+`StackProps` types. It has no framework dependency and is the input used by
+the static Stack fold. Svelte and Astro require native `.svelte`/`.astro`
+component adapters rather than a JavaScript component export and are not
+represented by these entries.
 
 See [Tooling → Codegen](/tooling/codegen/) for every command and flag.

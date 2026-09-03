@@ -315,6 +315,22 @@ The flat `SwapIR` is deliberately retained as the cheap path. Rich migrations
 use the versioned semantic `StyleProgram`; neither path is allowed to know a
 pair-specific `XToY` implementation.
 
+## Framework component adapters
+
+Component-family APIs follow the same port-and-adapter boundary as migration
+and backend APIs. `pandwind/stack` owns the renderer-neutral `StackProps` and
+deterministic class mapping. `pandwind/stack/react`, `pandwind/stack/solid`,
+`pandwind/stack/vue`, and `pandwind/stack/preact` each own their framework
+element creation, attribute spelling, children/slot behavior, and prop
+forwarding. The static fold imports only the neutral mapper, so a framework
+runtime is not pulled into static output.
+
+The family namespace is intentional: `pandwind/stack/{framework}` identifies a
+renderer for the Stack component family without turning `pandwind/{framework}`
+into a catch-all framework API. Svelte and Astro need native component-file
+adapters and compiler integration; a JavaScript façade would not be an
+idiomatic or type-safe substitute.
+
 ## Stack-safe tree processing
 
 Input-shaped trees are traversed iteratively with explicit depth-first stacks.
