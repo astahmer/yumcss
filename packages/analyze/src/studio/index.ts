@@ -25,3 +25,5 @@ export {
 	type StudioWorkspaceSnapshot,
 } from "./contracts.ts";
 export { createStudioSession } from "./session.ts";
+export { createStudioServer } from "./server.ts";
+export type { StudioServer, StudioServerAddress, StudioServerOptions } from "./server.ts";
