@@ -7,5 +7,3 @@ export const authoredCssAdapter = createStylesheetAdapter({
 	extensions: [".css"],
 	packages: { packages: [] },
 });
-
-export default authoredCssAdapter;

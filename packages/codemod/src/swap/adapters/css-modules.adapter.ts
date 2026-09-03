@@ -8,5 +8,3 @@ export const cssModulesAdapter = createStylesheetAdapter({
 	packages: { packages: [] },
 	composition: "partial",
 });
-
-export default cssModulesAdapter;

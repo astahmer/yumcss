@@ -43,6 +43,12 @@
 			"import": "./dist/swap/identifiers.js",
 			"default": "./dist/swap/identifiers.js"
 		},
+		"./swap/official/panda": {
+			"pandwind": "./src/swap/adapters/panda/theme.ts",
+			"types": "./dist/swap/adapters/panda/theme.d.ts",
+			"import": "./dist/swap/adapters/panda/theme.js",
+			"default": "./dist/swap/adapters/panda/theme.js"
+		},
 		"./swap/corpus": {
 			"pandwind": "./src/swap/real-repository-corpus.ts",
 			"types": "./dist/swap/real-repository-corpus.d.ts",

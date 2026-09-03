@@ -68,7 +68,13 @@ describe("migration lab", () => {
 			expect(result.ok, source.id).toBe(true);
 			if (!result.ok) continue;
 			if (source.id !== CodemodAdapterId.Pandwind) {
-				expect(result.code, source.id).not.toBe(lab.sampleFor(source.id));
+				// Fail-closed preprocessor sources (no compiler in the browser lab)
+				// are preserved verbatim by contract; every other source must rewrite.
+				const failClosed =
+					(source.id === CodemodAdapterId.Sass || source.id === CodemodAdapterId.Less) &&
+					result.converted === 0 &&
+					result.residuals.length > 0;
+				if (!failClosed) expect(result.code, source.id).not.toBe(lab.sampleFor(source.id));
 				expect(
 					result.converted + result.skipped + result.residuals.length,
 					source.id,

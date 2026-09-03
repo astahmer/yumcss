@@ -342,7 +342,6 @@
 		"@types/react": "19.2.8",
 		"@types/react-dom": "19.2.4",
 		"@vitest/coverage-v8": "4.1.10",
-		"@vue/server-renderer": "3.5.42",
 		"esbuild": "0.28.2",
 		"preact": "10.29.8",
 		"preact-render-to-string": "6.7.0",

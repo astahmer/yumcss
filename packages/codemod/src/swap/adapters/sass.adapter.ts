@@ -50,4 +50,3 @@ export function createSassAdapter(moduleLoader?: ProjectModuleLoader) {
 }
 
 export const sassAdapter = createSassAdapter();
-export default sassAdapter;

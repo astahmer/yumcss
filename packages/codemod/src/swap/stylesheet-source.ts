@@ -1,5 +1,6 @@
 import {
 	SemanticConditionKindTag,
+	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	styleProgramFromRules,
 	type StyleCondition,
@@ -589,7 +590,25 @@ export function createStylesheetFileMigration(
 					converted: 0,
 					skipped: 0,
 					generatedFiles: [],
-					residuals: [],
+					residuals:
+						context.sourceConfig.adapter === CodemodAdapterId.CssModules
+							? [
+									{
+										kind: StyleProgramResidualKindTag.Capability,
+										text: context.file,
+										hint: "CSS Modules local class scoping does not survive the authored-css target",
+									},
+								]
+							: context.sourceConfig.adapter === CodemodAdapterId.Sass ||
+								  context.sourceConfig.adapter === CodemodAdapterId.Less
+								? [
+										{
+											kind: StyleProgramResidualKindTag.Capability,
+											text: context.file,
+											hint: "preprocessor features require the official compiler to inline before authored-css output",
+										},
+									]
+								: [],
 					dependencies: [],
 				};
 			const residuals: StyleProgramResidual[] = [];

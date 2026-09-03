@@ -210,7 +210,48 @@ const card = css({ color: "red", padding: "1rem" });`,
 const styles = style9.create({
 	card: { color: "red", padding: 16 },
 });`,
+	[CodemodAdapterId.Tamagui]: `import { styled, View } from "tamagui";
+
+export const Card = styled(View, { color: "red", padding: 16 });`,
+	[CodemodAdapterId.AuthoredCss]: `/* Card banner */
+.card {
+	color: red;
+	padding: 1rem;
+}
+`,
+	[CodemodAdapterId.CssModules]: `/* Card banner */
+.card {
+	color: red;
+	padding: 1rem;
+}
+`,
+	[CodemodAdapterId.Sass]: `/* Card banner */
+.card
+	color: red
+	padding: 1rem
+`,
+	[CodemodAdapterId.Less]: `/* Card banner */
+.card {
+	color: red;
+	padding: 1rem;
+}
+`,
 };
+
+/**
+ * Sample filenames are proven against each adapter's own detection contract
+ * instead of a per-adapter id branch: stylesheet sources must land on a
+ * stylesheet extension or the adapter can never match them.
+ */
+const SAMPLE_FILE_CANDIDATES = [
+	"Example.tsx",
+	"Example.vue",
+	"styles.css",
+	"Card.module.css",
+	"styles.scss",
+	"styles.sass",
+	"styles.less",
+] as const;
 
 function labelFor(adapter: StyleAdapter): string {
 	return adapter.id
@@ -241,8 +282,16 @@ function pandwindApiEndpoint(
 	return { ...endpointFor(adapter, "target"), id: route, label: api.label };
 }
 
-function fileFor(adapter: string): string {
-	return adapter === CodemodAdapterId.VueStyled ? "Example.vue" : "Example.tsx";
+function fileFor(
+	registry: { get(id: string): StyleAdapter | undefined },
+	from: string,
+	source: string,
+): string {
+	const adapter = registry.get(from);
+	if (adapter === undefined) return "Example.tsx";
+	return (
+		SAMPLE_FILE_CANDIDATES.find((file) => adapter.detect({ file, source }).matched) ?? "Example.tsx"
+	);
 }
 
 /** Browser composition root for the same registry-backed migration use case as the CLI. */
@@ -269,7 +318,7 @@ export function createMigrationLab(): MigrationLab {
 				const result = runAdapterMigration(source, {
 					from,
 					to,
-					file: fileFor(from),
+					file: fileFor(catalog.registry, from, source),
 					readFile: () => undefined,
 					registry: catalog.systems,
 					adapterRegistry: catalog.registry,

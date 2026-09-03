@@ -24,7 +24,6 @@
 		"shiki": "4.4.3"
 	},
 	"devDependencies": {
-		"@emotion/react": "11.14.0",
 		"@oxc-parser/binding-wasm32-wasi": "0.144.0",
 		"@playwright/test": "1.61.1",
 		"@tailwindcss/vite": "4.3.3",

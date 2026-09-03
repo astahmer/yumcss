@@ -38,4 +38,3 @@ export function createLessAdapter(moduleLoader?: ProjectModuleLoader) {
 }
 
 export const lessAdapter = createLessAdapter();
-export default lessAdapter;

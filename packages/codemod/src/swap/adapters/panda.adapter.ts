@@ -107,7 +107,11 @@ async function officialPandaConfig(
 	// The official Panda loader is Node-only. Keep it behind the project-aware
 	// async path so the browser catalog can still ship the same adapter without
 	// pulling Panda's filesystem/config implementation into the client bundle.
-	const { loadPandaTheme } = await import(/* @vite-ignore */ "./panda/theme.ts");
+	// Self-package subpath so the specifier resolves identically from src
+	// (nub/tests) and dist (browser playground bundle): a relative dynamic
+	// import would break because dist emits .js next to a different folder
+	// depth than the source tree.
+	const { loadPandaTheme } = await import("pandwind-codemod/swap/official/panda");
 	const discovered = context
 		.listFiles?.(context.root)
 		.filter((candidate) => /(?:^|[\\/])panda\.config\.(?:ts|tsx|js|mjs|cjs)$/u.test(candidate));
