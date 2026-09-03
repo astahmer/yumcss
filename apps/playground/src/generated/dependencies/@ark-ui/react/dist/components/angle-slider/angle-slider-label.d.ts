@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface AngleSliderLabelBaseProps extends PolymorphicProps {
-}
-export interface AngleSliderLabelProps extends HTMLProps<'label'>, AngleSliderLabelBaseProps {
-}
-export declare const AngleSliderLabel: ForwardRefExoticComponent<AngleSliderLabelProps & RefAttributes<HTMLLabelElement>>;

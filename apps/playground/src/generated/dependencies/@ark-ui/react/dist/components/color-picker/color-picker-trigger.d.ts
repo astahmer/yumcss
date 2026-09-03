@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface ColorPickerTriggerBaseProps extends PolymorphicProps {
-}
-export interface ColorPickerTriggerProps extends HTMLProps<'button'>, ColorPickerTriggerBaseProps {
-}
-export declare const ColorPickerTrigger: ForwardRefExoticComponent<ColorPickerTriggerProps & RefAttributes<HTMLButtonElement>>;

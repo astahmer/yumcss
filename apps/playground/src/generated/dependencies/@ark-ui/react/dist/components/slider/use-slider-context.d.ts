@@ -1,6 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { UseSliderReturn } from './use-slider.d.ts';
-import { Provider } from 'react';
-export interface UseSliderContext extends UseSliderReturn {
-}
-export declare const SliderProvider: Provider<UseSliderContext>, useSliderContext: () => UseSliderContext;

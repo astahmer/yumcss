@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface MarqueeViewportBaseProps extends PolymorphicProps {
-}
-export interface MarqueeViewportProps extends HTMLProps<'div'>, MarqueeViewportBaseProps {
-}
-export declare const MarqueeViewport: ForwardRefExoticComponent<MarqueeViewportProps & RefAttributes<HTMLDivElement>>;

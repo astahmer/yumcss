@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface ScrollAreaContentBaseProps extends PolymorphicProps {
-}
-export interface ScrollAreaContentProps extends HTMLProps<'div'>, ScrollAreaContentBaseProps {
-}
-export declare const ScrollAreaContent: ForwardRefExoticComponent<ScrollAreaContentProps & RefAttributes<HTMLDivElement>>;

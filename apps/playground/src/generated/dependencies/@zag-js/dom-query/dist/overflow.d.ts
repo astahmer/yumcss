@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-type OverflowAncestor = Array<VisualViewport | Window | HTMLElement | null>;
-declare function getNearestOverflowAncestor(el: Node): HTMLElement;
-declare function getOverflowAncestors(el: HTMLElement, list?: OverflowAncestor): OverflowAncestor;
-declare function isInView(el: HTMLElement | Window | VisualViewport, ancestor: HTMLElement | Window | VisualViewport): boolean;
-declare function isOverflowElement(el: HTMLElement): boolean;
-
-export { type OverflowAncestor, getNearestOverflowAncestor, getOverflowAncestors, isInView, isOverflowElement };

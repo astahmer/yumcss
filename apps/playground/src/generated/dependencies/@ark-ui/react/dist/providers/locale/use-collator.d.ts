@@ -1,5 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-export interface UseCollatorProps extends Intl.CollatorOptions {
-    locale?: string;
-}
-export declare function useCollator(props?: UseCollatorProps): Intl.Collator;

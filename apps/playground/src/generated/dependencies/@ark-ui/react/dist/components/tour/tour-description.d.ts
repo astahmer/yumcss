@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface TourDescriptionBaseProps extends PolymorphicProps {
-}
-export interface TourDescriptionProps extends HTMLProps<'div'>, TourDescriptionBaseProps {
-}
-export declare const TourDescription: ForwardRefExoticComponent<TourDescriptionProps & RefAttributes<HTMLDivElement>>;

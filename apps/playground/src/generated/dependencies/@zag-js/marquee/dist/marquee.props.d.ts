@@ -1,9 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { UserDefinedContext } from './marquee.types.d.ts';
-import '@zag-js/core';
-import '@zag-js/types';
-
-declare const props: ("paused" | "id" | "getRootNode" | "ids" | "translations" | "onPauseChange" | "onLoopComplete" | "onComplete" | ("reverse" | "dir" | "spacing" | "speed" | "side" | "delay" | "loopCount" | "autoFill" | "pauseOnInteraction" | "defaultPaused"))[];
-declare const splitProps: <Props extends Partial<UserDefinedContext>>(props: Props) => [Partial<UserDefinedContext>, Omit<Props, "paused" | "id" | "getRootNode" | "ids" | "translations" | "onPauseChange" | "onLoopComplete" | "onComplete" | ("reverse" | "dir" | "spacing" | "speed" | "side" | "delay" | "loopCount" | "autoFill" | "pauseOnInteraction" | "defaultPaused")>];
-
-export { props, splitProps };

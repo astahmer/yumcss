@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface NavigationMenuItemIndicatorBaseProps extends PolymorphicProps {
-}
-export interface NavigationMenuItemIndicatorProps extends HTMLProps<'div'>, NavigationMenuItemIndicatorBaseProps {
-}
-export declare const NavigationMenuItemIndicator: ForwardRefExoticComponent<NavigationMenuItemIndicatorProps & RefAttributes<HTMLDivElement>>;

@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface TabListBaseProps extends PolymorphicProps {
-}
-export interface TabListProps extends HTMLProps<'div'>, TabListBaseProps {
-}
-export declare const TabList: ForwardRefExoticComponent<TabListProps & RefAttributes<HTMLDivElement>>;

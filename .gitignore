@@ -11,6 +11,7 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 .jj/
+apps/playground/src/generated/
 
 # studio run history (local snapshots)
 apps/inspector/.studio-history/

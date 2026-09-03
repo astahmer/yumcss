@@ -1,7 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { UseMenuReturn } from './use-menu.d.ts';
-import { Provider } from 'react';
-import { Api } from '@zag-js/menu';
-import { PropTypes } from '@zag-js/react';
-export type UseMenuContext = UseMenuReturn['api'];
-export declare const MenuProvider: Provider<Api<PropTypes>>, useMenuContext: () => Api<PropTypes>;

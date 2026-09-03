@@ -1,7 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { DateSegment } from '@zag-js/date-input';
-import { ReactNode } from 'react';
-export interface DateInputSegmentContextProps {
-    children: (segment: DateSegment) => ReactNode;
-}
-export declare const DateInputSegmentContext: (props: DateInputSegmentContextProps) => import("react").JSX.Element[];

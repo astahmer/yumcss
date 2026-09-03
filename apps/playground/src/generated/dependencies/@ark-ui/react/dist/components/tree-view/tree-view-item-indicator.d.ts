@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface TreeViewItemIndicatorBaseProps extends PolymorphicProps {
-}
-export interface TreeViewItemIndicatorProps extends HTMLProps<'div'>, TreeViewItemIndicatorBaseProps {
-}
-export declare const TreeViewItemIndicator: ForwardRefExoticComponent<TreeViewItemIndicatorProps & RefAttributes<HTMLDivElement>>;

@@ -1,9 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { ItemProps } from '@zag-js/rating-group';
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface RatingGroupItemBaseProps extends ItemProps, PolymorphicProps {
-}
-export interface RatingGroupItemProps extends HTMLProps<'span'>, RatingGroupItemBaseProps {
-}
-export declare const RatingGroupItem: ForwardRefExoticComponent<RatingGroupItemProps & RefAttributes<HTMLSpanElement>>;

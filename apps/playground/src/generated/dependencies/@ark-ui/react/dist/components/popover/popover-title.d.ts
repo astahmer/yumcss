@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface PopoverTitleBaseProps extends PolymorphicProps {
-}
-export interface PopoverTitleProps extends HTMLProps<'div'>, PopoverTitleBaseProps {
-}
-export declare const PopoverTitle: ForwardRefExoticComponent<PopoverTitleProps & RefAttributes<HTMLDivElement>>;

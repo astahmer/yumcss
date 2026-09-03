@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface TocIndicatorBaseProps extends PolymorphicProps {
-}
-export interface TocIndicatorProps extends HTMLProps<'div'>, TocIndicatorBaseProps {
-}
-export declare const TocIndicator: ForwardRefExoticComponent<TocIndicatorProps & RefAttributes<HTMLDivElement>>;

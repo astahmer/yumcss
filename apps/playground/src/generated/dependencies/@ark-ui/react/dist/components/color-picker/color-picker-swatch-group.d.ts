@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface ColorPickerSwatchGroupBaseProps extends PolymorphicProps {
-}
-export interface ColorPickerSwatchGroupProps extends HTMLProps<'div'>, ColorPickerSwatchGroupBaseProps {
-}
-export declare const ColorPickerSwatchGroup: ForwardRefExoticComponent<ColorPickerSwatchGroupProps & RefAttributes<HTMLDivElement>>;

@@ -1,4 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-export { HoverCardArrow as Arrow, HoverCardArrowTip as ArrowTip, HoverCardContent as Content, HoverCardPositioner as Positioner, HoverCardRoot as Root, HoverCardRootProvider as RootProvider, HoverCardPropsProvider as PropsProvider, HoverCardTrigger as Trigger, HoverCardContext as Context, } from "./hover-card.d.ts";
-export type { HoverCardArrowProps as ArrowProps, HoverCardArrowTipProps as ArrowTipProps, HoverCardContentProps as ContentProps, HoverCardPositionerProps as PositionerProps, HoverCardRootProps as RootProps, HoverCardRootProviderProps as RootProviderProps, HoverCardTriggerProps as TriggerProps, HoverCardOpenChangeDetails as OpenChangeDetails, } from "./hover-card.d.ts";
-export type { HoverCardInteractOutsideEvent as InteractOutsideEvent, HoverCardFocusOutsideEvent as FocusOutsideEvent, HoverCardPointerDownOutsideEvent as PointerDownOutsideEvent, } from "@ark-ui/react/hover-card";

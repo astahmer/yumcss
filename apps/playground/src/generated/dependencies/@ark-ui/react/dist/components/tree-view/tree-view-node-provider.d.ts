@@ -1,9 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { NodeProps } from '@zag-js/tree-view';
-export interface TreeViewNodeProviderBaseProps<T> extends NodeProps {
-    node: T;
-}
-export interface TreeViewNodeProviderProps<T> extends TreeViewNodeProviderBaseProps<T> {
-    children?: React.ReactNode | undefined;
-}
-export declare function TreeViewNodeProvider<T>(props: TreeViewNodeProviderProps<T>): import("react").JSX.Element;

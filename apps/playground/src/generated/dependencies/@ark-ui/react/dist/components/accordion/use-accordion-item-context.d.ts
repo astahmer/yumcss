@@ -1,6 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { ItemState } from '@zag-js/accordion';
-import { Provider } from 'react';
-export interface UseAccordionItemContext extends ItemState {
-}
-export declare const AccordionItemProvider: Provider<UseAccordionItemContext>, useAccordionItemContext: () => UseAccordionItemContext;

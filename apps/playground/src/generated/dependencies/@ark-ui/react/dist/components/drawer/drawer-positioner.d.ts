@@ -1,8 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { HTMLProps, PolymorphicProps } from '../factory.d.ts';
-import { ForwardRefExoticComponent, RefAttributes } from 'react';
-export interface DrawerPositionerBaseProps extends PolymorphicProps {
-}
-export interface DrawerPositionerProps extends HTMLProps<'div'>, DrawerPositionerBaseProps {
-}
-export declare const DrawerPositioner: ForwardRefExoticComponent<DrawerPositionerProps & RefAttributes<HTMLDivElement>>;

@@ -1,7 +1,0 @@
-// Generated from the workspace-linked pandwind package. Do not edit.
-import { ReactNode } from 'react';
-import * as toast from '@zag-js/toast';
-export interface CreateToasterProps extends toast.StoreProps {
-}
-export type CreateToasterReturn<T = ReactNode> = toast.Store<T>;
-export declare const createToaster: <T = ReactNode>(props: CreateToasterProps) => CreateToasterReturn<T>;
