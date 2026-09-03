@@ -94,6 +94,18 @@ describe("studio codemod evaluator", () => {
 
 		expect(result.artifacts?.targetCode).toContain("css.class");
 		expect(result.artifacts?.sourceCode).toContain("@emotion/css");
+		expect(result.semantic).toHaveProperty("programs");
+		expect(result.artifacts?.sourceCss).toBeDefined();
+		expect(result.artifacts?.targetCss).toBeDefined();
+		expect({
+			sourceCss: result.artifacts?.sourceCss,
+			targetCss: result.artifacts?.targetCss,
+		}).toMatchInlineSnapshot(`
+			{
+			  "sourceCss": "&{color:red}",
+			  "targetCss": "&{color:red}",
+			}
+		`);
 		expect(result.tree?.roots).toHaveLength(1);
 		const semantic = result.semantic as {
 			migrations: Array<{ file: string; converted: number; residuals: number; outcomes: unknown }>;
@@ -102,7 +114,7 @@ describe("studio codemod evaluator", () => {
 			...migration,
 			file: migration.file.replace(root, "<root>"),
 		}));
-		expect(semantic).toMatchInlineSnapshot(`
+		expect({ migrations: semantic.migrations }).toMatchInlineSnapshot(`
 			{
 			  "migrations": [
 			    {

@@ -137,6 +137,9 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 
 			const sourceCode: string[] = [];
 			const targetCode: string[] = [];
+			const sourceCss: string[] = [];
+			const targetCss: string[] = [];
+			const semanticPrograms: unknown[] = [];
 			const migrations: Array<{
 				file: string;
 				converted: number;
@@ -205,6 +208,13 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 							outcome,
 						})),
 					});
+					semanticPrograms.push(...result.loweringPlans.map(({ program }) => program));
+					for (const validation of result.validations) {
+						if (validation.canonicalSource !== undefined)
+							sourceCss.push(validation.canonicalSource);
+						if (validation.canonicalTarget !== undefined)
+							targetCss.push(validation.canonicalTarget);
+					}
 					for (const residual of result.residuals)
 						diagnostics.push(
 							diagnostic(
@@ -227,10 +237,12 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 			return {
 				diagnostics,
 				tree: { roots: sourceTree(request.workspace, migrations) },
-				semantic: { migrations },
+				semantic: { migrations, programs: semanticPrograms },
 				artifacts: {
 					sourceCode: sourceText,
 					targetCode: targetText,
+					...(sourceCss.length === 0 ? {} : { sourceCss: sourceCss.join("\n\n") }),
+					...(targetCss.length === 0 ? {} : { targetCss: targetCss.join("\n\n") }),
 					files: [...generatedFiles.values()],
 					sourceBytes: Buffer.byteLength(sourceText),
 					targetBytes: Buffer.byteLength(targetText),
