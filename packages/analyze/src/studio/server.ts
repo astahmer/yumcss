@@ -2,8 +2,8 @@ import { randomBytes } from "node:crypto";
 import { serve } from "@hono/node-server";
 import type { StudioSession } from "./contracts.ts";
 import { createStudioApp } from "./app.ts";
-import { createInMemoryStudioUiProvider, type StudioUiPort } from "./ui-provider.ts";
-import { STUDIO_HTML } from "./ui.ts";
+import type { StudioUiPort } from "./ui-provider.ts";
+import { createNodeStudioUiProvider } from "./ui-node.ts";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 0;
@@ -13,7 +13,6 @@ export interface StudioServerOptions {
 	readonly host?: string;
 	readonly port?: number;
 	readonly token?: string;
-	readonly indexHtml?: string;
 	readonly ui?: StudioUiPort;
 }
 
@@ -53,7 +52,7 @@ const listen = (server: ListenableServer, host: string, port: number): Promise<v
 export async function createStudioServer(options: StudioServerOptions): Promise<StudioServer> {
 	const host = options.host ?? DEFAULT_HOST;
 	const token = options.token ?? randomBytes(24).toString("hex");
-	const ui = options.ui ?? createInMemoryStudioUiProvider(options.indexHtml ?? STUDIO_HTML);
+	const ui = options.ui ?? createNodeStudioUiProvider();
 	const { app, dispose } = createStudioApp({ session: options.session, token, ui });
 	const nodeServer = serve({ fetch: app.fetch, hostname: host }, undefined);
 	await listen(nodeServer, host, options.port ?? DEFAULT_PORT);

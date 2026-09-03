@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { STUDIO_SESSION_SCHEMA, STUDIO_SNAPSHOT_SCHEMA, type StudioSession } from "./contracts.ts";
 import { createStudioServer } from "./server.ts";
+import { createInMemoryStudioUiProvider } from "./ui-provider.ts";
+
+const ui = createInMemoryStudioUiProvider(
+	"<!doctype html><html><body><h1>pandwind / studio</h1></body></html>",
+);
 
 function session(): StudioSession {
 	let listener: ((snapshot: Awaited<ReturnType<StudioSession["open"]>>) => void) | undefined;
@@ -54,7 +59,7 @@ function session(): StudioSession {
 
 describe("createStudioServer", () => {
 	test("protects the session and routes authorized operations", async () => {
-		const server = await createStudioServer({ session: session(), token: "test-token" });
+		const server = await createStudioServer({ session: session(), token: "test-token", ui });
 		const origin = new URL(server.address.url).origin;
 		try {
 			const unauthorized = await fetch(`${origin}/api/studio/snapshot`);

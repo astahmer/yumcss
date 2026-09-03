@@ -5,6 +5,11 @@ import { createStudioCodemodEvaluator } from "./evaluator.ts";
 import { createStudioServer } from "./server.ts";
 import { createStudioSession } from "./session.ts";
 import { createStudioWorkspace } from "./workspace.ts";
+import { createInMemoryStudioUiProvider } from "./ui-provider.ts";
+
+const ui = createInMemoryStudioUiProvider(
+	"<!doctype html><html><body><h1>pandwind / studio</h1></body></html>",
+);
 
 const roots: string[] = [];
 
@@ -26,7 +31,7 @@ describe("studio integration", () => {
 		const workspace = createStudioWorkspace({ watcher: { watch: () => () => undefined } });
 		const evaluator = createStudioCodemodEvaluator();
 		const session = createStudioSession({ workspace, evaluation: evaluator, adapters: evaluator });
-		const server = await createStudioServer({ session, token: "integration-token" });
+		const server = await createStudioServer({ session, token: "integration-token", ui });
 		const origin = new URL(server.address.url).origin;
 		const request = (path: string, body: unknown) =>
 			fetch(`${origin}${path}?token=integration-token`, {

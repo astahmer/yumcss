@@ -51,7 +51,8 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
-		"build": "nub exec tsdown",
+		"build:ui": "nub exec vite build",
+		"build": "nub exec tsdown && nub run build:ui",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
@@ -73,6 +74,8 @@
 		"oxc-parser": "0.144.0",
 		"tsdown": "0.22.14",
 		"typescript": "7.0.2",
+		"vite": "^8.2.2",
+		"vite-plugin-singlefile": "^2.3.3",
 		"vitest": "4.1.10"
 	},
 	"engines": {

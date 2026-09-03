@@ -24,8 +24,15 @@
 			"project": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
 		},
 		"packages/analyze": {
-			"entry": ["src/cli.ts", "src/collect/index.ts", "tests/**/*.test.ts"],
-			"project": ["src/**/*.ts", "tests/**/*.ts"]
+			"entry": [
+				"src/cli.ts",
+				"src/collect/index.ts",
+				"src/studio/index.ts",
+				"studio-app/src/main.ts",
+				"vite.config.ts",
+				"tests/**/*.test.ts"
+			],
+			"project": ["src/**/*.ts", "tests/**/*.ts", "studio-app/**/*.{ts,html}", "vite.config.ts"]
 		},
 		"packages/lint-plugin": {
 			"entry": ["src/index.ts"],
