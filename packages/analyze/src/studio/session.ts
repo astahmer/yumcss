@@ -83,6 +83,7 @@ class DefaultStudioSession implements StudioSession {
 			theme: this.theme,
 		};
 		const evaluation = await this.dependencies.evaluation.evaluate(request);
+		const adapters = await this.dependencies.adapters?.list();
 		const snapshot: StudioSnapshot = {
 			schema: STUDIO_SNAPSHOT_SCHEMA,
 			revision: this.revision,
@@ -91,6 +92,7 @@ class DefaultStudioSession implements StudioSession {
 			target: this.target,
 			theme: this.theme,
 			evaluation,
+			...(adapters === undefined ? {} : { adapters }),
 		};
 		for (const listener of this.listeners) listener(snapshot);
 		return snapshot;

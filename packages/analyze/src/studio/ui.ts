@@ -20,7 +20,7 @@ section { min-width: 0; border: 1px solid #2a2932; border-radius: 8px; overflow:
 <main>
 <section><div class="heading">workspace</div><div class="body stack"><select id="file"></select><pre id="tree">Open a project to inspect its source tree.</pre></div></section>
 <section><div class="heading">source editor (memory only)</div><div class="body stack"><textarea id="editor" spellcheck="false"></textarea><div class="row"><button id="apply">Apply edit</button><button id="evaluate">Evaluate target</button></div></div></section>
-<section><div class="heading">migration result</div><div class="body stack"><div class="row"><input id="source" placeholder="source adapter (auto)" /><input id="target" value="css.class" placeholder="target adapter" /></div><pre id="output">Choose a target and evaluate.</pre><div id="diagnostics" class="muted"></div></div></section>
+<section><div class="heading">migration result</div><div class="body stack"><div class="row"><select id="source"></select><select id="target"></select></div><pre id="output">Open a project to load registered adapters.</pre><div id="diagnostics" class="muted"></div></div></section>
 </main>
 <script>
 const token = new URL(location.href).searchParams.get("token") || "";
@@ -35,6 +35,18 @@ const call = async (path, body) => {
   if (!response.ok) throw new Error(value.error || "studio request failed");
   snapshot = value; render(); return value;
 };
+const option = (value, label) => { const item = document.createElement("option"); item.value = value; item.textContent = label; return item; };
+const renderAdapters = () => {
+  const adapters = snapshot.adapters || { sources: [], targets: [] };
+  const source = $("source");
+  const target = $("target");
+  const selectedSource = snapshot.target?.source || "";
+  const selectedTarget = snapshot.target?.target || adapters.targets[0]?.id || "";
+  source.replaceChildren(option("", "auto-detect source"), ...adapters.sources.map(({ id, label }) => option(id, label)));
+  target.replaceChildren(...adapters.targets.map(({ id, label }) => option(id, label)));
+  source.value = selectedSource;
+  target.value = selectedTarget;
+};
 const render = () => {
   if (!snapshot) return;
   $("root").value = snapshot.workspace.root;
@@ -43,8 +55,7 @@ const render = () => {
   $("file").replaceChildren(...files.map(({ document }) => { const option = document.createElement("option"); option.value = document.file; option.textContent = document.file.replace(snapshot.workspace.root + "/", ""); return option; }));
   $("file").value = selectedFile;
   $("editor").value = files.find(({ document }) => document.file === selectedFile)?.document.source || "";
-  $("source").value = snapshot.target?.source || "";
-  $("target").value = snapshot.target?.target || "css.class";
+  renderAdapters();
   $("tree").textContent = JSON.stringify(snapshot.evaluation?.tree || { roots: [] }, null, 2);
   $("output").textContent = snapshot.evaluation?.artifacts?.targetCode || "No target output yet.";
   const diagnostics = snapshot.evaluation?.diagnostics || [];

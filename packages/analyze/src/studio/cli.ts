@@ -20,7 +20,8 @@ const main = async (argv: readonly string[]): Promise<void> => {
 	const root = resolve(argv.find((argument) => !argument.startsWith("-")) ?? process.cwd());
 	const shouldOpen = !argv.includes("--no-open");
 	const workspace = createNodeStudioWorkspace();
-	const session = createStudioSession({ workspace, evaluation: createStudioCodemodEvaluator() });
+	const evaluator = createStudioCodemodEvaluator();
+	const session = createStudioSession({ workspace, evaluation: evaluator, adapters: evaluator });
 	const server = await createStudioServer({ session });
 	await session.open({ root });
 	console.log(`Pandwind Studio: ${server.address.url}`);

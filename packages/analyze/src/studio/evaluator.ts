@@ -11,6 +11,9 @@ import { PANDWIND_API_DIALECTS } from "pandwind-codemod/swap/browser";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import type {
 	StudioDiagnostic,
+	StudioAdapterCatalogPort,
+	StudioAdapterCatalogSnapshot,
+	StudioAdapterOption,
 	StudioEvaluationPort,
 	StudioEvaluationRequest,
 	StudioEvaluationResult,
@@ -90,11 +93,34 @@ const sourceTree = (
  * the existing codemod registry: detection, official config loading, parsing,
  * lowering, emission, and validation remain owned by their adapters.
  */
-export const createStudioCodemodEvaluator = (): StudioEvaluationPort => {
+const adapterOption = (adapter: StyleAdapter): StudioAdapterOption => ({
+	id: adapter.id,
+	label: adapter.id,
+	role: "both",
+});
+
+export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAdapterCatalogPort => {
 	const catalog = createBuiltinCodemodCatalog();
 	const configWorkspace = createSourceWorkspace();
+	const options = (): StudioAdapterCatalogSnapshot => {
+		const adapters = catalog.adapters.map(adapterOption);
+		const targets = [
+			...PANDWIND_API_DIALECTS.map(({ label }) => ({
+				id: label,
+				label,
+				role: "target" as const,
+			})),
+			...adapters,
+		].filter(
+			(option, index, all) => all.findIndex((candidate) => candidate.id === option.id) === index,
+		);
+		return { sources: adapters, targets };
+	};
 
 	return {
+		async list() {
+			return options();
+		},
 		async evaluate(request: StudioEvaluationRequest): Promise<StudioEvaluationResult> {
 			const target = request.target;
 			const selected = request.selection?.file;

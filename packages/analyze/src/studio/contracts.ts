@@ -54,6 +54,23 @@ export interface StudioEvaluationResult {
 	readonly diagnostics: readonly StudioDiagnostic[];
 }
 
+export type StudioAdapterRole = "source" | "target" | "both";
+
+export interface StudioAdapterOption {
+	readonly id: string;
+	readonly label: string;
+	readonly role: StudioAdapterRole;
+}
+
+export interface StudioAdapterCatalogSnapshot {
+	readonly sources: readonly StudioAdapterOption[];
+	readonly targets: readonly StudioAdapterOption[];
+}
+
+export interface StudioAdapterCatalogPort {
+	list(): Promise<StudioAdapterCatalogSnapshot>;
+}
+
 export interface StudioArtifactSnapshot {
 	readonly sourceCode?: string;
 	readonly targetCode?: string;
@@ -112,6 +129,7 @@ export interface StudioSnapshot {
 	readonly target: StudioTargetSelection | null;
 	readonly theme: StudioThemeSelection;
 	readonly evaluation: StudioEvaluationResult | null;
+	readonly adapters?: StudioAdapterCatalogSnapshot;
 }
 
 export interface StudioWorkspacePort {
@@ -128,6 +146,7 @@ export interface StudioEvaluationPort {
 export interface StudioSessionDependencies {
 	readonly workspace: StudioWorkspacePort;
 	readonly evaluation: StudioEvaluationPort;
+	readonly adapters?: StudioAdapterCatalogPort;
 }
 
 export interface StudioPreviewHostPort {

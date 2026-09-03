@@ -37,6 +37,41 @@ function workspacePort(): StudioWorkspacePort & { emit(snapshot: StudioWorkspace
 }
 
 describe("createStudioSession", () => {
+	test("publishes an injected adapter catalog with every snapshot", async () => {
+		const session = createStudioSession({
+			workspace: workspacePort(),
+			evaluation: { evaluate: async () => ({ diagnostics: [] }) },
+			adapters: {
+				list: async () => ({
+					sources: [{ id: "source", label: "Source", role: "source" }],
+					targets: [{ id: "target", label: "Target", role: "target" }],
+				}),
+			},
+		});
+
+		const snapshot = await session.open({ root: "/project" });
+
+		expect(snapshot.adapters).toMatchInlineSnapshot(`
+			{
+			  "sources": [
+			    {
+			      "id": "source",
+			      "label": "Source",
+			      "role": "source",
+			    },
+			  ],
+			  "targets": [
+			    {
+			      "id": "target",
+			      "label": "Target",
+			      "role": "target",
+			    },
+			  ],
+			}
+		`);
+		await session.close();
+	});
+
 	test("composes workspace edits, selection, target, and theme through one evaluator", async () => {
 		const workspace = workspacePort();
 		const requests: StudioEvaluationRequest[] = [];

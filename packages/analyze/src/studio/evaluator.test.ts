@@ -12,6 +12,66 @@ afterEach(() => {
 });
 
 describe("studio codemod evaluator", () => {
+	test("exposes registered adapters for the Studio controls", async () => {
+		const adapters = await createStudioCodemodEvaluator().list();
+
+		expect(adapters.sources).toContainEqual({
+			id: "emotion",
+			label: "emotion",
+			role: "both",
+		});
+		expect(adapters.targets).toContainEqual({
+			id: "css.class",
+			label: "css.class",
+			role: "target",
+		});
+		expect({
+			sourceCount: adapters.sources.length,
+			targetCount: adapters.targets.length,
+			firstTargets: adapters.targets.slice(0, 3),
+			lastTargets: adapters.targets.slice(-3),
+		}).toMatchInlineSnapshot(`
+			{
+			  "firstTargets": [
+			    {
+			      "id": "css.class",
+			      "label": "css.class",
+			      "role": "target",
+			    },
+			    {
+			      "id": "dss",
+			      "label": "dss",
+			      "role": "target",
+			    },
+			    {
+			      "id": "tw",
+			      "label": "tw",
+			      "role": "target",
+			    },
+			  ],
+			  "lastTargets": [
+			    {
+			      "id": "react-native",
+			      "label": "react-native",
+			      "role": "both",
+			    },
+			    {
+			      "id": "tokenami",
+			      "label": "tokenami",
+			      "role": "both",
+			    },
+			    {
+			      "id": "unocss",
+			      "label": "unocss",
+			      "role": "both",
+			    },
+			  ],
+			  "sourceCount": 26,
+			  "targetCount": 29,
+			}
+		`);
+	});
+
 	test("detects a source adapter and returns the target source without writing files", async () => {
 		const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-studio-evaluator-"));
 		mkdirSync(join(root, "src"));
