@@ -15,23 +15,24 @@ describe("migration lab", () => {
 			expect(targetIds).toContain(`${CodemodAdapterId.Pandwind}/${dialect}`);
 	});
 
-	test.each([
-		...PANDWIND_API_DIALECTS.map(({ dialect, label }) => [dialect, label] as const),
-	] as const)("routes to the Pandwind %s API dialect", (dialect, emitted) => {
-		const lab = createMigrationLab();
-		const target = `${CodemodAdapterId.Pandwind}/${dialect}`;
-		const source =
-			'import { css } from "@emotion/css";\n\n' +
-			'const card = css({ color: "#3182ce", fontSize: "0.875rem" });';
-		const result = lab.migrate(CodemodAdapterId.Emotion, target, source);
+	test.each(PANDWIND_API_DIALECTS.map(({ dialect, label }) => [dialect, label] as const))(
+		"routes to the Pandwind %s API dialect",
+		(dialect, emitted) => {
+			const lab = createMigrationLab();
+			const target = `${CodemodAdapterId.Pandwind}/${dialect}`;
+			const source =
+				'import { css } from "@emotion/css";\n\n' +
+				'const card = css({ color: "#3182ce", fontSize: "0.875rem" });';
+			const result = lab.migrate(CodemodAdapterId.Emotion, target, source);
 
-		expect(result.ok, target).toBe(true);
-		if (!result.ok) return;
-		expect(result.converted, target).toBe(1);
-		expect(result.skipped, target).toBe(0);
-		expect(result.residuals, target).toEqual([]);
-		expect(result.code, target).toContain(`${emitted}(`);
-	});
+			expect(result.ok, target).toBe(true);
+			if (!result.ok) return;
+			expect(result.converted, target).toBe(1);
+			expect(result.skipped, target).toBe(0);
+			expect(result.residuals, target).toEqual([]);
+			expect(result.code, target).toContain(`${emitted}(`);
+		},
+	);
 
 	test("runs the same safe migration contract used by the codemod", () => {
 		const lab = createMigrationLab();

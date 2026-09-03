@@ -139,7 +139,7 @@ test("themeVarsToCss preserves external selector scopes", () => {
 	};
 	const css = themeVarsToCss(scoped);
 	expect(css).toMatchInlineSnapshot(`
-		":root {\n\t--color-base: #fff;\n}\n[data-theme=\"dark\"] {\n\t--color-base: #111;\n}\n"
+		":root {\n\t--color-base: #fff;\n}\n[data-theme="dark"] {\n\t--color-base: #111;\n}\n"
 	`);
 	expect(css).toContain('[data-theme="dark"] {');
 });
