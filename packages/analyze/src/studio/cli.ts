@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { createStudioCodemodEvaluator } from "./evaluator.ts";
 import { createStudioServer } from "./server.ts";
 import { createStudioSession } from "./session.ts";
+import { createStaticStudioPreviewHost } from "./static-preview.ts";
 import { createNodeStudioWorkspace } from "./workspace.ts";
 
 const openInBrowser = (url: string): void => {
@@ -21,7 +22,12 @@ const main = async (argv: readonly string[]): Promise<void> => {
 	const shouldOpen = !argv.includes("--no-open");
 	const workspace = createNodeStudioWorkspace();
 	const evaluator = createStudioCodemodEvaluator();
-	const session = createStudioSession({ workspace, evaluation: evaluator, adapters: evaluator });
+	const session = createStudioSession({
+		workspace,
+		evaluation: evaluator,
+		adapters: evaluator,
+		preview: createStaticStudioPreviewHost(),
+	});
 	const server = await createStudioServer({ session });
 	await session.open({ root });
 	console.log(`Pandwind Studio: ${server.address.url}`);

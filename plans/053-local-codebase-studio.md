@@ -15,9 +15,9 @@ frozen `tw()` / `css()` / `cx()` / design runtime API.
 - **Wave 3 — static surfaces:** implemented for source/target output,
   semantic `StyleProgram` evidence, canonical CSS, discovered theme scopes,
   diagnostics, and a registry-driven adapter UI.
-- **Wave 4 — host preview:** boundary and unavailable-state contract are
-  implemented; a real React/Vite host adapter remains before this plan is
-  complete.
+- **Wave 4 — host preview:** the replaceable boundary and explicit static
+  mode/unavailable state are implemented; a real React/Vite host adapter
+  remains before this plan is complete.
 - **Wave 5 — framework expansion:** pending until the first host adapter is
   proven.
 - **Wave 6 — hardening/documentation:** focused Studio tests, package
@@ -329,17 +329,27 @@ sent to the browser.
   limitations.
 - Add package/build/typecheck/lint/Knip gates and a release smoke test.
 
-## Open questions
+## Decisions still to implement
 
-- Should the command be a subcommand of `pandwind-analyze` or a separate
-  `pandwind-studio` package to keep the analyzer CLI small?
-- Should host mode attach to an already-running dev server, start a configured
-  command, or support both through one host port?
-- Which framework gets the first host adapter after React/Vite?
-- Should a selected source edit be able to span multiple files immediately, or
-  should multi-file edits begin as a read-only generated-artifact preview?
-- What maximum repository size should enable project-wide tree generation, and
-  when should the UI switch to selection-first loading?
+- **Command ownership — decided.** Publish `pandwind-studio` from the analyze
+  package and keep it separate from the shipped runtime. The repository root
+  `studio` script is only a development convenience; the published binary is
+  the documented interface.
+- **Host attachment — intentionally open.** The first real host must support
+  an explicitly configured dev server or child process through one host port.
+  The static implementation must remain the safe default until that lifecycle,
+  injection, and shutdown contract is proven.
+- **First host — React/Vite candidate.** React/Vite is the first candidate
+  because Pandwind already has an unplugin integration, but it is not promoted
+  by the static-mode tests. It needs a real fixture with computed-style and
+  CSS-injection evidence.
+- **Multi-file editing — decided.** Keep edits as single-document in-memory
+  overlays for the first release. Generated multi-file artifacts are previewed
+  through the existing deduplicating migration result; applying them remains a
+  separate codemod operation.
+- **Large repositories — intentionally open.** Add a bounded project-size
+  policy and compact payload/request-by-id protocol before making project-wide
+  component-tree generation the default for very large repositories.
 
 ## Acceptance criteria
 

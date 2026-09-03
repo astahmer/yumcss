@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createStudioSession } from "./session.ts";
+import { createStaticStudioPreviewHost } from "./static-preview.ts";
 import type {
 	StudioEvaluationRequest,
 	StudioWorkspacePort,
@@ -139,6 +140,15 @@ describe("createStudioSession", () => {
 			}
 		`);
 		await session.close();
+	});
+
+	test("provides static mode through the replaceable preview contract", () => {
+		expect(createStaticStudioPreviewHost()).toMatchInlineSnapshot(`
+			{
+			  "available": false,
+			  "id": "static",
+			}
+		`);
 	});
 
 	test("composes workspace edits, selection, target, and theme through one evaluator", async () => {
