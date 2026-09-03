@@ -34,9 +34,12 @@ export {
 export { createStudioSession } from "./session.ts";
 export { createStudioServer } from "./server.ts";
 export type { StudioServer, StudioServerAddress, StudioServerOptions } from "./server.ts";
+export { createStudioApp } from "./app.ts";
+export type { StudioAppHandle, StudioAppOptions } from "./app.ts";
+export { createInMemoryStudioUiProvider } from "./ui-provider.ts";
+export type { StudioUiPort } from "./ui-provider.ts";
 export { createNodeStudioWorkspace, createStudioWorkspace } from "./workspace.ts";
 export type { StudioWorkspaceOptions, StudioWorkspaceWatcher } from "./workspace.ts";
 export { createStudioCodemodEvaluator } from "./evaluator.ts";
 export { runStudioCli } from "./cli.ts";
 export { createStaticStudioPreviewHost } from "./static-preview.ts";
-export { STUDIO_HTML } from "./ui.ts";

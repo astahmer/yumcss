@@ -60,7 +60,9 @@
 		"corpus": "nub run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
 	},
 	"dependencies": {
+		"@hono/node-server": "^2.1.1",
 		"@tailwindcss/node": "4.3.3",
+		"hono": "^4.13.5",
 		"pandwind": "workspace:*",
 		"pandwind-codemod": "workspace:*",
 		"postcss": "8.5.26"
