@@ -65,6 +65,39 @@ function validatePlannedGeneratedFiles(
 	}
 }
 
+function validatePlannedFileChanges(
+	root: string,
+	files: readonly {
+		readonly path: string;
+		readonly content: string;
+		readonly expectedContent?: string;
+	}[],
+	planned: Map<string, string>,
+): void {
+	for (const file of files) {
+		const path = file.path.replaceAll("\\", "/");
+		if (path.startsWith("/") || /^[A-Za-z]:\//u.test(path) || path.split("/").includes(".."))
+			throw new Error(`codemod: file change must be project-relative: ${file.path}`);
+		const plannedContent = planned.get(path);
+		if (planned.has(path) && plannedContent !== file.content)
+			throw new Error(`codemod: conflicting file change ${path} in one migration run`);
+		planned.set(path, file.content);
+		const absolutePath = resolve(root, path);
+		if (!existsSync(absolutePath))
+			throw new Error(`codemod: file change target does not exist ${absolutePath}`);
+		const current = readFileSync(absolutePath, "utf8");
+		if (file.expectedContent !== undefined && current !== file.expectedContent)
+			throw new Error(`codemod: refusing stale file change ${absolutePath}`);
+	}
+}
+
+function applyFileChanges(
+	root: string,
+	files: readonly { readonly path: string; readonly content: string }[],
+): void {
+	for (const file of files) writeFileSync(resolve(root, file.path), file.content);
+}
+
 interface CliArgs {
 	patterns: string[];
 	mode: MigrateMode;
@@ -496,6 +529,7 @@ async function runExternalAdapterSwap(
 		residuals: number;
 	}> = [];
 	const plannedGeneratedFiles = new Map<string, string>();
+	const plannedFileChanges = new Map<string, string>();
 	const projectFiles = sourceWorkspace.files(["**/*"], root, { includeUnsupported: true });
 	const pendingWrites: Array<{
 		file: string;
@@ -564,6 +598,7 @@ async function runExternalAdapterSwap(
 					`codemod: refusing to overwrite existing host-conversion output ${outputFile}`,
 				);
 			validatePlannedGeneratedFiles(root, result.generatedFiles, plannedGeneratedFiles);
+			validatePlannedFileChanges(root, result.fileChanges, plannedFileChanges);
 			pendingWrites.push({ file, outputFile, relative, result });
 		}
 		if (!args.write && args.reportFormat !== "json")
@@ -592,6 +627,7 @@ async function runExternalAdapterSwap(
 						`${pending.result.skipped} skipped, ${pending.result.residuals.length} residual(s)`,
 				);
 		}
+		for (const pending of pendingWrites) applyFileChanges(root, pending.result.fileChanges);
 	}
 	if (args.reportFormat !== "json")
 		console.log(

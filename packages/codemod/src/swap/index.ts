@@ -264,6 +264,17 @@ export { createTailwindAdapter } from "./adapters/tailwind.adapter.ts";
 export { createChakraAdapter } from "./adapters/chakra.adapter.ts";
 export { createPandwindAdapter } from "./adapters/pandwind.adapter.ts";
 export { createPandaAdapter } from "./adapters/panda.adapter.ts";
+export { createTamaguiAdapter } from "./adapters/tamagui.adapter.ts";
+export {
+	PlainStylesheetSource,
+	createStylesheetFileMigration,
+	parseStylesheetPrograms,
+} from "./stylesheet-source.ts";
+export type {
+	StylesheetSourceDocument,
+	StylesheetSourceNode,
+	StylesheetSourcePort,
+} from "./stylesheet-source.ts";
 export { NODE_PROJECT_MODULE_LOADER, NodeProjectModuleLoader } from "./project-module-loader.ts";
 export type { ProjectModuleLoader } from "./project-module-loader.ts";
 export { getProjectMigrationCommand } from "./project-commands.ts";
@@ -284,6 +295,7 @@ export type {
 	AdapterEmitContext,
 	AdapterEmitResult,
 	AdapterGeneratedFile,
+	AdapterFileChange,
 	AdapterMatch,
 	AdapterParseContext,
 	AdapterParseResult,

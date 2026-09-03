@@ -32,6 +32,11 @@ export const enum CodemodAdapterId {
 	Tailwind = "tailwind",
 	Tokenami = "tokenami",
 	UnoCSS = "unocss",
+	Tamagui = "tamagui",
+	CssModules = "css-modules",
+	Sass = "sass",
+	Less = "less",
+	AuthoredCss = "authored-css",
 }
 
 export const BUILTIN_CODEMOD_ADAPTER_IDS = [
@@ -61,6 +66,11 @@ export const BUILTIN_CODEMOD_ADAPTER_IDS = [
 	CodemodAdapterId.Tailwind,
 	CodemodAdapterId.Tokenami,
 	CodemodAdapterId.UnoCSS,
+	CodemodAdapterId.Tamagui,
+	CodemodAdapterId.CssModules,
+	CodemodAdapterId.Sass,
+	CodemodAdapterId.Less,
+	CodemodAdapterId.AuthoredCss,
 ] as const;
 
 export const enum CodemodPatternId {

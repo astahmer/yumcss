@@ -28,6 +28,13 @@ import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
 import { createTokenamiAdapter } from "./tokenami.adapter.ts";
 import { createUnoCssAdapter } from "./unocss.adapter.ts";
+import {
+	authoredCssAdapter,
+	cssModulesAdapter,
+	lessAdapter,
+	sassAdapter,
+} from "./stylesheet.adapters.ts";
+import { createTamaguiAdapter } from "./tamagui.adapter.ts";
 
 /** The built-in set is a composition root; adapter modules remain opaque to callers. */
 
@@ -71,6 +78,13 @@ export function createBuiltinAdapterPlugin(
 		moduleLoader === undefined
 			? createUnoCssAdapter({ moduleLoader: null })
 			: createUnoCssAdapter({ moduleLoader }),
+		authoredCssAdapter,
+		cssModulesAdapter,
+		sassAdapter,
+		lessAdapter,
+		moduleLoader === undefined
+			? createTamaguiAdapter({ moduleLoader: null })
+			: createTamaguiAdapter({ moduleLoader }),
 	]);
 }
 

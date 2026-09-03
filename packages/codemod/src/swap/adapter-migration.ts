@@ -205,6 +205,7 @@ export interface AdapterMigrationResult {
 	readonly dependencies: readonly AdapterDependencies[];
 	/** Target-owned project-relative files emitted with the rewritten module. */
 	readonly generatedFiles: readonly AdapterGeneratedFile[];
+	readonly fileChanges: readonly import("./adapter-contract.ts").AdapterFileChange[];
 	readonly residuals: readonly StyleProgramResidual[];
 	/** One inspectable representation decision for each parsed source match. */
 	readonly loweringPlans: readonly StyleLoweringPlan[];
@@ -241,6 +242,7 @@ function noOpMigration(source: string): AdapterMigrationResult {
 		validations: [],
 		dependencies: [],
 		generatedFiles: [],
+		fileChanges: [],
 		residuals: [],
 		loweringPlans: [],
 		outcomes: [],
@@ -288,6 +290,7 @@ function configurationFailure(
 		validations: [],
 		dependencies: [],
 		generatedFiles: [],
+		fileChanges: [],
 		residuals: [
 			{
 				kind: "configuration",
@@ -452,6 +455,7 @@ function runAdapterMigrationInternal(
 			validations: [],
 			dependencies: [],
 			generatedFiles: [],
+			fileChanges: [],
 			residuals: configurationResiduals,
 			loweringPlans: [],
 			outcomes: [
@@ -463,6 +467,27 @@ function runAdapterMigrationInternal(
 					detail: "official project configuration could not be loaded",
 				},
 			],
+		};
+	}
+	const fileMigration = sourceAdapter.migration?.file;
+	if (fileMigration !== undefined) {
+		const result = fileMigration.run({
+			source,
+			file: options.file,
+			root: options.root,
+			target: targetAdapter,
+			sourceConfig: config,
+			targetConfig,
+			readFile,
+			listFiles: options.listFiles,
+		});
+		return {
+			...result,
+			fileChanges: result.fileChanges ?? [],
+			reports: [],
+			validations: [],
+			loweringPlans: [],
+			outcomes: [],
 		};
 	}
 	const document = SOURCE_SCANNER_SERVICE.scan({
@@ -1671,6 +1696,7 @@ function runAdapterMigrationInternal(
 		dependencies,
 		residuals,
 		generatedFiles: [...generatedFiles.values()],
+		fileChanges: [],
 		loweringPlans,
 		outcomes,
 	};

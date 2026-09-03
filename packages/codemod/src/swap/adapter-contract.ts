@@ -310,9 +310,46 @@ export interface AdapterRewriteResult {
 }
 
 export interface AdapterMigrationHooks {
+	/** Optional whole-file projection for stylesheet sources whose extension changes. */
+	readonly file?: AdapterFileMigration;
 	prepareDynamic?(context: AdapterDynamicPreparationContext): AdapterDynamicPreparation;
 	rewrite?(context: AdapterRewriteContext): AdapterRewriteResult;
 	targetPolicy?: AdapterTargetMigrationPolicy;
+}
+
+export interface AdapterFileMigrationContext {
+	readonly source: string;
+	readonly file: string;
+	readonly root?: string;
+	readonly target: StyleAdapter;
+	readonly sourceConfig: AdapterProjectConfig;
+	readonly targetConfig: AdapterProjectConfig;
+	readonly readFile?: (file: string) => string | undefined;
+	readonly listFiles?: (root: string) => readonly string[];
+}
+
+export interface AdapterFileMigrationResult {
+	readonly code: string;
+	readonly outputExtension?: string;
+	readonly changed: boolean;
+	readonly converted: number;
+	readonly skipped: number;
+	readonly generatedFiles: readonly AdapterGeneratedFile[];
+	/** Existing project files rewritten atomically with the migrated source. */
+	readonly fileChanges?: readonly AdapterFileChange[];
+	readonly residuals: readonly StyleProgramResidual[];
+	readonly dependencies: readonly AdapterDependencies[];
+}
+
+export interface AdapterFileChange {
+	readonly path: string;
+	readonly content: string;
+	/** Optional source content used to detect a stale workspace before writing. */
+	readonly expectedContent?: string;
+}
+
+export interface AdapterFileMigration {
+	run(context: AdapterFileMigrationContext): AdapterFileMigrationResult;
 }
 
 export interface AdapterTargetMigrationPolicy {
