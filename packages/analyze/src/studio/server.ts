@@ -10,6 +10,7 @@ import type {
 	StudioTargetSelection,
 	StudioThemeSelection,
 } from "./contracts.ts";
+import { STUDIO_HTML } from "./ui.ts";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 0;
@@ -20,6 +21,7 @@ export interface StudioServerOptions {
 	readonly host?: string;
 	readonly port?: number;
 	readonly token?: string;
+	readonly indexHtml?: string;
 }
 
 export interface StudioServerAddress {
@@ -123,6 +125,12 @@ export async function createStudioServer(options: StudioServerOptions): Promise<
 				const url = new URL(request.url ?? "/", `http://${host}`);
 				if (!authorize(request, url, token)) {
 					json(response, 401, { error: "studio authorization required" });
+					return;
+				}
+				if (request.method === "GET" && (url.pathname === "/" || url.pathname === "/studio")) {
+					response.statusCode = 200;
+					response.setHeader("content-type", "text/html; charset=utf-8");
+					response.end(options.indexHtml ?? STUDIO_HTML);
 					return;
 				}
 

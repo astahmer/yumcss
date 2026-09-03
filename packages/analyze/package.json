@@ -15,7 +15,8 @@
 		"directory": "packages/pandwind-analyze"
 	},
 	"bin": {
-		"pandwind-analyze": "./dist/cli.js"
+		"pandwind-analyze": "./dist/cli.js",
+		"pandwind-studio": "./dist/studio/cli.js"
 	},
 	"files": [
 		"dist",
@@ -55,6 +56,7 @@
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"cli": "node dist/cli.js",
+		"studio": "node dist/studio/cli.js",
 		"corpus": "nub run cli \"analyze/tests/fixtures/coverage-corpus/*.ts\" --tw ../apps/example/src/tw.ts --root .."
 	},
 	"dependencies": {

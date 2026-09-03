@@ -28,9 +28,23 @@ export interface StudioWorkspaceOptions {
 	readonly scanner?: SourceScannerService;
 	readonly watcher?: StudioWorkspaceWatcher;
 	readonly defaultPatterns?: readonly string[];
+	readonly exclude?: (file: string) => boolean;
 }
 
 const DEFAULT_PATTERNS = ["**/*"] as const;
+const DEFAULT_GENERATED_DIRECTORIES = new Set([
+	".astro",
+	".next",
+	".svelte-kit",
+	".turbo",
+	"build",
+	"coverage",
+	"dist",
+	"storybook-static",
+]);
+
+const excludeGeneratedPath = (file: string): boolean =>
+	file.split(/[\\/]/).some((segment) => DEFAULT_GENERATED_DIRECTORIES.has(segment));
 
 const nodeWatcher: StudioWorkspaceWatcher = {
 	watch(root, onChange) {
@@ -127,7 +141,9 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 
 	private refresh(): void {
 		if (this.root === null) return;
-		this.files = this.sourceWorkspace.collect(this.patterns, this.root);
+		this.files = this.sourceWorkspace.collect(this.patterns, this.root, {
+			exclude: this.options.exclude ?? excludeGeneratedPath,
+		});
 		this.revision += 1;
 		this.notify();
 	}

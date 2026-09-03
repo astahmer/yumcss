@@ -22,6 +22,8 @@ export interface SourceWorkspaceFile {
 export interface SourceWorkspaceQuery {
 	/** Include regular files whose language is not supported by source scanning. */
 	readonly includeUnsupported?: boolean;
+	/** Exclude discovered paths without changing the scanner's language policy. */
+	readonly exclude?: (file: string) => boolean;
 }
 
 export interface SourceWorkspaceGlobOptions {
@@ -50,7 +52,11 @@ export interface SourceWorkspace {
 	files(patterns: readonly string[], root: string, query?: SourceWorkspaceQuery): readonly string[];
 	forEach(paths: readonly string[], visit: (file: SourceWorkspaceFile) => void): void;
 	read(paths: readonly string[]): readonly SourceWorkspaceFile[];
-	collect(patterns: readonly string[], root: string): readonly SourceWorkspaceFile[];
+	collect(
+		patterns: readonly string[],
+		root: string,
+		query?: SourceWorkspaceQuery,
+	): readonly SourceWorkspaceFile[];
 	/** Notify an incremental consumer that one path may have changed. */
 	invalidate(file: string): void;
 }
@@ -143,12 +149,12 @@ class NodeSourceWorkspace implements SourceWorkspace {
 		query: SourceWorkspaceQuery = {},
 	): readonly string[] {
 		const key = `${root}\0${patterns.join("\0")}\0${query.includeUnsupported === true ? "all" : "source"}`;
-		const cached = this.fileLists.get(key);
+		const cached = query.exclude === undefined ? this.fileLists.get(key) : undefined;
 		if (cached !== undefined) return cached;
 		const files = new Set<string>();
 		for (const pattern of patterns)
 			for (const file of this.expandPattern(pattern, root)) {
-				if (isIgnoredPath(file)) continue;
+				if (isIgnoredPath(file) || query.exclude?.(file) === true) continue;
 				try {
 					if (
 						this.fileSystem.stat(file).isFile() &&
@@ -160,9 +166,11 @@ class NodeSourceWorkspace implements SourceWorkspace {
 				}
 			}
 		const result = [...files].toSorted();
-		if (this.fileLists.size >= FILE_LIST_CACHE_LIMIT)
-			this.fileLists.delete(this.fileLists.keys().next().value!);
-		this.fileLists.set(key, result);
+		if (query.exclude === undefined) {
+			if (this.fileLists.size >= FILE_LIST_CACHE_LIMIT)
+				this.fileLists.delete(this.fileLists.keys().next().value!);
+			this.fileLists.set(key, result);
+		}
 		return result;
 	}
 
@@ -202,8 +210,12 @@ class NodeSourceWorkspace implements SourceWorkspace {
 		return files;
 	}
 
-	collect(patterns: readonly string[], root: string): readonly SourceWorkspaceFile[] {
-		return this.read(this.files(patterns, root));
+	collect(
+		patterns: readonly string[],
+		root: string,
+		query?: SourceWorkspaceQuery,
+	): readonly SourceWorkspaceFile[] {
+		return this.read(this.files(patterns, root, query));
 	}
 
 	invalidate(file: string): void {

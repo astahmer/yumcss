@@ -12,10 +12,12 @@ afterEach(() => {
 const createProject = (): string => {
 	const root = mkdtempSync(join(process.env.TMPDIR ?? "/tmp", "pandwind-studio-"));
 	mkdirSync(join(root, "src"));
+	mkdirSync(join(root, "dist"));
 	writeFileSync(
 		join(root, "src", "Card.tsx"),
 		'export const Card = () => <div className="card" />;',
 	);
+	writeFileSync(join(root, "dist", "Card.js"), "export const generated = true;");
 	writeFileSync(join(root, "README.md"), "not a source document");
 	roots.push(root);
 	return root;

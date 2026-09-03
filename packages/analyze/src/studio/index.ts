@@ -30,3 +30,5 @@ export type { StudioServer, StudioServerAddress, StudioServerOptions } from "./s
 export { createNodeStudioWorkspace, createStudioWorkspace } from "./workspace.ts";
 export type { StudioWorkspaceOptions, StudioWorkspaceWatcher } from "./workspace.ts";
 export { createStudioCodemodEvaluator } from "./evaluator.ts";
+export { runStudioCli } from "./cli.ts";
+export { STUDIO_HTML } from "./ui.ts";

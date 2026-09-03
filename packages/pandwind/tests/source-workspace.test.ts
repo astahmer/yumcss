@@ -51,6 +51,41 @@ describe("source workspace", () => {
 		]);
 	});
 
+	test("applies an injected path exclusion without polluting the shared file-list cache", () => {
+		const root = "/virtual-excluded-project";
+		const source = `${root}/src/Card.tsx`;
+		const generated = `${root}/dist/Card.js`;
+		const fileSystem: SourceWorkspaceFileSystem = {
+			readFile: () => "export const Card = 1;",
+			stat: (path) => ({
+				isFile: () => path === source || path === generated,
+				isDirectory: () => path === root,
+			}),
+			glob: () => ["src/Card.tsx", "dist/Card.js"],
+		};
+		const scanner = {
+			registry: {} as SourceScannerService["registry"],
+			languageForFile: () => "typescript" as const,
+			isSupportedFile: () => true,
+			isScriptFile: () => true,
+			isTypeScriptFile: () => true,
+			scan: (document) => ({
+				document,
+				language: "typescript" as const,
+				excluded: [],
+				diagnostics: [],
+				isExcluded: () => false,
+			}),
+			parse: () => undefined as never,
+		} satisfies SourceScannerService;
+
+		const workspace = createSourceWorkspace({ fileSystem, scanner });
+		expect(workspace.files(["**/*"], root, { exclude: (file) => file.includes("/dist/") })).toEqual(
+			[source],
+		);
+		expect(workspace.files(["**/*"], root)).toEqual([generated, source]);
+	});
+
 	test("keeps filesystem and scanner policy replaceable at the workspace boundary", () => {
 		const root = "/virtual-project";
 		const file = `${root}/Card.virtual`;

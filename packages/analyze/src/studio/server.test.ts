@@ -85,6 +85,9 @@ describe("createStudioServer", () => {
 				  },
 				}
 			`);
+			const page = await fetch(`${origin}/?token=test-token`);
+			expect(page.status).toBe(200);
+			expect(await page.text()).toContain("pandwind / studio");
 
 			const malformed = await fetch(`${origin}/api/studio/open?token=test-token`, {
 				method: "POST",
