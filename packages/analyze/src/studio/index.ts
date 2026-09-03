@@ -29,3 +29,4 @@ export { createStudioServer } from "./server.ts";
 export type { StudioServer, StudioServerAddress, StudioServerOptions } from "./server.ts";
 export { createNodeStudioWorkspace, createStudioWorkspace } from "./workspace.ts";
 export type { StudioWorkspaceOptions, StudioWorkspaceWatcher } from "./workspace.ts";
+export { createStudioCodemodEvaluator } from "./evaluator.ts";

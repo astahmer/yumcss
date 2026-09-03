@@ -55,6 +55,8 @@ export interface StudioEvaluationResult {
 }
 
 export interface StudioArtifactSnapshot {
+	readonly sourceCode?: string;
+	readonly targetCode?: string;
 	readonly sourceCss?: string;
 	readonly targetCss?: string;
 	readonly files: readonly StudioGeneratedFile[];

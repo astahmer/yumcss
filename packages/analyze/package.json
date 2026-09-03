@@ -60,6 +60,7 @@
 	"dependencies": {
 		"@tailwindcss/node": "4.3.3",
 		"pandwind": "workspace:*",
+		"pandwind-codemod": "workspace:*",
 		"postcss": "8.5.26"
 	},
 	"devDependencies": {
