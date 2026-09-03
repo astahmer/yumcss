@@ -39,7 +39,49 @@ a safe interactive preview, not a second migration implementation. Source
 adapters that need project configuration still report that limitation as a
 residual until a project-aware CLI migration supplies the configuration.
 
-## `nub run inspect` — pandwind studio
+## `pandwind-studio` — local codebase Studio
+
+Start a read-only Studio for an existing project:
+
+```sh
+pnpm exec pandwind-studio /path/to/project
+```
+
+Use `--no-open` when the URL should only be printed (for example in a test or
+remote shell):
+
+```sh
+pnpm exec pandwind-studio . --no-open
+```
+
+The command binds to localhost and prints a per-session URL containing a
+capability token. The browser never receives the project's module loader or
+filesystem implementation. Source edits are virtual overlays: **Apply edit**
+re-evaluates the overlay and does not write the project. Reopen the project to
+explicitly discard overlays and reload disk state.
+
+The static Studio view provides:
+
+- the shared source workspace and scanner, with supported documents and style
+  call sites;
+- registry-derived source/target adapter selectors, including the Pandwind
+  `css.class`, `dss`, and `tw` target dialects;
+- the rewritten target source, generated artifacts, byte metrics, semantic
+  `StyleProgram` evidence, canonical source/target CSS, and residuals;
+- discovered global and selector-scoped `@theme` variables, with the selected
+  theme scope carried through evaluation; and
+- a static component/style tree and an explicit host-preview state.
+
+When a disk file changes underneath an unsaved Studio overlay, the overlay is
+kept and a conflict is shown. This fails closed: the Studio does not silently
+choose disk over the user's edit. A real host preview is an optional adapter;
+projects without one remain in static mode.
+
+The Studio uses the same `StyleMigrationUseCase` and adapter registry as the
+codemod. It is therefore a feedback surface for the migration, not a second
+parser or a browser-side implementation of every ecosystem.
+
+## `nub run inspect` — analyzer dashboard
 
 A local read-only dashboard over the [analyze](#analyze) machinery:
 

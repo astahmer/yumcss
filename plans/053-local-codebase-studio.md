@@ -21,8 +21,9 @@ frozen `tw()` / `css()` / `cx()` / design runtime API.
 - **Wave 5 — framework expansion:** pending until the first host adapter is
   proven.
 - **Wave 6 — hardening/documentation:** focused Studio tests, package
-  typecheck/build, and a repository-local benchmark exist; Playwright-BDD,
-  release documentation, and formal performance baselines remain.
+  typecheck/build, a repository-local benchmark, isolated Playwright-BDD
+  coverage, and user documentation are implemented. Formal recorded
+  performance baselines and release smoke integration remain.
 
 ## Context
 
