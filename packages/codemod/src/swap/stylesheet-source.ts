@@ -21,6 +21,7 @@ import {
 	joinDocumentPath,
 	relativeDocumentPath,
 } from "../path-utils.ts";
+import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
 
 export interface StylesheetSourceNode {
 	readonly kind: "rule" | "at-rule" | "statement";
@@ -822,6 +823,18 @@ function cssModuleConsumerChanges(
 		const oldSpecifier = relativeDocumentPath(dirnameDocumentPath(consumerFile), sourceFile);
 		const newSpecifier = relativeDocumentPath(dirnameDocumentPath(consumerFile), targetFile);
 		const normalizedOld = oldSpecifier.replace(/^\.\//u, "");
+		let hasStaticImport = false;
+		try {
+			const scanned = SOURCE_SCANNER_SERVICE.scan({
+				file: consumerFile,
+				source,
+			});
+			const bindings = SourceBindings.fromDocument(scanned.document);
+			hasStaticImport = bindings.fromModule(oldSpecifier).length > 0;
+		} catch {
+			// A malformed consumer is not safe to rewrite from a text match.
+		}
+		if (!hasStaticImport) continue;
 		let changed = false;
 		const code = source.replace(
 			/(\bfrom\s*|\bimport\s*\(|\brequire\s*\()(["'])([^"']+)(["'])/gu,
