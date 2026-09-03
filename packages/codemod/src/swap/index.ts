@@ -265,6 +265,8 @@ export { createChakraAdapter } from "./adapters/chakra.adapter.ts";
 export { createPandwindAdapter } from "./adapters/pandwind.adapter.ts";
 export { createPandaAdapter } from "./adapters/panda.adapter.ts";
 export { createTamaguiAdapter } from "./adapters/tamagui.adapter.ts";
+export { createLessAdapter } from "./adapters/less.adapter.ts";
+export { createSassAdapter } from "./adapters/sass.adapter.ts";
 export {
 	PlainStylesheetSource,
 	createStylesheetFileMigration,

@@ -404,6 +404,27 @@ export async function runAdapterMigrationAsync(
 			options.skipMarker,
 		);
 	}
+	const fileMigration = route.source.migration?.file;
+	if (fileMigration?.runAsync !== undefined) {
+		const result = await fileMigration.runAsync({
+			source,
+			file: options.file,
+			root: options.root,
+			target: route.target,
+			sourceConfig,
+			targetConfig,
+			readFile: options.readFile,
+			listFiles: options.listFiles,
+		});
+		return {
+			...result,
+			fileChanges: result.fileChanges ?? [],
+			reports: [],
+			validations: [],
+			loweringPlans: [],
+			outcomes: [],
+		};
+	}
 	return runAdapterMigrationInternal(
 		source,
 		{ ...options, adapterRegistry },

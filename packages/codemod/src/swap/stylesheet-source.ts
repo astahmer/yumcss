@@ -40,6 +40,20 @@ export interface StylesheetSourcePort {
 	parse(source: string): StylesheetSourceDocument;
 }
 
+export interface StylesheetCompilerResult {
+	readonly css: string;
+	readonly dependencies?: readonly string[];
+	readonly sourceMap?: string;
+}
+
+/** Official Sass/Less compilers implement this port at the adapter boundary. */
+export interface StylesheetCompilerPort {
+	compile(
+		source: string,
+		context: { readonly file: string; readonly root?: string },
+	): Promise<StylesheetCompilerResult>;
+}
+
 function skipTrivia(source: string, start: number, end: number): number {
 	let index = start;
 	while (index < end) {
@@ -708,6 +722,69 @@ export function createStylesheetFileMigration(
 						: [],
 				residuals: [],
 				dependencies: [context.target.dependencies],
+			};
+		},
+	};
+}
+
+export function createPreprocessorFileMigration(
+	base: AdapterFileMigration,
+	compiler: StylesheetCompilerPort | undefined,
+): AdapterFileMigration {
+	return {
+		run: base.run,
+		runAsync: async (context) => {
+			if (compiler === undefined) {
+				return {
+					code: context.source,
+					changed: false,
+					converted: 0,
+					skipped: 1,
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [
+						{
+							kind: "configuration",
+							text: context.file,
+							hint: "the official preprocessor package is not installed in the project",
+						},
+					],
+					dependencies: [],
+				};
+			}
+			let compiled: StylesheetCompilerResult;
+			try {
+				compiled = await compiler.compile(context.source, {
+					file: context.file,
+					root: context.root,
+				});
+			} catch (error) {
+				return {
+					code: context.source,
+					changed: false,
+					converted: 0,
+					skipped: 1,
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [
+						{
+							kind: "configuration",
+							text: context.file,
+							hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
+						},
+					],
+					dependencies: [],
+				};
+			}
+			const result = base.run({ ...context, source: compiled.css });
+			return {
+				...result,
+				dependencies: [
+					...result.dependencies,
+					...(compiled.dependencies === undefined
+						? []
+						: [{ packages: [], files: compiled.dependencies }]),
+				],
 			};
 		},
 	};

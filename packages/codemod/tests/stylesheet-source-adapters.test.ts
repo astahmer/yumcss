@@ -2,7 +2,10 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	createSassAdapter,
 	runAdapterMigration,
+	runAdapterMigrationAsync,
+	createStyleAdapterRegistry,
 	styleProgramToCanonicalCss,
 } from "../src/swap/index.ts";
 import { PlainStylesheetSource, parseStylesheetPrograms } from "../src/swap/stylesheet-source.ts";
@@ -396,5 +399,88 @@ describe("stylesheet source adapters", () => {
 			expect(result.code).toBe(source);
 			expect(result.residuals.some((residual) => residual.kind === residualKind)).toBe(true);
 		}
+	});
+
+	test("uses the installed Sass compiler through the adapter port", async () => {
+		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const sass = createSassAdapter({
+			async importPackage<T>() {
+				return {
+					compileString: (source: string) => ({
+						css: source.replace("$tone", "red"),
+					}),
+				} as T;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const result = await runAdapterMigrationAsync(".card { color: $tone; }", {
+			from: CodemodAdapterId.Sass,
+			to: CodemodAdapterId.Pandwind,
+			file: "styles.scss",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([sass, pandwind!]),
+			mode: "safe",
+		});
+
+		expect(result.converted).toBe(1);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('color: "red"');
+		expect(result).toMatchInlineSnapshot(`
+			{
+			  "changed": true,
+			  "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ color: "red" }) };
+			export default styles;",
+			  "converted": 1,
+			  "dependencies": [
+			    {
+			      "packages": [
+			        {
+			          "kind": "runtime",
+			          "name": "pandwind",
+			        },
+			      ],
+			    },
+			  ],
+			  "fileChanges": [],
+			  "generatedFiles": [],
+			  "loweringPlans": [],
+			  "outcomes": [],
+			  "outputExtension": ".ts",
+			  "reports": [],
+			  "residuals": [],
+			  "skipped": 0,
+			  "validations": [],
+			}
+		`);
+	});
+
+	test("fails closed when an official Less/Sass compiler cannot be loaded", async () => {
+		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
+		const sass = createSassAdapter({
+			async importPackage<T>() {
+				return undefined;
+			},
+			async importFile() {
+				return undefined;
+			},
+		});
+		const result = await runAdapterMigrationAsync(".card { color: red; }", {
+			from: CodemodAdapterId.Sass,
+			to: CodemodAdapterId.Pandwind,
+			file: "styles.scss",
+			root: "/project",
+			adapterRegistry: createStyleAdapterRegistry([sass, pandwind!]),
+			mode: "safe",
+		});
+
+		expect(result.changed).toBe(false);
+		expect(result.code).toBe(".card { color: red; }");
+		expect(result.residuals).toEqual(
+			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
+		);
 	});
 });

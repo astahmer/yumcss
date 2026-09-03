@@ -350,6 +350,8 @@ export interface AdapterFileChange {
 
 export interface AdapterFileMigration {
 	run(context: AdapterFileMigrationContext): AdapterFileMigrationResult;
+	/** Optional official-compiler path used by project-aware async migrations. */
+	runAsync?(context: AdapterFileMigrationContext): Promise<AdapterFileMigrationResult>;
 }
 
 export interface AdapterTargetMigrationPolicy {
