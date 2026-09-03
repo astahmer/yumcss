@@ -26,7 +26,11 @@ function write(root: string, path: string, content: string): string {
 describe("crawlCssImports", () => {
 	test("follows relative imports in source order and remains cycle safe", () => {
 		const root = project();
-		const entry = write(root, "src/styles.css", '@import "./base.css";\n@theme { --color-entry: red; }');
+		const entry = write(
+			root,
+			"src/styles.css",
+			'@import "./base.css";\n@theme { --color-entry: red; }',
+		);
 		write(root, "src/base.css", '@import "./nested.css";\n@theme { --color-base: blue; }');
 		write(root, "src/nested.css", '@import "./base.css";\n@theme { --color-nested: green; }');
 
@@ -59,7 +63,11 @@ describe("crawlCssImports", () => {
 			"node_modules/@acme/theme/package.json",
 			JSON.stringify({ exports: { "./tailwind.css": "./dist/tailwind.css" } }),
 		);
-		write(root, "node_modules/@acme/theme/dist/tailwind.css", "@theme { --color-brand: rebeccapurple; }");
+		write(
+			root,
+			"node_modules/@acme/theme/dist/tailwind.css",
+			"@theme { --color-brand: rebeccapurple; }",
+		);
 
 		const result = crawlCssImports([entry], root);
 
@@ -72,7 +80,11 @@ describe("crawlCssImports", () => {
 
 	test("reports unresolved local imports without dropping reachable files", () => {
 		const root = project();
-		const entry = write(root, "src/styles.css", '@import "./missing.css";\n@theme { --color-entry: red; }');
+		const entry = write(
+			root,
+			"src/styles.css",
+			'@import "./missing.css";\n@theme { --color-entry: red; }',
+		);
 
 		const result = crawlCssImports([entry], root);
 
