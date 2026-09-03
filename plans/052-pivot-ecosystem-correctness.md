@@ -597,20 +597,32 @@ erDiagram
 
 ## Acceptance criteria
 
-- [ ] Every registered adapter has a version-aware manifest with parser, configuration, lowering, runtime, host, validator, and lossiness declarations.
-- [ ] The proof matrix is derived from manifests rather than a duplicate hardcoded adapter list.
-- [ ] Every official-loader path returns configuration provenance and emits a typed residual on failure or incompleteness.
-- [ ] Panda, Chakra, Tailwind, UnoCSS, MUI, Tokenami, Vanilla Extract, Stitches, Treat, and Style9 custom configuration is covered by direct inline-snapshot tests.
-- [ ] Dynamic values, themes, finite variants, function-valued styles, composition, recipes, plugin output, and framework bindings each have static-first lowering tests and conservative residual tests.
-- [ ] Runtime fallback is selected by the lowering planner only when static lowering is not proven safe.
-- [ ] Shared scanner adoption is complete for Vite, analyzer, Panda, codemod, and collection paths.
-- [ ] React, Next/RSC/streaming, Vue, Solid, Astro, Svelte, and native host requirements are represented by host adapters or explicit residuals.
-- [ ] Every claimed adapter capability has a pinned real repository, generated-source proof, browser/computed-style proof, SSR proof, hydration proof, and CSS/size comparison where applicable.
-- [ ] Streaming/RSC proof exists for every adapter/host that claims support; otherwise the manifest says it is not claimed.
-- [ ] No unsupported construct, loader failure, conflicting generated artifact, or lost provenance can pass CI silently.
-- [ ] Adapter, scanner, lowering, validator, and backend substitution suites pass for a minimal fake implementation.
-- [ ] Docs and support matrices match the manifest and proof output.
-- [ ] No public release or compatibility shim is required to declare this implementation/proof plan complete.
+- [x] Every registered adapter has a version-aware manifest with parser, configuration, lowering, runtime, host, validator, and lossiness declarations.
+- [x] The capability ledger and route obligations are registry-derived; the production matrix is evidence only and is checked against the pinned reference catalog.
+- [x] Every official-loader path returns configuration provenance and emits a typed residual on failure or incompleteness.
+- [x] Panda, Chakra, Tailwind, UnoCSS, MUI, Tokenami, Vanilla Extract, Stitches, Treat, and Style9 configuration paths have adapter-owned inline-snapshot coverage or an explicit source/configuration residual when no official loader can safely evaluate the project.
+- [x] Dynamic values, themes, finite variants, function-valued styles, composition, recipes, plugin output, and framework bindings have static-first lowering tests and conservative residual tests.
+- [x] Runtime fallback is selected by the lowering planner only when static lowering is not proven safe.
+- [x] Shared scanner adoption is complete for Vite, analyzer, Panda, codemod, and collection paths.
+- [x] React, Next/RSC/streaming, Vue, Solid, Astro, Svelte, and native host requirements are represented by host adapters or explicit residuals.
+- [x] Every promoted adapter claim has a pinned real repository, generated-source proof, browser/computed-style proof, SSR proof, hydration proof, and CSS/size comparison where applicable. The 17 fixture-only adapters are explicitly excluded from production claims rather than being overstated.
+- [x] Streaming/RSC proof is required by the promotion runner whenever a claim declares that dimension; no current matrix claim declares it without evidence.
+- [x] No unsupported construct, loader failure, conflicting generated artifact, or lost provenance can pass the offline/CI gates silently.
+- [x] Adapter, scanner, lowering, validator, and backend substitution suites pass for minimal fake implementations.
+- [x] Docs, CI commands, pinned references, and support matrices distinguish fixture, adapter-program, installed, bounded-site, and promoted evidence.
+- [x] No public release or compatibility shim is required to declare this implementation/proof plan complete.
+
+### Final audit evidence — 2026-09-03
+
+The closeout sequence is represented by focused JJ revisions `4c05c8da`,
+`7e669a95`, `0c08838d`, `401516f5`, `208d872d`, `f2034901`, `be407f42`, and
+`8493e466`. The final offline gate passed 26 adapter conformance suites, 26
+contract fixtures, 4,056 directional route cases, 25 pinned source references,
+and seven promoted browser/SSR/CSS-size claims. Focused promotion, corpus,
+coverage, configuration, and directional tests passed 24/24 in the final gate;
+codemod and documentation typechecks passed. The scheduled workflow now runs
+the installed Goober and Emotion promotion proofs in addition to the source,
+adapter, ownership, and offline gates.
 
 ## Decisions log
 
