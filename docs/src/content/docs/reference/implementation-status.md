@@ -17,7 +17,7 @@ Pandwind now has the core architecture required to act as a CSS-in-JS pivot:
 
 - a versioned semantic `StyleProgram` for rich rules and a flat `SwapIR` fast
   path for literal declaration swaps;
-- the v2 adapter contract for detection, config loading, parsing, emission,
+- the v3 adapter contract for detection, config loading, parsing, emission,
   dependencies, capabilities, validation, and explicit lossiness;
 - explicit adapter/plugin discovery, shared source scanning, host/framework
   adapters, backend registries, and validator/lowering composition;
@@ -68,7 +68,13 @@ arbitrary framework-specific runtime behavior can be made lossless.
 | 035–036      | Complete                                                                                                                                                            | This page and the repository's contributor guidance                                                                                    |
 | 037          | Complete for non-release semantic lowering, static-first fallback, shared source workspace, host/scanner contracts, and differential evidence                       | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/)                                        |
 | 038–039      | Complete for the reproducible offline pivot gate, pinned-reference adapter browser proof, explicit per-adapter coverage evidence, and the final history/proof audit | [Testing](/contributing/testing/), [Architecture](/contributing/architecture/), [Shipped plans](/reference/shipped-plans/)             |
+| 040–041      | Route planning, target-owned lowering, residual taxonomy, host projections, and bidirectional fixture infrastructure are shipped; universal semantic and production-proof checkboxes remain deliberately bounded | [Adapter migrations](/interop/css-in-js-adapters/), [Testing](/contributing/testing/) |
+| 042          | Complete for the `StyleProgramBuilder` construction façade, semantic invariant tests, and adapter-authoring documentation                                   | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/)                                          |
 | 043          | Complete for the deterministic semantic core, compatibility negotiation, proof fingerprints, conformance tests, and architecture documentation                      | [Architecture](/contributing/architecture/), [Adapter contract](/reference/adapter-contract/), [Testing](/contributing/testing/)       |
+| 044          | Complete for shared AST binding/index infrastructure and official-loader boundaries; host-rewrite ownership and broader ecosystem-specific context remain explicit follow-up scope | [Architecture](/contributing/architecture/), [Adapter migrations](/interop/css-in-js-adapters/) |
+| 045          | Runtime-only lazy methods were rejected after measurement; compiler-aware usage pruning is the accepted implementation                               | [Size](/reference/size/), [Benchmarks](/reference/benchmarks/)                                                                           |
+| 046          | Complete for usage-aware runtime pruning and the generic ecosystem lint/codemod policy; ecosystem-specific style preferences remain opt-in and metadata-backed | [Architecture](/contributing/architecture/), [Testing](/contributing/testing/) |
+| 047–048      | Complete for measured runtime hot-path optimization and codebase simplification, with the frozen API and `SwapIR` fast path preserved                    | [Benchmarks](/reference/benchmarks/), [Architecture](/contributing/architecture/)                                                        |
 | 049          | Complete for the optional tooling-only Effect 4 boundary, ordered bounded task runner, Node filesystem/path adapter, and substitution tests                         | [Architecture](/contributing/architecture/), [Testing](/contributing/testing/)                                                         |
 
 ## What remains intentionally bounded

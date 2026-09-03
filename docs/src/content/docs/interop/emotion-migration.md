@@ -66,7 +66,7 @@ Run the route, CSS-size, screenshot, and hydration proof:
 ```sh
 cd /path/to/pandwind
 node scripts/verify-emotion-site.mjs \
-  /Users/astahmer/.references/emotion-clean/site/out \
+  "${PANDWIND_REFERENCE_ROOT:-$HOME/.references}/emotion-clean/site/out" \
   /tmp/pandwind-emotion-site-candidate/site/out \
   /tmp/pandwind-emotion-browser-report.json
 ```

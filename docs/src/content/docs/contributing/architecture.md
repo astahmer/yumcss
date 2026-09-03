@@ -836,11 +836,12 @@ and scenario fixtures are shared by the Vitest suites and the offline proof
 composition root, so the two gates cannot silently use different corpora. The
 complete matrix covers every ordered adapter pair in safe and partial modes
 for happy, edge, and malformed inputs; the CLI e2e suite additionally spawns
-the real binary for all 676 ordered pairs, passing the three scenarios through
-each pair in both directions. A route is accepted only when it converts or
-preserves the source with a typed residual. Run the expensive public-boundary
-proof with `nub run --filter pandwind-codemod test:e2e`; the normal coverage gate
-runs the same route corpus in-process.
+the real binary for every ordered pair in the registered catalog, passing the
+three scenarios through each pair in both directions. A route is accepted only
+when it converts or preserves the source with a typed residual. Run the
+expensive public-boundary proof with
+`nub run --filter pandwind-codemod test:e2e`; the normal coverage gate runs the
+same route corpus in-process.
 
 The playground uses this same registry-backed runner in `safe` mode. Its Vue
 sample includes a `<template>` host so the static SFC projection is exercised;
@@ -867,9 +868,11 @@ states. A pending dimension is never counted as a passing real-repository
 promotion.
 
 Directional route behavior has a dedicated fast proof layer in
-`packages/codemod/tests/routes`. The generator creates one file for every
-distinct ordered pair of registered adapters (650 files for the current 26
-adapters). Each file covers a static happy path, a dynamic or otherwise
+`packages/codemod/tests/routes`. The generator currently creates one file for
+each distinct ordered pair in the 26-adapter syntax-fixture corpus (650 files).
+The broader registry also contains source families whose dedicated stylesheet
+or component tests are not generated into this directory. Each route file
+covers a static happy path, a dynamic or otherwise
 non-happy edge path, malformed input, theme/config variants, and token
 references, with inline snapshots of emitted code, selected representation,
 outcome, validation, and typed residuals.
@@ -888,8 +891,8 @@ The snapshots are deliberately paired with executable assertions: reverse
 conversion, an explicit residual, or a visible source-preserving fallback is
 required. A byte-stable second leg is valid only when the reverse adapter
 actually parsed and converted it; a silent no-op is rejected. The current fast
-corpus is 650 directional files (3,250 tests) plus 650 round-trip files (2,600
-tests). Context cases provide a virtual project root and adapter-owned config
+syntax-fixture corpus is 650 directional files (3,250 tests) plus 650
+round-trip files (2,600 tests). Context cases provide a virtual project root and adapter-owned config
 files, use blue and amber token values, and exercise native token spellings
 where the ecosystem has them. Run this isolated proof with
 `nub exec --cwd packages/codemod vitest --config

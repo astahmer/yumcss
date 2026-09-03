@@ -310,7 +310,7 @@ These are component-system migrations as well as styling migrations. Start by
 converting theme tokens, then convert component props and style objects:
 
 ```sh
-pnpm exec pandwind-codemod swap --from=chakra --to=css.class --diff --report 'src/**/*.{ts,tsx}'
+pnpm exec pandwind-codemod swap --from=chakra-ui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 pnpm exec pandwind-codemod swap --from=mui --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 pnpm exec pandwind-codemod swap --from=mantine --to=css.class --diff --report 'src/**/*.{ts,tsx}'
 ```

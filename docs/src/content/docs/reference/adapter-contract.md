@@ -7,8 +7,8 @@ sidebar:
 
 pandwind adapters implement `pandwind.style-adapter/3`. An adapter is both a
 source reader and a target writer around the versioned semantic style program.
-Our own `/2` contract is intentionally breaking; adapters should declare their
-version rather than silently accepting a different schema.
+The previous `/2` contract was intentionally breaking; adapters must declare
+their version rather than silently accepting a different schema.
 
 ## Adapter responsibilities
 
@@ -51,10 +51,12 @@ instead of guessing target token names.
 The built-in registry currently includes pandwind, Panda, Tailwind, Emotion,
 styled-components, Chakra UI, MUI, Mantine, vanilla-extract, Stitches,
 Linaria, JSS, Fela, Goober, Aphrodite, Style9, Treat, Compiled, StyleX,
-Solid/Vue styled systems, Bamboo, Next-yak, and React Native. The common
-migration entry point is `runAdapterMigration`, while `runDifferentialFixture`
-reparses the emitted target and can add browser-state, SSR/hydration,
-streaming, dependency, and framework checks.
+Solid/Vue styled systems, Bamboo, Next-yak, React Native, Tamagui, CSS
+Modules, Sass, Less, and authored CSS. The common migration entry point is
+`runAdapterMigration`, while `runDifferentialFixture` reparses the emitted
+target and can add browser-state, SSR/hydration, streaming, dependency, and
+framework checks. The stylesheet and component-source adapters are included in
+the registry but are documented separately from the CSS-in-JS syntax corpus.
 
 Third-party packages opt in through the explicit plugin manifest convention
 documented in [`ADAPTER_SDK.md`](https://github.com/astahmer/pandwind/blob/main/packages/codemod/ADAPTER_SDK.md).

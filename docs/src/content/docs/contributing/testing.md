@@ -122,17 +122,16 @@ separate from the adapter contract fixture: the contract checks one adapter's
 ports, while the matrix checks route composition. The complete Cartesian gate
 in `packages/codemod/tests/adapter-matrix-contract.test.ts` invokes every
 registered source/target pair in safe and partial modes for happy, edge, and
-malformed fixtures: 26 × 26 × 2 × 3 = 4,056 route cases. The flat `SwapIR`
-path remains separately covered as the cheap compatibility projection. Every
-case requires conversion or structured residual evidence; a skipped route may
-never be silent.
+malformed fixtures (`N × N × 2 × 3` cases, where `N` is read from the
+registry). The flat `SwapIR` path remains separately covered as the cheap
+compatibility projection. Every case requires conversion or structured
+residual evidence; a skipped route may never be silent.
 
 The binary-level matrix in
 `packages/codemod/tests/adapter-cli-e2e.test.ts` spawns the real CLI for every
 registered adapter in both `adapter → Pandwind` and `Pandwind → adapter`
-directions (104 cases), writes temporary source files, parses JSON reports, and
-checks that source-preserving skips carry typed residual markers. Run it alone
-with:
+directions, writes temporary source files, parses JSON reports, and checks that
+source-preserving skips carry typed residual markers. Run it alone with:
 
 ```sh
 nub run --filter pandwind-codemod test:e2e
@@ -145,9 +144,9 @@ routine local adapter work does not create `.tmp-codemod-e2e-*` or
 the opt-in flag and therefore retains the real CLI proof.
 
 `packages/codemod/tests/adapter-cli-full-matrix.test.ts` adds the production
-CLI smoke gate for every ordered happy route: 26 × 26 = 676 source/target
-pairs. It runs as part of `test:e2e` (and is kept out of V8 coverage because it
-launches the CLI once per route). The direct conformance suite also invokes
+CLI smoke gate for every ordered happy route in the registered catalog. It runs
+as part of `test:e2e` (and is kept out of V8 coverage because it launches the
+CLI once per route). The direct conformance suite also invokes
 each adapter-owned dynamic and host-policy hook, so coverage cannot be
 provided only by the shared adapter runtime. `test:coverage` enforces at least
 50% lines and 30% branches for every registered adapter file in addition to

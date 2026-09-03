@@ -51,7 +51,7 @@ The static-first runtime boundary is explicit:
 - route splitting and critical-CSS inlining are opt-in build policies;
 - `pandwind.agents.json` exposes generated project context to tooling; and
 - the erasable `pandwind/stack` helper provides a small renderer-neutral
-  layout primitive with a React binding.
+  layout primitive with React, Solid, Vue, and Preact bindings.
 
 These features preserve the small frozen authoring API while moving runtime
 work into compiler and host contracts. See [theming](/api/theming/),

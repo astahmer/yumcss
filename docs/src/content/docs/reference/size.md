@@ -5,19 +5,21 @@ sidebar:
   order: 2
 ---
 
-Last measured: 2026-08-27, local macOS (arm64), Node v24.19.0, esbuild
-0.28.2. All numbers come from real builds (esbuild `bundle + minify`, gzip
-level 6). Re-run `packages/pandwind/tests/runtime-size.test.ts` and
-`apps/example` to refresh after dependency or engine changes.
+Last measured: 2026-09-01 for the Pandwind runtime hot-path and size contract;
+competitor rows below retain their 2026-08-27 reference measurement. The
+environment was local macOS (arm64), Node v24.19.0, esbuild 0.28.2. All
+numbers come from real builds (esbuild `bundle + minify`, gzip level 6). Re-run
+`packages/pandwind/tests/runtime-size.test.ts` and `apps/example` to refresh
+after dependency or engine changes.
 
 ## The short version
 
 | what                                       |      min |     gzip |
 | ------------------------------------------ | -------: | -------: |
-| `css()` runtime                            |  3.42 KB |  1.61 KB |
-| `tw()` runtime                             |  2.09 KB |  0.99 KB |
-| `cx()` runtime                             |  8.84 KB |  3.79 KB |
-| all three together                         | 10.89 KB |  4.53 KB |
+| `css()` runtime                            |  6.54 KB |  2.95 KB |
+| `tw()` runtime                             |  2.32 KB |  1.10 KB |
+| `cx()` runtime                             | 12.32 KB |  5.21 KB |
+| all three together                         | 14.59 KB |  6.01 KB |
 | stylesheet generator (**build-time only**) | 83.27 KB | 20.78 KB |
 
 The generator is deliberately not exported from any runtime barrel — there is
@@ -32,10 +34,10 @@ bundlers drop whichever engines you do not import:
 
 | import                      |      min |    gzip |
 | --------------------------- | -------: | ------: |
-| `pandwind/css` — css() only |  3.42 KB | 1.61 KB |
-| `pandwind/tw` — tw() only   |  2.09 KB | 0.99 KB |
-| `pandwind/cx` — cx() only   |  8.84 KB | 3.78 KB |
-| `pandwind` root — tw + cx   | 10.89 KB | 4.53 KB |
+| `pandwind/css` — css() only |  6.54 KB | 2.95 KB |
+| `pandwind/tw` — tw() only   |  2.32 KB | 1.10 KB |
+| `pandwind/cx` — cx() only   | 12.32 KB | 5.21 KB |
+| `pandwind` root — tw + cx   | 14.59 KB | 6.01 KB |
 
 - **The root lane is curated.** `pandwind` (root) exports ONLY `tw` + `cx`;
   `css()` lives on `pandwind/css` and presets on `pandwind/preset`. Importing
@@ -45,6 +47,10 @@ bundlers drop whichever engines you do not import:
   the css engine's atom registry. `tw()` and `css()` are fully independent.
 
 ## Browser JS runtimes vs the alternatives
+
+The Pandwind rows use the September 1 hot-path build. Alternative-library
+rows are a historical comparison from the August 27 measurement and were not
+rerun as part of that optimization revision.
 
 | runtime                                    |      min |    gzip | what ships                              |
 | ------------------------------------------ | -------: | ------: | --------------------------------------- |
