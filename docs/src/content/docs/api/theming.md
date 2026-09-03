@@ -19,6 +19,12 @@ Codegen emits deterministic `[data-theme="…"]` override blocks next to the
 `@theme` bridge. Utilities keep referencing `var(--color-surface)`; switching
 is a `data-theme` attribute flip with zero utility CSS changes.
 
+The inspector applies the same rule to authored CSS. It follows reachable
+`@import` files and preserves any flat selector block containing only custom
+properties as an explicit scope, including scopes supplied by a package
+stylesheet. It never assumes that a scope is named `dark` or uses a fixed
+theme-file list.
+
 ## Component tokens
 
 Component tokens stack on top of theme scopes:

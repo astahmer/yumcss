@@ -1,7 +1,7 @@
 import interopJson from "../pandwind.interop.json" with { type: "json" };
 import { examplePreset } from "pandwind/preset";
 import type { PandwindMeta } from "pandwind-codemod/migration/meta";
-import type { PandwindInteropArtifact } from "pandwind/tw/interop-artifact";
+import type { PandwindInteropArtifact } from "pandwind/tw/interop";
 
 const interop = interopJson as PandwindInteropArtifact;
 
@@ -31,7 +31,10 @@ export const PLAYGROUND_MIGRATION_META: PandwindMeta = (() => {
 			]),
 		),
 		variants: new Map(
-			Object.entries(interop.tw.variants).map(([name, value]) => [name, { join: value.join ?? ":" }]),
+			Object.entries(interop.tw.variants).map(([name, value]) => [
+				name,
+				{ join: value.join ?? ":" },
+			]),
 		),
 		conflicts: new Map(Object.entries(interop.tw.conflicts ?? {})),
 		bridgeInverse,

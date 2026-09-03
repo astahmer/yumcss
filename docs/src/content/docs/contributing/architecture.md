@@ -55,6 +55,16 @@ host adapter to bind the original expression. The opt-in is adapter-owned and
 requires a substitution test; it is not a blanket permission for the runner to
 reinterpret function-valued styles or overwrite an existing style prop.
 
+`ClassNameStrategy` is intentionally limited to synchronous, declaration-level
+class naming. It is appropriate for Pandwind's own atomic strategy and stable
+compatibility policies such as Tailwind or StyleX. Panda and UnoCSS are not
+exposed as generic runtime strategies: their official generators depend on a
+project's loaded presets, plugins, extractors, and generated artifacts. Those
+systems belong behind their project-aware adapter/config-loader boundaries;
+inventing a standalone `toClassName` catalog would silently lose custom
+configuration. Their codemod and compiler-plugin routes remain the supported
+integration points.
+
 The same class-host port handles source systems whose style match is the whole
 JSX opening tag, such as `<Box bg={theme.foreground} />`. The target emitter
 produces its class expression first; the host projection then removes the

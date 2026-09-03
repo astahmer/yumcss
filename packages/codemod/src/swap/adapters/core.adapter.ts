@@ -177,7 +177,7 @@ function makeCoreAdapter(
 		}),
 		loadConfig: (context) => emptyConfig(id, context),
 		parse: (source, context) => parseCoreDialect(dialect, source, context),
-			emit: (program, context) => {
+		emit: (program, context) => {
 			const meta: PandwindMeta | undefined = context.meta;
 			if (meta === undefined)
 				return {

@@ -23,11 +23,7 @@ describe("migration lab", () => {
 		const source =
 			'import { css } from "@emotion/css";\n\n' +
 			'const card = css({ color: "#3182ce", fontSize: "0.875rem" });';
-		const result = lab.migrate(
-			CodemodAdapterId.Emotion,
-			target,
-			source,
-		);
+		const result = lab.migrate(CodemodAdapterId.Emotion, target, source);
 
 		expect(result.ok, target).toBe(true);
 		if (!result.ok) return;

@@ -255,7 +255,9 @@ export function createMigrationLab(): MigrationLab {
 			target: endpointFor(adapter, "target"),
 			adapter,
 		}));
-	const pandwindTargets = PANDWIND_API_DIALECTS.map((api) => pandwindApiEndpoint(catalog.systems, api));
+	const pandwindTargets = PANDWIND_API_DIALECTS.map((api) =>
+		pandwindApiEndpoint(catalog.systems, api),
+	);
 	return {
 		sources: endpoints.map(({ source }) => source),
 		targets: [...endpoints.map(({ target }) => target), ...pandwindTargets],

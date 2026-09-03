@@ -228,7 +228,8 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 		flatVars: mergedThemeVars,
 		themes: {
 			...(isDogfoodApp
-				? ((examplePreset as unknown as { themes?: Record<string, Record<string, string>> }).themes ?? {})
+				? ((examplePreset as unknown as { themes?: Record<string, Record<string, string>> })
+						.themes ?? {})
 				: {}),
 			...Object.fromEntries(crawledThemes),
 		},

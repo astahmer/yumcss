@@ -53,6 +53,20 @@ A local read-only dashboard over the [analyze](#analyze) machinery:
 - **Reports** — self-contained HTML/JSON/Markdown exports and CI-friendly
   `--github-annotations` output from the analyzer.
 
+CSS discovery follows authored `@import` edges transitively, including scoped
+package exports such as `@acme/theme/tailwind.css`. Reachable `@theme`
+variables are included in the design-system view; selector-scoped custom
+properties are retained as scope entries instead of being flattened into the
+root theme. The exported stylesheet preserves those selectors, so inspecting
+an external dark, brand, or component theme does not change its cascade.
+
+The repository also ships a reusable PR-comment workflow at
+`.github/workflows/analyze-comment.yml`. Consumers call it with
+`astahmer/pandwind/.github/workflows/analyze-comment.yml@main`, provide their
+`app-dir` and file `patterns`, and optionally pin `pandwind-version`. It runs
+the published analyzer against HEAD and the base checkout, then updates one
+marker-keyed comment with fold coverage, missing CSS, and CSS budget deltas.
+
 Extend the CLI, not the app, when adding metrics.
 
 ## Analyze
