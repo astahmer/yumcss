@@ -1,1 +1,2 @@
 {"kind":"cut","id":"pc_4o5qh8q5k6nz","ts":"2026-09-03T03:30:22.026Z","agent":"unknown","text":"The docs package is not named docs, so a generic nub run --filter docs typecheck command returns no projects matched; repository docs validation should expose a documented package/script target.","tags":["docs"],"severity":"minor"}
+{"kind":"cut","id":"pc_r07tufk5kntx","ts":"2026-09-03T04:07:36.779Z","agent":"unknown","text":"Direct rtk oxfmt invocation fails; repository formatting must use pnpm exec oxfmt","tags":["tooling"],"severity":"minor"}

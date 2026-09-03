@@ -3,6 +3,8 @@ import {
 	CodemodAdapterId,
 	StyleProgramResidualKindTag,
 	createChakraAdapter,
+	createMantineAdapter,
+	createMuiAdapter,
 	createTailwindAdapter,
 	createTokenamiAdapter,
 	createUnoCssAdapter,
@@ -52,6 +54,20 @@ describe("official project-context loaders", () => {
 				files: ["/project/src/theme.ts"],
 				readFile: (file: string) =>
 					file.endsWith("src/theme.ts") ? "export const theme = defineConfig({})" : undefined,
+			},
+			{
+				id: CodemodAdapterId.Mui,
+				adapter: createMuiAdapter({ moduleLoader: unavailableLoader }),
+				files: ["/project/src/theme.ts"],
+				readFile: (file: string) =>
+					file.endsWith("src/theme.ts") ? "export const theme = createTheme({})" : undefined,
+			},
+			{
+				id: CodemodAdapterId.Mantine,
+				adapter: createMantineAdapter({ moduleLoader: unavailableLoader }),
+				files: ["/project/src/theme.ts"],
+				readFile: (file: string) =>
+					file.endsWith("src/theme.ts") ? "export const theme = createTheme({})" : undefined,
 			},
 		];
 
@@ -111,6 +127,26 @@ describe("official project-context loaders", () => {
 			        "hint": "the official @chakra-ui/react package is unavailable for a discovered theme module",
 			        "kind": "configuration",
 			        "text": "Chakra project configuration",
+			      },
+			    ],
+			  },
+			  {
+			    "adapter": "mui",
+			    "residuals": [
+			      {
+			        "hint": "the official @mui/system or @mui/material package is unavailable for a discovered theme module",
+			        "kind": "configuration",
+			        "text": "MUI project theme",
+			      },
+			    ],
+			  },
+			  {
+			    "adapter": "mantine",
+			    "residuals": [
+			      {
+			        "hint": "the official @mantine/core package is unavailable for a discovered theme module",
+			        "kind": "configuration",
+			        "text": "Mantine project theme",
 			      },
 			    ],
 			  },

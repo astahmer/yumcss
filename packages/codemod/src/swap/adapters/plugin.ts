@@ -11,8 +11,8 @@ import fela from "./fela.adapter.ts";
 import goober from "./goober.adapter.ts";
 import jss from "./jss.adapter.ts";
 import linaria from "./linaria.adapter.ts";
-import mantine from "./mantine.adapter.ts";
-import mui from "./mui.adapter.ts";
+import { createMantineAdapter } from "./mantine.adapter.ts";
+import { createMuiAdapter } from "./mui.adapter.ts";
 import nextYak from "./next-yak.adapter.ts";
 import { createPandaAdapter } from "./panda.adapter.ts";
 import { createPandwindAdapter } from "./pandwind.adapter.ts";
@@ -52,8 +52,12 @@ export function createBuiltinAdapterPlugin(
 		vanillaExtract,
 		stitches,
 		linaria,
-		mantine,
-		mui,
+		moduleLoader === undefined
+			? createMantineAdapter({ moduleLoader: null })
+			: createMantineAdapter({ moduleLoader }),
+		moduleLoader === undefined
+			? createMuiAdapter({ moduleLoader: null })
+			: createMuiAdapter({ moduleLoader }),
 		nextYak,
 		createPandaAdapter({ moduleLoader: moduleLoader ?? null }),
 		moduleLoader === undefined

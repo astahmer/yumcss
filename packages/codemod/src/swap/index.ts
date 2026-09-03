@@ -262,6 +262,8 @@ export { createTokenamiAdapter } from "./adapters/tokenami.adapter.ts";
 export { createUnoCssAdapter, createUnoCssResolverFromCss } from "./adapters/unocss.adapter.ts";
 export { createTailwindAdapter } from "./adapters/tailwind.adapter.ts";
 export { createChakraAdapter } from "./adapters/chakra.adapter.ts";
+export { createMuiAdapter } from "./adapters/mui.adapter.ts";
+export { createMantineAdapter } from "./adapters/mantine.adapter.ts";
 export { createPandwindAdapter } from "./adapters/pandwind.adapter.ts";
 export { createPandaAdapter } from "./adapters/panda.adapter.ts";
 export { createTamaguiAdapter } from "./adapters/tamagui.adapter.ts";

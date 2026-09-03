@@ -21,7 +21,7 @@ import {
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
 import { joinDocumentPath } from "../../path-utils.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
-import type { JsxStyleHostMatch } from "../jsx-style-host.ts";
+import type { JsxStyleHostMatch, JsxStylePropSelector } from "../jsx-style-host.ts";
 import { TokenCatalog } from "../tokens.ts";
 
 const styleProps = [
@@ -338,8 +338,11 @@ function normalizeChakraEmissionProgram(program: StyleProgram): StyleProgram {
 	};
 }
 
-function valueTransformProperty(property: string): string {
-	const alias = propertyAliases[property as keyof typeof propertyAliases];
+function valueTransformPropertyFrom(
+	aliases: Readonly<Record<string, string | readonly string[]>>,
+	property: string,
+): string {
+	const alias = aliases[property];
 	return typeof alias === "string" ? alias : property;
 }
 
@@ -443,6 +446,10 @@ function chakraOfficialValue(
 interface ChakraSystemLike {
 	readonly $$chakra?: true;
 	readonly _config?: Record<string, unknown>;
+	readonly properties?: ReadonlySet<string>;
+	readonly utility?: {
+		readonly shorthands?: ReadonlyMap<string, string>;
+	};
 	readonly token?: {
 		var?(path: string, fallback?: unknown): unknown;
 	};
@@ -452,6 +459,21 @@ interface ChakraPackage {
 	readonly defaultConfig?: Record<string, unknown>;
 	readonly createSystem?: (...configs: Record<string, unknown>[]) => ChakraSystemLike;
 	readonly isValidSystem?: (value: unknown) => value is ChakraSystemLike;
+}
+
+function chakraSourceVocabulary(context: AdapterParseContext): {
+	readonly styleProps: JsxStylePropSelector;
+	readonly propertyAliases: Readonly<Record<string, string | readonly string[]>>;
+} {
+	const system = context.config.values.chakraSystem as ChakraSystemLike | undefined;
+	const aliases = system?.utility?.shorthands;
+	return {
+		styleProps:
+			system?.properties === undefined
+				? styleProps
+				: (property) => system.properties?.has(property) === true,
+		propertyAliases: aliases === undefined ? propertyAliases : Object.fromEntries(aliases),
+	};
 }
 
 function chakraConfigCandidate(value: unknown): Record<string, unknown> | undefined {
@@ -809,7 +831,7 @@ export function createChakraAdapter(
 				name: "chakra-style-props",
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
 				form: "jsx-style",
-				styleProps,
+				styleProps: (context) => chakraSourceVocabulary(context).styleProps,
 				preserveHostStyleProps: (host) => [
 					...preserveSeparatorGap(host),
 					...preserveNextImageFill(host),
@@ -929,33 +951,45 @@ export function createChakraAdapter(
 					loadConfigAsync: (context: AdapterConfigContext) =>
 						officialChakraConfig(context, moduleLoader),
 				}),
-		sourceObjectOptions: (source, context) => ({
-			...(() => {
-				const configured = context.config.values.chakraConfig as
-					| { readonly conditions?: Record<string, unknown> }
-					| undefined;
-				const conditionValues: Record<string, string> = {};
-				const conditionKinds: Record<string, SemanticConditionKind> = {};
-				for (const [name, value] of Object.entries(configured?.conditions ?? {})) {
-					if (typeof value !== "string") continue;
-					const normalized = name.replace(/^_/, "");
-					conditionValues[normalized] = value;
-					conditionKinds[normalized] = inferSemanticConditionKind(value);
-				}
-				return { conditionKinds, conditionValues };
-			})(),
-			propertyAliases,
-			objectReferences: objectReferences(source),
-			unwrapNestedObjectKeys: ["css"],
-			propertyValueConditions: true,
-			valueTransforms: Object.fromEntries(
-				[...new Set([...styleProps, ...Object.keys(propertyAliases)])].map((property) => [
-					property,
-					(value: StyleValue) =>
-						chakraOfficialValue(valueTransformProperty(property), value, context),
-				]),
-			),
-		}),
+		sourceObjectOptions: (source, context) => {
+			const vocabulary = chakraSourceVocabulary(context);
+			return {
+				...(() => {
+					const configured = context.config.values.chakraConfig as
+						| { readonly conditions?: Record<string, unknown> }
+						| undefined;
+					const conditionValues: Record<string, string> = {};
+					const conditionKinds: Record<string, SemanticConditionKind> = {};
+					for (const [name, value] of Object.entries(configured?.conditions ?? {})) {
+						if (typeof value !== "string") continue;
+						const normalized = name.replace(/^_/, "");
+						conditionValues[normalized] = value;
+						conditionKinds[normalized] = inferSemanticConditionKind(value);
+					}
+					return { conditionKinds, conditionValues };
+				})(),
+				propertyAliases: vocabulary.propertyAliases,
+				objectReferences: objectReferences(source),
+				unwrapNestedObjectKeys: ["css"],
+				propertyValueConditions: true,
+				valueTransforms: Object.fromEntries(
+					[
+						...new Set([
+							...Object.keys(vocabulary.propertyAliases),
+							...(typeof vocabulary.styleProps === "function" ? [] : vocabulary.styleProps),
+						]),
+					].map((property) => [
+						property,
+						(value: StyleValue) =>
+							chakraOfficialValue(
+								valueTransformPropertyFrom(vocabulary.propertyAliases, property),
+								value,
+								context,
+							),
+					]),
+				),
+			};
+		},
 		emit(program, { programObject }, context) {
 			const outputProgram = normalizeChakraEmissionProgram(program);
 			if (program.rules.some((rule) => rule.kind !== StyleRuleKindTag.Style))

@@ -240,6 +240,17 @@ project.
 | UnoCSS    | `@unocss/config` + `@unocss/core` | project config, presets, rules, shortcuts, and generated utility CSS                                              |
 | Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                                                                |
 | Tokenami  | `@tokenami/config`                | normalized project config and aliases                                                                             |
+| MUI       | `@mui/system` or `@mui/material`  | official `createTheme` output, palette/spacing/shape/typography values                                             |
+| Mantine   | `@mantine/core`                   | official `createTheme` output, colors/spacing/font sizes/line heights/radii                                      |
+
+MUI and Mantine keep a small adapter-owned map for their documented authored
+style-prop spellings (`sx`, `p`, `c`, and similar). Those maps are parser
+syntax, not default theme catalogs and are never used to guess custom project
+values. When a project theme is discoverable, the adapter loads it through the
+official package, builds the neutral token catalog, and resolves values through
+the resulting theme. If the package or theme module cannot be evaluated, the
+adapter emits a configuration residual and preserves the uncertain source
+semantics.
 
 Pandwind is the target-side exception: its async adapter loader discovers the
 project's generated `pandwind.interop.json` and `bridge.ts`, then imports the

@@ -1,7 +1,7 @@
 import { StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
+import type { AdapterConfigContext, AdapterHostRewriteResult } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
-import type { AdapterHostRewriteResult } from "../adapter-contract.ts";
 import {
 	BuiltinHostFramework,
 	canConvertStaticVueSfc,
@@ -18,7 +18,14 @@ import {
 	intrinsicTagForSubject,
 } from "../host-component-rewriter.ts";
 import { StyleProgramAnalysis } from "../style-program-analysis.ts";
+import { AdapterEvidence } from "../adapter-evidence.ts";
+import type { ProjectModuleLoader } from "../project-module-loader.ts";
+import { joinDocumentPath } from "../../path-utils.ts";
+import { TokenCatalog } from "../tokens.ts";
 
+// These are documented MUI source spellings, not a project vocabulary. The
+// official theme loader below supplies project-specific values and overrides
+// the no-context source parser where possible.
 const spacing = new Set([
 	"m",
 	"mt",
@@ -54,12 +61,164 @@ const propertyAliases = {
 	bgcolor: "backgroundColor",
 } as const;
 
-function defaultSpacing(property: string, value: StyleValue): StyleValue {
+interface MuiThemeLike {
+	readonly spacing?:
+		| ((factor: number | string) => string | number)
+		| readonly unknown[]
+		| Record<string, unknown>;
+	readonly palette?: Record<string, unknown>;
+	readonly shape?: Record<string, unknown>;
+	readonly typography?: Record<string, unknown>;
+}
+
+interface MuiPackage {
+	readonly createTheme?: (options?: Record<string, unknown>) => MuiThemeLike;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function muiThemeCandidate(value: unknown): Record<string, unknown> | undefined {
+	if (!isRecord(value)) return undefined;
+	return ["palette", "spacing", "shape", "typography", "breakpoints"].some(
+		(key) => value[key] !== undefined,
+	)
+		? value
+		: undefined;
+}
+
+function resolveThemePath(
+	theme: MuiThemeLike | undefined,
+	path: string,
+): string | number | undefined {
+	let current: unknown = theme;
+	for (const segment of path.split(".")) {
+		if (typeof current === "function") return undefined;
+		if (Array.isArray(current)) current = current[Number(segment)];
+		else if (isRecord(current)) current = current[segment];
+		else return undefined;
+	}
+	return typeof current === "string" || typeof current === "number" ? current : undefined;
+}
+
+function resolveMuiValue(
+	property: string,
+	value: string,
+	theme: MuiThemeLike | undefined,
+): string | number | undefined {
+	const direct = resolveThemePath(theme, value);
+	if (direct !== undefined) return direct;
+	if (property === "color" || property === "backgroundColor" || property === "borderColor")
+		return resolveThemePath(theme?.palette as MuiThemeLike | undefined, value);
+	return undefined;
+}
+
+function themeCollection(value: unknown): unknown {
+	if (!Array.isArray(value)) return value;
+	return Object.fromEntries(value.map((entry, index) => [String(index), entry]));
+}
+
+async function officialMuiConfig(
+	context: AdapterConfigContext,
+	loader: ProjectModuleLoader,
+): Promise<import("../adapter-contract.ts").AdapterProjectConfig> {
+	const fallback = {
+		adapter: CodemodAdapterId.Mui,
+		root: context.root,
+		files: [context.file],
+		values: {},
+	};
+	if (context.root === undefined) return fallback;
+	const discovered =
+		context
+			.listFiles?.(context.root)
+			.filter((file) =>
+				/(?:^|[\\/])(?:theme|mui-theme)(?:[\\/](?:index\\.)?(?:ts|tsx|js|mjs|cjs)|\\.(?:ts|tsx|js|mjs|cjs))$/u.test(
+					file,
+				),
+			) ?? [];
+	const candidates = [
+		"src/theme.ts",
+		"src/theme.tsx",
+		"src/theme.js",
+		"src/theme.mjs",
+		"theme.ts",
+		"theme.tsx",
+		"theme.js",
+		"theme.mjs",
+		...discovered,
+	];
+	const muiSystem = await loader.importPackage<MuiPackage>("@mui/system", context.root);
+	const mui = muiSystem ?? (await loader.importPackage<MuiPackage>("@mui/material", context.root));
+	const officialPackage = muiSystem === undefined ? "@mui/material" : "@mui/system";
+	const hasThemeFile = candidates.some(
+		(candidate) =>
+			context.readFile?.(
+				candidate.startsWith(context.root!)
+					? candidate
+					: joinDocumentPath(context.root!, candidate),
+			) !== undefined,
+	);
+	if (mui === undefined)
+		return hasThemeFile
+			? AdapterEvidence.configurationFailure(
+					fallback,
+					"MUI project theme",
+					"the official @mui/system or @mui/material package is unavailable for a discovered theme module",
+				)
+			: fallback;
+	for (const candidate of new Set(candidates)) {
+		const path = candidate.startsWith(context.root)
+			? candidate
+			: joinDocumentPath(context.root, candidate);
+		const module = await loader.importFile<Record<string, unknown>>(path);
+		if (module === undefined) continue;
+		const config = [module.default, ...Object.values(module)]
+			.map(muiThemeCandidate)
+			.find((value): value is Record<string, unknown> => value !== undefined);
+		if (config === undefined) continue;
+		const theme = mui.createTheme?.(config) ?? (config as MuiThemeLike);
+		return {
+			...fallback,
+			files: [...fallback.files, path],
+			tokenCatalog: TokenCatalog.fromNested({
+				colors: config.palette,
+				spacing: themeCollection(config.spacing),
+				radii: config.shape?.borderRadius,
+				fontSizes: config.typography?.fontSize,
+			})?.contract,
+			values: {
+				muiTheme: theme,
+				muiThemeConfig: config,
+				officialConfigPackage: officialPackage,
+			},
+		};
+	}
+	return fallback;
+}
+
+function defaultSpacing(property: string, value: StyleValue, theme?: MuiThemeLike): StyleValue {
 	if (value.kind !== StyleValueKindTag.Literal) return value;
-	if (spacing.has(property) && typeof value.value === "number")
+	if (spacing.has(property) && typeof value.value === "number") {
+		const resolved =
+			typeof theme?.spacing === "function"
+				? theme.spacing(value.value)
+				: Array.isArray(theme?.spacing)
+					? theme.spacing[value.value]
+					: isRecord(theme?.spacing)
+						? theme.spacing[String(value.value)]
+						: undefined;
+		if (typeof resolved === "string" || typeof resolved === "number")
+			return { kind: "literal", value: resolved };
 		return { kind: "literal", value: `${value.value * 8}px` };
-	if (property === "borderRadius" && typeof value.value === "number")
+	}
+	if (property === "borderRadius" && typeof value.value === "number") {
+		const base = theme?.shape?.borderRadius;
+		if (typeof base === "number") return { kind: "literal", value: `${value.value * base}px` };
+		if (typeof base === "string") return { kind: "literal", value: base };
 		return { kind: "literal", value: `${value.value * 4}px` };
+	}
 	if (
 		typeof value.value === "string" &&
 		/^[A-Za-z_$][\w$-]*\.[A-Za-z_$][\w$-]*$/.test(value.value)
@@ -71,12 +230,15 @@ function defaultSpacing(property: string, value: StyleValue): StyleValue {
 
 function muiTransforms(
 	source: string,
+	theme?: MuiThemeLike,
 ): Readonly<Record<string, (value: StyleValue) => StyleValue>> {
 	return Object.fromEntries(
 		[...spacing, "bgcolor", "backgroundColor", "color", "borderRadius"].map((property) => [
 			property,
 			(value: StyleValue) => {
 				if (value.kind === StyleValueKindTag.Literal && typeof value.value === "string") {
+					const resolved = resolveMuiValue(property, value.value, theme);
+					if (resolved !== undefined) return { kind: "literal", value: resolved };
 					const [group, key] = value.value.split(".");
 					if (group !== undefined && key !== undefined) {
 						const escapedGroup = group.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -87,7 +249,7 @@ function muiTransforms(
 						if (resolved !== undefined) return { kind: "literal", value: resolved };
 					}
 				}
-				return defaultSpacing(property, value);
+				return defaultSpacing(property, value, theme);
 			},
 		]),
 	);
@@ -225,228 +387,249 @@ function rewriteMuiIntrinsicHost(
 	};
 }
 
-export default defineCodemodAdapter({
-	id: CodemodAdapterId.Mui,
-	officialApi: {
-		pluginSystems: ["theme.components", "styleOverrides", "variants", "sx"],
-		ssrHooks: ["StyledEngineProvider", "ServerStyleSheets"],
-	},
-	patterns: [
-		{
-			name: "mui-sx",
-			regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
-			form: "jsx-style",
-			styleProps,
+export function createMuiAdapter(
+	options: { readonly moduleLoader?: ProjectModuleLoader | null } = {},
+) {
+	const moduleLoader = options.moduleLoader === null ? undefined : options.moduleLoader;
+	return defineCodemodAdapter({
+		id: CodemodAdapterId.Mui,
+		officialApi: {
+			pluginSystems: ["theme.components", "styleOverrides", "variants", "sx"],
+			ssrHooks: ["StyledEngineProvider", "ServerStyleSheets"],
 		},
-		{ name: "mui-styled", kind: "styled", regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*\{/g },
-		{
-			name: "mui-styled-theme-callback",
-			regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
-			form: "residual",
-			residual: {
-				kind: "runtime-context",
-				hint: "MUI styled theme callbacks require target-aware theme lowering",
+		patterns: [
+			{
+				name: "mui-sx",
+				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
+				form: "jsx-style",
+				styleProps,
 			},
-		},
-		{
-			name: "runtime-context",
-			regex:
-				/(?:import[^;\n]*\b(?:ThemeProvider|StyledEngineProvider)\b[^;\n]*;|<(?:ThemeProvider|StyledEngineProvider)\b[^>]*>)/g,
-			form: "residual",
-			residual: {
-				kind: "runtime-context",
-				hint: "MUI providers require target-aware theme and style-engine lowering",
+			{ name: "mui-styled", kind: "styled", regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*\{/g },
+			{
+				name: "mui-styled-theme-callback",
+				regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
+				form: "residual",
+				residual: {
+					kind: "runtime-context",
+					hint: "MUI styled theme callbacks require target-aware theme lowering",
+				},
 			},
-		},
-	],
-	packages: {
-		packages: [
-			CodemodAdapterKit.dependency("@mui/system", "peer").packages[0]!,
-			CodemodAdapterKit.dependency("@mui/material", "peer").packages[0]!,
+			{
+				name: "runtime-context",
+				regex:
+					/(?:import[^;\n]*\b(?:ThemeProvider|StyledEngineProvider)\b[^;\n]*;|<(?:ThemeProvider|StyledEngineProvider)\b[^>]*>)/g,
+				form: "residual",
+				residual: {
+					kind: "runtime-context",
+					hint: "MUI providers require target-aware theme and style-engine lowering",
+				},
+			},
 		],
-	},
-	capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
-		"function-values": "exact",
-		"theme-context": "partial",
-		"runtime-context": "partial",
-		components: "exact",
-	}),
-	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
-	detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
-	sourceModules: [],
-	configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
-	sourceObjectOptions: (source) => ({ propertyAliases, valueTransforms: muiTransforms(source) }),
-	emit(program, { programObject }, context) {
-		const subject = program.source?.subject;
-		if (subject !== undefined) {
+		packages: {
+			packages: [
+				CodemodAdapterKit.dependency("@mui/system", "peer").packages[0]!,
+				CodemodAdapterKit.dependency("@mui/material", "peer").packages[0]!,
+			],
+		},
+		capabilities: CodemodAdapterKit.allRuleCapabilities(CodemodAdapterId.Mui, "partial", {
+			"function-values": "exact",
+			"theme-context": "partial",
+			"runtime-context": "partial",
+			components: "exact",
+		}),
+		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+		detectPatterns: [/@mui\/(?:system|material)/, /\bsx\s*=/, /\bstyled\s*\(/],
+		sourceModules: [],
+		configFiles: ["package.json", "src/theme.ts", "src/theme.js"],
+		...(moduleLoader === undefined
+			? {}
+			: {
+					loadConfigAsync: (context: AdapterConfigContext) =>
+						officialMuiConfig(context, moduleLoader),
+				}),
+		sourceObjectOptions: (source, context) => ({
+			propertyAliases,
+			valueTransforms: muiTransforms(
+				source,
+				context.config.values.muiTheme as MuiThemeLike | undefined,
+			),
+		}),
+		emit(program, { programObject }, context) {
+			const subject = program.source?.subject;
+			if (subject !== undefined) {
+				if (
+					context?.host?.framework !== undefined &&
+					context.host.framework !== BuiltinHostFramework.React
+				)
+					return {
+						text: programObject(program),
+						residuals: [
+							{
+								kind: "host-framework",
+								text: subject,
+								hint: `MUI styled projection requires ${BuiltinHostFramework.React}`,
+							},
+						],
+					};
+				const tag = intrinsicTagForSubject(subject);
+				const base = componentExpressionForSubject(subject);
+				const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
+				return {
+					text: `styled(${targetSubject})(${programObject(program)})`,
+					imports: ['import { styled } from "@mui/system";'],
+				};
+			}
+			if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
+				const styleObject = programObject(program);
+				if (program.source?.hostOpenTag !== undefined)
+					return {
+						text: renderMuiSxHost(
+							program.source.hostOpenTag,
+							program.source.hostStyleAttributes ?? [],
+							styleObject,
+						),
+					};
+				return { text: styleObject };
+			}
 			if (
-				context?.host?.framework !== undefined &&
-				context.host.framework !== BuiltinHostFramework.React
+				context?.host?.representation === StyleHostRepresentationKind.Class &&
+				context.host.representationKind === StyleRepresentationKind.PortableArtifact
 			)
 				return {
-					text: programObject(program),
-					residuals: [
-						{
-							kind: "host-framework",
-							text: subject,
-							hint: `MUI styled projection requires ${BuiltinHostFramework.React}`,
-						},
-					],
+					text: `css.class(${programObject(program)})`,
+					imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
+					semantic: program,
 				};
-			const tag = intrinsicTagForSubject(subject);
-			const base = componentExpressionForSubject(subject);
-			const targetSubject = tag === undefined ? (base ?? subject) : JSON.stringify(tag);
+			if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
 			return {
-				text: `styled(${targetSubject})(${programObject(program)})`,
-				imports: ['import { styled } from "@mui/system";'],
+				text: programObject(program),
+				residuals: [
+					{
+						kind: "host-framework",
+						text: programObject(program),
+						hint: "MUI sx styles require a host component prop; no standalone sx() API exists",
+					},
+				],
 			};
-		}
-		if (context?.host?.representation === StyleHostRepresentationKind.StyleProp) {
-			const styleObject = programObject(program);
-			if (program.source?.hostOpenTag !== undefined)
-				return {
-					text: renderMuiSxHost(
-						program.source.hostOpenTag,
-						program.source.hostStyleAttributes ?? [],
-						styleObject,
-					),
-				};
-			return { text: styleObject };
-		}
-		if (
-			context?.host?.representation === StyleHostRepresentationKind.Class &&
-			context.host.representationKind === StyleRepresentationKind.PortableArtifact
-		)
-			return {
-				text: `css.class(${programObject(program)})`,
-				imports: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
-				semantic: program,
-			};
-		if (program.source?.hostOpenTag !== undefined) return { text: programObject(program) };
-		return {
-			text: programObject(program),
-			residuals: [
-				{
-					kind: "host-framework",
-					text: programObject(program),
-					hint: "MUI sx styles require a host component prop; no standalone sx() API exists",
-				},
-			],
-		};
-	},
-	migration: {
-		targetPolicy: {
-			handlesHostRewrites: true,
-			requiresHostContext: true,
-			hostContextRequiredHint:
-				"MUI sx styles require a host component prop; no standalone sx() API exists",
-			hostRepresentation: StyleHostRepresentationKind.Component,
-			resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
-				program.source?.subject === undefined && !hasHostContext
-					? StyleHostRepresentationKind.Class
-					: (framework === undefined || framework === BuiltinHostFramework.React) &&
-						  program.source?.subject === undefined
-						? (() => {
-								const host = findHostUse(source ?? "", binding);
-								const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
-								if (tag === undefined) return undefined;
-								return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
-									? StyleHostRepresentationKind.StyleProp
-									: isStaticProgram(program)
-										? StyleHostRepresentationKind.Class
-										: undefined;
-							})()
-						: framework === undefined || framework === BuiltinHostFramework.React
-							? StyleHostRepresentationKind.Component
+		},
+		migration: {
+			targetPolicy: {
+				handlesHostRewrites: true,
+				requiresHostContext: true,
+				hostContextRequiredHint:
+					"MUI sx styles require a host component prop; no standalone sx() API exists",
+				hostRepresentation: StyleHostRepresentationKind.Component,
+				resolveHostRepresentation: ({ program, hasHostContext, framework, source, binding }) =>
+					program.source?.subject === undefined && !hasHostContext
+						? StyleHostRepresentationKind.Class
+						: (framework === undefined || framework === BuiltinHostFramework.React) &&
+							  program.source?.subject === undefined
+							? (() => {
+									const host = findHostUse(source ?? "", binding);
+									const tag = host?.tag ?? tagForOpening(program.source?.hostOpenTag);
+									if (tag === undefined) return undefined;
+									return tag[0] === tag[0]?.toLowerCase() || isKnownMuiComponent(source ?? "", tag)
+										? StyleHostRepresentationKind.StyleProp
+										: isStaticProgram(program)
+											? StyleHostRepresentationKind.Class
+											: undefined;
+								})()
+							: framework === undefined || framework === BuiltinHostFramework.React
+								? StyleHostRepresentationKind.Component
+								: undefined,
+				standaloneHostRepresentation: StyleHostRepresentationKind.Component,
+				resolveRepresentation: ({ program, hostRepresentation }) =>
+					hostRepresentation === StyleHostRepresentationKind.Class &&
+					program.source?.subject === undefined &&
+					program.residuals.length === 0
+						? StyleRepresentationKind.PortableArtifact
+						: program.source?.subject !== undefined && hasScalarDynamicProgram(program)
+							? StyleRepresentationKind.TargetNative
 							: undefined,
-			standaloneHostRepresentation: StyleHostRepresentationKind.Component,
-			resolveRepresentation: ({ program, hostRepresentation }) =>
-				hostRepresentation === StyleHostRepresentationKind.Class &&
-				program.source?.subject === undefined &&
-				program.residuals.length === 0
-					? StyleRepresentationKind.PortableArtifact
-					: program.source?.subject !== undefined && hasScalarDynamicProgram(program)
-						? StyleRepresentationKind.TargetNative
-						: undefined,
-			capabilitiesForRepresentation: ({ program, representation }) => {
-				if (representation === StyleRepresentationKind.PortableArtifact) return ["theme-context"];
-				if (
+				capabilitiesForRepresentation: ({ program, representation }) => {
+					if (representation === StyleRepresentationKind.PortableArtifact) return ["theme-context"];
+					if (
+						representation === StyleRepresentationKind.TargetNative &&
+						hasScalarDynamicProgram(program)
+					)
+						return ["dynamic-values", "theme-context"];
+					return [];
+				},
+				preservesResidualKindsForRepresentation: ({ program, representation }) =>
 					representation === StyleRepresentationKind.TargetNative &&
 					hasScalarDynamicProgram(program)
-				)
-					return ["dynamic-values", "theme-context"];
-				return [];
-			},
-			preservesResidualKindsForRepresentation: ({ program, representation }) =>
-				representation === StyleRepresentationKind.TargetNative && hasScalarDynamicProgram(program)
-					? ["dynamic"]
-					: [],
-			handlesFrameworkSemantics: true,
-			hostFrameworks: [BuiltinHostFramework.React],
-			hostFrameworkConversions: [
-				{
-					from: BuiltinHostFramework.Solid,
-					to: BuiltinHostFramework.React,
-					canConvert: ({ file, source }) =>
-						/\.(?:jsx|tsx)$/.test(file) &&
-						!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
-							source,
-						),
+						? ["dynamic"]
+						: [],
+				handlesFrameworkSemantics: true,
+				hostFrameworks: [BuiltinHostFramework.React],
+				hostFrameworkConversions: [
+					{
+						from: BuiltinHostFramework.Solid,
+						to: BuiltinHostFramework.React,
+						canConvert: ({ file, source }) =>
+							/\.(?:jsx|tsx)$/.test(file) &&
+							!/\b(?:createSignal|createMemo|createEffect)\s*\(|\bon:|\buse:|\bclass\s*=/.test(
+								source,
+							),
+					},
+					{
+						from: BuiltinHostFramework.Vue,
+						to: BuiltinHostFramework.React,
+						canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
+						rewriteDocument: ({ code, targetFramework }) =>
+							rewriteVueSfcToJsx(code, targetFramework),
+					},
+				],
+				rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
+					if (representation !== StyleHostRepresentationKind.StyleProp)
+						return { code, residuals: [] };
+					if (framework !== undefined && framework !== BuiltinHostFramework.React)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: emittedExpression,
+									hint: `MUI sx host projection requires ${BuiltinHostFramework.React}`,
+								},
+							],
+						};
+					const expression = binding === undefined ? emittedExpression : binding;
+					const host = findHostUse(code, binding);
+					if (host === undefined)
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: expression,
+									hint: "MUI sx host projection could not find the converted class binding",
+								},
+							],
+						};
+					if (host.tag[0] === host.tag[0]?.toLowerCase())
+						return rewriteMuiIntrinsicHost(code, expression, host);
+					if (!isKnownMuiComponent(code, host.tag))
+						return {
+							code,
+							residuals: [
+								{
+									kind: "host-framework",
+									text: host.tag,
+									hint: "MUI sx projection requires an intrinsic Box wrapper or a known MUI component",
+								},
+							],
+						};
+					const escaped = expression.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+					const pattern = new RegExp(`(\\b)(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
+					return {
+						code: code.replace(pattern, `$1sx={${expression}}`),
+						residuals: [],
+					};
 				},
-				{
-					from: BuiltinHostFramework.Vue,
-					to: BuiltinHostFramework.React,
-					canConvert: ({ file, source }) => canConvertStaticVueSfc(file, source),
-					rewriteDocument: ({ code, targetFramework }) => rewriteVueSfcToJsx(code, targetFramework),
-				},
-			],
-			rewriteHost: ({ code, emittedExpression, binding, framework, representation }) => {
-				if (representation !== StyleHostRepresentationKind.StyleProp)
-					return { code, residuals: [] };
-				if (framework !== undefined && framework !== BuiltinHostFramework.React)
-					return {
-						code,
-						residuals: [
-							{
-								kind: "host-framework",
-								text: emittedExpression,
-								hint: `MUI sx host projection requires ${BuiltinHostFramework.React}`,
-							},
-						],
-					};
-				const expression = binding === undefined ? emittedExpression : binding;
-				const host = findHostUse(code, binding);
-				if (host === undefined)
-					return {
-						code,
-						residuals: [
-							{
-								kind: "host-framework",
-								text: expression,
-								hint: "MUI sx host projection could not find the converted class binding",
-							},
-						],
-					};
-				if (host.tag[0] === host.tag[0]?.toLowerCase())
-					return rewriteMuiIntrinsicHost(code, expression, host);
-				if (!isKnownMuiComponent(code, host.tag))
-					return {
-						code,
-						residuals: [
-							{
-								kind: "host-framework",
-								text: host.tag,
-								hint: "MUI sx projection requires an intrinsic Box wrapper or a known MUI component",
-							},
-						],
-					};
-				const escaped = expression.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
-				const pattern = new RegExp(`(\\b)(?:className|class)\\s*=\\s*\\{\\s*${escaped}\\s*\\}`);
-				return {
-					code: code.replace(pattern, `$1sx={${expression}}`),
-					residuals: [],
-				};
 			},
 		},
-	},
-});
+	});
+}
+
+export default createMuiAdapter();

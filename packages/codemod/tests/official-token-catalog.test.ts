@@ -2,6 +2,8 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	createChakraAdapter,
+	createMantineAdapter,
+	createMuiAdapter,
 	createPandaAdapter,
 	createTailwindAdapter,
 	createTokenamiAdapter,
@@ -460,5 +462,203 @@ describe("official custom-token loaders", () => {
 		expect(uno).toBe('"text-brand-500"');
 		expect(JSON.parse(tailwind)).toMatchInlineSnapshot(`"text-brand-500"`);
 		expect(JSON.parse(uno)).toMatchInlineSnapshot(`"text-brand-500"`);
+	});
+
+	test("derives Chakra shorthand and property vocabulary from the official system", async () => {
+		const system = {
+			$$chakra: true as const,
+			_config: {
+				theme: { tokens: { spacing: { card: { value: "13px" } } } },
+			},
+			properties: new Set(["css", "customSpacing"]),
+			utility: { shorthands: new Map([["customSpacing", "padding"]]) },
+			token: { var: (path: string) => `var(--chakra-${path.replaceAll(".", "-")})` },
+		};
+		const loader: ProjectModuleLoader = {
+			async importPackage() {
+				return { isValidSystem: (value: unknown) => value === system } as never;
+			},
+			async importFile() {
+				return { default: system } as never;
+			},
+		};
+		const adapter = createChakraAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			file: "src/App.tsx",
+			readFile: () => "export default {}",
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+		const source = '<Box customSpacing="card" />';
+		const parsed = adapter.parse(source, { ...context, source, config: config! });
+
+		expect(config?.values.officialConfigPackage).toBe("@chakra-ui/react");
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [],
+			    "property": "padding",
+			    "value": {
+			      "authored": "card",
+			      "kind": "token",
+			      "ref": "card",
+			      "resolved": "13px",
+			    },
+			  },
+			]
+		`);
+		expect(parsed.matches[0]?.program.declarations[0]?.property).toBe("padding");
+	});
+
+	test("uses the official MUI theme for custom spacing, palette, and radius values", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage(packageName) {
+				return packageName === "@mui/system"
+					? ({
+							createTheme: (config: Record<string, unknown>) => ({
+								...config,
+								spacing: (factor: number) => `${factor * 5}px`,
+							}),
+						} as never)
+					: undefined;
+			},
+			async importFile() {
+				return {
+					default: {
+						palette: { brand: { main: "#123456" } },
+						shape: { borderRadius: 6 },
+					},
+				} as never;
+			},
+		};
+		const adapter = createMuiAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			file: "src/App.tsx",
+			readFile: () => "export default {}",
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+		const source = '<Box sx={{ p: 2, color: "brand.main", borderRadius: 2 }} />';
+		const parsed = adapter.parse(source, { ...context, source, config: config! });
+
+		expect(config?.values.officialConfigPackage).toBe("@mui/system");
+		expect(config?.tokenCatalog?.groups).toMatchInlineSnapshot(`
+			{
+			  "colors": {
+			    "brand.main": "#123456",
+			  },
+			  "radii": {
+			    "": "6",
+			  },
+			}
+		`);
+		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [],
+			    "property": "padding",
+			    "value": {
+			      "kind": "literal",
+			      "value": "10px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "borderRadius",
+			    "value": {
+			      "kind": "literal",
+			      "value": "12px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "color",
+			    "value": {
+			      "kind": "literal",
+			      "value": "#123456",
+			    },
+			  },
+			]
+		`);
+		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
+			"padding",
+			"borderRadius",
+			"color",
+		]);
+	});
+
+	test("uses the official Mantine theme for custom colors, spacing, and typography", async () => {
+		const loader: ProjectModuleLoader = {
+			async importPackage() {
+				return { createTheme: (config: Record<string, unknown>) => config } as never;
+			},
+			async importFile() {
+				return {
+					default: {
+						colors: { brand: ["#123456"] },
+						spacing: { card: "13px" },
+						fontSizes: { hero: "2rem" },
+					},
+				} as never;
+			},
+		};
+		const adapter = createMantineAdapter({ moduleLoader: loader });
+		const config = await adapter.loadConfigAsync?.({
+			...context,
+			file: "src/App.tsx",
+			readFile: () => "export default {}",
+			listFiles: () => ["/project/src/theme.ts"],
+		});
+		const source = '<Box c="brand.0" p="card" fz="hero" />';
+		const parsed = adapter.parse(source, { ...context, source, config: config! });
+
+		expect(config?.values.officialConfigPackage).toBe("@mantine/core");
+		expect(config?.tokenCatalog?.groups).toMatchInlineSnapshot(`
+			{
+			  "colors": {
+			    "brand.0": "#123456",
+			  },
+			  "fontSizes": {
+			    "hero": "2rem",
+			  },
+			  "spacing": {
+			    "card": "13px",
+			  },
+			}
+		`);
+		expect(parsed.matches[0]?.program.declarations).toMatchInlineSnapshot(`
+			[
+			  {
+			    "conditions": [],
+			    "property": "padding",
+			    "value": {
+			      "kind": "literal",
+			      "value": "13px",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "color",
+			    "value": {
+			      "kind": "literal",
+			      "value": "#123456",
+			    },
+			  },
+			  {
+			    "conditions": [],
+			    "property": "fontSize",
+			    "value": {
+			      "kind": "literal",
+			      "value": "2rem",
+			    },
+			  },
+			]
+		`);
+		expect(parsed.matches[0]?.program.declarations.map(({ property }) => property)).toEqual([
+			"padding",
+			"color",
+			"fontSize",
+		]);
 	});
 });
