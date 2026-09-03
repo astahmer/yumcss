@@ -131,7 +131,7 @@ describe("adapter route round-trip contract", () => {
 
 	test("removes an aliased Panda generated import without shadowing Pandwind css", () => {
 		const result = migrate(
-			'import { css } from "@/styled-system/css";\n' + 'const card = css({ color: "red" });',
+			'import { css } from "@/styled-system/css";\nconst card = css({ color: "red" });',
 			CodemodAdapterId.Panda,
 			CodemodAdapterId.Pandwind,
 			"Card.tsx",
@@ -142,16 +142,16 @@ describe("adapter route round-trip contract", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.code).not.toContain("styled-system/css");
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { createCss } from \"pandwind/css\";
+			"import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			const card = css.class({ color: \"red\" });"
+			const card = css.class({ color: "red" });"
 		`);
 	});
 
 	test("removes the Pandwind helper when returning to Emotion's css binding", () => {
 		const forward = migrate(
-			'import { css } from "@emotion/css";\n' + 'const card = css({ color: "red" });',
+			'import { css } from "@emotion/css";\nconst card = css({ color: "red" });',
 			CodemodAdapterId.Emotion,
 			CodemodAdapterId.Pandwind,
 			"Card.tsx",

@@ -15,7 +15,7 @@ export interface StyleXAdapterOptions {
 const modifierFor = (part: string, conditions: StyleXAdapterOptions["conditions"]): string => {
 	const configured = conditions?.[part];
 	if (configured === undefined) return part;
-	const value = Array.isArray(configured) ? configured.join("") : configured;
+	const value = typeof configured === "string" ? configured : configured.join("");
 	// StyleX hashes pseudo selectors without the semantic `&` carrier.
 	return value.replaceAll("&", "");
 };

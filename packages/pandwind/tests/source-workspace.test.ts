@@ -129,7 +129,6 @@ describe("source workspace", () => {
 
 	test("invalidates a shared entry when the exact source changes", () => {
 		const root = "/virtual-changing-project";
-		const file = `${root}/Card.virtual`;
 		let source = "export const Card = 1;";
 		let scans = 0;
 		const fileSystem: SourceWorkspaceFileSystem = {

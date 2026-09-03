@@ -80,6 +80,7 @@
 	],
 	"ignoreBinaries": ["rg"],
 	"ignore": [
+		"**/dist/**",
 		"**/tests/fixtures/**",
 		"**/tests/fixtures/**/*",
 		"**/src/types.d.ts",

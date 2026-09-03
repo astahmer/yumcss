@@ -48,7 +48,7 @@ describe("owned style flattener", () => {
 	});
 
 	test("preserves array positions while omitting holes and nullish values", () => {
-		const values = ["first", null, , undefined, "last"];
+		const values = ["first", null, undefined, undefined, "last"];
 
 		expect(flatten({ values })).toMatchInlineSnapshot(`
 			{

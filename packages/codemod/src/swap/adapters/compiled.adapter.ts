@@ -21,7 +21,7 @@ const compiled = makeExtraAdapter({
 	packages: { packages: [{ name: "@compiled/react", kind: "peer" }] },
 	detect: [
 		/from\s+["']@compiled\/(?:react|css-in-js)["']/g,
-		/\b(?:css|styled\.[A-Za-z_$][\w$]*|ClassNames)\s*[(\{]/g,
+		/\b(?:css|styled\.[A-Za-z_$][\w$]*|ClassNames)\s*[({]/g,
 	],
 	call: /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*\(\s*\{/g,
 	prefix: "css(",

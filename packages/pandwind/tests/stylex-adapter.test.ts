@@ -48,7 +48,8 @@ describe("StyleX class-name adapter", () => {
 		const output = sheet.process([{ _hover: { color: "red" } }] as never);
 
 		expect(output.size).toBe(1);
-		expect(sheet.gen.atomic()).toContain(`.${className.replaceAll("\\", "")}`);
+		expect(className).not.toBeNull();
+		expect(sheet.gen.atomic()).toContain(`.${className!.replaceAll("\\", "")}`);
 		expect(sheet.gen.atomic()).toContain(":hover");
 	});
 
@@ -57,7 +58,10 @@ describe("StyleX class-name adapter", () => {
 		const className = adapter.toClassName("color", "red");
 
 		expect(className).toMatchInlineSnapshot(`"color-x1e2nbdu"`);
-		expect(className.startsWith("color-x")).toBe(true);
-		expect(className.replace("color-", "")).toBe(createStyleXAdapter().toClassName("color", "red"));
+		expect(className).not.toBeNull();
+		expect(className!.startsWith("color-x")).toBe(true);
+		expect(className!.replace("color-", "")).toBe(
+			createStyleXAdapter().toClassName("color", "red"),
+		);
 	});
 });

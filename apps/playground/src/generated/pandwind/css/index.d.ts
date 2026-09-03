@@ -3,4 +3,5 @@ export * from "./class-name-strategy.d.ts";
 export * from "./create-css.d.ts";
 export * from "./hash.d.ts";
 export * from "./named-atoms-strategy.d.ts";
+export * from "./stylex-adapter.d.ts";
 export * from "./var-compiler.d.ts";

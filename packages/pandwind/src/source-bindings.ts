@@ -274,7 +274,7 @@ function collectBindings(program: OxcNode): {
 		if (range.end <= range.start) return;
 		for (const name of names) shadowedScopes.push({ name, range });
 	};
-	walkWithParent(program, (node, parent) => {
+	walkWithParent(program, (node) => {
 		if (isImportNode(node)) {
 			if ((node as { importKind?: string }).importKind === "type") return;
 			const source = sourceOf(node);

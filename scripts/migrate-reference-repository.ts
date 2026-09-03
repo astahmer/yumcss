@@ -3,11 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { execFileSync, spawn } from "node:child_process";
 import { dirname, join, relative, resolve } from "node:path";
 import { tmpdir } from "node:os";
-import {
-	CodemodAdapterId,
-	createRealRepositoryCorpus,
-	runAdapterMigrationAsync,
-} from "pandwind-codemod/swap";
+import { createRealRepositoryCorpus, runAdapterMigrationAsync } from "pandwind-codemod/swap";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
 

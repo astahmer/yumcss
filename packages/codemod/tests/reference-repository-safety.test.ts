@@ -65,9 +65,9 @@ export const Button = () => <styled.button color="red" customState="ready" />;`;
 		expect(result.converted).toBe(0);
 		expect(result.code).toBe(source);
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { styled } from \"styled-system/jsx\";
+			"import { styled } from "styled-system/jsx";
 
-			export const Button = () => <styled.button color=\"red\" customState=\"ready\" />;"
+			export const Button = () => <styled.button color="red" customState="ready" />;"
 		`);
 	});
 
@@ -84,12 +84,12 @@ const Button = () => <styled.button color="red" />;`;
 		expect(result.code).not.toContain('from "styled-system/jsx"');
 		expect(result.code).toContain('<button className={css.class({ color: "red" })} />');
 		expect(result.code).toMatchInlineSnapshot(`
-		"import React from \"react\";
-		import { createCss } from \"pandwind/css\";
+		"import React from "react";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
 
 
-		const Button = () => <button className={css.class({ color: \"red\" })} />;"
+		const Button = () => <button className={css.class({ color: "red" })} />;"
 	`);
 	});
 
@@ -105,12 +105,12 @@ export const Button = () =>
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain("pandaStyled");
 		expect(result.code).toMatchInlineSnapshot(`
-		"import { createCss } from \"pandwind/css\";
+		"import { createCss } from "pandwind/css";
 		const css = createCss();
 
 
 		export const Button = () =>
-		\t\t<button data-testid=\"button\" disabled className={css.class({ backgroundColor: \"tomato\", color: \"red\", \"&:hover\": { color: \"blue\" } })} />;"
+		\t\t<button data-testid="button" disabled className={css.class({ backgroundColor: "tomato", color: "red", "&:hover": { color: "blue" } })} />;"
 	`);
 	});
 
@@ -128,12 +128,12 @@ export const App = () => <Card />;`;
 		expect(result.code).not.toContain("styled-components");
 		expect(result.code).toContain('import { createCss } from "pandwind/css";');
 		expect(result.code).toMatchInlineSnapshot(`
-		"import React from \"react\";
-		import { createCss } from \"pandwind/css\";
+		"import React from "react";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
 
 
-		const Card = css.class({ color: \"red\" });
+		const Card = css.class({ color: "red" });
 		export const App = () => <button className={Card} />;"
 	`);
 	});

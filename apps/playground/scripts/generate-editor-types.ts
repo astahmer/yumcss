@@ -80,7 +80,7 @@ const findExportPath = (target: ExportTarget | undefined): string | undefined =>
 		}
 		return undefined;
 	}
-	for (const condition of ["types", "import", "require", "default"]) {
+	for (const condition of ["pandwind", "types", "import", "require", "default"]) {
 		const path = findExportPath(target[condition]);
 		if (path !== undefined) return path;
 	}

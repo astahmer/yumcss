@@ -80,7 +80,7 @@ async function measure<T>(
 		value = await warm();
 		samples.push(performance.now() - start);
 	}
-	const sorted = [...samples].sort((left, right) => left - right);
+	const sorted = [...samples].toSorted((left, right) => left - right);
 	const p95Index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1);
 	const measurement: Measurement = {
 		coldMs: round(coldMs),
