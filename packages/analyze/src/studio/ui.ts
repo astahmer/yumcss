@@ -64,7 +64,9 @@ const render = () => {
   $("css").textContent = artifacts.targetCss || artifacts.sourceCss || "No CSS validation yet.";
   $("preview").textContent = JSON.stringify(snapshot.preview || { status: "unavailable", message: "Static mode only." }, null, 2);
   const diagnostics = snapshot.evaluation?.diagnostics || [];
+  const conflicts = snapshot.workspace.conflicts || [];
   $("diagnostics").textContent = diagnostics.length ? diagnostics.map(({ message, file }) => (file ? file + ": " : "") + message).join("\\n") : "No diagnostics.";
+  if (conflicts.length) status("conflict: reopen to reload disk", "error");
   status("live", "ok");
 };
 $("file").addEventListener("change", async (event) => { selectedFile = event.target.value; render(); try { await call("/api/studio/select", { file: selectedFile }); } catch (error) { status(String(error), "error"); } });

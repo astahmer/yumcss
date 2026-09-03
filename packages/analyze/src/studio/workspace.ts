@@ -86,6 +86,8 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 	private revision = 0;
 	private files: readonly SourceWorkspaceFile[] = [];
 	private readonly overlays = new Map<string, string>();
+	private readonly overlayBases = new Map<string, string>();
+	private conflicts = new Set<string>();
 	private readonly listeners = new Set<(workspace: StudioWorkspaceSnapshot) => void>();
 	private stopWatching: (() => void) | undefined;
 
@@ -102,6 +104,8 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 		this.root = root;
 		this.patterns = request.patterns ?? this.options.defaultPatterns ?? DEFAULT_PATTERNS;
 		this.overlays.clear();
+		this.overlayBases.clear();
+		this.conflicts.clear();
 		this.refresh();
 		this.stopWatching = (this.options.watcher ?? nodeWatcher).watch(root, (file) => {
 			if (!isInside(root, resolve(file))) return;
@@ -119,6 +123,8 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 			throw new Error(`studio edit is outside the workspace: ${request.file}`);
 		if (!this.files.some((entry) => entry.path === file))
 			throw new Error(`studio edit target is not an opened source document: ${request.file}`);
+		if (!this.overlayBases.has(file))
+			this.overlayBases.set(file, this.files.find((entry) => entry.path === file)!.source);
 		this.overlays.set(file, request.source);
 		this.revision += 1;
 		this.notify();
@@ -135,6 +141,8 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 		this.stopWatching = undefined;
 		this.listeners.clear();
 		this.overlays.clear();
+		this.overlayBases.clear();
+		this.conflicts.clear();
 		this.files = [];
 		this.root = null;
 	}
@@ -144,6 +152,20 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 		this.files = this.sourceWorkspace.collect(this.patterns, this.root, {
 			exclude: this.options.exclude ?? excludeGeneratedPath,
 		});
+		const present = new Set(this.files.map((file) => file.path));
+		for (const file of this.files) {
+			const overlay = this.overlays.get(file.path);
+			const base = this.overlayBases.get(file.path);
+			if (
+				overlay !== undefined &&
+				base !== undefined &&
+				file.source !== base &&
+				file.source !== overlay
+			)
+				this.conflicts.add(file.path);
+			else if (file.source === overlay) this.conflicts.delete(file.path);
+		}
+		for (const file of this.conflicts) if (!present.has(file)) this.conflicts.delete(file);
 		this.revision += 1;
 		this.notify();
 	}
@@ -156,6 +178,7 @@ class DefaultStudioWorkspace implements StudioWorkspacePort {
 			files: this.files.map((file) =>
 				documentFrom(file, this.overlays.get(file.path) ?? file.source, this.scanner),
 			),
+			...(this.conflicts.size === 0 ? {} : { conflicts: [...this.conflicts].toSorted() }),
 		};
 	}
 

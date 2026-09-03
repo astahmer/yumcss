@@ -159,6 +159,12 @@ export const createStudioCodemodEvaluator = (): StudioEvaluationPort & StudioAda
 				({ document }) => selected === undefined || document.file === selected,
 			);
 			const diagnostics: StudioDiagnostic[] = [];
+			for (const file of request.workspace.conflicts ?? [])
+				diagnostics.push({
+					kind: "workspace",
+					file,
+					message: "Disk changed while this file has an in-memory Studio edit; reopen to reload",
+				});
 			if (target === null) {
 				return {
 					diagnostics: [diagnostic("Choose a target adapter to evaluate this workspace")],

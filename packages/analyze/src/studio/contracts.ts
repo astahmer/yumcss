@@ -32,6 +32,7 @@ export interface StudioWorkspaceSnapshot {
 	readonly revision: number;
 	readonly root: string;
 	readonly files: readonly StudioDocument[];
+	readonly conflicts?: readonly string[];
 }
 
 export interface StudioDocument {

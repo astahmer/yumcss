@@ -94,6 +94,43 @@ describe("studio workspace", () => {
 		expect(refreshed.files[0]?.document.source).toContain("<strong");
 	});
 
+	test("preserves an in-memory edit and reports a disk conflict", async () => {
+		const root = createProject();
+		let notifyFile: ((file: string) => void) | undefined;
+		let latest = undefined as
+			| Awaited<ReturnType<ReturnType<typeof createStudioWorkspace>["open"]>>
+			| undefined;
+		const workspace = createStudioWorkspace({
+			watcher: {
+				watch: (_root, onChange) => {
+					notifyFile = onChange;
+					return () => undefined;
+				},
+			} satisfies StudioWorkspaceWatcher,
+		});
+		workspace.subscribe((snapshot) => {
+			latest = snapshot;
+		});
+		await workspace.open({ root, patterns: ["src/**/*"] });
+		await workspace.edit({ file: "src/Card.tsx", source: "export const Card = () => <i />;" });
+		writeFileSync(join(root, "src", "Card.tsx"), "export const Card = () => <b />;");
+		notifyFile?.(join(root, "src", "Card.tsx"));
+
+		expect(latest?.conflicts).toEqual([join(root, "src", "Card.tsx")]);
+		expect(latest?.files[0]?.document.source).toContain("<i");
+		expect({
+			conflicts: latest?.conflicts?.map((file) => file.replace(root, "<root>")),
+			source: latest?.files[0]?.document.source,
+		}).toMatchInlineSnapshot(`
+			{
+			  "conflicts": [
+			    "<root>/src/Card.tsx",
+			  ],
+			  "source": "export const Card = () => <i />;",
+			}
+		`);
+	});
+
 	test("rejects edits outside the opened source workspace", async () => {
 		const root = createProject();
 		const workspace = createStudioWorkspace({ watcher: { watch: () => () => undefined } });
