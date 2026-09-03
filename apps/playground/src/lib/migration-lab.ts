@@ -1,6 +1,7 @@
 import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
+	PANDWIND_API_DIALECTS,
 	runAdapterMigration,
 	type AdapterCapabilityReport,
 	type AdapterDependencies,
@@ -8,6 +9,7 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "pandwind-codemod/swap/browser";
+import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 
 export interface MigrationLabEndpoint {
 	readonly id: string;
@@ -229,6 +231,16 @@ function endpointFor(adapter: StyleAdapter, role: "source" | "target"): Migratio
 	};
 }
 
+function pandwindApiEndpoint(
+	registry: ReturnType<typeof createBuiltinCodemodCatalog>["systems"],
+	api: (typeof PANDWIND_API_DIALECTS)[number],
+): MigrationLabEndpoint {
+	const route = `${CodemodAdapterId.Pandwind}/${api.dialect}`;
+	const adapter = registry.getDialect(route);
+	if (adapter === undefined) throw new Error(`missing Pandwind API target: ${route}`);
+	return { ...endpointFor(adapter, "target"), id: route, label: api.label };
+}
+
 function fileFor(adapter: string): string {
 	return adapter === CodemodAdapterId.VueStyled ? "Example.vue" : "Example.tsx";
 }
@@ -243,9 +255,10 @@ export function createMigrationLab(): MigrationLab {
 			target: endpointFor(adapter, "target"),
 			adapter,
 		}));
+	const pandwindTargets = PANDWIND_API_DIALECTS.map((api) => pandwindApiEndpoint(catalog.systems, api));
 	return {
 		sources: endpoints.map(({ source }) => source),
-		targets: endpoints.map(({ target }) => target),
+		targets: [...endpoints.map(({ target }) => target), ...pandwindTargets],
 		sampleFor: (id) =>
 			SAMPLE_SOURCES[id as CodemodAdapterId] ??
 			`// No built-in sample yet for ${id}. Paste a source file to try this adapter.`,
@@ -258,6 +271,7 @@ export function createMigrationLab(): MigrationLab {
 					readFile: () => undefined,
 					registry: catalog.systems,
 					adapterRegistry: catalog.registry,
+					meta: PLAYGROUND_MIGRATION_META,
 					mode: "safe",
 				});
 				return { ok: true, ...result };

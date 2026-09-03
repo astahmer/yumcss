@@ -31,8 +31,19 @@ export function tokensToDtcg(data: StudioPayload): string {
 
 /** @theme vars as a plain `:root` custom-properties stylesheet. */
 export function themeVarsToCss(data: StudioPayload): string {
-	const lines = data.designSystem.themeVars.map((v: ThemeVar) => `\t${v.name}: ${v.value};`);
-	return lines.length === 0 ? "" : `:root {\n${lines.join("\n")}\n}\n`;
+	const groups = new Map<string, Array<ThemeVar>>();
+	for (const variable of data.designSystem.themeVars) {
+		const scope = variable.scope ?? ":root";
+		const entries = groups.get(scope) ?? [];
+		entries.push(variable);
+		groups.set(scope, entries);
+	}
+	if (groups.size === 0) return "";
+	const blocks = [...groups.entries()].map(
+		([scope, variables]) =>
+			`${scope} {\n${variables.map((v) => `\t${v.name}: ${v.value};`).join("\n")}\n}`,
+	);
+	return `${blocks.join("\n")}\n`;
 }
 
 /** Utility unions summary (counts, samples, open-ended flags). */

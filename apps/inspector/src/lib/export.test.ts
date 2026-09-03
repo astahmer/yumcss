@@ -126,6 +126,24 @@ test("themeVarsToCss emits a :root block with all vars", () => {
 	expect(css.endsWith("}\n")).toBe(true);
 });
 
+test("themeVarsToCss preserves external selector scopes", () => {
+	const scoped = {
+		...payload,
+		designSystem: {
+			...payload.designSystem,
+			themeVars: [
+				{ name: "--color-base", value: "#fff" },
+				{ name: "--color-base", value: "#111", scope: '[data-theme="dark"]' },
+			],
+		},
+	};
+	const css = themeVarsToCss(scoped);
+	expect(css).toMatchInlineSnapshot(`
+		":root {\n\t--color-base: #fff;\n}\n[data-theme=\"dark\"] {\n\t--color-base: #111;\n}\n"
+	`);
+	expect(css).toContain('[data-theme="dark"] {');
+});
+
 test("utilitiesToJson carries meta + unions and round-trips", () => {
 	const doc = JSON.parse(utilitiesToJson(payload)) as Record<string, unknown>;
 	expect(doc["variantCount"]).toBe(88);

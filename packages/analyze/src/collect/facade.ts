@@ -5,6 +5,7 @@ import {
 	groupThemeVars,
 	parseBridgeStats,
 	parseThemeVars,
+	parseThemeScopes,
 	parseUtilityUnions,
 	resolveChain,
 	splitTokenValue,
@@ -32,6 +33,7 @@ export class CollectionToolkit {
 	static readonly groupThemeVars = groupThemeVars;
 	static readonly parseBridgeStats = parseBridgeStats;
 	static readonly parseThemeVars = parseThemeVars;
+	static readonly parseThemeScopes = parseThemeScopes;
 	static readonly parseUtilityUnions = parseUtilityUnions;
 	static readonly resolveChain = resolveChain;
 	static readonly splitTokenValue = splitTokenValue;

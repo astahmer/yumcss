@@ -17,6 +17,7 @@ import { analyzeStyleUsage, computeContrastWarnings } from "./analytics.ts";
 import {
 	flattenTokenGroups,
 	parseBridgeStats,
+	parseThemeScopes,
 	parseThemeVars,
 	parseUtilityUnions,
 } from "./parsers.ts";
@@ -177,10 +178,23 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	}
 	const crawled = crawlCssImports(entryCss, root);
 	const crawledVars = new Map<string, ThemeVar>();
+	const crawledThemes = new Map<string, Record<string, string>>();
 	for (const file of crawled.contents) {
 		for (const v of parseThemeVars(file.content)) crawledVars.set(v.name, v);
+		for (const v of parseThemeScopes(file.content)) {
+			crawledVars.set(`${v.scope}\u0000${v.name}`, v);
+			const scope = crawledThemes.get(v.scope!) ?? {};
+			scope[v.name] = v.value;
+			crawledThemes.set(v.scope!, scope);
+		}
 	}
 	for (const v of parseThemeVars(themeCss)) crawledVars.set(v.name, v);
+	for (const v of parseThemeScopes(themeCss)) {
+		crawledVars.set(`${v.scope}\u0000${v.name}`, v);
+		const scope = crawledThemes.get(v.scope!) ?? {};
+		scope[v.name] = v.value;
+		crawledThemes.set(v.scope!, scope);
+	}
 	const mergedThemeVars = [...crawledVars.values()];
 
 	// --- usage analytics over the app's styling call sites.
@@ -212,7 +226,12 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 
 	const tokenGraph = buildTokenGraph({
 		flatVars: mergedThemeVars,
-		themes: isDogfoodApp ? (examplePreset as unknown as { themes?: never }).themes : undefined,
+		themes: {
+			...(isDogfoodApp
+				? ((examplePreset as unknown as { themes?: Record<string, Record<string, string>> }).themes ?? {})
+				: {}),
+			...Object.fromEntries(crawledThemes),
+		},
 		components: isDogfoodApp
 			? (examplePreset as unknown as { components?: never }).components
 			: undefined,

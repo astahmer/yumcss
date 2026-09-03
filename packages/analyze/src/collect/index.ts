@@ -19,6 +19,7 @@ export {
 	groupThemeVars,
 	parseBridgeStats,
 	parseThemeVars,
+	parseThemeScopes,
 	parseUtilityUnions,
 	resolveChain,
 	splitTokenValue,

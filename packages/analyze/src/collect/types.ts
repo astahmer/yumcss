@@ -10,6 +10,8 @@
 export interface ThemeVar {
 	name: string;
 	value: string;
+	/** CSS selector scope for an override outside `@theme`, when present. */
+	scope?: string;
 }
 
 export interface UsageCount {

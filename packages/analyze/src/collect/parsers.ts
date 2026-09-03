@@ -42,6 +42,36 @@ export const parseThemeVars = (bridgeCss: string): Array<ThemeVar> => {
 };
 
 /**
+ * Parse flat CSS custom-property scopes such as `[data-theme="dark"] {
+ * --color-surface: #111; }`. The selector is preserved verbatim: theme
+ * names are project policy, while the inspector only needs the CSS cascade
+ * boundary. Blocks containing ordinary declarations are ignored so a
+ * component rule cannot be mistaken for a theme scope.
+ */
+export const parseThemeScopes = (css: string): Array<ThemeVar> => {
+	const vars: Array<ThemeVar> = [];
+	for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+		const selector = match[1]?.trim();
+		const body = match[2] ?? "";
+		if (selector === undefined || selector === "" || selector.startsWith("@")) continue;
+		const declarations = body
+			.split(";")
+			.map((declaration) => declaration.trim())
+			.filter((declaration) => declaration !== "");
+		if (declarations.length === 0) continue;
+		const parsed = declarations.map((declaration) =>
+			/^\s*(--[\w-]+)\s*:\s*(.+?)\s*$/.exec(declaration),
+		);
+		if (parsed.some((declaration) => declaration === null)) continue;
+		for (const declaration of parsed) {
+			if (declaration === null) continue;
+			vars.push({ name: declaration[1]!, value: declaration[2]!, scope: selector });
+		}
+	}
+	return vars;
+};
+
+/**
  * Summarize the per-key literal unions in a generated types.d.ts.
  * Lines look like `type TextColorValue = WithOpacityModifiers<"a" | "b">;`
  * or `type XValue = "a" | "b";`. The `(string & {})` escape hatch is

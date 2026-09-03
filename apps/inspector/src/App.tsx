@@ -355,7 +355,7 @@ function DesignSystemView(props: {
 									{vars
 										.filter((v: ThemeVar) => matchText(v.name) || matchText(v.value))
 										.map((v: ThemeVar) => (
-											<tr key={v.name}>
+																<tr key={`${v.scope ?? ":root"}:${v.name}`}>
 												<td>
 													{categorizeColor(v) !== null ? (
 														<span
@@ -363,7 +363,8 @@ function DesignSystemView(props: {
 															style={{ background: categorizeColor(v) ?? "" }}
 														/>
 													) : null}
-													<code>{v.name}</code>
+																				<code>{v.name}</code>
+																				{v.scope !== undefined ? <small> · {v.scope}</small> : null}
 												</td>
 												<td>{v.value}</td>
 											</tr>

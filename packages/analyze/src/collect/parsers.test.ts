@@ -4,6 +4,7 @@ import {
 	flattenTokenGroups,
 	groupThemeVars,
 	parseBridgeStats,
+	parseThemeScopes,
 	parseThemeVars,
 	parseUtilityUnions,
 	resolveChain,
@@ -20,6 +21,29 @@ describe("parseThemeVars", () => {
 	});
 	test("no theme block -> empty", () => {
 		expect(parseThemeVars(".foo {}")).toEqual([]);
+	});
+	test("preserves selector scopes without confusing component declarations", () => {
+		const scopes = parseThemeScopes(`
+			@theme { --color-base: #fff; }
+			[data-theme="dark"] { --color-base: #111; --color-accent: #f0f; }
+			.card { --local: red; color: var(--local); }
+		`);
+		expect(scopes).toMatchInlineSnapshot(`
+			[
+			  {
+			    "name": "--color-base",
+			    "scope": "[data-theme="dark"]",
+			    "value": "#111",
+			  },
+			  {
+			    "name": "--color-accent",
+			    "scope": "[data-theme="dark"]",
+			    "value": "#f0f",
+			  },
+			]
+		`);
+		expect(scopes).toHaveLength(2);
+		expect(scopes.every((scope) => scope.scope === '[data-theme="dark"]')).toBe(true);
 	});
 });
 

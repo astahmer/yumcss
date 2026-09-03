@@ -101,3 +101,14 @@ Feature: Playground migration lab
       | React Native      | react-native      |
       | Tokenami          | tokenami          |
       | Unocss            | unocss            |
+
+  Scenario Outline: every Pandwind API target is reachable in the browser
+    When I choose "<targetLabel>" from "to · target adapter"
+    Then the "to · target adapter" selector has value "<targetId>"
+    And the output pane for "<targetLabel>" is visible
+
+    Examples:
+      | targetLabel          | targetId     |
+      | Pandwind · css.class | pandwind/css |
+      | Pandwind · dss       | pandwind/dss |
+      | Pandwind · tw        | pandwind/tw  |

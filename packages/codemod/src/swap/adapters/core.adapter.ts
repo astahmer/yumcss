@@ -37,6 +37,13 @@ const CORE_DEPENDENCIES: AdapterDependencies = {
 	packages: [{ name: "pandwind", kind: "runtime" }],
 };
 
+/** Public target dialects exposed by the browser migration lab and CLI. */
+export const PANDWIND_API_DIALECTS = [
+	{ dialect: SwapSourceId.Css, label: "css.class" },
+	{ dialect: SwapSourceId.Dss, label: "dss" },
+	{ dialect: SwapSourceId.Tw, label: "tw" },
+] as const;
+
 const CORE_CAPABILITIES = (adapter: string): AdapterCapabilities => ({
 	schema: ADAPTER_CAPABILITIES_SCHEMA,
 	adapter,
@@ -170,7 +177,7 @@ function makeCoreAdapter(
 		}),
 		loadConfig: (context) => emptyConfig(id, context),
 		parse: (source, context) => parseCoreDialect(dialect, source, context),
-		emit: (program, context) => {
+			emit: (program, context) => {
 			const meta: PandwindMeta | undefined = context.meta;
 			if (meta === undefined)
 				return {
@@ -178,7 +185,16 @@ function makeCoreAdapter(
 					residuals: [{ kind: "config", text: id, hint: "Pandwind metadata is required" }],
 				};
 			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
-			return { text: result.text, imports: result.imports, residuals: [...result.residuals] };
+			return {
+				text: result.text,
+				imports: result.imports,
+				residuals: [...result.residuals],
+				// Core targets are emitted by the same versioned semantic projection
+				// that owns their parser. Keep that program as validation evidence;
+				// reparsing `$frame`/`$text` vocabulary as CSS properties would lose
+				// the target's design semantics before validation.
+				semantic: program,
+			};
 		},
 		validate: (source, target, residuals = []) => {
 			const canonicalSource = styleProgramToCanonicalCss(source);
