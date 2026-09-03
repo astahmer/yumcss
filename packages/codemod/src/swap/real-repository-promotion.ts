@@ -1,4 +1,5 @@
 import type { RealRepositoryReference } from "./real-repository-corpus.ts";
+import { RealRepositoryProofDimension } from "./identifiers.ts";
 
 /** Versioned orchestration result for installed real-repository promotion. */
 export const REAL_REPOSITORY_PROMOTION_SCHEMA = "pandwind.real-repository-promotion/1" as const;
@@ -68,7 +69,8 @@ export interface RealRepositoryPromotionRequest {
 	readonly install: readonly PromotionCommand[];
 	/** Explicit build/typecheck/lint (or equivalent) commands; an empty list is a failed proof. */
 	readonly checks: readonly PromotionCommand[];
-	readonly requireStreamingProof?: boolean;
+	/** Every claimed production dimension must be named by the repository plan. */
+	readonly proofDimensions: readonly RealRepositoryProofDimension[];
 }
 
 export interface RealRepositoryPromotionStageResult {
@@ -99,6 +101,28 @@ function errorText(error: unknown): string {
 
 function commandDetail(command: PromotionCommand, result: PromotionCommandResult): string {
 	return `${command.name} ${command.args.join(" ")} exited with ${result.code}`;
+}
+
+function missingProofDimensions(
+	proof: PromotionProofResult,
+	dimensions: readonly RealRepositoryProofDimension[],
+): readonly RealRepositoryProofDimension[] {
+	return dimensions.filter((dimension) => {
+		switch (dimension) {
+			case RealRepositoryProofDimension.CanonicalCss:
+				return !proof.canonicalCssEqual;
+			case RealRepositoryProofDimension.BrowserStates:
+				return !proof.browserEquivalent;
+			case RealRepositoryProofDimension.SsrHydration:
+				return !proof.hydrationEquivalent;
+			case RealRepositoryProofDimension.RscStreaming:
+				return proof.streamingEquivalent !== true;
+			case RealRepositoryProofDimension.Dependencies:
+				return false;
+			case RealRepositoryProofDimension.CssSize:
+				return proof.targetCssBytes > proof.sourceCssBytes;
+		}
+	});
 }
 
 async function runCommands(
@@ -145,6 +169,8 @@ export function createRealRepositoryPromotionRunner(
 			const { reference } = request;
 			const stages: RealRepositoryPromotionStageResult[] = [];
 			const errors: string[] = [];
+			if (request.proofDimensions.length === 0)
+				errors.push("proof stage has no declared dimensions");
 			let workspace: PromotionWorkspace | undefined;
 			let migration: PromotionMigrationResult | undefined;
 			let proof: PromotionProofResult | undefined;
@@ -209,21 +235,18 @@ export function createRealRepositoryPromotionRunner(
 
 			try {
 				proof = await driver.prove(reference, workspace, migration);
-				const streamingPassed =
-					!request.requireStreamingProof || proof.streamingEquivalent === true;
+				const missing = missingProofDimensions(proof, request.proofDimensions);
 				const passed =
-					proof.canonicalCssEqual &&
-					proof.browserEquivalent &&
-					proof.hydrationEquivalent &&
-					streamingPassed &&
-					proof.targetCssBytes <= proof.sourceCssBytes &&
+					missing.length === 0 &&
 					proof.errors.length === 0;
 				stages.push({
 					stage: RealRepositoryPromotionStageTag.Proof,
 					passed,
 					...(passed ? {} : { detail: "differential proof requirements failed" }),
 				});
-				if (!passed) errors.push("differential proof requirements failed");
+				if (missing.length > 0)
+					errors.push(`missing proof dimensions: ${missing.join(", ")}`);
+				if (proof.errors.length > 0) errors.push("differential proof reported runtime errors");
 			} catch (error) {
 				const detail = errorText(error);
 				stages.push({ stage: RealRepositoryPromotionStageTag.Proof, passed: false, detail });

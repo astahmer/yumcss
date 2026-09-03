@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	CodemodAdapterId,
 	RealRepositoryPromotionStageTag,
+	RealRepositoryProofDimension,
 	createRealRepositoryPromotionRunner,
 	type PromotionCommand,
 	type RealRepositoryPromotionDriver,
@@ -20,6 +21,13 @@ const reference: RealRepositoryReference = {
 };
 
 const command: PromotionCommand = { name: "pnpm", args: ["build"], cwd: "/tmp/fixture" };
+const proofDimensions = [
+	RealRepositoryProofDimension.CanonicalCss,
+	RealRepositoryProofDimension.BrowserStates,
+	RealRepositoryProofDimension.SsrHydration,
+	RealRepositoryProofDimension.Dependencies,
+	RealRepositoryProofDimension.CssSize,
+] as const;
 
 function driver(
 	overrides: Partial<RealRepositoryPromotionDriver> = {},
@@ -47,6 +55,7 @@ describe("real repository promotion runner", () => {
 			reference,
 			install: [command],
 			checks: [command],
+			proofDimensions,
 		});
 
 		expect(result.status).toBe("passed");
@@ -111,7 +120,7 @@ describe("real repository promotion runner", () => {
 			driver({
 				migrate: async () => ({ converted: 1, skipped: 1, residuals: 1, manualChanges: 0 }),
 			}),
-		).run({ reference, install: [command], checks: [command] });
+		).run({ reference, install: [command], checks: [command], proofDimensions });
 
 		expect(result.status).toBe("failed");
 		expect(result.proof).toBeUndefined();
@@ -125,14 +134,14 @@ describe("real repository promotion runner", () => {
 	test("requires streaming proof only when the host claims it", async () => {
 		const result = await createRealRepositoryPromotionRunner(driver()).run({
 			reference,
-		install: [command],
-		checks: [command],
-			requireStreamingProof: true,
+			install: [command],
+			checks: [command],
+			proofDimensions: [...proofDimensions, RealRepositoryProofDimension.RscStreaming],
 		});
 
 		expect(result.status).toBe("failed");
 		expect(result.proof?.streamingEquivalent).toBeNull();
-		expect(result.errors).toEqual(["differential proof requirements failed"]);
+		expect(result.errors).toEqual(["missing proof dimensions: rsc-streaming"]);
 	});
 
 	test("fails closed when install or project checks are not configured", async () => {
@@ -140,6 +149,7 @@ describe("real repository promotion runner", () => {
 			reference,
 		install: [],
 		checks: [],
+		proofDimensions,
 		});
 
 		expect(result.status).toBe("failed");

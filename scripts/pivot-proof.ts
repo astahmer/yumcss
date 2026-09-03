@@ -18,6 +18,7 @@ import {
 import { adapterContractFixtures } from "../packages/codemod/proof/adapter-contract-fixtures.ts";
 import { completeAdapterMatrixFixtures } from "../packages/codemod/proof/adapter-matrix-fixtures.ts";
 import { createReferenceWorkspace } from "./reference-workspace.ts";
+import { createPinnedReferenceRepositoryCatalog } from "./reference-repository-catalog.ts";
 
 const root = resolve(import.meta.dirname, "..");
 const proofMatrixPath = resolve(root, "plans/evidence/real-browser-ssr-proof-matrix.json");
@@ -25,6 +26,7 @@ const proofMatrixPath = resolve(root, "plans/evidence/real-browser-ssr-proof-mat
 interface ProofMatrixClaim {
 	readonly id: string;
 	readonly sourceAdapter: string;
+	readonly referenceCommit: string;
 	readonly report: string;
 	readonly server: { readonly checked: boolean };
 	readonly browser: {
@@ -125,7 +127,19 @@ function runOfflineGate(): void {
 	const matrix = readCheckedInProofMatrix();
 	const fixtureOnlyAdapters = new Set(matrix.fixtureOnlyAdapters ?? []);
 	const references = createRealRepositoryCorpus().references;
+	const pinnedReferences = createPinnedReferenceRepositoryCatalog();
 	const referencedAdapters = new Set(references.map((reference) => reference.from));
+	for (const claim of matrix.claims) {
+		const reference = pinnedReferences.find(
+			(candidate) => candidate.commit === claim.referenceCommit,
+		);
+		if (reference === undefined)
+			throw new Error(
+				`${claim.id} is not backed by a pinned corpus reference for ${claim.sourceAdapter}`,
+			);
+		if (fixtureOnlyAdapters.has(claim.sourceAdapter))
+			throw new Error(`${claim.id} is both promoted and marked fixture-only`);
+	}
 	for (const adapter of catalog.adapters) {
 		if (adapter.id === CodemodAdapterId.Pandwind || adapter.id === CodemodAdapterId.ReactNative)
 			continue;
