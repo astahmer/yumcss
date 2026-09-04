@@ -116,11 +116,20 @@ than silently dropping it.
 
 `ClassNameStrategy` is the port between semantic styles and a target naming
 system. `createTwAdapter()` maps declarations to generated Tailwind utilities;
-`createStyleXAdapter()` emits StyleX-shaped atomic identities; named or atomic
-strategies can keep a stylesheet-backed identity. Strategies must preserve
-deterministic identity and expose capability/lossiness behavior to compilers
-and adapters. Pass resolved condition metadata to `createStyleXAdapter` when
-custom selectors or at-rules need to participate in the identity hash.
+`createStyleXAdapter()` emits StyleX-shaped atomic identities;
+`createPandaAdapter()` emits Panda's non-hash atomic names (verified against
+the real @pandacss/shared runtime; hash mode stays unsupported because the
+hash depends on the user's generator config); `createUnoCssAdapter()` emits
+UnoCSS arbitrary-property candidates with variant prefixes (verified against
+the real @unocss/core generator + preset-mini; preset vocabulary is not
+guessed). Named or atomic strategies can keep a stylesheet-backed identity.
+Strategies must preserve deterministic identity and expose
+capability/lossiness behavior to compilers and adapters. Pass resolved
+condition metadata to `createStyleXAdapter` / `createPandaAdapter` /
+`createUnoCssAdapter` when custom selectors or at-rules need to participate.
+Configurations outside a strategy's verified shape fail closed: unknown
+conditions and `$input` dynamics throw; unrepresentable values return `null`
+and fall back to the atomic engine instead of emitting dead classes.
 
 ## Presets and themes
 
