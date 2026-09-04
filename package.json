@@ -61,6 +61,8 @@
 		"playwright-bdd": "9.2.0",
 		"playwright-core": "1.61.1",
 		"pngjs": "7.0.0",
+		"less": "^4.9.1",
+		"sass": "^1.103.1",
 		"typescript": "7.0.2"
 	}
 }

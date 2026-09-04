@@ -38,6 +38,8 @@ import {
 } from "./lowering.ts";
 import type { StyleSystemRegistry } from "./style-systems.ts";
 import { MigrationOutput } from "./migration-output.ts";
+import type { ProjectModuleLoader } from "./project-module-loader.ts";
+import { NODE_PROJECT_MODULE_LOADER } from "./project-module-loader.ts";
 import { createBrowserCodemodCatalog } from "./browser-adapter-catalog.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
@@ -185,6 +187,8 @@ export interface AdapterMigrationOptions {
 	readonly skipMarker?: string;
 	/** Optional registry for third-party or core dialect routes. */
 	readonly registry?: StyleSystemRegistry;
+	/** Optional module loader override for official ecosystem package resolution. */
+	readonly moduleLoader?: ProjectModuleLoader;
 	/** Optional adapter registry, including adapters discovered from plugins. */
 	readonly adapterRegistry?: StyleAdapterRegistry;
 	/** Optional target-aware semantic lowering registry. */
@@ -258,12 +262,32 @@ interface LoadedAdapterConfigs {
 
 const defaultAdapterRegistry = createBrowserCodemodCatalog().registry;
 
-async function resolveNodeAdapterRegistry(): Promise<StyleAdapterRegistry> {
+async function resolveNodeAdapterRegistry(moduleLoader?: ProjectModuleLoader): Promise<StyleAdapterRegistry> {
 	// Keep this lazy so the browser catalog never pulls Node module loading into
 	// the playground. The built package must resolve the emitted JavaScript
 	// sibling; importing the source `.ts` path only works before publication.
 	const { createBuiltinCodemodCatalog } = await import(/* @vite-ignore */ "./adapter-catalog.js");
-	return createBuiltinCodemodCatalog().registry;
+	return createBuiltinCodemodCatalog(moduleLoader).registry;
+}
+
+/**
+ * Migration callers may inject a loader scoped to a harness root (sandbox,
+ * proof script) while adapters resolve optional packages from the migrated
+ * project root. The fallback order preserves that boundary: project first,
+ * caller-provided loader second.
+ */
+function withProjectLoaderFallback(fallback: ProjectModuleLoader): ProjectModuleLoader {
+	return {
+		async importPackage<T>(packageName: string, root: string): Promise<T | undefined> {
+			return (
+				(await NODE_PROJECT_MODULE_LOADER.importPackage<T>(packageName, root)) ??
+				(await fallback.importPackage<T>(packageName, root))
+			);
+		},
+		importFile<T>(file: string): Promise<T | undefined> {
+			return NODE_PROJECT_MODULE_LOADER.importFile<T>(file);
+		},
+	};
 }
 
 function configurationFailure(
@@ -383,7 +407,13 @@ export async function runAdapterMigrationAsync(
 	source: string,
 	options: AdapterMigrationOptions,
 ): Promise<AdapterMigrationResult> {
-	const adapterRegistry = options.adapterRegistry ?? (await resolveNodeAdapterRegistry());
+	const adapterRegistry =
+		options.adapterRegistry ??
+		(await resolveNodeAdapterRegistry(
+			options.moduleLoader === undefined
+				? undefined
+				: withProjectLoaderFallback(options.moduleLoader),
+		));
 	const route = (options.registry ?? adapterRegistry.toStyleSystemRegistry()).resolveRoute(
 		options.from,
 		options.to,

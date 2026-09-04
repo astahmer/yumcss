@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { NODE_PROJECT_MODULE_LOADER } from "./project-module-loader.ts";
+import { NODE_PROJECT_MODULE_LOADER, type ProjectModuleLoader } from "./project-module-loader.ts";
 import { createBuiltinAdapterPlugin } from "./adapters/plugin.ts";
 import { createCrossModuleConstResolver } from "pandwind/vite/cross-module-consts";
 import type { AdapterConfigContext, StyleAdapter } from "./adapter-contract.ts";
@@ -8,9 +8,11 @@ import { createCodemodAdapterCatalog, type CodemodAdapterCatalog } from "./adapt
 export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 
 /** Build the default composition root without exposing adapter implementation modules. */
-export function createBuiltinCodemodCatalog(): CodemodAdapterCatalog {
+export function createBuiltinCodemodCatalog(
+	moduleLoader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
+): CodemodAdapterCatalog {
 	const sourcePlugin = createBuiltinAdapterPlugin(
-		NODE_PROJECT_MODULE_LOADER,
+		moduleLoader,
 		createCrossModuleConstResolver(),
 	);
 	const readFile = (file: string): string | undefined => {

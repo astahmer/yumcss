@@ -73,6 +73,11 @@ const additionalReferences: readonly PinnedReferenceRepository[] = [
 		commit: "713331655e437401dfea6cd233893a69762734e1",
 	},
 	{
+		id: "bootstrap",
+		repository: "https://github.com/twbs/bootstrap",
+		commit: "12cb8b902d175a0d612f1280f58b386a09921a16",
+	},
+	{
 		id: "vanilla-extract",
 		repository: "https://github.com/vanilla-extract-css/vanilla-extract",
 		commit: "881c256a867f55386f96a7fe95068300bac720e6",

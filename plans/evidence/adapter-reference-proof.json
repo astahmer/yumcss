@@ -215,13 +215,51 @@
       "migration": {
         "detected": true,
         "converted": 8,
-        "skipped": 0,
-        "residuals": 0,
+        "skipped": 7,
+        "residuals": 7,
         "validations": 8,
-        "valid": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "configuration": 7
+        },
+        "residualDetails": [
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          },
+          {
+            "kind": "configuration",
+            "text": "createRenderer(",
+            "hint": "Fela renderer configuration and plugins require target-aware lowering"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
@@ -248,13 +286,27 @@
       "migration": {
         "detected": true,
         "converted": 1,
-        "skipped": 0,
-        "residuals": 0,
+        "skipped": 2,
+        "residuals": 2,
         "validations": 1,
-        "valid": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "capability": 1,
+          "parse": 1
+        },
+        "residualDetails": [
+          {
+            "kind": "capability",
+            "text": "css({ foo: 1 });\n\n        expect(hash).toBeCalledWith({ foo: 1 }, 'getSheet()', undefined, undefined, undefined);\n        expect(compile).not.toBeCalled();\n        expect(getSheet).toBeCalled();\n        expect(out).toEqual('hash()');\n    });\n\n    it('args: array', () => {\n        const propsBased = jest.fn().mockReturnValue({\n            backgroundColor: 'gold'\n        });\n        const payload = [{ foo: 1 }, { baz: 2 }, { opacity: 0, color: 'red' }, propsBased];\n        const out = css(payload);\n\n        expect(propsBased).toHaveBeenCalled();\n        expect(hash).toBeCalledWith(\n            { foo: 1, baz: 2, opacity: 0, color: 'red', backgroundColor: 'gold' },\n            'getSheet()',\n            undefined,\n            undefined,\n            undefined\n        );\n        expect(compile).not.toBeCalled();\n        expect(getSheet).toBeCalled();\n        expect(out).toEqual('hash()');\n    });\n\n    it('args: function', () => {\n        const incoming = { foo: 'foo' };\n        const out = css.call({ p: incoming }, (props) => ({ foo: props.foo }));\n\n        expect(hash).toBeCalledWith(incoming, 'getSheet()', undefined, undefined, undefined);\n        expect(compile).not.toBeCalled();\n        expect(getSheet).toBeCalled();\n        expect(out).toEqual('hash()');\n    });\n\n    it('bind', () => {\n        const target = '';\n        const p = {};\n        const g = true;\n        const out = css.bind({\n            target,\n            p,\n            g\n        })`foo: 1`",
+            "hint": "goober function-valued styles require a host-specific lowering"
+          },
+          {
+            "kind": "parse",
+            "text": "base${1}",
+            "hint": "goober nested template CSS requires a rule parser"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
@@ -292,8 +344,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1344,
-        "targetBytes": 1344,
+        "sourceBytes": 1129,
+        "targetBytes": 1129,
         "notLarger": true
       },
       "browser": {
@@ -325,8 +377,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 86,
-        "targetBytes": 86,
+        "sourceBytes": 76,
+        "targetBytes": 76,
         "notLarger": true
       },
       "browser": {
@@ -379,10 +431,10 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 4,
+        "converted": 6,
         "skipped": 0,
         "residuals": 0,
-        "validations": 4,
+        "validations": 6,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -391,15 +443,15 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 213,
-        "targetBytes": 213,
+        "sourceBytes": 291,
+        "targetBytes": 291,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 4,
+        "samples": 6,
         "errors": []
       }
     },
@@ -412,27 +464,60 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 9,
-        "skipped": 0,
-        "residuals": 0,
-        "validations": 9,
-        "valid": true,
+        "converted": 6,
+        "skipped": 3,
+        "residuals": 6,
+        "validations": 6,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "dynamic": 6
+        },
+        "residualDetails": [
+          {
+            "kind": "dynamic",
+            "text": "${({ border = 1, color = \"gainsboro\" }): string => `${border}px solid ${color}`}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "${({ bold = false }): string | number => (bold ? \"bold\" : 100)}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "${({ border = 1, theme }): string =>\n        `${border}px solid ${theme?.colors.primary ?? \"black\"}`}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "${({ bold = false }): string | number => (bold ? \"bold\" : 100)}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "${({ border = 1, color = \"gainsboro\" }): string => `${border}px solid ${color}`}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          },
+          {
+            "kind": "dynamic",
+            "text": "${({ bold = false }): string | number => (bold ? \"bold\" : 100)}",
+            "hint": "solid-styled function interpolation requires a framework prop wrapper"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1026,
-        "targetBytes": 1026,
+        "sourceBytes": 329,
+        "targetBytes": 329,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 9,
+        "samples": 6,
         "errors": []
       }
     },
@@ -457,8 +542,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 1487,
-        "targetBytes": 1487,
+        "sourceBytes": 1485,
+        "targetBytes": 1485,
         "notLarger": true
       },
       "browser": {
@@ -490,8 +575,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 289,
-        "targetBytes": 289,
+        "sourceBytes": 276,
+        "targetBytes": 276,
         "notLarger": true
       },
       "browser": {
@@ -644,13 +729,26 @@
       "migration": {
         "detected": true,
         "converted": 1,
-        "skipped": 0,
-        "residuals": 0,
+        "skipped": 2,
+        "residuals": 2,
         "validations": 1,
-        "valid": true,
+        "valid": false,
         "differences": [],
-        "residualKinds": {},
-        "residualDetails": []
+        "residualKinds": {
+          "runtime-context": 2
+        },
+        "residualDetails": [
+          {
+            "kind": "runtime-context",
+            "text": "import { ThemeProvider } from '@mui/material/styles';",
+            "hint": "MUI providers require target-aware theme and style-engine lowering"
+          },
+          {
+            "kind": "runtime-context",
+            "text": "<ThemeProvider\n      theme={{\n        palette: {\n          primary: {\n            main: '#007FFF',\n            dark: '#0066CC',\n          },\n        },\n      }}\n    >",
+            "hint": "MUI providers require target-aware theme and style-engine lowering"
+          }
+        ]
       },
       "canonicalCss": {
         "checked": true,
@@ -721,8 +819,8 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 367,
-        "targetBytes": 367,
+        "sourceBytes": 338,
+        "targetBytes": 338,
         "notLarger": true
       },
       "browser": {
@@ -742,10 +840,404 @@
       "execution": "adapter-program",
       "migration": {
         "detected": true,
-        "converted": 12,
+        "converted": 11,
+        "skipped": 1,
+        "residuals": 2,
+        "validations": 11,
+        "valid": false,
+        "differences": [],
+        "residualKinds": {
+          "unknown-utility": 2
+        },
+        "residualDetails": [
+          {
+            "kind": "unknown-utility",
+            "text": "bg-foreground",
+            "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "text-background",
+            "hint": "UnoCSS utility requires the project resolver/preset to be loaded"
+          }
+        ]
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 6992,
+        "targetBytes": 6992,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 11,
+        "errors": []
+      }
+    },
+    {
+      "id": "tailwindcss-docs-home",
+      "repository": "https://github.com/tailwindlabs/tailwindcss.com",
+      "commit": "bd868a314bd05ca78acd047e3da289274dd6ccd7",
+      "path": "src/app/page.tsx",
+      "adapter": "tailwind",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 0,
+        "skipped": 11,
+        "residuals": 62,
+        "validations": 0,
+        "valid": false,
+        "differences": [],
+        "residualKinds": {
+          "unknown-utility": 62
+        },
+        "residualDetails": [
+          {
+            "kind": "unknown-utility",
+            "text": "max-w-screen",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "overflow-x-hidden",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "fixed",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "inset-x-0",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "top-0",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "z-10",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-b",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-black/5",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "dark:border-white/10",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "grid",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "min-h-dvh",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "grid-cols-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "grid-rows-[1fr_1px_auto_1px_auto]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "justify-center",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "pt-14.25",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:-mx-4",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:grid-cols-[var(--gutter-width)_minmax(0,var(--breakpoint-2xl))_var(--gutter-width)]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "lg:mx-0",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "col-start-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-span-full",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-start-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "hidden",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-x",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-x-(--pattern-fg)",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-[repeating-linear-gradient(315deg,var(--pattern-fg)_0,var(--pattern-fg)_1px,transparent_0,transparent_50%)]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-size-[10px_10px]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-fixed",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "[--pattern-fg:var(--color-black)]/5",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:block",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "dark:[--pattern-fg:var(--color-white)]/10",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "grid",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "gap-24",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "pb-24",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "text-gray-950",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "sm:gap-40",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:pb-40",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "dark:text-white",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-span-full",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-start-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "hidden",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-x",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "border-x-(--pattern-fg)",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-[repeating-linear-gradient(315deg,var(--pattern-fg)_0,var(--pattern-fg)_1px,transparent_0,transparent_50%)]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-size-[10px_10px]",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "bg-fixed",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "[--pattern-fg:var(--color-black)]/5",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:col-start-3",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:block",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "dark:[--pattern-fg:var(--color-white)]/10",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "col-start-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-start-3",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:col-start-2",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "*:first:border-l-0",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "*:last:border-r-0",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "col-start-1",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "row-start-5",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "grid",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:col-start-2",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "px-4",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "md:px-6",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "lg:px-8",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          },
+          {
+            "kind": "unknown-utility",
+            "text": "fixed!",
+            "hint": "Tailwind utility requires the project engine or a custom preset"
+          }
+        ]
+      },
+      "canonicalCss": {
+        "checked": false,
+        "equal": false,
+        "sourceBytes": 0,
+        "targetBytes": 0,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": false,
+        "equivalent": false,
+        "hydrationEquivalent": false,
+        "samples": 0,
+        "errors": [
+          "migration did not expose an adapter-level canonical CSS pair"
+        ]
+      }
+    },
+    {
+      "id": "tamagui-remix-starter",
+      "repository": "https://github.com/tamagui/tamagui",
+      "commit": "25d97e1ab6bc5d09e83c7776f61d6b0852048678",
+      "path": "code/starters/remix/app/routes/_index.tsx",
+      "adapter": "tamagui",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 3,
         "skipped": 0,
         "residuals": 0,
-        "validations": 12,
+        "validations": 3,
         "valid": true,
         "differences": [],
         "residualKinds": {},
@@ -754,19 +1246,151 @@
       "canonicalCss": {
         "checked": true,
         "equal": true,
-        "sourceBytes": 4613,
-        "targetBytes": 4613,
+        "sourceBytes": 334,
+        "targetBytes": 334,
         "notLarger": true
       },
       "browser": {
         "checked": true,
         "equivalent": true,
         "hydrationEquivalent": true,
-        "samples": 12,
+        "samples": 3,
+        "errors": []
+      }
+    },
+    {
+      "id": "astryx-not-found-module",
+      "repository": "https://github.com/facebook/astryx",
+      "commit": "8359f1a3601766e3a96ae0805e9487ac3dc17754",
+      "path": "apps/docsite/src/app/not-found.module.css",
+      "adapter": "css-modules",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 102,
+        "targetBytes": 102,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "bootstrap-badge-scss",
+      "repository": "https://github.com/twbs/bootstrap",
+      "commit": "12cb8b902d175a0d612f1280f58b386a09921a16",
+      "path": "scss/helpers/_stacks.scss",
+      "adapter": "sass",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 2,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 2,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 138,
+        "targetBytes": 138,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 2,
+        "errors": []
+      }
+    },
+    {
+      "id": "less-post-processor",
+      "repository": "https://github.com/less/less.js",
+      "commit": "713331655e437401dfea6cd233893a69762734e1",
+      "path": "packages/less/test/browser/less/postProcessor/postProcessor.less",
+      "adapter": "less",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 1,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 1,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 14,
+        "targetBytes": 14,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 1,
+        "errors": []
+      }
+    },
+    {
+      "id": "posthog-global-authored-css",
+      "repository": "https://github.com/PostHog/posthog.com",
+      "commit": "8a1619a0f2ec72d7d2d560d4fb5c9eca551b04ff",
+      "path": "src/components/Layout/SkeletonLoading.css",
+      "adapter": "authored-css",
+      "execution": "adapter-program",
+      "migration": {
+        "detected": true,
+        "converted": 5,
+        "skipped": 0,
+        "residuals": 0,
+        "validations": 5,
+        "valid": true,
+        "differences": [],
+        "residualKinds": {},
+        "residualDetails": []
+      },
+      "canonicalCss": {
+        "checked": true,
+        "equal": true,
+        "sourceBytes": 121,
+        "targetBytes": 121,
+        "notLarger": true
+      },
+      "browser": {
+        "checked": true,
+        "equivalent": true,
+        "hydrationEquivalent": true,
+        "samples": 5,
         "errors": []
       }
     }
   ],
   "passed": 23,
-  "failed": 0
+  "failed": 6
 }

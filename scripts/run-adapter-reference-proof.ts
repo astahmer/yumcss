@@ -28,6 +28,26 @@ const root = resolve(import.meta.dirname, "..");
 const referencesRoot = createReferenceWorkspace().root;
 const requireFromExample = createRequire(join(root, "examples/showcase/package.json"));
 const { chromium } = requireFromExample("playwright-core") as typeof import("playwright-core");
+const requireFromRoot = createRequire(join(root, "package.json"));
+
+/**
+ * Optional ecosystem compilers (sass, less) are Pandwind devDependencies, not
+ * upstream-repository dependencies. Project-first resolution keeps the host
+ * boundary; this fallback lets pinned excerpts compile without installing
+ * their full upstream lockfiles.
+ */
+const harnessModuleLoader = {
+	async importPackage<T>(packageName: string, projectRoot: string): Promise<T | undefined> {
+		try {
+			return requireFromRoot(packageName) as T;
+		} catch {
+			return undefined;
+		}
+	},
+	async importFile<T>(file: string): Promise<T | undefined> {
+		return undefined;
+	},
+};
 
 interface CanonicalValidation {
 	readonly canonicalSource: string;
@@ -217,6 +237,7 @@ async function proveReference(
 		to: reference.to,
 		file: reference.path,
 		root: projectRoot,
+		moduleLoader: harnessModuleLoader,
 		semantic: { source: { file: reference.path, framework: reference.framework } },
 	});
 	const validations = migration.validations as readonly CanonicalValidation[];

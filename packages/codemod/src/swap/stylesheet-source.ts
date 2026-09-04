@@ -698,7 +698,7 @@ export function createStylesheetFileMigration(
 			for (const [index, match] of matches.entries()) {
 				const rule = match.program.rules[0];
 				const name = rule?.name;
-				if (rule === undefined || name === undefined || !/^[A-Za-z_$][\w$]*$/u.test(name)) {
+				if (rule === undefined || name === undefined || !/^[A-Za-z_$][\w$-]*$/u.test(name)) {
 					residuals.push({
 						kind: "capability",
 						text: rule?.selector ?? match.sourceText,

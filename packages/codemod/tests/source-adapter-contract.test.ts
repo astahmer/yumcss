@@ -62,14 +62,19 @@ describe("non-CSS-in-JS source adapter contract", () => {
 
 		expect(result.changed).toBe(false);
 		expect(result.converted).toBe(0);
-		expect(result.code).toBe(source);
+		// Global-selector rules fail closed, so the whole file is skipped:
+		// preserved source under the visible marker plus the capability
+		// residual naming the offending selector.
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain(":global(.reset) { margin: 0; } .card { color: red; }");
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "capability" })]),
 		);
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": false,
-			  "code": ":global(.reset) { margin: 0; } .card { color: red; }",
+			  "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			:global(.reset) { margin: 0; } .card { color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
 			  "fileChanges": [],
@@ -129,7 +134,16 @@ describe("non-CSS-in-JS source adapter contract", () => {
 			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": "&{color:red}",
+			      "canonicalTarget": "&{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
