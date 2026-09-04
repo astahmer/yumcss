@@ -60,6 +60,8 @@ interface Prepared {
 	exportNames: Array<string>;
 	/** Span of the final expression statement, if present. */
 	lastExpr?: { start: number; end: number };
+	/** Module-level names the file declares itself (they shadow builtins). */
+	declaredNames: Array<string>;
 }
 
 /**
@@ -149,7 +151,7 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	].sort((left, right) => right[0] - left[0]);
 	let evalCode = code;
 	for (const [start, end] of edits) evalCode = evalCode.slice(0, start) + evalCode.slice(end);
-	return { evalCode, imports, exportNames };
+	return { evalCode, imports, exportNames, declaredNames: [] };
 }
 
 /**
@@ -158,7 +160,7 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
  */
 /** Evaluation modes: the entry tab wraps its final expression as the
  * result; sibling tabs run whole and hand back their exported bindings. */
-export type EvalMode = "entry" | "module";
+type EvalMode = "entry" | "module";
 
 function prepare(code: string, mode: EvalMode): Prepared {
 	const base = stripModule(code);
@@ -168,6 +170,22 @@ function prepare(code: string, mode: EvalMode): Prepared {
 		body?: Array<{ type: string; start: number; end: number }>;
 	};
 	const statements = program.body ?? [];
+	// Module-declared names shadow the sandbox builtins: an example that
+	// says `const css = createCss()` must receive its own css, not the
+	// prebuilt binding injected under the same identifier.
+	const declaredNames: Array<string> = [];
+	for (const statement of statements) {
+		const s = statement as unknown as {
+			type: string;
+			declarations?: Array<{ id?: { name?: string } }>;
+			id?: { name?: string };
+		};
+		if (s.type === "VariableDeclaration") {
+			for (const decl of s.declarations ?? []) if (decl.id?.name) declaredNames.push(decl.id.name);
+		} else if (s.type === "FunctionDeclaration" || s.type === "ClassDeclaration") {
+			if (s.id?.name) declaredNames.push(s.id.name);
+		}
+	}
 	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon.
 	let lastExpr: { start: number; end: number } | undefined;
 	for (const statement of statements) {
@@ -200,6 +218,7 @@ function prepare(code: string, mode: EvalMode): Prepared {
 	return {
 		body,
 		consts,
+		declaredNames,
 		exprText,
 		evalCode,
 		imports: base.imports,
@@ -391,6 +410,16 @@ export function evalPlayground(input: EvalInput): PlaygroundResult {
 	return evalGuarded(input, "entry");
 }
 
+/** Builtins the sandbox injects; a module-local declaration shadows them. */
+const SANDBOX_BUILTINS = ["tw", "css", "cx", "props", "createCss"];
+
+function sandboxNames(prepared: Prepared): string[] {
+	return dedupe([
+		...SANDBOX_BUILTINS.filter((name) => !prepared.declaredNames.includes(name)),
+		...prepared.imports.map((imp) => imp.local),
+	]);
+}
+
 /**
  * Evaluate a sibling tab in module mode and return its exported bindings.
  * Errors come back as a thrown Error so the caller can surface which tab
@@ -401,7 +430,7 @@ export function evalSiblingModule(input: EvalInput): Record<string, unknown> {
 	if (code === "") throw new Error("nothing to evaluate");
 	const prepared = prepare(code, "module");
 	const sandbox = buildSandbox(input, prepared, input.tw, input.css, input.cx);
-	const names = dedupe(["tw", "css", "cx", "props", "createCss", ...prepared.imports.map((imp) => imp.local)]);
+	const names = sandboxNames(prepared);
 	const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
 	return (fn(sandbox) ?? {}) as Record<string, unknown>;
 }
@@ -573,16 +602,11 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	// bare-call tests and quick snippets keep working without an import.
 	const sandbox = buildSandbox(input, prepared, tw, css, cx);
 	let captured: { value?: unknown } = {};
-	if (prepared.imports.length > 0) {
-		const names = dedupe(["tw", "css", "cx", "props", "createCss", ...prepared.imports.map((imp) => imp.local)]);
-		const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
-		captured = (fn(sandbox) ?? {}) as { value?: unknown };
-	} else {
-		const fn = new Function("tw", "css", "cx", "props", "createCss", `"use strict";\n${prepared.body}`);
-		captured = (fn(tw, css, cx, sandbox["props"], sandbox["createCss"]) ?? {}) as {
-			value?: unknown;
-		};
-	}
+	// One destructured scope for every module: builtins filtered by local
+	// shadows plus import bindings, so an example's own `const css` wins.
+	const names = sandboxNames(prepared);
+	const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
+	captured = (fn(sandbox) ?? {}) as { value?: unknown };
 
 	// The final expression may be a class string, a declaration map (plain
 	// css() / css.raw()), or a { class, style } pair from css.vars().

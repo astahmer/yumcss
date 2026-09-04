@@ -73,6 +73,7 @@ export function EditorPane(props: {
 	code: string;
 	onChange: (next: string) => void;
 	onRun: () => void;
+	filePath?: string;
 	className?: string;
 }) {
 	return (
@@ -93,7 +94,7 @@ export function EditorPane(props: {
 					height="100%"
 					defaultLanguage="typescript"
 					theme="pandwind"
-					path="file:///pandwind/playground/Example.tsx"
+					path={props.filePath ?? "file:///pandwind/playground/Example.tsx"}
 					beforeMount={(monaco) => {
 						defineTheme(monaco);
 						configureTypeScript(monaco);
