@@ -441,6 +441,20 @@ complete merely because an adapter is registered.
 - [ ] Each adapter has a real pinned repository corpus and appropriate
       build/typecheck/lint/browser/SSR acceptance evidence.
 
+## Execution status (updated as work lands)
+
+- [x] Task 1 — directional + roundtrip test matrix: 930 directional and 930
+      roundtrip tests covering every registered source/target pair, including
+      the plan-055 source adapters (revision vvtlnyptx).
+- [x] Task 2 — pinned real-repository corpus + adapter-program proof run:
+      Tamagui, CSS Modules (Sass and Less variants), raw authored CSS, and
+      Vanilla Extract corpus pins; proof run with residual-by-design failures
+      kept explicit, not gamed (revisions ryrwnkzs, zzpluzpu).
+- [x] Task 3 — playground migration-lab plan-055 samples: dedicated samples
+      and snapshot/assertion tests for Tamagui, authored CSS, CSS Modules,
+      Sass, and Less migrations plus roundtrip legs; stale editor-types
+      dependency assertion fixed as fallout (revision rylmpwnn).
+
 ## Decisions log
 
 | Date       | Decision                                                               | Rationale                                                                                            |
