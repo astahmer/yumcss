@@ -1,5 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { CodemodAdapterId, PANDWIND_API_DIALECTS } from "pandwind-codemod/swap/browser";
+import {
+	BUILTIN_CODEMOD_ADAPTER_IDS,
+	CodemodAdapterId,
+	PANDWIND_API_DIALECTS,
+} from "pandwind-codemod/swap/browser";
 import { createMigrationLab } from "./migration-lab.ts";
 
 describe("migration lab", () => {
@@ -13,6 +17,17 @@ describe("migration lab", () => {
 		expect(targetIds).toContain(CodemodAdapterId.Pandwind);
 		for (const { dialect } of PANDWIND_API_DIALECTS)
 			expect(targetIds).toContain(`${CodemodAdapterId.Pandwind}/${dialect}`);
+	});
+
+	test("offers at least one scenario for every built-in adapter", () => {
+		const lab = createMigrationLab();
+		const covered = new Set(
+			lab.sources
+				.filter((endpoint) => lab.scenariosFor(endpoint.id).length > 0)
+				.map((endpoint) => endpoint.id),
+		);
+
+		expect(covered).toEqual(new Set(BUILTIN_CODEMOD_ADAPTER_IDS));
 	});
 
 	test.each(PANDWIND_API_DIALECTS.map(({ dialect, label }) => [dialect, label] as const))(

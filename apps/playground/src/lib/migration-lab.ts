@@ -9,6 +9,11 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "pandwind-codemod/swap/browser";
+import {
+	officialApiCases,
+	officialApiFamilyCases,
+	type OfficialApiCase,
+} from "pandwind-codemod/swap/official-api-cases";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 
 export interface MigrationLabEndpoint {
@@ -41,10 +46,24 @@ interface MigrationLabError {
 	readonly message: string;
 }
 
+export interface MigrationLabScenario {
+	readonly key: string;
+	readonly name: string;
+	readonly file?: string;
+	readonly source: string;
+	readonly expectation?:
+		| "converted"
+		| "runtime"
+		| "residual"
+		| "identity"
+		| "context";
+}
+
 export interface MigrationLab {
 	readonly sources: readonly MigrationLabEndpoint[];
 	readonly targets: readonly MigrationLabEndpoint[];
 	readonly sampleFor: (id: string) => string;
+	readonly scenariosFor: (id: string) => readonly MigrationLabScenario[];
 	readonly migrate: (
 		from: string,
 		to: string,
@@ -317,6 +336,26 @@ export function createMigrationLab(): MigrationLab {
 		sampleFor: (id) =>
 			SAMPLE_SOURCES[id as CodemodAdapterId] ??
 			`// No built-in sample yet for ${id}. Paste a source file to try this adapter.`,
+		scenariosFor: (id) => {
+			const primary = officialApiCases()
+				.filter((api) => api.adapter === id)
+				.map((api, index) => ({
+					key: "primary-" + index,
+					name: api.name,
+					file: api.file,
+					source: api.source,
+				}));
+			const families = officialApiFamilyCases()
+				.filter((api) => api.adapter === id)
+				.map((api, index) => ({
+					key: "family-" + index,
+					name: api.name,
+					file: api.file,
+					source: api.source,
+					expectation: api.expectation,
+				}));
+			return [...primary, ...families];
+		},
 		migrate: (from, to, source) => {
 			try {
 				const result = runAdapterMigration(source, {

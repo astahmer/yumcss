@@ -6,242 +6,7 @@ import {
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
 import { routeEvidence } from "./route-spec-support.ts";
-
-interface OfficialApiCase {
-	readonly adapter: CodemodAdapterId;
-	readonly name: string;
-	readonly file: string;
-	readonly source: string;
-	readonly documentation: string;
-}
-
-/**
- * One primary authoring form per registered adapter, copied from that
- * project's public documentation or maintained README. This is deliberately
- * source-specific: it is not a generic `route.run("happy")` smoke fixture.
- */
-class OfficialAdapterApiCatalog {
-	static cases(): readonly OfficialApiCase[] {
-		return [
-			{
-				adapter: CodemodAdapterId.Pandwind,
-				name: "css.class object",
-				file: "styles.ts",
-				source:
-					'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.class({ color: "red", padding: "1rem" });',
-				documentation: "/api/css/",
-			},
-			{
-				adapter: CodemodAdapterId.Pandwind,
-				name: "css.vars object",
-				file: "styles.ts",
-				source:
-					'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const card = css.vars({ color: "var(--card-color)" });',
-				documentation: "/api/css/",
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "generated styled-system css",
-				file: "styles.ts",
-				source:
-					'import { css } from "styled-system/css";\nexport const card = css({ color: "red.300", _hover: { color: "blue.300" } });',
-				documentation: "https://panda-css.com/docs/concepts/writing-styles",
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "stylex.create",
-				file: "styles.ts",
-				source:
-					'import stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red", padding: 8 } });',
-				documentation: "https://stylexjs.com/docs/learn/",
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "@emotion/css object",
-				file: "styles.ts",
-				source:
-					'import { css } from "@emotion/css";\nexport const card = css({ color: "red", padding: "1rem" });',
-				documentation: "https://emotion.sh/docs/%40emotion/css",
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "styled object",
-				file: "Card.tsx",
-				source:
-					'import styled from "styled-components";\nexport const Card = styled.div({ color: "red", padding: "1rem" });',
-				documentation: "https://styled-components.com/docs/api",
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "style object",
-				file: "styles.css.ts",
-				source:
-					'import { style } from "@vanilla-extract/css";\nexport const card = style({ color: "red", padding: 8 });',
-				documentation: "https://vanilla-extract.style/documentation/api/style/",
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "css object",
-				file: "styles.ts",
-				source:
-					'import { css } from "@stitches/react";\nexport const card = css({ color: "red", padding: "1rem" });',
-				documentation: "https://stitches.dev/docs/styling",
-			},
-			{
-				adapter: CodemodAdapterId.Linaria,
-				name: "css template",
-				file: "styles.ts",
-				source:
-					'import { css } from "@linaria/core";\nexport const card = css`color: red; padding: 1rem;`;',
-				documentation: "https://linaria.dev/",
-			},
-			{
-				adapter: CodemodAdapterId.Jss,
-				name: "react-jss createUseStyles",
-				file: "styles.ts",
-				source:
-					'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red" } });',
-				documentation: "https://cssinjs.org/react-jss",
-			},
-			{
-				adapter: CodemodAdapterId.Fela,
-				name: "renderer.renderRule",
-				file: "styles.ts",
-				source:
-					'import { createRenderer } from "fela";\nconst renderer = createRenderer();\nexport const card = renderer.renderRule(() => ({ color: "red" }));',
-				documentation: "https://fela.js.org/docs/",
-			},
-			{
-				adapter: CodemodAdapterId.Goober,
-				name: "css object",
-				file: "styles.ts",
-				source:
-					'import { css } from "goober";\nexport const card = css({ color: "red", padding: "1rem" });',
-				documentation: "https://goober.js.org/api/css/",
-			},
-			{
-				adapter: CodemodAdapterId.Aphrodite,
-				name: "StyleSheet.create",
-				file: "styles.ts",
-				source:
-					'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });',
-				documentation: "https://github.com/Khan/aphrodite#usage",
-			},
-			{
-				adapter: CodemodAdapterId.Treat,
-				name: "treat style",
-				file: "styles.treat.ts",
-				source:
-					'import { style } from "treat";\nexport const card = style({ color: "red", padding: 8 });',
-				documentation: "https://seek-oss.github.io/treat/how-it-works/",
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "compiled css object",
-				file: "styles.tsx",
-				source:
-					'import { css } from "@compiled/react";\nexport const card = css({ color: "red", padding: 8 });',
-				documentation: "https://compiledcssinjs.com/docs/api-css-prop",
-			},
-			{
-				adapter: CodemodAdapterId.ChakraUi,
-				name: "Chakra style props",
-				file: "App.tsx",
-				source:
-					'import { Box } from "@chakra-ui/react";\nexport const App = () => <Box bg="red.200" p="4" />;',
-				documentation: "https://chakra-ui.com/docs/styling/overview",
-			},
-			{
-				adapter: CodemodAdapterId.Mui,
-				name: "MUI sx prop",
-				file: "App.tsx",
-				source:
-					'import { Box } from "@mui/material";\nexport const App = () => <Box sx={{ color: "red", p: 2 }} />;',
-				documentation: "https://mui.com/system/getting-started/the-sx-prop/",
-			},
-			{
-				adapter: CodemodAdapterId.Mantine,
-				name: "Mantine style props",
-				file: "App.tsx",
-				source:
-					'import { Box } from "@mantine/core";\nexport const App = () => <Box c="blue.6" mx="auto" maw={400} />;',
-				documentation: "https://mantine.dev/styles/style-props/",
-			},
-			{
-				adapter: CodemodAdapterId.NextYak,
-				name: "next-yak css template",
-				file: "styles.tsx",
-				source:
-					'import { css } from "next-yak";\nexport const card = css`color: red; padding: 1rem;`;',
-				documentation: "https://yak.js.org/docs/features",
-			},
-			{
-				adapter: CodemodAdapterId.Bamboo,
-				name: "styled-system css object",
-				file: "styles.ts",
-				source:
-					'import { css } from "styled-system/css";\nexport const card = css({ color: "red" });',
-				documentation: "https://styled-system.com/",
-			},
-			{
-				adapter: CodemodAdapterId.Style9,
-				name: "style9.create",
-				file: "styles.ts",
-				source:
-					'import style9 from "style9";\nexport const styles = style9.create({ card: { color: "red" } });',
-				documentation: "https://github.com/jaredpalmer/style9#readme",
-			},
-			{
-				adapter: CodemodAdapterId.SolidStyled,
-				name: "solid styled template",
-				file: "styles.tsx",
-				source:
-					'import { styled } from "solid-styled-components";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-				documentation: "https://github.com/solidjs/solid-styled-components",
-			},
-			{
-				adapter: CodemodAdapterId.VueStyled,
-				name: "vue styled template",
-				file: "styles.ts",
-				source:
-					'import styled from "vue-styled-components";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-				documentation: "https://github.com/styled-components/vue-styled-components",
-			},
-			{
-				adapter: CodemodAdapterId.ReactNative,
-				name: "React Native StyleSheet",
-				file: "styles.ts",
-				source:
-					'import { StyleSheet } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 8 } });',
-				documentation: "https://reactnative.dev/docs/stylesheet",
-			},
-			{
-				adapter: CodemodAdapterId.Tokenami,
-				name: "Tokenami css object",
-				file: "styles.ts",
-				source:
-					'import { css } from "@tokenami/css";\nexport const card = css({ color: "red", "--card-gap": "1rem" });',
-				documentation: "https://tokenami.dev/",
-			},
-			{
-				adapter: CodemodAdapterId.UnoCSS,
-				name: "UnoCSS utility classes",
-				file: "App.tsx",
-				source:
-					'export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;',
-				documentation: "https://unocss.dev/",
-			},
-			{
-				adapter: CodemodAdapterId.Tailwind,
-				name: "Tailwind arbitrary utility classes",
-				file: "App.tsx",
-				source:
-					'export const App = () => <div className="[display:flex] [align-items:center] [gap:1rem]" />;',
-				documentation: "https://tailwindcss.com/docs/adding-custom-styles#using-arbitrary-values",
-			},
-		];
-	}
-}
+import { officialApiCases, type OfficialApiCase } from "../src/swap/official-api-cases.ts";
 
 function migrate(api: OfficialApiCase): AdapterMigrationResult {
 	return runAdapterMigration(api.source, {
@@ -255,7 +20,7 @@ function migrate(api: OfficialApiCase): AdapterMigrationResult {
 
 describe("official primary API forms", () => {
 	test("covers every registered adapter with source-specific documented syntax", () => {
-		const cases = OfficialAdapterApiCatalog.cases();
+		const cases = officialApiCases();
 		const results = cases.map((api) => ({ api, result: migrate(api) }));
 
 		expect(new Set(results.map(({ api }) => api.adapter))).toEqual(
@@ -285,7 +50,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { padding: 8, color: "red" } });",
+			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -293,6 +58,24 @@ describe("official primary API forms", () => {
 			        "representation": "named-map",
 			      },
 			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "authored-css/css rule": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export default styles;",
+			    "converted": 1,
+			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -362,6 +145,24 @@ describe("official primary API forms", () => {
 			        "representation": "static",
 			      },
 			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "css-modules/module class": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export default styles;",
+			    "converted": 1,
+			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -447,7 +248,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const useStyles = css.group({ card: { color: "red" } });",
+			export const useStyles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -455,6 +256,24 @@ describe("official primary API forms", () => {
 			        "representation": "named-map",
 			      },
 			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "less/less rule": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export default styles;",
+			    "converted": 1,
+			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -607,7 +426,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { padding: 8, color: "red" } });",
+			export const styles = { "card": css.class({ padding: 8, color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -615,6 +434,24 @@ describe("official primary API forms", () => {
 			        "representation": "named-map",
 			      },
 			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "sass/scss rule": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+			export default styles;",
+			    "converted": 1,
+			    "outcomes": [],
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
@@ -680,7 +517,7 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red" } });",
+			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -728,7 +565,7 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { padding: "8px", color: "red" } });",
+			export const styles = { "card": css.class({ padding: "8px", color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -751,6 +588,30 @@ describe("official primary API forms", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 			export const App = () => <div className={css.class({ gap: "1rem", alignItems: "center", display: "flex" })}/>;",
+			    "converted": 1,
+			    "outcomes": [
+			      {
+			        "outcome": "static",
+			        "representation": "static",
+			      },
+			    ],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "tamagui/styled component": {
+			    "changed": true,
+			    "code": "import { View } from "tamagui";
+			import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const Card = css.class({ padding: "$4", color: "red" });
+			export const App = () => <View className={Card} />;",
 			    "converted": 1,
 			    "outcomes": [
 			      {

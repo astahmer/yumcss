@@ -10,717 +10,7 @@ import {
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
 import { routeEvidence } from "./route-spec-support.ts";
-
-type ApiExpectation = "converted" | "runtime" | "residual" | "identity" | "context";
-
-interface OfficialApiFamilyCase {
-	readonly adapter: CodemodAdapterId;
-	readonly name: string;
-	readonly expectation: ApiExpectation;
-	readonly file?: string;
-	readonly source: string;
-}
-
-/**
- * The primary matrix proves one public form per adapter. This catalog proves
- * the remaining documented syntax families that have different IR semantics:
- * rules, maps, templates, components, globals, keyframes, and composition.
- */
-class OfficialAdapterApiFamilyCatalog {
-	static cases(): readonly OfficialApiFamilyCase[] {
-		return [
-			{
-				adapter: CodemodAdapterId.Pandwind,
-				name: "css.group named map",
-				expectation: "identity",
-				file: "styles.ts",
-				source:
-					'import { createCss } from "pandwind/css";\nconst css = createCss();\nexport const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "cva recipe",
-				expectation: "residual",
-				file: "styles.ts",
-				source:
-					'import { cva } from "styled-system/recipes";\nexport const button = cva({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "sva slot recipe",
-				expectation: "residual",
-				file: "styles.ts",
-				source:
-					'import { sva } from "styled-system/recipes";\nexport const card = sva({ slots: ["root", "label"], base: { root: { color: "red" } } });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "generated styled component",
-				expectation: "residual",
-				file: "styles.ts",
-				source:
-					'import { styled } from "styled-system/jsx";\nexport const Card = styled.div({ base: { color: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "generated styled JSX style props",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { styled } from "styled-system/jsx";\nexport const Button = () => <styled.button color="red" />;',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "globalCss config",
-				expectation: "context",
-				file: "panda.config.ts",
-				source:
-					'import { defineConfig, defineGlobalStyles } from "@pandacss/dev";\nconst globalCss = defineGlobalStyles({ "html, body": { margin: 0 } });\nexport default defineConfig({ globalCss });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "token helper context",
-				expectation: "context",
-				file: "App.tsx",
-				source:
-					'import { token } from "styled-system/tokens";\nexport const color = token("colors.red.400");',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "defineRecipe config",
-				expectation: "context",
-				file: "button.recipe.ts",
-				source:
-					'import { defineRecipe } from "@pandacss/dev";\nexport const button = defineRecipe({ base: { color: "red" }, variants: { size: { sm: { padding: "2" } } } });',
-			},
-			{
-				adapter: CodemodAdapterId.Panda,
-				name: "defineSlotRecipe config",
-				expectation: "context",
-				file: "card.recipe.ts",
-				source:
-					'import { defineSlotRecipe } from "@pandacss/dev";\nexport const card = defineSlotRecipe({ slots: ["root"], base: { root: { color: "red" } } });',
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "create",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import stylex from "@stylexjs/stylex";\nexport const styles = stylex.create({ card: { color: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "keyframes",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import stylex from "@stylexjs/stylex";\nexport const pulse = stylex.keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "defineVars",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import stylex from "@stylexjs/stylex";\nexport const theme = stylex.defineVars({ accent: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "props host projection",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import * as stylex from "@stylexjs/stylex";\nconst styles = stylex.create({ card: { color: "red" } });\nexport const Card = () => <div {...stylex.props(styles.card)} />;',
-			},
-			{
-				adapter: CodemodAdapterId.StyleX,
-				name: "createTheme context",
-				expectation: "residual",
-				file: "theme.ts",
-				source:
-					'import stylex from "@stylexjs/stylex";\nimport { vars } from "./vars";\nexport const theme = stylex.createTheme(vars, { accent: "blue" });',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "tagged css template",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { css } from "@emotion/css";\nexport const card = css`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "keyframes object",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { keyframes } from "@emotion/css";\nexport const pulse = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "injectGlobal object",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { injectGlobal } from "@emotion/css";\ninjectGlobal({ body: { margin: 0 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "styled component object",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import styled from "@emotion/styled";\nexport const Card = styled.button({ color: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "css prop",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { jsx } from "@emotion/react";\nexport const Card = () => <button css={{ color: "red" }} />;',
-			},
-			{
-				adapter: CodemodAdapterId.Emotion,
-				name: "Global component",
-				expectation: "converted",
-				file: "Global.tsx",
-				source:
-					'import { Global } from "@emotion/react";\nexport const App = () => <Global styles={{ body: { margin: 0 } }} />;',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "styled tagged template",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import styled from "styled-components";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "keyframes tagged template",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { keyframes } from "styled-components";\nexport const pulse = keyframes`from { opacity: 0; } to { opacity: 1; }`;',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "createGlobalStyle object",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { createGlobalStyle } from "styled-components";\nexport const Global = createGlobalStyle({ body: { margin: 0 } });',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "styled component subject",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import styled from "styled-components";\nconst Link = (props: { href: string }) => <a {...props} />;\nexport const Card = styled(Link)({ color: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "polymorphic as",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import styled from "styled-components";\nconst Card = styled.div({ color: "red" });\nexport const App = () => <Card as="a" href="/docs" />;',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "ThemeProvider context",
-				expectation: "context",
-				file: "App.tsx",
-				source:
-					'import { ThemeProvider } from "styled-components";\nexport const App = () => <ThemeProvider theme={{ colors: { brand: "red" } }}><div /></ThemeProvider>;',
-			},
-			{
-				adapter: CodemodAdapterId.StyledComponents,
-				name: "theme callback",
-				expectation: "runtime",
-				file: "Card.tsx",
-				source:
-					'import styled from "styled-components";\nexport const Card = styled.div(({ theme }) => ({ color: theme.colors.brand }));',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "globalStyle",
-				expectation: "converted",
-				source:
-					'import { globalStyle } from "@vanilla-extract/css";\nglobalStyle("body", { margin: 0 });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "keyframes",
-				expectation: "converted",
-				source:
-					'import { keyframes } from "@vanilla-extract/css";\nexport const pulse = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "fontFace",
-				expectation: "converted",
-				source:
-					'import { fontFace } from "@vanilla-extract/css";\nexport const inter = fontFace({ fontFamily: "Inter", src: "url(inter.woff2)" });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "styleVariants",
-				expectation: "residual",
-				source:
-					'import { styleVariants } from "@vanilla-extract/css";\nexport const variants = styleVariants({ primary: { color: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "recipe",
-				expectation: "residual",
-				file: "styles.css.ts",
-				source:
-					'import { recipe } from "@vanilla-extract/recipes";\nexport const button = recipe({ base: { color: "red" }, variants: { size: { sm: { padding: 4 } } } });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "theme contract",
-				expectation: "context",
-				file: "theme.css.ts",
-				source:
-					'import { createThemeContract } from "@vanilla-extract/css";\nexport const vars = createThemeContract({ colors: { brand: null } });',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "createVar",
-				expectation: "context",
-				file: "theme.css.ts",
-				source:
-					'import { createVar } from "@vanilla-extract/css";\nexport const brand = createVar();',
-			},
-			{
-				adapter: CodemodAdapterId.VanillaExtract,
-				name: "createTheme",
-				expectation: "context",
-				file: "theme.css.ts",
-				source:
-					'import { createTheme } from "@vanilla-extract/css";\nexport const themeClass = createTheme({ colors: { brand: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "globalCss",
-				expectation: "converted",
-				source:
-					'import { globalCss } from "@stitches/react";\nexport const reset = globalCss({ body: { margin: 0 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "keyframes",
-				expectation: "converted",
-				source:
-					'import { keyframes } from "@stitches/react";\nexport const pulse = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "styled component",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { styled } from "@stitches/react";\nexport const Card = styled("div", { color: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "createTheme context",
-				expectation: "context",
-				file: "theme.ts",
-				source:
-					'import { createStitches } from "@stitches/react";\nexport const { createTheme } = createStitches({ theme: { colors: { brand: "red" } } });',
-			},
-			{
-				adapter: CodemodAdapterId.Stitches,
-				name: "variants",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { css } from "@stitches/react";\nexport const button = css({ variants: { size: { sm: { padding: 4 } } }, compoundVariants: [{ size: "sm", css: { color: "red" } }] });',
-			},
-			{
-				adapter: CodemodAdapterId.Linaria,
-				name: "styled tagged template",
-				expectation: "converted",
-				source:
-					'import { styled } from "@linaria/react";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.Linaria,
-				name: "css prop",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { css } from "@linaria/core";\nexport const Card = () => <button css={css`color: red;`} />;',
-			},
-			{
-				adapter: CodemodAdapterId.Jss,
-				name: "createStyleSheet named map",
-				expectation: "converted",
-				source:
-					'import jss from "jss";\nexport const sheet = jss.createStyleSheet({ card: { color: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Jss,
-				name: "createRule named map",
-				expectation: "converted",
-				source: 'import jss from "jss";\nexport const rule = jss.createRule({ color: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.Jss,
-				name: "imperative applyTo",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import jss from "jss";\nconst sheet = jss.createStyleSheet({ card: { color: "red" } });\nsheet.attach();\nsheet.getRule("card").applyTo(element);',
-			},
-			{
-				adapter: CodemodAdapterId.Fela,
-				name: "createComponent",
-				expectation: "residual",
-				source:
-					'import { createComponent } from "react-fela";\nexport const Card = createComponent(() => ({ color: "red" }));',
-			},
-			{
-				adapter: CodemodAdapterId.Fela,
-				name: "renderer plugins context",
-				expectation: "context",
-				file: "renderer.ts",
-				source:
-					'import { createRenderer } from "fela";\nconst plugin = (element) => element;\nexport const renderer = createRenderer({ plugins: [plugin] });',
-			},
-			{
-				adapter: CodemodAdapterId.Goober,
-				name: "styled tagged template",
-				expectation: "converted",
-				source:
-					'import { styled } from "goober";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.Goober,
-				name: "css tagged template",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { css } from "goober";\nexport const card = css`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.Goober,
-				name: "setup context",
-				expectation: "context",
-				file: "setup.ts",
-				source: 'import { setup } from "goober";\nsetup({ prefix: "pw-" });',
-			},
-			{
-				adapter: CodemodAdapterId.Aphrodite,
-				name: "font-face array value",
-				expectation: "converted",
-				source:
-					'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ fonts: { fontFamily: [{ fontFamily: "Inter", src: "url(inter.woff2)" }] } });',
-			},
-			{
-				adapter: CodemodAdapterId.Aphrodite,
-				name: "array composition",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { StyleSheet } from "aphrodite";\nexport const styles = StyleSheet.create({ card: [{ color: "red" }, { padding: 8 }] });',
-			},
-			{
-				adapter: CodemodAdapterId.Treat,
-				name: "treat style",
-				expectation: "converted",
-				file: "styles.treat.ts",
-				source:
-					'import { style } from "treat";\nexport const card = style({ color: "red", padding: 8 });',
-			},
-			{
-				adapter: CodemodAdapterId.Treat,
-				name: "createTheme context",
-				expectation: "context",
-				file: "theme.treat.ts",
-				source:
-					'import { createTheme } from "treat";\nexport const theme = createTheme({ colors: { brand: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "cssMap",
-				expectation: "residual",
-				source:
-					'import { cssMap } from "@compiled/react";\nexport const colors = cssMap({ red: { color: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "keyframes",
-				expectation: "residual",
-				source:
-					'import { keyframes } from "@compiled/react";\nexport const pulse = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "styled component",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { styled } from "@compiled/react";\nexport const Card = styled.button({ color: "red" });',
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "ClassNames composition",
-				expectation: "residual",
-				file: "Card.tsx",
-				source:
-					'import { ClassNames } from "@compiled/react";\nexport const Card = () => <ClassNames>{null}</ClassNames>;',
-			},
-			{
-				adapter: CodemodAdapterId.Compiled,
-				name: "CSS prop",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { css } from "@compiled/react";\nexport const Card = () => <button css={css({ color: "red" })} />;',
-			},
-			{
-				adapter: CodemodAdapterId.ChakraUi,
-				name: "recipe usage",
-				expectation: "residual",
-				source:
-					'import { useRecipe } from "@chakra-ui/react";\nexport const button = useRecipe(buttonRecipe);',
-			},
-			{
-				adapter: CodemodAdapterId.ChakraUi,
-				name: "globalCss system config",
-				expectation: "context",
-				file: "theme.ts",
-				source:
-					'import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";\nconst config = defineConfig({ globalCss: { "html, body": { margin: 0 } } });\nexport const system = createSystem(defaultConfig, config);',
-			},
-			{
-				adapter: CodemodAdapterId.ChakraUi,
-				name: "token helper context",
-				expectation: "context",
-				file: "theme.ts",
-				source:
-					'import { defaultSystem } from "@chakra-ui/react";\nexport const color = defaultSystem.token("colors.red.200");',
-			},
-			{
-				adapter: CodemodAdapterId.Mui,
-				name: "styled component",
-				expectation: "converted",
-				source:
-					'import { styled } from "@mui/system";\nexport const Card = styled("div")({ color: "red", padding: 8 });',
-			},
-			{
-				adapter: CodemodAdapterId.Mui,
-				name: "theme callback",
-				expectation: "residual",
-				file: "Card.tsx",
-				source:
-					'import { styled } from "@mui/system";\nexport const Card = styled("div")(({ theme }) => ({ color: theme.palette.primary.main }));',
-			},
-			{
-				adapter: CodemodAdapterId.Mui,
-				name: "ThemeProvider context",
-				expectation: "context",
-				file: "App.tsx",
-				source:
-					'import { ThemeProvider } from "@mui/material";\nexport const App = () => <ThemeProvider theme={{ palette: { primary: { main: "red" } } }}><div /></ThemeProvider>;',
-			},
-			{
-				adapter: CodemodAdapterId.Mantine,
-				name: "styles API",
-				expectation: "residual",
-				source:
-					'import { Button } from "@mantine/core";\nexport const App = () => <Button styles={{ root: { color: "red" } }} />;',
-			},
-			{
-				adapter: CodemodAdapterId.Mantine,
-				name: "classNames API",
-				expectation: "residual",
-				file: "App.tsx",
-				source:
-					'import { Button } from "@mantine/core";\nexport const App = () => <Button classNames={{ root: "button-root" }} />;',
-			},
-			{
-				adapter: CodemodAdapterId.Mantine,
-				name: "MantineProvider context",
-				expectation: "context",
-				file: "App.tsx",
-				source:
-					'import { MantineProvider } from "@mantine/core";\nexport const App = () => <MantineProvider theme={{ colors: { brand: ["red"] } }}><div /></MantineProvider>;',
-			},
-			{
-				adapter: CodemodAdapterId.NextYak,
-				name: "styled tagged template",
-				expectation: "converted",
-				source:
-					'import { styled } from "next-yak";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.NextYak,
-				name: "CSS prop",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import { css } from "next-yak";\nexport const Card = () => <button css={css`color: red;`} />;',
-			},
-			{
-				adapter: CodemodAdapterId.Bamboo,
-				name: "styled-system object",
-				expectation: "converted",
-				source:
-					'import { css } from "styled-system/css";\nexport const card = css({ display: "flex", gap: "4" });',
-			},
-			{
-				adapter: CodemodAdapterId.Style9,
-				name: "named style map",
-				expectation: "converted",
-				source:
-					'import style9 from "style9";\nexport const styles = style9.create({ card: { color: "red" }, muted: { opacity: 0.5 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Style9,
-				name: "style9 call composition",
-				expectation: "converted",
-				file: "Card.tsx",
-				source:
-					'import style9 from "style9";\nconst styles = style9.create({ card: { color: "red" } });\nexport const Card = () => <div className={style9(styles.card)} />;',
-			},
-			{
-				adapter: CodemodAdapterId.SolidStyled,
-				name: "static component template",
-				expectation: "converted",
-				source:
-					'import { styled } from "solid-styled-components";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.SolidStyled,
-				name: "prop callback",
-				expectation: "runtime",
-				file: "Card.tsx",
-				source:
-					'import { styled } from "solid-styled-components";\nexport const Card = styled.button`color: ${(props) => props.color};`;',
-			},
-			{
-				adapter: CodemodAdapterId.VueStyled,
-				name: "static component template",
-				expectation: "converted",
-				source:
-					'import styled from "vue-styled-components";\nexport const Card = styled.div`color: red; padding: 1rem;`;',
-			},
-			{
-				adapter: CodemodAdapterId.VueStyled,
-				name: "theme callback",
-				expectation: "runtime",
-				file: "Card.vue",
-				source:
-					'<script setup>\nimport styled from "vue-styled-components";\nconst Card = styled.div`color: ${props => props.color};`;\n</script>\n<template><Card color="red" /></template>',
-			},
-			{
-				adapter: CodemodAdapterId.ReactNative,
-				name: "StyleSheet named map",
-				expectation: "converted",
-				source:
-					'import { StyleSheet } from "react-native";\nexport const styles = StyleSheet.create({ card: { padding: 8, backgroundColor: "red" } });',
-			},
-			{
-				adapter: CodemodAdapterId.ReactNative,
-				name: "inline style array",
-				expectation: "converted",
-				file: "App.tsx",
-				source:
-					'import { View } from "react-native";\nexport const App = () => <View style={[{ padding: 8 }, { backgroundColor: "red" }]} />;',
-			},
-			{
-				adapter: CodemodAdapterId.ReactNative,
-				name: "Platform.select context",
-				expectation: "context",
-				file: "styles.ts",
-				source:
-					'import { Platform } from "react-native";\nexport const style = Platform.select({ ios: { padding: 8 }, android: { padding: 4 } });',
-			},
-			{
-				adapter: CodemodAdapterId.Tokenami,
-				name: "css.compose",
-				expectation: "converted",
-				source:
-					'import { css } from "@tokenami/css";\nexport const card = css.compose({ color: "red", padding: "1rem" });',
-			},
-			{
-				adapter: CodemodAdapterId.Tokenami,
-				name: "alias and custom property selector",
-				expectation: "converted",
-				file: "styles.ts",
-				source:
-					'import { css } from "@tokenami/css";\nexport const card = css({ "--card-color": "red", "&[data-state=active]": { color: "var(--card-color)" } });',
-			},
-			{
-				adapter: CodemodAdapterId.Tokenami,
-				name: "config context",
-				expectation: "context",
-				file: "tokenami.config.ts",
-				source:
-					'export default { aliases: { ink: "color" }, responsive: { md: "@media (min-width: 48rem)" }, tokens: { brand: "red" } };',
-			},
-			{
-				adapter: CodemodAdapterId.UnoCSS,
-				name: "variant utility",
-				expectation: "converted",
-				file: "App.tsx",
-				source:
-					'export const App = () => <div className="hover:[background-color:black] md:[display:flex]" />;',
-			},
-			{
-				adapter: CodemodAdapterId.UnoCSS,
-				name: "unknown shortcut",
-				expectation: "residual",
-				source: 'export const App = () => <div className="btn-primary" />;',
-			},
-			{
-				adapter: CodemodAdapterId.UnoCSS,
-				name: "preset config",
-				expectation: "context",
-				file: "uno.config.ts",
-				source:
-					'import { defineConfig } from "unocss";\nexport default defineConfig({ shortcuts: { btn: "px-4 py-2" }, presets: [] });',
-			},
-			{
-				adapter: CodemodAdapterId.Tailwind,
-				name: "arbitrary utility",
-				expectation: "converted",
-				file: "App.tsx",
-				source:
-					'export const App = () => <div className="[color:rebeccapurple] md:[display:flex]" />;',
-			},
-			{
-				adapter: CodemodAdapterId.Tailwind,
-				name: "custom variant candidate",
-				expectation: "converted",
-				file: "App.tsx",
-				source: 'export const App = () => <div className="[&[data-state=active]]:[color:red]" />;',
-			},
-			{
-				adapter: CodemodAdapterId.Tailwind,
-				name: "unknown project utility",
-				expectation: "residual",
-				source: 'export const App = () => <div className="btn-primary" />;',
-			},
-			{
-				adapter: CodemodAdapterId.Tailwind,
-				name: "at-rule config",
-				expectation: "context",
-				file: "app.css",
-				source:
-					'@import "tailwindcss";\n@theme { --color-brand: #123456; }\n@utility content-auto { content-visibility: auto; }\n@custom-variant theme-midnight (&:where([data-theme="midnight"] *));\n@plugin "@tailwindcss/forms";',
-			},
-		];
-	}
-}
+import { officialApiFamilyCases, type OfficialApiFamilyCase } from "../src/swap/official-api-cases.ts";
 
 const pandaProofRegistry = createStyleAdapterRegistry([
 	createPandaAdapter({
@@ -770,7 +60,7 @@ function normalizeSource(code: string): string {
 
 describe("official adapter API families", () => {
 	test("covers every registered adapter's documented secondary forms", async () => {
-		const cases = OfficialAdapterApiFamilyCatalog.cases();
+		const cases = officialApiFamilyCases();
 		const results = await Promise.all(
 			cases.map(async (api) => ({ api, result: await migrate(api) })),
 		);
@@ -889,7 +179,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const styles = (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({ fonts: {  } }));",
+			export const styles = { "fonts": (css.sheet.registerSemanticRules([{ kind: "font-face", declarations: [{ property: "fontFamily", value: "Inter" }, { property: "src", value: "url(inter.woff2)" } ] }]), css.group({  })) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -900,6 +190,34 @@ describe("official adapter API families", () => {
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "authored-css/at-rules": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
+			export const styles = { "card": css.class({ color: "white" }), "pulse": (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-animation", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]), "pw-kf-animation") };
+			export default styles;",
+			    "converted": 2,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [
+			          "canonical CSS differs",
+			        ],
+			        "lossiness": "unsupported",
+			        "valid": false,
+			      },
 			      {
 			        "differences": [],
 			        "lossiness": "lossless",
@@ -1084,6 +402,23 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "css-modules/composes": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: composition)
+			.card { color: red; }
+			.primary { composes: card; font-weight: 600; }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "preprocessor or CSS Modules composition needs its source context",
+			        "kind": "composition",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "emotion/Global component": {
 			    "changed": true,
@@ -1371,7 +706,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const sheet = css.group({ card: { color: "red" } });",
+			export const sheet = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1394,7 +729,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			const sheet = css.group({ card: { color: "red" } });
+			const sheet = { "card": css.class({ color: "red" }) };
 
 			element.classList.add(sheet.card);",
 			    "converted": 1,
@@ -1413,6 +748,28 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "less/less variables and nesting": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+			@brand: red;
+			.card { color: @brand; padding: 1rem; &__title { font-weight: 600; } }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet statement is preserved outside the style program",
+			        "kind": "parse",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "nested stylesheet rules require selector-aware lowering",
+			        "kind": "nesting",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 2,
+			    "validations": [],
 			  },
 			  "linaria/css prop": {
 			    "changed": true,
@@ -1831,7 +1188,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { padding: 8, backgroundColor: "red" } });",
+			export const styles = { "card": css.class({ padding: 8, backgroundColor: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1872,6 +1229,28 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "sass/scss variables and nesting": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: parse, nesting)
+			$brand: red;
+			.card { color: $brand; padding: 1rem; &__title { font-weight: 600; } }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet statement is preserved outside the style program",
+			        "kind": "parse",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "nested stylesheet rules require selector-aware lowering",
+			        "kind": "nesting",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 2,
+			    "validations": [],
 			  },
 			  "solid-styled/prop callback": {
 			    "changed": true,
@@ -2037,7 +1416,7 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
+			export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -2062,7 +1441,7 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			const styles = css.group({ card: { color: "red" } });
+			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div className={cx(styles.card)} />;",
 			    "converted": 1,
 			    "outcomes": [
@@ -2264,7 +1643,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const styles = css.group({ card: { color: "red" } });",
+			export const styles = { "card": css.class({ color: "red" }) };",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -2358,7 +1737,7 @@ describe("official adapter API families", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			const styles = css.group({ card: { color: "red" } });
+			const styles = { "card": css.class({ color: "red" }) };
 			export const Card = () => <div {...css.props(styles.card)} />;",
 			    "converted": 1,
 			    "outcomes": [
@@ -2449,6 +1828,55 @@ describe("official adapter API families", () => {
 			      {
 			        "hint": "Tailwind utility requires the project engine or a custom preset",
 			        "kind": "unknown-utility",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
+			  "tamagui/createTamagui config": {
+			    "changed": true,
+			    "code": "// pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: configuration)
+			import { createTamagui, createTokens } from "tamagui";
+			export const config = createTamagui({ tokens: createTokens({ color: { red: "#ff0000" } }) });",
+			    "converted": 0,
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
+			    "residuals": [
+			      {
+			        "hint": "Tamagui tokens and compiler configuration require official project context",
+			        "kind": "configuration",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "Tamagui tokens and compiler configuration require official project context",
+			        "kind": "configuration",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
+			  "tamagui/styled theme callback": {
+			    "changed": true,
+			    "code": "import { styled, View } from "tamagui";
+			export const Card = // pandwind:migrate-skip (route: tamagui -> pandwind | parse-residual: function-dynamic | available: named-map, residual)
+			styled(View, ({ theme }) => ({ color: theme.color }));",
+			    "converted": 0,
+			    "outcomes": [
+			      {
+			        "outcome": "residual",
+			        "representation": "residual",
+			      },
+			    ],
+			    "residuals": [
+			      {
+			        "hint": "Tamagui function-valued styles require a theme/props wrapper",
+			        "kind": "function-dynamic",
 			        "preserved": undefined,
 			      },
 			    ],
@@ -2748,25 +2176,26 @@ describe("official adapter API families", () => {
 			  },
 			  "vanilla-extract/styleVariants": {
 			    "changed": true,
-			    "code": "import { styleVariants } from "@vanilla-extract/css";
-			export const variants = // pandwind:migrate-skip (route: vanilla-extract -> pandwind | parse-residual: composition | available: named-map, residual)
-			styleVariants({ primary: { color: "red" } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+
+			export const variants = { "primary": css.class({ color: "red" }) };",
+			    "converted": 1,
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "target-native",
+			        "representation": "named-map",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Vanilla Extract styleVariants require variant-aware target lowering",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "vanilla-extract/theme contract": {
 			    "changed": true,

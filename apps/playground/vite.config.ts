@@ -38,6 +38,26 @@ export default defineConfig({
 				find: "@oxc-parser/binding-wasm32-wasi/wasi-worker-browser.mjs",
 				replacement: join(wasiBindingDir, "wasi-worker-browser.mjs"),
 			},
+			{
+				// Workspace source of the shared official-api scenario catalog.
+				// Vitest and the dev server cannot use the package "pandwind"
+				// export condition, and dist may be stale; alias to source so
+				// tests and the lab always exercise the current catalog.
+				find: "pandwind-codemod/swap/official-api-cases",
+				replacement: join(
+					dirname(createRequire(import.meta.url).resolve("pandwind-codemod/package.json")),
+					"src/swap/official-api-cases.ts",
+				),
+			},
+			{
+				// Same stale-dist risk as the scenario catalog: the browser-safe
+				// swap surface must stay current with new exports in dev.
+				find: "pandwind-codemod/swap/browser",
+				replacement: join(
+					dirname(createRequire(import.meta.url).resolve("pandwind-codemod/package.json")),
+					"src/swap/browser.ts",
+				),
+			},
 		],
 	},
 	// Keep oxc-parser out of esbuild prebundling: the optimizer mangles the

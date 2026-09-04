@@ -5,6 +5,7 @@ import { EditorPane } from "./EditorPane.tsx";
 import { GhostButton, Kbd, Pane } from "./ui.tsx";
 import {
 	MIGRATION_LAB,
+	type MigrationLabScenario,
 	type MigrationLabEndpoint,
 	type MigrationLabResult,
 } from "../lib/migration-lab.ts";
@@ -17,6 +18,47 @@ function endpointById(
 	id: string,
 ): MigrationLabEndpoint {
 	return endpoints.find((endpoint) => endpoint.id === id) ?? endpoints[0]!;
+}
+
+const EXPECTATION_STYLE: Record<NonNullable<MigrationLabScenario["expectation"]>, string> = {
+	converted: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
+	runtime: "border-sky-400/30 bg-sky-400/10 text-sky-300",
+	residual: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+	identity: "border-zinc-400/30 bg-zinc-400/10 text-zinc-300",
+	context: "border-violet-400/30 bg-violet-400/10 text-violet-300",
+};
+
+function ScenarioChips(props: {
+	scenarios: readonly MigrationLabScenario[];
+	activeKey: string | undefined;
+	onSelect: (scenario: MigrationLabScenario) => void;
+}) {
+	if (props.scenarios.length === 0) return null;
+	return (
+		<div className="flex flex-wrap items-center gap-1.5">
+			{props.scenarios.map((scenario) => (
+				<button
+					key={scenario.key}
+					type="button"
+					onClick={() => props.onSelect(scenario)}
+					className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors ${
+						scenario.key === props.activeKey
+							? "border-orange-400/50 bg-orange-400/10 text-orange-200"
+							: "border-white/10 bg-[#16161b] text-zinc-400 hover:border-white/25 hover:text-zinc-200"
+					}`}
+				>
+					<span>{scenario.name}</span>
+					{scenario.expectation === undefined ? null : (
+						<span
+							className={`rounded-full border px-1.5 py-px text-[9px] uppercase tracking-[0.08em] ${EXPECTATION_STYLE[scenario.expectation]}`}
+						>
+							{scenario.expectation}
+						</span>
+					)}
+				</button>
+			))}
+		</div>
+	);
 }
 
 function SelectField(props: {
@@ -281,13 +323,21 @@ export function MigrationLabPage() {
 	const [from, setFrom] = useState(endpointById(sourceOptions, DEFAULT_SOURCE).id);
 	const [to, setTo] = useState(endpointById(targetOptions, DEFAULT_TARGET).id);
 	const [source, setSource] = useState(() => MIGRATION_LAB.sampleFor(DEFAULT_SOURCE));
+	const [scenarioKey, setScenarioKey] = useState<string | undefined>(undefined);
 	const sourceEndpoint = endpointById(sourceOptions, from);
 	const targetEndpoint = endpointById(targetOptions, to);
 	const result = useMemo(() => MIGRATION_LAB.migrate(from, to, source), [from, source, to]);
+	const scenarios = useMemo(() => MIGRATION_LAB.scenariosFor(from), [from]);
 
 	const selectSource = (next: string) => {
 		setFrom(next);
 		setSource(MIGRATION_LAB.sampleFor(next));
+		setScenarioKey(undefined);
+	};
+
+	const selectScenario = (scenario: MigrationLabScenario) => {
+		setScenarioKey(scenario.key);
+		setSource(scenario.source);
 	};
 
 	return (
@@ -311,19 +361,36 @@ export function MigrationLabPage() {
 					</div>
 				</div>
 				<div className="mt-3 flex flex-col gap-2 rounded-lg border border-white/[0.07] bg-[#0e0e11] p-3 sm:flex-row sm:items-end">
-					<SelectField
-						label="from · source adapter"
-						value={from}
-						options={sourceOptions}
-						onChange={selectSource}
-					/>
-					<div className="hidden pb-2 font-mono text-[12px] text-zinc-700 sm:block">→</div>
-					<SelectField
-						label="to · target adapter"
-						value={to}
-						options={targetOptions}
-						onChange={setTo}
-					/>
+					<div className="flex flex-col gap-1.5 lg:flex-row lg:items-start">
+						<SelectField
+							label="from · source adapter"
+							value={from}
+							options={sourceOptions}
+							onChange={selectSource}
+						/>
+						<div className="hidden pb-2 font-mono text-[12px] text-zinc-700 sm:block">→</div>
+						<SelectField
+							label="to · target adapter"
+							value={to}
+							options={targetOptions}
+							onChange={setTo}
+						/>
+					</div>
+					<div className="min-w-0 flex-1">
+						<div className="mb-1 font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-600">
+							documented scenarios
+						</div>
+						<ScenarioChips
+							scenarios={scenarios}
+							activeKey={scenarioKey}
+							onSelect={selectScenario}
+						/>
+						{scenarios.length === 0 ? (
+							<div className="pb-0.5 text-[11px] leading-4 text-zinc-600">
+								no cataloged scenarios — paste any source to try this adapter
+							</div>
+						) : null}
+					</div>
 					<div className="flex items-end justify-between gap-3 sm:max-w-[18rem] sm:flex-1">
 						<div className="min-w-0 pb-0.5 text-[11px] leading-4 text-zinc-600">
 							{sourceEndpoint.dependencies.length > 0

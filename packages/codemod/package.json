@@ -37,6 +37,12 @@
 			"import": "./dist/swap/index.js",
 			"default": "./dist/swap/index.js"
 		},
+		"./swap/official-api-cases": {
+			"pandwind": "./src/swap/official-api-cases.ts",
+			"types": "./dist/swap/official-api-cases.d.ts",
+			"import": "./dist/swap/official-api-cases.js",
+			"default": "./dist/swap/official-api-cases.js"
+		},
 		"./swap/identifiers": {
 			"pandwind": "./src/swap/identifiers.ts",
 			"types": "./dist/swap/identifiers.d.ts",

@@ -210,6 +210,13 @@ export {
 } from "./semantic-contract-suite.ts";
 export { StyleProgramBuilder } from "./style-program-builder.ts";
 export {
+	officialApiCases,
+	officialApiFamilyCases,
+	type OfficialApiCase,
+	type OfficialApiExpectation,
+	type OfficialApiFamilyCase,
+} from "./official-api-cases.ts";
+export {
 	createStyleDeclarationOrderingPolicy,
 	type StyleDeclarationOrderingPolicy,
 } from "./style-declaration-order.ts";
