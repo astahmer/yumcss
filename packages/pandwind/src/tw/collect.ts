@@ -7,10 +7,18 @@
  * evaluates every literal `tw({ ... })` call in the app source using the same
  * typed `tw` instance the app imports and writes exactly those candidates.
  */
-import { writeFileSync } from "node:fs";
+import { basename } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
-import { evalLiteral, evalLiteralValues, isTwCall, walk } from "./literal.ts";
+import { findCxImports } from "../vite/cx-inline.ts";
+	import {
+		collectCxClassCandidates,
+		pushVerifiedCandidate,
+	} from "../vite/cx-call-rewriter.ts";
+	import { collectModuleConstants } from "../vite/cx-static-evaluator.ts";
+import { extractTwConfig } from "../vite/inline.ts";
+import { evalLiteral, evalLiteralValues, isTwCall, walk, type OxcNode } from "./literal.ts";
 
 export interface TwScanOptions {
 	readonly twEntry: string;
@@ -40,6 +48,11 @@ class DefaultTwClassCollector implements TwClassCollector {
 	): Promise<string[]> {
 		const { tw } = (await import(twEntry)) as { tw: (styles: unknown) => string };
 		const classes = new Set<string>();
+		// cx() never calls tw() itself: its merge uses generated compose/
+		// conflict metadata instead. Verify its finite class candidates
+		// through the same strict catalog the vite lane uses so scan output
+		// stays identical to what the bundler lane would have registered.
+		const config = extractTwConfig(readFileSync(twEntry, "utf8"));
 
 		for (const { path: file, source, scan } of workspace.read(files)) {
 			if (!SOURCE_SCANNER_SERVICE.isScriptFile(file)) continue;
@@ -49,7 +62,7 @@ class DefaultTwClassCollector implements TwClassCollector {
 				language: scan.language,
 			});
 
-			walk(result.program, (node) => {
+			walk(result.program as unknown as OxcNode, (node) => {
 				if (!isTwCall(node)) return;
 				for (const argument of node.arguments) {
 					const styles = evalLiteral(argument);
@@ -86,6 +99,40 @@ class DefaultTwClassCollector implements TwClassCollector {
 					}
 				}
 			});
+			if (config !== undefined) {
+				// Only a cx() imported from the same generated module as tw() is
+				// ours; foreign cx() helpers (clsx, other libs) are left alone.
+				const entryBase = basename(twEntry).split(".")[0];
+				const cxNames = findCxImports(source, file, (importSource) => {
+					if (importSource === entryBase) return true;
+					return importSource.endsWith("/" + entryBase);
+				}, result.program as unknown as OxcNode).localNames;
+				if (cxNames.size > 0) {
+					const consts = new Map(
+						[...collectModuleConstants(result.program as unknown as OxcNode)].map(
+							([name, known]) => [name, known.value] as const,
+						),
+					);
+					const verified = new Set<string>();
+					walk(result.program as unknown as OxcNode, (node) => {
+						if (
+							node.type !== "CallExpression" ||
+							node.callee === null ||
+							typeof node.callee !== "object" ||
+							(node.callee as { type?: string; name?: string }).type !== "Identifier" ||
+							!cxNames.has((node.callee as { name?: string }).name ?? "")
+						)
+							return;
+						for (const argument of (node as unknown as { arguments: [] }).arguments) {
+							for (const candidate of collectCxClassCandidates(argument, consts)) {
+								if (verified.has(candidate)) continue;
+								if (pushVerifiedCandidate(candidate, config, [])) verified.add(candidate);
+							}
+						}
+					});
+					for (const candidate of verified) classes.add(candidate);
+				}
+			}
 		}
 
 		return [...classes];

@@ -66,10 +66,16 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       `tokenHasExactCss` before registration. Partially foldable calls
       (skeleton rendering) keep their existing behavior — candidates only
       cover calls that remain fully runtime.
-- [ ] T5 - Candidate plumbing unification: extend the plugin's candidate
+- [x] T5 - Candidate plumbing unification: extend the plugin's candidate
       collection (`@source inline` emission + `pandwind-tw scan` module
       mode) to accept candidates from css/design/cx lanes, not only tw.
       Deduplicate across lanes.
+      Done in tusklywo (vite lane) and this revision (scan lane):
+      pandwind-tw scan now finds cx() imported from the generated tw
+      module, verifies candidates through the same strict config catalog,
+      and adds only verified classes; @source inline emission dedups
+      across tw and cx lanes via one fresh-set filter in vite/index.ts.
+      Foreign cx() helpers (clsx etc.) are excluded by import source.
 - [ ] T6 - Verification gates: every registered candidate must pass the
       same exact-match conflict-map verification as plan 057 (reuse
       `tokenHasExactCss`); unresolvable members surface via `onUnresolved`,

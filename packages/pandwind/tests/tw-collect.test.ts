@@ -40,4 +40,50 @@ describe("tw scanner", () => {
 			rmSync(root, { recursive: true, force: true });
 		}
 	});
+
+	test("finite dynamic cx() calls register verified candidates", async () => {
+		const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+		const { tmpdir } = await import("node:os");
+		const { join } = await import("node:path");
+		const root = mkdtempSync(join(tmpdir(), "pandwind-tw-collect-cx-"));
+		try {
+			const cxSource = join(root, "cx-dynamic.tsx");
+			const body = [
+				'import { cx } from "../../../apps/example/src/tw";',
+				'const tone = pickTone();',
+				"export const a = cx(tone === \"light\" ? \"bg-sky-600\" : \"bg-gray-900\");",
+				'export const b = cx(flags && { underline: true, "font-bold": true });',
+				'export const c = cx(dynamicClassName());',
+			].join("\n");
+			writeFileSync(cxSource, body);
+			const classes = await collectTwClasses([cxSource], resolve(app, "src/tw.ts"));
+			expect(classes).toContain("bg-sky-600");
+			expect(classes).toContain("bg-gray-900");
+			expect(classes).toContain("underline");
+			expect(classes).toContain("font-bold");
+			// Unbounded calls contribute nothing.
+			expect(classes).not.toContain("flex");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
+
+	test("foreign cx() helpers are not collected", async () => {
+		const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+		const { tmpdir } = await import("node:os");
+		const { join } = await import("node:path");
+		const root = mkdtempSync(join(tmpdir(), "pandwind-tw-collect-foreign-"));
+		try {
+			const foreignSource = join(root, "foreign.tsx");
+			const body = [
+				'import { cx } from "clsx";',
+				'export const a = cx(cond ? "bg-sky-600" : "bg-gray-900");',
+			].join("\n");
+			writeFileSync(foreignSource, body);
+			const classes = await collectTwClasses([foreignSource], resolve(app, "src/tw.ts"));
+			expect(classes).toEqual([]);
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
 });

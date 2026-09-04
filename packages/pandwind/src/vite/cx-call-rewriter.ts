@@ -106,7 +106,10 @@ const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
  * templates with expressions, spreads of unknown arrays, and anything else
  * unbounded contribute nothing — they stay runtime-only rather than guessing.
  */
-const collectCxClassCandidates = (root: Expression, consts: Map<string, unknown>): string[] => {
+export const collectCxClassCandidates = (
+	root: Expression,
+	consts: Map<string, unknown>,
+): string[] => {
 	const found = new Set<string>();
 	const visited = new Set<unknown>();
 	const stack: Array<{ node: unknown; depth: number }> = [{ node: root, depth: 0 }];
@@ -172,7 +175,11 @@ const collectCxClassCandidates = (root: Expression, consts: Map<string, unknown>
 };
 
 /** Register a class only when every token compiles through the design system. */
-const pushVerifiedCandidate = (candidate: string, config: TwConfig, out: string[]): boolean => {
+export const pushVerifiedCandidate = (
+	candidate: string,
+	config: TwConfig,
+	out: string[],
+): boolean => {
 	for (const token of candidate.split(/\s+/)) {
 		if (token !== "" && !tokenHasExactCss(token, config)) return false;
 	}

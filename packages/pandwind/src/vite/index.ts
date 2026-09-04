@@ -92,10 +92,12 @@ export interface PandwindViteOptions {
 	onUnresolved?: OnUnresolved;
 	/**
 	 * Receive the class candidates that bounded dynamic `tw()` calls
-	 * (ternaries, unions, finite constant sets) may produce at runtime. The
-	 * host registers them with the Tailwind scanner (`@source inline` or the
-	 * `pandwind-tw scan` safelist) so every possible class has CSS. Called
-	 * per transformed module with deduplication left to the host.
+	 * (ternaries, unions, finite constant sets) and unfolded finite `cx()`
+	 * calls may produce at runtime. The host registers them with the
+	 * Tailwind scanner (`@source inline` or the `pandwind-tw scan`
+	 * safelist) so every possible class has CSS. Duplicates across the
+	 * tw/cx lanes and repeated modules are already removed here; the host
+	 * only needs to accumulate or forward each batch.
 	 */
 	onTwCandidates?: (candidates: readonly string[]) => void;
 }
@@ -253,6 +255,17 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 	const unresolvedMode: OnUnresolved = options.onUnresolved ?? OnUnresolvedTag.Off;
 	const unresolvedOptions = { onUnresolved: unresolvedMode };
 	const reportTwCandidates = options.onTwCandidates;
+	// Cross-lane, cross-module candidate dedup: the tw and cx lanes may
+	// discover the same finite classes in the same or different modules;
+	// the Tailwind scanner only needs each candidate once per build.
+	const reportedCandidates = new Set<string>();
+	const reportCandidates = (candidates: readonly string[]): void => {
+		if (reportTwCandidates === undefined) return;
+		const fresh = candidates.filter((candidate) => !reportedCandidates.has(candidate));
+		if (fresh.length === 0) return;
+		for (const candidate of fresh) reportedCandidates.add(candidate);
+		reportTwCandidates(fresh);
+	};
 
 	return {
 		name: "pandwind:inline-tw",
@@ -297,9 +310,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				parsedProgram: imports.program,
 			});
 			working = result.code;
-			if (reportTwCandidates !== undefined && result.candidates?.length) {
-				reportTwCandidates(result.candidates);
-			}
+			if (result.candidates?.length) reportCandidates(result.candidates);
 
 			// cx pass runs on the post-tw code: folded tw() strings then
 			// participate as plain string arguments to cx(). With css folding
@@ -334,9 +345,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				working = cxResult.code;
 				inlined += cxResult.inlined;
 				cxUnresolved = cxResult.unresolved ?? [];
-				if (reportTwCandidates !== undefined && cxResult.candidates?.length) {
-					reportTwCandidates(cxResult.candidates);
-				}
+				if (cxResult.candidates?.length) reportCandidates(cxResult.candidates);
 			}
 
 			const optimized = runtimePruner.transform(working, id);
