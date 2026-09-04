@@ -364,17 +364,27 @@ test("extractCssStyles resolves design modules in literal calls", () => {
 	`);
 });
 
-test("extractCssStyles skips dynamic calls and processes each argument", () => {
+test("extractCssStyles registers const-backed candidates and skips unbounded calls", () => {
 	const code = `
 		import { css } from "./design";
 		const color = "$blue-500";
 		const a = css({ $frame: { fill: color } });
 		const b = css({ $frame: { w: "20" } }, { $frame: { h: "20" } });
 	`;
+	// A same-module const is a finite, proven value -> its resolved rule is
+	// registered as a candidate; the runtime call still selects it.
 	expect(extract().extractStyles(code, "app.ts", new Set(["css"]))).toEqual([
+		{ backgroundColor: "#3182ce" },
 		{ width: "20px" },
 		{ height: "20px" },
 	]);
+	// Genuinely unbounded values stay conservative.
+	const unbounded = `
+		import { css } from "./design";
+		const pick = () => "$blue-500";
+		const a = css({ $frame: { fill: pick() } });
+	`;
+	expect(extract().extractStyles(unbounded, "app.ts", new Set(["css"]))).toEqual([]);
 });
 
 test("extractCssStyles ignores raw css() from non-matching sources", () => {
@@ -747,6 +757,137 @@ test("pandwindCssVite serves conditions and semantic tokens", () => {
 			".\\31 e60pra{padding:20px}
 			.\\31 qx89tq:hover{color:#60A3BC}"
 		`);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("finite ternary members register every combination in the sheet", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const cond = Math.random() > 0.5;
+			const cls = css({ $text: { color: cond ? "$red-300" : "$blue-600" } });
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// Both branches are statically knowable -> both rules exist.
+		expect(generated).toContain("color:#FC8181");
+		expect(generated).toContain("color:#2b6cb0");
+		// The call itself stays the runtime selection mechanism.
+		expect(
+			relevantCss(generated, ["color:#FC8181", "color:#2b6cb0"]),
+		).toMatchInlineSnapshot(`
+			".\\31 8g83j1{color:#2b6cb0}
+			.\\31 95eees{color:#FC8181}"
+		`);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("mixed literal and finite dynamic members enumerate combinations", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const cond = Math.random() > 0.5;
+			const cls = css({
+				$frame: { pad: "4" },
+				$text: { color: cond ? "$red-300" : "$blue-600" },
+			});
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// pad:"4" combines with both colors -> pad rule + two color rules,
+		// deduped by atomic id (the static subset is not registered twice).
+		expect(generated).toContain("padding:4px");
+		expect(generated).toContain("color:#FC8181");
+		expect(generated).toContain("color:#2b6cb0");
+		expect(generated.match(/padding:4px/g)).toHaveLength(1);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("module constants feeding dynamic members enumerate through the const scope", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const BRAND = "$red";
+			const tone = BRAND + "-300";
+			const cls = css.class({ $text: { color: tone } });
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// The call-site value is a plain identifier; only the module const
+		// scope makes it finite and provable -> the resolved rule exists.
+		expect(generated).toContain("color:#FC8181");
+		expect(
+			relevantCss(generated, ["color:#FC8181"]),
+		).toMatchInlineSnapshot(`".\\31 95eees{color:#FC8181}"`);
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("css.group finite entries register every entry combination", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const cond = Math.random() > 0.5;
+			const cls = css.group({
+				card: { $frame: { pad: "4" } },
+				accent: { $text: { color: cond ? "$red-300" : "$blue-600" } },
+			});
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// Static group entries resolve as before; the finite dynamic entry
+		// contributes one rule per branch value.
+		expect(generated).toContain("padding:4px");
+		expect(generated).toContain("color:#FC8181");
+		expect(generated).toContain("color:#2b6cb0");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("finite combinations beyond the cap stay conservative", () => {
+	// 3 chained ternaries = 8 branch values, but 3 nested ternary
+	// *dimensions* would exceed 256 via the cartesian object; build an
+	// unbounded shape instead: a non-constant function call value.
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const pick = () => (Math.random() > 0.5 ? "1rem" : "2rem");
+			const cls = css.class({ $frame: { pad: pick() } });
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// Function-call values are unbounded -> no candidate rules; the
+		// rewriter owns the runtime carrier instead.
+		expect(generated).not.toContain("padding:1rem");
+		expect(generated).not.toContain("padding:2rem");
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

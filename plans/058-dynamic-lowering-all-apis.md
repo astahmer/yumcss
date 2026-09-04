@@ -29,19 +29,23 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
 
 ## Tasks
 
-- [ ] T1 - Shared finite-value evaluator. Extract plan-057's
+- [x] T1 - Shared finite-value evaluator. Extract plan-057's
       `evalLiteralValues` usage in `src/vite/inline.ts` into the shared
       literal module (`src/tw/literal.ts`) so css/design/cx evaluators
       consume the same ternary/union/array/constant-scope discovery instead
       of duplicating it. Behavior-preserving; inline snapshots pin tw
       behavior before/after.
-- [ ] T2 - Finite discovery for `css()`/`css.class()`/`css.group()` in
-      `StaticCssCallRewriter`: when a dynamic position has a finite value
-      set, compile one artifact per combination (cap 256/call, beyond cap ->
-      residual diagnostic) and register candidates for the scanner lane.
-      Unbounded values keep the existing css.vars/css.props carrier or the
-      runtime fallback. Issue-driven fixtures first: mixed ternary color,
-      union-typed size map, constant array index.
+- [x] T2 - Finite discovery for `css()`/`css.class()`/`css.group()` —
+      implemented in `DesignCssArtifactExtractor` (extraction owns sheet
+      completeness, so candidates flow into collect/route-splitting without
+      rewriter plumbing). One resolved artifact per value combination
+      (cap 256 enforced by the evaluator, beyond cap -> conservative skip);
+      same-module const scope participates via `collectModuleConstants`;
+      unbounded values keep the css.vars/css.props carrier or runtime
+      fallback; css.raw stays verbatim. Fixtures: ternary color, mixed
+      literal+dynamic, const-scope composition, group entries, unbounded
+      function call stays conservative. (Constant-array index remains an
+      evaluator limitation, recorded as T5/T6 follow-up.)
 - [ ] T3 - Finite discovery for `dcss()`: same policy through
       `resolveDesignStyle` — one resolved design style per value
       combination, candidates registered through the design token catalog.
