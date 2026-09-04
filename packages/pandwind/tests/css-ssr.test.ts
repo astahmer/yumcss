@@ -96,7 +96,10 @@ describe("SSR dynamic-value routing (plan-057 T9)", () => {
 	test("pseudo-state toggles keep values out of the generated sheet", () => {
 		const sheet = createStylesheet(examplePreset);
 
-		const out = css.vars({ _hover: { backgroundColor: "#1d4ed8" }, backgroundColor: "#3b82f6" });
+		const out = css.vars({
+			_hover: { backgroundColor: "#1d4ed8" },
+			backgroundColor: "#3b82f6",
+		} as never);
 		expect(out.class).toBe("pw-hover:background-color pw-background-color");
 
 		sheet.processVarKey("background-color");
