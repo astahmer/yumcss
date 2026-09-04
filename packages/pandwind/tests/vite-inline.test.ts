@@ -65,4 +65,19 @@ describe("inlineTwCalls", () => {
 		expect(inlined).toBe(0);
 		expect(code).toBe(input);
 	});
+
+	test("bounded dynamic tw() calls keep the source and emit every candidate", () => {
+		const input = 'const a = tw({ bg: active ? "sky-600" : "gray-900" });';
+		const { code, inlined, candidates } = inlineTwCalls(input, "app.ts", config!, new Set(["tw"]));
+		expect(inlined).toBe(0);
+		expect(code).toBe(input);
+		expect(candidates).toEqual(["bg-sky-600", "bg-gray-900"]);
+	});
+
+	test("unbounded dynamic tw() calls emit no candidates", () => {
+		const input = "const a = tw({ bg: someColor });";
+		const { code, candidates } = inlineTwCalls(input, "app.ts", config!, new Set(["tw"]));
+		expect(code).toBe(input);
+		expect(candidates).toBeUndefined();
+	});
 });

@@ -25,7 +25,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
 
 ## Tasks
 
-- [ ] T1 - Finite-value evaluation layer. New evaluator API beside
+- [x] T1 - Finite-value evaluation layer. New evaluator API beside
       \`evalLiteral\` (\`packages/pandwind/src/tw/literal.ts\` or sibling) that
       returns a *set* of possible values for ConditionalExpression, Logical
       \`&&/||/??\`, arrays and object property values. \`evalLiteral\` semantics
@@ -78,4 +78,3 @@ surface; this plan adds no new public API. Compiler/codemod work only.
 - Unbounded expressions: runtime preserved + structured diagnostic/residual.
 - All new behavior covered by inline snapshots + ordinary \`expect\` assertions
   (issue-driven workflow). Focused vitest runs only during development.
-

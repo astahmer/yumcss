@@ -18,7 +18,13 @@ import {
 	type TwNestedStyles,
 	type TwVariantsMeta,
 } from "../tw/compile.ts";
-import { evalLiteral, type LiteralConstantScope, type OxcNode, walk } from "../tw/literal.ts";
+import {
+	evalLiteral,
+	evalLiteralValues,
+	type LiteralConstantScope,
+	type OxcNode,
+	walk,
+} from "../tw/literal.ts";
 import { collectModuleConstants, type ConstantScope } from "./cx-inline.ts";
 import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
 
@@ -99,6 +105,13 @@ export interface InlineResult {
 	inlined: number;
 	/** Folded class tokens outside the design system (onUnresolved lane). */
 	unresolved?: UnresolvedToken[];
+	/**
+	 * Classes a dynamic-but-bounded `tw()` call may produce at runtime
+	 * (finite ternary/union/constant sets). The source is left untouched —
+	 * the runtime still selects the real class — but the host can register
+	 * every candidate so the Tailwind scanner emits CSS for all of them.
+	 */
+	candidates?: string[];
 }
 
 /**
@@ -154,6 +167,7 @@ export function inlineTwCalls(
 	]);
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	let inlined = 0;
+	let candidates: string[] | undefined;
 	const checkUnresolved =
 		options?.onUnresolved !== undefined && options.onUnresolved !== OnUnresolvedTag.Off;
 	const lines = checkUnresolved ? createLineIndex(code) : undefined;
@@ -170,6 +184,34 @@ export function inlineTwCalls(
 		if (call.arguments.length !== 1) return;
 		const styles = evalLiteral(call.arguments[0] as Expression, consts);
 		if (typeof styles !== "object" || styles === null || Array.isArray(styles)) {
+			// Not a proven literal: fall back to finite candidate discovery.
+			// Unbounded or non-object sets are left for the runtime with no
+			// candidates (the scanner/residual lane owns the diagnostic).
+			const valueSet = evalLiteralValues(call.arguments[0] as Expression, consts);
+			if (valueSet === undefined) return;
+			const compiled: string[] = [];
+			for (const candidateStyles of valueSet.values) {
+				if (
+					typeof candidateStyles !== "object" ||
+					candidateStyles === null ||
+					Array.isArray(candidateStyles)
+				) {
+					return;
+				}
+				try {
+					compiled.push(
+						compileStyles(
+							candidateStyles as TwNestedStyles,
+							config.variants,
+							config.conflicts,
+							config.compose,
+						),
+					);
+				} catch {
+					return;
+				}
+			}
+			(candidates ??= []).push(...compiled);
 			return;
 		}
 		try {
@@ -194,10 +236,12 @@ export function inlineTwCalls(
 		}
 	});
 
-	if (edits.length === 0) return { code, inlined: 0 };
+	if (edits.length === 0) {
+		return candidates === undefined ? { code, inlined: 0 } : { code, inlined: 0, candidates };
+	}
 	let output = code;
 	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {
 		output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 	}
-	return { code: output, inlined, unresolved };
+	return { code: output, inlined, unresolved, candidates };
 }
