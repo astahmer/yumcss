@@ -39,6 +39,7 @@ import type { PandaMigrationWorkspace } from "./migration-discovery.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 import { SOURCE_SCANNER_SERVICE } from "pandwind/source";
 import { walk, type OxcNode } from "pandwind/tw/literal";
+import { NodeKind } from "pandwind/tw/literal";
 import { createPandaProjectFileSystem, type PandaProjectFileSystem } from "./panda-file-system.ts";
 import {
 	convertPandaRecipe,
@@ -526,7 +527,7 @@ export function scanFactoryElements(
 		return out;
 	}
 	walk(program, (node) => {
-		if (node.type !== "JSXElement") return;
+		if (node.type !== NodeKind.JSXElement) return;
 		const opening = (node as { openingElement?: unknown }).openingElement;
 		if (opening === null || typeof opening !== "object") return;
 		const element = opening as {
@@ -539,7 +540,7 @@ export function scanFactoryElements(
 		};
 		const name = element.name;
 		if (
-			name?.type !== "JSXMemberExpression" ||
+			name?.type !== NodeKind.JSXMemberExpression ||
 			name.object?.name !== "panda" ||
 			name.property?.name === undefined ||
 			element.start === undefined ||
@@ -563,7 +564,7 @@ export function scanFactoryElements(
 				end?: number;
 			};
 			if (attribute.start === undefined || attribute.end === undefined) continue;
-			if (attribute.type === "JSXSpreadAttribute") {
+			if (attribute.type === NodeKind.JSXSpreadAttribute) {
 				attrs.push({
 					name: "...spread",
 					nameStart: attribute.start,
@@ -588,7 +589,7 @@ export function scanFactoryElements(
 				});
 				continue;
 			}
-			if (value.type === "Literal" && typeof value.value === "string") {
+			if (value.type === NodeKind.Literal && typeof value.value === "string") {
 				attrs.push({
 					name: attrName,
 					nameStart: attribute.start,
@@ -599,7 +600,7 @@ export function scanFactoryElements(
 				});
 				continue;
 			}
-			if (value.type === "JSXExpressionContainer") {
+			if (value.type === NodeKind.JSXExpressionContainer) {
 				const expression = value.expression;
 				const start = expression?.start;
 				const end = expression?.end;

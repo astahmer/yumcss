@@ -39,6 +39,7 @@ import {
 	type GeneratedCssAtRule,
 	type GeneratedCssNode,
 } from "../generated-css-parser.ts";
+import { GeneratedCssNodeKind } from "../generated-css-parser.ts";
 
 export interface UnoCssTokenResolver {
 	resolve(token: string, context: AdapterParseContext): readonly StyleDeclaration[] | undefined;
@@ -110,7 +111,7 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 	while (work.length > 0) {
 		const current = work.pop()!;
 		const node = current.node;
-		if (node.type === "decl") {
+		if (node.type === GeneratedCssNodeKind.Declaration) {
 			if (!current.insideStyleRule) continue;
 			const name = cssPropertyToStyleProperty(node.prop.trim());
 			const value = node.value.trim();
@@ -125,10 +126,10 @@ export function createUnoCssResolverFromCss(css: string): UnoCssTokenResolver {
 			continue;
 		}
 		const children = node.nodes ?? [];
-		if (node.type === "atrule") {
+		if (node.type === GeneratedCssNodeKind.AtRule) {
 			if (node.name === "theme") {
 				for (const child of children) {
-					if (child.type !== "decl") continue;
+					if (child.type !== GeneratedCssNodeKind.Declaration) continue;
 					const value = child.value.trim();
 					const match = /^--color-(.+)$/u.exec(child.prop);
 					if (match?.[1] === undefined || value === "") continue;

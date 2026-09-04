@@ -43,6 +43,7 @@ import {
 	type GeneratedCssAtRule,
 	type GeneratedCssNode,
 } from "../generated-css-parser.ts";
+import { GeneratedCssNodeKind } from "../generated-css-parser.ts";
 
 interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
@@ -655,7 +656,7 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 	while (work.length > 0) {
 		const current = work.pop()!;
 		const node = current.node;
-		if (node.type === "decl") {
+		if (node.type === GeneratedCssNodeKind.Declaration) {
 			const property = node.prop.trim();
 			const value = node.value.trim();
 			if (current.insideStyleRule && property !== "" && value !== "")
@@ -666,7 +667,7 @@ function parseEngineCss(css: string, token: string): readonly StyleDeclaration[]
 			continue;
 		}
 		const children = node.nodes ?? [];
-		if (node.type === "atrule") {
+		if (node.type === GeneratedCssNodeKind.AtRule) {
 			const atRuleCondition = generatedAtRuleCondition(node);
 			const conditions =
 				atRuleCondition === undefined

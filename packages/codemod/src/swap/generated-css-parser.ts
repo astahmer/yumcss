@@ -27,6 +27,13 @@ export interface GeneratedCssAtRule {
 
 export type GeneratedCssNode = GeneratedCssDeclaration | GeneratedCssRule | GeneratedCssAtRule;
 
+/** `GeneratedCssNode.type` discriminators for typed comparisons. */
+export const GeneratedCssNodeKind = {
+	Declaration: "decl",
+	Rule: "rule",
+	AtRule: "atrule",
+} as const;
+
 function skipTrivia(css: string, start: number): number {
 	let index = start;
 	while (index < css.length) {

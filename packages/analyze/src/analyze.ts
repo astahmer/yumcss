@@ -24,6 +24,7 @@ import { collectModuleConstants, evalStaticCx, type ConstantScope } from "pandwi
 import { extractTwConfig, inlineTwCalls, type TwConfig } from "pandwind/vite/inline";
 import { compileStyles, type TwNestedStyles } from "pandwind/tw/compile";
 import { evalLiteral, walk, type OxcNode } from "pandwind/tw/literal";
+import { NodeKind } from "pandwind/tw/literal";
 import {
 	DefaultCssResidualCollector,
 	type ArbitraryValueSite,
@@ -117,7 +118,7 @@ const NOT_STATIC: unknown = (() => {
 	const probe = SOURCE_SCANNER_SERVICE.parse({ file: "probe.ts", source: `unknownRuntimeValue` });
 	let sentinel: unknown;
 	walk(probe.program as unknown as OxcNode, (node) => {
-		if ((node as { type?: string }).type !== "ExpressionStatement") return;
+		if ((node as { type?: string }).type !== NodeKind.ExpressionStatement) return;
 		sentinel = evalStaticCx((node as { expression?: unknown }).expression as never);
 	});
 	return sentinel;
@@ -148,7 +149,7 @@ function parseModule(
 
 	const imported = new Map<string, string>();
 	walk(program, (node) => {
-		if ((node as { type?: string }).type !== "ImportDeclaration") return;
+		if ((node as { type?: string }).type !== NodeKind.ImportDeclaration) return;
 		for (const specifier of (node as { specifiers?: Array<Record<string, unknown>> }).specifiers ??
 			[]) {
 			const spec = specifier as {
@@ -156,7 +157,7 @@ function parseModule(
 				imported?: { name?: string };
 				local?: { name?: string };
 			};
-			if (spec.type !== "ImportSpecifier") continue;
+			if (spec.type !== NodeKind.ImportSpecifier) continue;
 			const importedName = (spec.imported?.name ?? "") as string;
 			const local = spec.local?.name ?? "";
 			if (importedName === "cx" || importedName === "tw") imported.set(local, importedName);
@@ -194,13 +195,13 @@ function parseModule(
 
 	const calls: Array<CallInfo & { name: string }> = [];
 	walk(program, (node) => {
-		if ((node as { type?: string }).type !== "CallExpression") return;
+		if ((node as { type?: string }).type !== NodeKind.CallExpression) return;
 		const call = node as {
 			callee?: { type?: string; name?: string };
 			arguments?: unknown[];
 			start?: number;
 		};
-		if (call.callee?.type !== "Identifier") return;
+		if (call.callee?.type !== NodeKind.Identifier) return;
 		const name = call.callee.name ?? "";
 		if (!cxNames.has(name) && !twNames.has(name)) return;
 
@@ -262,9 +263,9 @@ function resolveTwArg(
 	consts: ConstantScope,
 ): unknown {
 	const call = node as { type?: string; callee?: OxcNode; arguments?: unknown[] } | undefined;
-	if (call?.type !== "CallExpression") return node;
+	if (call?.type !== NodeKind.CallExpression) return node;
 	const callee = call.callee as { type?: string; name?: string } | undefined;
-	if (callee?.type !== "Identifier" || !twNames.has(callee.name ?? "")) return node;
+	if (callee?.type !== NodeKind.Identifier || !twNames.has(callee.name ?? "")) return node;
 	if ((call.arguments?.length ?? 0) !== 1) return node;
 	const literalScope = new Map([...consts].map(([n, known]) => [n, known.value]));
 	const styles = evalLiteral(call.arguments![0] as never, literalScope);
@@ -324,7 +325,7 @@ function classify(
 	}
 	// All args static: full fold — unless a css()/unknown helper call is
 	// among them without a fold context (the pass leaves those alone).
-	const hasUnknownCall = args.some((a) => (a as { type?: string })?.type === "CallExpression");
+	const hasUnknownCall = args.some((a) => (a as { type?: string })?.type === NodeKind.CallExpression);
 	if (hasUnknownCall) {
 		return {
 			start,
@@ -339,7 +340,7 @@ function classify(
 
 function explain(args: unknown[]): string {
 	for (const arg of args) {
-		if ((arg as { type?: string })?.type === "SpreadElement") return "spread argument";
+		if ((arg as { type?: string })?.type === NodeKind.SpreadElement) return "spread argument";
 	}
 	let conditionals = 0;
 	for (const arg of args) {
@@ -347,20 +348,20 @@ function explain(args: unknown[]): string {
 		if (t === "ConditionalExpression" || t === "LogicalExpression") conditionals++;
 	}
 	if (conditionals > 1) return "multiple dynamic conditionals";
-	if (args.some((a) => (a as { type?: string })?.type === "ArrowFunctionExpression"))
+	if (args.some((a) => (a as { type?: string })?.type === NodeKind.ArrowFunctionExpression))
 		return "function argument";
 	if (
 		args.some(
 			(a) =>
-				(a as { type?: string })?.type === "TemplateLiteral" &&
+				(a as { type?: string })?.type === NodeKind.TemplateLiteral &&
 				(a as { expressions?: unknown[] }).expressions?.length,
 		)
 	) {
 		return "runtime template interpolation";
 	}
-	if (args.some((a) => (a as { type?: string })?.type === "MemberExpression"))
+	if (args.some((a) => (a as { type?: string })?.type === NodeKind.MemberExpression))
 		return "member expression value";
-	if (args.some((a) => (a as { type?: string })?.type === "CallExpression"))
+	if (args.some((a) => (a as { type?: string })?.type === NodeKind.CallExpression))
 		return "dynamic helper call";
 	return "unknown runtime value";
 }

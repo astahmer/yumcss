@@ -22,6 +22,7 @@ import {
 	type StyleProgramEmissionHint,
 } from "./identifiers.ts";
 import { createStyleDeclarationOrderingPolicy } from "./style-declaration-order.ts";
+import { NodeKind, PropertyKindTag } from "pandwind/tw/literal";
 
 const defaultDeclarationOrdering = createStyleDeclarationOrderingPolicy();
 
@@ -786,15 +787,15 @@ function sourceKey(node: SourceNode, body: string, options: StyleProgramOptions)
 		return options.computedKeys?.[expression] ?? null;
 	}
 	const key = node.key;
-	if (key?.type === "Identifier" && key.name !== undefined) return key.name;
-	if (key?.type === "Literal" && typeof key.value === "string") return key.value;
+	if (key?.type === NodeKind.Identifier && key.name !== undefined) return key.name;
+	if (key?.type === NodeKind.Literal && typeof key.value === "string") return key.value;
 	return key === undefined ? null : sourceSlice(body, key).replace(/^['"]|['"]$/g, "");
 }
 
 function literalSourceValue(node: SourceNode): StyleValue | null {
-	if (node.type === "ParenthesizedExpression" && node.expression !== undefined)
+	if (node.type === NodeKind.ParenthesizedExpression && node.expression !== undefined)
 		return literalSourceValue(node.expression);
-	if (node.type === "TemplateLiteral") {
+	if (node.type === NodeKind.TemplateLiteral) {
 		const quasis = node.quasis ?? [];
 		const expressions = node.expressions ?? [];
 		if (quasis.length !== expressions.length + 1) return null;
@@ -818,7 +819,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 		}
 		return { kind: "literal", value };
 	}
-	if (node.type === "UnaryExpression" && (node.operator === "-" || node.operator === "+")) {
+	if (node.type === NodeKind.UnaryExpression && (node.operator === "-" || node.operator === "+")) {
 		const argument = node.argument === undefined ? null : literalSourceValue(node.argument);
 		if (argument?.kind === StyleValueKindTag.Literal && typeof argument.value === "number") {
 			return {
@@ -827,14 +828,14 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 			};
 		}
 	}
-	if (node.type === "ConditionalExpression") {
+	if (node.type === NodeKind.ConditionalExpression) {
 		const test = node.test === undefined ? null : literalSourceValue(node.test);
 		if (test?.kind === StyleValueKindTag.Literal && typeof test.value === "boolean") {
 			const selected = test.value ? node.consequent : node.alternate;
 			return selected === undefined ? null : literalSourceValue(selected);
 		}
 	}
-	if (node.type === "BinaryExpression" || node.type === "LogicalExpression") {
+	if (node.type === NodeKind.BinaryExpression || node.type === NodeKind.LogicalExpression) {
 		const left = node.left === undefined ? null : literalSourceValue(node.left);
 		const right = node.right === undefined ? null : literalSourceValue(node.right);
 		if (left?.kind === StyleValueKindTag.Literal && right?.kind === StyleValueKindTag.Literal) {
@@ -842,7 +843,7 @@ function literalSourceValue(node: SourceNode): StyleValue | null {
 			if (value !== undefined) return { kind: "literal", value };
 		}
 	}
-	if (node.type !== "Literal") return null;
+	if (node.type !== NodeKind.Literal) return null;
 	if (
 		typeof node.value === "string" ||
 		typeof node.value === "number" ||
@@ -956,7 +957,7 @@ function dynamicSourceValue(
 }
 
 function sourceObject(node: SourceNode): boolean {
-	return node.type === "ObjectExpression";
+	return node.type === NodeKind.ObjectExpression;
 }
 
 function looksLikeCondition(name: string, options: StyleProgramOptions): boolean {
@@ -1004,7 +1005,7 @@ function looksLikePropertyValueConditions(
 	return (
 		properties.length > 0 &&
 		properties.every((property) => {
-			if (property.type !== "Property" || property.kind !== "init") return false;
+			if (property.type !== NodeKind.Property || property.kind !== PropertyKindTag.Init) return false;
 			const propertyName = sourceKey(property, body, options);
 			return (
 				propertyName === "default" ||
@@ -1075,7 +1076,7 @@ export function styleProgramFromSourceObject(
 			return;
 		}
 		for (const conditionProperty of valueNode.properties ?? []) {
-			if (conditionProperty.type !== "Property" || conditionProperty.kind !== "init") {
+			if (conditionProperty.type !== NodeKind.Property || conditionProperty.kind !== PropertyKindTag.Init) {
 				addDynamicResidual(
 					sourceSlice(body, conditionProperty),
 					"conditional style values must be initialized properties",
@@ -1110,14 +1111,14 @@ export function styleProgramFromSourceObject(
 		});
 		const statement = (parsed.program as { body?: SourceNode[] }).body?.[0];
 		const expression = statement?.expression;
-		root = expression?.type === "ParenthesizedExpression" ? expression.expression : expression;
+		root = expression?.type === NodeKind.ParenthesizedExpression ? expression.expression : expression;
 	} catch {
 		addDynamicResidual(body, "source style object could not be parsed");
 	}
 
 	const walk = (object: SourceNode, conditions: readonly StyleCondition[]): void => {
 		for (const property of object.properties ?? []) {
-			if (property.type === "SpreadElement") {
+			if (property.type === NodeKind.SpreadElement) {
 				const reference = sourceSlice(body, property)
 					.trim()
 					.replace(/^\.\.\./, "")
@@ -1142,7 +1143,7 @@ export function styleProgramFromSourceObject(
 				}
 				continue;
 			}
-			if (property.type !== "Property" || property.kind !== "init") {
+			if (property.type !== NodeKind.Property || property.kind !== PropertyKindTag.Init) {
 				addDynamicResidual(sourceSlice(body, property), "unsupported source style property");
 				continue;
 			}
@@ -1161,7 +1162,7 @@ export function styleProgramFromSourceObject(
 			}
 			if (
 				options.compositionArrayKeys?.includes(name) === true &&
-				valueNode.type === "ArrayExpression"
+				valueNode.type === NodeKind.ArrayExpression
 			) {
 				for (const element of valueNode.elements ?? []) {
 					const reference = sourceSlice(body, element).trim();
@@ -1181,7 +1182,7 @@ export function styleProgramFromSourceObject(
 				continue;
 			}
 			const specialKind = options.arrayRuleKinds?.[name];
-			if (specialKind !== undefined && valueNode.type === "ArrayExpression") {
+			if (specialKind !== undefined && valueNode.type === NodeKind.ArrayExpression) {
 				for (const element of valueNode.elements ?? []) {
 					if (!sourceObject(element)) {
 						addDynamicResidual(
@@ -1217,7 +1218,7 @@ export function styleProgramFromSourceObject(
 			}
 			if (sourceObject(valueNode) && options.variantContainerKeys?.includes(name)) {
 				for (const variant of valueNode.properties ?? []) {
-					if (variant.type !== "Property" || variant.kind !== "init") continue;
+					if (variant.type !== NodeKind.Property || variant.kind !== PropertyKindTag.Init) continue;
 					const variantName = sourceKey(variant, body, options);
 					const values = variant.value as SourceNode | undefined;
 					if (variantName === null || values === undefined || !sourceObject(values)) {
@@ -1228,7 +1229,7 @@ export function styleProgramFromSourceObject(
 						continue;
 					}
 					for (const option of values.properties ?? []) {
-						if (option.type !== "Property" || option.kind !== "init") continue;
+						if (option.type !== NodeKind.Property || option.kind !== PropertyKindTag.Init) continue;
 						const optionName = sourceKey(option, body, options);
 						const optionStyles = option.value as SourceNode | undefined;
 						if (optionName === null || optionStyles === undefined || !sourceObject(optionStyles)) {
