@@ -439,6 +439,80 @@ const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor
 	}
 };
 
+/**
+ * Structural mirror of the shared governance `TokenPolicySnapshot` (plans/054).
+ * Declared locally on purpose: the lint plugin has no runtime dependency on
+ * the analyzer, and the governance contract is versioned and additive, so
+ * structural compatibility is sufficient. Unknown strictness (resolved:
+ * false) stays report-only/fail-open.
+ */
+type TokenPolicySnapshotOption = {
+	readonly owner: string;
+	readonly resolved: boolean;
+	readonly allowedRawValues?: readonly string[];
+	readonly allowedRawPrefixes?: readonly string[];
+	readonly strictProperties?: readonly string[];
+	readonly allowedRawValuesByProperty?: Readonly<Record<string, readonly string[]>>;
+	readonly tokenVocabulary?: Readonly<Record<string, Readonly<Record<string, string>>>>;
+};
+
+const governancePolicy = (context: RuleContext): TokenPolicySnapshotOption | undefined => {
+	const options = context.options?.[0];
+	if (options === null || typeof options !== "object") return undefined;
+	const policy = (options as Record<string, unknown>)["policy"];
+	if (policy === null || typeof policy !== "object") return undefined;
+	return policy as TokenPolicySnapshotOption;
+};
+
+/** Verified-token or declared escape hatch for one strict property literal. */
+const strictPropertyAllows = (policy: TokenPolicySnapshotOption, property: string, value: string): boolean =>
+	policy.tokenVocabulary?.[property]?.[value] !== undefined ||
+	policy.allowedRawValuesByProperty?.[property]?.includes(value) === true ||
+	policy.allowedRawValues?.includes(value) === true ||
+	policy.allowedRawPrefixes?.some((prefix) => value.startsWith(prefix)) === true;
+
+/** Collect string literals under strict property values (conditions stay
+ * opaque, `$raw` is an explicit escape hatch) and report with property
+ * provenance. */
+const walkStrictPropertyLiterals = (
+	moduleValue: AstValue,
+	isStrict: (property: string) => boolean,
+	seen: Set<AstNode>,
+	report: (literal: AstNode, property: string) => void,
+): void => {
+	const stack: AstValue[] = [moduleValue];
+	while (stack.length > 0) {
+		const node = stack.pop();
+		if (Array.isArray(node)) {
+			for (let index = node.length - 1; index >= 0; index -= 1) stack.push(node[index]);
+			continue;
+		}
+		if (!isNode(node)) continue;
+		if (node.type === "Property") {
+			const name = propertyName(node);
+			if (name === undefined) {
+				stack.push(node.value);
+				continue;
+			}
+			if (name === "$raw") continue;
+			if (isStrict(name)) {
+				walkDesignValues(node.value, seen, (literal) => report(literal, name));
+			} else {
+				// non-strict containers may still nest strict props (conditions, modules)
+				stack.push(node.value);
+			}
+			continue;
+		}
+		if (node.type === "ConditionalExpression" || node.type === "LogicalExpression") continue;
+		const keys = Object.keys(node);
+		for (let index = keys.length - 1; index >= 0; index -= 1) {
+			const key = keys[index];
+			if (key === undefined || key === "parent" || key === "type") continue;
+			stack.push(node[key]);
+		}
+	}
+};
+
 const tokenPolicy = (context: RuleContext): { allows(value: string): boolean } | undefined => {
 	const options = context.options?.[0];
 	if (options === null || typeof options !== "object") return undefined;
@@ -613,9 +687,36 @@ const rules: Record<string, RuleDefinition> = {
 	},
 	"design-tokens-only": {
 		create(context) {
-			const policy = tokenPolicy(context);
+			const governance = governancePolicy(context);
+			const legacy = governance === undefined ? tokenPolicy(context) : undefined;
 			return withResolver((node, api) => {
-				if (policy === undefined || !isTokenLane(api)) return;
+				if (!isTokenLane(api)) return;
+				if (governance !== undefined) {
+					// Unresolved governance policy stays report-only (fail-open):
+					// strictness is unknown, so the rule must stay silent.
+					if (!governance.resolved) return;
+					const strict = new Set(governance.strictProperties ?? []);
+					if (strict.size === 0) return;
+					for (const arg of node.arguments) {
+						const seen = new Set<AstNode>();
+						walkStrictPropertyLiterals(
+							arg,
+							(name) => strict.has(name),
+							seen,
+							(literal, property) => {
+								if (strictPropertyAllows(governance, property, literal.value)) return;
+								context.report({
+									node: literal,
+									message:
+										'pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch',
+										data: { value: literal.value, property },
+								});
+							},
+						);
+					}
+					return;
+				}
+				if (legacy === undefined) return;
 				for (const arg of node.arguments) {
 					const seen = new Set<AstNode>();
 					walkNode(arg, (inner) => {
@@ -623,7 +724,7 @@ const rules: Record<string, RuleDefinition> = {
 						if (inner.type !== "Property" || name === undefined || !DESIGN_MODULE_KEYS.has(name))
 							return;
 						walkDesignValues(inner.value, seen, (literal) => {
-							if (policy.allows(literal.value)) return;
+							if (legacy.allows(literal.value)) return;
 							context.report({
 								node: literal,
 								message:

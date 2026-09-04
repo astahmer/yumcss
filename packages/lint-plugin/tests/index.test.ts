@@ -351,6 +351,73 @@ dcss.class({ $frame: { gap: "space-5" } });`,
 		`);
 	});
 
+	test("consumes the shared governance TokenPolicySnapshot (plans/054)", () => {
+		const policy = {
+			owner: "pandwind",
+			resolved: true,
+			strictProperties: ["padding", "radius", "color"],
+			allowedRawValuesByProperty: { padding: ["4px"] },
+			tokenVocabulary: {
+				padding: { "$space.4": "space::4" },
+				radius: { "$radius.sm": "radii::sm" },
+				color: { "red-500": "colors::red-500" },
+			},
+		};
+
+		// verified tokens, declared property escape hatch, and non-strict props stay quiet
+		const ok = runRule(
+			"design-tokens-only",
+			`import { createDesignCss } from "pandwind/design";
+const dcss = createDesignCss(preset);
+dcss.class({
+  $frame: { padding: "$space.4", padding2: "4px", radius: "$radius.sm" },
+  $text: { color: "red-500", weight: "bold" },
+});`,
+			[{ policy }],
+		);
+		expect(ok).toEqual([]);
+
+		// unresolved policy is report-only/fail-open
+		const badCode = `import { createDesignCss } from "pandwind/design";
+const dcss = createDesignCss(preset);
+dcss.class({
+  $frame: { padding: "13px" },
+  $text: { color: "chartreuse" },
+});`;
+		const unresolved = runRule("design-tokens-only", badCode, [{
+			policy: { ...policy, resolved: false },
+		}]);
+		expect(unresolved).toEqual([]);
+
+		// unknown raw literal in a strict property is reported with property provenance
+		const reports = runRule("design-tokens-only", badCode, [{ policy }]);
+		expect(reports).toHaveLength(2);
+		expect(reports.map((r) => r.data)).toEqual([
+			{ value: "13px", property: "padding" },
+			{ value: "chartreuse", property: "color" },
+		]);
+		expect(reports).toMatchInlineSnapshot(`
+			[
+			  {
+			    "data": {
+			      "property": "padding",
+			      "value": "13px",
+			    },
+			    "message": "pandwind: \"{{value}}\" is not a verified token for \"{{property}}\" (strict policy) — use a project token or an explicit escape hatch",
+			    "nodeType": "Literal",
+			  },
+			  {
+			    "data": {
+			      "property": "color",
+			      "value": "chartreuse",
+			    },
+			    "message": "pandwind: \"{{value}}\" is not a verified token for \"{{property}}\" (strict policy) — use a project token or an explicit escape hatch",
+			    "nodeType": "Literal",
+			  },
+			]
+		`);
+	});
+
 	test("handles deeply nested generated ASTs without consuming the call stack", () => {
 		let value: AstNode = { type: "Literal", value: "w-[13px]" };
 		for (let index = 0; index < 12_000; index += 1) {
