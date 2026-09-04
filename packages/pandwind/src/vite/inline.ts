@@ -207,6 +207,15 @@ export function inlineTwCalls(
 							config.compose,
 						),
 					);
+					if (lines !== undefined) {
+						unresolved.push(
+							...collectUnresolvedTokens(
+								compiled[compiled.length - 1]!,
+								lines.lineOf(call.start),
+								config,
+							),
+						);
+					}
 				} catch {
 					return;
 				}
@@ -237,7 +246,12 @@ export function inlineTwCalls(
 	});
 
 	if (edits.length === 0) {
-		return candidates === undefined ? { code, inlined: 0 } : { code, inlined: 0, candidates };
+		return {
+			code,
+			inlined: 0,
+			...(candidates !== undefined && { candidates }),
+			...(unresolved.length > 0 && { unresolved }),
+		};
 	}
 	let output = code;
 	for (const edit of [...edits].toSorted((a, b) => b.start - a.start)) {

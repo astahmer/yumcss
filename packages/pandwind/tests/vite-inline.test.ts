@@ -80,4 +80,18 @@ describe("inlineTwCalls", () => {
 		expect(code).toBe(input);
 		expect(candidates).toBeUndefined();
 	});
+
+	test("candidate validation flags unknown utilities through onUnresolved", () => {
+		const input = 'const a = tw({ wibble: active ? "foo" : "bar" });';
+		const { candidates, unresolved } = inlineTwCalls(
+			input,
+			"app.ts",
+			config!,
+			new Set(["tw"]),
+			undefined,
+			{ onUnresolved: "warn" },
+		);
+		expect(candidates).toEqual(["wibble-foo", "wibble-bar"]);
+		expect(unresolved?.map((entry) => entry.reason)).toEqual(["no-css", "no-css"]);
+	});
 });

@@ -42,7 +42,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       cover \`@source inline\` emission shape and \`pandwind-tw scan\` module mode
       (extend \`src/tw/collect.ts\` to consume the same evaluator). Unbounded
       values produce an explicit coverage diagnostic, never a guessed class.
-- [ ] T4 - Official-engine validation of finite candidates through the
+- [x] T4 - Official-engine validation of finite candidates through the
       existing \`tokenHasCss\` conflict-map lane (\`src/vite/unresolved.ts\`) with
       inline snapshots; unresolved candidates surface via \`onUnresolved\` as
       today.
