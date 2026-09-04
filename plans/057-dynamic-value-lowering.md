@@ -31,7 +31,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       \`&&/||/??\`, arrays and object property values. \`evalLiteral\` semantics
       unchanged. Unit tests: ternaries, nested ternaries, \`||\`/\`??\`, arrays,
       consts scope, mixed static/dynamic.
-- [ ] T2 - Finite candidate discovery in \`inlineTwCalls\`
+- [x] T2 - Finite candidate discovery in \`inlineTwCalls\`
       (\`src/vite/inline.ts\`): when a \`tw()\` argument is not fully literal but
       every dynamic position has a finite value set, do NOT inline; instead
       compile one class string per combination and return the candidate list so
