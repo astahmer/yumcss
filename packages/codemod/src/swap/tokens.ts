@@ -271,3 +271,37 @@ export function resolvedAuthoredToken(value: string, tokens?: AnyTokens): string
 	}
 	return null;
 }
+
+/**
+ * Governance suggestions (plans/054) — structural mirror of the versioned
+ * `RawTokenSuggestion` contract. The codemod does not depend on the
+ * analyzer; the swap runner accepts precomputed suggestions from a
+ * governance report (or a CLI lane) and validates them against the swap IR
+ * before applying.
+ */
+export interface GovernanceSuggestionInput {
+	readonly file: string;
+	readonly start: number;
+	readonly end: number;
+	readonly property?: string;
+	readonly rawValue: string;
+	readonly tokenId: string;
+	readonly replacement: string;
+	readonly confidence: "verified" | "inferred" | "unknown";
+}
+
+/**
+ * Property+value keyed lookup over governance suggestions. Only exact
+ * (property, rawValue) pairs apply — the value→token map is evidence, not
+ * permission to rewrite a different literal.
+ */
+export function suggestionLookup(
+	suggestions: ReadonlyArray<GovernanceSuggestionInput>,
+): ReadonlyMap<string, string> {
+	const map = new Map<string, string>();
+	for (const s of suggestions) {
+		if (s.property === undefined || s.property === "") continue;
+		map.set(s.property + "\u0000" + s.rawValue, s.replacement);
+	}
+	return map;
+}

@@ -474,6 +474,61 @@ describe("--tokenize: raw values -> authored $tokens", () => {
 	});
 });
 
+describe("--tokenize + governance suggestions (plans/054)", () => {
+	test("governance suggestions govern: only exact property+value pairs rewrite", () => {
+		const source = `import { css } from "./design.ts";\nconst card = css.class({ backgroundColor: "#3182ce", color: "#3182ce" });`;
+		const result = runSwapRaw(source, meta, {
+			from: "css",
+			to: "css.class",
+			file: "t.tsx",
+			metaDir: "apps/example/src",
+			tokenize: true,
+			// Only backgroundColor has a verified exact-match suggestion; color
+			// shares the same raw value but no evidence — stays literal.
+			suggestions: [
+				{
+					file: "t.tsx",
+					start: 0,
+					end: 1,
+					property: "backgroundColor",
+					rawValue: "#3182ce",
+					tokenId: "colors::blue-500",
+					replacement: "$blue-500",
+					confidence: "verified",
+				},
+			],
+		});
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('backgroundColor: "$blue-500"');
+		expect(result.code).toContain('color: "#3182ce"');
+	});
+
+	test("suggestions without a matching literal leave source untouched", () => {
+		const source = `import { css } from "./design.ts";\nconst card = css.class({ backgroundColor: "#222222" });`;
+		const result = runSwapRaw(source, meta, {
+			from: "css",
+			to: "css.class",
+			file: "t.tsx",
+			metaDir: "apps/example/src",
+			tokenize: true,
+			suggestions: [
+				{
+					file: "t.tsx",
+					start: 0,
+					end: 1,
+					property: "backgroundColor",
+					rawValue: "#3182ce",
+					tokenId: "colors::blue-500",
+					replacement: "$blue-500",
+					confidence: "verified",
+				},
+			],
+		});
+		expect(result.converted).toBe(1);
+		expect(result.code).toContain('backgroundColor: "#222222"');
+	});
+});
+
 describe("--sort: canonical property order", () => {
 	test("emitted scopes sort canonically (color after borderRadius)", () => {
 		const result = runSwapRaw(

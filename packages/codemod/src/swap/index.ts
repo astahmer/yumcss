@@ -603,6 +603,19 @@ export interface SwapOptions {
 	engineResolver?: (utilityClass: string) => readonly { prop: string; value: string }[] | null;
 	/** Tokenize-this: rewrite raw values to authored $tokens (css sources). */
 	tokenize?: boolean;
+	/** Exact raw->token suggestions from a governance report (plans/054).
+	 * When supplied with `tokenize`, ONLY suggested (property, rawValue) pairs
+	 * are rewritten; the value-scan heuristic is bypassed. */
+	suggestions?: ReadonlyArray<{
+		file: string;
+		start: number;
+		end: number;
+		property?: string;
+		rawValue: string;
+		tokenId: string;
+		replacement: string;
+		confidence: "verified" | "inferred" | "unknown";
+	}>;
 	/** Canonical property-order sorting in emitted scopes. */
 	sort?: boolean;
 	/** Hoist repeated identical literal call sites into module constants. */
@@ -638,6 +651,7 @@ function collectMatches(
 	file: string,
 	engineResolver?: MissResolver,
 	tokenize?: boolean,
+	suggestions?: SwapOptions["suggestions"],
 ): Array<Match> {
 	if (from === CodemodAdapterId.Panda || builtinAdapterIds.includes(from)) return [];
 	return [
@@ -647,6 +661,7 @@ function collectMatches(
 			meta,
 			engineResolver,
 			tokenize,
+			suggestions,
 		}),
 	];
 }
@@ -668,6 +683,7 @@ export function runSwap(
 		file,
 		options.engineResolver,
 		options.tokenize,
+		options.suggestions,
 	);
 
 	type Edit = { start: number; end: number; text: string };

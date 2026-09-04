@@ -22,7 +22,7 @@ import { resolveDesignStyle } from "pandwind/design/resolve";
 import type { AnyTokens } from "pandwind/types/typings";
 import { SourcePass } from "../source-pass-utils.ts";
 import type { SwapIR } from "./ir.ts";
-import { resolvedAuthoredToken } from "./tokens.ts";
+import { resolvedAuthoredToken, suggestionLookup, type GovernanceSuggestionInput } from "./tokens.ts";
 
 const enum LiteralParserValueTag {
 	Dynamic = "dynamic",
@@ -506,7 +506,7 @@ function flattenToIr(flat: Record<string, unknown>): SwapIR {
 export function parseCssLiterals(
 	source: string,
 	excluded: (start: number) => boolean,
-	options: { tokenize?: boolean; tokens?: AnyTokens } = {},
+	options: { tokenize?: boolean; tokens?: AnyTokens; suggestions?: ReadonlyArray<GovernanceSuggestionInput> } = {},
 ): Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> {
 	const out: Array<{ start: number; end: number; ir: SwapIR; design: boolean; binding: string }> =
 		[];
@@ -540,14 +540,28 @@ export function parseCssLiterals(
 			let ir = design
 				? flattenToIr(resolveDesignStyle(style, options.tokens) as never)
 				: flattenToIr(style);
-			if (!design && options.tokenize === true) {
-				// Tokenize-this: raw values with an authored preset token become
-				// $token references (#3182ce -> $blue-500).
-				for (const entry of ir.entries) {
-					if (typeof entry.value !== "string") continue;
-					const authored = resolvedAuthoredToken(entry.value, options.tokens);
-					if (authored !== null) entry.value = authored;
+		if (!design && options.tokenize === true) {
+			// Tokenize-this: raw values with an authored preset token become
+			// $token references (#3182ce -> $blue-500).
+			const suggestions =
+				options.suggestions !== undefined ? suggestionLookup(options.suggestions) : undefined;
+			for (const entry of ir.entries) {
+				if (typeof entry.value !== "string") continue;
+				if (suggestions !== undefined) {
+					// Governance evidence governs (plans/054): a property+value
+					// pair with an exact suggestion uses it; a pair without one
+					// is NOT rewritten — absence of evidence is not permission
+					// for the heuristic to fire.
+					const replacement = suggestions.get(entry.prop + "\u0000" + entry.value);
+					if (replacement !== undefined) {
+						entry.value = replacement;
+						continue;
+					}
+					if (suggestions.size > 0) continue;
 				}
+				const authored = resolvedAuthoredToken(entry.value, options.tokens);
+				if (authored !== null) entry.value = authored;
+			}
 			}
 			out.push({ start, end: block.end, ir, design, binding: bindingName });
 		}

@@ -1,6 +1,7 @@
 import type { PandwindMeta } from "../meta.ts";
 import { SourcePass } from "../source-pass-utils.ts";
 import { parseCssLiterals, parseTwCalls } from "./parse.ts";
+import type { GovernanceSuggestionInput } from "./tokens.ts";
 import { type EmitterContext, type EmitterResult } from "./emit.ts";
 import { OUTBOUND_ADAPTERS } from "./adapters/outbound/plugin.ts";
 import type { SwapIR } from "./ir.ts";
@@ -23,6 +24,8 @@ export interface SwapSourceContext {
 		utilityClass: string,
 	) => readonly { prop: string; value: string }[] | null;
 	readonly tokenize?: boolean;
+	/** Exact raw->token suggestions from a governance report (plans/054). */
+	readonly suggestions?: ReadonlyArray<GovernanceSuggestionInput>;
 }
 
 export interface SwapSourceAdapter {
@@ -73,6 +76,7 @@ const coreSource = (
 		return parseCssLiterals(context.source, excluded, {
 			tokenize: context.tokenize,
 			tokens: context.meta.tokens,
+			suggestions: context.suggestions,
 		})
 			.filter((match) => (id === SwapSourceId.Design ? match.design : !match.design))
 			.map((match) => ({ start: match.start, end: match.end, ir: match.ir, shape: id }));
@@ -83,6 +87,7 @@ const autoSource = source(SwapSourceId.Auto, (context, excluded) => [
 	...parseCssLiterals(context.source, excluded, {
 		tokenize: context.tokenize,
 		tokens: context.meta.tokens,
+		suggestions: context.suggestions,
 	}).map((match) => ({
 		start: match.start,
 		end: match.end,
