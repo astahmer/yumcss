@@ -45,6 +45,13 @@ export interface TwOptions {
 	 */
 	/** Arrays at rest (generated artifact); Sets after Vite extraction. Compilation ignores this field. */
 	wildcardValues?: Record<string, ReadonlyArray<string> | ReadonlySet<string>>;
+	/**
+	 * Raw-value to token spelling reverse catalog for dynamic candidate remap
+	 * (generated artifact; see `codegen-conflicts.ts`). Compilation remaps an
+	 * exact raw-value match to its configured token spelling before class
+	 * assembly; ordinary static inlining is unaffected.
+	 */
+	valueTokens?: Record<string, Readonly<Record<string, string>>>;
 	/** Generated composing utilities that must never merge across keys. */
 	compose?: TwComposeMeta;
 }
@@ -59,7 +66,8 @@ export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 		options.compose === undefined || options.compose.length === 0
 			? undefined
 			: new Set(options.compose);
-	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts, compose);
+	const valueTokens = options.valueTokens;
+	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts, compose, valueTokens);
 }
 
 /**

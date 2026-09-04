@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { extractTwConfig, inlineTwCalls } from "../src/vite/inline.ts";
+import { createTw } from "../src/tw/runtime.ts";
 
 const twSource = readFileSync(
 	resolve(import.meta.dirname, "../../../apps/example/src/tw.ts"),
@@ -116,12 +117,80 @@ describe("inlineTwCalls", () => {
 	test("verification still registers every candidate when the map is absent", () => {
 		// No conflict map => the lane is disabled; everything compiles.
 		const input = 'const a = tw({ bg: active ? "sky-600" : "gray-900" });';
-		const { candidates } = inlineTwCalls(
+		const { candidates } = inlineTwCalls(input, "app.ts", { variants: {} }, new Set(["tw"]));
+		expect(candidates).toEqual(["bg-sky-600", "bg-gray-900"]);
+	});
+
+	test("exact raw-value matches remap to the configured token spelling", () => {
+		// #3182ce is the example preset's resolved --color-blue-500; the
+		// generated catalog proves the exact match, so the emitted class is
+		// the token spelling, not an arbitrary value.
+		const input = 'tw({ bg: "#3182ce" })';
+		const { code, inlined } = inlineTwCalls(input, "app.ts", config!, new Set(["tw"]));
+		expect(inlined).toBe(1);
+		expect(JSON.parse(code)).toBe("bg-blue-500");
+	});
+
+	test("dynamic raw values register token-spelled candidates", () => {
+		const input = 'const a = tw({ bg: active ? "#3182ce" : "#111827" });';
+		const { code, inlined, candidates, unresolved } = inlineTwCalls(
 			input,
 			"app.ts",
-			{ variants: {} },
+			config!,
 			new Set(["tw"]),
 		);
-		expect(candidates).toEqual(["bg-sky-600", "bg-gray-900"]);
+		expect(inlined).toBe(0);
+		expect(code).toBe(input);
+		expect(candidates).toEqual(["bg-blue-500", "bg-gray-900"]);
+		expect(unresolved).toBeUndefined();
+	});
+
+	test("unknown raw values keep the source and surface no-css", () => {
+		const input = 'const a = tw({ bg: active ? "#00ff00" : "#111827" });';
+		const { code, candidates, unresolved } = inlineTwCalls(
+			input,
+			"app.ts",
+			config!,
+			new Set(["tw"]),
+			undefined,
+			{ onUnresolved: "warn" },
+		);
+		expect(code).toBe(input);
+		expect(candidates).toEqual(["bg-gray-900"]);
+		expect(unresolved?.map((entry) => entry.token)).toEqual(["bg-#00ff00"]);
+	});
+
+	test("opacity-modified raw values are not remapped", () => {
+		// The catalog proves whole declarations only; a /50 modifier is a
+		// different declaration the design system may not define, so the
+		// value stays raw and unregistered (safe failure, no invention).
+		const input = 'const a = tw({ bg: active ? "#3182ce/50" : "#111827" });';
+		const { candidates } = inlineTwCalls(input, "app.ts", config!, new Set(["tw"]));
+		expect(candidates).toEqual(["bg-gray-900"]);
+	});
+
+	test("missing catalog keeps raw-value candidates", () => {
+		// Without valueTokens the dynamic lane cannot remap; raw arbitrary
+		// candidates compile and register as before T6.
+		const input = 'const a = tw({ bg: active ? "#3182ce" : "#111827" });';
+		const { candidates } = inlineTwCalls(input, "app.ts", { variants: {} }, new Set(["tw"]));
+		expect(candidates).toEqual(["bg-#3182ce", "bg-#111827"]);
+	});
+
+	test("runtime and inliner stay byte-identical through the remap", () => {
+		const styles = { bg: "#3182ce" };
+		const { code } = inlineTwCalls(
+			`tw(${JSON.stringify(styles)})`,
+			"app.ts",
+			config!,
+			new Set(["tw"]),
+		);
+		const tw = createTw({
+			variants: config!.variants,
+			conflicts: config!.conflicts,
+			compose: config!.compose,
+			valueTokens: config!.valueTokens,
+		});
+		expect(JSON.parse(code)).toBe(tw(styles));
 	});
 });

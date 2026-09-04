@@ -52,7 +52,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       \`css.vars\` carrier form (inline emission when the call site shape is a
       JSX-safe class+style pair). Whole-call fallback unchanged. Inline
       snapshots for mixed objects, conditions, and refusal cases.
-- [ ] T6 - Token preservation: when a dynamic value selects among known
+- [x] T6 - Token preservation: when a dynamic value selects among known
       configured tokens (finite value set matches preset token values), emit
       candidates that reference tokens (e.g. \`bg-blue-500\`) rather than
       arbitrary values; exact-match only, verified against the preset catalog.

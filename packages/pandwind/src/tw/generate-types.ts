@@ -98,7 +98,7 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 		const system = await this.loader(effectiveCss, { base });
 		const functionalKeys = system.utilities.keys("functional");
 		const types = this.catalog.collect(system);
-		const { conflicts, compose, wildcardValues } = this.buildConflicts(system, types, functionalKeys);
+		const { conflicts, compose, wildcardValues, valueTokens } = this.buildConflicts(system, types, functionalKeys);
 		this.catalog.expand(types, conflicts);
 		const modifierCapable = this.detectModifiers(system, types);
 		const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];
@@ -116,7 +116,7 @@ ${this.emitter.utilities(types, modifierCapable)}
 
 ${this.emitter.variants(variants, utilityKeyNames)}
 `,
-			twTs: this.emitter.runtime(variants, conflicts, compose, wildcardValues),
+			twTs: this.emitter.runtime(variants, conflicts, compose, wildcardValues, valueTokens),
 			utilityCount: types.size,
 			variantCount: variants.length,
 		};

@@ -83,6 +83,6 @@
 }
 
 /* Condition-bound token overrides */
-.dark {
-	--color-surface: #111827;
-}
+	.dark {
+		--color-surface: #111827;
+	}

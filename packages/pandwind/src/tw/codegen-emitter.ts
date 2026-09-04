@@ -126,6 +126,7 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		conflicts: Record<string, Record<string, string[]>>,
 		compose: string[],
 		wildcardValues: Record<string, ReadonlySet<string>> = {},
+		valueTokens: Record<string, Readonly<Record<string, string>>> = {},
 	): string {
 		const variantEntries = variants.map(
 			({ name, join }) =>
@@ -151,6 +152,22 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 				([utility, values]) =>
 					`\t\t${JSON.stringify(utility)}: [${[...values].toSorted().map((value) => JSON.stringify(value)).join(", ")}],`,
 			);
+		const valueTokenEntries = Object.entries(valueTokens)
+			.toSorted(([a], [b]) => a.localeCompare(b, 'en'))
+			.map(
+				([utility, values]) =>
+					'\t\t' +
+					JSON.stringify(utility) +
+					': { ' +
+					Object.entries(values)
+						.toSorted(([a], [b]) => a.localeCompare(b, 'en'))
+						.map(([value, token]) => JSON.stringify(value) + ': ' + JSON.stringify(token))
+						.join(', ') +
+					' },',
+			);
+		const valueTokenBlock = valueTokenEntries.length
+			? '\tvalueTokens: {\n' + valueTokenEntries.join('\n') + '\n},'
+			: '';
 		const wildcardBlock = wildcardEntries.length
 			? `\twildcardValues: {\n${wildcardEntries.join("\n")}\n},`
 			: "";
@@ -165,6 +182,7 @@ ${variantEntries.join("\n")}
 \t},
  ${conflictEntries.length ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
  ${composeEntries}
+${valueTokenBlock}
 ${wildcardBlock}
  	};
 

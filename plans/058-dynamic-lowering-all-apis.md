@@ -85,11 +85,6 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       `InlineResult.unresolved`) report unverified tokens with call-site
       lines; `tw:scan` CLI prints per-token warnings. Vite-lane early
       return now keeps `unresolved` even when no candidate verifies.
-`docs/src/content/docs/api/css.md`, `design-css.md`, `cx` docs, and
-`tw.md` now document the four-lane behavior and the verification gates.
-`technical-overview.md` gained a "Bounded dynamic values" decision diagram
-covering finite registration, exact-match gating, and unbounded runtime
-fallback across every API.
 - [x] T7 - Docs: update the dynamic-values sections in
       `docs/src/content/docs/api/css.md`, `design-css.md`, `cx` docs, and
       the technical overview decision table to cover all four lanes.

@@ -1,5 +1,6 @@
 import { UTILITY_SUBKEYS } from "./compile.ts";
 import { longestFunctionalPrefix } from "./codegen-catalog.ts";
+import { resolveVar, simplifyCalc } from "./theme.ts";
 
 type Values = Set<string | true>;
 type UtilityMap = Map<string, Values>;
@@ -150,10 +151,14 @@ const SHORTHAND_EXPANSION: Record<string, string[]> = {
  * (syntax/inherits/initial-value), the latter describes animation keyframes,
  * neither of which is a style the class itself sets.
  */
-function cssProperties(css: string | null): string[] {
-	if (css === null) return [];
-	const props = new Set<string>();
+interface CssWalk {
+	props: Set<string>;
+	values: Map<string, string>;
+}
 
+function walkCss(css: string | null): CssWalk {
+	const walk: CssWalk = { props: new Set(), values: new Map() };
+	if (css === null) return walk;
 	let depth = 0;
 	let inSkippedBlock = false;
 	let i = 0;
@@ -228,13 +233,53 @@ function cssProperties(css: string | null): string[] {
 		// `-moz-*`); custom properties (`--tw-*`) were skipped above.
 		const declaration = /^(-?[a-zA-Z][a-zA-Z0-9-]*)\s*:/.exec(css.slice(i));
 		if (declaration !== null) {
-			props.add(declaration[1]!);
+			const prop = declaration[1]!;
+			walk.props.add(prop);
 			i += declaration[0].length;
+			// Capture the declaration value for the raw-value -> token
+			// reverse catalog: everything up to the terminating `;` or
+			// closing `}` (strings, comments and parens already handled
+			// above; custom properties were skipped before this branch).
+			const end = findValueEnd(css, i);
+			const value = css.slice(i, end).trim();
+			if (value !== "" && !walk.values.has(prop)) walk.values.set(prop, value);
+			i = end;
 			continue;
 		}
 		i += 1;
 	}
-	return [...props].toSorted();
+	return walk;
+}
+
+function findValueEnd(css: string, from: number): number {
+	let i = from;
+	let depth = 0;
+	while (i < css.length) {
+		const char = css[i]!;
+		if (char === '"' || char === "'") {
+			const quote = char;
+			i += 1;
+			while (i < css.length && css[i] !== quote) {
+				if (css[i] === "\\") i += 1;
+				i += 1;
+			}
+			i += 1;
+			continue;
+		}
+		if (char === "(") {
+			depth += 1;
+		} else if (char === ")") {
+			depth = Math.max(0, depth - 1);
+		} else if (depth === 0 && (char === ";" || char === "}")) {
+			return i;
+		}
+		i += 1;
+	}
+	return i;
+}
+
+function cssProperties(css: string | null): string[] {
+	return [...walkCss(css).props].toSorted();
 }
 
 /**
@@ -377,6 +422,16 @@ export function buildConflicts(
 	 * candidate verification stays exact-match.
 	 */
 	wildcardValues?: Record<string, ReadonlySet<string>>;
+	/**
+	 * Reverse catalog: class prefix -> resolved raw CSS value -> the token
+	 * spelling whose compiled declaration value is an exact match. Built by
+	 * probing every class-list candidate and resolving its declaration
+	 * values through the design system's own theme resolver. Values that
+	 * still contain `var(` after resolution, and values claimed by more
+	 * than one token (ambiguous), are omitted — remapping must be provable,
+	 * never plausible. Empty utilities are omitted from the map.
+	 */
+	valueTokens?: Record<string, Readonly<Record<string, string>>>;
 } {
 	const functional = new Set(functionalKeys);
 	const completions = new Map<string, Array<{ values: Array<string | null> }>>();
@@ -457,6 +512,17 @@ export function buildConflicts(
 	}
 
 	const sampleProps = new Map<string, Array<{ value: string; props: string[] }>>();
+	const themeValues = new Map<string, string>();
+	const resolveTheme = (system as { resolveThemeValue?: (name: string) => string | undefined })
+		.resolveThemeValue;
+	const resolveValue = (value: string): string => {
+		if (resolveTheme === undefined) return value;
+		const memo = themeValues.get(value);
+		if (memo !== undefined) return memo;
+		const resolved = simplifyCalc(resolveVar(value, resolveTheme));
+		themeValues.set(value, resolved);
+		return resolved;
+	};
 	for (const batch of chunk(probes, 300)) {
 		const results = system.candidatesToCss(batch.map((probe) => probe.candidate));
 		batch.forEach((probe, index) => {
@@ -467,6 +533,54 @@ export function buildConflicts(
 			samples.push({ value: probe.value, props });
 			sampleProps.set(probe.utility, samples);
 		});
+	}
+
+	// Raw-value reverse catalog: probe class-list candidates that belong to
+	// the typed utilities and record their resolved declaration values. A
+	// utility prefix claims a raw value only once (ambiguity omitted) and
+	// only when resolution removed every `var(` reference.
+	const rawValueByPrefix = new Map<string, Map<string, string>>();
+	if (resolveTheme !== undefined) {
+		const typedPrefixes = new Set<string>();
+		for (const name of types.keys()) {
+			if (functional.has(name)) typedPrefixes.add(dashCase(name));
+		}
+		const classCandidates: Array<{ candidate: string; prefix: string; suffix: string }> = [];
+		for (const [candidate] of classList) {
+			const best = longestFunctionalPrefix(candidate, functionalKeys);
+			if (best === undefined || !typedPrefixes.has(dashCase(best))) continue;
+			const value = candidate === best ? "" : candidate.slice(best.length + 1);
+			if (value === "" || value.includes("[")) continue;
+			classCandidates.push({ candidate, prefix: dashCase(best), suffix: value });
+		}
+		for (const batch of chunk(classCandidates, 200)) {
+			const results = system.candidatesToCss(batch.map((probe) => probe.candidate));
+			batch.forEach((probe, index) => {
+				const css = results[index];
+				if (css === null || css === undefined) return;
+				const { values } = walkCss(css);
+				for (const declaration of values.values()) {
+					const resolved = resolveValue(declaration);
+					if (resolved === "" || resolved.includes("var(")) continue;
+					const byValue = rawValueByPrefix.get(probe.prefix) ?? new Map<string, string>();
+					if (byValue.has(resolved)) {
+						if (byValue.get(resolved) !== probe.candidate) byValue.set(resolved, "");
+					} else {
+						byValue.set(resolved, probe.suffix);
+					}
+					rawValueByPrefix.set(probe.prefix, byValue);
+				}
+			});
+		}
+	}
+	const valueTokens: Record<string, Readonly<Record<string, string>>> = {};
+	for (const [prefix, byValue] of rawValueByPrefix) {
+		const catalog: Record<string, string> = {};
+		for (const [resolved, candidate] of byValue) {
+			if (candidate === "") continue;
+			catalog[resolved] = candidate;
+		}
+		if (Object.keys(catalog).length > 0) valueTokens[prefix] = catalog;
 	}
 
 	// Group values inherit their group's sampled properties; individual
@@ -525,6 +639,7 @@ export function buildConflicts(
 		conflicts,
 		compose: [...COMPOSE_KEYS].filter((key) => conflicts[key] !== undefined),
 		wildcardValues,
+		valueTokens,
 	};
 }
 

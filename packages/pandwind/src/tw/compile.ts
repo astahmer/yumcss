@@ -48,6 +48,16 @@ export interface TwConflictsMeta {
  */
 export type TwComposeMeta = readonly string[];
 
+/**
+ * Raw CSS value to configured token spelling, per utility (generated artifact;
+ * see `codegen-conflicts.ts`). Only exact provenance-backed matches are
+ * present: compilation may remap a raw value to its token spelling without
+ * changing the emitted CSS.
+ */
+export interface TwValueTokensMeta {
+	[utility: string]: Readonly<Record<string, string>>;
+}
+
 const dashCaseRegex = /[A-Z]/g;
 
 function dashCase(key: string): string {
@@ -135,6 +145,7 @@ function visit(
 	signatures: Map<string, number> | undefined,
 	prefix: string,
 	parentName: string | undefined,
+	valueTokens: TwValueTokensMeta | undefined,
 ): void {
 	const frames: Array<{
 		styles: TwNestedStyles;
@@ -203,16 +214,22 @@ function visit(
 		}
 
 		for (const part of parts) {
-			push(
-				classes,
-				signatures,
-				conflicts,
-				compose,
-				part ? `${className}-${part}` : className,
-				frame.prefix,
-				utility,
-				part,
-			);
+			// Dynamic-but-bounded raw values remap to the configured token
+			// spelling when the catalog proves an exact value match (the catalog
+			// only contains entries derived from real class-list candidates of
+			// this utility). Opacity modifiers verify separately, so they stay raw.
+			const token =
+				valueTokens === undefined || part.includes("/") ? part : (valueTokens[utility]?.[part] ?? part);
+				push(
+					classes,
+					signatures,
+					conflicts,
+					compose,
+					token ? `${className}-${token}` : className,
+					frame.prefix,
+					utility,
+					token,
+				);
 		}
 	}
 }
@@ -290,21 +307,23 @@ function push(
  * @param variants variant metadata from the generated `tw.ts`
  * @param conflicts optional generated conflict map enabling last-wins merging
  * @param compose optional generated list of composing utility keys
+ * @param valueTokens optional raw-value to token spelling catalog for dynamic remap
  */
 export function compileStyles(
 	styles: TwNestedStyles,
 	variants: TwVariantsMeta,
 	conflicts?: TwConflictsMeta,
 	compose?: TwComposeMeta | ReadonlySet<string>,
+	valueTokens?: TwValueTokensMeta,
 ): string {
 	if (conflicts === undefined) {
 		const classes: string[] = [];
-		visit(styles, variants, conflicts, undefined, classes, undefined, "", undefined);
+		visit(styles, variants, conflicts, undefined, classes, undefined, "", undefined, valueTokens);
 		return classes.join(" ");
 	}
 	const classes: Emitted[] = [];
 	const composeSet = compose === undefined || compose instanceof Set ? compose : new Set(compose);
-	visit(styles, variants, conflicts, composeSet, classes, new Map(), "", undefined);
+	visit(styles, variants, conflicts, composeSet, classes, new Map(), "", undefined, valueTokens);
 	let output = "";
 	for (const emitted of classes) {
 		if (emitted.className === "") continue;

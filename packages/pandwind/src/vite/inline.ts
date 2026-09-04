@@ -17,6 +17,7 @@ import {
 	type TwConflictsMeta,
 	type TwNestedStyles,
 	type TwVariantsMeta,
+	type TwValueTokensMeta,
 } from "../tw/compile.ts";
 import {
 	evalLiteral,
@@ -38,6 +39,8 @@ export interface TwConfig {
 	conflicts?: TwConflictsMeta;
 	/** Real value sets for wildcard-collapsed utilities (see TwOptions). */
 	wildcardValues?: Record<string, ReadonlySet<string>>;
+	/** Raw CSS value to token spelling remap catalog for dynamic candidates. */
+	valueTokens?: TwValueTokensMeta;
 	compose?: TwComposeMeta;
 }
 
@@ -125,6 +128,10 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 					? (options.conflicts as TwConflictsMeta)
 					: undefined,
 			wildcardValues: normalizeWildcardValues(options.wildcardValues),
+			valueTokens:
+				typeof options.valueTokens === "object" && options.valueTokens !== null
+					? (options.valueTokens as TwValueTokensMeta)
+					: undefined,
 			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
 		};
 	});
@@ -240,6 +247,7 @@ export function inlineTwCalls(
 						config.variants,
 						config.conflicts,
 						config.compose,
+						config.valueTokens,
 					);
 					// Exact-match gate: only register classes whose every token
 					// compiles through the generated conflict map. This is token
@@ -273,6 +281,7 @@ export function inlineTwCalls(
 				config.variants,
 				config.conflicts,
 				config.compose,
+				config.valueTokens,
 			);
 			edits.push({
 				start: call.start,
