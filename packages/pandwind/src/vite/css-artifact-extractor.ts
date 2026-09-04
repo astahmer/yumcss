@@ -43,7 +43,10 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			if (kind === undefined) return;
 			for (const argument of call.arguments) {
 				const literal = evalLiteral(argument as never);
-				if (typeof literal !== "object" || literal === null) continue;
+				if (typeof literal !== "object" || literal === null) {
+					this.pushPartialLiteral(sources, code, id, call, kind, argument);
+					continue;
+				}
 				const styles =
 					kind === "css.group"
 						? Object.values(literal).filter(
@@ -79,6 +82,50 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 			sources: this.extract(code, id, names),
 			varKeys: [...this.scanner.findVarKeys(code, id, names)],
 		};
+	}
+
+	/**
+	 * Mixed static/dynamic call sites keep their provably literal declarations
+	 * in the stylesheet. The rewriter lowers the dynamic remainder through a
+	 * vars carrier; extraction only ever sees the static subset, so no dynamic
+	 * value reaches generated CSS through this path.
+	 */
+	private pushPartialLiteral(
+		sources: ExtractedCssStyle[],
+		code: string,
+		id: string,
+		call: CallNode,
+		kind: ExtractedCssStyle["provenance"]["callKind"],
+		argument: unknown,
+	): void {
+		if (kind === "css.group" || kind === "css.raw") return;
+		const node = argument as { type?: string; properties?: unknown[] } | null;
+		if (node?.type !== "ObjectExpression") return;
+		const partial: Record<string, unknown> = {};
+		for (const property of node.properties ?? []) {
+			const entry = property as {
+				type?: string;
+				key?: { name?: string; value?: { value?: string } };
+				value?: { type?: string; value?: unknown };
+			};
+			if (entry?.type !== "Property" || entry.value?.type !== "Literal") continue;
+			const key = entry.key?.name ?? entry.key?.value?.value;
+			if (typeof key !== "string") continue;
+			partial[key] = entry.value.value;
+		}
+		if (Object.keys(partial).length === 0) return;
+		const before = code.slice(0, call.start);
+		sources.push({
+			style: resolveDesignStyle(partial, this.preset.tokens),
+			provenance: {
+				file: id,
+				start: call.start,
+				end: call.end,
+				line: before.split("\n").length,
+				column: call.start - (before.lastIndexOf("\n") + 1) + 1,
+				callKind: kind,
+			},
+		});
 	}
 
 	private parse(id: string, code: string): OxcNode {

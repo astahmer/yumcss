@@ -1,6 +1,6 @@
 import { createCss } from "../css/create-css.ts";
 import { resolveDesignStyle } from "../design/resolve.ts";
-import { evalLiteral, type OxcNode, walk } from "../tw/literal.ts";
+import { evalLiteral, type OxcNode, walk, walkWithParent } from "../tw/literal.ts";
 import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
@@ -17,6 +17,8 @@ interface CallNode extends OxcNode {
 export class StaticCssCallRewriter implements CssCallRewriter {
 	private readonly preset: CssPreset;
 	private readonly className: ClassNameStrategy | undefined;
+	/** Var toggle keys introduced by carriers this rewriter emitted. */
+	private readonly varKeys = new Set<string>();
 
 	constructor(preset: CssPreset, className?: ClassNameStrategy) {
 		this.preset = preset;
@@ -24,16 +26,17 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 	}
 
 	inline(code: string, id: string, names: ReadonlySet<string>): InlineCssResult {
-		if (names.size === 0) return { code, inlined: 0 };
+		this.varKeys.clear();
+		if (names.size === 0) return { code, inlined: 0, varKeys: [] };
 		const engine = createCss({ className: this.className });
 		const edits: Array<{ start: number; end: number; text: string }> = [];
-		walk(
+		walkWithParent(
 			SOURCE_SCANNER_SERVICE.parse({
 				file: id,
 				source: code,
 				language: SOURCE_SCANNER_SERVICE.languageForFile(id),
 			}).program,
-			(node) => {
+			(node, parent, ancestors) => {
 				if (node.type !== "CallExpression") return;
 				const call = node as CallNode;
 				const callee = call.callee;
@@ -51,6 +54,38 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						kind = member as "class" | "group";
 				}
 				if (kind === undefined || call.arguments.length === 0) return;
+				const objectArguments = call.arguments.filter(
+					(argument) => (argument as { type?: string } | null)?.type === "ObjectExpression",
+				);
+				if (
+					kind !== "group" &&
+					objectArguments.length > 0 &&
+					objectArguments.length === call.arguments.length &&
+					call.arguments.every((argument) => hasLiteralProperty(argument as OxcNode)) &&
+					call.arguments.some((argument) => evalLiteral(argument as never) === undefined)
+				) {
+					// The carrier's host-prop result shape ({style, className}) is
+					// only equivalent to the css() call result when spread onto a
+					// JSX host. Plain code positions keep the runtime fallback.
+					// The runtime carrier re-derives the static subset itself, so
+					// vars atoms never collide with stylesheet rules for the same keys.
+					const isJsxPosition =
+						parent?.type === "JSXExpressionContainer" ||
+						parent?.type === "JSXSpreadAttribute" ||
+						ancestors.at(-2)?.type === "JSXExpressionContainer";
+					if (isJsxPosition) {
+						const ranges = call.arguments.map(
+							(argument) => argument as { start?: number; end?: number },
+						);
+						const carrier = `css.props(css.vars(${ranges
+							.map((range) => code.slice(range.start!, range.end!))
+							.join(", ")}))`;
+						edits.push({ start: call.start, end: call.end, text: carrier });
+						for (const argument of call.arguments)
+							collectFlatVarKeys(argument as OxcNode, "", this.varKeys);
+						return;
+					}
+				}
 				if (kind === "group") {
 					const group = literalGroup(call.arguments[0]);
 					if (group === undefined) return;
@@ -71,7 +106,10 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 						? [resolveDesignStyle(literal as Record<string, unknown>, this.preset.tokens)]
 						: [];
 				});
-				if (styles.length === 0) return;
+				// Only fold when every argument is provably literal; a partially
+				// literal multi-arg call must not silently drop dynamic arguments
+				// (those take the vars-carrier path above or stay on the runtime).
+				if (styles.length === 0 || styles.length !== call.arguments.length) return;
 				try {
 					const compiled = kind === "class" ? engine.class(...styles) : engine(...styles);
 					edits.push({ start: call.start, end: call.end, text: JSON.stringify(compiled) });
@@ -92,9 +130,39 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 		for (const start of pureCalls.toReversed()) {
 			output = output.slice(0, start) + "/* @__PURE__ */ " + output.slice(start);
 		}
-		return { code: output, inlined: edits.length };
+		return { code: output, inlined: edits.length, varKeys: [...this.varKeys] };
 	}
 }
+
+/** At least one ordinary property with a literal value (see pushPartialLiteral). */
+const hasLiteralProperty = (node: OxcNode): boolean =>
+	((node as { properties?: unknown[] }).properties ?? []).some((property) => {
+		const entry = property as {
+			type?: string;
+			key?: { name?: string; value?: { value?: string } };
+			value?: { type?: string };
+		};
+		if (entry?.type !== "Property" || entry.value?.type !== "Literal") return false;
+		return typeof (entry.key?.name ?? entry.key?.value?.value) === "string";
+	});
+
+/** Flattened var-toggle key path (condition segments first), same shape the scanner reports. */
+const collectFlatVarKeys = (node: OxcNode | undefined, prefix: string, out: Set<string>): void => {
+	if (node?.type !== "ObjectExpression") return;
+	for (const property of (node as { properties?: unknown[] }).properties ?? []) {
+		const entry = property as {
+			type?: string;
+			key?: { name?: string; value?: string };
+			value?: OxcNode;
+		};
+		if (entry?.type === "SpreadElement") continue;
+		const key = entry?.key?.name ?? (entry?.key as { value?: string } | undefined)?.value;
+		if (typeof key !== "string") continue;
+		const full = prefix === "" ? key : `${prefix}__${key}`;
+		if (entry.value?.type === "ObjectExpression") collectFlatVarKeys(entry.value, full, out);
+		else out.add(full);
+	}
+};
 
 const literalGroup = (argument: unknown): Record<string, StyleObject> | undefined => {
 	const value = evalLiteral(argument as never);

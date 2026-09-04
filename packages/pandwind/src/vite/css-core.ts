@@ -84,12 +84,26 @@ export function createCssExtractorPluginCore(
 	const isScanned = (file: string): boolean =>
 		include.some((pattern) => pattern.test(file)) && !exclude.some((pattern) => pattern.test(file));
 
+	/**
+	 * Var keys the transform-time rewriter introduced through vars carriers.
+	 * The workspace's extractFile scanner cannot see these (it scans the
+	 * pre-transform source), so transform records them and the collect paths
+	 * merge them into the sheet.
+	 */
+	const carriedVarKeys = new Map<string, readonly string[]>();
+
 	const transform = (code: string, id: string): { code: string; map: null } | null => {
 		if (id.includes("node_modules")) return null;
 		if (!isScanned(id)) return null;
 		const names = sourceService.findCssImports(code, id, matchers);
-		const extracted =
-			names.size === 0 ? code : sourceService.inline(code, id, names, preset, className).code;
+		let extracted = code;
+		if (names.size === 0) carriedVarKeys.delete(id);
+		else {
+			const result = sourceService.inline(code, id, names, preset, className);
+			extracted = result.code;
+			if (result.varKeys.length > 0) carriedVarKeys.set(id, result.varKeys);
+			else carriedVarKeys.delete(id);
+		}
 		const optimized = runtimePruner.transform(extracted, id);
 		if (optimized !== null) return optimized;
 		return extracted === code ? null : { code: extracted, map: null };
@@ -143,6 +157,7 @@ export function createCssExtractorPluginCore(
 			const entry = workspace.scan(file);
 			for (const { style } of entry.sources) sheet.process([style]);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
+			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}
 
 		workspace.prune(seen);
@@ -172,6 +187,7 @@ export function createCssExtractorPluginCore(
 			const entry = scanFile(file);
 			for (const { style } of entry.sources) sheet.process([style]);
 			for (const key of entry.varKeys) sheet.processVarKey(key);
+			for (const key of carriedVarKeys.get(file) ?? []) sheet.processVarKey(key);
 		}
 		const atomic = sheet.gen.atomicEntries();
 		const vars = sheet.gen.varEntries();
@@ -338,6 +354,7 @@ ${split.routes.get(route.name) ?? ""}`;
 			// The next load re-scans the changed file and refreshes the rendered
 			// stylesheet. Clearing even an unknown path also covers added files.
 			workspace.invalidate(file);
+			carriedVarKeys.delete(file);
 			bodyCache = undefined;
 			splitCache = undefined;
 		},

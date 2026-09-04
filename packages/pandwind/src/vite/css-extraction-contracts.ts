@@ -68,6 +68,8 @@ export interface CssFileExtraction {
 export interface InlineCssResult {
 	readonly code: string;
 	readonly inlined: number;
+	/** Var toggle keys introduced by carriers the rewriter emitted (see css.vars). */
+	readonly varKeys: readonly string[];
 }
 
 export interface CssSourceScanner {

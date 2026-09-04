@@ -286,7 +286,7 @@ test("css extraction façade accepts substituted policy ports", () => {
 		scanner,
 		artifacts,
 		diagnostics,
-		rewriter: { inline: (code) => ({ code: `${code}!`, inlined: 1 }) },
+		rewriter: { inline: (code) => ({ code: `${code}!`, inlined: 1, varKeys: [] }) },
 	});
 
 	expect(service.extractFile("ignored", "ignored.ts")).toEqual({
@@ -296,6 +296,7 @@ test("css extraction façade accepts substituted policy ports", () => {
 	expect(service.inline("code", "ignored.ts", new Set(["css"]))).toEqual({
 		code: "code!",
 		inlined: 1,
+		varKeys: [],
 	});
 });
 
@@ -413,6 +414,7 @@ test("inlineCssCalls rewrites literal css() calls to Tailwind classes", () => {
 				const b = {"backgroundColor":"bg-red-500"};
 			",
 		  "inlined": 2,
+		  "varKeys": [],
 		}
 	`);
 });
@@ -444,6 +446,7 @@ test("inlineCssCalls leaves raw/props/group and dynamic calls untouched", () => 
 				const d = "text-blue-500 bg-red-500";
 			",
 		  "inlined": 1,
+		  "varKeys": [],
 		}
 	`);
 });
@@ -630,6 +633,68 @@ test("dynamic css calls keep the runtime fallback", () => {
 	const result = extract().inline(code, "app.ts", new Set(["css"]));
 
 	expect(result.inlined).toBe(0);
+	expect(result.code).toBe(code);
+});
+
+test("mixed literal/dynamic css calls in JSX hosts lower through vars carriers", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		export const App = () => (
+			<>
+				<div {...css({ color: "red", backgroundColor: shade })} />
+				<div {...css({ _hover: { bg: shade } })} />
+				<div {...css({ padding: "1rem" }, { margin: shade, display: "flex" })} />
+			</>
+		);
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	// Two carriers: each mixed call with a static subset lowers as one
+	// carrier. The _hover-only call has no top-level literal declaration,
+	// so it keeps the untouched runtime fallback.
+	expect(result.inlined).toBe(2);
+	expect(result.code).toContain('css.props(css.vars({ color: "red", backgroundColor: shade }))');
+	expect(result.code).toContain(
+		'css.props(css.vars({ padding: "1rem" }, { margin: shade, display: "flex" }))',
+	);
+	expect(result.code).toContain("css({ _hover: { bg: shade } })");
+	// Flattened toggle keys mirror the scanner contract.
+	expect(result.varKeys).toEqual(["color", "backgroundColor", "padding", "margin", "display"]);
+	expect(result.code).toContain("const shade = getShade();");
+	expect(result.code).toContain("<>");
+});
+
+test("vars carriers are gated to JSX host positions", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		export const App = () => <div {...css({ color: "red", backgroundColor: shade })} />;
+		const plain = css({ color: "red", backgroundColor: shade });
+		const full = css({ color: "red" });
+	`;
+	const result = inline().inline(code, "app.tsx", new Set(["css"]));
+
+	// JSX host position: carrier. Plain statement: untouched runtime fallback.
+	expect(result.code).toContain('css.props(css.vars({ color: "red", backgroundColor: shade }))');
+	expect(result.code).toContain('const plain = css({ color: "red", backgroundColor: shade });');
+	// Full-literal plain call still folds through the ordinary engine path.
+	expect(result.code).toContain('const full = {"color":"[color:red]"}');
+	expect(result.varKeys).toEqual(["color", "backgroundColor"]);
+});
+
+test("vars carriers refuse non-object and group-shaped arguments", () => {
+	const code = `
+		import { css } from "./design";
+		const shade = getShade();
+		const a = css(getShade());
+		const b = css.group({ _hover: { bg: shade } });
+		const c = css(...spread);
+	`;
+	const result = inline().inline(code, "app.ts", new Set(["css"]));
+
+	expect(result.inlined).toBe(0);
+	expect(result.varKeys).toEqual([]);
 	expect(result.code).toBe(code);
 });
 
