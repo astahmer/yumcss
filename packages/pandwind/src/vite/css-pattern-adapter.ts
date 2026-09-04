@@ -6,6 +6,7 @@ import type {
 	CssSourceProvenance,
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 type JsxAttribute = { name?: { name?: string }; value?: OxcNode | null };
 type JsxElement = {
@@ -104,9 +105,9 @@ const ALIASES: Record<string, string> = {
 
 const attributeValue = (value: OxcNode | null | undefined): unknown | null => {
 	if (value === null || value === undefined) return true;
-	if (value.type === "JSXExpressionContainer") {
+	if (value.type === NodeKind.JSXExpressionContainer) {
 		const expression = (value as { expression?: OxcNode }).expression;
-		return expression?.type === "JSXEmptyExpression" || expression === undefined
+		return expression?.type === NodeKind.JSXEmptyExpression || expression === undefined
 			? null
 			: evalLiteral(expression as never);
 	}
@@ -129,7 +130,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 		const parsed = this.scanner.parse(code, id);
 		const imported = new Map<string, string>();
 		walk(parsed, (node) => {
-			if (node.type !== "ImportDeclaration") return;
+			if (node.type !== NodeKind.ImportDeclaration) return;
 			const declaration = node as {
 				source?: { value?: string };
 				specifiers?: Array<{
@@ -143,7 +144,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 				const original = specifier.imported?.name;
 				const local = specifier.local?.name;
 				if (
-					specifier.type === "ImportSpecifier" &&
+					specifier.type === NodeKind.ImportSpecifier &&
 					original !== undefined &&
 					local !== undefined &&
 					this.canHandle(original)
@@ -153,7 +154,7 @@ export class PandwindPatternAdapter implements CssPatternAdapter {
 		});
 		const sources: ExtractedCssStyle[] = [];
 		walk(parsed, (node) => {
-			if (node.type !== "JSXElement") return;
+			if (node.type !== NodeKind.JSXElement) return;
 			const element = node as unknown as JsxElement;
 			const local = element.openingElement?.name?.name;
 			const pattern = local === undefined ? undefined : imported.get(local);

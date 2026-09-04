@@ -19,6 +19,7 @@ import {
 	type KnownConstant,
 	type StaticEval,
 } from "./cx-static-evaluator.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 /** Rewrites only provably equivalent cx() calls; all other calls stay runtime. */
 export interface CxCompilerPorts {
@@ -91,7 +92,7 @@ const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
 		}
 		if (current === null || typeof current !== "object") continue;
 		const node = current as { type?: string };
-		if (node.type === "CallExpression") visit(current as CallNode);
+		if (node.type === NodeKind.CallExpression) visit(current as CallNode);
 		const values = Object.values(current);
 		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
 	}
@@ -118,23 +119,23 @@ export const collectCxClassCandidates = (
 		if (depth > 16 || node === null || typeof node !== "object" || visited.has(node)) continue;
 		visited.add(node);
 		switch ((node as { type?: string }).type) {
-			case "Literal": {
+			case NodeKind.Literal: {
 				const value = (node as { value?: unknown }).value;
 				if (typeof value === "string" && value !== "") found.add(value);
 				break;
 			}
-			case "Identifier": {
+			case NodeKind.Identifier: {
 				const known = consts.get((node as { name?: string }).name ?? "");
 				if (known !== undefined) stack.push({ node: known, depth: depth + 1 });
 				break;
 			}
-			case "ConditionalExpression": {
+			case NodeKind.ConditionalExpression: {
 				const conditional = node as { consequent: unknown; alternate: unknown };
 				stack.push({ node: conditional.consequent, depth: depth + 1 });
 				stack.push({ node: conditional.alternate, depth: depth + 1 });
 				break;
 			}
-			case "LogicalExpression": {
+			case NodeKind.LogicalExpression: {
 				const logical = node as { left: unknown; right: unknown };
 				// Both sides are possible results (|| / ??) or the right side
 				// is (&&); visiting left too is a conservative superset.
@@ -142,25 +143,25 @@ export const collectCxClassCandidates = (
 				stack.push({ node: logical.right, depth: depth + 1 });
 				break;
 			}
-			case "ArrayExpression": {
+			case NodeKind.ArrayExpression: {
 				for (const element of (node as { elements: unknown[] }).elements) {
 					if (element !== null) stack.push({ node: element, depth: depth + 1 });
 				}
 				break;
 			}
-			case "ObjectExpression": {
+			case NodeKind.ObjectExpression: {
 				for (const property of (node as { properties: unknown[] }).properties) {
 					const prop = property as {
 						type?: string;
 						computed?: boolean;
 						key?: { type?: string; name?: string; value?: unknown };
 					};
-					if (prop.type !== "Property" || prop.computed) continue;
+					if (prop.type !== NodeKind.Property || prop.computed) continue;
 					const key = prop.key;
 					const name =
-						key?.type === "Identifier"
+						key?.type === NodeKind.Identifier
 							? key.name
-							: key?.type === "Literal" && typeof key.value === "string"
+							: key?.type === NodeKind.Literal && typeof key.value === "string"
 								? key.value
 								: undefined;
 					if (name !== undefined && name !== "") found.add(name);
@@ -270,7 +271,7 @@ export class CxCallRewriter {
 		};
 
 		walkCalls(program, (call) => {
-			if (call.callee?.type !== "Identifier" || !cxNames.has(call.callee.name ?? "")) return;
+			if (call.callee?.type !== NodeKind.Identifier || !cxNames.has(call.callee.name ?? "")) return;
 			const inputs: StaticEval[] = [];
 			let conditional: { index: number; node: Expression } | undefined;
 			for (let index = 0; index < call.arguments.length; index++) {

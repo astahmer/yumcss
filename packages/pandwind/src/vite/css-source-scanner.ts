@@ -8,6 +8,7 @@ import type {
 	CssSourceInspection,
 	CssSourceScanner,
 } from "./css-extraction-contracts.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 /**
  * Language-aware source observations for the CSS extraction façade.
@@ -58,16 +59,16 @@ const location = (code: string, start: number): { line: number; column: number }
 const authoredSpecifier = (source: string): boolean => /\.css(?:[?#].*)?$/.test(source);
 
 const memberName = (callee: OxcNode | null): string | undefined =>
-	callee?.type === "MemberExpression"
+	callee?.type === NodeKind.MemberExpression
 		? (callee as { property?: { name?: string } | null }).property?.name
 		: undefined;
 
 const isMemberCall = (callee: OxcNode | null, names: ReadonlySet<string>): boolean => {
-	if (callee?.type !== "MemberExpression") return false;
+	if (callee?.type !== NodeKind.MemberExpression) return false;
 	const object = (callee as { object?: OxcNode | null }).object;
 	const property = (callee as { property?: { name?: string } | null }).property;
 	return (
-		object?.type === "Identifier" &&
+		object?.type === NodeKind.Identifier &&
 		names.has((object as { name?: string }).name ?? "") &&
 		(property?.name === "class" || property?.name === "raw" || property?.name === "group")
 	);
@@ -77,7 +78,7 @@ const callKind = (
 	callee: OxcNode | null,
 	names: ReadonlySet<string>,
 ): CssCallSite["callKind"] | undefined => {
-	if (callee?.type === "Identifier" && names.has((callee as { name?: string }).name ?? "")) {
+	if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? "")) {
 		return "css";
 	}
 	if (!isMemberCall(callee, names)) return undefined;
@@ -93,7 +94,7 @@ const isObjectLiteral = (argument: unknown): boolean => {
 const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]): Set<string> => {
 	const names = new Set<string>();
 	walk(program, (node) => {
-		if (node.type !== "ImportDeclaration") return;
+		if (node.type !== NodeKind.ImportDeclaration) return;
 		const declaration = node as ImportNode;
 		const source = declaration.source?.value;
 		if (typeof source !== "string" || !cssSourceMatches(source, matchers)) return;
@@ -101,8 +102,8 @@ const collectNames = (program: OxcNode, matchers: readonly (string | RegExp)[]):
 			const local = specifier.local?.name;
 			if (typeof local !== "string") continue;
 			if (
-				specifier.type === "ImportDefaultSpecifier" ||
-				(specifier.type === "ImportSpecifier" &&
+				specifier.type === NodeKind.ImportDefaultSpecifier ||
+				(specifier.type === NodeKind.ImportSpecifier &&
 					(specifier.imported?.name === "css" || specifier.imported?.name === "dcss"))
 			) {
 				names.add(local);
@@ -121,7 +122,7 @@ const findCallSites = (
 	if (names.size === 0) return [];
 	const sites: CssCallSite[] = [];
 	walk(program, (node) => {
-		if (node.type !== "CallExpression") return;
+		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
 		const kind = callKind(call.callee, names);
 		if (kind === undefined) return;
@@ -143,13 +144,13 @@ const findVarKeys = (names: ReadonlySet<string>, program: OxcNode): readonly str
 	if (names.size === 0) return [];
 	const keys = new Set<string>();
 	walk(program, (node) => {
-		if (node.type !== "CallExpression") return;
+		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
-		if (call.callee?.type !== "MemberExpression") return;
+		if (call.callee?.type !== NodeKind.MemberExpression) return;
 		const object = (call.callee as { object?: OxcNode | null }).object;
 		const property = (call.callee as { property?: { name?: string } | null }).property;
 		if (
-			object?.type !== "Identifier" ||
+			object?.type !== NodeKind.Identifier ||
 			!names.has((object as { name?: string }).name ?? "") ||
 			property?.name !== "vars"
 		)
@@ -162,7 +163,7 @@ const findVarKeys = (names: ReadonlySet<string>, program: OxcNode): readonly str
 const authoredImports = (code: string, id: string, program: OxcNode): AuthoredCssImport[] => {
 	const imports: AuthoredCssImport[] = [];
 	walk(program, (node) => {
-		if (node.type !== "ImportDeclaration") return;
+		if (node.type !== NodeKind.ImportDeclaration) return;
 		const declaration = node as ImportNode;
 		const source = declaration.source?.value;
 		if (typeof source !== "string" || !authoredSpecifier(source)) return;
@@ -275,7 +276,7 @@ const collectObjectKeys = (
 	prefix: string,
 	out: Set<string>,
 ): void => {
-	if (node?.type !== "ObjectExpression") return;
+	if (node?.type !== NodeKind.ObjectExpression) return;
 	for (const property of (
 		node as {
 			properties?: Array<{
@@ -285,11 +286,11 @@ const collectObjectKeys = (
 			}>;
 		}
 	).properties ?? []) {
-		if (property.type === "SpreadElement") continue;
+		if (property.type === NodeKind.SpreadElement) continue;
 		const key = property.key?.name ?? property.key?.value;
 		if (typeof key !== "string") continue;
 		const full = prefix === "" ? key : `${prefix}__${key}`;
-		if (property.value?.type === "ObjectExpression") collectObjectKeys(property.value, full, out);
+		if (property.value?.type === NodeKind.ObjectExpression) collectObjectKeys(property.value, full, out);
 		else out.add(full);
 	}
 };
@@ -333,11 +334,11 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 					language: this.sourceScanner.languageForFile(id),
 				}).program as unknown as OxcNode),
 			(node) => {
-				if (node.type !== "CallExpression") return;
+				if (node.type !== NodeKind.CallExpression) return;
 				const call = node as CallNode;
-				if (call.callee?.type !== "MemberExpression") return;
+				if (call.callee?.type !== NodeKind.MemberExpression) return;
 				const object = (call.callee as { object?: OxcNode | null }).object;
-				if (object?.type !== "Identifier" || !names.has((object as { name?: string }).name ?? ""))
+				if (object?.type !== NodeKind.Identifier || !names.has((object as { name?: string }).name ?? ""))
 					return;
 				const member = memberName(call.callee);
 				const start = call.start;

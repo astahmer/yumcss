@@ -1,6 +1,7 @@
 import type { ParseResult } from "oxc-parser";
 import { SOURCE_SCANNER_SERVICE, type SourceDocument, type SourceRange } from "./source-scanner.ts";
 import { walkWithParent, type OxcNode } from "./tw/literal.ts";
+import { ImportKindTag, NodeKind } from "./ast-node-kind.ts";
 
 /** Runtime-safe typed identity values used by source adapters. */
 export const SourceBindingKind = {
@@ -201,28 +202,28 @@ const bindingNames = (node: unknown, names: string[]): void => {
 			properties?: unknown[];
 		};
 		switch (value.type) {
-			case "Identifier":
+			case NodeKind.Identifier:
 				if (typeof value.name === "string") names.push(value.name);
 				break;
-			case "RestElement":
+			case NodeKind.RestElement:
 			case "AssignmentPattern":
-				stack.push(value.type === "RestElement" ? value.argument : value.left);
+				stack.push(value.type === NodeKind.RestElement ? value.argument : value.left);
 				break;
 			case "ArrayPattern":
 				for (const element of (value.elements ?? []).toReversed()) stack.push(element);
 				break;
-			case "ObjectPattern":
+			case NodeKind.ObjectPattern:
 				for (const property of (value.properties ?? []).toReversed()) {
 					if (property === null || typeof property !== "object") continue;
 					const entry = property as { type?: string; value?: unknown; argument?: unknown };
-					stack.push(entry.type === "RestElement" ? entry.argument : entry.value);
+					stack.push(entry.type === NodeKind.RestElement ? entry.argument : entry.value);
 				}
 				break;
 		}
 	}
 };
 
-const isImportNode = (node: AstNode): boolean => node.type === "ImportDeclaration";
+const isImportNode = (node: AstNode): boolean => node.type === NodeKind.ImportDeclaration;
 
 const recoverableParse = (document: SourceDocument): ParseResult => {
 	const parsed = SOURCE_SCANNER_SERVICE.parse({
@@ -276,7 +277,7 @@ function collectBindings(program: OxcNode): {
 	};
 	walkWithParent(program, (node) => {
 		if (isImportNode(node)) {
-			if ((node as { importKind?: string }).importKind === "type") return;
+			if ((node as { importKind?: string }).importKind === ImportKindTag.Type) return;
 			const source = sourceOf(node);
 			if (source === undefined) return;
 			const nodeRange = rangeOf(node, { start: 0, end: 0 });
@@ -288,13 +289,13 @@ function collectBindings(program: OxcNode): {
 					local?: unknown;
 					imported?: unknown;
 				};
-				if (specifier.importKind === "type") continue;
+				if (specifier.importKind === ImportKindTag.Type) continue;
 				const localName = nodeName(specifier.local);
 				if (localName === undefined) continue;
 				const kind =
-					specifier.type === "ImportDefaultSpecifier"
+					specifier.type === NodeKind.ImportDefaultSpecifier
 						? SourceBindingKind.Default
-						: specifier.type === "ImportNamespaceSpecifier"
+						: specifier.type === NodeKind.ImportNamespaceSpecifier
 							? SourceBindingKind.Namespace
 							: SourceBindingKind.Named;
 				const importedName =
@@ -314,7 +315,7 @@ function collectBindings(program: OxcNode): {
 			return;
 		}
 
-		if (node.type === "ExportNamedDeclaration") {
+		if (node.type === NodeKind.ExportNamedDeclaration) {
 			const source = sourceOf(node);
 			if (source === undefined) return;
 			const nodeRange = rangeOf(node, { start: 0, end: 0 });
@@ -333,7 +334,7 @@ function collectBindings(program: OxcNode): {
 			}
 		}
 
-		if (node.type === "ExportAllDeclaration") {
+		if (node.type === NodeKind.ExportAllDeclaration) {
 			const source = sourceOf(node);
 			if (source !== undefined)
 				exportAllSources.push({
@@ -343,21 +344,21 @@ function collectBindings(program: OxcNode): {
 		}
 
 		if (
-			node.type === "VariableDeclarator" ||
-			node.type === "FunctionDeclaration" ||
-			node.type === "ClassDeclaration" ||
-			node.type === "CatchClause"
+			node.type === NodeKind.VariableDeclarator ||
+			node.type === NodeKind.FunctionDeclaration ||
+			node.type === NodeKind.ClassDeclaration ||
+			node.type === NodeKind.CatchClause
 		) {
 			const names: string[] = [];
 			bindingNames(
-				node.type === "VariableDeclarator"
+				node.type === NodeKind.VariableDeclarator
 					? (node as { id?: unknown }).id
-					: node.type === "CatchClause"
+					: node.type === NodeKind.CatchClause
 						? (node as { param?: unknown }).param
 						: (node as { id?: unknown }).id,
 				names,
 			);
-			if (node.type === "FunctionDeclaration") {
+			if (node.type === NodeKind.FunctionDeclaration) {
 				for (const parameter of (node as { params?: unknown[] }).params ?? [])
 					bindingNames(parameter, names);
 			}
@@ -365,16 +366,16 @@ function collectBindings(program: OxcNode): {
 		}
 
 		if (
-			node.type === "FunctionDeclaration" ||
-			node.type === "FunctionExpression" ||
-			node.type === "ArrowFunctionExpression"
+			node.type === NodeKind.FunctionDeclaration ||
+			node.type === NodeKind.FunctionExpression ||
+			node.type === NodeKind.ArrowFunctionExpression
 		) {
 			const names: string[] = [];
 			for (const parameter of (node as { params?: unknown[] }).params ?? [])
 				bindingNames(parameter, names);
 			addShadowedScope(names, (node as { body?: unknown }).body);
 		}
-		if (node.type === "CatchClause") {
+		if (node.type === NodeKind.CatchClause) {
 			const names: string[] = [];
 			bindingNames((node as { param?: unknown }).param, names);
 			addShadowedScope(names, (node as { body?: unknown }).body);
@@ -392,10 +393,10 @@ const memberCallee = (node: unknown): { localName: string; property?: string } |
 		property?: unknown;
 		computed?: boolean;
 	};
-	if (value.type === "Identifier" && typeof value.name === "string")
+	if (value.type === NodeKind.Identifier && typeof value.name === "string")
 		return { localName: value.name };
 	if (
-		value.type === "MemberExpression" &&
+		value.type === NodeKind.MemberExpression &&
 		value.computed !== true &&
 		value.property !== undefined
 	) {
@@ -421,9 +422,9 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 		const range = rangeOf(node, { start: 0, end: 0 });
 		if (shape === undefined || range.end <= range.start) return;
 		const assignment =
-			parent?.type === "VariableDeclarator"
+			parent?.type === NodeKind.VariableDeclarator
 				? parent
-				: [...ancestors].toReversed().find((ancestor) => ancestor.type === "VariableDeclarator");
+				: [...ancestors].toReversed().find((ancestor) => ancestor.type === NodeKind.VariableDeclarator);
 		sites.push({
 			kind,
 			...range,
@@ -441,9 +442,9 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 		});
 	};
 	walkWithParent(program, (node, parent, ancestors) => {
-		if (node.type === "CallExpression")
+		if (node.type === NodeKind.CallExpression)
 			add(SourceCallSiteKind.Call, node, (node as { callee?: unknown }).callee, parent, ancestors);
-		else if (node.type === "TaggedTemplateExpression")
+		else if (node.type === NodeKind.TaggedTemplateExpression)
 			add(
 				SourceCallSiteKind.TaggedTemplate,
 				node,
@@ -458,7 +459,7 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 function collectHostUses(program: OxcNode): SourceHostUse[] {
 	const uses: SourceHostUse[] = [];
 	walkWithParent(program, (node) => {
-		if (node.type !== "JSXOpeningElement") return;
+		if (node.type !== NodeKind.JSXOpeningElement) return;
 		const element = node as {
 			name?: { type?: string; name?: string };
 			attributes?: unknown[];
@@ -467,7 +468,7 @@ function collectHostUses(program: OxcNode): SourceHostUse[] {
 		};
 		const name = element.name;
 		if (
-			name?.type === "JSXIdentifier" &&
+			name?.type === NodeKind.JSXIdentifier &&
 			typeof name.name === "string" &&
 			element.start !== undefined &&
 			element.end !== undefined
@@ -488,8 +489,8 @@ function collectHostUses(program: OxcNode): SourceHostUse[] {
 			};
 			const expression = attribute.value?.expression;
 			if (
-				attribute.type !== "JSXAttribute" ||
-				expression?.type !== "Identifier" ||
+				attribute.type !== NodeKind.JSXAttribute ||
+				expression?.type !== NodeKind.Identifier ||
 				typeof expression.name !== "string" ||
 				attribute.start === undefined ||
 				attribute.end === undefined

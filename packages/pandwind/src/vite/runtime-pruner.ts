@@ -1,5 +1,6 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { walkWithParent, type OxcNode } from "../tw/literal.ts";
+import { ImportKindTag, NodeKind } from "../ast-node-kind.ts";
 
 const CssRuntimeMethodTag = {
 	Class: "class",
@@ -62,19 +63,19 @@ interface Usage {
 }
 
 const isCreateCssImport = (specifier: ImportSpecifierNode, declaration: ImportNode): boolean =>
-	declaration.importKind !== "type" &&
-	specifier.importKind !== "type" &&
-	specifier.type === "ImportSpecifier" &&
+	declaration.importKind !== ImportKindTag.Type &&
+	specifier.importKind !== ImportKindTag.Type &&
+	specifier.type === NodeKind.ImportSpecifier &&
 	specifier.imported?.name === "createCss" &&
 	specifier.local?.name !== undefined;
 
 const isCssRuntimeSource = (source: string): boolean => CSS_RUNTIME_SOURCES.test(source);
 
 const identifierName = (node: OxcNode | null | undefined): string | undefined =>
-	node?.type === "Identifier" ? (node as IdentifierNode).name : undefined;
+	node?.type === NodeKind.Identifier ? (node as IdentifierNode).name : undefined;
 
 const memberName = (node: OxcNode | null | undefined): CssRuntimeMethodTag | undefined => {
-	if (node?.type !== "MemberExpression") return undefined;
+	if (node?.type !== NodeKind.MemberExpression) return undefined;
 	const member = node as MemberNode;
 	if (member.computed === true) return undefined;
 	const name = member.property?.name;
@@ -89,7 +90,7 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 	const declarations = new Set<number>();
 
 	walkWithParent(program, (node, _parent, ancestors) => {
-		if (node.type !== "VariableDeclarator") return;
+		if (node.type !== NodeKind.VariableDeclarator) return;
 		const declarator = node as DeclaratorNode;
 		if (declarator.id?.name !== local || declarator.id.start === undefined) return;
 		declarations.add(declarator.id.start);
@@ -97,7 +98,7 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 	});
 
 	walkWithParent(program, (node, parent) => {
-		if (node.type !== "Identifier") return;
+		if (node.type !== NodeKind.Identifier) return;
 		const identifier = node as IdentifierNode;
 		if (
 			identifier.name !== local ||
@@ -110,8 +111,8 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 			escaped = true;
 			return;
 		}
-		if (parent.type === "CallExpression" && (parent as CallNode).callee === node) return;
-		if (parent.type === "MemberExpression" && (parent as MemberNode).object === node) {
+		if (parent.type === NodeKind.CallExpression && (parent as CallNode).callee === node) return;
+		if (parent.type === NodeKind.MemberExpression && (parent as MemberNode).object === node) {
 			const method = memberName(parent);
 			if (method === undefined) escaped = true;
 			else methods.add(method);
@@ -126,13 +127,13 @@ const usageFor = (program: OxcNode, local: string): Usage => {
 const findFactoryVariables = (program: OxcNode, imported: Set<string>): Set<string> => {
 	const result = new Set<string>();
 	walkWithParent(program, (node) => {
-		if (node.type !== "VariableDeclarator") return;
+		if (node.type !== NodeKind.VariableDeclarator) return;
 		const declarator = node as DeclaratorNode;
 		const local = declarator.id?.name;
 		const init = declarator.init;
 		if (
 			local === undefined ||
-			init?.type !== "CallExpression" ||
+			init?.type !== NodeKind.CallExpression ||
 			identifierName(init.callee) === undefined ||
 			!imported.has(identifierName(init.callee)!)
 		)
@@ -145,7 +146,7 @@ const findFactoryVariables = (program: OxcNode, imported: Set<string>): Set<stri
 const collectImports = (program: OxcNode): RuntimeImport[] => {
 	const imports: RuntimeImport[] = [];
 	walkWithParent(program, (node) => {
-		if (node.type !== "ImportDeclaration") return;
+		if (node.type !== NodeKind.ImportDeclaration) return;
 		const declaration = node as ImportNode;
 		const source = declaration.source?.value;
 		const sourceStart = declaration.source?.start;
@@ -154,8 +155,8 @@ const collectImports = (program: OxcNode): RuntimeImport[] => {
 			return;
 		const hasOtherRuntimeImport = (declaration.specifiers ?? []).some(
 			(specifier) =>
-				declaration.importKind !== "type" &&
-				specifier.importKind !== "type" &&
+				declaration.importKind !== ImportKindTag.Type &&
+				specifier.importKind !== ImportKindTag.Type &&
 				!isCreateCssImport(specifier, declaration),
 		);
 		if (hasOtherRuntimeImport) return;

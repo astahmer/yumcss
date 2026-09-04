@@ -1,3 +1,4 @@
+import { NodeKind } from "../ast-node-kind.ts";
 /**
  * Pure AST walking helpers shared by the vite passes.
  *
@@ -31,30 +32,30 @@ function* iterAll(node: OxcNode): Generator<OxcNode> {
 export function bindingIsShadowedOrWritten(program: OxcNode, name: string): boolean {
 	for (const node of iterAll(program)) {
 		switch ((node as { type?: string }).type) {
-			case "VariableDeclarator":
-			case "FunctionDeclaration":
-			case "ClassDeclaration":
-			case "CatchClause": {
+			case NodeKind.VariableDeclarator:
+			case NodeKind.FunctionDeclaration:
+			case NodeKind.ClassDeclaration:
+			case NodeKind.CatchClause: {
 				const id =
 					(node as { id?: OxcNode | null; param?: OxcNode | null }).id ??
 					(node as { param?: OxcNode | null }).param;
 				if ((id as { name?: string } | undefined)?.name === name) return true;
 				break;
 			}
-			case "Property": {
+			case NodeKind.Property: {
 				// Destructured bindings (`function F({ NAME }`) bind through
 				// shorthand properties.
 				const prop = node as { shorthand?: boolean; key?: { name?: string } };
 				if (prop.shorthand === true && prop.key?.name === name) return true;
 				break;
 			}
-			case "AssignmentExpression": {
+			case NodeKind.AssignmentExpression: {
 				let target: OxcNode | undefined = (node as { left?: OxcNode }).left;
-				while (target && (target as { type?: string }).type === "MemberExpression") {
+				while (target && (target as { type?: string }).type === NodeKind.MemberExpression) {
 					target = (target as { object?: OxcNode | null }).object ?? undefined;
 				}
 				if (
-					(target as { type?: string }).type === "Identifier" &&
+					(target as { type?: string }).type === NodeKind.Identifier &&
 					(target as { name?: string }).name === name
 				) {
 					return true;

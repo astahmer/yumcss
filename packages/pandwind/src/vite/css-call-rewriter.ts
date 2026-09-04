@@ -5,6 +5,7 @@ import type { ClassNameStrategy } from "../css/class-name-strategy.ts";
 import type { CssCallRewriter, CssPreset, InlineCssResult } from "./css-extraction-contracts.ts";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { StyleObject } from "../types/typings.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 /** Static rewrite port; unsupported or dynamic calls remain untouched. */
 interface CallNode extends OxcNode {
@@ -37,17 +38,17 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				language: SOURCE_SCANNER_SERVICE.languageForFile(id),
 			}).program,
 			(node, parent, ancestors) => {
-				if (node.type !== "CallExpression") return;
+				if (node.type !== NodeKind.CallExpression) return;
 				const call = node as CallNode;
 				const callee = call.callee;
 				let kind: "map" | "class" | "group" | undefined;
-				if (callee?.type === "Identifier" && names.has((callee as { name?: string }).name ?? ""))
+				if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? ""))
 					kind = "map";
-				else if (callee?.type === "MemberExpression") {
+				else if (callee?.type === NodeKind.MemberExpression) {
 					const object = (callee as { object?: OxcNode | null }).object;
 					const member = (callee as { property?: { name?: string } | null }).property?.name;
 					if (
-						object?.type === "Identifier" &&
+						object?.type === NodeKind.Identifier &&
 						names.has((object as { name?: string }).name ?? "") &&
 						(member === "class" || member === "group")
 					)
@@ -55,7 +56,7 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				}
 				if (kind === undefined || call.arguments.length === 0) return;
 				const objectArguments = call.arguments.filter(
-					(argument) => (argument as { type?: string } | null)?.type === "ObjectExpression",
+					(argument) => (argument as { type?: string } | null)?.type === NodeKind.ObjectExpression,
 				);
 				if (
 					kind !== "group" &&
@@ -70,9 +71,9 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 					// The runtime carrier re-derives the static subset itself, so
 					// vars atoms never collide with stylesheet rules for the same keys.
 					const isJsxPosition =
-						parent?.type === "JSXExpressionContainer" ||
-						parent?.type === "JSXSpreadAttribute" ||
-						ancestors.at(-2)?.type === "JSXExpressionContainer";
+						parent?.type === NodeKind.JSXExpressionContainer ||
+						parent?.type === NodeKind.JSXSpreadAttribute ||
+						ancestors.at(-2)?.type === NodeKind.JSXExpressionContainer;
 					if (isJsxPosition) {
 						const ranges = call.arguments.map(
 							(argument) => argument as { start?: number; end?: number },
@@ -142,24 +143,24 @@ const hasLiteralProperty = (node: OxcNode): boolean =>
 			key?: { name?: string; value?: { value?: string } };
 			value?: { type?: string };
 		};
-		if (entry?.type !== "Property" || entry.value?.type !== "Literal") return false;
+		if (entry?.type !== NodeKind.Property || entry.value?.type !== NodeKind.Literal) return false;
 		return typeof (entry.key?.name ?? entry.key?.value?.value) === "string";
 	});
 
 /** Flattened var-toggle key path (condition segments first), same shape the scanner reports. */
 const collectFlatVarKeys = (node: OxcNode | undefined, prefix: string, out: Set<string>): void => {
-	if (node?.type !== "ObjectExpression") return;
+	if (node?.type !== NodeKind.ObjectExpression) return;
 	for (const property of (node as { properties?: unknown[] }).properties ?? []) {
 		const entry = property as {
 			type?: string;
 			key?: { name?: string; value?: string };
 			value?: OxcNode;
 		};
-		if (entry?.type === "SpreadElement") continue;
+		if (entry?.type === NodeKind.SpreadElement) continue;
 		const key = entry?.key?.name ?? (entry?.key as { value?: string } | undefined)?.value;
 		if (typeof key !== "string") continue;
 		const full = prefix === "" ? key : `${prefix}__${key}`;
-		if (entry.value?.type === "ObjectExpression") collectFlatVarKeys(entry.value, full, out);
+		if (entry.value?.type === NodeKind.ObjectExpression) collectFlatVarKeys(entry.value, full, out);
 		else out.add(full);
 	}
 };
@@ -182,7 +183,7 @@ function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<
 	const program = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code }).program;
 	const factoryNames = new Set<string>();
 	walk(program, (node) => {
-		if (node.type !== "ImportDeclaration") return;
+		if (node.type !== NodeKind.ImportDeclaration) return;
 		for (const specifier of (
 			node as {
 				specifiers?: Array<{
@@ -195,7 +196,7 @@ function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<
 			const imported = specifier.imported?.name;
 			const local = specifier.local?.name;
 			if (
-				specifier.type === "ImportSpecifier" &&
+				specifier.type === NodeKind.ImportSpecifier &&
 				local !== undefined &&
 				imported !== undefined &&
 				CSS_FACTORY_NAMES.has(imported)
@@ -205,7 +206,7 @@ function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<
 	});
 
 	walk(program, (node) => {
-		if (node.type !== "VariableDeclarator") return;
+		if (node.type !== NodeKind.VariableDeclarator) return;
 		const declarator = node as unknown as {
 			id?: { type?: string; name?: string; start?: number };
 			init?: {
@@ -218,11 +219,11 @@ function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<
 		const binding = declarator.id;
 		const init = declarator.init;
 		if (
-			binding?.type !== "Identifier" ||
+			binding?.type !== NodeKind.Identifier ||
 			binding.name === undefined ||
 			!names.has(binding.name) ||
-			init?.type !== "CallExpression" ||
-			init.callee?.type !== "Identifier" ||
+			init?.type !== NodeKind.CallExpression ||
+			init.callee?.type !== NodeKind.Identifier ||
 			init.callee.name === undefined ||
 			!factoryNames.has(init.callee.name) ||
 			(init.arguments?.length ?? 0) !== 0 ||
@@ -232,7 +233,7 @@ function findUnusedCssFactoryCalls(code: string, id: string, names: ReadonlySet<
 
 		let references = 0;
 		walk(program, (candidate) => {
-			if (candidate.type !== "Identifier") return;
+			if (candidate.type !== NodeKind.Identifier) return;
 			const identifier = candidate as unknown as { name?: string; start?: number };
 			if (identifier.name === binding.name && identifier.start !== binding.start) references++;
 		});

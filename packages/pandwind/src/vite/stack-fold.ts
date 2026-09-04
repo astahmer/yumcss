@@ -1,3 +1,4 @@
+import { NodeKind } from "../ast-node-kind.ts";
 /**
  * Vite fold pass for `<Stack>` — rewrites literal-prop JSX into plain divs
  * with static class strings at build time (plans/016). Opt-in plugin.
@@ -51,7 +52,7 @@ function readAttributes(opening: Record<string, unknown>): { attrs: JsxAttr[] } 
 				value = valueNode["value"] as string | number;
 			} else if (valueNode["type"] === "JSXExpressionContainer") {
 				const inner = valueNode["expression"] as Record<string, unknown>;
-				if (inner?.type === "Literal") value = inner["value"] as string | number;
+				if (inner?.type === NodeKind.Literal) value = inner["value"] as string | number;
 				else dynamic = true;
 			} else {
 				dynamic = true;
@@ -75,7 +76,7 @@ export function foldStackElements(code: string, id: string): { code: string; fol
 
 	const targets: FoldTarget[] = [];
 	walk(parsed.program as unknown as OxcNode, (node) => {
-		if ((node as { type?: string }).type !== "JSXElement") return;
+		if ((node as { type?: string }).type !== NodeKind.JSXElement) return;
 		const el = node as {
 			openingElement?: Record<string, unknown>;
 			closingElement?: Record<string, unknown>;

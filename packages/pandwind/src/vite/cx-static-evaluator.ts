@@ -3,6 +3,7 @@ import type { CxInput } from "../cx/index.ts";
 import type { PandwindEngineContext } from "./engine-context.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import { bindingIsShadowedOrWritten } from "./ast-walk.ts";
+import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 
 /**
  * Compile-time evaluator for the cx() folding pass.
@@ -83,8 +84,8 @@ const topLevelCandidates = (program: OxcNode): Map<string, Candidate> => {
 	const candidates = new Map<string, Candidate>();
 	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
 		if (
-			(statement as { type?: string }).type !== "VariableDeclaration" ||
-			(statement as { kind?: string }).kind !== "const"
+			(statement as { type?: string }).type !== NodeKind.VariableDeclaration ||
+			(statement as { kind?: string }).kind !== VariableDeclarationKindTag.Const
 		)
 			continue;
 		for (const declaration of (statement as { declarations?: OxcNode[] }).declarations ?? []) {
@@ -92,7 +93,7 @@ const topLevelCandidates = (program: OxcNode): Map<string, Candidate> => {
 			const init = (declaration as { init?: Expression | null }).init;
 			const name = (binding as { type?: string; name?: string } | undefined)?.name;
 			if (
-				(binding as { type?: string } | undefined)?.type !== "Identifier" ||
+				(binding as { type?: string } | undefined)?.type !== NodeKind.Identifier ||
 				init === undefined ||
 				init === null ||
 				name === undefined ||
@@ -106,40 +107,40 @@ const topLevelCandidates = (program: OxcNode): Map<string, Candidate> => {
 };
 
 const isBinding = (node: OxcNode | null | undefined, name: string): boolean =>
-	(node as { type?: string; name?: string } | undefined)?.type === "Identifier" &&
+	(node as { type?: string; name?: string } | undefined)?.type === NodeKind.Identifier &&
 	(node as { name?: string }).name === name;
 
 const risky = (program: OxcNode, name: string, own: ReadonlySet<OxcNode>): boolean => {
 	for (const node of nodes(program)) {
 		switch (node.type) {
-			case "VariableDeclarator":
+			case NodeKind.VariableDeclarator:
 				if (!own.has(node) && isBinding((node as { id?: OxcNode }).id, name)) return true;
 				break;
-			case "FunctionDeclaration":
-			case "ClassDeclaration":
+			case NodeKind.FunctionDeclaration:
+			case NodeKind.ClassDeclaration:
 				if (isBinding((node as { id?: OxcNode }).id, name)) return true;
 				break;
-			case "ImportSpecifier":
+			case NodeKind.ImportSpecifier:
 				if (isBinding((node as { local?: OxcNode }).local, name)) return true;
 				break;
-			case "CatchClause":
+			case NodeKind.CatchClause:
 				if (isBinding((node as { param?: OxcNode }).param, name)) return true;
 				break;
-			case "AssignmentExpression": {
+			case NodeKind.AssignmentExpression: {
 				let target = (node as { left?: OxcNode }).left;
-				while (target?.type === "MemberExpression")
+				while (target?.type === NodeKind.MemberExpression)
 					target = (target as { object?: OxcNode }).object;
 				if (isBinding(target, name)) return true;
 				break;
 			}
-			case "UpdateExpression":
+			case NodeKind.UpdateExpression:
 				if (isBinding((node as { argument?: OxcNode }).argument, name)) return true;
 				break;
 		}
 		if (
-			node.type === "FunctionDeclaration" ||
-			node.type === "FunctionExpression" ||
-			node.type === "ArrowFunctionExpression"
+			node.type === NodeKind.FunctionDeclaration ||
+			node.type === NodeKind.FunctionExpression ||
+			node.type === NodeKind.ArrowFunctionExpression
 		) {
 			for (const parameter of (node as { params?: OxcNode[] }).params ?? []) {
 				if ([...nodes(parameter)].some((inner) => isBinding(inner, name))) return true;
@@ -167,13 +168,13 @@ export function collectModuleConstants(program: OxcNode): ConstantScope {
 const cssCall = (node: Expression, fold: CxFoldContext): boolean => {
 	const call = node as unknown as { callee?: OxcNode | null };
 	const callee = call.callee;
-	if (callee?.type === "Identifier")
+	if (callee?.type === NodeKind.Identifier)
 		return fold.cssNames.has((callee as { name?: string }).name ?? "");
-	if (callee?.type !== "MemberExpression") return false;
+	if (callee?.type !== NodeKind.MemberExpression) return false;
 	const object = (callee as { object?: OxcNode | null }).object;
 	const property = (callee as { property?: { name?: string } | null }).property?.name;
 	return (
-		object?.type === "Identifier" &&
+		object?.type === NodeKind.Identifier &&
 		fold.cssNames.has((object as { name?: string }).name ?? "") &&
 		property === "class"
 	);
@@ -186,13 +187,13 @@ export function evalStaticCx(
 ): StaticEval {
 	if (node === undefined) return NOT_STATIC;
 	switch (node.type) {
-		case "Literal": {
+		case NodeKind.Literal: {
 			const value = (node as { value?: unknown }).value;
 			return typeof value === "string" || value === false || value === null || value === true
 				? (value as CxInput)
 				: NOT_STATIC;
 		}
-		case "Identifier": {
+		case NodeKind.Identifier: {
 			const name = (node as { name?: string }).name;
 			if (name === "undefined") return undefined;
 			const known = consts?.get(name ?? "");
@@ -202,7 +203,7 @@ export function evalStaticCx(
 				? known.value
 				: NOT_STATIC;
 		}
-		case "TemplateLiteral": {
+		case NodeKind.TemplateLiteral: {
 			const expressions = (node as { expressions?: Expression[] }).expressions ?? [];
 			const quasis =
 				(node as { quasis?: Array<{ value: { cooked?: string; raw: string } }> }).quasis ?? [];
@@ -214,16 +215,16 @@ export function evalStaticCx(
 			}
 			return value;
 		}
-		case "BinaryExpression": {
+		case NodeKind.BinaryExpression: {
 			if ((node as { operator?: string }).operator !== "+") return NOT_STATIC;
 			const left = evalStaticCx((node as { left: Expression }).left, fold, consts);
 			const right = evalStaticCx((node as { right: Expression }).right, fold, consts);
 			return typeof left === "string" && typeof right === "string" ? left + right : NOT_STATIC;
 		}
-		case "ArrayExpression": {
+		case NodeKind.ArrayExpression: {
 			const values: StaticEval[] = [];
 			for (const element of (node as { elements?: Expression[] }).elements ?? []) {
-				if (element === null || (element as { type?: string }).type === "SpreadElement")
+				if (element === null || (element as { type?: string }).type === NodeKind.SpreadElement)
 					return NOT_STATIC;
 				const value = evalStaticCx(element, fold, consts);
 				if (value === NOT_STATIC) return NOT_STATIC;
@@ -231,7 +232,7 @@ export function evalStaticCx(
 			}
 			return values as unknown as CxInput;
 		}
-		case "LogicalExpression": {
+		case NodeKind.LogicalExpression: {
 			const left = evalStaticCx((node as { left: Expression }).left, fold, consts);
 			if (left === NOT_STATIC) return NOT_STATIC;
 			const right = () => evalStaticCx((node as { right: Expression }).right, fold, consts);
@@ -246,14 +247,14 @@ export function evalStaticCx(
 					return NOT_STATIC;
 			}
 		}
-		case "ConditionalExpression": {
+		case NodeKind.ConditionalExpression: {
 			const test = evalStaticCx((node as { test: Expression }).test, fold, consts);
 			if (test === NOT_STATIC) return NOT_STATIC;
 			return isTruthy(test)
 				? evalStaticCx((node as { consequent: Expression }).consequent, fold, consts)
 				: evalStaticCx((node as { alternate: Expression }).alternate, fold, consts);
 		}
-		case "CallExpression": {
+		case NodeKind.CallExpression: {
 			if (fold === undefined || !cssCall(node, fold)) return NOT_STATIC;
 			const classes: string[] = [];
 			for (const argument of (node as unknown as { arguments: Expression[] }).arguments) {
@@ -280,15 +281,15 @@ const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => 
 	const value = evalStaticCx(node, undefined, consts);
 	if (value !== NOT_STATIC && (typeof value !== "object" || value === null || Array.isArray(value)))
 		return value;
-	if (node.type !== "ObjectExpression") return NOT_STATIC;
+	if (node.type !== NodeKind.ObjectExpression) return NOT_STATIC;
 	const result: Record<string, unknown> = {};
 	for (const property of node.properties) {
-		if (property.type !== "Property" || property.computed || property.method || property.shorthand)
+		if (property.type !== NodeKind.Property || property.computed || property.method || property.shorthand)
 			return NOT_STATIC;
 		const key =
-			property.key.type === "Identifier"
+			property.key.type === NodeKind.Identifier
 				? property.key.name
-				: property.key.type === "Literal" && typeof property.key.value === "string"
+				: property.key.type === NodeKind.Literal && typeof property.key.value === "string"
 					? property.key.value
 					: undefined;
 		if (key === undefined) return NOT_STATIC;

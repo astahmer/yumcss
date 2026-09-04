@@ -1,3 +1,4 @@
+import { NodeKind, PropertyKindTag } from "../ast-node-kind.ts";
 /**
  * oxc-based literal evaluation, shared by the scanner (`collect.ts`) and the
  * vite plugin. oxc parses TS/TSX several times faster than the TS compiler
@@ -115,9 +116,9 @@ export interface LiteralValueSet {
 export function evalLiteral(node: Expression | undefined, consts?: LiteralConstantScope): unknown {
 	if (!node) return undefined;
 	switch (node.type) {
-		case "Literal":
+		case NodeKind.Literal:
 			return node.value;
-		case "Identifier": {
+		case NodeKind.Identifier: {
 			const name = (node as unknown as { name?: string }).name;
 			if (consts !== undefined && typeof name === "string") {
 				const known = consts.get(name);
@@ -125,7 +126,7 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 			}
 			return undefined;
 		}
-		case "TemplateLiteral": {
+		case NodeKind.TemplateLiteral: {
 			const hasExpressions = node.expressions.length !== 0;
 			if (hasExpressions && consts === undefined) return undefined;
 			if (node.quasis.length !== node.expressions.length + 1) return undefined;
@@ -138,7 +139,7 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 			}
 			return out;
 		}
-		case "BinaryExpression": {
+		case NodeKind.BinaryExpression: {
 			if (consts === undefined || node.operator !== "+") return undefined;
 			const left = evalLiteral(node.left, consts);
 			if (typeof left !== "string") return undefined;
@@ -146,17 +147,17 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 			if (typeof right !== "string") return undefined;
 			return left + right;
 		}
-		case "UnaryExpression": {
-			if (node.operator !== "-" || node.argument.type !== "Literal") {
+		case NodeKind.UnaryExpression: {
+			if (node.operator !== "-" || node.argument.type !== NodeKind.Literal) {
 				return undefined;
 			}
 			const value = node.argument.value;
 			return typeof value === "number" ? -value : undefined;
 		}
-		case "ArrayExpression": {
+		case NodeKind.ArrayExpression: {
 			const values: unknown[] = [];
 			for (const element of node.elements) {
-				if (element === null || element.type === "SpreadElement") {
+				if (element === null || element.type === NodeKind.SpreadElement) {
 					return undefined;
 				}
 				const value = evalLiteral(element, consts);
@@ -165,12 +166,12 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 			}
 			return values;
 		}
-		case "ObjectExpression": {
+		case NodeKind.ObjectExpression: {
 			const styles: Record<string, unknown> = {};
 			for (const property of node.properties) {
 				if (
-					property.type !== "Property" ||
-					property.kind !== "init" ||
+					property.type !== NodeKind.Property ||
+					property.kind !== PropertyKindTag.Init ||
 					property.computed ||
 					property.method ||
 					property.shorthand
@@ -179,9 +180,9 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 				}
 				const key = property.key;
 				const name =
-					key.type === "Identifier"
+					key.type === NodeKind.Identifier
 						? key.name
-						: key.type === "Literal" && typeof key.value === "string"
+						: key.type === NodeKind.Literal && typeof key.value === "string"
 							? key.value
 							: undefined;
 				if (name === undefined) return undefined;
@@ -220,10 +221,10 @@ export function isTwCall(node: OxcNode): node is OxcNode & {
 	arguments: Expression[];
 } {
 	return (
-		node.type === "CallExpression" &&
+		node.type === NodeKind.CallExpression &&
 		node.callee !== null &&
 		typeof node.callee === "object" &&
-		(node.callee as OxcNode).type === "Identifier" &&
+		(node.callee as OxcNode).type === NodeKind.Identifier &&
 		(node.callee as { name?: string }).name === "tw"
 	);
 }
@@ -239,16 +240,16 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 	if (node === null || node === undefined) return { single: undefined };
 	const type = (node as OxcNode).type;
 	switch (type) {
-		case "Literal":
+		case NodeKind.Literal:
 			return { single: (node as unknown as { value?: unknown }).value };
-		case "Identifier": {
+		case NodeKind.Identifier: {
 			const name = (node as unknown as { name?: string }).name;
 			if (consts !== undefined && typeof name === "string" && consts.has(name)) {
 				return { single: consts.get(name) };
 			}
 			return { sets: [] };
 		}
-		case "TemplateLiteral": {
+		case NodeKind.TemplateLiteral: {
 			const template = node as unknown as {
 				quasis: Array<{ value: { cooked: string | null; raw: string } }>;
 				expressions: Expression[];
@@ -274,7 +275,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			}
 			return { sets: pieces };
 		}
-		case "BinaryExpression": {
+		case NodeKind.BinaryExpression: {
 			const binary = node as unknown as { operator: string; left: Expression; right: Expression };
 			if (binary.operator !== "+") return { sets: [] };
 			const left = collectValueSet(evalSetNode(binary.left, consts));
@@ -290,7 +291,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			}
 			return { sets: out };
 		}
-		case "UnaryExpression": {
+		case NodeKind.UnaryExpression: {
 			const unary = node as unknown as { operator: string; argument: Expression };
 			if (unary.operator !== "-") return { sets: [] };
 			const inner = evalSetNode(unary.argument, consts);
@@ -298,7 +299,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			const value = inner.single;
 			return typeof value === "number" ? { single: -value } : { sets: [] };
 		}
-		case "ConditionalExpression": {
+		case NodeKind.ConditionalExpression: {
 			const conditional = node as unknown as {
 				test: Expression;
 				consequent: Expression;
@@ -311,7 +312,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			}
 			return evalBranchUnion([conditional.consequent, conditional.alternate], consts);
 		}
-		case "LogicalExpression": {
+		case NodeKind.LogicalExpression: {
 			const logical = node as unknown as { operator: string; left: Expression; right: Expression };
 			const left = collectValueSet(evalSetNode(logical.left, consts));
 			if (left === undefined) return { sets: [] };
@@ -353,11 +354,11 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			}
 			return { sets: [] };
 		}
-		case "ArrayExpression": {
+		case NodeKind.ArrayExpression: {
 			const array = node as unknown as { elements: Array<Expression | null | { type: string }> };
 			const entries: Array<readonly unknown[]> = [];
 			for (const element of array.elements) {
-				if (element === null || (element as { type: string }).type === "SpreadElement") {
+				if (element === null || (element as { type: string }).type === NodeKind.SpreadElement) {
 					return { sets: [] };
 				}
 				const valueSet = collectValueSet(evalSetNode(element, consts));
@@ -378,7 +379,7 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 			build(0, []);
 			return { sets: combinations };
 		}
-		case "ObjectExpression": {
+		case NodeKind.ObjectExpression: {
 			const object = node as unknown as { properties: unknown[] };
 			const keys: string[] = [];
 			const entries: Array<readonly unknown[]> = [];
@@ -393,8 +394,8 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 					value: Expression;
 				};
 				if (
-					prop.type !== "Property" ||
-					prop.kind !== "init" ||
+					prop.type !== NodeKind.Property ||
+					prop.kind !== PropertyKindTag.Init ||
 					prop.computed ||
 					prop.method ||
 					prop.shorthand
@@ -403,9 +404,9 @@ function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): V
 				}
 				const key = prop.key;
 				const name =
-					key.type === "Identifier"
+					key.type === NodeKind.Identifier
 						? key.name
-						: key.type === "Literal" && typeof key.value === "string"
+						: key.type === NodeKind.Literal && typeof key.value === "string"
 							? (key.value as string)
 							: undefined;
 				if (name === undefined) return { sets: [] };

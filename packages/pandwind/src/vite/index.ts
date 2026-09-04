@@ -1,3 +1,4 @@
+import { NodeKind } from "../ast-node-kind.ts";
 /**
  * pandwind vite plugin — statically inlines `tw()` calls at build time.
  *
@@ -133,12 +134,12 @@ function findTwImports(
 	const info = { localNames: new Set<string>(), sources: [] as string[] };
 
 	walk(program, (node) => {
-		if (node.type !== "ImportDeclaration") return;
+		if (node.type !== NodeKind.ImportDeclaration) return;
 		const source = (node as { source?: { value?: string } }).source?.value;
 		if (typeof source !== "string" || !isTwSource(source)) return;
 		info.sources.push(source);
 		for (const specifier of (node as { specifiers?: OxcSpecifier[] }).specifiers ?? []) {
-			if (specifier.type !== "ImportSpecifier") continue;
+			if (specifier.type !== NodeKind.ImportSpecifier) continue;
 			const imported = (specifier as { imported?: { name?: string } }).imported?.name;
 			const local = (specifier as { local?: { name?: string } }).local?.name;
 			if (imported === "tw" && typeof local === "string") {

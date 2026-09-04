@@ -1,5 +1,6 @@
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import type { OxcNode } from "../tw/literal.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 export interface CxImportInfo {
 	readonly localNames: Set<string>;
@@ -32,7 +33,7 @@ class CxImportScanner {
 			}
 			if (current === null || typeof current !== "object") continue;
 			const node = current as OxcNode;
-			if (node.type === "ImportDeclaration") {
+			if (node.type === NodeKind.ImportDeclaration) {
 				const declaration = node as {
 					source?: { value?: string };
 					specifiers?: Array<{
@@ -46,7 +47,7 @@ class CxImportScanner {
 					info.sources.push(source);
 					for (const specifier of declaration.specifiers ?? []) {
 						if (
-							specifier.type === "ImportSpecifier" &&
+							specifier.type === NodeKind.ImportSpecifier &&
 							specifier.imported?.name === "cx" &&
 							specifier.local?.name !== undefined
 						)

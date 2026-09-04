@@ -1,3 +1,4 @@
+import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 /**
  * Pure helpers for the pandwind vite plugin — shared, unit-testable, and free
  * of vite/rollup types.
@@ -90,7 +91,7 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 	// initializer before evaluating.
 	const topLevelConsts = new Map<string, Expression>();
 	walk(result.program, (node) => {
-		if (node.type !== "VariableDeclaration" || node.kind !== "const") return;
+		if (node.type !== NodeKind.VariableDeclaration || node.kind !== VariableDeclarationKindTag.Const) return;
 		for (const declarator of (
 			node as unknown as {
 				declarations: Array<{
@@ -99,21 +100,21 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 				}>;
 			}
 		).declarations) {
-			if (declarator.id.type === "Identifier" && declarator.id.name && declarator.init) {
+			if (declarator.id.type === NodeKind.Identifier && declarator.id.name && declarator.init) {
 				topLevelConsts.set(declarator.id.name, declarator.init);
 			}
 		}
 	});
 	const resolveArg = (argument: Expression): Expression => {
-		if (argument.type !== "Identifier") return argument;
+		if (argument.type !== NodeKind.Identifier) return argument;
 		const name = (argument as unknown as { name?: string }).name;
 		if (name === undefined || name.startsWith("$")) return argument;
 		return (topLevelConsts.get(name) ?? argument) as Expression;
 	};
 	walk(result.program, (node) => {
-		if (config !== undefined || node.type !== "CallExpression") return;
+		if (config !== undefined || node.type !== NodeKind.CallExpression) return;
 		const callee = node.callee as OxcNode | null;
-		if (callee?.type !== "Identifier" || callee.name !== "createTw") return;
+		if (callee?.type !== NodeKind.Identifier || callee.name !== "createTw") return;
 		const argument = (node.arguments as Expression[])[0];
 		if (argument === undefined || argument === null) return;
 		const literal = evalLiteral(resolveArg(argument));
@@ -217,11 +218,11 @@ export function inlineTwCalls(
 	const unresolved: UnresolvedToken[] = [];
 
 	walk(result.program, (node) => {
-		if (node.type !== "CallExpression") return;
+		if (node.type !== NodeKind.CallExpression) return;
 		const call = node as CallNode;
 		const callee = call.callee;
 		const calleeName = (callee as { name?: string } | null)?.name;
-		if (callee?.type !== "Identifier" || !twNames.has(calleeName ?? "")) {
+		if (callee?.type !== NodeKind.Identifier || !twNames.has(calleeName ?? "")) {
 			return;
 		}
 		if (call.arguments.length !== 1) return;

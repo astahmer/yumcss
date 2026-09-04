@@ -1,3 +1,4 @@
+import { NodeKind, VariableDeclarationKindTag } from "../ast-node-kind.ts";
 /**
  * Cross-module constant propagation for the vite cx/tw passes.
  *
@@ -79,7 +80,7 @@ export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 			const source = (statement as { source?: { value?: string } }).source?.value;
 			const declarations = (statement as { declaration?: OxcNode | null }).declaration;
 			if (declarations !== null && declarations !== undefined) {
-				if ((declarations as { kind?: string }).kind !== "const") continue;
+				if ((declarations as { kind?: string }).kind !== VariableDeclarationKindTag.Const) continue;
 				for (const declarator of (declarations as { declarations?: OxcNode[] }).declarations ??
 					[]) {
 					const id = (declarator as { id?: OxcNode }).id;
@@ -116,11 +117,11 @@ export function analyzeModuleExports(program: OxcNode): ModuleExportAnalysis {
 
 /** Static string value of an initializer: string literal or bare template. */
 function staticString(node: Expression): string | undefined {
-	if ((node as { type?: string }).type === "Literal") {
+	if ((node as { type?: string }).type === NodeKind.Literal) {
 		const value = (node as { value?: unknown }).value;
 		return typeof value === "string" ? value : undefined;
 	}
-	if ((node as { type?: string }).type === "TemplateLiteral") {
+	if ((node as { type?: string }).type === NodeKind.TemplateLiteral) {
 		const expressions = (node as { expressions?: unknown[] }).expressions ?? [];
 		if (expressions.length > 0) return undefined;
 		const quasis = (node as { quasis?: Array<{ value: { cooked?: string; raw: string } }> }).quasis;
@@ -133,12 +134,12 @@ function staticString(node: Expression): string | undefined {
 export function collectImportBindings(program: OxcNode): ImportBinding[] {
 	const bindings: ImportBinding[] = [];
 	for (const statement of (program as { body?: OxcNode[] }).body ?? []) {
-		if ((statement as { type?: string }).type !== "ImportDeclaration") continue;
+		if ((statement as { type?: string }).type !== NodeKind.ImportDeclaration) continue;
 		const source = (statement as { source?: { value?: string } }).source?.value;
 		if (typeof source !== "string") continue;
 		for (const specifier of (statement as { specifiers?: Array<Record<string, unknown>> })
 			.specifiers ?? []) {
-			if (specifier.type === "ImportDefaultSpecifier") continue;
+			if (specifier.type === NodeKind.ImportDefaultSpecifier) continue;
 			const local = (specifier.local as { name?: string } | undefined)?.name;
 			const imported = (specifier.imported as { name?: string } | undefined)?.name ?? local;
 			if (typeof local === "string" && typeof imported === "string") {

@@ -1,5 +1,6 @@
 import { parseSync, type ParseResult } from "oxc-parser";
 import { walk, type OxcNode } from "./tw/literal.ts";
+import { NodeKind } from "./ast-node-kind.ts";
 
 /** Versioned, package-level source analysis protocol shared by every lane. */
 export const SOURCE_SCANNER_SCHEMA = "pandwind.source-scanner/2" as const;
@@ -281,11 +282,9 @@ export function computeExcludedRanges(
 			quasi?: { start?: number; end?: number };
 		};
 		if (typeof n.start !== "number" || typeof n.end !== "number") return;
-		if (n.type === "Comment") {
-			excluded.push([n.start, n.end]);
-			return;
-		}
-		if (n.type === "TaggedTemplateExpression" && n.tag !== undefined) {
+		// Comments never appear in the program AST (they are handled separately
+		// via `parsed.comments` above), so there is no comment branch here.
+		if (n.type === NodeKind.TaggedTemplateExpression && n.tag !== undefined) {
 			const tagText = source.slice(n.tag.start ?? 0, n.tag.end ?? 0);
 			if (
 				/^\s*(?:styled\b|css\b|keyframes\b)/.test(tagText) &&
@@ -300,7 +299,7 @@ export function computeExcludedRanges(
 			}
 			return;
 		}
-		if (n.type === "Literal" || n.type === "TemplateLiteral") excluded.push([n.start, n.end]);
+		if (n.type === NodeKind.Literal || n.type === NodeKind.TemplateLiteral) excluded.push([n.start, n.end]);
 	});
 	const filtered = excluded
 		.filter(([start, end]) => !supportedStyleQuasis.some(([qs, qe]) => start >= qs && end <= qe))

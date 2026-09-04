@@ -17,6 +17,7 @@ import type {
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";
+import { NodeKind } from "../ast-node-kind.ts";
 
 /** Resolves literal style calls into artifacts while preserving source provenance. */
 interface CallNode extends OxcNode {
@@ -48,7 +49,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		// so all-literal files never pay for the constant walk.
 		let moduleConsts: LiteralConstantScope | undefined;
 		walk(parsed, (node) => {
-			if (node.type !== "CallExpression") return;
+			if (node.type !== NodeKind.CallExpression) return;
 			const call = node as CallNode;
 			const kind = this.callKind(call.callee, names);
 			if (kind === undefined) return;
@@ -107,7 +108,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 	): void {
 		if (kind === "css.group" || kind === "css.raw") return;
 		const node = argument as { type?: string; properties?: unknown[] } | null;
-		if (node?.type !== "ObjectExpression") return;
+		if (node?.type !== NodeKind.ObjectExpression) return;
 		const partial: Record<string, unknown> = {};
 		for (const property of node.properties ?? []) {
 			const entry = property as {
@@ -115,7 +116,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 				key?: { name?: string; value?: { value?: string } };
 				value?: { type?: string; value?: unknown };
 			};
-			if (entry?.type !== "Property" || entry.value?.type !== "Literal") continue;
+			if (entry?.type !== NodeKind.Property || entry.value?.type !== NodeKind.Literal) continue;
 			const key = entry.key?.name ?? entry.key?.value?.value;
 			if (typeof key !== "string") continue;
 			partial[key] = entry.value.value;
@@ -143,7 +144,7 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		moduleConsts: () => LiteralConstantScope,
 	): void {
 		if (kind === "css.raw") return;
-		if ((argument as { type?: string } | null)?.type === "SpreadElement") return;
+		if ((argument as { type?: string } | null)?.type === NodeKind.SpreadElement) return;
 		const valueSet = evalLiteralValues(argument as never, moduleConsts());
 		if (valueSet === undefined || literalValueSetSize(valueSet) === 0) return;
 		for (const value of valueSet.values) {
@@ -189,12 +190,12 @@ export class DesignCssArtifactExtractor implements CssArtifactExtractor {
 		callee: OxcNode | null,
 		names: ReadonlySet<string>,
 	): ExtractedCssStyle["provenance"]["callKind"] | undefined {
-		if (callee?.type === "Identifier" && names.has((callee as { name?: string }).name ?? ""))
+		if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? ""))
 			return "css";
-		if (callee?.type !== "MemberExpression") return undefined;
+		if (callee?.type !== NodeKind.MemberExpression) return undefined;
 		const object = (callee as { object?: OxcNode | null }).object;
 		const member = (callee as { property?: { name?: string } | null }).property?.name;
-		return object?.type === "Identifier" &&
+		return object?.type === NodeKind.Identifier &&
 			names.has((object as { name?: string }).name ?? "") &&
 			(member === "class" || member === "raw" || member === "group")
 			? `css.${member}`

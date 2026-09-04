@@ -1,3 +1,4 @@
+import { NodeKind } from "../ast-node-kind.ts";
 /**
  * Tailwind source collection — extracts the classes used by `tw()` calls and
  * writes them to a safelist file that Tailwind's file scanner can see.
@@ -139,10 +140,10 @@ class DefaultTwClassCollector implements TwClassCollector {
 					const verified = new Set<string>();
 					walk(result.program as unknown as OxcNode, (node) => {
 						if (
-							node.type !== "CallExpression" ||
+							node.type !== NodeKind.CallExpression ||
 							node.callee === null ||
 							typeof node.callee !== "object" ||
-							(node.callee as { type?: string; name?: string }).type !== "Identifier" ||
+							(node.callee as { type?: string; name?: string }).type !== NodeKind.Identifier ||
 							!cxNames.has((node.callee as { name?: string }).name ?? "")
 						)
 							return;
