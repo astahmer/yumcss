@@ -142,7 +142,7 @@ describe("concrete adapter capability proofs", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			const styles = css.group({ card: { padding: "2px", color: "red" } });",
+			const styles = { "card": css.class({ padding: "2px", color: "red" }) };",
 			    "converted": 1,
 			    "id": "stylex-create",
 			    "residuals": [],
@@ -151,7 +151,7 @@ describe("concrete adapter capability proofs", () => {
 			    "code": "import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			const useStyles = css.group({ card: { padding: 2, color: "red" } });",
+			const useStyles = { "card": css.class({ padding: 2, color: "red" }) };",
 			    "converted": 1,
 			    "id": "jss-hook",
 			    "residuals": [],

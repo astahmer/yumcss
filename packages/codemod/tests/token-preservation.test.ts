@@ -47,7 +47,7 @@ describe("verified Pandwind token preservation", () => {
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
 
-			export const card = css.class({ color: "$blue-500", padding: "$4", borderRadius: "$lg" });"
+			export const card = css.class({ padding: "$4", borderRadius: "$lg", color: "$blue-500" });"
 		`);
 	});
 

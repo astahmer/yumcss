@@ -8,6 +8,7 @@ import {
 	type StyleProgram,
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
+import { MigrationDiagnostics } from "./migration-diagnostics.ts";
 import type {
 	AdapterFileMigration,
 	AdapterFileMigrationResult,
@@ -576,9 +577,39 @@ export function createStylesheetFileMigration(
 ): AdapterFileMigration {
 	return {
 		run(context): AdapterFileMigrationResult {
-			if (context.target.id === CodemodAdapterId.AuthoredCss)
+			if (context.target.id === CodemodAdapterId.AuthoredCss) {
+				// Without the compiler the preprocessor features cannot be
+				// inlined, so this outcome is an explicit skip: preserved
+				// source, visible marker, and a capability residual.
+				const capabilityResiduals: readonly StyleProgramResidual[] =
+					context.sourceConfig.adapter === CodemodAdapterId.CssModules
+						? [
+								{
+									kind: StyleProgramResidualKindTag.Capability,
+									text: context.file,
+									hint: "CSS Modules local class scoping does not survive the authored-css target",
+								},
+							]
+						: context.sourceConfig.adapter === CodemodAdapterId.Sass ||
+							  context.sourceConfig.adapter === CodemodAdapterId.Less
+							? [
+									{
+										kind: StyleProgramResidualKindTag.Capability,
+										text: context.file,
+										hint: "preprocessor features require the official compiler to inline before authored-css output",
+									},
+								]
+							: [];
 				return {
-					code: context.source,
+					code:
+						capabilityResiduals.length === 0
+							? context.source
+							: MigrationDiagnostics.skipMarker({
+									marker: "pandwind:migrate-skip",
+									loweringResiduals: capabilityResiduals,
+								}) +
+								"\n" +
+								context.source,
 					outputExtension:
 						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
 						context.sourceConfig.adapter === CodemodAdapterId.Less
@@ -588,29 +619,12 @@ export function createStylesheetFileMigration(
 						context.sourceConfig.adapter === CodemodAdapterId.Sass ||
 						context.sourceConfig.adapter === CodemodAdapterId.Less,
 					converted: 0,
-					skipped: 0,
+					skipped: capabilityResiduals.length === 0 ? 0 : 1,
 					generatedFiles: [],
-					residuals:
-						context.sourceConfig.adapter === CodemodAdapterId.CssModules
-							? [
-									{
-										kind: StyleProgramResidualKindTag.Capability,
-										text: context.file,
-										hint: "CSS Modules local class scoping does not survive the authored-css target",
-									},
-								]
-							: context.sourceConfig.adapter === CodemodAdapterId.Sass ||
-								  context.sourceConfig.adapter === CodemodAdapterId.Less
-								? [
-										{
-											kind: StyleProgramResidualKindTag.Capability,
-											text: context.file,
-											hint: "preprocessor features require the official compiler to inline before authored-css output",
-										},
-									]
-								: [],
+					residuals: capabilityResiduals,
 					dependencies: [],
 				};
+			}
 			const residuals: StyleProgramResidual[] = [];
 			const matches: AdapterParseResult["matches"][number][] = [];
 			const visited = new Set<string>();
@@ -718,17 +732,37 @@ export function createStylesheetFileMigration(
 					});
 				entries.push(`${JSON.stringify(name)}: ${emission.text}`);
 			}
-			if (residuals.length > 0 || entries.length !== matches.length || entries.length === 0)
+			if (residuals.length > 0 || entries.length !== matches.length || entries.length === 0) {
+				// A skip is only visible when the preserved source carries the same
+				// compact marker every other migration path emits; the residual
+				// report stays authoritative for the underlying reason.
+				const skipResiduals: StyleProgramResidual[] =
+					residuals.length > 0
+						? residuals
+						: [
+								{
+									kind: StyleProgramResidualKindTag.Capability,
+									text: context.file,
+									hint: "stylesheet rules could not be lowered to the target without loss",
+								},
+							];
 				return {
-					code: context.source,
+					code:
+						MigrationDiagnostics.skipMarker({
+							marker: "pandwind:migrate-skip",
+							loweringResiduals: skipResiduals,
+						}) +
+						"\n" +
+						context.source,
 					changed: false,
 					converted: 0,
-					skipped: Math.max(1, residuals.length),
+					skipped: Math.max(1, skipResiduals.length),
 					generatedFiles: [],
 					fileChanges: [],
-					residuals,
+					residuals: skipResiduals,
 					dependencies: [],
 				};
+			}
 			const code = [
 				[...imports].join("\n"),
 				`export const styles = { ${entries.join(", ")} };`,
@@ -763,7 +797,19 @@ export function createPreprocessorFileMigration(
 		runAsync: async (context) => {
 			if (compiler === undefined) {
 				return {
-					code: context.source,
+					code:
+						MigrationDiagnostics.skipMarker({
+							marker: "pandwind:migrate-skip",
+							configurationResiduals: [
+								{
+									kind: "configuration",
+									text: context.file,
+									hint: "the official preprocessor package is not installed in the project",
+								},
+							],
+						}) +
+						"\n" +
+						context.source,
 					changed: false,
 					converted: 0,
 					skipped: 1,
@@ -787,7 +833,19 @@ export function createPreprocessorFileMigration(
 				});
 			} catch (error) {
 				return {
-					code: context.source,
+					code:
+						MigrationDiagnostics.skipMarker({
+							marker: "pandwind:migrate-skip",
+							configurationResiduals: [
+								{
+									kind: "configuration",
+									text: context.file,
+									hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
+								},
+							],
+						}) +
+						"\n" +
+						context.source,
 					changed: false,
 					converted: 0,
 					skipped: 1,
@@ -806,6 +864,15 @@ export function createPreprocessorFileMigration(
 			const result = base.run({ ...context, source: compiled.css });
 			return {
 				...result,
+				// Compilation already resolved the preprocessor features; only
+				// residuals produced by the compiled source itself are relevant.
+				residuals: result.residuals.filter(
+					(residual) =>
+						!(
+							residual.kind === StyleProgramResidualKindTag.Capability &&
+							residual.hint?.includes("official compiler") === true
+						),
+				),
 				...(compiled.sourceMap === undefined
 					? {}
 					: { sourceMaps: [...(result.sourceMaps ?? []), compiled.sourceMap] }),

@@ -10,46 +10,19 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Jss, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Jss);
-const happySource =
-	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
-const edgeSource =
-	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
-const malformedSource =
-	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "red", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */';
+	const happySource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
+const edgeSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.foreground, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
+const malformedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"red\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;\nconst unfinished = { /* unfinished jss */";
 const sourceSemantic = undefined;
-const themedSource =
-	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
-const tokenSource =
-	'import { createUseStyles } from "react-jss";\nexport const useStyles = createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });\nexport const App = () => <div className={useStyles().card} />;';
-const blueSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
-	},
-};
-const amberProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
-	},
-};
-const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: theme.colors.brand, padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
+const tokenSource = "import { createUseStyles } from \"react-jss\";\nexport const useStyles = createUseStyles({ card: { color: \"$colors.brand\", padding: \"1rem\" } });\nexport const App = () => <div className={useStyles().card} />;";
+const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("jss -> mantine -> jss: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -169,34 +142,12 @@ test("jss -> mantine -> jss: retains edge semantics without silent loss", () => 
 });
 
 test("jss -> mantine -> jss: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({
-		source: themedSource,
-		file: "Card.tsx",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const secondBlue = reverse.run({
-		source: firstBlue.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
-	const firstAmber = forward.run({
-		source: themedSource,
-		file: "Card.tsx",
-		semantic: amberSemantic,
-		project: amberProject,
-	});
-	const secondAmber = reverse.run({
-		source: firstAmber.code,
-		file: "Card.tsx",
-		semantic: amberTargetSemantic,
-		project: amberProject,
-	});
+	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
-	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
-		0,
-	);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -287,18 +238,8 @@ test("jss -> mantine -> jss: preserves concrete theme and project context varian
 });
 
 test("jss -> mantine -> jss: resolves token references across both concrete legs", () => {
-	const first = forward.run({
-		source: tokenSource,
-		file: "Card.tsx",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const second = reverse.run({
-		source: first.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
+	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
@@ -343,3 +284,4 @@ test("jss -> mantine -> jss: resolves token references across both concrete legs
 		}
 	`);
 });
+

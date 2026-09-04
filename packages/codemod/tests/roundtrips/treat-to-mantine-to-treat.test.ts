@@ -10,53 +10,22 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.Treat, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.Treat);
-const happySource =
-	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });';
-const edgeSource =
-	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.foreground, padding: "1rem" });';
-const malformedSource =
-	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "red", padding: "1rem" });\nconst unfinished = { /* unfinished treat */';
+	const happySource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });";
+const edgeSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.foreground, padding: \"1rem\" });";
+const malformedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"red\", padding: \"1rem\" });\nconst unfinished = { /* unfinished treat */";
 const sourceSemantic = undefined;
-const themedSource =
-	'import { style } from "@treatjs/treat";\nexport const card = style({ color: theme.colors.brand, padding: "1rem" });';
-const tokenSource =
-	'import { style } from "@treatjs/treat";\nexport const card = style({ color: "$colors.brand", padding: "1rem" });';
-const blueSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
-	},
-};
-const amberProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
-	},
-};
-const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: theme.colors.brand, padding: \"1rem\" });";
+const tokenSource = "import { style } from \"@treatjs/treat\";\nexport const card = style({ color: \"$colors.brand\", padding: \"1rem\" });";
+const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("treat -> mantine -> treat: preserves an actionable concrete round trip", () => {
-	const first = forward.run({
-		source: happySource,
-		file: "Card.treat.ts",
-		semantic: sourceSemantic,
-	});
+	const first = forward.run({ source: happySource, file: "Card.treat.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped).toBeGreaterThan(0);
 	if (first.skipped === 0) {
@@ -123,11 +92,7 @@ test("treat -> mantine -> treat: preserves an actionable concrete round trip", (
 });
 
 test("treat -> mantine -> treat: retains edge semantics without silent loss", () => {
-	const first = forward.run({
-		source: edgeSource,
-		file: "Card.treat.ts",
-		semantic: sourceSemantic,
-	});
+	const first = forward.run({ source: edgeSource, file: "Card.treat.ts", semantic: sourceSemantic });
 	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: targetSemantic });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
@@ -141,7 +106,7 @@ test("treat -> mantine -> treat: retains edge semantics without silent loss", ()
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -165,7 +130,7 @@ test("treat -> mantine -> treat: retains edge semantics without silent loss", ()
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.foreground, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
 		    "outcomes": [],
 		    "residuals": [],
@@ -177,34 +142,12 @@ test("treat -> mantine -> treat: retains edge semantics without silent loss", ()
 });
 
 test("treat -> mantine -> treat: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({
-		source: themedSource,
-		file: "Card.treat.ts",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const secondBlue = reverse.run({
-		source: firstBlue.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
-	const firstAmber = forward.run({
-		source: themedSource,
-		file: "Card.treat.ts",
-		semantic: amberSemantic,
-		project: amberProject,
-	});
-	const secondAmber = reverse.run({
-		source: firstAmber.code,
-		file: "Card.tsx",
-		semantic: amberTargetSemantic,
-		project: amberProject,
-	});
+	const firstBlue = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
+	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = forward.run({ source: themedSource, file: "Card.treat.ts", semantic: amberSemantic, project: amberProject });
+	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
-	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
-		0,
-	);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -223,7 +166,7 @@ test("treat -> mantine -> treat: preserves concrete theme and project context va
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -247,7 +190,7 @@ test("treat -> mantine -> treat: preserves concrete theme and project context va
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
 		      "outcomes": [],
 		      "residuals": [],
@@ -262,7 +205,7 @@ test("treat -> mantine -> treat: preserves concrete theme and project context va
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -286,7 +229,7 @@ test("treat -> mantine -> treat: preserves concrete theme and project context va
 		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-		export const card = css.vars({ "color": theme.colors.brand, "padding": "1rem" });",
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
 		      "outcomes": [],
 		      "residuals": [],
@@ -299,18 +242,8 @@ test("treat -> mantine -> treat: preserves concrete theme and project context va
 });
 
 test("treat -> mantine -> treat: resolves token references across both concrete legs", () => {
-	const first = forward.run({
-		source: tokenSource,
-		file: "Card.treat.ts",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const second = reverse.run({
-		source: first.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
+	const first = forward.run({ source: tokenSource, file: "Card.treat.ts", semantic: blueSemantic, project: blueProject });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
@@ -366,3 +299,4 @@ test("treat -> mantine -> treat: resolves token references across both concrete 
 		}
 	`);
 });
+

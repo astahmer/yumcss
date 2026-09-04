@@ -139,4 +139,29 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 		file: "unocss.tsx",
 		source: '<div className="[color:red] [padding:1rem]" />',
 	},
+	{
+		adapter: CodemodAdapterId.Tamagui,
+		file: "card.tamagui.tsx",
+		source: "import { styled, View } from 'tamagui'; styled(View, { color: 'red', padding: '$4' })",
+	},
+	{
+		adapter: CodemodAdapterId.CssModules,
+		file: "card.module.css",
+		source: ".card { color: red; padding: 1rem; }",
+	},
+	{
+		adapter: CodemodAdapterId.Sass,
+		file: "card.scss",
+		source: ".card { color: red; padding: 1rem; }",
+	},
+	{
+		adapter: CodemodAdapterId.Less,
+		file: "card.less",
+		source: ".card { color: red; padding: 1rem; }",
+	},
+	{
+		adapter: CodemodAdapterId.AuthoredCss,
+		file: "card.css",
+		source: ".card { color: red; padding: 1rem; }",
+	},
 ];

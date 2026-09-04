@@ -300,8 +300,21 @@ export function createTamaguiAdapter(
 			},
 		},
 		emit(program, { programObject }) {
+			const subject = program.source?.subject;
 			return {
-				text: `styled(${program.source?.subject ?? "View"}, ${programObject(program)})`,
+				text: `styled(${subject ?? "View"}, ${programObject(program)})`,
+				// The emitted subject wrapper requires the styled factory to be in
+				// scope. @tamagui/core is the package the parser accepts as the
+				// canonical styled source, so re-emitting its import keeps the
+				// generated module self-contained and roundtrip-detectable.
+				// The default View subject is injected here rather than coming from
+				// the source, so it must be imported alongside styled; a source
+				// subject keeps its own preserved imports.
+				imports: [
+					subject === undefined
+						? 'import { styled, View } from "@tamagui/core";'
+						: 'import { styled } from "@tamagui/core";',
+				],
 				semantic: program,
 				residuals: [],
 			};

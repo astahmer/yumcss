@@ -40,7 +40,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "chakra-ui",
 			  },
 			  {
-			    "apiCount": 9,
+			    "apiCount": 10,
 			    "configCount": 3,
 			    "id": "emotion",
 			  },
@@ -50,12 +50,12 @@ describe("adapter evidence contracts", () => {
 			    "id": "styled-components",
 			  },
 			  {
-			    "apiCount": 9,
+			    "apiCount": 10,
 			    "configCount": 1,
 			    "id": "vanilla-extract",
 			  },
 			  {
-			    "apiCount": 3,
+			    "apiCount": 4,
 			    "configCount": 2,
 			    "id": "stitches",
 			  },
@@ -65,12 +65,12 @@ describe("adapter evidence contracts", () => {
 			    "id": "linaria",
 			  },
 			  {
-			    "apiCount": 3,
+			    "apiCount": 4,
 			    "configCount": 3,
 			    "id": "mantine",
 			  },
 			  {
-			    "apiCount": 2,
+			    "apiCount": 4,
 			    "configCount": 3,
 			    "id": "mui",
 			  },
@@ -80,7 +80,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "next-yak",
 			  },
 			  {
-			    "apiCount": 4,
+			    "apiCount": 5,
 			    "configCount": 3,
 			    "id": "panda",
 			  },
@@ -95,7 +95,7 @@ describe("adapter evidence contracts", () => {
 			    "id": "jss",
 			  },
 			  {
-			    "apiCount": 3,
+			    "apiCount": 4,
 			    "configCount": 1,
 			    "id": "stylex",
 			  },
@@ -153,6 +153,31 @@ describe("adapter evidence contracts", () => {
 			    "apiCount": 4,
 			    "configCount": 2,
 			    "id": "unocss",
+			  },
+			  {
+			    "apiCount": 1,
+			    "configCount": 1,
+			    "id": "authored-css",
+			  },
+			  {
+			    "apiCount": 1,
+			    "configCount": 1,
+			    "id": "css-modules",
+			  },
+			  {
+			    "apiCount": 1,
+			    "configCount": 1,
+			    "id": "sass",
+			  },
+			  {
+			    "apiCount": 1,
+			    "configCount": 1,
+			    "id": "less",
+			  },
+			  {
+			    "apiCount": 1,
+			    "configCount": 3,
+			    "id": "tamagui",
 			  },
 			]
 		`);

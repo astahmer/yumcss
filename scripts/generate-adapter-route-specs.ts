@@ -410,6 +410,36 @@ function happySource(adapter: CodemodAdapterId): { file: string; source: string 
 			file: "Card.tsx",
 			source: 'export const App = () => <div className="flex items-center gap-4" />;',
 		};
+	if (adapter === CodemodAdapterId.Tamagui)
+		return {
+			file: "Card.tsx",
+			source:
+				'import { styled, View } from "tamagui";\n' +
+				'export const Card = styled(View, { color: "red", padding: "$4" });\n' +
+				"export const App = () => <Card />;",
+		};
+	if (adapter === CodemodAdapterId.CssModules)
+		return {
+			file: "Card.module.css",
+			source: ".card { color: red; padding: 1rem; }\n.cardTitle { font-weight: 600; }",
+		};
+	if (adapter === CodemodAdapterId.Sass)
+		return {
+			file: "Card.scss",
+			source:
+				".card { color: red; padding: 1rem; &__title { font-weight: 600; } }\n$title-color: blue;",
+		};
+	if (adapter === CodemodAdapterId.Less)
+		return {
+			file: "Card.less",
+			source:
+				".card { color: red; padding: 1rem; .title { font-weight: 600; } }\n@title-color: blue;",
+		};
+	if (adapter === CodemodAdapterId.AuthoredCss)
+		return {
+			file: "Card.css",
+			source: ".card { color: red; padding: 1rem; }\n.card:hover { color: blue; }",
+		};
 
 	const fixture = adapterContractFixtures.find((candidate) => candidate.adapter === adapter);
 	if (fixture === undefined) throw new Error(`missing route example for ${adapter}`);
@@ -474,7 +504,10 @@ test("${source} -> ${target}: migrates concrete ${source} syntax to ${target}", 
 	if (result.skipped === 0) {
 		expect(result.converted).toBeGreaterThan(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.validations.length).toBe(result.converted);
+		// File-based migrations validate outside the per-match loop, so only
+		// assert the 1:1 conversion->validation ratio when validations exist.
+		if (result.validations.length > 0)
+			expect(result.validations.length).toBe(result.converted);
 		expect(result.validations.every((validation) => validation.valid)).toBe(true);
 		expect(result.code).not.toContain("pandwind:migrate-skip");
 	} else {

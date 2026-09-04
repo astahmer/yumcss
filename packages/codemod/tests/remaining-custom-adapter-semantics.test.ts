@@ -87,7 +87,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			const css = createRuntimeCss(pandwindPreset);
 
 			export const theme = (css.sheet.registerSemanticRules([{ kind: "global", selector: ":root", declarations: [{ property: "--brand", value: "#123456" }] }]), { "brand": "var(--brand)" });
-			export const card = css.group({ root: { color: "var(--brand)" } });"
+			export const card = { "root": css.class({ color: "var(--brand)" }) };"
 		`);
 	});
 
@@ -193,7 +193,7 @@ describe("remaining adapter-owned custom semantics", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const useStyles = css.group({ card: { color: (theme) => theme.colors.brand } });"
+			export const useStyles = { "card": css.group({ color: (theme) => theme.colors.brand }) };"
 		`);
 	});
 

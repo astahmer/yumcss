@@ -10,46 +10,19 @@ import {
 
 const forward = createAdapterRouteSpec(CodemodAdapterId.ReactNative, CodemodAdapterId.Mantine);
 const reverse = createAdapterRouteSpec(CodemodAdapterId.Mantine, CodemodAdapterId.ReactNative);
-const happySource =
-	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
-const edgeSource =
-	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
-const malformedSource =
-	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "red", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */';
+	const happySource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
+const edgeSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
+const malformedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"red\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;\nconst unfinished = { /* unfinished react-native */";
 const sourceSemantic = undefined;
-const themedSource =
-	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
-const tokenSource =
-	'import { StyleSheet, View } from "react-native";\nexport const styles = StyleSheet.create({ card: { color: "$colors.brand", padding: 16 } });\nexport const App = () => <View style={styles.card} />;';
-const blueSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberSemantic = {
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }],
-};
-const amberTargetSemantic = {
-	source: { framework: BuiltinHostFramework.React },
-	themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }],
-};
-const blueProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#2563eb"] } };',
-	},
-};
-const amberProject = {
-	root: "/virtual/pandwind-route-project",
-	files: {
-		"/virtual/pandwind-route-project/src/theme.ts":
-			'export const mantineTheme = { colors: { brand: ["#f97316"] } };',
-	},
-};
-const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
+const themedSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
+const tokenSource = "import { StyleSheet, View } from \"react-native\";\nexport const styles = StyleSheet.create({ card: { color: \"$colors.brand\", padding: 16 } });\nexport const App = () => <View style={styles.card} />;";
+const blueSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberSemantic = { themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#2563eb" }] };
+const amberTargetSemantic = { source: { framework: BuiltinHostFramework.React }, themes: [{ path: "colors.brand", authored: "theme.colors.brand", resolved: "#f97316" }] };
+const blueProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#2563eb\"] } };"} };
+const amberProject = { root: "/virtual/pandwind-route-project", files: {"/virtual/pandwind-route-project/src/theme.ts":"export const mantineTheme = { colors: { brand: [\"#f97316\"] } };"} };
+	const targetSemantic = { source: { framework: BuiltinHostFramework.React } };
 
 test("react-native -> mantine -> react-native: preserves an actionable concrete round trip", () => {
 	const first = forward.run({ source: happySource, file: "Card.tsx", semantic: sourceSemantic });
@@ -193,34 +166,12 @@ test("react-native -> mantine -> react-native: retains edge semantics without si
 });
 
 test("react-native -> mantine -> react-native: preserves concrete theme and project context variants", () => {
-	const firstBlue = forward.run({
-		source: themedSource,
-		file: "Card.tsx",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const secondBlue = reverse.run({
-		source: firstBlue.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
-	const firstAmber = forward.run({
-		source: themedSource,
-		file: "Card.tsx",
-		semantic: amberSemantic,
-		project: amberProject,
-	});
-	const secondAmber = reverse.run({
-		source: firstAmber.code,
-		file: "Card.tsx",
-		semantic: amberTargetSemantic,
-		project: amberProject,
-	});
+	const firstBlue = forward.run({ source: themedSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const secondBlue = reverse.run({ source: firstBlue.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
+	const firstAmber = forward.run({ source: themedSource, file: "Card.tsx", semantic: amberSemantic, project: amberProject });
+	const secondAmber = reverse.run({ source: firstAmber.code, file: "Card.tsx", semantic: amberTargetSemantic, project: amberProject });
 	expect(firstBlue.converted + firstBlue.skipped + firstBlue.residuals.length).toBeGreaterThan(0);
-	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(
-		0,
-	);
+	expect(firstAmber.converted + firstAmber.skipped + firstAmber.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(firstBlue, secondBlue);
 	expectActionableRoundTrip(firstAmber, secondAmber);
 	expectExplicitResidualEvidence(firstBlue);
@@ -335,18 +286,8 @@ test("react-native -> mantine -> react-native: preserves concrete theme and proj
 });
 
 test("react-native -> mantine -> react-native: resolves token references across both concrete legs", () => {
-	const first = forward.run({
-		source: tokenSource,
-		file: "Card.tsx",
-		semantic: blueSemantic,
-		project: blueProject,
-	});
-	const second = reverse.run({
-		source: first.code,
-		file: "Card.tsx",
-		semantic: blueTargetSemantic,
-		project: blueProject,
-	});
+	const first = forward.run({ source: tokenSource, file: "Card.tsx", semantic: blueSemantic, project: blueProject });
+	const second = reverse.run({ source: first.code, file: "Card.tsx", semantic: blueTargetSemantic, project: blueProject });
 	expect(first.converted + first.skipped + first.residuals.length).toBeGreaterThan(0);
 	expectActionableRoundTrip(first, second);
 	expectExplicitResidualEvidence(first);
@@ -416,3 +357,4 @@ test("react-native -> mantine -> react-native: resolves token references across 
 		}
 	`);
 });
+
