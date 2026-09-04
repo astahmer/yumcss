@@ -984,6 +984,16 @@ then checks the pinned baseline and migrated applications in the browser and
 records route, hydration, screenshot, and CSS-size evidence. This proof is
 kept as a script and a pinned reference rather than as a vendored website.
 
+## Token governance (plans/054)
+
+`packages/analyze/src/governance` owns the versioned token-governance ledger (`pandwind.analyze.governance/1`, `TOKEN_GOVERNANCE_REPORT_VERSION = 1`): one neutral report shared by the analyzer CLI, Inspector, the lint plugin, and the tokenization codemod. Nothing in the ledger touches the frozen runtime API. One service pass (`analyzeTokenGovernance`) assembles it from the effective token universe (`EffectiveTokenContextInputs`: authored preset groups, crawled CSS theme variables, interop-artifact variables, loader-failure diagnostics), positioned usage facts from `tw()`/`css()` call-site objects, exact raw-to-token suggestions, and reachability classification over explicit coverage boundaries (dynamic expressions, public exports, safelist, plugin output, generated CSS, unscanned files, unresolved imports, configuration failures). A zero-use claim requires proven reachability; unknown is always explicit.
+
+Policy is never guessed. `deriveProjectGovernanceContext` reads the loaded official preset's declared strict surface (`strict`, `properties`, `$strictness: "inherits"`) into a `TokenPolicySnapshot` with a per-property token vocabulary and raw escape hatches; a missing, failed, or undeclared policy downgrades to report-only with a diagnostic instead of inventing strictness. Strictness states are verified token, allowed raw, strict violation, dynamic, and unknown-policy.
+
+Removal stays report-first. `buildGovernancePruneChangeset` classifies every unused candidate as safe, review-required, or not-removable with provenance-linked reasons, deterministically and deduplicated. Consumers decide what happens next: the Inspector governance tab renders summary, strict-policy panel, boundary chips, candidate and suggestion tables, and the prune preview; `pandwind analyze --governance` emits the versioned JSON document; `design-tokens-only` accepts the snapshot as a structural option so the lint plugin stays dependency-free; and the codemod tokenize lane rewrites only exact `(property, rawValue)` pairs from the report's suggestions — when suggestions are supplied, the heuristic fallback is disabled rather than merged.
+
+Suggestion safety is exact-match only: a raw literal is replaceable when the target definition is statically valued and unscoped, the property category and token group are compatible, resolved values are exactly equal (hex case-folding is the one normalization), and exactly one candidate matches. Ambiguous matches are rejected with a diagnostic, never resolved by plausibility. Repository-scale cost is benchmarked in `packages/analyze/tests/governance.bench.ts` (2,000 definitions, 400 files, ~16k usage sites per pass).
+
 ## Plan inventory and remaining claims
 
 Every Markdown file under `plans/` was reviewed against the current source,
@@ -1011,6 +1021,7 @@ deliberate:
 - `plans/045-lazy-runtime-methods.md` is superseded by the shipped
   compiler-aware runtime pruning. Its runtime-only accessor checklist is not
   pending work.
+- `plans/054-token-usage-governance.md` is complete for the tooling ledger: versioned report, effective universe, strictness classification, exact suggestions, reachability, prune changesets, CLI/Inspector/lint/codemod consumption, and the governance bench. Studio-side paginated queries for very large catalogs and an approved write-mode removal command remain bounded follow-ups inside their owning plans, not open governance work.
 
 No other reviewed plan currently identifies an actionable, unimplemented
 product change separate from those boundaries. New work should first add a

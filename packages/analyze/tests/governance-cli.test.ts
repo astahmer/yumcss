@@ -45,6 +45,7 @@ describe("runCli --governance", () => {
 				version: number;
 				policy: { resolved: boolean; strictProperties?: string[] } | null;
 				summary: { defined: number; used: number; strictViolations: number };
+				usage: Array<{ strictness: string; tokenId: string }>;
 				unusedCandidates: Array<{ tokenId: string; safety: string }>;
 			};
 			changeset: { count: number; content: string | null };

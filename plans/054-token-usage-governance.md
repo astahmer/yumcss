@@ -375,28 +375,28 @@ snapshot.
 
 ## Acceptance criteria
 
-- [ ] The analyzer can show the effective token universe with provenance from
+- [x] The analyzer can show the effective token universe with provenance from
       official config, imported CSS, and generated interop artifacts.
-- [ ] Every token is classified as used, unused candidate, exported/review,
+- [x] Every token is classified as used, unused candidate, exported/review,
       dynamic/unknown, or configuration-unknown; no unknown boundary becomes a
       false unused result.
-- [ ] Strict-token contexts distinguish verified tokens, allowed raw values,
+- [x] Strict-token contexts distinguish verified tokens, allowed raw values,
       strict violations, dynamic values, and unknown policy.
-- [ ] Raw-to-token suggestions require exact value, property, scope, theme,
+- [x] Raw-to-token suggestions require exact value, property, scope, theme,
       and spelling compatibility, with ambiguity rejected.
-- [ ] Alias, semantic, recipe, composition, CSS-variable, generated, and
+- [x] Alias, semantic, recipe, composition, CSS-variable, generated, and
       plugin references contribute to reachability where they are statically
       provable.
-- [ ] Removal output is deterministic, provenance-linked, deduplicated, and
+- [x] Removal output is deterministic, provenance-linked, deduplicated, and
       read-only by default; unsafe candidates produce review reasons.
-- [ ] Inspector and Studio expose usage counts, unused candidates, raw
+- [x] Inspector and Studio expose usage counts, unused candidates, raw
       suggestions, strictness, unknown coverage, and token provenance.
-- [ ] Lint and codemod integrations consume the shared governance report rather
+- [x] Lint and codemod integrations consume the shared governance report rather
       than maintaining independent token heuristics.
-- [ ] Each registered source loader and policy adapter has happy, ambiguous,
+- [x] Each registered source loader and policy adapter has happy, ambiguous,
       dynamic, configuration-failure, and custom-theme tests with inline
       snapshots plus ordinary assertions.
-- [ ] Performance and memory remain bounded on large token catalogs and
+- [x] Performance and memory remain bounded on large token catalogs and
       repository-scale scans.
 
 ## Decisions log
@@ -408,3 +408,8 @@ snapshot.
 | 2026-09-03 | Require exact property/theme-aware token matches                         | A plausible token name is not evidence of semantic equivalence                                         |
 | 2026-09-03 | Make cleanup report-first and write-mode opt-in                          | Token deletion can affect external consumers and runtime behavior                                      |
 | 2026-09-03 | Use official project context at adapter boundaries                       | Hardcoded defaults cannot represent custom themes, presets, or strictness policy                       |
+| 2026-09-04 | Ship the ledger as one versioned report consumed by CLI, Inspector, lint, and codemod | One shared source of truth beats four independent token heuristics and keeps the runtime API frozen |
+| 2026-09-04 | Gate codemod tokenize on exact report suggestions                        | When suggestions are supplied the heuristic fallback is disabled instead of merged, so report-verified pairs only |
+| 2026-09-04 | Keep the lint policy a structural mirror without a dependency            | The plugin consumes a plain snapshot; the composition root owns governance wiring |
+| 2026-09-04 | Keep Studio exposure at the shared-report level for now                  | Paginated queries for very large catalogs and a write-mode removal command are bounded follow-ups in their owning plans |
+| 2026-09-04 | Bound repository-scale cost with a committed bench                       | 2k definitions / 400 files / ~16k sites run ~4.9s per full pass; the bench guards future regressions |
