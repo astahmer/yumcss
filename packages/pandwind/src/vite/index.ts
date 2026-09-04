@@ -90,6 +90,14 @@ export interface PandwindViteOptions {
 	 * - "error": throw — the build fails on the offending module.
 	 */
 	onUnresolved?: OnUnresolved;
+	/**
+	 * Receive the class candidates that bounded dynamic `tw()` calls
+	 * (ternaries, unions, finite constant sets) may produce at runtime. The
+	 * host registers them with the Tailwind scanner (`@source inline` or the
+	 * `pandwind-tw scan` safelist) so every possible class has CSS. Called
+	 * per transformed module with deduplication left to the host.
+	 */
+	onTwCandidates?: (candidates: readonly string[]) => void;
 }
 
 export interface Resolver {
@@ -244,6 +252,7 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 	const crossModuleResolver = createCrossModuleConstResolver();
 	const unresolvedMode: OnUnresolved = options.onUnresolved ?? OnUnresolvedTag.Off;
 	const unresolvedOptions = { onUnresolved: unresolvedMode };
+	const reportTwCandidates = options.onTwCandidates;
 
 	return {
 		name: "pandwind:inline-tw",
@@ -288,6 +297,9 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				parsedProgram: imports.program,
 			});
 			working = result.code;
+			if (reportTwCandidates !== undefined && result.candidates?.length) {
+				reportTwCandidates(result.candidates);
+			}
 
 			// cx pass runs on the post-tw code: folded tw() strings then
 			// participate as plain string arguments to cx(). With css folding

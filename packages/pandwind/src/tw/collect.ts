@@ -10,7 +10,7 @@
 import { writeFileSync } from "node:fs";
 import { SOURCE_SCANNER_SERVICE } from "../source-scanner.ts";
 import { createSourceWorkspace, type SourceWorkspace } from "../source-workspace.ts";
-import { evalLiteral, isTwCall, walk } from "./literal.ts";
+import { evalLiteral, evalLiteralValues, isTwCall, walk } from "./literal.ts";
 
 export interface TwScanOptions {
 	readonly twEntry: string;
@@ -53,13 +53,36 @@ class DefaultTwClassCollector implements TwClassCollector {
 				if (!isTwCall(node)) return;
 				for (const argument of node.arguments) {
 					const styles = evalLiteral(argument);
-					if (styles === undefined) continue;
-					try {
-						for (const className of tw(styles).split(" ")) {
-							if (className) classes.add(className);
+					if (styles !== undefined) {
+						try {
+							for (const className of tw(styles).split(" ")) {
+								if (className) classes.add(className);
+							}
+						} catch {
+							// Unrepresentable calls stay on the runtime path.
 						}
-					} catch {
-						// Unrepresentable calls stay on the runtime path.
+						continue;
+					}
+					// Not a proven literal: register every candidate a bounded
+					// dynamic value set may produce at runtime so the Tailwind
+					// scanner emits CSS for all of them (plan 057).
+					const valueSet = evalLiteralValues(argument);
+					if (valueSet === undefined) continue;
+					for (const candidateStyles of valueSet.values) {
+						if (
+							typeof candidateStyles !== "object" ||
+							candidateStyles === null ||
+							Array.isArray(candidateStyles)
+						) {
+							continue;
+						}
+						try {
+							for (const className of tw(candidateStyles).split(" ")) {
+								if (className) classes.add(className);
+							}
+						} catch {
+							// Unrepresentable candidate stays on the runtime path.
+						}
 					}
 				}
 			});
