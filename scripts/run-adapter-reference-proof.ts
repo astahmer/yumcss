@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import {
 	CodemodAdapterId,
@@ -29,25 +29,80 @@ const referencesRoot = createReferenceWorkspace().root;
 const requireFromExample = createRequire(join(root, "examples/showcase/package.json"));
 const { chromium } = requireFromExample("playwright-core") as typeof import("playwright-core");
 const requireFromRoot = createRequire(join(root, "package.json"));
+const requireFromCodemod = createRequire(join(root, "packages/codemod/package.json"));
 
 /**
- * Optional ecosystem compilers (sass, less) are Pandwind devDependencies, not
- * upstream-repository dependencies. Project-first resolution keeps the host
- * boundary; this fallback lets pinned excerpts compile without installing
- * their full upstream lockfiles.
+ * Optional ecosystem compilers and engine loaders (sass, less,
+ * @tailwindcss/node) are Pandwind devDependencies, not upstream-repository
+ * dependencies. Project-first resolution keeps the host boundary; the
+ * packages/codemod fallback lets pinned excerpts compile without installing
+ * their full upstream lockfiles. This fallback lives in the harness only:
+ * adapters still resolve from the migrated project first.
  */
 const harnessModuleLoader = {
 	async importPackage<T>(packageName: string, projectRoot: string): Promise<T | undefined> {
 		try {
 			return requireFromRoot(packageName) as T;
 		} catch {
-			return undefined;
+			try {
+				return requireFromCodemod(packageName) as T;
+			} catch {
+				return undefined;
+			}
 		}
 	},
 	async importFile<T>(file: string): Promise<T | undefined> {
 		return undefined;
 	},
 };
+
+/**
+ * Adapters resolve official configuration from discovered project files.
+ * Without providers they must fail closed, which proves the contract but not
+ * the configured case. These harness providers read only from the pinned
+ * checkout so an excerpt is proven against its real project context.
+ */
+function checkoutFileProvider(checkout: string): {
+	readFile: (file: string) => string | undefined;
+	listFiles: (base: string) => readonly string[];
+} {
+	const read = (file: string): string | undefined => {
+		const resolved = resolve(checkout, file);
+		if (!resolved.startsWith(checkout)) return undefined;
+		try {
+			return readFileSync(resolved, "utf8");
+		} catch {
+			return undefined;
+		}
+	};
+	const list = (base: string): readonly string[] => {
+		const files: string[] = [];
+		const walk = (directory: string): void => {
+			if (!directory.startsWith(checkout) || directory.includes("/.git")) return;
+			let entries: readonly string[];
+			try {
+				entries = readdirSync(directory);
+			} catch {
+				return;
+			}
+			for (const entry of entries) {
+				const path = join(directory, entry);
+				if (path.includes("node_modules")) continue;
+				let stat;
+				try {
+					stat = statSync(path);
+				} catch {
+					continue;
+				}
+				if (stat.isDirectory()) walk(path);
+				else files.push(path);
+			}
+		};
+		walk(resolve(checkout, base));
+		return files;
+	};
+	return { readFile: read, listFiles: list };
+}
 
 interface CanonicalValidation {
 	readonly canonicalSource: string;
@@ -232,11 +287,13 @@ async function proveReference(
 ): Promise<ReferenceProofReport> {
 	const source = readPinnedSource(reference);
 	const projectRoot = projectRootFor(reference);
+	const checkout = join(referencesRoot, reference.clone);
 	const migration = await runAdapterMigrationAsync(source, {
 		from: reference.from,
 		to: reference.to,
 		file: reference.path,
 		root: projectRoot,
+		...checkoutFileProvider(checkout),
 		moduleLoader: harnessModuleLoader,
 		semantic: { source: { file: reference.path, framework: reference.framework } },
 	});

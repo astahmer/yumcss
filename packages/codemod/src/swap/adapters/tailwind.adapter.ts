@@ -28,7 +28,7 @@ import {
 } from "../identifiers.ts";
 import { AdapterEvidence } from "../adapter-evidence.ts";
 import type { ProjectModuleLoader } from "../project-module-loader.ts";
-import { joinDocumentPath } from "../../path-utils.ts";
+import { dirnameDocumentPath, joinDocumentPath } from "../../path-utils.ts";
 import {
 	collectDynamicClassAttributes,
 	detectStaticClassTarget,
@@ -696,7 +696,11 @@ function tailwindCssFiles(
 ): readonly { file: string; text: string }[] {
 	if (context.root === undefined || context.readFile === undefined) return [];
 	const discovered = context.listFiles?.(context.root) ?? [];
+	// Tailwind v4 configuration lives in CSS files only. Restricting discovery
+	// to .css keeps documentation prose that quotes "@import" from becoming a
+	// false configuration entry.
 	const candidates = discovered
+		.filter((file) => /\.css$/u.test(file))
 		.map((file) => ({
 			file,
 			text: context.readFile?.(
@@ -764,7 +768,11 @@ async function officialConfig(
 		return fallback;
 	}
 	try {
-		const system = await module.__unstable__loadDesignSystem(cssFile.text, { base: context.root });
+		// The official engine resolves @import graph files relative to the CSS
+		// file's directory, not the project root.
+		const system = await module.__unstable__loadDesignSystem(cssFile.text, {
+			base: dirnameDocumentPath(cssFile.file),
+		});
 		const resolver: TailwindUtilityResolver = {
 			resolve(token) {
 				return parseEngineCss(system.candidatesToCss([token])[0] ?? "", token);
