@@ -174,17 +174,29 @@ export const collectCxClassCandidates = (
 	return [...found];
 };
 
-/** Register a class only when every token compiles through the design system. */
+/**
+ * Register a class only when every token compiles through the design system.
+ * Tokens that fail exact-match verification are appended to `unresolved` with
+ * the call-site line when provided, so dynamic values never vanish silently —
+ * they stay on the runtime path and surface in diagnostics/scan reports.
+ */
 export const pushVerifiedCandidate = (
 	candidate: string,
 	config: TwConfig,
 	out: string[],
+	unresolved?: UnresolvedToken[],
+	line?: number,
 ): boolean => {
+	let verified = true;
 	for (const token of candidate.split(/\s+/)) {
-		if (token !== "" && !tokenHasExactCss(token, config)) return false;
+		if (token === "") continue;
+		if (!tokenHasExactCss(token, config)) {
+			verified = false;
+			unresolved?.push({ token, line: line ?? 0, reason: "no-css" });
+		}
 	}
-	out.push(candidate);
-	return true;
+	if (verified) out.push(candidate);
+	return verified;
 };
 
 export class CxCallRewriter {
@@ -230,20 +242,30 @@ export class CxCallRewriter {
 		};
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		const unresolved: UnresolvedToken[] = [];
-		let candidates: string[] | undefined;
 		const lines =
 			options.onUnresolved !== undefined && options.onUnresolved !== OnUnresolvedTag.Off
 				? createLineIndex(code)
 				: undefined;
+		const callLines = lines ? lines.lineOf(0) : 0;
+		let candidates: string[] | undefined;
 		const partial = options.partialFold !== false;
 		const rawConsts = new Map([...constants].map(([name, known]) => [name, known.value] as const));
 		// Register the finite class union of a call that stays runtime so the
 		// Tailwind scanner can emit CSS for classes that never appear as
 		// static source text. Used on both abandonment paths below.
-		const registerCallCandidates = (call: { arguments: readonly Expression[] }) => {
+		const registerCallCandidates = (call: {
+			arguments: readonly Expression[];
+			start?: number;
+		}) => {
 			for (const argument of call.arguments) {
 				for (const candidate of collectCxClassCandidates(argument, rawConsts))
-					pushVerifiedCandidate(candidate, config, candidates ??= []);
+					pushVerifiedCandidate(
+						candidate,
+						config,
+						(candidates ??= []),
+						unresolved,
+						call.start !== undefined && lines ? lines.lineOf(call.start) : callLines,
+					);
 			}
 		};
 
@@ -298,9 +320,12 @@ export class CxCallRewriter {
 		for (const edit of edits.toSorted((a, b) => b.start - a.start))
 			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
 		if (edits.length === 0)
-			return candidates !== undefined && candidates.length > 0
-				? { code, inlined: 0, candidates }
-				: { code, inlined: 0 };
+			return {
+				code,
+				inlined: 0,
+				...(unresolved.length > 0 && { unresolved }),
+				...(candidates !== undefined && candidates.length > 0 && { candidates }),
+			};
 		return { code: output, inlined: edits.length, unresolved, candidates };
 	}
 }

@@ -202,6 +202,17 @@ const defaultHandlers: TwCliHandlers = {
 		console.log(
 			`pandwind: wrote ${result.classes.length} ${result.mode === "css" ? "@source inline directives" : "classes"} to ${result.outFile}`,
 		);
+		const unresolved = result.unresolvedTokens ?? [];
+		if (unresolved.length > 0) {
+			for (const { token, line } of unresolved) {
+				console.warn(
+					`pandwind: unresolved dynamic candidate "${token}" (line ${line}) — no exact design-system CSS; stays on the runtime path`,
+				);
+			}
+			console.warn(
+				`pandwind: ${unresolved.length} dynamic candidate(s) need a static branch, safelist entry, or css.vars lowering`,
+			);
+		}
 	},
 	async prune(command) {
 		const result = await runTwPrune(command);

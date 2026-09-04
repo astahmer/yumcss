@@ -76,10 +76,15 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       and adds only verified classes; @source inline emission dedups
       across tw and cx lanes via one fresh-set filter in vite/index.ts.
       Foreign cx() helpers (clsx etc.) are excluded by import source.
-- [ ] T6 - Verification gates: every registered candidate must pass the
+- [x] T6 - Verification gates: every registered candidate must pass the
       same exact-match conflict-map verification as plan 057 (reuse
       `tokenHasExactCss`); unresolvable members surface via `onUnresolved`,
-      never silently dropped.
+      never silently dropped. Done: `pushVerifiedCandidate` gates both cx
+      call sites; scan lane (`TwCollectResult.unresolvedTokens` with
+      reason/line) and vite lane (`CxRewriteResult.unresolved`,
+      `InlineResult.unresolved`) report unverified tokens with call-site
+      lines; `tw:scan` CLI prints per-token warnings. Vite-lane early
+      return now keeps `unresolved` even when no candidate verifies.
 - [ ] T7 - Docs: update the dynamic-values sections in
       `docs/src/content/docs/api/css.md`, `design-css.md`, `cx` docs, and
       the technical overview decision table to cover all four lanes.

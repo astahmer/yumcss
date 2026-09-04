@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { collectTwClasses } from "../src/tw/collect.ts";
+import { collectTwClasses, createTwClassCollector } from "../src/tw/collect.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 
@@ -85,5 +85,49 @@ describe("tw scanner", () => {
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
+	});
+
+	describe("verification gates (plan 058 T6)", () => {
+		test("unresolvable finite dynamic candidates are excluded and reported", async () => {
+			const { mkdtempSync, rmSync, writeFileSync } = await import("node:fs");
+			const { tmpdir } = await import("node:os");
+			const { join } = await import("node:path");
+			const root = mkdtempSync(join(tmpdir(), "pandwind-tw-collect-gates-"));
+			try {
+				const source = join(root, "gates.tsx");
+				const body = [
+					'import { tw, cx } from "../../../apps/example/src/tw";',
+					'const size = pickSize();',
+					'const color = pickColor();',
+					'export const a = tw({ p: size === "1" ? "4" : "bananas" });',
+					'export const b = cx(color === "x" ? "bg-sky-600" : "bg-nope-999");',
+				].join("\n");
+				writeFileSync(source, body);
+				const { classes, unresolvedTokens } = await createTwClassCollector().collect(
+					[source],
+					resolve(app, "src/tw.ts"),
+				);
+				// Verified design-system classes still register.
+				expect(classes).toContain("p-4");
+				expect(classes).toContain("bg-sky-600");
+				// Classes with no exact design-system CSS never enter the safelist…
+				expect(classes).not.toContain("p-bananas");
+				expect(classes).not.toContain("bg-nope-999");
+				// …they are reported with their call-site line instead.
+				const tokens = unresolvedTokens.map((entry) => entry.token);
+				expect(tokens).toHaveLength(2);
+				expect(tokens).toContain("p-bananas");
+				expect(tokens).toContain("bg-nope-999");
+				for (const entry of unresolvedTokens) {
+					expect(entry.reason).toBe("no-css");
+					expect(entry.line).toBeGreaterThan(0);
+				}
+				const pEntry = unresolvedTokens.find((entry) => entry.token === "p-bananas");
+				const bgEntry = unresolvedTokens.find((entry) => entry.token === "bg-nope-999");
+				expect(pEntry?.line).toBeLessThan(bgEntry?.line ?? 0);
+			} finally {
+				rmSync(root, { recursive: true, force: true });
+			}
+		});
 	});
 });

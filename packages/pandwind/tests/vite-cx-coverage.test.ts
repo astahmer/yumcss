@@ -331,6 +331,25 @@ describe("finite dynamic cx() arguments register scanner candidates", () => {
 		expect(candidates).toBeUndefined();
 	});
 
+	test("unverified finite candidates surface through the unresolved lane", () => {
+		const source = `import { cx } from "./tw";
+			const tone = pickTone();
+			cx(tone === "light" ? "bg-sky-600" : "bg-nope-999");
+		`;
+		const { inlined, candidates, unresolved } = inlineCxCalls(
+			source,
+			"app.ts",
+			config,
+			new Set(["cx"]),
+			{ partialFold: false, onUnresolved: "warn" },
+		);
+		expect(inlined).toBe(0); // selection stays runtime
+		// The verified branch still registers for the scanner…
+		expect(candidates).toEqual(["bg-sky-600"]);
+		// …the unverified token is reported with its call-site line…
+		expect(unresolved).toEqual([{ token: "bg-nope-999", line: 3, reason: "no-css" }]);
+	});
+
 	test("array arguments register their literal string entries", () => {
 		const source = `import { cx } from "./tw";
 			const tone = pickTone();
