@@ -225,6 +225,62 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
+			  "authored-css/multi-rule stylesheet": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
+			export default styles;",
+			    "converted": 2,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "authored-css/non-class selectors": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			:root { --brand: red; }
+			[data-theme="dark"] .card { color: white; }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet migration requires a single local class selector",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "stylesheet migration requires a single local class selector",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 2,
+			    "validations": [],
+			  },
+			  "bamboo/patterns and cva": {
+			    "changed": false,
+			    "code": "import { circle, cva } from "styled-system/patterns";
+			export const avatar = circle({ size: "8" });
+			export const button = cva({ base: { padding: "2" } });",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [],
+			  },
 			  "bamboo/styled-system object": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
@@ -419,6 +475,51 @@ describe("official adapter API families", () => {
 			    ],
 			    "skipped": 1,
 			    "validations": [],
+			  },
+			  "css-modules/global pseudo and descendant selectors": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: capability)
+			:global(.footer) { color: gray; }
+			.card:hover { color: red; }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet migration requires a single local class selector",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "stylesheet migration requires a single local class selector",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 2,
+			    "validations": [],
+			  },
+			  "css-modules/named class map": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ padding: "1rem", color: "red" }), "title": css.class({ fontWeight: "600" }) };
+			export default styles;",
+			    "converted": 2,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
 			  },
 			  "emotion/Global component": {
 			    "changed": true,
@@ -742,6 +843,45 @@ describe("official adapter API families", () => {
 			    "residuals": [],
 			    "skipped": 0,
 			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
+			    ],
+			  },
+			  "less/less mixin call": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+			.card { .shadow(); color: red; }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet declaration requires a property and value",
+			        "kind": "parse",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
+			  },
+			  "less/less plain rules": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+			export const styles = { "card": css.class({ color: "red" }), "title": css.class({ fontWeight: "600" }) };
+			export default styles;",
+			    "converted": 2,
+			    "outcomes": [],
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
+			      {
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
+			      },
 			      {
 			        "differences": [],
 			        "lossiness": "lossless",
@@ -1229,6 +1369,45 @@ describe("official adapter API families", () => {
 			        "valid": true,
 			      },
 			    ],
+			  },
+			  "sass/scss mixins": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: capability, parse)
+			@mixin flex($gap) { display: flex; gap: $gap; }
+			.card { @include flex(1rem); }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet at-rule is not safely representable by the selected style target",
+			        "kind": "capability",
+			        "preserved": undefined,
+			      },
+			      {
+			        "hint": "stylesheet declaration requires a property and value",
+			        "kind": "parse",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 2,
+			    "validations": [],
+			  },
+			  "sass/scss module use": {
+			    "changed": false,
+			    "code": "// pandwind:migrate-skip (lowering-residual: parse)
+			@use "sass:math";
+			.card { padding: 1rem; }",
+			    "converted": 0,
+			    "outcomes": [],
+			    "residuals": [
+			      {
+			        "hint": "stylesheet statement is preserved outside the style program",
+			        "kind": "parse",
+			        "preserved": undefined,
+			      },
+			    ],
+			    "skipped": 1,
+			    "validations": [],
 			  },
 			  "sass/scss variables and nesting": {
 			    "changed": false,

@@ -1026,5 +1026,68 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 				file: "card.css",
 				source: "@media (prefers-color-scheme: dark) {\n  .card { color: white; }\n}\n@keyframes pulse {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}",
 			},
+			{
+				adapter: CodemodAdapterId.Bamboo,
+				name: "patterns and cva",
+				expectation: "identity",
+				source:
+					'import { circle, cva } from "styled-system/patterns";\nexport const avatar = circle({ size: "8" });\nexport const button = cva({ base: { padding: "2" } });',
+			},
+			{
+				adapter: CodemodAdapterId.CssModules,
+				name: "named class map",
+				expectation: "converted",
+				file: "Card.module.css",
+				source: ".card { color: red; padding: 1rem; }\n.title { font-weight: 600; }",
+			},
+			{
+				adapter: CodemodAdapterId.CssModules,
+				name: "global pseudo and descendant selectors",
+				expectation: "residual",
+				file: "Card.module.css",
+				source: ":global(.footer) { color: gray; }\n.card:hover { color: red; }",
+			},
+			{
+				adapter: CodemodAdapterId.Sass,
+				name: "scss mixins",
+				expectation: "residual",
+				file: "card.scss",
+				source: "@mixin flex($gap) { display: flex; gap: $gap; }\n.card { @include flex(1rem); }",
+			},
+			{
+				adapter: CodemodAdapterId.Sass,
+				name: "scss module use",
+				expectation: "residual",
+				file: "card.scss",
+				source: '@use "sass:math";\n.card { padding: 1rem; }',
+			},
+			{
+				adapter: CodemodAdapterId.Less,
+				name: "less mixin call",
+				expectation: "residual",
+				file: "card.less",
+				source: ".card { .shadow(); color: red; }",
+			},
+			{
+				adapter: CodemodAdapterId.Less,
+				name: "less plain rules",
+				expectation: "converted",
+				file: "card.less",
+				source: ".card { color: red; }\n.title { font-weight: 600; }",
+			},
+			{
+				adapter: CodemodAdapterId.AuthoredCss,
+				name: "non-class selectors",
+				expectation: "residual",
+				file: "card.css",
+				source: ':root { --brand: red; }\n[data-theme="dark"] .card { color: white; }',
+			},
+			{
+				adapter: CodemodAdapterId.AuthoredCss,
+				name: "multi-rule stylesheet",
+				expectation: "converted",
+				file: "card.css",
+				source: ".card { color: red; }\n.title { font-weight: 600; }",
+			},
 		];
 	}
