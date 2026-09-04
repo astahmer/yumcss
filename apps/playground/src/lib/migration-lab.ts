@@ -225,10 +225,14 @@ export const Card = styled(View, { color: "red", padding: 16 });`,
 	padding: 1rem;
 }
 `,
+	// Brace syntax only: the browser lab has no official Sass compiler, so
+	// indented-syntax sources fail closed there by design (see the codemod
+	// corpus proof for the compiler-backed indented path).
 	[CodemodAdapterId.Sass]: `/* Card banner */
-.card
-	color: red
-	padding: 1rem
+.card {
+	color: red;
+	padding: 1rem;
+}
 `,
 	[CodemodAdapterId.Less]: `/* Card banner */
 .card {

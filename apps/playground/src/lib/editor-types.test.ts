@@ -64,10 +64,14 @@ describe("playground editor declarations", () => {
 		);
 		expect(dependencyModules).toContain('declare module "@chakra-ui/react"');
 		expect(dependencyModules).toContain('declare module "@mantine/core"');
-		expect(dependencyModules).toContain('declare module "@emotion/react"');
 		expect(dependencyModules).toContain('declare module "tailwindcss"');
 		expect(dependencyModules).toContain('declare module "@unocss/core"');
 		expect(dependencyModules).toContain('declare module "jss"');
+		expect(dependencyModules).toContain('declare module "@tokenami/config"');
+		// The generator silently skips adapter packages that are not installed
+		// anywhere in the workspace graph; a pruned dependency must not resurrect.
+		expect(dependencyModules).not.toContain('declare module "@emotion/react"');
+		expect(dependencyModules).not.toContain('declare module "styled-components"');
 		const mountedModules = EDITOR_TYPE_LIBRARIES.map((library) => library.content).join("\n");
 		expect(mountedModules).not.toContain(
 			'declare module "@chakra-ui/react" { export const Box: PlaygroundComponent; }',
