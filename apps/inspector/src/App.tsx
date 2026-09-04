@@ -5,8 +5,16 @@ import { InspectorExport } from "./lib/export.ts";
 import { filterNamed, makeTextMatcher } from "./lib/filter.ts";
 import { CollectionToolkit, type ThemeVarCategory } from "pandwind-analyze/collect";
 import type { StudioPayload, ThemeVar, TokenSection, TokenGraph, TokenTier } from "./types.ts";
+import {
+	authoredTokenSpelling,
+	type GovernanceCoverageBoundary,
+	type RawTokenSuggestion,
+	type RemovalSafety,
+	type TokenPolicySnapshot,
+	type UnusedTokenCandidate,
+} from "pandwind-analyze/governance";
 
-type Tab = "design" | "stats" | "history" | "graph" | "usage";
+type Tab = "design" | "stats" | "history" | "graph" | "usage" | "governance";
 
 /* ---------------------------------- helpers ---------------------------------- */
 
@@ -968,15 +976,26 @@ function UsageView(props: { data: StudioPayload }) {
 						))}
 					</tbody>
 				</table>
-				{a.unusedTokens.length > 0 && (
-					<>
-						<h3>unused tokens ({a.unusedTokens.length}) — pruning candidates</h3>
-						<p className="muted">{a.unusedTokens.slice(0, 40).join(", ")}</p>
-					</>
+				{props.data.governance !== undefined ? (
+					<p className="muted">
+						{props.data.governance.summary.unusedCandidates} unused candidate(s) per the
+						governance report — see the Governance tab ({props.data.governance.summary.safeToRemove} safe ·{" "}
+						{props.data.governance.summary.reviewRequired} review ·{" "}
+						{props.data.governance.summary.notRemovable} not removable).
+					</p>
+				) : (
+					a.unusedTokens.length > 0 && (
+						<>
+							<h3>not observed in the scanned graph ({a.unusedTokens.length}) — unclassified</h3>
+							<p className="muted">{a.unusedTokens.slice(0, 40).join(", ")}</p>
+						</>
+					)
 				)}
 			</section>
 			<ContrastWarningsView warnings={props.data.contrastWarnings ?? []} />
-			<PruneChangesetView unusedCount={a.unusedTokens.length} />
+			<PruneChangesetView
+				unusedCount={props.data.governance?.summary.safeToRemove ?? a.unusedTokens.length}
+			/>
 			<AnalyticsHistoryChart />
 		</div>
 	);
@@ -1064,6 +1083,204 @@ function PruneChangesetView({ unusedCount }: { unusedCount: number }) {
 			)}
 			{content !== null && <pre className="card">{content}</pre>}
 		</section>
+	);
+}
+
+const SAFETY_ORDER: Readonly<Record<RemovalSafety, number>> = {
+	"safe-to-remove": 0,
+	"review-required": 1,
+	"not-removable": 2,
+};
+
+const SAFETY_COLOR: Readonly<Record<RemovalSafety, string>> = {
+	"safe-to-remove": "#22c55e",
+	"review-required": "#d97706",
+	"not-removable": "#ef4444",
+};
+
+const BOUNDARY_ORDER: ReadonlyArray<GovernanceCoverageBoundary> = [
+	"configuration-failure",
+	"unresolved-import",
+	"dynamic-expression",
+	"runtime-theme-access",
+	"generated-css",
+	"plugin-output",
+	"public-export",
+	"safelist",
+	"unscanned-file",
+];
+
+/** Token governance tab (plans/054) — report-first view of the shared
+ * governance ledger: provenance, strictness, suggestions, and removal
+ * candidates with their safety classification. Read-only by design; the only
+ * write-shaped action generates a reviewable .changeset preview. */
+function GovernanceView(props: { data: StudioPayload }) {
+	const g = props.data.governance;
+	if (g === undefined) {
+		return (
+			<div className="empty-state">
+				<p className="muted">
+					the current snapshot has no governance report — refresh to re-run the analysis
+					with the governance gather payload.
+				</p>
+			</div>
+		);
+	}
+	const s = g.summary;
+	const policy: TokenPolicySnapshot | null = g.policy;
+	const unused = [...g.unusedCandidates]
+		.toSorted((a, b) => SAFETY_ORDER[a.safety] - SAFETY_ORDER[b.safety] || a.tokenId.localeCompare(b.tokenId));
+	const suggestions = [...g.suggestions].toSorted(
+		(a, b) => a.file.localeCompare(b.file) || a.start - b.start,
+	);
+	const nonZeroBoundaries = BOUNDARY_ORDER.filter((b) => (s.boundaries[b] ?? 0) > 0);
+	return (
+		<div>
+			{s.boundaries["configuration-failure"] > 0 && (
+				<section>
+					<h2>configuration incomplete</h2>
+					<p className="muted">
+						the project configuration could not be fully evaluated — usage claims are
+						provenance-linked but incomplete. wording: “not observed in the scanned graph”,
+						not “unused”.
+					</p>
+				</section>
+			)}
+			<section className="cards">
+				<Card label="defined" value={String(s.defined)} />
+				<Card label="used" value={String(s.used)} />
+				<Card label="unused candidates" value={String(s.unusedCandidates)} />
+				<Card label="safe to remove" value={String(s.safeToRemove)} />
+				<Card label="review required" value={String(s.reviewRequired)} />
+				<Card label="not removable" value={String(s.notRemovable)} />
+				<Card label="strict violations" value={String(s.strictViolations)} />
+				<Card label="raw allowed" value={String(s.rawAllowed)} />
+				<Card label="unknown strictness" value={String(s.unknownStrictness)} />
+				<Card label="suggestions" value={String(s.suggestions)} />
+			</section>
+			{nonZeroBoundaries.length > 0 && (
+				<section>
+					<h2>coverage boundaries</h2>
+					<p className="muted">
+						conditions that prevent a definitive usage claim — nothing behind these is
+						classified as safe-to-remove.
+					</p>
+					<div className="chip-row">
+						{nonZeroBoundaries.map((b) => (
+							<span className="chip" key={b}>
+								{b} ({s.boundaries[b]})
+							</span>
+						))}
+					</div>
+				</section>
+			)}
+			<section>
+				<h2>strict policy</h2>
+				{policy === null ? (
+					<p className="muted">no policy resolved — strictness is report-only/fail-open (unknown).</p>
+				) : policy.resolved ? (
+					<table>
+						<tbody>
+							<tr>
+								<th>owner</th>
+								<td>{policy.owner}</td>
+								<th>origin</th>
+								<td>{policy.origin ?? "—"}</td>
+							</tr>
+							<tr>
+								<th>strict properties</th>
+								<td>{(policy.strictProperties ?? []).join(", ") || "—"}</td>
+								<th>allowed raw values</th>
+								<td>{(policy.allowedRawValues ?? []).join(", ") || "—"}</td>
+							</tr>
+							{policy.allowedRawPrefixes !== undefined && policy.allowedRawPrefixes.length > 0 && (
+								<tr>
+									<th>allowed raw prefixes</th>
+									<td>{policy.allowedRawPrefixes.join(", ")}</td>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				) : (
+					<p className="muted">policy for {policy.owner} could not be resolved — all strictness is unknown.</p>
+				)}
+			</section>
+			<section>
+				<h2>unused candidates ({unused.length})</h2>
+				<p className="muted">
+					zero reachable usage after alias/composition/generated-artifact/export analysis —
+					safety is a classification, not a deletion approval.
+				</p>
+				<table>
+					<thead>
+						<tr>
+							<th>token</th>
+							<th>safety</th>
+							<th>reasons / boundaries</th>
+						</tr>
+					</thead>
+					<tbody>
+						{unused.map((c: UnusedTokenCandidate) => (
+							<tr key={c.tokenId}>
+								<td>{stripDollar(authoredTokenSpelling(c.tokenId))}</td>
+								<td style={{ color: SAFETY_COLOR[c.safety] }}>{c.safety}</td>
+								<td>{c.reasons.join("; ") || "—"}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</section>
+			{suggestions.length > 0 && (
+				<section>
+					<h2>raw value suggestions ({suggestions.length}) — exact matches only</h2>
+					<p className="muted">
+						each suggestion is an exact resolved-value match with a legal spelling for the
+						property; ambiguous matches are rejected, not ranked.
+					</p>
+					<table>
+						<thead>
+							<tr>
+								<th>file</th>
+								<th>property</th>
+								<th>raw</th>
+								<th>replacement</th>
+								<th>confidence</th>
+								<th>reason</th>
+							</tr>
+						</thead>
+						<tbody>
+							{suggestions.map((sg: RawTokenSuggestion, i) => (
+								<tr key={`${sg.file}:${sg.start}:${i}`}>
+									<td>{sg.file}</td>
+									<td>{sg.property ?? "—"}</td>
+									<td>{sg.rawValue}</td>
+									<td>{stripDollar(sg.replacement)}</td>
+									<td>{sg.confidence}</td>
+									<td>{sg.reason}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</section>
+			)}
+			{g.diagnostics.length > 0 && (
+				<section>
+					<h2>diagnostics</h2>
+					<table>
+						<tbody>
+							{g.diagnostics.map((d, i) => (
+								<tr key={i}>
+									<td style={{ color: d.severity === "error" ? "#ef4444" : d.severity === "warning" ? "#d97706" : "#64748b" }}>{d.severity}</td>
+									<td>{d.code}</td>
+									<td>{d.message}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</section>
+			)}
+			<PruneChangesetView unusedCount={s.safeToRemove} />
+		</div>
 	);
 }
 
@@ -1212,6 +1429,8 @@ export function App() {
 				<TokenGraphView graph={data.tokenGraph} />
 			) : tab === "usage" ? (
 				<UsageView data={data} />
+			) : tab === "governance" ? (
+				<GovernanceView data={data} />
 			) : tab === "design" ? (
 				<DesignSystemView data={data} query={query} queryChange={queryChange} />
 			) : tab === "history" ? (
@@ -1246,6 +1465,9 @@ export function App() {
 					</button>
 					<button className={tab === "usage" ? "active" : ""} onClick={() => setTab("usage")}>
 						Usage
+					</button>
+					<button className={tab === "governance" ? "active" : ""} onClick={() => setTab("governance")}>
+						Governance
 					</button>
 					<button className={tab === "history" ? "active" : ""} onClick={() => setTab("history")}>
 						History
