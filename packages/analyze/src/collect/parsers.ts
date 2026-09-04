@@ -116,10 +116,45 @@ export const flattenTokenGroups = (
 };
 
 /** Count top-level property groups and leaf mappings in a generated bridge. */
+/**
+ * Count bridge property groups and leaf mappings. The generated bridge has
+ * two shapes: the pretty-printed multi-line layout and the current
+ * single-line `as const` export. For the single-line layout the stats are
+ * derived from balanced-brace body scans instead of line shapes.
+ */
 export const parseBridgeStats = (source: string): { properties: number; mappings: number } => {
 	const properties = [...source.matchAll(/^\t([A-Za-z-]+): \{/gm)].length;
 	const mappings = [...source.matchAll(/^\t\t"/gm)].length;
-	return { properties, mappings };
+	if (properties > 0) return { properties, mappings };
+
+	// Single-line `as const` export: body-scan the bridge literal.
+	const anchor = source.indexOf("export const bridge =");
+	if (anchor === -1) return { properties: 0, mappings: 0 };
+	const open = source.indexOf("{", anchor);
+	if (open === -1) return { properties: 0, mappings: 0 };
+	let depth = 0;
+	let end = source.length;
+	for (let i = open; i < source.length; i++) {
+		if (source[i] === "{") depth++;
+		else if (source[i] === "}") {
+			depth--;
+			if (depth === 0) {
+				end = i;
+				break;
+			}
+		}
+	}
+	const body = source.slice(open + 1, end);
+	// Top-level property groups = depth-1 keys; mappings = leaf string pairs.
+	const perProperty = body.split(/(?<=\}),\s*"[\w$-]+":\s*\{/);
+	const counted = perProperty
+		.map((section) => ({
+			mappings: [...section.matchAll(/"(?:[^"\\]|\\.)*":\s*"(?:[^"\\]|\\.)*"/g)].length,
+		}));
+	return {
+		properties: perProperty.length,
+		mappings: counted.reduce((sum, c) => sum + c.mappings, 0),
+	};
 };
 
 /**

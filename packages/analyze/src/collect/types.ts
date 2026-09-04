@@ -97,6 +97,8 @@ export interface SheetShape {
 
 export type { CssCallSite, CssDiagnostic, CssDiagnosticKind } from "../css-diagnostics.ts";
 export type { AuthoredCssImport } from "../css-diagnostics.ts";
+export type { TokenGovernanceReport } from "../governance/contracts.ts";
+export type { GovernancePruneChangeset } from "../governance/prune-changeset.ts";
 
 export interface CollectPayload {
 	meta: { root: string };
@@ -104,6 +106,11 @@ export interface CollectPayload {
 	cssSources: Array<import("../css-diagnostics.ts").CssCallSite>;
 	cssDiagnostics: Array<import("../css-diagnostics.ts").CssDiagnostic>;
 	analytics?: StyleUsageReport;
+	/** Token governance report (plans/054) — computed when the app's
+	 * official preset is loadable; report-only when it is not. */
+	governance?: import("../governance/contracts.ts").TokenGovernanceReport;
+	/** Deterministic prune-changeset proposal derived from the report. */
+	governanceChangeset?: import("../governance/prune-changeset.ts").GovernancePruneChangeset;
 	cssCrawl?: {
 		files: number;
 		unresolved: Array<{ from: string; specifier: string }>;

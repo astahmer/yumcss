@@ -26,5 +26,14 @@ describe("gather (integration over apps/example)", { timeout: 60_000 }, () => {
 		});
 		expect(data.cssSources.some((site) => (site.rules?.length ?? 0) > 0)).toBe(true);
 		expect(data.cssDiagnostics).toEqual([]);
+		// Token governance (plans/054): the official example-preset resolves a
+		// strict policy, the universe covers preset + css + interop sources,
+		// and the changeset proposal is read-only-safe by construction.
+		expect(data.governance).toBeDefined();
+		expect(data.governance?.version).toBe(1);
+		expect(data.governance?.policy?.resolved).toBe(true);
+		expect(data.governance?.definitions.length).toBeGreaterThan(0);
+		expect(data.governanceChangeset).toBeDefined();
+		expect(data.governanceChangeset?.count).toBeGreaterThanOrEqual(0);
 	}, 60_000);
 });

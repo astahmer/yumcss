@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig, type Plugin } from "vite";
 import { gather } from "./src/server/gather.ts";
-import { buildPruneChangeset } from "pandwind-analyze/collect";
+import { buildGovernancePruneChangeset } from "pandwind-analyze/governance";
 import { persistAnalyticsSnapshot, readAnalyticsSeries } from "./src/server/analytics-history.ts";
 import { persistRun } from "./src/server/history.ts";
 
@@ -29,14 +29,14 @@ const studioApi = (): Plugin => ({
 			void (async () => {
 				try {
 					const payload = (await gather()) as import("./src/types.ts").StudioPayload;
-					const unused = payload.analytics?.unusedTokens ?? [];
+					// Governance-owned proposal (plans/054): only safe-to-remove
+					// candidates are listed; boundaries downgrade to review first.
+					const changeset =
+						payload.governance === undefined
+							? { count: 0, content: null }
+							: buildGovernancePruneChangeset(payload.governance);
 					res.setHeader("content-type", "application/json");
-					res.end(
-						JSON.stringify({
-							count: unused.length,
-							content: buildPruneChangeset(unused),
-						}),
-					);
+					res.end(JSON.stringify(changeset));
 				} catch (error) {
 					res.statusCode = 500;
 					res.end(JSON.stringify({ error: String(error) }));

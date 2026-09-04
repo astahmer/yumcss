@@ -23,6 +23,12 @@ import {
 } from "./parsers.ts";
 import { crawlCssImports } from "./theme-crawl.ts";
 import { collectCssReport } from "../css-diagnostics.ts";
+import {
+	analyzeTokenGovernance,
+	buildGovernancePruneChangeset,
+	loadOfficialPresetModule,
+	projectGovernanceInputs,
+} from "../governance/index.ts";
 import type { CollectPayload, ThemeVar, TokenSection } from "./types.ts";
 
 const DEFAULT_APP = "apps/example";
@@ -238,12 +244,51 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 			: undefined,
 	});
 
+	// --- token governance (plans/054): official-loader policy + effective
+	// universe from the preset, theme vars, and interop artifact. A generated
+	// safelist file downgrades every unused candidate to review-required (its
+	// class strings cannot be attributed to token ids without guessing).
+	const presetLoad = await loadOfficialPresetModule(
+		isDogfoodApp ? 'pandwind/preset/example-preset' : `./${APP}/src/pandwind.preset.ts`,
+		root,
+	);
+	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
+	let interopVariables: Record<string, string> = {};
+	try {
+		const interop = JSON.parse(
+			readSourceArtifact(appSrc("pandwind.interop.json")) ?? "{}",
+		) as { theme?: { variables?: Record<string, string> } };
+		if (interop.theme?.variables !== undefined) interopVariables = interop.theme.variables;
+	} catch {
+		interopVariables = {};
+	}
+	const safelistSource = readSourceArtifact(appSrc("pandwind.safelist.ts")) ?? "";
+	const safelistEntries = [...safelistSource.matchAll(/"([^"]+)"/g)].map((m) => m[1] ?? "");
+	const governance = analyzeTokenGovernance({
+		root,
+		files: appSourceFiles.map(({ file, content }) => ({
+			file: file.startsWith(`${root}/`) ? file.slice(root.length + 1) : file,
+			content,
+		})),
+		policy,
+		tokenContext: {
+			...tokenContext,
+			themeVars: mergedThemeVars,
+			interopVariables,
+			unresolvedImports: crawled.unresolved,
+		},
+		...(safelistEntries.length > 0 ? { boundaryHits: { safelist: ["*"] } } : {}),
+	});
+	const governanceChangeset = buildGovernancePruneChangeset(governance, APP);
+
 	return {
 		meta: { root },
 		authoredCss,
 		cssSources,
 		cssDiagnostics,
 		tokenGraph,
+		governance,
+		governanceChangeset,
 		coverage: {
 			eliminatedPct: summary.eliminatedPct,
 			entryEliminatedPct: summary.entryEliminatedPct,

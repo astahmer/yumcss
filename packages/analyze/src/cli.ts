@@ -23,8 +23,16 @@ import {
 	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
+import {
+	analyzeTokenGovernance,
+	buildGovernancePruneChangeset,
+	loadOfficialPresetModule,
+	projectGovernanceInputs,
+} from "./governance/index.ts";
+import { parseThemeVars } from "./collect/parsers.ts";
+import { runGovernanceLane } from "./governance-lane.ts";
 
-interface CliArgs {
+export interface CliArgs {
 	patterns: Array<string>;
 	twPath: string;
 	json: boolean;
@@ -36,6 +44,10 @@ interface CliArgs {
 	failOverBytes?: number;
 	/** Budgets json path: per-lane caps { css, gzip, rules }. */
 	budgetsPath?: string;
+	/** Token-governance lane (plans/054) — emits the versioned report. */
+	governance: boolean;
+	/** Official preset specifier for the governance lane. */
+	preset: string;
 }
 
 /** Per-lane caps for the budgets file (plans/023 CI gate). */
@@ -80,6 +92,10 @@ export function evaluateBudget(
 
 /** Version tag stamped into `--json` output for consumers. */
 export const ANALYZE_JSON_SCHEMA = "pandwind.analyze/2";
+/** Version tag for the governance lane document. */
+export const GOVERNANCE_JSON_SCHEMA = "pandwind.analyze.governance/1";
+/** Default official preset for the governance lane. */
+export const DEFAULT_GOVERNANCE_PRESET = "pandwind/preset/example-preset";
 
 function parseArgs(argv: Array<string>): CliArgs {
 	const patterns: Array<string> = [];
@@ -91,6 +107,8 @@ function parseArgs(argv: Array<string>): CliArgs {
 	let constantsPath: string | undefined;
 	let failOverBytes: number | undefined;
 	let budgetsPath: string | undefined;
+	let governance = false;
+	let preset = DEFAULT_GOVERNANCE_PRESET;
 	for (let i = 0; i < argv.length; i++) {
 		const arg = argv[i];
 		if (arg === "--tw") {
@@ -105,6 +123,10 @@ function parseArgs(argv: Array<string>): CliArgs {
 			root = resolve(process.cwd(), argv[++i] ?? ".");
 		} else if (arg === "--constants") {
 			constantsPath = resolve(process.cwd(), argv[++i] ?? "");
+		} else if (arg === "--governance") {
+			governance = true;
+		} else if (arg === "--preset") {
+			preset = argv[++i] ?? preset;
 		} else if (arg !== undefined && arg.startsWith("--fail-over=")) {
 			failOverBytes = Number(arg.slice("--fail-over=".length));
 			if (!Number.isFinite(failOverBytes) || failOverBytes < 0) {
@@ -112,6 +134,8 @@ function parseArgs(argv: Array<string>): CliArgs {
 			}
 		} else if (arg !== undefined && arg.startsWith("--budgets=")) {
 			budgetsPath = resolve(process.cwd(), arg.slice("--budgets=".length));
+		} else if (arg !== undefined && arg.startsWith("--preset=")) {
+			preset = arg.slice("--preset=".length);
 		} else if (arg !== undefined) {
 			patterns.push(arg);
 		}
@@ -126,6 +150,8 @@ function parseArgs(argv: Array<string>): CliArgs {
 		constantsPath,
 		failOverBytes,
 		budgetsPath,
+		governance,
+		preset,
 	};
 }
 
@@ -154,6 +180,7 @@ async function computeCssBudget(args: CliArgs, files: Array<string>) {
  */
 export async function runCli(argv: Array<string>): Promise<string> {
 	const args = parseArgs(argv);
+	if (args.governance) return runGovernanceLane(args);
 	const patterns = args.patterns.length > 0 ? args.patterns : ["src/**/*.{ts,tsx}"];
 	const workspace = createAnalysisWorkspace();
 	const analysis = createFoldAnalysisService();

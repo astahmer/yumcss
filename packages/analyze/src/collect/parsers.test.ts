@@ -83,6 +83,14 @@ describe("parseBridgeStats", () => {
 			'export const bridge = {\n\tbottom: {\n\t\t"0": "bottom-0",\n\t\t"1px": "bottom-1",\n\t},\n\tcolor: {\n\t\t"red": "text-red-500",\n\t},\n};';
 		expect(parseBridgeStats(src)).toEqual({ properties: 2, mappings: 3 });
 	});
+	test("counts the single-line as-const bridge export", () => {
+		const src =
+			'export const bridge = {"bottom":{"0px":"bottom-0","1px":"bottom-1"},"color":{"#ff0000":"text-red-500"}} as const;';
+		expect(parseBridgeStats(src)).toEqual({ properties: 2, mappings: 3 });
+	});
+	test("no bridge export -> zeros", () => {
+		expect(parseBridgeStats("export const x = 1;")).toEqual({ properties: 0, mappings: 0 });
+	});
 });
 
 describe("categorizeThemeVar / groupThemeVars", () => {
