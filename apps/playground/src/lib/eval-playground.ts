@@ -1,7 +1,7 @@
 /**
  * Playground eval engine.
  *
- * Runs user-authored `tw(...)` / `css(...)` / `cx(...)` expressions against
+ * Runs user-authored `tw(...)` / `css(...)` / `cx(...)` example files against
  * the app's real bindings and reports: the merged class string, which input
  * tokens survived vs were killed by conflict merging, and whether the build-
  * time folding pass would have eliminated the call (full/partial/runtime).
@@ -19,6 +19,15 @@ interface PlaygroundSuccess {
 	ok: true;
 	/** The merged class string produced by the runtime. */
 	output: string;
+	/**
+	 * Declaration map when the final expression returned one (plain css() /
+	 * css.raw()); the class-string pane is replaced by a declarations pane.
+	 */
+	decls?: Record<string, string>;
+	/** Class + inline-style pair from a css.vars() result. */
+	varsOutput?: { class: string; style: Record<string, string> };
+	/** Resolved React-style host props from a css.props() result. */
+	propsOutput?: { className?: string; style?: Record<string, string> };
 	/** Every class token fed in through any call (deduped). */
 	tokensIn: string[];
 	/** Tokens present in the final output. */
@@ -43,69 +52,123 @@ interface Prepared {
 	body: string;
 	consts: ConstantScope;
 	exprText: string;
+	/** Rewritten module source (imports removed, export markers unwrapped). */
+	evalCode: string;
+	/** Value imports collected from the stripped file. */
+	imports: Array<{ local: string; source: string; imported?: string }>;
+	/** Module-level names this file exports (sandbox export surface). */
+	exportNames: Array<string>;
+	/** Span of the final expression statement, if present. */
+	lastExpr?: { start: number; end: number };
 }
 
 /**
- * Statements the sandbox cannot execute: module imports (the sandbox runs
- * inside `new Function`, not a module loader) and export markers. Removal
- * is AST-span-based so multi-line named imports, export-wrapped
- * declarations, and type-only suffixes survive intact: the example source
- * stays a real, pasteable file while evaluation keeps operating on plain
- * JS the sandbox can execute (new Function does no TS transform).
+ * Parse the full module once and classify every top-level statement:
+ * imports are collected (never executed), export markers are unwrapped, and
+ * the last top-level expression statement is located as the result. Type-only
+ * suffixes ("as const", "satisfies X") keep their expression and drop the
+ * annotation span, so typed example source still runs untransformed.
  */
-function stripModuleSyntax(code: string): string {
+function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText"> {
 	const parsed = parseSync("module-syntax.tsx", code, { sourceType: "module", lang: "tsx" });
-	const statements = ((parsed.program as unknown as { body?: Array<Record<string, unknown>> })
-		.body ?? []) as Array<{ type: string; start: number; end: number }>;
+	const statements = ((parsed.program as unknown as { body?: unknown }).body ?? []) as Array<
+		{
+			type: string;
+			start: number;
+			end: number;
+			source?: { value?: string };
+			specifiers?: Array<{
+				type: string;
+				local?: { name?: string };
+				imported?: { name?: string; value?: string };
+				importKind?: string;
+			}>;
+			importKind?: string;
+			declaration?: { type?: string; declarations?: Array<{ id?: { name?: string } }> };
+		} & Record<string, unknown>
+	>;
+	const imports: Prepared["imports"] = [];
+	const exportNames: Array<string> = [];
 	const cuts: Array<[number, number]> = [];
 	const unwraps: Array<[number, number]> = [];
-	for (const statement of statements) {
-		if (statement.type === "ImportDeclaration") cuts.push([statement.start, statement.end]);
-		else if (statement.type === "TSExportAssignment" || statement.type === "ExportDefaultDeclaration")
-			cuts.push([statement.start, statement.end]);
-		else if (statement.type === "ExportNamedDeclaration") {
-			const inner = (statement as unknown as { declaration?: { start: number } }).declaration;
-			if (inner === undefined) cuts.push([statement.start, statement.end]);
-			else unwraps.push([statement.start, statement.start + "export ".length]);
-		}
-	}
 	// Type-only suffixes ("as const", "satisfies X") keep their expression
-	// and drop the annotation span, so typed example code still runs.
+	// and drop the annotation span, so typed example source still runs
+	// untransformed inside new Function.
 	const walk = (node: unknown): void => {
 		if (Array.isArray(node)) {
 			for (const item of node) walk(item);
 			return;
 		}
 		if (node === null || typeof node !== "object") return;
-		const n = node as { type?: string; start?: number; end?: number; expression?: { end?: number } };
+		const n = node as { type?: string; end?: number; expression?: { end?: number } };
 		if (n.type === "TSAsExpression" || n.type === "TSSatisfiesExpression") {
 			const inner = n.expression;
-			if (typeof inner?.end === "number") cuts.push([inner.end, n.end ?? inner.end]);
+			if (typeof inner?.end === "number" && typeof n.end === "number") cuts.push([inner.end, n.end]);
 		}
-		for (const value of Object.values(node)) {
+		for (const value of Object.values(node as Record<string, unknown>)) {
 			if (value !== null && typeof value === "object") walk(value);
 		}
 	};
 	walk(parsed.program);
+	for (const statement of statements) {
+		if (statement.type === "ImportDeclaration") {
+			if (statement.importKind === "type") {
+				cuts.push([statement.start, statement.end]);
+				continue;
+			}
+			const source = statement.source?.value ?? "";
+			for (const spec of statement.specifiers ?? []) {
+				if (spec.type === "ImportSpecifier" && spec.importKind === "type") continue;
+				const local = spec.local?.name;
+				if (local === undefined) continue;
+				if (spec.type === "ImportSpecifier")
+					imports.push({ local, source, imported: spec.imported?.name ?? spec.imported?.value });
+				else imports.push({ local, source });
+			}
+			cuts.push([statement.start, statement.end]);
+		} else if (statement.type === "TSExportAssignment" || statement.type === "ExportDefaultDeclaration") {
+			cuts.push([statement.start, statement.end]);
+		} else if (statement.type === "ExportNamedDeclaration") {
+			const inner = statement.declaration;
+			if (inner === undefined) cuts.push([statement.start, statement.end]);
+			else {
+				unwraps.push([statement.start, statement.start + "export ".length]);
+				for (const decl of inner.declarations ?? []) {
+					if (decl.id?.name !== undefined) exportNames.push(decl.id.name);
+				}
+				if (inner.type === "FunctionDeclaration" && (inner as { id?: { name?: string } }).id?.name)
+					exportNames.push((inner as { id?: { name?: string } }).id!.name!);
+			}
+		}
+	}
 	// Every edit is an (original-start, original-end, replacement) triple so
 	// spans stay valid: apply them in one right-to-left pass.
 	const edits: Array<[number, number, string]> = [
 		...cuts.map(([start, end]): [number, number, string] => [start, end, ""]),
 		...unwraps.map(([start, end]): [number, number, string] => [start, end, ""]),
 	].sort((left, right) => right[0] - left[0]);
-	let out = code;
-	for (const [start, end] of edits) out = out.slice(0, start) + out.slice(end);
-	return out;
+	let evalCode = code;
+	for (const [start, end] of edits) evalCode = evalCode.slice(0, start) + evalCode.slice(end);
+	return { evalCode, imports, exportNames };
 }
 
-/** Parse + locate the last top-level expression statement (the result). */
-function prepare(code: string): Prepared {
-	const evalCode = stripModuleSyntax(code);
+/**
+ * Parse the module, strip imports/export markers, locate the final top-level
+ * expression, and collect module constants for the fold classifier.
+ */
+/** Evaluation modes: the entry tab wraps its final expression as the
+ * result; sibling tabs run whole and hand back their exported bindings. */
+export type EvalMode = "entry" | "module";
+
+function prepare(code: string, mode: EvalMode): Prepared {
+	const base = stripModule(code);
+	const evalCode = base.evalCode;
 	const parsed = parseSync("playground.tsx", evalCode, { sourceType: "module", lang: "tsx" });
 	const program = parsed.program as unknown as {
 		body?: Array<{ type: string; start: number; end: number }>;
 	};
 	const statements = program.body ?? [];
+	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon.
 	let lastExpr: { start: number; end: number } | undefined;
 	for (const statement of statements) {
 		if (statement.type === "ExpressionStatement") lastExpr = statement;
@@ -113,21 +176,37 @@ function prepare(code: string): Prepared {
 	const consts = collectModuleConstants(
 		parsed.program as unknown as Parameters<typeof collectModuleConstants>[0],
 	);
-	if (lastExpr === undefined) {
-		return {
-			body: `${evalCode}\n;throw new Error("add a final expression — nothing to output");`,
-			consts,
-			exprText: "",
-		};
+	let body: string;
+	let exprText = "";
+	if (mode === "module") {
+		// Sibling-tab mode: run the stripped file and return every exported
+		// binding so the entry tab can import them as a real module.
+		body =
+			base.exportNames.length === 0
+				? evalCode + "\nreturn {};"
+				: evalCode
+					+ `\nreturn { ${base.exportNames.map((name) => `${name}: ${name}`).join(", ")} };`;
+	} else if (lastExpr === undefined) {
+		body = evalCode + '\n;throw new Error("add a final expression — nothing to output");';
+	} else {
+		const rawText = evalCode.slice(lastExpr.start, lastExpr.end);
+		exprText = rawText.replace(/;\s*$/, "");
+		body = "const __pwExports = {};\n"
+			+ evalCode.slice(0, lastExpr.start)
+			+ "__pwExports.value = (() => { return " + exprText + "; })();\n"
+			+ evalCode.slice(lastExpr.end)
+			+ "\nreturn __pwExports;";
 	}
-	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon - strip it
-	const rawText = evalCode.slice(lastExpr.start, lastExpr.end);
-	const exprText = rawText.replace(/;\s*$/, "");
-	const body = `let __pw_out;\n${evalCode.slice(0, lastExpr.start)}__pw_out = (${exprText})${evalCode.slice(lastExpr.end)}\nreturn __pw_out;`;
-	return { body, consts, exprText };
+	return {
+		body,
+		consts,
+		exprText,
+		evalCode,
+		imports: base.imports,
+		exportNames: base.exportNames,
+	};
 }
 
-/** Classify how the build-time pass would treat the result expression. */
 /**
  * Classify how the build-time pass would treat the result expression:
  * - every literal/resolvable node -> FULL (the vite pass eliminates it),
@@ -291,6 +370,13 @@ export interface EvalInput {
 	tw: (...args: Array<unknown>) => unknown;
 	css: ((...args: Array<unknown>) => unknown) & Record<string, unknown>;
 	cx: (...inputs: Array<never>) => string;
+	/** Loose engine css() available as createCss() inside evaluated code. */
+	createCss?: (...args: Array<unknown>) => unknown;
+	/**
+	 * Extra module bindings: sandbox import rewrites (pandwind/preset ->
+	 * presetApi, ./brand.ts -> evaluated sibling tab) land here by specifier.
+	 */
+	moduleBindings?: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
 	/** Available inside evaluated code as `props` (component-like dynamics). */
 	props?: Record<string, unknown>;
 	/**
@@ -302,19 +388,115 @@ export interface EvalInput {
 
 /** Evaluate playground code. Throws nothing — errors come back as data. */
 export function evalPlayground(input: EvalInput): PlaygroundResult {
+	return evalGuarded(input, "entry");
+}
+
+/**
+ * Evaluate a sibling tab in module mode and return its exported bindings.
+ * Errors come back as a thrown Error so the caller can surface which tab
+ * failed; the result shape is the raw export record, not a PlaygroundResult.
+ */
+export function evalSiblingModule(input: EvalInput): Record<string, unknown> {
+	const code = input.code.trim();
+	if (code === "") throw new Error("nothing to evaluate");
+	const prepared = prepare(code, "module");
+	const sandbox = buildSandbox(input, prepared, input.tw, input.css, input.cx);
+	const names = dedupe(["tw", "css", "cx", "props", "createCss", ...prepared.imports.map((imp) => imp.local)]);
+	const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
+	return (fn(sandbox) ?? {}) as Record<string, unknown>;
+}
+
+function evalGuarded(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	try {
-		return runOnce(input);
+		return runOnce(input, mode);
 	} catch (error) {
 		return { ok: false, error: error instanceof Error ? error.message : String(error) };
 	}
 }
 
-function runOnce(input: EvalInput): PlaygroundResult {
+/**
+ * The pandwind public API surface the sandbox can resolve imports against.
+ * Kept as a function so the record reflects the exact bindings this input
+ * carries (createCss may be absent).
+ */
+function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
+	return {
+		tw: input.tw,
+		css: input.css,
+		cx: input.cx,
+		createCss: input.createCss,
+		props: input.props,
+	};
+}
+
+/**
+ * Build the sandbox scope shared by entry and module evaluation: the
+ * instrumented builtin bindings plus one entry per resolved import. Builtin
+ * defaults always exist so bare-call snippets work without an import.
+ */
+function buildSandbox(
+	input: EvalInput,
+	prepared: Prepared,
+	tw: (...args: Array<unknown>) => unknown,
+	css: EvalInput["css"],
+	cx: (...inputs: Array<never>) => string,
+): Record<string, unknown> {
+	const sandbox: Record<string, unknown> = {
+		tw,
+		css,
+		cx,
+		props: input.props ?? {},
+		createCss: input.createCss,
+	};
+	for (const imp of prepared.imports) {
+		const bindings = input.moduleBindings?.[imp.source];
+		if (bindings !== undefined) {
+			sandbox[imp.local] = imp.imported === undefined ? bindings : bindings[imp.imported];
+			continue;
+		}
+		// pandwind's own public API resolves against the sandbox builtins:
+		// `import { tw } from "pandwind"` is the same tw the file already has.
+		if (imp.source === "pandwind" || imp.source.startsWith("pandwind/")) {
+			if (imp.imported !== undefined) {
+				sandbox[imp.local] = pandwindBuiltins(input)[imp.imported];
+			} else {
+				// Default import: the css entry's default is the loose engine.
+				sandbox[imp.local] = imp.source === "pandwind" ? pandwindBuiltins(input) : input.createCss;
+			}
+			continue;
+		}
+		if (imp.source.startsWith("./")) {
+			throw new Error(`import "${imp.source}" — no sibling tab provides this module in the playground`);
+		}
+		throw new Error(`import "${imp.source}" is not available in the playground sandbox`);
+	}
+	for (const [local, value] of Object.entries(sandbox)) {
+		if (local === "tw" || local === "css" || local === "cx" || local === "props" || local === "createCss") continue;
+		if (value === undefined) {
+			throw new Error(`the import "${local}" is not available in the playground sandbox`);
+		}
+	}
+	return sandbox;
+}
+
+function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	const code = input.code.trim();
 	if (code === "") return { ok: false, error: "nothing to evaluate" };
 
-	const prepared = prepare(code);
+	const prepared = prepare(code, mode);
 	const exprText = prepared.exprText;
+	// Sibling imports that resolve to scalars are known constants for the
+	// fold classifier: the vite pass evaluates the real sibling module, so
+	// a statically-known brand tone folds exactly like a local const.
+	for (const imp of prepared.imports) {
+		if (imp.imported === undefined || prepared.consts.has(imp.local)) continue;
+		const value = input.moduleBindings?.[imp.source]?.[imp.imported];
+		// StaticEval = CxInput: strings (and class records) are foldable
+		// constants; numbers/booleans are not cx inputs.
+		if (typeof value === "string") {
+			prepared.consts.set(imp.local, { value, declStart: -1 });
+		}
+	}
 
 	// Instrumented bindings: record every token entering any call.
 	const inputs: string[] = [];
@@ -338,36 +520,47 @@ function runOnce(input: EvalInput): PlaygroundResult {
 	};
 	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
 	/**
-	 * Instrumented css() binding. `method` selects a namespaced variant
-	 * (`.class` / `.raw`) — the wrapper must expose the SAME surface as the
-	 * real css() or sandbox code calling `css.class({...})` would crash.
+	 * Instrumented css() binding. The wrapper exposes the SAME surface as the
+	 * real css() (callable plus every namespaced method the instance carries:
+	 * class / raw / vars / props / group / input), so sandbox code can use the
+	 * full documented API without crashing on a partial shim.
 	 */
-	const cssBinding =
-		(method?: "class" | "raw") =>
+	const cssCall =
+		(method?: string) =>
 		(...args: Array<unknown>): unknown => {
 			recordArgs(args);
-			const result =
-				method === undefined
-					? input.css(...(args as never[]))
-					: (input.css[method] as (...a: Array<never>) => unknown)(...(args as never[]));
+			const fn =
+				method === undefined ? input.css : (input.css[method] as (...a: Array<never>) => unknown);
+			if (typeof fn !== "function") throw new Error(`css.${method} is not available in the sandbox`);
+			const result = fn(...(args as never[]));
 			recordTokens(result);
-			if (
-				typeof result === "string" &&
-				args.length > 0 &&
-				typeof args[0] === "object" &&
-				args[0] !== null &&
-				input.resolveCss !== undefined
-			) {
-				const decls = input.resolveCss(args[0] as Record<string, unknown>);
-				if (decls !== undefined && Object.keys(decls).length > 0) {
-					atomDeclarations.push({ cls: result, decls });
+			if (args.length > 0 && typeof args[0] === "object" && args[0] !== null && input.resolveCss !== undefined) {
+				const resolved = input.resolveCss(args[0] as Record<string, unknown>);
+				if (resolved !== undefined && Object.keys(resolved).length > 0) {
+					if (typeof result === "string") {
+						atomDeclarations.push({ cls: result, decls: resolved });
+					} else if (result !== null && typeof result === "object") {
+						// Bare css() returns { designProp -> atom class }; each entry
+						// is one generated atom alongside its resolved declaration.
+						for (const [prop, cls] of Object.entries(result as Record<string, unknown>)) {
+							const value = (resolved as Record<string, unknown>)[prop];
+							if (typeof value !== "string") continue;
+							atomDeclarations.push({
+								cls: String(cls),
+								decls: { [prop]: value },
+							});
+						}
+					}
 				}
 			}
 			return result;
 		};
-	const css = cssBinding() as EvalInput["css"];
-	css.class = cssBinding("class") as EvalInput["css"]["class"];
-	css.raw = cssBinding("raw") as EvalInput["css"]["raw"];
+	const css = cssCall() as EvalInput["css"];
+	for (const key of Object.keys(input.css)) {
+		if (typeof (input.css as Record<string, unknown>)[key] === "function") {
+			(css as unknown as Record<string, unknown>)[key] = cssCall(key);
+		}
+	}
 	const cx = (...callInputs: Array<never>) => {
 		recordArgs(callInputs);
 		const result = input.cx(...callInputs);
@@ -375,20 +568,64 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		return result;
 	};
 
-	const fn = new Function("tw", "css", "cx", "props", `"use strict";\n${prepared.body}`);
-	const raw = fn(tw, css, cx, input.props ?? {});
-	if (typeof raw !== "string") {
-		return { ok: false, error: "the final expression did not produce a class string" };
+	// One sandbox record: builtins plus every import binding share a single
+	// destructured scope inside the evaluated body. Builtin defaults stay so
+	// bare-call tests and quick snippets keep working without an import.
+	const sandbox = buildSandbox(input, prepared, tw, css, cx);
+	let captured: { value?: unknown } = {};
+	if (prepared.imports.length > 0) {
+		const names = dedupe(["tw", "css", "cx", "props", "createCss", ...prepared.imports.map((imp) => imp.local)]);
+		const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
+		captured = (fn(sandbox) ?? {}) as { value?: unknown };
+	} else {
+		const fn = new Function("tw", "css", "cx", "props", "createCss", `"use strict";\n${prepared.body}`);
+		captured = (fn(tw, css, cx, sandbox["props"], sandbox["createCss"]) ?? {}) as {
+			value?: unknown;
+		};
 	}
 
-	const survived = splitClasses(raw);
+	// The final expression may be a class string, a declaration map (plain
+	// css() / css.raw()), or a { class, style } pair from css.vars().
+	const rawValue = captured.value;
+	let output: string | undefined;
+	let decls: Record<string, string> | undefined;
+	let varsOutput: { class: string; style: Record<string, string> } | undefined;
+	let propsOutput: { className?: string; style?: Record<string, string> } | undefined;
+	if (typeof rawValue === "string") {
+		output = rawValue;
+	} else if (rawValue !== null && typeof rawValue === "object") {
+		const candidate = rawValue as Record<string, unknown>;
+		if (typeof candidate.class === "string" && candidate.style !== null && typeof candidate.style === "object") {
+			const style: Record<string, string> = {};
+			for (const [key, value] of Object.entries(candidate.style as Record<string, unknown>)) {
+				style[key] = String(value);
+			}
+			varsOutput = { class: candidate.class, style };
+			output = candidate.class;
+		} else if (typeof candidate.className === "string") {
+			propsOutput = { className: candidate.className, style: candidate.style as Record<string, string> | undefined };
+			output = candidate.className;
+		} else if (Object.values(candidate).every((value) => typeof value !== "object")) {
+			decls = {};
+			for (const [key, value] of Object.entries(candidate)) decls[key] = String(value);
+		}
+	}
+	if (output === undefined && decls === undefined) {
+		return {
+			ok: false,
+			error: "the final expression did not produce a class string or declaration object",
+		};
+	}
+
+	const finalClass = output ?? "";
+	const survived = splitClasses(finalClass);
 	const uniqueIn = dedupe(inputs);
 	const killed = dedupe(uniqueIn.filter((token) => !survived.includes(token)));
 	const foldInfo = classifyFold(exprText, prepared.consts);
 
-	return {
+	const success: PlaygroundSuccess = {
 		ok: true,
-		output: raw,
+		output: finalClass,
 		tokensIn: uniqueIn,
 		survived: dedupe(survived),
 		killed,
@@ -396,4 +633,8 @@ function runOnce(input: EvalInput): PlaygroundResult {
 		foldNote: foldInfo.note,
 		atomDeclarations,
 	};
+	if (decls !== undefined) success.decls = decls;
+	if (varsOutput !== undefined) success.varsOutput = varsOutput;
+	if (propsOutput !== undefined) success.propsOutput = propsOutput;
+	return success;
 }
