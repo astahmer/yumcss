@@ -423,7 +423,7 @@ export async function runAdapterMigrationAsync(
 			fileChanges: result.fileChanges ?? [],
 			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
-			validations: [],
+			validations: result.validations ?? [],
 			loweringPlans: [],
 			outcomes: [],
 		};
@@ -510,7 +510,7 @@ function runAdapterMigrationInternal(
 			fileChanges: result.fileChanges ?? [],
 			...(result.sourceMaps === undefined ? {} : { sourceMaps: result.sourceMaps }),
 			reports: [],
-			validations: [],
+			validations: result.validations ?? [],
 			loweringPlans: [],
 			outcomes: [],
 		};

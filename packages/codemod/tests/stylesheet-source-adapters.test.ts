@@ -285,7 +285,24 @@ describe("stylesheet source adapters", () => {
 			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": "&{color:red}",
+			      "canonicalTarget": "&{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			    {
+			      "canonicalSource": "&{color:blue}",
+			      "canonicalTarget": "&{color:blue}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
@@ -351,7 +368,16 @@ describe("stylesheet source adapters", () => {
 			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": "&{color:red}",
+			      "canonicalTarget": "&{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
@@ -361,7 +387,8 @@ describe("stylesheet source adapters", () => {
 		const result = migrate(source, CodemodAdapterId.CssModules, "Card.module.css");
 
 		expect(result.changed).toBe(false);
-		expect(result.code).toBe(source);
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain(source);
 		expect(result.converted).toBe(0);
 		expect(result.residuals).toEqual([
 			expect.objectContaining({ kind: "composition", text: "composes: base" }),
@@ -369,7 +396,8 @@ describe("stylesheet source adapters", () => {
 		expect(result).toMatchInlineSnapshot(`
 			{
 			  "changed": false,
-			  "code": ".card { composes: base; color: red; }",
+			  "code": "// pandwind:migrate-skip (lowering-residual: composition)
+			.card { composes: base; color: red; }",
 			  "converted": 0,
 			  "dependencies": [],
 			  "fileChanges": [],
@@ -397,7 +425,8 @@ describe("stylesheet source adapters", () => {
 		] as const) {
 			const result = migrate(source, from, file);
 			expect(result.changed).toBe(false);
-			expect(result.code).toBe(source);
+			expect(result.code).toContain("pandwind:migrate-skip");
+			expect(result.code).toContain(source);
 			expect(result.residuals.some((residual) => residual.kind === residualKind)).toBe(true);
 		}
 	});
@@ -454,7 +483,16 @@ describe("stylesheet source adapters", () => {
 			  "reports": [],
 			  "residuals": [],
 			  "skipped": 0,
-			  "validations": [],
+			  "validations": [
+			    {
+			      "canonicalSource": "&{color:red}",
+			      "canonicalTarget": "&{color:red}",
+			      "differences": [],
+			      "lossiness": "lossless",
+			      "residuals": [],
+			      "valid": true,
+			    },
+			  ],
 			}
 		`);
 	});
@@ -479,7 +517,8 @@ describe("stylesheet source adapters", () => {
 		});
 
 		expect(result.changed).toBe(false);
-		expect(result.code).toBe(".card { color: red; }");
+		expect(result.code).toContain("pandwind:migrate-skip");
+		expect(result.code).toContain(".card { color: red; }");
 		expect(result.residuals).toEqual(
 			expect.arrayContaining([expect.objectContaining({ kind: "configuration" })]),
 		);

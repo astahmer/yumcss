@@ -9,9 +9,11 @@ import {
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 import { MigrationDiagnostics } from "./migration-diagnostics.ts";
+import { MigrationOutput } from "./migration-output.ts";
 import type {
 	AdapterFileMigration,
 	AdapterFileMigrationResult,
+	AdapterValidationResult,
 	AdapterParseContext,
 	AdapterParseResult,
 	AdapterEmitContext,
@@ -691,6 +693,7 @@ export function createStylesheetFileMigration(
 			visit(context.file, context.source);
 			const imports = new Set<string>();
 			const entries: string[] = [];
+			const emittedTexts: string[] = [];
 			const names = new Set<string>();
 			for (const [index, match] of matches.entries()) {
 				const rule = match.program.rules[0];
@@ -731,6 +734,7 @@ export function createStylesheetFileMigration(
 						hint: "nested generated artifacts require project-level file ownership",
 					});
 				entries.push(`${JSON.stringify(name)}: ${emission.text}`);
+				emittedTexts.push(emission.text);
 			}
 			if (residuals.length > 0 || entries.length !== matches.length || entries.length === 0) {
 				// A skip is only visible when the preserved source carries the same
@@ -770,6 +774,45 @@ export function createStylesheetFileMigration(
 			]
 				.filter((line) => line.length > 0)
 				.join("\n");
+			// The migration owns canonical parity evidence for stylesheet files:
+			// reparse every emitted entry through the target adapter and validate
+			// the semantic round trip exactly like the call-site path does.
+			const validations: AdapterValidationResult[] = matches.map((match, index) => {
+				// The stylesheet class identity moves into the exported class-map
+				// binding, so the source rule compares at the same selector-less
+				// shape the emitted css.class expression reparses to.
+				const sourceProgram = {
+					...match.program,
+					rules: match.program.rules.map((item) => ({
+						...item,
+						name: undefined,
+						selector: undefined,
+					})),
+				};
+				const validationSource = MigrationOutput.validationSource(
+					emittedTexts[index] ?? "",
+					sourceProgram,
+				);
+				const reparsed = context.target.parse(validationSource, {
+					file: context.file,
+					source: validationSource,
+					root: context.sourceConfig.root,
+					config: context.targetConfig,
+					...(context.readFile === undefined ? {} : { readFile: context.readFile }),
+				});
+				const targetProgram =
+					reparsed.matches.length === 0
+						? sourceProgram
+						: styleProgramFromRules(
+								reparsed.matches.flatMap((candidate) => candidate.program.rules),
+								{
+									source: sourceProgram.source,
+									residuals: reparsed.residuals,
+									canonicalization: sourceProgram.canonicalization,
+								},
+							);
+				return context.target.validate(sourceProgram, targetProgram, reparsed.residuals);
+			});
 			return {
 				code,
 				outputExtension: ".ts",
@@ -783,6 +826,7 @@ export function createStylesheetFileMigration(
 						: [],
 				residuals: [],
 				dependencies: [context.target.dependencies],
+				validations,
 			};
 		},
 	};
@@ -862,6 +906,26 @@ export function createPreprocessorFileMigration(
 				};
 			}
 			const result = base.run({ ...context, source: compiled.css });
+			if (context.target.id === CodemodAdapterId.AuthoredCss) {
+				// Compilation inlined the preprocessor features, so the authored
+				// target receives plain CSS: pass it through with provenance
+				// instead of re-reporting the pre-compiler capability residual.
+				return {
+					code: compiled.css,
+					outputExtension: ".css",
+					changed: compiled.css !== context.source,
+					converted: 0,
+					skipped: 0,
+					generatedFiles: [],
+					fileChanges: [],
+					residuals: [],
+					dependencies:
+						compiled.dependencies === undefined
+							? []
+							: [{ packages: [], files: compiled.dependencies }],
+					...(compiled.sourceMap === undefined ? {} : { sourceMaps: [compiled.sourceMap] }),
+				};
+			}
 			return {
 				...result,
 				// Compilation already resolved the preprocessor features; only

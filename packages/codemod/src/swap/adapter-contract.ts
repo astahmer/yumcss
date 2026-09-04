@@ -341,6 +341,8 @@ export interface AdapterFileMigrationResult {
 	readonly fileChanges?: readonly AdapterFileChange[];
 	readonly residuals: readonly StyleProgramResidual[];
 	readonly dependencies: readonly AdapterDependencies[];
+	/** Canonical source/target parity evidence produced by the migration itself. */
+	readonly validations?: readonly AdapterValidationResult[];
 }
 
 export interface AdapterFileChange {
