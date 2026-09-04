@@ -95,6 +95,30 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("adapter capability mismatch");
 	});
 
+	test("keeps an unbounded dynamic value as source with a typed residual", () => {
+		// T7 issue fixture: a call expression is not a bounded scalar - the
+		// portable lane must not invent a css.vars carrier for it; the source
+		// stays and the migration reports a capability residual.
+		const result = runAdapterMigration(
+			'import { css } from "@linaria/core";' + String.fromCharCode(10) + 'const card = css\`color: computeColor(accent);\`;',
+			{
+				from: CodemodAdapterId.Linaria,
+				to: CodemodAdapterId.Pandwind,
+				file: "Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.code).toContain("computeColor(accent)");
+		expect(result.code).not.toContain("css.vars(");
+		expect(
+			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Capability),
+		).toBe(true);
+	});
+
 	test("preserves scalar template dynamics when Chakra has no host carrier", () => {
 		const result = runAdapterMigration(
 			'import { css } from "@linaria/core";\nconst card = css`color: ${theme.foreground};`;',

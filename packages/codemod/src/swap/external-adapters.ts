@@ -604,6 +604,103 @@ function parseGlobalProgram(
 	);
 }
 
+/**
+ * Documented CSS functional notation permitted inside declaration values
+ * (fixed language contract of CSS syntax). A value that starts with a JS
+ * identifier call outside this set is source code, not CSS: stringifying it
+ * into a literal declaration would emit invented CSS, so the declaration
+ * must fail closed as a capability residual instead.
+ */
+const CssFunctionalNotationNames: ReadonlySet<string> = new Set([
+	"rgb",
+	"rgba",
+	"hsl",
+	"hsla",
+	"hwb",
+	"lab",
+	"lch",
+	"oklab",
+	"oklch",
+	"color",
+	"color-mix",
+	"device-cmyk",
+	"var",
+	"env",
+	"calc",
+	"min",
+	"max",
+	"clamp",
+	"round",
+	"mod",
+	"rem",
+	"attr",
+	"url",
+	"counter",
+	"counters",
+	"linear-gradient",
+	"radial-gradient",
+	"conic-gradient",
+	"repeating-linear-gradient",
+	"repeating-radial-gradient",
+	"repeating-conic-gradient",
+	"image-set",
+	"cross-fade",
+	"element",
+	"paint",
+	"cubic-bezier",
+	"steps",
+	"blur",
+	"brightness",
+	"contrast",
+	"drop-shadow",
+	"grayscale",
+	"hue-rotate",
+	"invert",
+	"opacity",
+	"saturate",
+	"sepia",
+	"matrix",
+	"matrix3d",
+	"perspective",
+	"rotate",
+	"rotate3d",
+	"rotateX",
+	"rotateY",
+	"rotateZ",
+	"scale",
+	"scale3d",
+	"scaleX",
+	"scaleY",
+	"scaleZ",
+	"skew",
+	"skewX",
+	"skewY",
+	"translate",
+	"translate3d",
+	"translateX",
+	"translateY",
+	"translateZ",
+	"fit-content",
+	"minmax",
+	"repeat",
+	"path",
+	"rect",
+	"xywh",
+	"inset",
+	"polygon",
+	"circle",
+	"ellipse",
+	"ray",
+	"toggle",
+	"symbols",
+]);
+
+/** True when a raw template value is a JS call expression, not CSS notation. */
+function isUnboundedJsCallValue(rawValue: string): boolean {
+	const match = /^[A-Za-z_$][\w$]*\s*\(/.exec(rawValue.trim());
+	if (match === null) return false;
+	return !CssFunctionalNotationNames.has(match[0].replace(/\s*\($/, ""));
+}
 function parseTemplateProgram(
 	body: string,
 	context: AdapterParseContext,
@@ -634,6 +731,14 @@ function parseTemplateProgram(
 				return;
 			}
 			const rawValue = trimmed.slice(colon + 1).trim();
+			if (isUnboundedJsCallValue(rawValue)) {
+				residuals.push({
+					kind: "capability",
+					text: statement,
+					hint: "call-expression values require a runtime value carrier, not a static literal",
+				});
+				return;
+			}
 			const hasInterpolation = rawValue.includes("${");
 			let value: StyleDeclaration["value"];
 			if (hasInterpolation) {
