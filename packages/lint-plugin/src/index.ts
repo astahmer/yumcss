@@ -95,6 +95,54 @@ type RuleDefinition = {
 	create(context: RuleContext): RuleListener;
 	meta?: { fixable?: "code" | "whitespace" };
 };
+/**
+ * Structural node-kind identity for the lint plugin.
+ *
+ * The plugin intentionally has no runtime parser dependency; these `as const`
+ * values mirror the oxc/estree kind names the rules match against, so a
+ * misspelling is a compile error instead of a silent never-matching compare.
+ */
+const NODE_KIND = {
+	ArrayExpression: "ArrayExpression",
+	ArrowFunctionExpression: "ArrowFunctionExpression",
+	AwaitExpression: "AwaitExpression",
+	BinaryExpression: "BinaryExpression",
+	CallExpression: "CallExpression",
+	ChainExpression: "ChainExpression",
+	ConditionalExpression: "ConditionalExpression",
+	ExportDefaultDeclaration: "ExportDefaultDeclaration",
+	ExportNamedDeclaration: "ExportNamedDeclaration",
+	ExpressionStatement: "ExpressionStatement",
+	FunctionDeclaration: "FunctionDeclaration",
+	FunctionExpression: "FunctionExpression",
+	Identifier: "Identifier",
+	ImportDeclaration: "ImportDeclaration",
+	ImportNamespaceSpecifier: "ImportNamespaceSpecifier",
+	ImportSpecifier: "ImportSpecifier",
+	JSXAttribute: "JSXAttribute",
+	JSXExpressionContainer: "JSXExpressionContainer",
+	JSXOpeningElement: "JSXOpeningElement",
+	JSXSpreadAttribute: "JSXSpreadAttribute",
+	Literal: "Literal",
+	LogicalExpression: "LogicalExpression",
+	MemberExpression: "MemberExpression",
+	NewExpression: "NewExpression",
+	ObjectExpression: "ObjectExpression",
+	ParenthesizedExpression: "ParenthesizedExpression",
+	Program: "Program",
+	Property: "Property",
+	SpreadElement: "SpreadElement",
+	TSAsExpression: "TSAsExpression",
+	TSTypeAssertion: "TSTypeAssertion",
+	TaggedTemplateExpression: "TaggedTemplateExpression",
+	TemplateLiteral: "TemplateLiteral",
+	TypeCastExpression: "TypeCastExpression",
+	UnaryExpression: "UnaryExpression",
+	VariableDeclarator: "VariableDeclarator",
+} as const;
+/** Type-only import discriminators (`importKind`). */
+const IMPORT_KIND = { type: "type" } as const;
+
 const isNode = (value: unknown): value is AstNode =>
 	value !== null && typeof value === "object" && "type" in value && typeof value.type === "string";
 
@@ -122,27 +170,27 @@ const walkNode = (root: AstValue, visit: AstVisitor): void => {
 };
 
 const propertyName = (property: AstNode): string | undefined => {
-	if (property.type !== "Property") return undefined;
+	if (property.type !== NODE_KIND.Property) return undefined;
 	const key = property.key;
-	if (key?.type === "Identifier") return key.name;
-	if (key?.type === "Literal") return String(key.value);
+	if (key?.type === NODE_KIND.Identifier) return key.name;
+	if (key?.type === NODE_KIND.Literal) return String(key.value);
 	return undefined;
 };
 
 const memberName = (member: AstNode): string | undefined => {
-	if (member.type !== "MemberExpression") return undefined;
-	if (!member.computed && member.property?.type === "Identifier") return member.property.name;
-	if (member.computed && member.property?.type === "Literal") return String(member.property.value);
+	if (member.type !== NODE_KIND.MemberExpression) return undefined;
+	if (!member.computed && member.property?.type === NODE_KIND.Identifier) return member.property.name;
+	if (member.computed && member.property?.type === NODE_KIND.Literal) return String(member.property.value);
 	return undefined;
 };
 
 const sourceName = (source: AstNode | undefined): string | undefined =>
-	source?.type === "Literal" && typeof source.value === "string" ? source.value : undefined;
+	source?.type === NODE_KIND.Literal && typeof source.value === "string" ? source.value : undefined;
 
 const importedName = (specifier: AstNode): string | undefined => {
-	if (specifier.type !== "ImportSpecifier") return undefined;
-	if (specifier.imported?.type === "Identifier") return specifier.imported.name;
-	if (specifier.imported?.type === "Literal") return String(specifier.imported.value);
+	if (specifier.type !== NODE_KIND.ImportSpecifier) return undefined;
+	if (specifier.imported?.type === NODE_KIND.Identifier) return specifier.imported.name;
+	if (specifier.imported?.type === NODE_KIND.Literal) return String(specifier.imported.value);
 	return undefined;
 };
 
@@ -180,55 +228,55 @@ const findDynamicExpression = (
 		seen.add(value);
 
 		switch (value.type) {
-			case "Literal":
+			case NODE_KIND.Literal:
 				continue;
-			case "Identifier":
+			case NODE_KIND.Identifier:
 				if (staticBindings.has(value.name)) continue;
 				return { node: value, bad: "unresolved identifier" };
-			case "MemberExpression":
+			case NODE_KIND.MemberExpression:
 				return { node: value, bad: "member expression value" };
-			case "TemplateLiteral":
+			case NODE_KIND.TemplateLiteral:
 				if ((value.expressions?.length ?? 0) > 0)
 					return { node: value, bad: "template interpolation" };
 				continue;
-			case "ArrowFunctionExpression":
-			case "FunctionExpression":
-			case "FunctionDeclaration":
+			case NODE_KIND.ArrowFunctionExpression:
+			case NODE_KIND.FunctionExpression:
+			case NODE_KIND.FunctionDeclaration:
 				return { node: value, bad: "function argument" };
-			case "CallExpression":
-			case "NewExpression":
-			case "TaggedTemplateExpression":
+			case NODE_KIND.CallExpression:
+			case NODE_KIND.NewExpression:
+			case NODE_KIND.TaggedTemplateExpression:
 				return { node: value, bad: "dynamic helper call" };
-			case "SpreadElement":
+			case NODE_KIND.SpreadElement:
 				return { node: value, bad: "spread argument" };
-			case "Property":
+			case NODE_KIND.Property:
 				if (value.computed) stack.push(value.key);
 				stack.push(value.value);
 				continue;
-			case "ObjectExpression":
-			case "ArrayExpression":
+			case NODE_KIND.ObjectExpression:
+			case NODE_KIND.ArrayExpression:
 				for (const child of value.properties ?? value.elements ?? []) stack.push(child);
 				continue;
-			case "ConditionalExpression":
+			case NODE_KIND.ConditionalExpression:
 				stack.push(value.alternate, value.consequent);
 				continue;
-			case "LogicalExpression":
+			case NODE_KIND.LogicalExpression:
 				stack.push(value.right, value.left);
 				continue;
-			case "UnaryExpression":
-			case "AwaitExpression":
-			case "TSAsExpression":
-			case "TSTypeAssertion":
-			case "TypeCastExpression":
-			case "ChainExpression":
-			case "ParenthesizedExpression":
+			case NODE_KIND.UnaryExpression:
+			case NODE_KIND.AwaitExpression:
+			case NODE_KIND.TSAsExpression:
+			case NODE_KIND.TSTypeAssertion:
+			case NODE_KIND.TypeCastExpression:
+			case NODE_KIND.ChainExpression:
+			case NODE_KIND.ParenthesizedExpression:
 				stack.push(value.argument ?? value.expression);
 				continue;
-			case "JSXExpressionContainer":
+			case NODE_KIND.JSXExpressionContainer:
 				stack.push(value.expression);
 				continue;
-			case "Program":
-			case "ExpressionStatement":
+			case NODE_KIND.Program:
+			case NODE_KIND.ExpressionStatement:
 				stack.push(value.expression ?? value.body);
 				continue;
 			default:
@@ -253,12 +301,12 @@ const createApiResolver = () => {
 	const shadowedCalls = new WeakSet<AstNode>();
 
 	const registerImport = (node: AstNode): void => {
-		if (node.importKind === "type") return;
+		if (node.importKind === IMPORT_KIND.type) return;
 		const source = sourceName(node.source);
 		if (source !== SOURCE.core && source !== SOURCE.css && source !== SOURCE.design) return;
 		for (const specifier of node.specifiers ?? []) {
-			if (specifier.importKind === "type") continue;
-			if (specifier.type === "ImportNamespaceSpecifier") {
+			if (specifier.importKind === IMPORT_KIND.type) continue;
+			if (specifier.type === NODE_KIND.ImportNamespaceSpecifier) {
 				namespaces.set(specifier.local.name, source);
 				continue;
 			}
@@ -272,8 +320,8 @@ const createApiResolver = () => {
 	};
 
 	const resolveMember = (expression: unknown): string | undefined => {
-		if (!isNode(expression) || expression.type !== "MemberExpression") return undefined;
-		if (expression.object?.type !== "Identifier") return undefined;
+		if (!isNode(expression) || expression.type !== NODE_KIND.MemberExpression) return undefined;
+		if (expression.object?.type !== NODE_KIND.Identifier) return undefined;
 		const object = expression.object.name;
 		const property = memberName(expression);
 		if (property === undefined) return undefined;
@@ -284,17 +332,17 @@ const createApiResolver = () => {
 	};
 
 	const resolveFactory = (expression: unknown): string | undefined => {
-		if (!isNode(expression) || expression.type !== "CallExpression") return undefined;
-		if (expression.callee?.type === "Identifier") return factories.get(expression.callee.name);
+		if (!isNode(expression) || expression.type !== NODE_KIND.CallExpression) return undefined;
+		if (expression.callee?.type === NODE_KIND.Identifier) return factories.get(expression.callee.name);
 		return resolveMember(expression.callee);
 	};
 
 	const scan = (program: AstNode): void => {
 		walkNode(program, (node) => {
-			if (node.type === "ImportDeclaration") registerImport(node);
+			if (node.type === NODE_KIND.ImportDeclaration) registerImport(node);
 		});
 		walkNode(program, (node) => {
-			if (node.type !== "VariableDeclarator" || node.id?.type !== "Identifier") return;
+			if (node.type !== NODE_KIND.VariableDeclarator || node.id?.type !== NODE_KIND.Identifier) return;
 			if (node.init !== undefined) declarations.set(node.id.name, node.init);
 			const factory = resolveFactory(node.init);
 			if (factory === API.cssFactory || factory === API.designFactory) instances.add(node.id.name);
@@ -320,21 +368,21 @@ const createApiResolver = () => {
 			}
 			if (!isNode(value)) continue;
 
-			if (value.type === "CallExpression") {
+			if (value.type === NODE_KIND.CallExpression) {
 				const callee = value.callee;
 				const name =
-					callee?.type === "Identifier"
+					callee?.type === NODE_KIND.Identifier
 						? callee.name
-						: callee?.type === "MemberExpression" && callee.object?.type === "Identifier"
+						: callee?.type === NODE_KIND.MemberExpression && callee.object?.type === NODE_KIND.Identifier
 							? callee.object.name
 							: undefined;
 				if (name !== undefined && current.shadowed.has(name)) shadowedCalls.add(value);
 			}
 
 			if (
-				value.type === "FunctionDeclaration" ||
-				value.type === "FunctionExpression" ||
-				value.type === "ArrowFunctionExpression"
+				value.type === NODE_KIND.FunctionDeclaration ||
+				value.type === NODE_KIND.FunctionExpression ||
+				value.type === NODE_KIND.ArrowFunctionExpression
 			) {
 				const shadowed = new Set(current.shadowed);
 				for (const parameter of value.params ?? []) {
@@ -342,7 +390,7 @@ const createApiResolver = () => {
 					while (patternStack.length > 0) {
 						const pattern = patternStack.pop();
 						if (!isNode(pattern)) continue;
-						if (pattern.type === "Identifier") shadowed.add(pattern.name);
+						if (pattern.type === NODE_KIND.Identifier) shadowed.add(pattern.name);
 						for (const key of Object.keys(pattern)) {
 							if (key !== "parent" && key !== "type") patternStack.push(pattern[key]);
 						}
@@ -362,9 +410,9 @@ const createApiResolver = () => {
 	};
 
 	const resolve = (call: AstNode): ApiReference | undefined => {
-		if (call.type !== "CallExpression") return undefined;
+		if (call.type !== NODE_KIND.CallExpression) return undefined;
 		if (shadowedCalls.has(call)) return undefined;
-		if (call.callee?.type === "Identifier") {
+		if (call.callee?.type === NODE_KIND.Identifier) {
 			const kind = direct.get(call.callee.name);
 			if (kind !== undefined) return { kind, name: call.callee.name };
 			if (instances.has(call.callee.name)) return { kind: API.style, name: call.callee.name };
@@ -394,8 +442,8 @@ const countDynamicConditionals = (args: readonly AstNode[]): number => {
 		}
 		if (!isNode(value)) continue;
 		if (
-			value.type === "ConditionalExpression" ||
-			(value.type === "LogicalExpression" && ["||", "??"].includes(value.operator))
+			value.type === NODE_KIND.ConditionalExpression ||
+			(value.type === NODE_KIND.LogicalExpression && ["||", "??"].includes(value.operator))
 		)
 			count += 1;
 		for (const key of Object.keys(value)) {
@@ -421,15 +469,15 @@ const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor
 			continue;
 		}
 		if (!isNode(node)) continue;
-		if (node.type === "Property" && propertyName(node) === "$raw") continue;
-		if (node.type === "Literal" && typeof node.value === "string") {
+		if (node.type === NODE_KIND.Property && propertyName(node) === "$raw") continue;
+		if (node.type === NODE_KIND.Literal && typeof node.value === "string") {
 			if (!seen.has(node)) {
 				seen.add(node);
 				report(node);
 			}
 			continue;
 		}
-		if (node.type === "ConditionalExpression" || node.type === "LogicalExpression") continue;
+		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression) continue;
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
@@ -488,7 +536,7 @@ const walkStrictPropertyLiterals = (
 			continue;
 		}
 		if (!isNode(node)) continue;
-		if (node.type === "Property") {
+		if (node.type === NODE_KIND.Property) {
 			const name = propertyName(node);
 			if (name === undefined) {
 				stack.push(node.value);
@@ -503,7 +551,7 @@ const walkStrictPropertyLiterals = (
 			}
 			continue;
 		}
-		if (node.type === "ConditionalExpression" || node.type === "LogicalExpression") continue;
+		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression) continue;
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
@@ -600,7 +648,7 @@ const migrationAnalysis = (program: AstNode): CallAnalysis[] => {
 	resolver.scan(program);
 	const calls: CallAnalysis[] = [];
 	walkNode(program, (node) => {
-		if (node.type !== "CallExpression") return;
+		if (node.type !== NODE_KIND.CallExpression) return;
 		const api = resolver.resolve(node);
 		if (api === undefined) return;
 		const dynamic = isExtractionLane(api)
@@ -650,7 +698,7 @@ const rules: Record<string, RuleDefinition> = {
 				if (!isTokenLane(api)) return;
 				for (const arg of node.arguments) {
 					walkNode(arg, (inner) => {
-						if (inner.type !== "Property" || propertyName(inner) !== "$raw") return;
+						if (inner.type !== NODE_KIND.Property || propertyName(inner) !== "$raw") return;
 						context.report({
 							node: inner,
 							message:
@@ -669,7 +717,7 @@ const rules: Record<string, RuleDefinition> = {
 				for (const arg of node.arguments) {
 					walkNode(arg, (inner) => {
 						if (
-							inner.type !== "Literal" ||
+							inner.type !== NODE_KIND.Literal ||
 							typeof inner.value !== "string" ||
 							!ARBITRARY_RE.test(inner.value)
 						)
@@ -721,7 +769,7 @@ const rules: Record<string, RuleDefinition> = {
 					const seen = new Set<AstNode>();
 					walkNode(arg, (inner) => {
 						const name = propertyName(inner);
-						if (inner.type !== "Property" || name === undefined || !DESIGN_MODULE_KEYS.has(name))
+						if (inner.type !== NODE_KIND.Property || name === undefined || !DESIGN_MODULE_KEYS.has(name))
 							return;
 						walkDesignValues(inner.value, seen, (literal) => {
 							if (legacy.allows(literal.value)) return;
@@ -742,7 +790,7 @@ const rules: Record<string, RuleDefinition> = {
 			return withResolver((node, api) => {
 				if (!isStaticLane(api)) return;
 				for (const arg of node.arguments) {
-					if (arg.type !== "SpreadElement") continue;
+					if (arg.type !== NODE_KIND.SpreadElement) continue;
 					context.report({
 						node: arg,
 						message:
@@ -867,20 +915,20 @@ const rules: Record<string, RuleDefinition> = {
 					const resolver = createApiResolver();
 					resolver.scan(node);
 					walkNode(node, (opening) => {
-						if (opening.type !== "JSXOpeningElement") return;
+						if (opening.type !== NODE_KIND.JSXOpeningElement) return;
 						let stylePropsSpread = false;
 						const explicitProps: { name: string; node: AstNode }[] = [];
 						for (const attribute of opening.attributes ?? []) {
-							if (attribute.type === "JSXSpreadAttribute") {
+							if (attribute.type === NODE_KIND.JSXSpreadAttribute) {
 								const expression = attribute.argument;
 								if (
-									expression?.type === "CallExpression" &&
+									expression?.type === NODE_KIND.CallExpression &&
 									resolver.resolve(expression)?.method === STYLE_METHOD.props
 								)
 									stylePropsSpread = true;
 								continue;
 							}
-							if (attribute.type !== "JSXAttribute") continue;
+							if (attribute.type !== NODE_KIND.JSXAttribute) continue;
 							const name = attribute.name?.name;
 							if (name === "className" || name === "style")
 								explicitProps.push({ name, node: attribute });

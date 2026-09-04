@@ -14,6 +14,7 @@
 import { parseSync } from "oxc-parser";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";
 import type { ConstantScope } from "pandwind/vite/cx-inline";
+import { NodeKind, ImportKindTag } from "pandwind/tw/literal";
 
 interface PlaygroundSuccess {
 	ok: true;
@@ -103,7 +104,7 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 		}
 		if (node === null || typeof node !== "object") return;
 		const n = node as { type?: string; end?: number; expression?: { end?: number } };
-		if (n.type === "TSAsExpression" || n.type === "TSSatisfiesExpression") {
+		if (n.type === NodeKind.TSAsExpression || n.type === NodeKind.TSSatisfiesExpression) {
 			const inner = n.expression;
 			if (typeof inner?.end === "number" && typeof n.end === "number") cuts.push([inner.end, n.end]);
 		}
@@ -113,24 +114,24 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	};
 	walk(parsed.program);
 	for (const statement of statements) {
-		if (statement.type === "ImportDeclaration") {
-			if (statement.importKind === "type") {
+		if (statement.type === NodeKind.ImportDeclaration) {
+			if (statement.importKind === ImportKindTag.Type) {
 				cuts.push([statement.start, statement.end]);
 				continue;
 			}
 			const source = statement.source?.value ?? "";
 			for (const spec of statement.specifiers ?? []) {
-				if (spec.type === "ImportSpecifier" && spec.importKind === "type") continue;
+				if (spec.type === NodeKind.ImportSpecifier && spec.importKind === ImportKindTag.Type) continue;
 				const local = spec.local?.name;
 				if (local === undefined) continue;
-				if (spec.type === "ImportSpecifier")
+				if (spec.type === NodeKind.ImportSpecifier)
 					imports.push({ local, source, imported: spec.imported?.name ?? spec.imported?.value });
 				else imports.push({ local, source });
 			}
 			cuts.push([statement.start, statement.end]);
-		} else if (statement.type === "TSExportAssignment" || statement.type === "ExportDefaultDeclaration") {
+		} else if (statement.type === NodeKind.TSExportAssignment || statement.type === NodeKind.ExportDefaultDeclaration) {
 			cuts.push([statement.start, statement.end]);
-		} else if (statement.type === "ExportNamedDeclaration") {
+		} else if (statement.type === NodeKind.ExportNamedDeclaration) {
 			const inner = statement.declaration;
 			if (inner === undefined) cuts.push([statement.start, statement.end]);
 			else {
@@ -138,7 +139,7 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 				for (const decl of inner.declarations ?? []) {
 					if (decl.id?.name !== undefined) exportNames.push(decl.id.name);
 				}
-				if (inner.type === "FunctionDeclaration" && (inner as { id?: { name?: string } }).id?.name)
+				if (inner.type === NodeKind.FunctionDeclaration && (inner as { id?: { name?: string } }).id?.name)
 					exportNames.push((inner as { id?: { name?: string } }).id!.name!);
 			}
 		}
@@ -180,16 +181,16 @@ function prepare(code: string, mode: EvalMode): Prepared {
 			declarations?: Array<{ id?: { name?: string } }>;
 			id?: { name?: string };
 		};
-		if (s.type === "VariableDeclaration") {
+		if (s.type === NodeKind.VariableDeclaration) {
 			for (const decl of s.declarations ?? []) if (decl.id?.name) declaredNames.push(decl.id.name);
-		} else if (s.type === "FunctionDeclaration" || s.type === "ClassDeclaration") {
+		} else if (s.type === NodeKind.FunctionDeclaration || s.type === NodeKind.ClassDeclaration) {
 			if (s.id?.name) declaredNames.push(s.id.name);
 		}
 	}
 	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon.
 	let lastExpr: { start: number; end: number } | undefined;
 	for (const statement of statements) {
-		if (statement.type === "ExpressionStatement") lastExpr = statement;
+		if (statement.type === NodeKind.ExpressionStatement) lastExpr = statement;
 	}
 	const consts = collectModuleConstants(
 		parsed.program as unknown as Parameters<typeof collectModuleConstants>[0],
@@ -239,25 +240,25 @@ function isStaticNode(node: unknown, consts: ConstantScope): boolean {
 	const n = node as { type?: string; name?: string } | null;
 	if (n === null || n === undefined || typeof n !== "object") return true;
 	switch (n.type) {
-		case "Literal":
+		case NodeKind.Literal:
 			return true;
-		case "Identifier":
+		case NodeKind.Identifier:
 			return n.name === "undefined" || consts.has(n.name ?? "");
-		case "ObjectExpression":
+		case NodeKind.ObjectExpression:
 			return (
 				(n as { properties?: Array<{ type?: string; value?: unknown }> }).properties ?? []
-			).every((prop) => prop.type === "Property" && isStaticNode(prop.value, consts));
-		case "ArrayExpression":
+			).every((prop) => prop.type === NodeKind.Property && isStaticNode(prop.value, consts));
+		case NodeKind.ArrayExpression:
 			return ((n as { elements?: Array<unknown> }).elements ?? []).every((el) =>
 				isStaticNode(el, consts),
 			);
-		case "TemplateLiteral":
+		case NodeKind.TemplateLiteral:
 			return ((n as { expressions?: Array<unknown> }).expressions ?? []).every((ex) =>
 				isStaticNode(ex, consts),
 			);
-		case "UnaryExpression":
+		case NodeKind.UnaryExpression:
 			return isStaticNode((n as { argument?: unknown }).argument, consts);
-		case "ConditionalExpression": {
+		case NodeKind.ConditionalExpression: {
 			const parts = n as { test?: unknown; consequent?: unknown; alternate?: unknown };
 			return (
 				isStaticNode(parts.test, consts) &&
@@ -265,17 +266,17 @@ function isStaticNode(node: unknown, consts: ConstantScope): boolean {
 				isStaticNode(parts.alternate, consts)
 			);
 		}
-		case "LogicalExpression": {
+		case NodeKind.LogicalExpression: {
 			const parts = n as { left?: unknown; right?: unknown };
 			return isStaticNode(parts.left, consts) && isStaticNode(parts.right, consts);
 		}
-		case "BinaryExpression": {
+		case NodeKind.BinaryExpression: {
 			const parts = n as { left?: unknown; right?: unknown };
 			return isStaticNode(parts.left, consts) && isStaticNode(parts.right, consts);
 		}
-		case "CallExpression": {
+		case NodeKind.CallExpression: {
 			const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-			if (call.callee?.type === "Identifier" && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
+			if (call.callee?.type === NodeKind.Identifier && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
 				return (call.arguments ?? []).every((arg) => isStaticNode(arg, consts));
 			}
 			return false;
@@ -292,7 +293,7 @@ function classifyFold(
 	const parsed = parseSync("fold.tsx", exprText, { sourceType: "module", lang: "tsx" });
 	const statement = (parsed.program as unknown as { body: Array<Record<string, unknown>> })
 		.body?.[0];
-	if (statement === undefined || statement.type !== "ExpressionStatement") {
+	if (statement === undefined || statement.type !== NodeKind.ExpressionStatement) {
 		return { fold: "runtime", note: "no expression to analyze" };
 	}
 	const expr = statement.expression as { type?: string };
@@ -316,43 +317,43 @@ function classifyFold(
 		const n = node as { type?: string; name?: string; operator?: string } | null;
 		if (n === null || typeof n !== "object") return;
 		switch (n.type) {
-			case "Literal":
+			case NodeKind.Literal:
 				return;
-			case "Identifier":
+			case NodeKind.Identifier:
 				if (n.name !== "undefined" && !consts.has(n.name ?? "")) partialEligible = false;
 				return;
-			case "ObjectExpression": {
+			case NodeKind.ObjectExpression: {
 				for (const prop of ((n as { properties?: Array<{ value?: unknown }> }).properties ??
 					[]) as Array<{ value?: unknown }>) {
 					visit(prop.value);
 				}
 				return;
 			}
-			case "ArrayExpression": {
+			case NodeKind.ArrayExpression: {
 				for (const el of (n as { elements?: Array<unknown> }).elements ?? []) visit(el);
 				return;
 			}
-			case "TemplateLiteral": {
+			case NodeKind.TemplateLiteral: {
 				for (const ex of (n as { expressions?: Array<unknown> }).expressions ?? []) visit(ex);
 				return;
 			}
-			case "UnaryExpression":
+			case NodeKind.UnaryExpression:
 				visit((n as { argument?: unknown }).argument);
 				return;
-			case "BinaryExpression": {
+			case NodeKind.BinaryExpression: {
 				const parts = n as { left?: unknown; right?: unknown };
 				visit(parts.left);
 				visit(parts.right);
 				return;
 			}
-			case "ConditionalExpression": {
+			case NodeKind.ConditionalExpression: {
 				dynamicConditionals++;
 				const parts = n as { consequent?: unknown; alternate?: unknown };
 				visit(parts.consequent);
 				visit(parts.alternate);
 				return;
 			}
-			case "LogicalExpression": {
+			case NodeKind.LogicalExpression: {
 				const parts = n as { operator?: string; left?: unknown; right?: unknown };
 				if (parts.operator === "&&") {
 					// kept-dynamic test + static right side is fine
@@ -364,9 +365,9 @@ function classifyFold(
 				}
 				return;
 			}
-			case "CallExpression": {
+			case NodeKind.CallExpression: {
 				const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-				if (call.callee?.type === "Identifier" && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
+				if (call.callee?.type === NodeKind.Identifier && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
 					sawFoldCall = true;
 					for (const arg of call.arguments ?? []) visit(arg);
 					return;
