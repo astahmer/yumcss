@@ -9,3 +9,8 @@
  */
 export * from "./contracts.ts";
 export { buildTokenGovernanceReport, type GovernanceInputs } from "./report.ts";
+export {
+	buildEffectiveTokenContext,
+	type EffectiveTokenContext,
+	type EffectiveTokenContextInputs,
+} from "./effective-token-context.ts";
