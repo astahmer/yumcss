@@ -217,19 +217,19 @@ function visit(
 			// Dynamic-but-bounded raw values remap to the configured token
 			// spelling when the catalog proves an exact value match (the catalog
 			// only contains entries derived from real class-list candidates of
-			// this utility). Opacity modifiers verify separately, so they stay raw.
-			const token =
-				valueTokens === undefined || part.includes("/") ? part : (valueTokens[utility]?.[part] ?? part);
-				push(
-					classes,
-					signatures,
-					conflicts,
-					compose,
-					token ? `${className}-${token}` : className,
-					frame.prefix,
-					utility,
-					token,
-				);
+			// this utility, keyed by whole resolved values). Opacity modifiers
+			// like `#3182ce/50` never match a catalog key, so they stay raw.
+			const token = valueTokens?.[utility]?.[part] ?? part;
+			push(
+				classes,
+				signatures,
+				conflicts,
+				compose,
+				token ? `${className}-${token}` : className,
+				frame.prefix,
+				utility,
+				token,
+			);
 		}
 	}
 }
