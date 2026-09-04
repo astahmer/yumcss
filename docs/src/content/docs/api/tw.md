@@ -37,12 +37,23 @@ tw({ rounded: "xl", bg: "white", p: "6", hover: { bg: "gray-50" } });
 - **`pandwind-tw scan`** — Tailwind v4 scans source files for literal candidates, so
   dynamically composed classes are invisible to it. The scanner statically
   evaluates every `tw({ ... })` call through the same runtime and writes a
-  safelist file that Tailwind generates CSS for.
+  safelist file that Tailwind generates CSS for. Finite dynamic arguments —
+  ternaries, unions, arrays, literal `cx()` conditionals over known constants —
+  register **every possible class** they may produce, so runtime selection
+  still has CSS. Only design-system-verified classes enter the safelist:
+  every token must compile through the generated conflict map. An
+  unresolvable token (`bg-nope-999`, a class from a plugin Tailwind never
+  saw) is never invented; it is reported with its source line in
+  `TwScanResult.unresolvedTokens` and printed per-token by the CLI as a
+  warning.
 - **`pandwindVite()`** — statically inlines literal `tw({ ... })` calls with
   literal arguments into plain class strings before Tailwind's scanner sees
   them. The runtime cost becomes zero and the whole runtime + conflict map
   tree-shake out of the bundle (the generated `tw.ts` is marked `@__PURE__`).
-  Dynamic calls keep working through the runtime.
+  Dynamic calls keep working through the runtime, with the same
+  verification-gate behavior: finite candidates are collected for the
+  scanner, unverified tokens surface through the plugin's `onUnresolved`
+  lane instead of silently disappearing.
 
 ## Agent-ready by construction
 

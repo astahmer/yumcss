@@ -142,7 +142,12 @@ The plugin scans source files (like Tailwind's own scanner) for literal
 `css(...)` calls, resolves them through the design layer and serves the
 deduped CSS — tokens plus atomic rules. Dynamic calls keep working at runtime
 but are not extracted (same constraint as dynamic class names in plain
-Tailwind).
+Tailwind), with one refinement: when a dynamic argument is provably **finite**
+(a ternary, union, array, or set of known constants), the plugin registers
+every possible class the call may produce, so runtime selection still has
+CSS. Only verified classes are registered; anything the design system cannot
+compile is reported through the plugin's `onUnresolved` lane rather than
+silently missing.
 
 ## Design css() — the Figma-inspector vocabulary
 

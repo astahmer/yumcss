@@ -111,6 +111,23 @@ cx(inputs)
 The Vite `cx` compiler folds only what it can prove. Dynamic conditionals,
 unknown helpers, spreads, and non-literal values retain runtime behavior.
 
+### Bounded dynamic values
+
+`tw()`, `css`/`css.class`/`css.group`, `dcss`, and `cx()` share one
+static-first policy for values that are not provably literal:
+
+```text
+dynamic value
+  ├─ finite set (ternary, union, array, constant branches)
+  │    → register every possible output with the scanner
+  │    → static subsets still fold
+  ├─ token fails exact-match conflict-map verification
+  │    → never registered; reported with call-site line
+  │      (scan: unresolvedTokens / vite: onUnresolved)
+  └─ unbounded (helpers, spreads of unknown arrays)
+       → stays runtime; explicit diagnostic, no silent CSS gap
+```
+
 ## Build-time pipelines
 
 ### Vite and unplugin
