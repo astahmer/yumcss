@@ -105,7 +105,11 @@ export interface TokenUsage {
 	readonly start: number;
 	readonly end: number;
 	readonly property?: string;
+	/** Condition path the usage sits under (for example "hover" or "dark"). */
+	readonly condition?: string;
 	readonly theme?: string;
+	/** Authored raw literal, when the usage is a raw value (tokenId is ""). */
+	readonly rawValue?: string;
 	readonly strictness: TokenStrictness;
 	readonly confidence: GovernanceConfidence;
 }
@@ -121,6 +125,10 @@ export interface TokenPolicySnapshot {
 	readonly resolved: boolean;
 	readonly allowedRawValues?: readonly string[];
 	readonly allowedRawPrefixes?: readonly string[];
+	/** Properties that require tokens; literals there are strict violations. */
+	readonly strictProperties?: readonly string[];
+	/** Per-property raw escape hatches (literal values the project declared). */
+	readonly allowedRawValuesByProperty?: Readonly<Record<string, readonly string[]>>;
 	readonly origin?: string;
 }
 
