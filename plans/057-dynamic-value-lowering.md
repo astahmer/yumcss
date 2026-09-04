@@ -62,14 +62,17 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       + typed residual. Bounded interpolations lower through the T5 carrier
       lanes; JS call heads (non-CSS functional notation) fail closed with a
       capability residual (\`opzlszkq\`).
-- [ ] T8 - Runtime-sheet dynamic-value tests: repeated dynamic values dedupe
+- [x] T8 - Runtime-sheet dynamic-value tests: repeated dynamic values dedupe
       rules; var toggle rules resolve condition-specific custom properties with
       base fallback (extends \`tests/runtime-sheet.test.ts\`, \`css-vars.test.ts\`).
-- [ ] T9 - SSR/hydration/browser dynamic tests: theme changes, responsive
+- [x] T9 - SSR/hydration/browser dynamic tests: theme changes, responsive
       conditions, pseudo states through the vars carrier; assert no dynamic
       value leaks into generated CSS (extends \`tests/css-ssr.test.ts\`).
-- [ ] T10 - Docs: dynamic-values section in docs reflecting the routing table
-      and diagnostics; update plan checkboxes as tasks complete.
+- [x] T10 - Docs: dynamic-values section in docs reflecting the routing table
+      and diagnostics; update plan checkboxes as tasks complete. Added the
+      tw() dynamic-values/token-preservation section, the token branch in the
+      technical-overview routing tree, and the plan-057 record in
+      shipped-plans.
 
 ## Definition of done
 
