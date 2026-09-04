@@ -4,7 +4,7 @@ packages:
   - examples/*
   - docs
 allowBuilds:
-  '@parcel/watcher': set this to true or false
+  '@parcel/watcher': true
   "@swc/core": true
   esbuild: true
   msgpackr-extract: true

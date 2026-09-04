@@ -42,6 +42,18 @@
 			"import": "./dist/css/stylex-adapter.js",
 			"default": "./dist/css/stylex-adapter.js"
 		},
+		"./css/panda": {
+			"pandwind": "./src/css/panda-adapter.ts",
+			"types": "./dist/css/panda-adapter.d.ts",
+			"import": "./dist/css/panda-adapter.js",
+			"default": "./dist/css/panda-adapter.js"
+		},
+		"./css/unocss": {
+			"pandwind": "./src/css/unocss-adapter.ts",
+			"types": "./dist/css/unocss-adapter.d.ts",
+			"import": "./dist/css/unocss-adapter.js",
+			"default": "./dist/css/unocss-adapter.js"
+		},
 		"./cx": {
 			"pandwind": "./src/cx/index.ts",
 			"types": "./dist/cx/index.d.ts",
@@ -337,6 +349,7 @@
 		"unplugin": "3.3.0"
 	},
 	"devDependencies": {
+		"@unocss/core": "66.8.1",
 		"@types/node": "26.2.0",
 		"@types/react": "19.2.8",
 		"@types/react-dom": "19.2.4",
