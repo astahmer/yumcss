@@ -14,3 +14,22 @@ export {
 	type EffectiveTokenContext,
 	type EffectiveTokenContextInputs,
 } from "./effective-token-context.ts";
+export {
+	classifyReachability,
+	type ReachabilityInputs,
+	type ReachabilityOutcome,
+} from "./reachability.ts";
+export {
+	suggestRawTokenReplacements,
+	type SuggestionOutcome,
+} from "./suggestions.ts";
+export {
+	collectTokenUsage,
+	resolveUsageAgainstDefinitions,
+	classifyStrictness,
+	policySets,
+	UNRESOLVED_TOKEN_ID,
+	type UsageCollectionResult,
+	type UsageCollectorFile,
+} from "./usage-collector.ts";
+export { analyzeTokenGovernance, type TokenGovernanceOptions } from "./service.ts";
