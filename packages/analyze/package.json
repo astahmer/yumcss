@@ -37,6 +37,12 @@
 			"import": "./dist/collect/index.js",
 			"default": "./dist/collect/index.js"
 		},
+		"./governance": {
+			"pandwind": "./src/governance/index.ts",
+			"types": "./dist/governance/index.d.ts",
+			"import": "./dist/governance/index.js",
+			"default": "./dist/governance/index.js"
+		},
 		"./studio": {
 			"pandwind": "./src/studio/index.ts",
 			"types": "./dist/studio/index.d.ts",
