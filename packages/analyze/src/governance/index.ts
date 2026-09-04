@@ -19,6 +19,7 @@ export {
 	type ReachabilityInputs,
 	type ReachabilityOutcome,
 } from "./reachability.ts";
+export { scanPublicExports, type PublicExportHit } from "./public-export.ts";
 export {
 	suggestRawTokenReplacements,
 	type SuggestionOutcome,
@@ -33,3 +34,17 @@ export {
 	type UsageCollectorFile,
 } from "./usage-collector.ts";
 export { analyzeTokenGovernance, type TokenGovernanceOptions } from "./service.ts";
+export {
+	deriveProjectGovernanceContext,
+	loadOfficialPresetModule,
+	presetCandidates,
+	projectGovernanceInputs,
+	type DerivedProjectContext,
+	type OfficialPresetLoad,
+	type ProjectGovernanceInputs,
+} from "./project-context.ts";
+export {
+	authoredTokenSpelling,
+	buildGovernancePruneChangeset,
+	type GovernancePruneChangeset,
+} from "./prune-changeset.ts";

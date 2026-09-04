@@ -10,6 +10,7 @@ import type {
 	TokenPolicySnapshot,
 } from "./contracts.ts";
 import { buildEffectiveTokenContext, type EffectiveTokenContextInputs } from "./effective-token-context.ts";
+import { scanPublicExports } from "./public-export.ts";
 import { classifyReachability } from "./reachability.ts";
 import { suggestRawTokenReplacements } from "./suggestions.ts";
 import {
@@ -55,6 +56,34 @@ export function analyzeTokenGovernance(options: TokenGovernanceOptions): TokenGo
 		"unresolved-import": [...(options.boundaryHits?.["unresolved-import"] ?? [])],
 	};
 	boundaryHits["dynamic-expression"].push(...collected.boundaryHits["dynamic-expression"]);
+
+	// Public-export boundary: statically string-literal exports of the
+	// scanned files may escape the graph (re-exported design tokens, shared
+	// theme objects), so their references are review-required, never
+	// safe-to-remove. Exact authored-spelling exports hit the token id;
+	// object-literal hits attribute each quoted $-reference by authored
+	// name (ambiguously named or unknown spellings are skipped, not
+	// guessed onto every definition).
+	const exported = scanPublicExports(options.files);
+	const definitionIds = new Set(context.definitions.map((d) => d.id));
+	const idsByAuthoredName = new Map<string, string[]>();
+	for (const def of context.definitions) {
+		const list = idsByAuthoredName.get(def.name) ?? [];
+		list.push(def.id);
+		idsByAuthoredName.set(def.name, list);
+	}
+	for (const hit of exported) {
+		for (const authored of hit.references) {
+			if (hit.tokenId !== null) {
+				// Exact-spelling exports name the id itself; count the hit when
+				// the id exists in the universe.
+				if (definitionIds.has(hit.tokenId)) boundaryHits["public-export"].push(hit.tokenId);
+				continue;
+			}
+			const ids = idsByAuthoredName.get(authored) ?? [];
+			if (ids.length === 1) boundaryHits["public-export"].push(ids[0]!);
+		}
+	}
 
 	const configurationIncomplete =
 		(options.tokenContext?.loaderFailures?.length ?? 0) > 0 ||

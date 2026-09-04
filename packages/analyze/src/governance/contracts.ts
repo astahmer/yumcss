@@ -129,6 +129,13 @@ export interface TokenPolicySnapshot {
 	readonly strictProperties?: readonly string[];
 	/** Per-property raw escape hatches (literal values the project declared). */
 	readonly allowedRawValuesByProperty?: Readonly<Record<string, readonly string[]>>;
+	/**
+	 * Per-property token vocabulary (official config): authored name ->
+	 * canonical token id (or "$name" authored form when the group is
+	 * ambiguous). A value matching its property's vocabulary is a verified
+	 * token reference even without a $ prefix.
+	 */
+	readonly tokenVocabulary?: Readonly<Record<string, Readonly<Record<string, string>>>>;
 	readonly origin?: string;
 }
 

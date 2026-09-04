@@ -51,23 +51,23 @@ describe("studio codemod evaluator", () => {
 			  ],
 			  "lastTargets": [
 			    {
-			      "id": "react-native",
-			      "label": "react-native",
+			      "id": "sass",
+			      "label": "sass",
 			      "role": "both",
 			    },
 			    {
-			      "id": "tokenami",
-			      "label": "tokenami",
+			      "id": "less",
+			      "label": "less",
 			      "role": "both",
 			    },
 			    {
-			      "id": "unocss",
-			      "label": "unocss",
+			      "id": "tamagui",
+			      "label": "tamagui",
 			      "role": "both",
 			    },
 			  ],
-			  "sourceCount": 26,
-			  "targetCount": 29,
+			  "sourceCount": 31,
+			  "targetCount": 34,
 			}
 		`);
 	});

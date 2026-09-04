@@ -85,6 +85,38 @@ describe("collectTokenUsage", () => {
 		);
 		expect(result.usage[0]!.strictness).toBe("unknown");
 	});
+
+	it("classifies bare vocabulary literals as verified token usage", () => {
+		const vocabularyPolicy: TokenPolicySnapshot = {
+			owner: "pandwind",
+			resolved: true,
+			strictProperties: ["color", "padding", "width"],
+			origin: "official-loader",
+			tokenVocabulary: {
+				color: { red: "colors::red", "1/2": "$width" },
+				padding: { "4": "spacing::4" },
+				width: { "1/2": "sizes::1/2" },
+			},
+		};
+		const content = [
+			'const a = tw({ color: "red" });        // vocabulary bare name -> token',
+			'const b = tw({ padding: "4" });        // vocabulary numeric name -> token',
+			'const c = tw({ width: "1/2" });        // vocabulary fraction name -> token',
+			'const d = tw({ color: "#abcdef" });    // not in vocabulary -> strict violation',
+		].join("\n");
+		const result = collectTokenUsage([{ file: "a.tsx", content }], vocabularyPolicy);
+		const byValue = Object.fromEntries(
+			result.usage.map((u) => [(u.rawValue ?? "").replace(/^["']|["']$/g, ""), u]),
+		);
+		expect(byValue.red?.strictness).toBe("token");
+		expect(byValue["4"]?.strictness).toBe("token");
+		expect(byValue["1/2"]?.strictness).toBe("token");
+		// Vocabulary ids flow into the usage fact so reachability counts them.
+		expect(byValue.red?.tokenId).toBe("colors::red");
+		expect(
+			result.usage.filter((u) => u.strictness === "raw-strict-violation"),
+		).toHaveLength(1);
+	});
 });
 
 describe("resolveUsageAgainstDefinitions", () => {

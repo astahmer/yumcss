@@ -180,6 +180,13 @@ export function classifyStrictness(
 	}
 	const literal = usage.rawValue.replace(/^["']|["']$/g, "");
 	if (policy === null || !policy.resolved) return "unknown";
+	// Official-config vocabulary: a bare literal the project declared for this
+	// property (colors.red-500 as "red-500", spacing.4 as "4") is a verified
+	// token reference — the config itself vouches for the mapping.
+	if (policy.tokenVocabulary !== undefined) {
+		const vocab = policy.tokenVocabulary[usage.property];
+		if (vocab !== undefined && typeof vocab[literal] === "string") return "token";
+	}
 	const propertyAllowed = sets.allowedByProperty[usage.property]?.has(literal) ?? false;
 	if (
 		sets.allowedValues.has(literal) ||
@@ -227,8 +234,16 @@ export function collectTokenUsage(
 			walkObject(body, open + 1, "", raws);
 			for (const raw of raws) {
 				const strictness = classifyStrictness(raw, policy, sets);
+				// Vocabulary-classified bare literals carry their canonical id
+				// (or $name authored form for ambiguous names) so the resolver
+				// and reachability can count them as real token usage.
+				const literal = raw.rawValue.replace(/^["']|["']$/g, "");
+				const vocabId =
+					raw.tokenRef === null && strictness === "token"
+						? policy?.tokenVocabulary?.[raw.property]?.[literal]
+						: undefined;
 				const fact: TokenUsage = {
-					tokenId: raw.tokenRef ?? UNRESOLVED_TOKEN_ID,
+					tokenId: raw.tokenRef ?? vocabId ?? UNRESOLVED_TOKEN_ID,
 					kind: "direct",
 					file: file.file,
 					start: raw.start,
@@ -277,6 +292,11 @@ export function resolveUsageAgainstDefinitions(
 		const authored = u.tokenId.replace(/^\$/, "");
 		const dot = authored.indexOf(".");
 		let exact: string | undefined;
+		// Already-canonical ids (per-property vocabulary classification) skip
+		// re-resolution; the id is the definition identity itself.
+		if (authored.includes("::")) {
+			return { ...u, tokenId: authored, strictness: "token" as const, confidence: "verified" as const };
+		}
 		if (dot !== -1) {
 			const group = authored.slice(0, dot);
 			const name = authored.slice(dot + 1);
