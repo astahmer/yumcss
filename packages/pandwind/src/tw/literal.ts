@@ -95,6 +95,12 @@ export function walkWithParent(node: unknown, visit: OxcParentVisitor): void {
  */
 export type LiteralConstantScope = ReadonlyMap<string, unknown>;
 
+/** Result of finite set evaluation: every value the expression may take. */
+export interface LiteralValueSet {
+	/** All values the expression can statically produce. */
+	readonly values: readonly unknown[];
+}
+
 /**
  * Statically evaluate a literal expression. Only pure literal values are
  * supported; anything else (variables, spreads, template interpolation)
@@ -190,6 +196,25 @@ export function evalLiteral(node: Expression | undefined, consts?: LiteralConsta
 	}
 }
 
+/**
+ * Statically enumerate the finite value set of an expression. Returns
+ * `undefined` when the value space is unbounded or unknown (function calls,
+ * non-constant identifiers, spreads of unknown arrays). Where `evalLiteral`
+ * answers "is this a single proven value?", `evalLiteralValues` answers
+ * "what are all the values this could produce?" - enabling finite candidate
+ * discovery for ternaries, short-circuit operators, unions of constants, and
+ * cartesian combinations inside arrays/objects. The combination cap is
+ * enforced by callers via `literalValueSetSize`.
+ */
+export function evalLiteralValues(
+	node: Expression | undefined,
+	consts?: LiteralConstantScope,
+): LiteralValueSet | undefined {
+	const set = collectValueSet(evalSetNode(node, consts));
+	if (set === undefined) return undefined;
+	return { values: set };
+}
+
 /** True when `node` is a call to the bare identifier `tw`. */
 export function isTwCall(node: OxcNode): node is OxcNode & {
 	arguments: Expression[];
@@ -201,4 +226,238 @@ export function isTwCall(node: OxcNode): node is OxcNode & {
 		(node.callee as OxcNode).type === "Identifier" &&
 		(node.callee as { name?: string }).name === "tw"
 	);
+}
+
+type ValueNode = { sets: unknown[] } | { single: unknown };
+
+/**
+ * Internal recursive evaluator producing a set-shaped tree: every node is
+ * either a single proven value or a finite list of alternatives. Leaves use
+ * the same literal rules as evalLiteral; combinator nodes enumerate.
+ */
+function evalSetNode(node: unknown, consts: LiteralConstantScope | undefined): ValueNode {
+	if (node === null || node === undefined) return { single: undefined };
+	const type = (node as OxcNode).type;
+	switch (type) {
+		case "Literal":
+			return { single: (node as unknown as { value?: unknown }).value };
+		case "Identifier": {
+			const name = (node as unknown as { name?: string }).name;
+			if (consts !== undefined && typeof name === "string" && consts.has(name)) {
+				return { single: consts.get(name) };
+			}
+			return { sets: [] };
+		}
+		case "TemplateLiteral": {
+			const template = node as unknown as {
+				quasis: Array<{ value: { cooked: string | null; raw: string } }>;
+				expressions: Expression[];
+			};
+			if (template.quasis.length !== template.expressions.length + 1) return { sets: [] };
+			const pieces: string[] = [
+				template.quasis[0]?.value.cooked ?? template.quasis[0]?.value.raw ?? "",
+			];
+			for (let i = 0; i < template.expressions.length; i++) {
+				const part = collectValueSet(evalSetNode(template.expressions[i], consts));
+				if (part === undefined) return { sets: [] };
+				const tail =
+					template.quasis[i + 1]?.value.cooked ?? template.quasis[i + 1]?.value.raw ?? "";
+				const next: string[] = [];
+				for (const existing of pieces) {
+					for (const value of part) {
+						if (typeof value !== "string") return { sets: [] };
+						next.push(existing + value + tail);
+					}
+				}
+				pieces.length = 0;
+				pieces.push(...next);
+			}
+			return { sets: pieces };
+		}
+		case "BinaryExpression": {
+			const binary = node as unknown as { operator: string; left: Expression; right: Expression };
+			if (binary.operator !== "+") return { sets: [] };
+			const left = collectValueSet(evalSetNode(binary.left, consts));
+			if (left === undefined) return { sets: [] };
+			const right = collectValueSet(evalSetNode(binary.right, consts));
+			if (right === undefined) return { sets: [] };
+			const out: string[] = [];
+			for (const l of left) {
+				for (const r of right) {
+					if (typeof l !== "string" || typeof r !== "string") return { sets: [] };
+					out.push(l + r);
+				}
+			}
+			return { sets: out };
+		}
+		case "UnaryExpression": {
+			const unary = node as unknown as { operator: string; argument: Expression };
+			if (unary.operator !== "-") return { sets: [] };
+			const inner = evalSetNode(unary.argument, consts);
+			if (inner === undefined || !("single" in inner)) return { sets: [] };
+			const value = inner.single;
+			return typeof value === "number" ? { single: -value } : { sets: [] };
+		}
+		case "ConditionalExpression": {
+			const conditional = node as unknown as {
+				test: Expression;
+				consequent: Expression;
+				alternate: Expression | undefined;
+			};
+			const test = collectValueSet(evalSetNode(conditional.test, consts));
+			if (test !== undefined && (test.includes(true) || test.includes(false))) {
+				const chosen = test.includes(true) ? conditional.consequent : conditional.alternate;
+				return evalBranchUnion([chosen], consts);
+			}
+			return evalBranchUnion([conditional.consequent, conditional.alternate], consts);
+		}
+		case "LogicalExpression": {
+			const logical = node as unknown as { operator: string; left: Expression; right: Expression };
+			const left = collectValueSet(evalSetNode(logical.left, consts));
+			if (left === undefined) return { sets: [] };
+			const right = collectValueSet(evalSetNode(logical.right, consts));
+			if (right === undefined) return { sets: [] };
+			const values: unknown[] = [];
+			if (logical.operator === "&&") {
+				const leftTruthy = left.filter((value) => Boolean(value));
+				if (leftTruthy.length === 0) return { single: left[0] ?? false };
+				if (leftTruthy.length !== left.length) values.push(false);
+				for (const value of leftTruthy) {
+					if (typeof value === "boolean" || value === null) {
+						values.push(false);
+					} else {
+						values.push(...right);
+					}
+				}
+				return { sets: values };
+			}
+			if (logical.operator === "||") {
+				for (const value of left) {
+					if (value) {
+						values.push(value);
+					} else {
+						values.push(...right);
+					}
+				}
+				return { sets: values };
+			}
+			if (logical.operator === "??") {
+				for (const value of left) {
+					if (value === null || value === undefined) {
+						values.push(...right);
+					} else {
+						values.push(value);
+					}
+				}
+				return { sets: values };
+			}
+			return { sets: [] };
+		}
+		case "ArrayExpression": {
+			const array = node as unknown as { elements: Array<Expression | null | { type: string }> };
+			const entries: Array<readonly unknown[]> = [];
+			for (const element of array.elements) {
+				if (element === null || (element as { type: string }).type === "SpreadElement") {
+					return { sets: [] };
+				}
+				const valueSet = collectValueSet(evalSetNode(element, consts));
+				if (valueSet === undefined) return { sets: [] };
+				entries.push(valueSet);
+			}
+			const combinations: unknown[][] = [];
+			const build = (index: number, current: unknown[]): void => {
+				if (index === entries.length) {
+					combinations.push([...current]);
+					return;
+				}
+				for (const value of entries[index]!) {
+					current[index] = value;
+					build(index + 1, current);
+				}
+			};
+			build(0, []);
+			return { sets: combinations };
+		}
+		case "ObjectExpression": {
+			const object = node as unknown as { properties: unknown[] };
+			const keys: string[] = [];
+			const entries: Array<readonly unknown[]> = [];
+			for (const property of object.properties) {
+				const prop = property as {
+					type: string;
+					kind: string;
+					computed: boolean;
+					method: boolean;
+					shorthand: boolean;
+					key: { type: string; name?: string; value?: unknown };
+					value: Expression;
+				};
+				if (
+					prop.type !== "Property" ||
+					prop.kind !== "init" ||
+					prop.computed ||
+					prop.method ||
+					prop.shorthand
+				) {
+					return { sets: [] };
+				}
+				const key = prop.key;
+				const name =
+					key.type === "Identifier"
+						? key.name
+						: key.type === "Literal" && typeof key.value === "string"
+							? (key.value as string)
+							: undefined;
+				if (name === undefined) return { sets: [] };
+				const valueSet = collectValueSet(evalSetNode(prop.value, consts));
+				if (valueSet === undefined) return { sets: [] };
+				keys.push(name);
+				entries.push(valueSet);
+			}
+			const objects: Record<string, unknown>[] = [];
+			const build = (index: number, current: Record<string, unknown>): void => {
+				if (index === entries.length) {
+					objects.push({ ...current });
+					return;
+				}
+				for (const value of entries[index]!) {
+					current[keys[index]!] = value;
+					build(index + 1, current);
+				}
+			};
+			build(0, {});
+			return { sets: objects };
+		}
+		default:
+			return { sets: [] };
+	}
+}
+
+function evalBranchUnion(
+	branches: Array<Expression | undefined>,
+	consts: LiteralConstantScope | undefined,
+): ValueNode {
+	const values: unknown[] = [];
+	for (const branch of branches) {
+		const branchValues = collectValueSet(evalSetNode(branch, consts));
+		if (branchValues === undefined) return { sets: [] };
+		values.push(...branchValues);
+	}
+	return { sets: values };
+}
+
+/**
+ * Flatten a set-tree to a concrete value list. Returns undefined for an
+ * empty or unbounded set, or a set exceeding the combination cap.
+ */
+function collectValueSet(node: ValueNode | undefined, cap = 256): readonly unknown[] | undefined {
+	if (node === undefined) return undefined;
+	if ("single" in node) return [node.single];
+	if (node.sets.length === 0 || node.sets.length > cap) return undefined;
+	return node.sets;
+}
+
+/** Total number of combinations a value set represents (0 when unbounded). */
+export function literalValueSetSize(set: LiteralValueSet | undefined): number {
+	return set === undefined ? 0 : set.values.length;
 }
