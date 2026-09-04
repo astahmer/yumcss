@@ -67,6 +67,31 @@ reality; this file is _derived from the compiled design system on every run_,
 contains only what provably exists, and wrong classes are caught as TypeScript
 errors before an agent ever ships.
 
+## Dynamic values and token preservation
+
+Dynamic `tw()` values follow one static-first policy. When a value is
+provably finite (a ternary, union, array, or set of known constants), the
+scanner and the Vite plugin compile **every possible class** the call may
+produce and register them for Tailwind, so runtime selection still has CSS.
+The runtime call itself is never rewritten.
+
+When a finite dynamic value is a raw value that your configured tokens also
+produce (for example `tw({ bg: theme === "dark" ? "#3b82f6" : "#111827" })`
+where `blue-500` and `gray-900` resolve to exactly those values), the
+generated artifact carries a value-to-token catalog built by
+`pandwind-tw generate`. Candidates then reference the token spelling
+(`bg-blue-500`, `bg-gray-900`) instead of arbitrary values, so they merge,
+conflict, and theme like hand-written classes. The remap is exact-match and
+provenance-backed only: a value the catalog cannot prove stays an arbitrary
+value (`bg-[#00ff00]`), opacity-modified values stay raw, and a missing
+catalog keeps raw candidates.
+
+Diagnostics are structured, never guessed: candidates the design system
+cannot verify surface through the scanner's `unresolvedTokens` (CLI) or the
+plugin's `onUnresolved` lane (Vite), with the call site attached.
+Unbounded expressions (helpers, unknown spreads) keep their runtime behavior
+and produce an explicit coverage diagnostic instead of a silent CSS gap.
+
 ## Semantic sub-keys for overloaded utilities
 
 Tailwind overloads one class prefix for several CSS concerns (`text-2xl` size,

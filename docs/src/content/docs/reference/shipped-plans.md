@@ -57,6 +57,21 @@ These features preserve the small frozen authoring API while moving runtime
 work into compiler and host contracts. See [theming](/api/theming/),
 [Vite plugins](/tooling/vite-plugins/), and [backends](/reference/backends/).
 
+### Dynamic value lowering — plan 057
+
+Every dynamic styling value resolves to one of three honest outcomes. A
+finite value set registers every possible output class (`tw()`) or folds the
+static part and lowers the dynamic remainder through `css.vars()` /
+`css.props()` (engine `css()`, JSX-position gated). A dynamic raw value that
+exactly matches a configured token's resolved value emits the token spelling
+instead of an arbitrary value, through a value-to-token catalog generated
+next to the conflict map. Anything unbounded keeps runtime behavior and is
+reported: `unresolvedTokens`/ `onUnresolved` for `tw()`, typed capability
+residuals for codemod migrations. Values never silently disappear from
+generated CSS. See [tw() dynamic values](/api/tw/), the
+[css() vars carrier](/api/css/), and the codemod residuals in
+[codemod tooling](/tooling/codemod/).
+
 ## Tooling and adoption proof
 
 Plans 006, 009–013, 017, and 023 completed the operational layer:

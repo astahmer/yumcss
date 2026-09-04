@@ -121,6 +121,9 @@ dynamic value
   ├─ finite set (ternary, union, array, constant branches)
   │    → register every possible output with the scanner
   │    → static subsets still fold
+  │    → raw values matching a configured token's resolved value emit the
+  │      token spelling instead of an arbitrary value (exact-match only,
+  │      catalog built by codegen)
   ├─ token fails exact-match conflict-map verification
   │    → never registered; reported with call-site line
   │      (scan: unresolvedTokens / vite: onUnresolved)
