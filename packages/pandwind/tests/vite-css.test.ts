@@ -892,3 +892,50 @@ test("finite combinations beyond the cap stay conservative", () => {
 		rmSync(dir, { recursive: true, force: true });
 	}
 });
+
+test("dcss finite dynamic tokens register candidates through the design resolver", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const cond = Math.random() > 0.5;
+			const cls = css({ $text: { color: cond ? "$red-300" : "$blue-600" } });
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// Design tokens resolve through the preset catalog exactly like the
+		// static dcss path -> both branch rules exist with concrete colors.
+		expect(generated).toContain("color:#FC8181");
+		expect(generated).toContain("color:#2b6cb0");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test("dcss literal values outside the token catalog resolve identically at runtime", () => {
+	const dir = makeProject({
+		"src/design.ts": "export const css = (x: unknown) => x;",
+		"src/app.ts": `
+			import { css } from "./design";
+			const cond = Math.random() > 0.5;
+			const cls = css({ $text: { color: cond ? "#ff0000" : "#00ff00" } });
+		`,
+	});
+
+	try {
+		const plugin = pandwindCssVite(examplePreset, { root: dir });
+		const generated = loadGenerated(plugin);
+		// Raw hex values are not preset tokens, but the design resolver
+		// passes unknown values through as-is. The runtime would resolve
+		// the same concrete rules, so finite extraction registers them:
+		// candidate completeness mirrors runtime resolution, it does not
+		// filter by token membership.
+		expect(generated).toContain("color:#ff0000");
+		expect(generated).toContain("color:#00ff00");
+	} finally {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});

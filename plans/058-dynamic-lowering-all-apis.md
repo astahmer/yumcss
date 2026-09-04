@@ -46,11 +46,15 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       literal+dynamic, const-scope composition, group entries, unbounded
       function call stays conservative. (Constant-array index remains an
       evaluator limitation, recorded as T5/T6 follow-up.)
-- [ ] T3 - Finite discovery for `dcss()`: same policy through
-      `resolveDesignStyle` — one resolved design style per value
-      combination, candidates registered through the design token catalog.
-      Token values outside the catalog produce residuals (same
-      exact-match-only rule as T6 of plan 057).
+- [x] T3 - Finite discovery for `dcss()`: dcss already flows through the
+      same `DesignCssArtifactExtractor` as css/class/group, so candidate
+      registration works via `resolveDesignStyle` + the preset token
+      catalog. Verified with fixtures: token ternaries resolve to concrete
+      catalog colors (`$red-300`/`$blue-600`), and literal non-token
+      values resolve identically at runtime (the design adapter passes
+      unknown values through), so extraction registers them too —
+      candidate completeness mirrors runtime resolution rather than
+      filtering by token membership.
 - [ ] T4 - `cx()` candidate union: when a dynamic cx() argument is a finite
       set of literal classes, register the union so the Tailwind scanner
       emits CSS for classes that only appear at runtime. Never fold the
