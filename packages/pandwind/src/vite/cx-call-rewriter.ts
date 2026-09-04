@@ -6,6 +6,7 @@ import type { CssFn } from "../css/create-css.ts";
 import type { OxcNode } from "../tw/literal.ts";
 import { OnUnresolvedTag, type TwConfig, type OnUnresolved } from "./inline.ts";
 import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
+import { tokenHasExactCss } from "./unresolved.ts";
 import {
 	buildFoldSkeleton,
 	collectModuleConstants,
@@ -62,6 +63,14 @@ export interface CxRewriteResult {
 	readonly code: string;
 	readonly inlined: number;
 	readonly unresolved?: UnresolvedToken[];
+	/**
+	 * Class tokens that unfolded cx() calls may produce at runtime from
+	 * finite dynamic arguments (ternaries, unions, constant sets). The host
+	 * registers them with the Tailwind scanner so runtime-selected classes
+	 * still have CSS. Only design-system-verified tokens are registered;
+	 * foreign classes stay runtime-only.
+	 */
+	readonly candidates?: string[];
 }
 
 interface CallNode {
@@ -86,6 +95,89 @@ const walkCalls = (root: unknown, visit: (call: CallNode) => void): void => {
 		const values = Object.values(current);
 		for (let index = values.length - 1; index >= 0; index--) stack.push(values[index]);
 	}
+};
+
+/**
+ * Class candidates for one unfolded cx() call, walking the cx input grammar
+ * conservatively. Record keys register regardless of their values' staticity
+ * (truthiness is a runtime decision; a key is a possible class either way).
+ * Conditionals and logical operators union their branches; arrays union
+ * their elements; known constants resolve to their values. Calls,
+ * templates with expressions, spreads of unknown arrays, and anything else
+ * unbounded contribute nothing — they stay runtime-only rather than guessing.
+ */
+const collectCxClassCandidates = (root: Expression, consts: Map<string, unknown>): string[] => {
+	const found = new Set<string>();
+	const visited = new Set<unknown>();
+	const stack: Array<{ node: unknown; depth: number }> = [{ node: root, depth: 0 }];
+	while (stack.length > 0) {
+		const { node, depth } = stack.pop()!;
+		if (depth > 16 || node === null || typeof node !== "object" || visited.has(node)) continue;
+		visited.add(node);
+		switch ((node as { type?: string }).type) {
+			case "Literal": {
+				const value = (node as { value?: unknown }).value;
+				if (typeof value === "string" && value !== "") found.add(value);
+				break;
+			}
+			case "Identifier": {
+				const known = consts.get((node as { name?: string }).name ?? "");
+				if (known !== undefined) stack.push({ node: known, depth: depth + 1 });
+				break;
+			}
+			case "ConditionalExpression": {
+				const conditional = node as { consequent: unknown; alternate: unknown };
+				stack.push({ node: conditional.consequent, depth: depth + 1 });
+				stack.push({ node: conditional.alternate, depth: depth + 1 });
+				break;
+			}
+			case "LogicalExpression": {
+				const logical = node as { left: unknown; right: unknown };
+				// Both sides are possible results (|| / ??) or the right side
+				// is (&&); visiting left too is a conservative superset.
+				stack.push({ node: logical.left, depth: depth + 1 });
+				stack.push({ node: logical.right, depth: depth + 1 });
+				break;
+			}
+			case "ArrayExpression": {
+				for (const element of (node as { elements: unknown[] }).elements) {
+					if (element !== null) stack.push({ node: element, depth: depth + 1 });
+				}
+				break;
+			}
+			case "ObjectExpression": {
+				for (const property of (node as { properties: unknown[] }).properties) {
+					const prop = property as {
+						type?: string;
+						computed?: boolean;
+						key?: { type?: string; name?: string; value?: unknown };
+					};
+					if (prop.type !== "Property" || prop.computed) continue;
+					const key = prop.key;
+					const name =
+						key?.type === "Identifier"
+							? key.name
+							: key?.type === "Literal" && typeof key.value === "string"
+								? key.value
+								: undefined;
+					if (name !== undefined && name !== "") found.add(name);
+				}
+				break;
+			}
+			default:
+				break;
+		}
+	}
+	return [...found];
+};
+
+/** Register a class only when every token compiles through the design system. */
+const pushVerifiedCandidate = (candidate: string, config: TwConfig, out: string[]): boolean => {
+	for (const token of candidate.split(/\s+/)) {
+		if (token !== "" && !tokenHasExactCss(token, config)) return false;
+	}
+	out.push(candidate);
+	return true;
 };
 
 export class CxCallRewriter {
@@ -131,11 +223,22 @@ export class CxCallRewriter {
 		};
 		const edits: Array<{ start: number; end: number; text: string }> = [];
 		const unresolved: UnresolvedToken[] = [];
+		let candidates: string[] | undefined;
 		const lines =
 			options.onUnresolved !== undefined && options.onUnresolved !== OnUnresolvedTag.Off
 				? createLineIndex(code)
 				: undefined;
 		const partial = options.partialFold !== false;
+		const rawConsts = new Map([...constants].map(([name, known]) => [name, known.value] as const));
+		// Register the finite class union of a call that stays runtime so the
+		// Tailwind scanner can emit CSS for classes that never appear as
+		// static source text. Used on both abandonment paths below.
+		const registerCallCandidates = (call: { arguments: readonly Expression[] }) => {
+			for (const argument of call.arguments) {
+				for (const candidate of collectCxClassCandidates(argument, rawConsts))
+					pushVerifiedCandidate(candidate, config, candidates ??= []);
+			}
+		};
 
 		walkCalls(program, (call) => {
 			if (call.callee?.type !== "Identifier" || !cxNames.has(call.callee.name ?? "")) return;
@@ -160,6 +263,7 @@ export class CxCallRewriter {
 				}
 				// Unknown helpers, spreads, and additional dynamic arguments are
 				// left intact so runtime evaluation retains its original semantics.
+				registerCallCandidates(call);
 				return;
 			}
 			let replacement: string | null = null;
@@ -178,13 +282,18 @@ export class CxCallRewriter {
 					replacement = this.ports.renderSkeleton(skeleton, conditional.index, inputs, merge);
 			}
 			if (replacement !== null) edits.push({ start: call.start, end: call.end, text: replacement });
+			else {
+				registerCallCandidates(call);
+			}
 		});
 
 		let output = code;
 		for (const edit of edits.toSorted((a, b) => b.start - a.start))
 			output = output.slice(0, edit.start) + edit.text + output.slice(edit.end);
-		return edits.length === 0
-			? { code, inlined: 0 }
-			: { code: output, inlined: edits.length, unresolved };
+		if (edits.length === 0)
+			return candidates !== undefined && candidates.length > 0
+				? { code, inlined: 0, candidates }
+				: { code, inlined: 0 };
+		return { code: output, inlined: edits.length, unresolved, candidates };
 	}
 }

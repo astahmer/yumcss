@@ -24,6 +24,8 @@ export interface InlineResult {
 	readonly code: string;
 	readonly inlined: number;
 	readonly unresolved?: UnresolvedToken[];
+	/** Verified class candidates from unfolded finite dynamic cx() arguments. */
+	readonly candidates?: string[];
 }
 
 export interface InlineCxCallsOptions extends CxCompilerOptions {

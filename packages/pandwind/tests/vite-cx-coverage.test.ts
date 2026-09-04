@@ -271,3 +271,74 @@ describe("fold coverage across a realistic corpus", () => {
 		);
 	});
 });
+
+describe("finite dynamic cx() arguments register scanner candidates", () => {
+	// Unfolded calls stay runtime (selection must not change), but their
+	// finite literal value sets are reported so the Tailwind scanner can
+	// emit CSS for classes that never appear as static source text.
+
+	test("cross-module conditional registers both branch classes", () => {
+		const source = `import { cx } from "./tw";
+			const tone = pickTone();
+			cx(tone === "light" ? "bg-sky-600" : "bg-gray-900");
+		`;
+		const { code, inlined, candidates } = inlineCxCalls(
+			source,
+			"app.ts",
+			config,
+			new Set(["cx"]),
+			{
+				partialFold: false,
+				importedConstants: new Map([["pickTone", { value: "pickTone", declStart: 0 }]]),
+			},
+	);
+	expect(inlined).toBe(0); // selection stays runtime
+	expect(code).toBe(source); // source preserved verbatim
+	expect(candidates).toHaveLength(2);
+	expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900"]));
+		/* prettier-ignore */
+		expect(code).toMatchInlineSnapshot(`
+			"import { cx } from "./tw";
+						const tone = pickTone();
+						cx(tone === "light" ? "bg-sky-600" : "bg-gray-900");
+					"
+		`);
+	});
+
+	test("truthy object keys register as possible classes, call stays runtime", () => {
+		const source = `import { cx } from "./tw";
+			const flags = getFlags();
+			cx(flags && { "underline": true, "font-bold": true });
+		`;
+		const { inlined, candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+		expect(inlined).toBe(0);
+		expect(candidates).toEqual(["underline", "font-bold"]);
+	});
+
+	test("foreign classes are not registered", () => {
+		const source = `import { cx } from "./tw";
+			cx(Math.random() > 0.5 ? "my-custom-plugin-class" : "another-one");
+		`;
+		const { candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+		expect(candidates).toBeUndefined();
+	});
+
+	test("unbounded arguments contribute no candidates", () => {
+		const source = `import { cx } from "./tw";
+			cx(dynamicClassName());
+		`;
+		const { candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+		expect(candidates).toBeUndefined();
+	});
+
+	test("array arguments register their literal string entries", () => {
+		const source = `import { cx } from "./tw";
+			const tone = pickTone();
+			cx([tone === "light" ? "bg-sky-600" : "bg-gray-900", "p-6"]);
+		`;
+	const { inlined, candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+	expect(inlined).toBe(0);
+	expect(candidates).toHaveLength(3);
+	expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900", "p-6"]));
+	});
+});

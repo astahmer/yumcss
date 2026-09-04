@@ -334,6 +334,9 @@ export function createInlineTwPluginCore(options: PandwindViteOptions = {}): Inl
 				working = cxResult.code;
 				inlined += cxResult.inlined;
 				cxUnresolved = cxResult.unresolved ?? [];
+				if (reportTwCandidates !== undefined && cxResult.candidates?.length) {
+					reportTwCandidates(cxResult.candidates);
+				}
 			}
 
 			const optimized = runtimePruner.transform(working, id);

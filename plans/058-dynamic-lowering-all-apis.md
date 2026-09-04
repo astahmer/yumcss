@@ -55,10 +55,17 @@ dynamic + unbounded      -> runtime fallback + explicit coverage diagnostic
       unknown values through), so extraction registers them too —
       candidate completeness mirrors runtime resolution rather than
       filtering by token membership.
-- [ ] T4 - `cx()` candidate union: when a dynamic cx() argument is a finite
+- [x] T4 - `cx()` candidate union: when a dynamic cx() argument is a finite
       set of literal classes, register the union so the Tailwind scanner
       emits CSS for classes that only appear at runtime. Never fold the
       call itself — selection stays runtime. Unbounded args stay untouched.
+      Implementation: conservative cx-grammar walker
+      (literals, known constants, conditionals/logical union, arrays,
+      record keys; unbounded constructs contribute nothing) over every
+      abandoned or unfolded call, each candidate verified through
+      `tokenHasExactCss` before registration. Partially foldable calls
+      (skeleton rendering) keep their existing behavior — candidates only
+      cover calls that remain fully runtime.
 - [ ] T5 - Candidate plumbing unification: extend the plugin's candidate
       collection (`@source inline` emission + `pandwind-tw scan` module
       mode) to accept candidates from css/design/cx lanes, not only tw.
