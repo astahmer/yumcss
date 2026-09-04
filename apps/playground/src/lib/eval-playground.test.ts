@@ -99,4 +99,47 @@ describe("evalPlayground", () => {
 		const result = run(`tw({ broken`);
 		expect(result.ok).toBe(false);
 	});
+
+	test("a real file with imports and exports evaluates after module syntax is stripped", () => {
+		const result = run(
+			[
+				'import { tw } from "pandwind";',
+				'import type { Tw } from "pandwind/tw";',
+				"",
+				'export const tone = "red-500" as const;',
+				"",
+				"export function Button() {",
+				"  return null;",
+				"}",
+				"",
+				'tw({ bgColor: tone, p: "4" });',
+			].join("\n"),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.output).toContain("bg-red-500");
+			expect(result.output).toContain("p-4");
+			expect(result.fold).toBe("full");
+		}
+	});
+
+	test("a multi-line named import is stripped whole", () => {
+		const result = run(
+			[
+				"import {",
+				"  tw,",
+				'} from "pandwind";',
+				"",
+				'tw({ display: "flex" });',
+			].join("\n"),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) expect(result.output).toContain("flex");
+	});
+
+	test("a file with imports but no expression reports the friendly error", () => {
+		const result = run('import { tw } from "pandwind";\n\nconst tone = "red-500";');
+		expect(result.ok).toBe(false);
+		if (!result.ok) expect(result.error).toContain("final expression");
+	});
 });

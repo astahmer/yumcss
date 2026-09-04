@@ -1,3 +1,10 @@
+export interface ExampleFile {
+	/** Tab label; mirrors the filename the example would live in. */
+	name: string;
+	/** Full file content, imports included — pasteable into a real project. */
+	code: string;
+}
+
 export interface ExampleDef {
 	/** Route path for this example. */
 	path: string;
@@ -5,67 +12,21 @@ export interface ExampleDef {
 	title: string;
 	/** One-liner shown under the title. */
 	blurb: string;
-	/** Initial editor code. */
-	code: string;
+	/**
+	 * Scenario group shown in the nav. "core" examples are the happy paths;
+	 * "limits" examples document what pandwind genuinely cannot handle.
+	 */
+	group: "core" | "limits";
+	/**
+	 * Optional note about what the example demonstrates or where it hits a
+	 * documented limit — rendered above the editor.
+	 */
+	note?: string;
+	/** One or more files; the first is evaluated, the rest are tabs. */
+	files: readonly ExampleFile[];
 }
 
-/**
- * Per-route examples. Each is a self-contained snippet exercising one
- * pandwind surface; the playground evaluates them with the real bindings.
- */
-export const EXAMPLES: Array<ExampleDef> = [
-	{
-		path: "/",
-		title: "Basics",
-		blurb: "typed tw() objects — wrong values are type errors",
-		code: `tw({
-	bgColor: "red-500",
-	textSize: "lg",
-	rounded: "lg",
-	p: "4",
-})`,
-	},
-	{
-		path: "/conflicts",
-		title: "Conflicts",
-		blurb: "last-wins merging across tw(), css() and raw strings",
-		code: `cx(
-	tw({ p: "4", bgColor: "red-500" }),
-	"px-8 bg-blue-600",
-)
-// px-8 refines p-4 (axis merge), blue wins red entirely`,
-	},
-	{
-		path: "/semantic-tokens",
-		title: "Semantic tokens",
-		blurb: "$tokens flip under [data-theme] scopes",
-		code: `tw({
-	bgColor: "$surface",
-	textColor: "$muted",
-	border: "$hairline",
-})
-// semantic tokens re-bind per theme scope at runtime CSS level`,
-	},
-	{
-		path: "/responsive",
-		title: "Responsive",
-		blurb: "nested variant stacks, compiled statically",
-		code: `tw({
-	flex: true,
-	gap: "2",
-	md: {
-		flex: "col",
-		gap: "6",
-	},
-})`,
-	},
-	{
-		path: "/atoms",
-		title: "css() atoms",
-		blurb: "design-layer properties via css.class, merged by cx",
-		code: `cx(
-	css.class({ color: "$green-500", weight: "semibold" }),
-	tw({ textSize: "lg" }),
-)`,
-	},
-];
+/** Convenience constructor for the single-file majority. */
+export function oneFile(name: string, code: string): readonly ExampleFile[] {
+	return [{ name, code }];
+}

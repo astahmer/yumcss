@@ -45,9 +45,63 @@ interface Prepared {
 	exprText: string;
 }
 
+/**
+ * Statements the sandbox cannot execute: module imports (the sandbox runs
+ * inside `new Function`, not a module loader) and export markers. Removal
+ * is AST-span-based so multi-line named imports, export-wrapped
+ * declarations, and type-only suffixes survive intact: the example source
+ * stays a real, pasteable file while evaluation keeps operating on plain
+ * JS the sandbox can execute (new Function does no TS transform).
+ */
+function stripModuleSyntax(code: string): string {
+	const parsed = parseSync("module-syntax.tsx", code, { sourceType: "module", lang: "tsx" });
+	const statements = ((parsed.program as unknown as { body?: Array<Record<string, unknown>> })
+		.body ?? []) as Array<{ type: string; start: number; end: number }>;
+	const cuts: Array<[number, number]> = [];
+	const unwraps: Array<[number, number]> = [];
+	for (const statement of statements) {
+		if (statement.type === "ImportDeclaration") cuts.push([statement.start, statement.end]);
+		else if (statement.type === "TSExportAssignment" || statement.type === "ExportDefaultDeclaration")
+			cuts.push([statement.start, statement.end]);
+		else if (statement.type === "ExportNamedDeclaration") {
+			const inner = (statement as unknown as { declaration?: { start: number } }).declaration;
+			if (inner === undefined) cuts.push([statement.start, statement.end]);
+			else unwraps.push([statement.start, statement.start + "export ".length]);
+		}
+	}
+	// Type-only suffixes ("as const", "satisfies X") keep their expression
+	// and drop the annotation span, so typed example code still runs.
+	const walk = (node: unknown): void => {
+		if (Array.isArray(node)) {
+			for (const item of node) walk(item);
+			return;
+		}
+		if (node === null || typeof node !== "object") return;
+		const n = node as { type?: string; start?: number; end?: number; expression?: { end?: number } };
+		if (n.type === "TSAsExpression" || n.type === "TSSatisfiesExpression") {
+			const inner = n.expression;
+			if (typeof inner?.end === "number") cuts.push([inner.end, n.end ?? inner.end]);
+		}
+		for (const value of Object.values(node)) {
+			if (value !== null && typeof value === "object") walk(value);
+		}
+	};
+	walk(parsed.program);
+	// Every edit is an (original-start, original-end, replacement) triple so
+	// spans stay valid: apply them in one right-to-left pass.
+	const edits: Array<[number, number, string]> = [
+		...cuts.map(([start, end]): [number, number, string] => [start, end, ""]),
+		...unwraps.map(([start, end]): [number, number, string] => [start, end, ""]),
+	].sort((left, right) => right[0] - left[0]);
+	let out = code;
+	for (const [start, end] of edits) out = out.slice(0, start) + out.slice(end);
+	return out;
+}
+
 /** Parse + locate the last top-level expression statement (the result). */
 function prepare(code: string): Prepared {
-	const parsed = parseSync("playground.tsx", code, { sourceType: "module", lang: "tsx" });
+	const evalCode = stripModuleSyntax(code);
+	const parsed = parseSync("playground.tsx", evalCode, { sourceType: "module", lang: "tsx" });
 	const program = parsed.program as unknown as {
 		body?: Array<{ type: string; start: number; end: number }>;
 	};
@@ -61,15 +115,15 @@ function prepare(code: string): Prepared {
 	);
 	if (lastExpr === undefined) {
 		return {
-			body: `${code}\n;throw new Error("add a final expression — nothing to output");`,
+			body: `${evalCode}\n;throw new Error("add a final expression — nothing to output");`,
 			consts,
 			exprText: "",
 		};
 	}
 	// oxc's ExpressionStatement.end INCLUDES the trailing semicolon - strip it
-	const rawText = code.slice(lastExpr.start, lastExpr.end);
+	const rawText = evalCode.slice(lastExpr.start, lastExpr.end);
 	const exprText = rawText.replace(/;\s*$/, "");
-	const body = `let __pw_out;\n${code.slice(0, lastExpr.start)}__pw_out = (${exprText})${code.slice(lastExpr.end)}\nreturn __pw_out;`;
+	const body = `let __pw_out;\n${evalCode.slice(0, lastExpr.start)}__pw_out = (${exprText})${evalCode.slice(lastExpr.end)}\nreturn __pw_out;`;
 	return { body, consts, exprText };
 }
 
