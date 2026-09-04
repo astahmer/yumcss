@@ -45,7 +45,11 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "./adapter-contract.ts";
-import { findTemplateLiteralEnd } from "./adapter-template-parser.ts";
+import {
+	findTemplateLiteralEnd,
+	camelPropertyName as camelProperty,
+	templateValueExpression as templateDynamicExpression,
+} from "./adapter-template-parser.ts";
 import {
 	JsxStyleHost,
 	type JsxStyleHostMatch,
@@ -598,21 +602,6 @@ function parseGlobalProgram(
 			residuals: base.residuals,
 		},
 	);
-}
-
-function camelProperty(property: string): string {
-	return property
-		.trim()
-		.replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
-}
-
-function templateDynamicExpression(rawValue: string): string {
-	const normalized = rawValue.trim();
-	if (normalized.startsWith("${")) {
-		const interpolation = SourcePass.matchBlock(normalized, 1);
-		if (interpolation?.end === normalized.length) return interpolation.body.trim();
-	}
-	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
 }
 
 function parseTemplateProgram(

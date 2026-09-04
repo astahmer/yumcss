@@ -7,10 +7,10 @@ import {
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 
-const camelProperty = (property: string): string =>
+export const camelPropertyName = (property: string): string =>
 	property.trim().replace(/-([a-z])/g, (_match, character: string) => character.toUpperCase());
 
-function templateDynamicExpression(rawValue: string): string {
+export function templateValueExpression(rawValue: string): string {
 	const normalized = rawValue.trim();
 	if (normalized.startsWith("${")) {
 		const interpolation = SourcePass.matchBlock(normalized, 1);
@@ -74,7 +74,7 @@ export function parseAdapterTemplate(
 			const hasInterpolation = rawValue.includes("${");
 			let value: StyleDeclaration["value"];
 			if (hasInterpolation) {
-				const expression = templateDynamicExpression(rawValue);
+				const expression = templateValueExpression(rawValue);
 				value = { kind: "dynamic", expression, lowering: "residual" };
 				residuals.push({
 					kind: "dynamic",
@@ -88,7 +88,7 @@ export function parseAdapterTemplate(
 			}
 			declarations.push({
 				conditions: [],
-				property: camelProperty(trimmed.slice(0, colon)),
+				property: camelPropertyName(trimmed.slice(0, colon)),
 				value,
 			});
 		};
