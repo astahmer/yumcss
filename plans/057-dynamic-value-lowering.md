@@ -56,10 +56,12 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       configured tokens (finite value set matches preset token values), emit
       candidates that reference tokens (e.g. \`bg-blue-500\`) rather than
       arbitrary values; exact-match only, verified against the preset catalog.
-- [ ] T7 - Codemod lane: migrate dynamic CSS values to \`css.vars\`/\`css.props\`
+- [x] T7 - Codemod lane: migrate dynamic CSS values to \`css.vars\`/\`css.props\`
       when the host shape makes it safe (source adapters -> pandwind css
       dialect). Issue-driven fixtures first; unbounded expressions keep source
-      + typed residual.
+      + typed residual. Bounded interpolations lower through the T5 carrier
+      lanes; JS call heads (non-CSS functional notation) fail closed with a
+      capability residual (\`opzlszkq\`).
 - [ ] T8 - Runtime-sheet dynamic-value tests: repeated dynamic values dedupe
       rules; var toggle rules resolve condition-specific custom properties with
       base fallback (extends \`tests/runtime-sheet.test.ts\`, \`css-vars.test.ts\`).
