@@ -81,7 +81,7 @@ describe("inlineTwCalls", () => {
 		expect(candidates).toBeUndefined();
 	});
 
-	test("candidate validation flags unknown utilities through onUnresolved", () => {
+	test("unresolvable candidates are not registered and surface through onUnresolved", () => {
 		const input = 'const a = tw({ wibble: active ? "foo" : "bar" });';
 		const { candidates, unresolved } = inlineTwCalls(
 			input,
@@ -91,7 +91,37 @@ describe("inlineTwCalls", () => {
 			undefined,
 			{ onUnresolved: "warn" },
 		);
-		expect(candidates).toEqual(["wibble-foo", "wibble-bar"]);
+		// Exact-match only: a token the conflict map cannot compile must not
+		// be registered for scanning — no invented classes.
+		expect(candidates).toEqual([]);
 		expect(unresolved?.map((entry) => entry.reason)).toEqual(["no-css", "no-css"]);
+	});
+
+	test("mixed finite sets register only verified candidates", () => {
+		const input = 'const a = tw({ bg: active ? "sky-600" : "not-a-token" });';
+		const { code, inlined, candidates } = inlineTwCalls(
+			input,
+			"app.ts",
+			config!,
+			new Set(["tw"]),
+			undefined,
+			{ onUnresolved: "warn" },
+		);
+		expect(inlined).toBe(0);
+		expect(code).toBe(input);
+		expect(candidates).toEqual(["bg-sky-600"]);
+		expect(unresolved?.map((entry) => entry.token)).toEqual(["bg-not-a-token"]);
+	});
+
+	test("verification still registers every candidate when the map is absent", () => {
+		// No conflict map => the lane is disabled; everything compiles.
+		const input = 'const a = tw({ bg: active ? "sky-600" : "gray-900" });';
+		const { candidates } = inlineTwCalls(
+			input,
+			"app.ts",
+			{ variants: {} },
+			new Set(["tw"]),
+		);
+		expect(candidates).toEqual(["bg-sky-600", "bg-gray-900"]);
 	});
 });

@@ -26,11 +26,18 @@ import {
 	walk,
 } from "../tw/literal.ts";
 import { collectModuleConstants, type ConstantScope } from "./cx-inline.ts";
-import { createLineIndex, collectUnresolvedTokens, type UnresolvedToken } from "./unresolved.ts";
+import {
+	createLineIndex,
+	collectUnresolvedTokens,
+	tokenHasExactCss,
+	type UnresolvedToken,
+} from "./unresolved.ts";
 
 export interface TwConfig {
 	variants: TwVariantsMeta;
 	conflicts?: TwConflictsMeta;
+	/** Real value sets for wildcard-collapsed utilities (see TwOptions). */
+	wildcardValues?: Record<string, ReadonlySet<string>>;
 	compose?: TwComposeMeta;
 }
 
@@ -93,6 +100,10 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 				typeof options.conflicts === "object" && options.conflicts !== null
 					? (options.conflicts as TwConflictsMeta)
 					: undefined,
+			wildcardValues:
+				typeof options.wildcardValues === "object" && options.wildcardValues !== null
+					? (options.wildcardValues as Record<string, ReadonlySet<string>>)
+					: undefined,
 			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
 		};
 	});
@@ -110,6 +121,10 @@ export interface InlineResult {
 	 * (finite ternary/union/constant sets). The source is left untouched —
 	 * the runtime still selects the real class — but the host can register
 	 * every candidate so the Tailwind scanner emits CSS for all of them.
+	 * Only verified candidates are reported: every token must compile
+	 * through the generated conflict map (exact token match or arbitrary
+	 * value), so the scanner never receives an invented class. Tokens
+	 * outside the design system surface through the `onUnresolved` lane.
 	 */
 	candidates?: string[];
 }
@@ -199,23 +214,31 @@ export function inlineTwCalls(
 					return;
 				}
 				try {
-					compiled.push(
-						compileStyles(
-							candidateStyles as TwNestedStyles,
-							config.variants,
-							config.conflicts,
-							config.compose,
-						),
+					const classes = compileStyles(
+						candidateStyles as TwNestedStyles,
+						config.variants,
+						config.conflicts,
+						config.compose,
 					);
-					if (lines !== undefined) {
-						unresolved.push(
-							...collectUnresolvedTokens(
-								compiled[compiled.length - 1]!,
-								lines.lineOf(call.start),
-								config,
-							),
-						);
+					// Exact-match gate: only register classes whose every token
+					// compiles through the generated conflict map. This is token
+					// preservation, not invention — an unresolvable member is left
+					// to the runtime and reported through the onUnresolved lane.
+					let verified = true;
+					for (const token of classes.split(/\s+/)) {
+						if (token !== "" && !tokenHasExactCss(token, config)) {
+							verified = false;
+							if (lines !== undefined) {
+								unresolved.push({
+									token,
+									line: lines.lineOf(call.start),
+									reason: "no-css",
+								});
+							}
+							break;
+						}
 					}
+					if (verified) compiled.push(classes);
 				} catch {
 					return;
 				}

@@ -125,6 +125,7 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		variants: Array<{ name: string; join: ":" | "-" | "" }>,
 		conflicts: Record<string, Record<string, string[]>>,
 		compose: string[],
+		wildcardValues: Record<string, ReadonlySet<string>>,
 	): string {
 		const variantEntries = variants.map(
 			({ name, join }) =>
@@ -144,6 +145,15 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		const composeEntries = compose.length
 			? `\tcompose: [\n${compose.map((key) => `\t\t${JSON.stringify(key)},`).join("\n")}\n\t],`
 			: "";
+		const wildcardEntries = Object.entries(wildcardValues)
+			.toSorted(([a], [b]) => a.localeCompare(b, "en"))
+			.map(
+				([utility, values]) =>
+					`\t\t${JSON.stringify(utility)}: [${[...values].toSorted().map((value) => JSON.stringify(value)).join(", ")}],`,
+			);
+		const wildcardBlock = wildcardEntries.length
+			? `\twildcardValues: {\n${wildcardEntries.join("\n")}\n},`
+			: "";
 		return `import { createTw, type TwOptions } from "pandwind/tw";
 	import type { WindVariants } from "./types";
 
@@ -153,9 +163,10 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 \tvariants: {
 ${variantEntries.join("\n")}
 \t},
-${conflictEntries.length ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
-${composeEntries}
-	};
+ ${conflictEntries.length ? `\tconflicts: {\n${conflictEntries.join("\n")}\n\t},` : ""}
+ ${composeEntries}
+${wildcardBlock}
+ 	};
 
 	// The PURE annotation lets bundlers drop the whole module when every tw()
 	// call in the app was statically inlined by the vite plugin.

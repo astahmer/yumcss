@@ -37,6 +37,13 @@ export interface TwOptions {
 	variants?: TwVariantsMeta;
 	/** Generated conflict map enabling last-wins merging (see `compile.ts`). */
 	conflicts?: TwConflictsMeta;
+	/**
+	 * Real design-system value sets for utilities whose conflict entries
+	 * collapsed to the `"*"` wildcard. Strict verification (finite dynamic
+	 * candidate registration) exact-matches against these instead of trusting
+	 * the wildcard; ordinary compilation ignores them.
+	 */
+	wildcardValues?: Record<string, ReadonlySet<string>>;
 	/** Generated composing utilities that must never merge across keys. */
 	compose?: TwComposeMeta;
 }

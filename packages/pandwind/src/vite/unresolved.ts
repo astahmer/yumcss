@@ -50,6 +50,24 @@ const topLevelColon = (token: string): number => {
  * No map => the lane is disabled and everything is assumed compilable.
  */
 export const tokenHasCss = (token: string, config: TwConfig): boolean => {
+	return checkTokenCss(token, config, true);
+};
+
+/**
+ * Strict variant of `tokenHasCss` for candidate registration: the value
+ * must be an explicit conflict-map entry for that utility. The per-utility
+ * wildcard (`"*"`) fallback (arbitrary values, opacity-modified colors) does
+ * not count on its own — a finite dynamic set may only register tokens the
+ * generated design system actually defines, never a guessed class. For
+ * utilities whose conflict entries collapsed to the wildcard (all values
+ * share one property shape, so the map cannot distinguish theme values from
+ * typos), verification falls back to the generated real value catalog
+ * (`wildcardValues`). No map/catalog => the lane is disabled.
+ */
+export const tokenHasExactCss = (token: string, config: TwConfig): boolean =>
+	checkTokenCss(token, config, false);
+
+function checkTokenCss(token: string, config: TwConfig, allowFallback: boolean): boolean {
 	let rest = token;
 	for (;;) {
 		const colon = topLevelColon(rest);
@@ -58,7 +76,7 @@ export const tokenHasCss = (token: string, config: TwConfig): boolean => {
 		if (config.variants?.[prefix] === undefined) return false;
 		rest = rest.slice(colon + 1);
 	}
-	if (rest.includes("[")) return true;
+	if (rest.includes("[")) return allowFallback;
 	if (config.conflicts === undefined) return true;
 	const conflicts = config.conflicts;
 	const whole = conflicts[rest];
@@ -67,16 +85,23 @@ export const tokenHasCss = (token: string, config: TwConfig): boolean => {
 	for (;;) {
 		i = rest.lastIndexOf("-", i - 1);
 		if (i <= 0) return false;
-		const byValue = conflicts[rest.slice(0, i)];
+		const utility = rest.slice(0, i);
+		const byValue = conflicts[utility];
 		if (byValue === undefined) continue;
 		const value = rest.slice(i + 1);
-		if (byValue[value] !== undefined || byValue["*"] !== undefined) return true;
+		if (byValue[value] !== undefined || (allowFallback && byValue["*"] !== undefined)) {
+			return true;
+		}
+		if (!allowFallback && config.wildcardValues !== undefined) {
+			const wildcard = config.wildcardValues[utility];
+			if (wildcard !== undefined) return wildcard.has(value);
+		}
 		const slash = value.lastIndexOf("/");
 		if (slash > 0 && slash < value.length - 1 && byValue[value.slice(0, slash)] !== undefined) {
 			return true;
 		}
 	}
-};
+}
 
 /** Line index for one module: offset -> 1-based line (built lazily once). */
 export interface LineIndex {

@@ -369,6 +369,14 @@ export function buildConflicts(
 ): {
 	conflicts: Record<string, Record<string, string[]>>;
 	compose: string[];
+	/**
+	 * Per-utility value sets for utilities whose conflict entries collapsed
+	 * to the `"*"` wildcard (all known values share one property shape).
+	 * The map alone cannot distinguish a real theme value from a typo for
+	 * these; this catalog carries the real design-system values so strict
+	 * candidate verification stays exact-match.
+	 */
+	wildcardValues: Record<string, ReadonlySet<string>>;
 } {
 	const functional = new Set(functionalKeys);
 	const completions = new Map<string, Array<{ values: Array<string | null> }>>();
@@ -483,6 +491,7 @@ export function buildConflicts(
 	}
 
 	const conflicts: Record<string, Record<string, string[]>> = {};
+	const wildcardValues: Record<string, ReadonlySet<string>> = {};
 	for (const [name, byValue] of propByValue) {
 		const sorted = [...byValue.entries()].toSorted(([a], [b]) => a.localeCompare(b, "en"));
 		// Prefer a non-empty default so unknown values (arbitrary ring widths,
@@ -496,11 +505,26 @@ export function buildConflicts(
 				overrides[value] = props;
 			}
 		}
-		conflicts[dashCase(name)] = { "*": defaultProps, ...overrides };
+		const utility = dashCase(name);
+		conflicts[utility] = { "*": defaultProps, ...overrides };
+		// Values hidden by the wildcard (props equal the utility default) are
+		// invisible to exact conflict-map matching, so they are recorded in a
+		// per-utility real value set for strict candidate verification.
+		const knownValues = types.get(name);
+		if (knownValues) {
+			const hidden = new Set<string>();
+			for (const value of knownValues) {
+				if (typeof value !== "string" || value === "") continue;
+				if (overrides[value] !== undefined) continue;
+				hidden.add(value);
+			}
+			if (hidden.size > 0) wildcardValues[utility] = hidden;
+		}
 	}
 	return {
 		conflicts,
 		compose: [...COMPOSE_KEYS].filter((key) => conflicts[key] !== undefined),
+		wildcardValues,
 	};
 }
 

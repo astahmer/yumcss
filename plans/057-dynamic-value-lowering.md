@@ -46,7 +46,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       existing \`tokenHasCss\` conflict-map lane (\`src/vite/unresolved.ts\`) with
       inline snapshots; unresolved candidates surface via \`onUnresolved\` as
       today.
-- [ ] T5 - Partial lowering in \`StaticCssCallRewriter\`
+- [x] T5 - Partial lowering in \`StaticCssCallRewriter\`
       (\`src/vite/css-call-rewriter.ts\`): per-declaration analysis of \`css()\`
       objects. Static declarations fold; dynamic declarations rewrite to the
       \`css.vars\` carrier form (inline emission when the call site shape is a
