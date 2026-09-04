@@ -285,3 +285,66 @@ describe("runtime CSS-in-JS sheet", () => {
 		);
 	});
 });
+
+describe("runtime-sheet dynamic values (plan-057 T8)", () => {
+	test("repeated dynamic values dedupe into one var rule per key", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet });
+
+		const first = css.vars({ color: "#3182ce" });
+		const second = css.vars({ color: "#ff0000" });
+		const third = css.vars({ color: "#111827" });
+
+		// Same carrier class for the same property, regardless of value:
+		expect(first.class).toBe("pw-color");
+		expect(second.class).toBe("pw-color");
+		expect(third.class).toBe("pw-color");
+		expect(sheet.css().match(/\.pw-color\b/g)).toHaveLength(1);
+
+		// Per-key identity survives interleaved registration:
+		css.vars({ _hover: { color: "#2563eb" } });
+		css.vars({ _hover: { color: "#dc2626" } });
+		expect(sheet.css().match(/\.pw-hover\\:color\b/g)).toHaveLength(1);
+	});
+
+	test("var toggle rules resolve condition-specific custom properties with base fallback", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet });
+
+		css.vars({ color: "#3182ce", _hover: { color: "#1d4ed8" } });
+
+		const rules = sheet.css();
+		expect(rules).toContain(".pw-color");
+		expect(rules).toContain(".pw-hover\\:color");
+		// The toggle rule resolves through the hover var first, base var last:
+		expect(rules).toContain("color: var(--pw-c-color_hover, var(--pw-c-color))");
+	});
+
+	test("deep condition paths chain every prefix with the base fallback", () => {
+		const sheet = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet });
+
+		css.vars({ _dark: { _hover: { color: "#1d4ed8" } } });
+
+		expect(sheet.css()).toContain(
+			"color: var(--pw-c-color_dark_hover, var(--pw-c-color_dark, var(--pw-c-color)))",
+		);
+	});
+
+	test("hydrated snapshots keep deduped var rules and accept new registrations", () => {
+		const server = createRuntimeSheet({ autoMount: false });
+		const css = createRuntimeCss(examplePreset, { sheet: server });
+		css.vars({ color: "#3182ce" });
+		css.vars({ color: "#ff0000" });
+
+		const client = createRuntimeSheet({ autoMount: false });
+		client.hydrate(server.snapshot());
+		const before = client.css();
+
+		const clientCss = createRuntimeCss(examplePreset, { sheet: client });
+		clientCss.vars({ color: "#111827" });
+		expect(client.css()).toBe(before);
+		expect(clientCss.vars({ color: "#16a34a" }).class).toBe("pw-color");
+		expect(client.css().match(/\.pw-color\b/g)).toHaveLength(1);
+	});
+});
