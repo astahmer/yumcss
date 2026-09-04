@@ -125,7 +125,7 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 		variants: Array<{ name: string; join: ":" | "-" | "" }>,
 		conflicts: Record<string, Record<string, string[]>>,
 		compose: string[],
-		wildcardValues: Record<string, ReadonlySet<string>>,
+		wildcardValues: Record<string, ReadonlySet<string>> = {},
 	): string {
 		const variantEntries = variants.map(
 			({ name, join }) =>

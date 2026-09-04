@@ -99,7 +99,7 @@ describe("inlineTwCalls", () => {
 
 	test("mixed finite sets register only verified candidates", () => {
 		const input = 'const a = tw({ bg: active ? "sky-600" : "not-a-token" });';
-		const { code, inlined, candidates } = inlineTwCalls(
+		const { code, inlined, candidates, unresolved } = inlineTwCalls(
 			input,
 			"app.ts",
 			config!,

@@ -376,7 +376,7 @@ export function buildConflicts(
 	 * these; this catalog carries the real design-system values so strict
 	 * candidate verification stays exact-match.
 	 */
-	wildcardValues: Record<string, ReadonlySet<string>>;
+	wildcardValues?: Record<string, ReadonlySet<string>>;
 } {
 	const functional = new Set(functionalKeys);
 	const completions = new Map<string, Array<{ values: Array<string | null> }>>();

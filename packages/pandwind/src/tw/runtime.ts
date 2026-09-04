@@ -43,7 +43,8 @@ export interface TwOptions {
 	 * candidate registration) exact-matches against these instead of trusting
 	 * the wildcard; ordinary compilation ignores them.
 	 */
-	wildcardValues?: Record<string, ReadonlySet<string>>;
+	/** Arrays at rest (generated artifact); Sets after Vite extraction. Compilation ignores this field. */
+	wildcardValues?: Record<string, ReadonlyArray<string> | ReadonlySet<string>>;
 	/** Generated composing utilities that must never merge across keys. */
 	compose?: TwComposeMeta;
 }

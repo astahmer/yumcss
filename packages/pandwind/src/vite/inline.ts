@@ -49,6 +49,30 @@ interface CallNode extends OxcNode {
 }
 
 /**
+ * The generated tw.ts serializes wildcard value sets as arrays; strict
+ * candidate verification needs Set membership. Normalize at the extraction
+ * boundary so the TwConfig contract always sees Sets.
+ */
+function normalizeWildcardValues(
+	raw: unknown,
+): Record<string, ReadonlySet<string>> | undefined {
+	if (typeof raw !== "object" || raw === null) return undefined;
+	const out: Record<string, ReadonlySet<string>> = {};
+	let entries = 0;
+	for (const [utility, values] of Object.entries(raw as Record<string, unknown>)) {
+		if (values instanceof Set) {
+			out[utility] = values as ReadonlySet<string>;
+			entries++;
+			continue;
+		}
+		if (!Array.isArray(values)) return undefined;
+		out[utility] = new Set(values.filter((value): value is string => typeof value === "string"));
+		entries++;
+	}
+	return entries > 0 ? out : undefined;
+}
+
+/**
  * Extract the `createTw({ variants, conflicts, compose })` config from a
  * generated `tw.ts` source. The generated shape is stable, so a plain oxc
  * parse + literal evaluation is enough — no type info needed.
@@ -100,10 +124,7 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 				typeof options.conflicts === "object" && options.conflicts !== null
 					? (options.conflicts as TwConflictsMeta)
 					: undefined,
-			wildcardValues:
-				typeof options.wildcardValues === "object" && options.wildcardValues !== null
-					? (options.wildcardValues as Record<string, ReadonlySet<string>>)
-					: undefined,
+			wildcardValues: normalizeWildcardValues(options.wildcardValues),
 			compose: Array.isArray(options.compose) ? (options.compose as string[]) : undefined,
 		};
 	});
