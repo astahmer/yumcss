@@ -1,13 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
-import { createCss } from "pandwind/css";
-import { type ExampleDef, type ExampleFile, type ExampleVariant } from "../lib/examples.ts";
+import { createRuntimeCss, createRuntimeDesignCss } from "pandwind/css/runtime";
+import type { ClassNameStrategy } from "pandwind/css";
+import {
+	PlaygroundApi,
+	type ExampleDef,
+	type ExampleFile,
+	type ExampleVariant,
+} from "../lib/examples.ts";
 import { evalPlayground, evalSiblingModule, type EvalInput } from "../lib/eval-playground.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
-import { css as designCss } from "../css.ts";
 import { examplePreset } from "pandwind/preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
+import {
+	CLASS_NAME_ADAPTERS,
+	ClassNameAdapterId,
+	classNameAdapterById,
+	type ClassNameAdapterDefinition,
+} from "../lib/class-name-adapters.ts";
 import { EditorPane } from "./EditorPane.tsx";
 import { ResultsPane } from "./ResultsPane.tsx";
 import { GhostButton, ResizableSplitter } from "./ui.tsx";
@@ -36,13 +47,16 @@ function decodeCode(encoded: string): string | null {
 function evalSiblings(
 	sources: readonly string[],
 	variant: ExampleVariant,
+	adapter: ClassNameAdapterDefinition,
 ): EvalInput["moduleBindings"] {
 	if (variant.files.length <= 1) return undefined;
 	const bindings: Record<string, Record<string, unknown>> = {};
 	for (let index = 1; index < variant.files.length; index++) {
 		const file: ExampleFile = variant.files[index]!;
 		try {
-			bindings["./" + file.name] = evalSiblingModule(makeInput(sources[index] ?? file.code));
+			bindings["./" + file.name] = evalSiblingModule(
+				makeInput(sources[index] ?? file.code, undefined, adapter.strategy ?? null),
+			);
 		} catch (error) {
 			throw new Error(file.name + ": " + (error instanceof Error ? error.message : String(error)), {
 				cause: error,
@@ -57,15 +71,32 @@ function variantFromUrl(def: ExampleDef): ExampleVariant {
 	return def.variants.find((variant) => variant.api === requested) ?? def.variants[0]!;
 }
 
-function variantUrl(def: ExampleDef, api: string, hash: string): string {
-	const search = def.variants.length > 1 ? `?api=${encodeURIComponent(api)}` : "";
-	return window.location.pathname + search + hash;
+function adapterFromUrl(): ClassNameAdapterDefinition {
+	return classNameAdapterById(new URLSearchParams(window.location.search).get("adapter"));
+}
+
+function variantUrl(
+	def: ExampleDef,
+	api: ExampleVariant["api"],
+	hash: string,
+	adapterId: ClassNameAdapterDefinition["id"],
+): string {
+	const params = new URLSearchParams();
+	if (def.variants.length > 1) params.set("api", api);
+	if (api !== PlaygroundApi.Tw && adapterId !== ClassNameAdapterId.Atomic) {
+		params.set("adapter", adapterId);
+	}
+	const search = params.toString();
+	return window.location.pathname + (search === "" ? "" : `?${search}`) + hash;
 }
 
 export function PlaygroundPage(props: { def: ExampleDef }) {
 	const initialVariant = variantFromUrl(props.def);
+	const initialAdapter = adapterFromUrl();
 	const [api, setApi] = useState<ExampleVariant["api"]>(initialVariant.api);
 	const activeVariant = props.def.variants.find((variant) => variant.api === api) ?? initialVariant;
+	const [classNameAdapterId, setClassNameAdapterId] = useState(initialAdapter.id);
+	const activeClassNameAdapter = classNameAdapterById(classNameAdapterId);
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
 		if (hash !== "") {
@@ -78,12 +109,26 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	});
 	const [activeTab, setActiveTab] = useState(0);
 	const [result, setResult] = useState(() =>
-		evalPlayground(makeInput(files[0]!, evalSiblings(files, activeVariant))),
+		evalPlayground(
+			makeInput(
+				files[0]!,
+				evalSiblings(files, activeVariant, activeClassNameAdapter),
+				activeClassNameAdapter.strategy ?? null,
+			),
+		),
 	);
 	const run = useCallback(
 		(sources: readonly string[]) => {
 			try {
-				setResult(evalPlayground(makeInput(sources[0]!, evalSiblings(sources, activeVariant))));
+				setResult(
+					evalPlayground(
+						makeInput(
+							sources[0]!,
+							evalSiblings(sources, activeVariant, activeClassNameAdapter),
+							activeClassNameAdapter.strategy ?? null,
+						),
+					),
+				);
 			} catch (error) {
 				setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
 			}
@@ -91,9 +136,13 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 				sources[0]!.trim() === activeVariant.files[0]!.code.trim()
 					? ""
 					: "#" + encodeCode(sources[0]!);
-			history.replaceState(null, "", variantUrl(props.def, activeVariant.api, hash));
+			history.replaceState(
+				null,
+				"",
+				variantUrl(props.def, activeVariant.api, hash, activeClassNameAdapter.id),
+			);
 		},
-		[activeVariant, props.def],
+		[activeClassNameAdapter, activeVariant, props.def],
 	);
 
 	const selectApi = useCallback(
@@ -104,20 +153,60 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			setApi(nextVariant.api);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setResult(evalPlayground(makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant))));
-			history.replaceState(null, "", variantUrl(props.def, nextVariant.api, ""));
+			setResult(
+				evalPlayground(
+					makeInput(
+						nextFiles[0]!,
+						evalSiblings(nextFiles, nextVariant, activeClassNameAdapter),
+						activeClassNameAdapter.strategy ?? null,
+					),
+				),
+			);
+			history.replaceState(
+				null,
+				"",
+				variantUrl(props.def, nextVariant.api, "", activeClassNameAdapter.id),
+			);
 		},
-		[props.def],
+		[activeClassNameAdapter, props.def],
+	);
+
+	const selectClassNameAdapter = useCallback(
+		(nextId: string) => {
+			const nextAdapter = classNameAdapterById(nextId);
+			setClassNameAdapterId(nextAdapter.id);
+			setResult(
+				evalPlayground(
+					makeInput(
+						files[0]!,
+						evalSiblings(files, activeVariant, nextAdapter),
+						nextAdapter.strategy ?? null,
+					),
+				),
+			);
+			history.replaceState(null, "", variantUrl(props.def, activeVariant.api, "", nextAdapter.id));
+		},
+		[activeVariant, files, props.def],
 	);
 
 	useEffect(() => {
 		const syncVariant = () => {
 			const nextVariant = variantFromUrl(props.def);
+			const nextAdapter = adapterFromUrl();
 			const nextFiles = nextVariant.files.map((file) => file.code);
 			setApi(nextVariant.api);
+			setClassNameAdapterId(nextAdapter.id);
 			setFiles(nextFiles);
 			setActiveTab(0);
-			setResult(evalPlayground(makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant))));
+			setResult(
+				evalPlayground(
+					makeInput(
+						nextFiles[0]!,
+						evalSiblings(nextFiles, nextVariant, nextAdapter),
+						nextAdapter.strategy ?? null,
+					),
+				),
+			);
 		};
 		window.addEventListener("popstate", syncVariant);
 		return () => window.removeEventListener("popstate", syncVariant);
@@ -177,14 +266,30 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 			<div
 				className={uiCss.class({
 					display: "flex",
-					height: "24px",
+					minHeight: "24px",
 					flexShrink: "0",
 					alignItems: "center",
 					justifyContent: "space-between",
+					gap: "12px",
 				})}
 			>
-				<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "12px" })}>
-					<div className={uiCss.class({ display: "flex", alignItems: "center", gap: "8px" })}>
+				<div
+					className={uiCss.class({
+						display: "flex",
+						minWidth: "0px",
+						flexWrap: "wrap",
+						alignItems: "center",
+						gap: "8px 12px",
+					})}
+				>
+					<div
+						className={uiCss.class({
+							display: "flex",
+							flexWrap: "wrap",
+							alignItems: "center",
+							gap: "8px",
+						})}
+					>
 						<h1
 							className={uiCss.class({
 								margin: "0",
@@ -233,6 +338,45 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 								</select>
 							</label>
 						)}
+						{activeVariant.api !== PlaygroundApi.Tw && (
+							<label className={uiCss.class({ display: "flex", alignItems: "center", gap: "5px" })}>
+								<span
+									className={uiCss.class({
+										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+										fontSize: "10px",
+										textTransform: "uppercase",
+										letterSpacing: "0.08em",
+										color: "#52525b",
+									})}
+								>
+									ADAPTER
+								</span>
+								<select
+									aria-label="Select class name adapter"
+									value={activeClassNameAdapter.id}
+									onChange={(event) => selectClassNameAdapter(event.target.value)}
+									className={uiCss.class({
+										height: "24px",
+										maxWidth: "220px",
+										border: "1px solid rgba(255,255,255,0.1)",
+										borderRadius: "5px",
+										backgroundColor: "#16161b",
+										padding: "0 6px",
+										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+										fontSize: "11px",
+										color: "#a1a1aa",
+										outline: "none",
+										"&:focus": { borderColor: "rgba(251,146,60,0.6)", color: "#f4f4f5" },
+									})}
+								>
+									{CLASS_NAME_ADAPTERS.map((adapter) => (
+										<option key={adapter.id} value={adapter.id}>
+											{adapter.label}
+										</option>
+									))}
+								</select>
+							</label>
+						)}
 					</div>
 					<p
 						className={uiCss.class({
@@ -245,6 +389,27 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					>
 						{props.def.blurb}
 					</p>
+					{activeVariant.api === PlaygroundApi.Tw ? (
+						<span
+							className={uiCss.class({
+								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+								fontSize: "10px",
+								color: "#52525b",
+							})}
+						>
+							tw() uses its generated Tailwind bridge
+						</span>
+					) : (
+						<span
+							className={uiCss.class({
+								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+								fontSize: "10px",
+								color: "#52525b",
+							})}
+						>
+							{activeClassNameAdapter.description}
+						</span>
+					)}
 				</div>
 				{dirty && (
 					<GhostButton onClick={reset} title="Restore the example code">
@@ -311,13 +476,40 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	);
 }
 
-function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): EvalInput {
+function runtimeOptions(
+	strategy: ClassNameStrategy | null,
+	options: unknown = {},
+): Parameters<typeof createRuntimeCss>[1] {
+	const authoredOptions =
+		options !== null && typeof options === "object" ? (options as Record<string, unknown>) : {};
+	const authoredSheetOptions =
+		authoredOptions.sheetOptions !== null && typeof authoredOptions.sheetOptions === "object"
+			? (authoredOptions.sheetOptions as Record<string, unknown>)
+			: {};
+	return {
+		...authoredOptions,
+		className: strategy ?? undefined,
+		sheetOptions: { ...authoredSheetOptions, autoMount: false },
+	} as Parameters<typeof createRuntimeCss>[1];
+}
+
+function makeInput(
+	code: string,
+	moduleBindings?: EvalInput["moduleBindings"],
+	strategy: ClassNameStrategy | null = null,
+): EvalInput {
+	const createPlaygroundCss = (...args: Array<unknown>) =>
+		createRuntimeCss(examplePreset, runtimeOptions(strategy, args[0]));
 	return {
 		code,
 		tw: tw as unknown as (...args: Array<unknown>) => unknown,
-		css: designCss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
+		css: createRuntimeDesignCss(examplePreset, runtimeOptions(strategy)) as unknown as ((
+			...args: Array<unknown>
+		) => unknown) &
+			Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
-		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
+		createCss: createPlaygroundCss,
+		classNameStrategy: strategy,
 		moduleBindings:
 			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
 		props: SANDBOX_PROPS,

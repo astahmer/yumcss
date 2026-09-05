@@ -12,6 +12,7 @@
  * boundary and must never run third-party code.
  */
 import { parseSync } from "oxc-parser";
+import type { ClassNameStrategy } from "pandwind/css";
 import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { flattenStyle } from "pandwind/lib/utils";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";
@@ -516,6 +517,8 @@ export interface EvalInput {
 	cx: (...inputs: Array<never>) => string;
 	/** Loose engine css() available as createCss() inside evaluated code. */
 	createCss?: (...args: Array<unknown>) => unknown;
+	/** Explicit playground adapter; null selects Pandwind's default atomic output. */
+	classNameStrategy?: ClassNameStrategy | null;
 	/**
 	 * Extra module bindings: sandbox import rewrites (pandwind/preset ->
 	 * presetApi, ./brand.ts -> evaluated sibling tab) land here by specifier.
@@ -792,17 +795,24 @@ function buildSandbox(
 						typeof authoredOptions.sheetOptions === "object"
 							? (authoredOptions.sheetOptions as Record<string, unknown>)
 							: {};
+					const effectiveOptions =
+						input.classNameStrategy === undefined
+							? authoredOptions
+							: {
+									...authoredOptions,
+									className: input.classNameStrategy ?? undefined,
+								};
 					const factoryArgs = isCssFactory
 						? [
 								{
-									...authoredOptions,
+									...effectiveOptions,
 									sheetOptions: { ...authoredSheetOptions, autoMount: false },
 								},
 							]
 						: [
 								args[0],
 								{
-									...authoredOptions,
+									...effectiveOptions,
 									sheetOptions: { ...authoredSheetOptions, autoMount: false },
 								},
 							];
@@ -823,14 +833,14 @@ function buildSandbox(
 						typeof (instance as RuntimeCssInstance).sheet.css === "function" &&
 						typeof (instance as RuntimeCssInstance).sheet.snapshot === "function"
 					) {
-						const className = authoredOptions.className;
+						const className = effectiveOptions.className;
 						const classNameRecord =
 							className !== null && typeof className === "object"
 								? (className as Record<string, unknown>)
 								: undefined;
 						onRuntimeCss?.({
 							strategy: typeof classNameRecord?.name === "string" ? classNameRecord.name : "atomic",
-							sheetBacked: classNameRecord?.sheetBacked !== false,
+							sheetBacked: classNameRecord === undefined || classNameRecord.sheetBacked === true,
 							sheet: (instance as RuntimeCssInstance).sheet,
 						});
 					}

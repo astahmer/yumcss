@@ -8,6 +8,7 @@ import { css } from "../css.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "pandwind/preset";
 import { createNamedAtomsStrategy } from "pandwind/css";
+import { createUnoCssAdapter } from "pandwind/css";
 import { createRuntimeCss } from "pandwind/css/runtime";
 import { StyleValueKindTag } from "pandwind-codemod/swap/semantic-ir";
 import { tw } from "../tw.ts";
@@ -17,6 +18,7 @@ const run = (
 	code: string,
 	props?: Record<string, unknown>,
 	moduleBindings?: EvalInput["moduleBindings"],
+	classNameStrategy?: EvalInput["classNameStrategy"],
 ): ReturnType<typeof evalPlayground> =>
 	evalPlayground({
 		code,
@@ -25,6 +27,7 @@ const run = (
 		cx: cx as EvalInput["cx"],
 		props,
 		moduleBindings,
+		classNameStrategy,
 		resolveCss: (style) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);
 			const out: Record<string, string> = {};
@@ -257,6 +260,49 @@ describe("evalPlayground", () => {
 			expect(result.sheets[0]?.strategy).toBe("named-atoms");
 			expect(result.sheets[0]?.css).toContain(".demo-color-red-500");
 		}
+	});
+
+	test("selected playground adapter overrides an authored runtime strategy", () => {
+		const result = run(
+			[
+				'import { createRuntimeCss } from "pandwind/css/runtime";',
+				'import { examplePreset } from "pandwind/preset";',
+				"",
+				'const css = createRuntimeCss(examplePreset, { className: "ignored-by-playground" });',
+				'css.class({ color: "red-500" });',
+			].join("\n"),
+			undefined,
+			{
+				"pandwind/css/runtime": { createRuntimeCss },
+				"pandwind/preset": { examplePreset },
+			},
+			createNamedAtomsStrategy("selected"),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.output).toBe("selected-color-red-500");
+			expect(result.sheets[0]?.strategy).toBe("named-atoms");
+		}
+	});
+
+	test("selected external adapters do not claim a Pandwind-owned sheet", () => {
+		const result = run(
+			[
+				'import { createRuntimeCss } from "pandwind/css/runtime";',
+				'import { examplePreset } from "pandwind/preset";',
+				"",
+				"const css = createRuntimeCss(examplePreset);",
+				'css.class({ color: "red" });',
+			].join("\n"),
+			undefined,
+			{
+				"pandwind/css/runtime": { createRuntimeCss },
+				"pandwind/preset": { examplePreset },
+			},
+			createUnoCssAdapter({ preset: examplePreset }),
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) expect(result.sheets).toEqual([]);
 	});
 
 	test("maps runtime declarations to their emitted classes", () => {
