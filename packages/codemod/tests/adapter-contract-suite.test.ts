@@ -4,6 +4,7 @@ import {
 	createAdapterContractSuite,
 	createBuiltinCodemodCatalog,
 	createStyleAdapterRegistry,
+	StyleProgramResidualKindTag,
 	type AdapterContractFixture,
 } from "../src/swap/index.ts";
 import { adapterContractFixtures } from "../proof/adapter-contract-fixtures.ts";
@@ -62,7 +63,10 @@ describe("adapter contract suite", () => {
 			});
 			expect(config.adapter).toBe(adapter.id);
 			expect(config.configuration).toBeDefined();
-			if (config.residuals?.some(({ kind }) => kind === "configuration") === true)
+			if (
+				config.residuals?.some(({ kind }) => kind === StyleProgramResidualKindTag.Configuration) ===
+				true
+			)
 				expect(config.configuration?.some(({ source }) => source === "unresolved")).toBe(true);
 			return {
 				adapter: adapter.id,

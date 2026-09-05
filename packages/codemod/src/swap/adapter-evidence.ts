@@ -173,7 +173,11 @@ export class AdapterEvidence {
 				paths: config.files,
 			});
 		}
-		if (config.residuals?.some((residual) => residual.kind === "configuration") === true) {
+		if (
+			config.residuals?.some(
+				(residual) => residual.kind === StyleProgramResidualKindTag.Configuration,
+			) === true
+		) {
 			evidence.push({
 				source: AdapterConfigEvidenceSourceTag.Unresolved,
 				status: AdapterEvidenceStatusTag.Failed,

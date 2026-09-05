@@ -12,6 +12,8 @@ import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
 	StyleProgramEmissionHint,
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "pandwind-codemod/swap";
@@ -132,10 +134,13 @@ function hasComponentSelectorInterpolation(template: string): boolean {
 
 function requiresRuntimeCss(program: StyleProgram): boolean {
 	if (program.emissionHints?.includes(StyleProgramEmissionHint.RawTemplate) === true) return true;
-	if (program.residuals.some((residual) => residual.kind === "parse")) return true;
+	if (program.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse))
+		return true;
 	if (
 		program.residuals.some(
-			(residual) => residual.kind === "dynamic" && residual.hint?.includes("condition") === true,
+			(residual) =>
+				residual.kind === StyleProgramResidualKindTag.Dynamic &&
+				residual.hint?.includes("condition") === true,
 		)
 	)
 		return true;
@@ -151,7 +156,7 @@ function requiresRuntimeCss(program: StyleProgram): boolean {
 		return true;
 	return program.rules.some(function hasRuntimeRule(rule): boolean {
 		return (
-			(rule.kind !== "style" &&
+			(rule.kind !== StyleRuleKindTag.Style &&
 				rule.declarations.some((declaration) => declaration.value.kind === "dynamic")) ||
 			rule.children.some(hasRuntimeRule)
 		);

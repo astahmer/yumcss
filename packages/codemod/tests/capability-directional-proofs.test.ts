@@ -3,6 +3,7 @@ import {
 	CodemodAdapterId,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
+	StyleProgramResidualKindTag,
 } from "../src/swap/index.ts";
 
 const catalog = createBuiltinCodemodCatalog();
@@ -215,7 +216,9 @@ describe("concrete adapter capability proofs", () => {
 	] as const)("keeps $id dynamic class bindings visible", ({ from, attribute, hint }) => {
 		const source = "<div " + attribute + '={["color:red", runtimeClass].join(" ")} />';
 		const result = migrate(source, from, pandwind, "Card.tsx");
-		const dynamicResidual = result.residuals.find((residual) => residual.kind === "dynamic");
+		const dynamicResidual = result.residuals.find(
+			(residual) => residual.kind === StyleProgramResidualKindTag.Dynamic,
+		);
 
 		expect(result.converted).toBe(0);
 		expect(result.skipped).toBe(1);

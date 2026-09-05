@@ -9,7 +9,7 @@ export const enum StyleDialectRoleTag {
 	Target = "target",
 	Both = "both",
 }
-export type StyleDialectRole = "source" | "target" | "both";
+export type StyleDialectRole = `${StyleDialectRoleTag}`;
 
 /** A dialect is one concrete syntax/semantic adapter within a style system. */
 export interface StyleDialectAdapter extends StyleAdapter {
@@ -65,7 +65,7 @@ export function asStyleDialect(
 		...adapter,
 		system: options.system,
 		dialect: options.dialect ?? adapter.id,
-		role: options.role ?? "both",
+		role: options.role ?? StyleDialectRoleTag.Both,
 	};
 }
 

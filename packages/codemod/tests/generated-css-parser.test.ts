@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseGeneratedCss } from "../src/swap/generated-css-parser.ts";
+import { GeneratedCssNodeKind, parseGeneratedCss } from "../src/swap/generated-css-parser.ts";
 
 describe("generated CSS parser", () => {
 	test("preserves nested rule order", () => {
@@ -43,10 +43,10 @@ describe("generated CSS parser", () => {
 		const stack = [...nodes];
 		while (stack.length > 0) {
 			const node = stack.pop()!;
-			if (node.type === "rule") {
+			if (node.type === GeneratedCssNodeKind.Rule) {
 				rules++;
 				stack.push(...node.nodes);
-			} else if (node.type === "atrule") {
+			} else if (node.type === GeneratedCssNodeKind.AtRule) {
 				stack.push(...(node.nodes ?? []));
 			}
 		}

@@ -31,11 +31,11 @@ export const enum SwapResidualKindTag {
 
 export type SwapResidualKind =
 	/** A non-literal value (identifier, template literal, spread). */
-	| "dynamic"
+	| `${SwapResidualKindTag.Dynamic}`
 	/** No typed utility / bridge coverage for this pair in the target. */
-	| "unknown-value"
+	| `${SwapResidualKindTag.UnknownValue}`
 	/** The target API has no representation for this declaration at all. */
-	| "unrepresentable";
+	| `${SwapResidualKindTag.Unrepresentable}`;
 
 export interface SwapResidual {
 	kind: SwapResidualKind;

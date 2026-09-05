@@ -58,6 +58,21 @@ export const enum StyleValueKindTag {
 	Literal = "literal",
 	Dynamic = "dynamic",
 }
+export type StyleValueKind = `${StyleValueKindTag}`;
+type StyleTokenKind = `${StyleValueKindTag.Token}`;
+type StyleLiteralKind = `${StyleValueKindTag.Literal}`;
+type StyleDynamicKind = `${StyleValueKindTag.Dynamic}`;
+
+export const enum StyleDynamicLoweringTag {
+	Runtime = "runtime",
+	CustomProperty = "custom-property",
+	Residual = "residual",
+}
+
+export const enum StyleStaticEvaluationStatusTag {
+	Unresolved = "unresolved",
+}
+export type StyleStaticEvaluationStatus = `${StyleStaticEvaluationStatusTag}`;
 
 /** Known residual categories used by lowering and migration diagnostics. */
 export const enum StyleProgramResidualKindTag {
@@ -86,27 +101,14 @@ export interface StyleCondition {
 	readonly operator?: StyleConditionOperator;
 }
 
-export type SemanticConditionKind =
-	| "named"
-	| "pseudo"
-	| "selector"
-	| "media"
-	| "container"
-	| "supports";
+export type SemanticConditionKind = `${SemanticConditionKindTag}`;
 
-export type StyleConditionOperator = "and" | "or" | "not";
+export type StyleConditionOperator = `${StyleConditionOperatorTag}`;
 
-export type StyleRuleKind =
-	| "style"
-	| "global"
-	| "keyframes"
-	| "font-face"
-	| "layer"
-	| "supports"
-	| "property";
+export type StyleRuleKind = `${StyleRuleKindTag}`;
 
 export interface StyleTokenValue {
-	readonly kind: "token";
+	readonly kind: StyleTokenKind;
 	/** Stable source-facing token reference without the `$` sigil. */
 	readonly ref: string;
 	/** Exact authored spelling, retained for lossless emission. */
@@ -115,20 +117,20 @@ export interface StyleTokenValue {
 }
 
 export interface StyleLiteralValue {
-	readonly kind: "literal";
+	readonly kind: StyleLiteralKind;
 	readonly value: string | boolean | number;
 }
 
-export type StyleDynamicLowering = "runtime" | "custom-property" | "residual";
+export type StyleDynamicLowering = `${StyleDynamicLoweringTag}`;
 
 export interface StyleStaticEvaluation {
 	readonly attempted: true;
-	readonly status: "unresolved";
+	readonly status: StyleStaticEvaluationStatus;
 	readonly reason: string;
 }
 
 export interface StyleDynamicValue {
-	readonly kind: "dynamic";
+	readonly kind: StyleDynamicKind;
 	/** Source expression or placeholder retained for a target adapter. */
 	readonly expression: string;
 	/** Parsed expression shape used by lowering and framework host adapters. */

@@ -53,7 +53,7 @@ export class StyleProgramAnalysis {
 }
 
 function isFunctionDynamic(value: {
-	kind: "dynamic";
+	kind: `${StyleValueKindTag.Dynamic}`;
 	expression: string;
 	expressionKind?: StyleDynamicExpressionKind;
 }): boolean {

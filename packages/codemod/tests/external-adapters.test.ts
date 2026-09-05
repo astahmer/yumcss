@@ -1,4 +1,9 @@
-import { StyleProgramResidualKindTag, SwapResidualKindTag } from "../src/swap/semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleValueKindTag,
+	SwapResidualKindTag,
+} from "../src/swap/semantic-ir.ts";
+import { StyleDynamicExpressionKind } from "../src/swap/identifiers.ts";
 import { AdapterDependencyKindTag } from "../src/swap/adapter-contract.ts";
 import { describe, expect, test } from "vitest";
 import {
@@ -1839,11 +1844,12 @@ describe("CSS-in-JS adapter contract v2", () => {
 			(declaration) => declaration.property === "border",
 		)?.value;
 		expect(borderValue).toMatchObject({
-			kind: "dynamic",
-			expressionKind: "function",
+			kind: StyleValueKindTag.Dynamic,
+			expressionKind: StyleDynamicExpressionKind.Function,
 		});
 		expect(
-			borderValue?.kind === "dynamic" && borderValue.expression.startsWith("({ border = 1"),
+			borderValue?.kind === StyleValueKindTag.Dynamic &&
+				borderValue.expression.startsWith("({ border = 1"),
 		).toBe(true);
 		expect(
 			parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
