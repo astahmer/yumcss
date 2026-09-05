@@ -153,6 +153,30 @@ describe("migration lab", () => {
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
 
+	test("keeps an exported keyframe name usable across module boundaries", () => {
+		const lab = createMigrationLab();
+		const scenario = lab
+			.scenariosFor(CodemodAdapterId.StyledComponents)
+			.find(({ name }) => name === "keyframes tagged template");
+
+		expect(scenario).toBeDefined();
+		if (scenario === undefined) return;
+		const result = lab.migrate(
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.Pandwind,
+			`${scenario.source}\nexport const animationName = pulse;`,
+		);
+
+		expect(result.ok).toBe(true);
+		if (!result.ok) return;
+		expect(result.converted).toBe(1);
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("export const pulse = (() =>");
+		expect(result.code).toContain("return name; })();");
+		expect(result.code).toContain("export const animationName = pulse;");
+	});
+
 	test("exposes explicit evidence for every source-to-target route", () => {
 		const lab = createMigrationLab();
 		for (const source of lab.sources) {

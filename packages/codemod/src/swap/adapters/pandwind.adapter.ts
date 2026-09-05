@@ -896,7 +896,7 @@ function runtimeKeyframes(program: StyleProgram, context: AdapterEmitContext | u
 				)
 				.join(", ")}] }`,
 	);
-	return `(css.sheet.registerSemanticRules([{ kind: "keyframes", name: ${JSON.stringify(name)}, children: [${children.join(", ")}] }]), ${JSON.stringify(name)})`;
+	return `(() => { const name = ${JSON.stringify(name)}; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [${children.join(", ")}] }]); return name; })()`;
 }
 
 function runtimeGlobalRule(rule: StyleProgram["rules"][number], root: boolean): string {

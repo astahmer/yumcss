@@ -61,6 +61,25 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
 
+	test("returns the registered keyframe name for external consumers", () => {
+		const result = migrate(
+			'import { keyframes } from "styled-components";\n' +
+				"export const pulse = keyframes`from { opacity: 0; } to { opacity: 1; }`;\n" +
+				"export const animationName = pulse;",
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.Pandwind,
+			"animation.ts",
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("export const pulse = (() =>");
+		expect(result.code).toContain("css.sheet.registerSemanticRules");
+		expect(result.code).toContain("return name; })();");
+		expect(result.code).toContain("export const animationName = pulse;");
+		expect(result.code).not.toContain(']), "pw-kf-pulse")');
+	});
+
 	test("emits native StyleX source when StyleX is selected as the target", () => {
 		const result = migrate(
 			'import { css } from "@emotion/css";\nconst card = css({ color: "red" });',

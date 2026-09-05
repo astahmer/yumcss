@@ -207,7 +207,7 @@ describe("official adapter API families", () => {
 			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-			export const styles = { "card": css.class({ color: "white" }), "pulse": (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-animation", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]), "pw-kf-animation") };
+			export const styles = { "card": css.class({ color: "white" }), "pulse": (() => { const name = "pw-kf-animation"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })() };
 			export default styles;",
 			    "converted": 2,
 			    "outcomes": [
@@ -451,7 +451,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -660,7 +660,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1617,7 +1617,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1797,7 +1797,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: "0" }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: "1" }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1989,7 +1989,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -2409,7 +2409,7 @@ describe("official adapter API families", () => {
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
 
-			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			export const pulse = (() => { const name = "pw-kf-pulse"; css.sheet.registerSemanticRules([{ kind: "keyframes", name, children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]); return name; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
