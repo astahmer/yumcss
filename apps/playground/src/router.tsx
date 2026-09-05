@@ -13,7 +13,7 @@ import { MigrationLabPage } from "./components/MigrationLabPage.tsx";
 import { css as uiCss } from "./ui-css.ts";
 
 const GROUP_LABEL = { core: "Scenarios", limits: "Limits" } as const;
-const DEFAULT_ROUTE = "/basics-tw" as const;
+const DEFAULT_ROUTE = "/basics" as const;
 
 const NAV_GROUPS = (Object.keys(GROUP_LABEL) as Array<keyof typeof GROUP_LABEL>).map((group) => ({
 	group,

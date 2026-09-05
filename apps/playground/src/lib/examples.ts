@@ -5,6 +5,23 @@ export interface ExampleFile {
 	code: string;
 }
 
+export const PlaygroundApi = {
+	Tw: "tw",
+	Css: "css",
+	Dss: "dss",
+} as const;
+
+export type PlaygroundApi = (typeof PlaygroundApi)[keyof typeof PlaygroundApi];
+
+export interface ExampleVariant {
+	/** The Pandwind API demonstrated by this variant. */
+	api: PlaygroundApi;
+	/** Label shown in the API selector. */
+	label: string;
+	/** One or more files; the first is evaluated, the rest are tabs. */
+	files: readonly ExampleFile[];
+}
+
 export interface ExampleDef {
 	/** Route path for this example. */
 	path: string;
@@ -22,13 +39,27 @@ export interface ExampleDef {
 	 * documented limit — rendered above the editor.
 	 */
 	note?: string;
-	/** One or more files; the first is evaluated, the rest are tabs. */
-	files: readonly ExampleFile[];
+	/** One or more API-specific implementations of the same scenario. */
+	variants: readonly ExampleVariant[];
 }
 
 /** Convenience constructor for the single-file majority. */
 function oneFile(name: string, code: string): readonly ExampleFile[] {
 	return [{ name, code }];
+}
+
+function oneVariant(
+	api: PlaygroundApi,
+	nameOrCode: string,
+	code?: string,
+): readonly ExampleVariant[] {
+	return [
+		{
+			api,
+			label: api === PlaygroundApi.Tw ? "tw()" : api,
+			files: oneFile(code === undefined ? "Example.tsx" : nameOrCode, code ?? nameOrCode),
+		},
+	];
 }
 
 const TW_IMPORT = [
@@ -40,15 +71,19 @@ const TW_IMPORT = [
 
 export const EXAMPLES: readonly ExampleDef[] = [
 	{
-		path: "/basics-tw",
-		title: "Basics · tw()",
-		blurb: "typed tw() objects — wrong values are type errors",
+		path: "/basics",
+		title: "Basics",
+		blurb: "the same styling intent expressed through each Pandwind API",
 		group: "core",
-		note: `The generated WindUtilities type is derived from your theme config: try changing "blue-500" to a color that does not exist and the editor will flag it. cx() merges with a conflict map, so the last background wins.`,
-		files: oneFile(
-			"Example.tsx",
-			TW_IMPORT +
-				`
+		note: `Select an API to see the same button styles expressed through typed tw(), declaration-first css(), or design-system dss(). The output classes stay aligned because all three APIs use the same preset and bridge.`,
+		variants: [
+			{
+				api: PlaygroundApi.Tw,
+				label: "tw()",
+				files: oneFile(
+					"Example.tsx",
+					TW_IMPORT +
+						`
 
 const buttons = {
 	primary: tw({ bgColor: "blue-500", textColor: "white", rounded: "lg" }),
@@ -57,51 +92,48 @@ const buttons = {
 };
 
 buttons.primary`,
-		),
-	},
-	{
-		path: "/basics-css",
-		title: "Basics · css()",
-		blurb: "declaration-first objects compiled through the generated bridge",
-		group: "core",
-		note: "css() speaks CSS properties and preset tokens; the generated (property, value) bridge maps each declaration to the same Tailwind utility tw() would emit. Arbitrary values and conditions never block the output.",
-		files: oneFile(
-			"Example.tsx",
-			`import { createCss } from "pandwind/css";
+				),
+			},
+			{
+				api: PlaygroundApi.Css,
+				label: "css()",
+				files: oneFile(
+					"Example.tsx",
+					`import { createCss } from "pandwind/css";
 import { createCx } from "pandwind/cx";
 
 const css = createCss();
 const cx = createCx({ css });
 
-const card = css.class({
-	backgroundColor: "$blue-500",
-	color: "$gray-50",
-	padding: "16px",
-	borderRadius: "8px",
-});
+const buttons = {
+	primary: css.class({ backgroundColor: "$blue-500", color: "$gray-50", borderRadius: "8px", padding: "16px" }),
+	danger: css.class({ backgroundColor: "$red-500", color: "$gray-50", borderRadius: "8px", padding: "16px" }),
+	large: css.class({ padding: "16px", fontSize: "1.125rem" }),
+};
 
-cx(card, css.class({ _hover: { backgroundColor: "$blue-600" } }))`,
-		),
-	},
-	{
-		path: "/basics-dss",
-		title: "Basics · dss",
-		blurb: "design-system vocabulary ($frame/$text) resolved to the same classes",
-		group: "core",
-		note: "createDesignCss accepts designer module vocabulary — $frame, $text, $layout — and resolves it against the preset tokens before lowering. The output classes are identical to what css() would emit for the resolved declarations.",
-		files: oneFile(
-			"Example.tsx",
-			`import { createDesignCss } from "pandwind/design";
+cx(buttons.primary, "px-4")`,
+				),
+			},
+			{
+				api: PlaygroundApi.Dss,
+				label: "dss",
+				files: oneFile(
+					"Example.tsx",
+					`import { createDesignCss } from "pandwind/design";
 import { examplePreset } from "pandwind/preset";
 
 const dcss = createDesignCss(examplePreset);
 
-dcss.class({
-	$frame: { fill: "$blue-500", corners: "lg", pad: [4, 8] },
-	$text: { weight: "600", color: "$gray-900" },
-	_hover: { $text: { color: "$blue-100" } },
-})`,
-		),
+const buttons = {
+	primary: dcss.class({ $frame: { fill: "$blue-500", corners: "lg", pad: [4, 4] }, $text: { color: "$gray-50" } }),
+	danger: dcss.class({ $frame: { fill: "$red-500", corners: "lg", pad: [4, 4] }, $text: { color: "$gray-50" } }),
+	large: dcss.class({ $frame: { pad: [4, 4] }, $text: { size: "lg" } }),
+};
+
+buttons.primary`,
+				),
+			},
+		],
 	},
 	{
 		path: "/dynamic",
@@ -109,10 +141,11 @@ dcss.class({
 		blurb: "runtime values: partial folds, css.vars, and css.props",
 		group: "core",
 		note: "The ternary branches are static strings, so the build folds the static halves and keeps only the runtime choice (partial). The css.vars() / css.props() calls carry dynamic values as inline custom properties instead of inventing classes.",
-		files: oneFile(
-			"Example.tsx",
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			TW_IMPORT +
 				`
+
 import { createCss } from "pandwind/css";
 
 const css = createCss();
@@ -137,8 +170,8 @@ cx(
 		blurb: "breakpoint and media variants as plain object nesting",
 		group: "core",
 		note: "Breakpoint keys come from your preset conditions (sm, md, lg, smDown, ...); they join with the generated variant metadata — no variant string concatenation in user code.",
-		files: oneFile(
-			"Example.tsx",
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			TW_IMPORT +
 				`
 
@@ -156,8 +189,8 @@ tw({
 		blurb: "cx() keeps the last declaration and reports what died",
 		group: "core",
 		note: "cx() merges through the generated conflict map: the second background-color kills the first. The panel shows exactly which input tokens were removed instead of silently shipping dead classes.",
-		files: oneFile(
-			"Example.tsx",
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			TW_IMPORT +
 				`
 
@@ -173,10 +206,14 @@ cx(
 		blurb: "raw, semantic, and component tokens in one call",
 		group: "core",
 		note: "brandTone is a raw token imported from another file, success is a semantic alias, button.padding is a component token. Each resolves to a concrete value; anything the generated bridge cannot map falls back to an arbitrary property instead of being dropped.",
-		files: [
+		variants: [
 			{
-				name: "Example.tsx",
-				code: `import { createCss } from "pandwind/css";
+				api: PlaygroundApi.Css,
+				label: "css()",
+				files: [
+					{
+						name: "Example.tsx",
+						code: `import { createCss } from "pandwind/css";
 import { brandTone } from "./brand.ts";
 
 const css = createCss();
@@ -187,10 +224,12 @@ css.class({
 	padding: "button.padding",
 	_dark: { color: "$gray-200" },
 })`,
-			},
-			{
-				name: "brand.ts",
-				code: 'export const brandTone = "$brand-500";',
+					},
+					{
+						name: "brand.ts",
+						code: 'export const brandTone = "$brand-500";',
+					},
+				],
 			},
 		],
 	},
@@ -200,10 +239,14 @@ css.class({
 		blurb: "define your own theme, tokens, and conditions",
 		group: "core",
 		note: "A brand preset is data: defineTokens + definePreset. Without a generated bridge the engine falls back to arbitrary properties ([background-color:#4c51bf]) — run pandwind-tw generate to produce the bridge and these become bg-brand-500 utilities.",
-		files: [
+		variants: [
 			{
-				name: "Example.tsx",
-				code: `import { createDesignCss } from "pandwind/design";
+				api: PlaygroundApi.Dss,
+				label: "dss",
+				files: [
+					{
+						name: "Example.tsx",
+						code: `import { createDesignCss } from "pandwind/design";
 import { definePreset, defineTheme } from "pandwind/preset";
 import { brandTokens } from "./brand.ts";
 
@@ -215,14 +258,16 @@ const brand = definePreset(
 const dcss = createDesignCss(brand);
 
 dcss.class({ $frame: { fill: "$brand-500" }, _hover: { $frame: { fill: "$brand-500" } } })`,
-			},
-			{
-				name: "brand.ts",
-				code: `import { defineTokens } from "pandwind/preset";
+					},
+					{
+						name: "brand.ts",
+						code: `import { defineTokens } from "pandwind/preset";
 
 export const brandTokens = defineTokens({
 	colors: { "$brand-500": "#4c51bf" },
 });`,
+					},
+				],
 			},
 		],
 	},
@@ -232,7 +277,8 @@ export const brandTokens = defineTokens({
 		blurb: "cva-style variant maps and computed accessors",
 		group: "core",
 		note: "Variant selection is plain object composition — pick a branch, hand the merged style to css.class()/tw(). Computed keys ([accessor]) work too because the value is what gets compiled, not the key spelling.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
 
@@ -258,7 +304,8 @@ pick({ size: "lg", tone: "brand" })`,
 		blurb: "css.group maps, dynamic groups, and host props",
 		group: "core",
 		note: "Static group entries compile once; entries with $input return a function that carries runtime values as inline custom properties. css.props() projects everything onto React-ready host props.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
 
@@ -282,7 +329,8 @@ css.props(styles.card, styles.muted, styles.banner({ tone: "blue" }))`,
 		blurb: "what the vite pass eliminates before your app ships",
 		group: "core",
 		note: "Module constants, template literals, and static ternary branches all fold at build time; values only known at runtime survive as runtime folds. The panel reports which of the three happened.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			"Example.tsx",
 			TW_IMPORT +
 				`
@@ -301,7 +349,8 @@ cx(
 		blurb: "Tailwind-style nested variants: sm:, group-hover:, dark:",
 		group: "core",
 		note: "tw() understands Tailwind's compositional prefixes — responsive sm:, group-hover:, and nested _hover/_dark pairs join through the generated variant metadata.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			"Example.tsx",
 			TW_IMPORT +
 				`
@@ -319,7 +368,8 @@ tw({
 		blurb: "tw() is not a string concatenation API — this is the honest failure",
 		group: "limits",
 		note: "tw() compiles typed style objects, not class-name strings. Passing a string treats every character as a utility name and emits per-character metadata tokens. Keep static class strings out of tw(); use cx() with plain strings when you already have classes.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			"Example.tsx",
 			TW_IMPORT +
 				`
@@ -333,7 +383,8 @@ tw("bg-red-500 text-lg")`,
 		blurb: "variant keys must nest objects, not strings",
 		group: "limits",
 		note: 'sm: "p-4" hands the variant machinery a string where a style object belongs, so it emits sm-p-4— a token with no generated CSS. The valid form is sm: { p: "4" } (see Responsive).',
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Tw,
 			"Example.tsx",
 			TW_IMPORT +
 				`
@@ -347,7 +398,8 @@ tw({ sm: "p-4" })`,
 		blurb: "declarations outside the preset survive as metadata, not CSS",
 		group: "limits",
 		note: "animation is not in this preset's property allowlist, so the engine emits a metadata token instead of guessing CSS that would never be generated. Widen the preset's properties config (or add the value to the bridge) to make it a real utility.",
-		files: oneFile(
+		variants: oneVariant(
+			PlaygroundApi.Css,
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
 

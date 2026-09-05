@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cx } from "../cx.ts";
 import { tw } from "../tw.ts";
 import { createCss } from "pandwind/css";
-import type { ExampleDef, ExampleFile } from "../lib/examples.ts";
+import { type ExampleDef, type ExampleFile, type ExampleVariant } from "../lib/examples.ts";
 import { evalPlayground, evalSiblingModule, type EvalInput } from "../lib/eval-playground.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { css as designCss } from "../css.ts";
@@ -33,11 +33,14 @@ function decodeCode(encoded: string): string | null {
  * the `./name` import surface the entry tab resolves against — the same
  * module graph a real bundler would see.
  */
-function evalSiblings(sources: readonly string[], def: ExampleDef): EvalInput["moduleBindings"] {
-	if (def.files.length <= 1) return undefined;
+function evalSiblings(
+	sources: readonly string[],
+	variant: ExampleVariant,
+): EvalInput["moduleBindings"] {
+	if (variant.files.length <= 1) return undefined;
 	const bindings: Record<string, Record<string, unknown>> = {};
-	for (let index = 1; index < def.files.length; index++) {
-		const file: ExampleFile = def.files[index]!;
+	for (let index = 1; index < variant.files.length; index++) {
+		const file: ExampleFile = variant.files[index]!;
 		try {
 			bindings["./" + file.name] = evalSiblingModule(makeInput(sources[index] ?? file.code));
 		} catch (error) {
@@ -49,34 +52,76 @@ function evalSiblings(sources: readonly string[], def: ExampleDef): EvalInput["m
 	return bindings;
 }
 
+function variantFromUrl(def: ExampleDef): ExampleVariant {
+	const requested = new URLSearchParams(window.location.search).get("api");
+	return def.variants.find((variant) => variant.api === requested) ?? def.variants[0]!;
+}
+
+function variantUrl(def: ExampleDef, api: string, hash: string): string {
+	const search = def.variants.length > 1 ? `?api=${encodeURIComponent(api)}` : "";
+	return window.location.pathname + search + hash;
+}
+
 export function PlaygroundPage(props: { def: ExampleDef }) {
+	const initialVariant = variantFromUrl(props.def);
+	const [api, setApi] = useState<ExampleVariant["api"]>(initialVariant.api);
+	const activeVariant = props.def.variants.find((variant) => variant.api === api) ?? initialVariant;
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
 		if (hash !== "") {
 			const decoded = decodeCode(hash);
 			if (decoded !== null && decoded.trim() !== "") {
-				return [decoded, ...props.def.files.slice(1).map((file) => file.code)];
+				return [decoded, ...activeVariant.files.slice(1).map((file) => file.code)];
 			}
 		}
-		return props.def.files.map((file) => file.code);
+		return activeVariant.files.map((file) => file.code);
 	});
 	const [activeTab, setActiveTab] = useState(0);
 	const [result, setResult] = useState(() =>
-		evalPlayground(makeInput(files[0]!, evalSiblings(files, props.def))),
+		evalPlayground(makeInput(files[0]!, evalSiblings(files, activeVariant))),
 	);
 	const run = useCallback(
 		(sources: readonly string[]) => {
 			try {
-				setResult(evalPlayground(makeInput(sources[0]!, evalSiblings(sources, props.def))));
+				setResult(evalPlayground(makeInput(sources[0]!, evalSiblings(sources, activeVariant))));
 			} catch (error) {
 				setResult({ ok: false, error: error instanceof Error ? error.message : String(error) });
 			}
 			const hash =
-				sources[0]!.trim() === props.def.files[0]!.code ? "" : "#" + encodeCode(sources[0]!);
-			history.replaceState(null, "", window.location.pathname + window.location.search + hash);
+				sources[0]!.trim() === activeVariant.files[0]!.code.trim()
+					? ""
+					: "#" + encodeCode(sources[0]!);
+			history.replaceState(null, "", variantUrl(props.def, activeVariant.api, hash));
+		},
+		[activeVariant, props.def],
+	);
+
+	const selectApi = useCallback(
+		(nextApi: ExampleVariant["api"]) => {
+			const nextVariant = props.def.variants.find((variant) => variant.api === nextApi);
+			if (nextVariant === undefined) return;
+			const nextFiles = nextVariant.files.map((file) => file.code);
+			setApi(nextVariant.api);
+			setFiles(nextFiles);
+			setActiveTab(0);
+			setResult(evalPlayground(makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant))));
+			history.replaceState(null, "", variantUrl(props.def, nextVariant.api, ""));
 		},
 		[props.def],
 	);
+
+	useEffect(() => {
+		const syncVariant = () => {
+			const nextVariant = variantFromUrl(props.def);
+			const nextFiles = nextVariant.files.map((file) => file.code);
+			setApi(nextVariant.api);
+			setFiles(nextFiles);
+			setActiveTab(0);
+			setResult(evalPlayground(makeInput(nextFiles[0]!, evalSiblings(nextFiles, nextVariant))));
+		};
+		window.addEventListener("popstate", syncVariant);
+		return () => window.removeEventListener("popstate", syncVariant);
+	}, [props.def]);
 
 	// Live evaluation: re-run shortly after every edit; ⌘↵ runs immediately.
 	// The debounced run reads the latest state through the setter so edits on
@@ -109,21 +154,97 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	useEffect(() => () => window.clearTimeout(debounceRef.current), []);
 
 	const dirty = files.some(
-		(code, index) => code.trim() !== (props.def.files[index]?.code ?? "").trim(),
+		(code, index) => code.trim() !== (activeVariant.files[index]?.code ?? "").trim(),
 	);
 	const reset = useCallback(() => {
 		window.clearTimeout(debounceRef.current);
-		const restored = props.def.files.map((file) => file.code);
+		const restored = activeVariant.files.map((file) => file.code);
 		setFiles(restored);
 		run(restored);
-	}, [props.def, run]);
+	}, [activeVariant, run]);
 
 	return (
-		<div className={uiCss.class({ display: "flex", height: "100%", minHeight: "0px", flexDirection: "column", gap: "12px", padding: "16px" })}>
-			<div className={uiCss.class({ display: "flex", height: "24px", flexShrink: "0", alignItems: "center", justifyContent: "space-between" })}>
+		<div
+			className={uiCss.class({
+				display: "flex",
+				height: "100%",
+				minHeight: "0px",
+				flexDirection: "column",
+				gap: "12px",
+				padding: "16px",
+			})}
+		>
+			<div
+				className={uiCss.class({
+					display: "flex",
+					height: "24px",
+					flexShrink: "0",
+					alignItems: "center",
+					justifyContent: "space-between",
+				})}
+			>
 				<div className={uiCss.class({ display: "flex", alignItems: "baseline", gap: "12px" })}>
-					<h1 className={uiCss.class({ margin: "0", fontSize: "13px", fontWeight: "500", color: "#e4e4e7" })}>{props.def.title}</h1>
-					<p className={uiCss.class({ display: "none", margin: "0", fontSize: "12px", color: "#52525b", "@media (min-width: 768px)": { display: "block" } })}>{props.def.blurb}</p>
+					<div className={uiCss.class({ display: "flex", alignItems: "center", gap: "8px" })}>
+						<h1
+							className={uiCss.class({
+								margin: "0",
+								fontSize: "13px",
+								fontWeight: "500",
+								color: "#e4e4e7",
+							})}
+						>
+							{props.def.title}
+						</h1>
+						{props.def.variants.length > 1 && (
+							<label className={uiCss.class({ display: "flex", alignItems: "center", gap: "5px" })}>
+								<span
+									className={uiCss.class({
+										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+										fontSize: "10px",
+										textTransform: "uppercase",
+										letterSpacing: "0.08em",
+										color: "#52525b",
+									})}
+								>
+									API
+								</span>
+								<select
+									aria-label="Select Pandwind API"
+									value={activeVariant.api}
+									onChange={(event) => selectApi(event.target.value as ExampleVariant["api"])}
+									className={uiCss.class({
+										height: "24px",
+										border: "1px solid rgba(255,255,255,0.1)",
+										borderRadius: "5px",
+										backgroundColor: "#16161b",
+										padding: "0 6px",
+										fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+										fontSize: "11px",
+										color: "#a1a1aa",
+										outline: "none",
+										"&:focus": { borderColor: "rgba(251,146,60,0.6)", color: "#f4f4f5" },
+									})}
+								>
+									{props.def.variants.map((variant) => (
+										<option key={variant.api} value={variant.api}>
+											{variant.label}
+										</option>
+									))}
+								</select>
+							</label>
+						)}
+					</div>
+					<p
+						className={uiCss.class({
+							display: "none",
+							margin: "0",
+							fontSize: "12px",
+							color: "#52525b",
+							"@media (min-width: 768px)": { display: "block" },
+						})}
+					>
+						{props.def.blurb}
+					</p>
 				</div>
 				{dirty && (
 					<GhostButton onClick={reset} title="Restore the example code">
@@ -131,9 +252,19 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					</GhostButton>
 				)}
 			</div>
-			{props.def.files.length > 1 && (
-				<div className={uiCss.class({ display: "flex", height: "28px", flexShrink: "0", alignItems: "center", gap: "4px", overflowX: "auto" })} role="tablist">
-					{props.def.files.map((file, index) => (
+			{activeVariant.files.length > 1 && (
+				<div
+					className={uiCss.class({
+						display: "flex",
+						height: "28px",
+						flexShrink: "0",
+						alignItems: "center",
+						gap: "4px",
+						overflowX: "auto",
+					})}
+					role="tablist"
+				>
+					{activeVariant.files.map((file, index) => (
 						<button
 							key={file.name}
 							type="button"
@@ -147,13 +278,22 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					))}
 				</div>
 			)}
-			<div className={uiCss.class({ display: "grid", minHeight: "0px", flex: "1 1 0%", gridTemplateColumns: "1fr", gap: "12px", "@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" } })}>
+			<div
+				className={uiCss.class({
+					display: "grid",
+					minHeight: "0px",
+					flex: "1 1 0%",
+					gridTemplateColumns: "1fr",
+					gap: "12px",
+					"@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+				})}
+			>
 				<EditorPane
 					code={files[activeTab] ?? ""}
 					onChange={onChange}
 					onRun={() => run(files)}
 					filePath={
-						"file:///pandwind/playground/" + (props.def.files[activeTab]?.name ?? "Example.tsx")
+						"file:///pandwind/playground/" + (activeVariant.files[activeTab]?.name ?? "Example.tsx")
 					}
 					className={uiCss.class({ minHeight: "18rem" })}
 				/>
