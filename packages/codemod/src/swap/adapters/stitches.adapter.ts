@@ -1,4 +1,8 @@
-import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterProjectConfig } from "../adapter-contract.ts";
 import {
@@ -68,7 +72,7 @@ function stitchesTransform(program: StyleProgram): StyleProgram {
 				residuals: [
 					...program.residuals,
 					...Array.from(unresolved, (text) => ({
-						kind: "configuration",
+						kind: StyleProgramResidualKindTag.Configuration,
 						text,
 						hint: "Stitches token reference was not found in static createStitches theme config",
 					})),

@@ -16,6 +16,7 @@ import type {
 	StyleProgram,
 	StyleProgramResidual,
 } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
 	CodemodPatternId,
@@ -185,7 +186,7 @@ async function officialTokenamiConfig(
 			...fallback,
 			residuals: [
 				{
-					kind: "configuration",
+					kind: StyleProgramResidualKindTag.Configuration,
 					text: "Tokenami project configuration",
 					hint: "Tokenami configuration was not found or could not be loaded",
 				},
@@ -245,7 +246,7 @@ function normalizeProgram(program: StyleProgram, context: AdapterParseContext): 
 	const residuals: StyleProgramResidual[] = [...program.residuals];
 	for (const composition of program.compositions ?? [])
 		residuals.push({
-			kind: "composition",
+			kind: StyleProgramResidualKindTag.Composition,
 			text: composition.reference,
 			hint: "Tokenami includes require target-side composition lowering",
 		});

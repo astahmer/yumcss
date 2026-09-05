@@ -1,4 +1,6 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
@@ -47,45 +49,45 @@ export default defineCodemodAdapter({
 		{
 			name: "recipe",
 			regex: /\b(?:recipe|createRecipe)\s*\(/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "composition",
+				kind: StyleProgramResidualKindTag.Composition,
 				hint: "Vanilla Extract recipes require variant-aware target lowering",
 			},
 		},
 		{
 			name: "theme-contract",
 			regex: /\b(?:createThemeContract|createGlobalThemeContract)\s*\(/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				hint: "Vanilla Extract theme contracts require contract-aware variable lowering",
 			},
 		},
 		{
 			name: "theme-creation",
 			regex: /\b(?:createTheme|createGlobalTheme)\s*\(/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				hint: "Vanilla Extract themes require static contract/config lowering",
 			},
 		},
 		{
 			name: "assign-vars",
 			regex: /\bassignVars\s*\(/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				hint: "Vanilla Extract assignVars requires contract-aware variable lowering",
 			},
 		},
 		{
 			name: "create-var",
 			regex: /\bcreateVar\s*\(/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				hint: "Vanilla Extract createVar requires contract-aware variable lowering",
 			},
 		},

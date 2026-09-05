@@ -14,6 +14,7 @@ import {
 	StyleProgramEmissionHint,
 	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
+	StyleValueKindTag,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 } from "pandwind-codemod/swap";
@@ -102,8 +103,9 @@ const staticPreset = {
 function containsDynamic(program: StyleProgram): boolean {
 	return program.rules.some(
 		(rule) =>
-			rule.declarations.some((declaration) => declaration.value.kind === "dynamic") ||
-			rule.children.some((child) => containsDynamic({ ...program, rules: [child] })),
+			rule.declarations.some(
+				(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+			) || rule.children.some((child) => containsDynamic({ ...program, rules: [child] })),
 	);
 }
 
@@ -157,7 +159,9 @@ function requiresRuntimeCss(program: StyleProgram): boolean {
 	return program.rules.some(function hasRuntimeRule(rule): boolean {
 		return (
 			(rule.kind !== StyleRuleKindTag.Style &&
-				rule.declarations.some((declaration) => declaration.value.kind === "dynamic")) ||
+				rule.declarations.some(
+					(declaration) => declaration.value.kind === StyleValueKindTag.Dynamic,
+				)) ||
 			rule.children.some(hasRuntimeRule)
 		);
 	});

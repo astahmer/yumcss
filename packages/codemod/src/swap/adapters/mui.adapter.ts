@@ -1,4 +1,5 @@
-import { StyleValueKindTag } from "../semantic-ir.ts";
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { AdapterConfigContext, AdapterHostRewriteResult } from "../adapter-contract.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
@@ -459,7 +460,7 @@ export function createMuiAdapter(
 			{
 				name: "mui-sx",
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
-				form: "jsx-style",
+				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps,
 			},
 			{
@@ -470,9 +471,9 @@ export function createMuiAdapter(
 			{
 				name: "mui-styled-theme-callback",
 				regex: /\bstyled\s*\(\s*[^)]+\s*\)\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "runtime-context",
+					kind: StyleProgramResidualKindTag.RuntimeContext,
 					hint: "MUI styled theme callbacks require target-aware theme lowering",
 				},
 			},
@@ -480,9 +481,9 @@ export function createMuiAdapter(
 				name: "runtime-context",
 				regex:
 					/(?:import[^;\n]*\b(?:ThemeProvider|StyledEngineProvider)\b[^;\n]*;|<(?:ThemeProvider|StyledEngineProvider)\b[^>]*>)/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "runtime-context",
+					kind: StyleProgramResidualKindTag.RuntimeContext,
 					hint: "MUI providers require target-aware theme and style-engine lowering",
 				},
 			},

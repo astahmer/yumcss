@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleRuleKindTag, StyleValueKindTag, type StyleProgram } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
@@ -85,7 +86,7 @@ export default defineCodemodAdapter({
 		{
 			name: "jsx-css",
 			regex: /<[A-Za-z_$][\w$.-]*\b/g,
-			form: "jsx-style",
+			form: CodemodCallPatternFormTag.JsxStyle,
 			styleProps: ["css"],
 		},
 		{ name: "css", regex: /\bcss\s*\(\s*\{/g },
@@ -104,7 +105,7 @@ export default defineCodemodAdapter({
 			name: "styled-template",
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 		{
 			name: "keyframes",
@@ -114,7 +115,7 @@ export default defineCodemodAdapter({
 		{
 			name: "ClassNames",
 			regex: /<\s*ClassNames\b/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
 				kind: "component",
 				hint: "Compiled ClassNames requires a host-aware render-prop lowering",

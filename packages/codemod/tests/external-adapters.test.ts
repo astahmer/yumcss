@@ -709,7 +709,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		});
 		const dyn = parsed.matches
 			.flatMap((match) => match.program.residuals)
-			.find((residual) => residual.kind === "dynamic");
+			.find((residual) => residual.kind === StyleProgramResidualKindTag.Dynamic);
 		expect(dyn?.text).toBe("({ theme }): string => theme.fg");
 	});
 

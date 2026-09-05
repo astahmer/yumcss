@@ -16,6 +16,16 @@ import { join } from "node:path";
 import { CodemodAdapterId } from "../../identifiers.ts";
 import { createSourceWorkspace } from "pandwind/source/workspace";
 
+export const enum PandaFactoryComponentKindTag {
+	Style = "style",
+	Recipe = "recipe",
+}
+
+export const enum PandaDefinitionKindTag {
+	Cva = "cva",
+	Sva = "sva",
+}
+
 const sourceWorkspace = createSourceWorkspace();
 
 /* ------------------------------------------------------------------ */
@@ -171,12 +181,17 @@ export interface ProjectUsage {
 	factoryComponents: Array<{
 		name: string;
 		target: string;
-		kind: "style" | "recipe";
+		kind: `${PandaFactoryComponentKindTag}`;
 		start: number;
 		end: number;
 	}>;
 	/** cva/sva/defineRecipe variable declarations. */
-	definitions: Array<{ name: string; kind: "cva" | "sva"; start: number; end: number }>;
+	definitions: Array<{
+		name: string;
+		kind: `${PandaDefinitionKindTag}`;
+		start: number;
+		end: number;
+	}>;
 }
 
 const RECIPE_IMPORT_RE = /from\s+["'][^"']*styled-system\/recipes["']/g;
@@ -265,10 +280,12 @@ function scanFileUsage(file: string, source: string, usage: ProjectUsage): void 
 	for (const def of source.matchAll(
 		/(?:const|let|var)\s+([\w$]+)\s*=\s*(?:(?:cva|defineRecipe)|(?:sva|defineSlotRecipe))\s*\(/g,
 	)) {
-		const kind = /sva|defineSlotRecipe/.test(def[0]) ? "sva" : "cva";
+		const kind = /sva|defineSlotRecipe/.test(def[0])
+			? PandaDefinitionKindTag.Sva
+			: PandaDefinitionKindTag.Cva;
 		usage.definitions.push({
 			name: def[1]!,
-			kind: kind as "cva" | "sva",
+			kind,
 			start: def.index ?? 0,
 			end: (def.index ?? 0) + def[0].length,
 		});
@@ -289,7 +306,7 @@ function scanFileUsage(file: string, source: string, usage: ProjectUsage): void 
 		usage.factoryComponents.push({
 			name: factory[1]!,
 			target,
-			kind: isRecipeArg ? "recipe" : "style",
+			kind: isRecipeArg ? PandaFactoryComponentKindTag.Recipe : PandaFactoryComponentKindTag.Style,
 			start: factory.index ?? 0,
 			end: (factory.index ?? 0) + factory[0].length,
 		});

@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { SourcePass } from "../../source-pass-utils.ts";
 import type { AdapterRewriteContext, AdapterRewriteResult } from "../adapter-contract.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
@@ -76,7 +77,7 @@ export default defineCodemodAdapter({
 		{
 			name: "jss-styleSheet-reference",
 			regex: /\b(?:jss\.)?createStyleSheet\s*\(\s*([A-Za-z_$][\w$]*)\s*\)/g,
-			form: "reference",
+			form: CodemodCallPatternFormTag.Reference,
 			objectKind: "named",
 		},
 		{ name: "jss-createRule", regex: /\b(?:jss\.)?createRule\s*\(\s*\{/g, objectKind: "named" },

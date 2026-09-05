@@ -24,6 +24,7 @@ import {
 	styleProgramFromSwapIR,
 	styleProgramToCanonicalCss,
 	swapIRFromStyleProgram,
+	StyleProgramResidualKindTag,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import {
@@ -89,7 +90,11 @@ function parseDss(source: string, context: AdapterParseContext): AdapterParseRes
 		const open = source.indexOf("{", start);
 		const block = SourcePass.matchBlock(source, open);
 		if (block === null) {
-			residuals.push({ kind: "parse", text: source.slice(start), hint: "unbalanced dss object" });
+			residuals.push({
+				kind: StyleProgramResidualKindTag.Parse,
+				text: source.slice(start),
+				hint: "unbalanced dss object",
+			});
 			continue;
 		}
 		const program = styleProgramFromSourceObject(block.body, {
@@ -111,7 +116,13 @@ function parseCoreDialect(
 		if (context.meta === undefined)
 			return {
 				matches: [],
-				residuals: [{ kind: "config", text: "tw({...})", hint: "Pandwind metadata is required" }],
+				residuals: [
+					{
+						kind: StyleProgramResidualKindTag.Configuration,
+						text: "tw({...})",
+						hint: "Pandwind metadata is required",
+					},
+				],
 			};
 		return {
 			matches: parseTwCalls(source, context.meta, excluded).map((match) => ({
@@ -183,7 +194,13 @@ function makeCoreAdapter(
 			if (meta === undefined)
 				return {
 					text: "",
-					residuals: [{ kind: "config", text: id, hint: "Pandwind metadata is required" }],
+					residuals: [
+						{
+							kind: StyleProgramResidualKindTag.Configuration,
+							text: id,
+							hint: "Pandwind metadata is required",
+						},
+					],
 				};
 			const result = emitter(swapIRFromStyleProgram(program), meta, { index: context.index, meta });
 			return {

@@ -1,4 +1,5 @@
-import { StyleValueKindTag } from "../semantic-ir.ts";
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
+import { StyleProgramResidualKindTag, StyleValueKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -139,7 +140,7 @@ async function officialPandaConfig(
 					: {
 							residuals: [
 								{
-									kind: "configuration" as const,
+									kind: StyleProgramResidualKindTag.Configuration,
 									text: "Panda project configuration",
 									hint: theme.officialConfigError,
 								},
@@ -156,7 +157,7 @@ async function officialPandaConfig(
 				...fallback,
 				residuals: [
 					{
-						kind: "configuration",
+						kind: StyleProgramResidualKindTag.Configuration,
 						text: "Panda project configuration",
 						hint: `official Panda config loading failed: ${error instanceof Error ? error.message : String(error)}`,
 					},
@@ -180,7 +181,7 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			{
 				name: "jsx-style-props",
 				regex: /<\s*styled\.[A-Za-z_$][\w$]*\b/g,
-				form: "jsx-style",
+				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps: pandaJsxStyleProps,
 				semanticBindings: [{ source: "styled-system/jsx", imported: "styled" }],
 				regexForBinding: (binding) =>
@@ -193,25 +194,25 @@ export function createPandaAdapter(options: PandaAdapterOptions = {}) {
 			{
 				name: "cva",
 				regex: /\bcva\s*\(\s*\{/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "composition",
+					kind: StyleProgramResidualKindTag.Composition,
 					hint: "Panda cva recipes require variant-aware target lowering",
 				},
 			},
 			{
 				name: "sva",
 				regex: /\bsva\s*\(\s*\{/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "composition",
+					kind: StyleProgramResidualKindTag.Composition,
 					hint: "Panda sva slot recipes require slot-aware target lowering",
 				},
 			},
 			{
 				name: "generated-styled",
 				regex: /\bstyled\.[A-Za-z_$][\w$]*\s*\(/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
 					kind: "component",
 					hint: "Panda generated styled components require host/component lowering",

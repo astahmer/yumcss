@@ -1,5 +1,6 @@
 import {
 	StyleRuleKindTag,
+	StyleProgramResidualKindTag,
 	StyleValueKindTag,
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
@@ -51,9 +52,9 @@ export interface ExtraAdapterOptions {
 	readonly packages: AdapterDependencies;
 	readonly detect: readonly RegExp[];
 	readonly call: RegExp;
-	readonly form?: "object" | "template";
+	readonly form?: `${CodemodCallPatternFormTag}`;
 	/** Multiple static carriers may share one public function, e.g. Goober's css. */
-	readonly forms?: readonly ("object" | "template")[];
+	readonly forms?: readonly `${CodemodCallPatternFormTag}`[];
 	/** Optional JSX host carrier for adapters with inline style attributes. */
 	readonly jsxStyle?: {
 		readonly regex: RegExp;
@@ -298,7 +299,7 @@ function parseObjectCalls(
 		const block = balanced(source, open);
 		if (block === undefined) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(start),
 				hint: `${id} object is unbalanced`,
 			});
@@ -422,7 +423,7 @@ function parseTemplateCalls(
 		if (source.slice(start, firstTick).includes("=>")) {
 			if (options.functionCall !== undefined) continue;
 			residuals.push({
-				kind: "capability",
+				kind: StyleProgramResidualKindTag.Capability,
 				text: source.slice(start, lastTick + 1),
 				hint: `${id} function-valued styles require a host-specific lowering`,
 			});

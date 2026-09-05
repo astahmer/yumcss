@@ -1,4 +1,6 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import {
+	StyleProgramResidualKindTag,
 	inferSemanticConditionKind,
 	StyleRuleKindTag,
 	StyleValueKindTag,
@@ -624,7 +626,7 @@ function compositionResidual(program: StyleProgram, text: string): StyleProgram 
 		residuals: [
 			...program.residuals,
 			{
-				kind: "composition",
+				kind: StyleProgramResidualKindTag.Composition,
 				text,
 				hint: "Chakra recipes and attached factory styles require explicit composition lowering",
 			},
@@ -836,7 +838,7 @@ export function createChakraAdapter(
 			{
 				name: "chakra-style-props",
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
-				form: "jsx-style",
+				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps: (context) => chakraSourceVocabulary(context).styleProps,
 				preserveHostStyleProps: (host) => [
 					...preserveSeparatorGap(host),
@@ -849,53 +851,53 @@ export function createChakraAdapter(
 			{
 				name: "chakra-system-css",
 				regex: /\b(?:system|defaultSystem|chakraSystem)\.css\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 			},
 			{
 				name: "chakra-recipe",
 				regex: /\bdefineRecipe\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				transform: (program) => compositionResidual(program, "defineRecipe"),
 			},
 			{
 				name: "chakra-slot-recipe",
 				regex: /\bdefineSlotRecipe\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				transform: (program) => compositionResidual(program, "defineSlotRecipe"),
 			},
 			{
 				name: "chakra-cva",
 				regex: /\b(?:system|defaultSystem|chakraSystem)\.cva\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				transform: (program) => compositionResidual(program, "system.cva"),
 			},
 			{
 				name: "chakra-sva",
 				regex: /\b(?:system|defaultSystem|chakraSystem)\.sva\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				transform: (program) => compositionResidual(program, "system.sva"),
 			},
 			{
 				name: "chakra-factory-styles",
 				regex: /\bchakra\s*\(\s*(?:["'][^"']+["']|[A-Za-z_$][\w$]*)\s*,\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				transform: (program) => compositionResidual(program, "chakra factory styles"),
 			},
 			{
 				name: "chakra-use-recipe",
 				regex: /\buseRecipe\s*\(\s*[A-Za-z_$][\w$]*\s*\)/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "composition",
+					kind: StyleProgramResidualKindTag.Composition,
 					hint: "Chakra recipe usage requires explicit variant/component lowering",
 				},
 			},
 			{
 				name: "chakra-use-slot-recipe",
 				regex: /\buseSlotRecipe\s*\(\s*[A-Za-z_$][\w$]*\s*\)/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "composition",
+					kind: StyleProgramResidualKindTag.Composition,
 					hint: "Chakra slot recipe usage requires explicit variant/component lowering",
 				},
 			},

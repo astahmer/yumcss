@@ -1,6 +1,8 @@
 import {
 	SemanticConditionKindTag,
 	StyleRuleKindTag,
+	StyleDynamicLoweringTag,
+	StyleProgramResidualKindTag,
 	StyleValueKindTag,
 	inferSemanticConditionKind,
 	styleProgramFromRules,
@@ -83,13 +85,7 @@ type CallPattern = {
 	/** Resolve authored aliases through the shared AST binding index. */
 	readonly semanticBindings?: readonly { source: string; imported: string }[];
 	readonly regexForBinding?: (binding: SourceBinding) => RegExp;
-	readonly form?:
-		| "object"
-		| "template"
-		| "reference"
-		| "jsx-style"
-		| CodemodCallPatternFormTag.JsxGlobal
-		| "residual";
+	readonly form?: `${CodemodCallPatternFormTag}`;
 	readonly residual?: Pick<StyleProgramResidual, "kind" | "hint">;
 	readonly functionCall?: Pick<
 		import("./function-style-parser.ts").FunctionStyleCallParserOptions,
@@ -732,7 +728,7 @@ function parseTemplateProgram(
 			const colon = trimmed.indexOf(":");
 			if (colon <= 0) {
 				residuals.push({
-					kind: "parse",
+					kind: StyleProgramResidualKindTag.Parse,
 					text: statement,
 					hint: "nested template CSS requires a rule parser",
 				});
@@ -741,7 +737,7 @@ function parseTemplateProgram(
 			const rawValue = trimmed.slice(colon + 1).trim();
 			if (isUnboundedJsCallValue(rawValue)) {
 				residuals.push({
-					kind: "capability",
+					kind: StyleProgramResidualKindTag.Capability,
 					text: statement,
 					hint: "call-expression values require a runtime value carrier, not a static literal",
 				});
@@ -751,9 +747,13 @@ function parseTemplateProgram(
 			let value: StyleDeclaration["value"];
 			if (hasInterpolation) {
 				const expression = templateDynamicExpression(rawValue);
-				value = { kind: "dynamic", expression, lowering: "residual" };
+				value = {
+					kind: StyleValueKindTag.Dynamic,
+					expression,
+					lowering: StyleDynamicLoweringTag.Residual,
+				};
 				residuals.push({
-					kind: "dynamic",
+					kind: StyleProgramResidualKindTag.Dynamic,
 					text: rawValue,
 					hint: rawValue.includes("=>")
 						? "function interpolation requires a framework prop wrapper"
@@ -804,7 +804,7 @@ function parseTemplateProgram(
 				const block = SourcePass.matchBlock(input, index);
 				if (block === null || selector === "") {
 					residuals.push({
-						kind: "parse",
+						kind: StyleProgramResidualKindTag.Parse,
 						text: input.slice(cursor),
 						hint: "unbalanced template CSS",
 					});
@@ -812,7 +812,7 @@ function parseTemplateProgram(
 				}
 				if (selector.includes("${"))
 					residuals.push({
-						kind: "dynamic",
+						kind: StyleProgramResidualKindTag.Dynamic,
 						text: selector,
 						hint: "component selector interpolation requires a host rewrite",
 					});
@@ -1238,7 +1238,7 @@ function parseCalls(
 					);
 					if (binding === null) {
 						residuals.push({
-							kind: "parse",
+							kind: StyleProgramResidualKindTag.Parse,
 							text: match[0],
 							hint: `JSS style binding '${reference}' was not found`,
 						});
@@ -1248,7 +1248,7 @@ function parseCalls(
 					const block = SourcePass.matchBlock(source, open);
 					if (block === null) {
 						residuals.push({
-							kind: "parse",
+							kind: StyleProgramResidualKindTag.Parse,
 							text: match[0],
 							hint: `JSS style binding '${reference}' is unbalanced`,
 						});
@@ -1282,7 +1282,7 @@ function parseCalls(
 					if (isInsideHostRange(start)) continue;
 					if (source.slice(start, firstTick).includes("=>")) {
 						residuals.push({
-							kind: "capability",
+							kind: StyleProgramResidualKindTag.Capability,
 							text: source.slice(start, lastTick + 1),
 							hint: `${pattern.name} function-valued styles require a host-specific lowering`,
 						});
@@ -1291,7 +1291,7 @@ function parseCalls(
 					const templateBody = source.slice(firstTick + 1, lastTick);
 					if (/\$\{[^`]*`/u.test(templateBody)) {
 						residuals.push({
-							kind: "dynamic",
+							kind: StyleProgramResidualKindTag.Dynamic,
 							text: source.slice(start, lastTick + 1),
 							hint: `${pattern.name} nested template interpolation requires a host-specific lowering`,
 						});
@@ -1327,7 +1327,7 @@ function parseCalls(
 				const block = SourcePass.matchBlock(source, open);
 				if (block === null) {
 					residuals.push({
-						kind: "parse",
+						kind: StyleProgramResidualKindTag.Parse,
 						text: source.slice(start),
 						hint: "unbalanced style object",
 					});

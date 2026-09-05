@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	CodemodCallPatternKindTag,
@@ -17,12 +18,16 @@ export default defineCodemodAdapter({
 		compilerIntegrations: ["@linaria/babel-preset", "@linaria/webpack-loader"],
 	},
 	patterns: [
-		{ name: "linaria-css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
+		{
+			name: "linaria-css",
+			regex: /\bcss\s*`(?:\\.|[^`])*`/g,
+			form: CodemodCallPatternFormTag.Template,
+		},
 		{
 			name: "linaria-styled",
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 	],
 	packages: {

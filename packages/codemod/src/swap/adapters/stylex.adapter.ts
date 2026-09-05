@@ -1,4 +1,6 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { StyleLowering } from "../lowering.ts";
@@ -786,9 +788,9 @@ export function createStyleXAdapter(options: StyleXAdapterOptions = {}) {
 			{
 				name: "stylex-create-theme",
 				regex: /\bstylex\.createTheme\s*\(/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "configuration",
+					kind: StyleProgramResidualKindTag.Configuration,
 					hint: "StyleX createTheme requires variable-aware theme lowering",
 				},
 			},

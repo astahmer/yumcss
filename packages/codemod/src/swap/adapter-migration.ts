@@ -360,7 +360,7 @@ function configurationFailure(
 				marker,
 				configurationResiduals: [
 					{
-						kind: "configuration",
+						kind: StyleProgramResidualKindTag.Configuration,
 						text: "official project configuration",
 						hint: `official adapter configuration loading failed: ${detail}`,
 					},
@@ -378,7 +378,7 @@ function configurationFailure(
 		fileChanges: [],
 		residuals: [
 			{
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				text: "official project configuration",
 				hint: `official adapter configuration loading failed: ${detail}`,
 			},
@@ -1000,7 +1000,7 @@ function runAdapterMigrationInternal(
 						detail: "dynamic value has no validated host carrier",
 					});
 					residuals.push({
-						kind: "dynamic-values",
+						kind: StyleProgramResidualKindTag.DynamicValues,
 						text: match.sourceText,
 						hint:
 							preview?.residuals[0]?.hint ?? "dynamic values need a host-bound class/style carrier",
@@ -1013,7 +1013,7 @@ function runAdapterMigrationInternal(
 								marker,
 								loweringResiduals: [
 									{
-										kind: "dynamic-values",
+										kind: StyleProgramResidualKindTag.DynamicValues,
 										text: match.sourceText,
 										hint: "dynamic values require a host-bound class/style carrier",
 									},
@@ -1343,7 +1343,7 @@ function runAdapterMigrationInternal(
 					? []
 					: [
 							{
-								kind: "capability",
+								kind: StyleProgramResidualKindTag.Capability,
 								text: match.sourceText,
 								hint: effectiveReport.blockers
 									.map((issue) => `${issue.capability}: ${issue.detail}`)

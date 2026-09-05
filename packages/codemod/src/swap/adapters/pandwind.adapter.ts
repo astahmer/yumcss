@@ -255,7 +255,7 @@ async function officialPandwindConfig(
 				...fallback,
 				residuals: [
 					{
-						kind: "configuration",
+						kind: StyleProgramResidualKindTag.Configuration,
 						text: "Pandwind generated design-system metadata",
 						hint: `Pandwind interop loading failed: ${error instanceof Error ? error.message : String(error)}`,
 					},

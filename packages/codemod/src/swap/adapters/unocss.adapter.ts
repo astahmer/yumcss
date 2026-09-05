@@ -1,5 +1,6 @@
 import {
 	SemanticConditionKindTag,
+	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	StyleValueKindTag,
 	styleProgramFromRules,
@@ -359,7 +360,7 @@ function emitUnoClassTokens(
 		const token = unoToken(declaration);
 		if (token === undefined) {
 			residuals.push({
-				kind: "dynamic",
+				kind: StyleProgramResidualKindTag.Dynamic,
 				text: declaration.property,
 				hint: "UnoCSS arbitrary utility projection requires a literal declaration",
 			});
@@ -562,7 +563,7 @@ async function officialConfig(
 			...fallback,
 			residuals: [
 				{
-					kind: "configuration",
+					kind: StyleProgramResidualKindTag.Configuration,
 					text: "UnoCSS project configuration",
 					hint: `official UnoCSS config loading failed: ${error instanceof Error ? error.message : String(error)}`,
 				},
@@ -824,7 +825,7 @@ function parseUnoCss(
 	}
 	for (const text of collectDynamicClassAttributes(source))
 		residuals.push({
-			kind: "dynamic",
+			kind: StyleProgramResidualKindTag.Dynamic,
 			text,
 			hint: "UnoCSS dynamic class expressions require runtime-aware target lowering",
 		});

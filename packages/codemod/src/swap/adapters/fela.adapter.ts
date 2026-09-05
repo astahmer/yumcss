@@ -1,5 +1,6 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import {
 	AdapterOfficialApiStatusTag,
 	CodemodAdapterId,
@@ -32,7 +33,7 @@ const fela = makeExtraAdapter({
 		{
 			name: "createRenderer",
 			regex: /\bcreateRenderer\s*\((?!\s*\))/g,
-			kind: "configuration",
+			kind: StyleProgramResidualKindTag.Configuration,
 			hint: "Fela renderer configuration and plugins require target-aware lowering",
 		},
 		{

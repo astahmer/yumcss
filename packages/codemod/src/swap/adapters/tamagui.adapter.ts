@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type {
 	AdapterConfigContext,
@@ -10,6 +11,7 @@ import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import {
 	styleProgramFromRules,
 	styleProgramFromSourceObject,
+	StyleProgramResidualKindTag,
 	type StyleProgramResidual,
 } from "../semantic-ir.ts";
 import { CodemodAdapterId, StyleHostRepresentationKind } from "../identifiers.ts";
@@ -100,7 +102,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 			const start = match.index ?? 0;
 			const call = balancedCall(source, source.indexOf("(", start));
 			residuals.push({
-				kind: "configuration",
+				kind: StyleProgramResidualKindTag.Configuration,
 				text: call === undefined ? source.slice(start) : source.slice(start, call.end),
 				hint: "Tamagui tokens and compiler configuration require official project context",
 			});
@@ -115,7 +117,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 		const call = balancedCall(source, open);
 		if (call === undefined) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(start),
 				hint: "Tamagui styled call is unbalanced",
 			});
@@ -124,7 +126,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 		const comma = topLevelComma(call.body, 0, call.body.length);
 		if (comma === undefined) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(start, call.end),
 				hint: "Tamagui styled requires a component and style object",
 			});
@@ -134,7 +136,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 		const block = objectOpen === -1 ? undefined : SourcePass.matchBlock(source, objectOpen);
 		if (block === null || block === undefined) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(start, call.end),
 				hint: "Tamagui styled style object is unbalanced",
 			});
@@ -157,7 +159,7 @@ function parseTamaguiStyles(source: string, context: AdapterParseContext): Adapt
 					},
 					residuals: [
 						{
-							kind: "function-dynamic",
+							kind: StyleProgramResidualKindTag.FunctionDynamic,
 							text: styleArgument,
 							hint: "Tamagui function-valued styles require a theme/props wrapper",
 						},
@@ -233,9 +235,9 @@ export function createTamaguiAdapter(
 			{
 				name: "tamagui-create-system",
 				regex: /\b(?:createTamagui|createTokens|createFont)\s*\(/gu,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "configuration",
+					kind: StyleProgramResidualKindTag.Configuration,
 					hint: "Tamagui project configuration must be evaluated through its official compiler context",
 				},
 			},

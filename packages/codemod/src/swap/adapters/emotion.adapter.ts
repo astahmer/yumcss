@@ -1,5 +1,5 @@
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
 import {
 	CodemodCallPatternKindTag,
 	CodemodCallPatternFormTag,
@@ -115,7 +115,7 @@ export default defineCodemodAdapter({
 		{
 			name: "jsx-css",
 			regex: /<[A-Za-z_$][\w$.-]*\b/g,
-			form: "jsx-style",
+			form: CodemodCallPatternFormTag.JsxStyle,
 			styleProps: ["css"],
 		},
 		{
@@ -137,7 +137,7 @@ export default defineCodemodAdapter({
 		{
 			name: "css-template",
 			regex: /\bcss\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 			semanticBindings: [
 				{ source: "@emotion/css", imported: "css" },
 				{ source: "@emotion/react", imported: "css" },
@@ -176,7 +176,7 @@ export default defineCodemodAdapter({
 			name: "styled-template",
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 		{
 			name: "keyframes",
@@ -198,9 +198,9 @@ export default defineCodemodAdapter({
 			name: "runtime-context",
 			regex:
 				/(?:import[^;\n]*\b(?:ThemeProvider|CacheProvider)\b[^;\n]*;|<(?:ThemeProvider|CacheProvider)\b[^>]*>)/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "runtime-context",
+				kind: StyleProgramResidualKindTag.RuntimeContext,
 				hint: "Emotion runtime providers require target-aware theme/cache lowering",
 			},
 		},

@@ -12,6 +12,7 @@ import type {
 import { createBuiltinCodemodCatalog } from "./adapter-catalog.ts";
 import type { StyleAdapterRegistry } from "./adapter-registry.ts";
 import {
+	StyleProgramResidualKindTag,
 	styleProgramFromRules,
 	styleProgramToCanonicalCss,
 	type StyleProgram,
@@ -237,7 +238,10 @@ export function runDifferentialFixture(fixture: DifferentialFixture): Differenti
 			differences: ["target capability contract rejected the program"],
 			residuals: [
 				...residuals,
-				...report.blockers.map((issue) => ({ kind: "capability", text: issue.detail })),
+				...report.blockers.map((issue) => ({
+					kind: StyleProgramResidualKindTag.Capability,
+					text: issue.detail,
+				})),
 				...lowering.residuals,
 			],
 			capability: effectiveReport,

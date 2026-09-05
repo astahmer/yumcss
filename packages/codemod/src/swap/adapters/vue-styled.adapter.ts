@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
@@ -103,7 +104,7 @@ const vueStyled = makeExtraAdapter({
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
 	call: /\bstyled\.[A-Za-z_$][\w$]*[^`]*`(?:\\.|[^`])*`/g,
-	form: "template",
+	form: CodemodCallPatternFormTag.Template,
 	prefix: "styled.div(",
 	targetImports: ['import styled from "vue-styled-components";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,

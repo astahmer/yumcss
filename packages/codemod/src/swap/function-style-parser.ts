@@ -1,4 +1,5 @@
 import { StyleValueKindTag } from "./semantic-ir.ts";
+import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import type { AdapterParseContext, AdapterParseResult } from "./adapter-contract.ts";
 import {
 	styleProgramFromSourceObject,
@@ -96,7 +97,7 @@ export class FunctionStyleCallParser {
 			const call = balancedCall(source, open);
 			if (call === undefined) {
 				residuals.push({
-					kind: "parse",
+					kind: StyleProgramResidualKindTag.Parse,
 					text: source.slice(start),
 					hint: `${options.id} function style is unbalanced`,
 				});
@@ -146,7 +147,7 @@ export class FunctionStyleCallParser {
 			const object = objectOpen === -1 ? undefined : balanced(source, open + 1 + objectOpen);
 			if (arrow === -1 || object === undefined) {
 				residuals.push({
-					kind: "dynamic",
+					kind: StyleProgramResidualKindTag.Dynamic,
 					text: source.slice(start, call.end),
 					hint: `${options.id} function-valued styles require a framework prop wrapper`,
 				});

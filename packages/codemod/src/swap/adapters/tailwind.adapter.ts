@@ -1,5 +1,6 @@
 import {
 	SemanticConditionKindTag,
+	StyleProgramResidualKindTag,
 	StyleRuleKindTag,
 	StyleValueKindTag,
 	styleProgramFromRules,
@@ -433,7 +434,7 @@ function parseTailwind(
 	}
 	for (const text of collectDynamicClassAttributes(source))
 		residuals.push({
-			kind: "dynamic",
+			kind: StyleProgramResidualKindTag.Dynamic,
 			text,
 			hint: "Tailwind dynamic class expressions require runtime-aware target lowering",
 		});
@@ -543,7 +544,7 @@ function emitTailwind(
 	for (const declaration of declarations) {
 		if (declaration.value.kind !== StyleValueKindTag.Literal) {
 			residuals.push({
-				kind: "dynamic",
+				kind: StyleProgramResidualKindTag.Dynamic,
 				text: declaration.property,
 				hint: "Tailwind output requires a literal declaration or a host runtime carrier",
 			});
@@ -764,7 +765,7 @@ async function officialConfig(
 				...fallback,
 				residuals: [
 					{
-						kind: "configuration",
+						kind: StyleProgramResidualKindTag.Configuration,
 						text: "Tailwind project CSS graph",
 						hint: "project file discovery is required to load the official Tailwind engine",
 					},
@@ -800,7 +801,7 @@ async function officialConfig(
 			...fallback,
 			residuals: [
 				{
-					kind: "configuration",
+					kind: StyleProgramResidualKindTag.Configuration,
 					text: "Tailwind project configuration",
 					hint: `official Tailwind config loading failed: ${error instanceof Error ? error.message : String(error)}`,
 				},

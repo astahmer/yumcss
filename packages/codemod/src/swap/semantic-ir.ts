@@ -84,6 +84,7 @@ export const enum StyleProgramResidualKindTag {
 	RuntimeContext = "runtime-context",
 	Parse = "parse",
 	Capability = "capability",
+	Nesting = "nesting",
 	Configuration = "configuration",
 	Composition = "composition",
 	PluginTransform = "plugin-transform",
@@ -1353,7 +1354,7 @@ export function swapIRFromStyleProgram(program: StyleProgram): SwapIR {
 			rule.children.length > 0
 		) {
 			residuals.push({
-				kind: "unrepresentable",
+				kind: SwapResidualKindTag.Unrepresentable,
 				text: rule.name ?? rule.selector ?? rule.kind,
 				hint: "rich semantic structure requires a rule-capable target",
 			});

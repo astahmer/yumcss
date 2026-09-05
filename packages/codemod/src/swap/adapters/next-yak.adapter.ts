@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import {
 	AdapterOfficialApiStatusTag,
@@ -23,15 +24,15 @@ export default defineCodemodAdapter({
 		{
 			name: "jsx-css",
 			regex: /<[A-Za-z_$][\w$.-]*\b/g,
-			form: "jsx-style",
+			form: CodemodCallPatternFormTag.JsxStyle,
 			styleProps: ["css"],
 		},
-		{ name: "css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: "template" },
+		{ name: "css", regex: /\bcss\s*`(?:\\.|[^`])*`/g, form: CodemodCallPatternFormTag.Template },
 		{
 			name: "styled",
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 	],
 	packages: CodemodAdapterKit.dependency("next-yak", "peer"),

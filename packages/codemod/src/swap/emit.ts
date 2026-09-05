@@ -15,6 +15,7 @@ import { mapToken } from "../map.ts";
 import type { AnyTokens } from "pandwind/types/typings";
 import type { SwapEntry, SwapIR } from "./ir.ts";
 import { TokenRefModeTag, type TokenRefMode } from "./tokens.ts";
+import { SwapResidualKindTag } from "./ir.ts";
 import type { StyleProgram } from "./semantic-ir.ts";
 import type { AdapterCapabilities, AdapterCapabilityReport } from "./capabilities.ts";
 import { CSS_PROPERTY_ALIASES } from "./property-aliases.ts";
@@ -517,7 +518,7 @@ function emitDesignVocabWithCallee(
 				if (!flexPaired) {
 					scope.raw.push([entry.prop, entry.value]);
 					residuals.push({
-						kind: "unknown-value",
+						kind: SwapResidualKindTag.UnknownValue,
 						text: `${entry.prop}: ${String(entry.value)}`,
 						hint: "display/flex-direction outside the designer vocabulary",
 						preserved: true,
@@ -528,7 +529,7 @@ function emitDesignVocabWithCallee(
 			if (!placeEntry(entry, scope, mode, meta.tokens)) {
 				scope.raw.push([entry.prop, entry.value]);
 				residuals.push({
-					kind: "unknown-value",
+					kind: SwapResidualKindTag.UnknownValue,
 					text: `${entry.prop}: ${String(entry.value)}`,
 					hint: "outside the designer vocabulary — placed in $raw",
 					preserved: true,

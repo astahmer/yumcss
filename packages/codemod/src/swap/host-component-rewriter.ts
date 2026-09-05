@@ -1,4 +1,5 @@
 import { SourcePass } from "../source-pass-utils.ts";
+import { StyleProgramResidualKindTag } from "./semantic-ir.ts";
 import type { StyleProgramResidual } from "./semantic-ir.ts";
 import {
 	BuiltinHostFramework,
@@ -477,7 +478,7 @@ export function rewriteDynamicCarrier(
 			needsCx: false,
 			residuals: [
 				{
-					kind: "dynamic-values",
+					kind: StyleProgramResidualKindTag.DynamicValues,
 					text: binding,
 					hint: `dynamic style binding '${binding}' has no supported host use`,
 				},
@@ -539,7 +540,7 @@ export function rewriteDynamicExpressionCarrier(
 			needsCx: false,
 			residuals: [
 				{
-					kind: "dynamic-values",
+					kind: StyleProgramResidualKindTag.DynamicValues,
 					text: expression,
 					hint: "inline dynamic style expression has no supported host use",
 				},

@@ -1,7 +1,9 @@
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import {
 	AdapterOfficialApiStatusTag,
+	CodemodCallPatternFormTag,
 	CodemodAdapterId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
@@ -22,13 +24,13 @@ const goober = makeExtraAdapter({
 	packages: { packages: [{ name: "goober", kind: AdapterDependencyKindTag.Runtime }] },
 	detect: [/from\s+["']goober["']/g, /\b(?:css|styled\.[A-Za-z_$][\w$]*)\s*(?:\(\s*\{|`)/g],
 	call: /\b(?:css\s*(?:\(\s*\{|`)|styled\.[A-Za-z_$][\w$]*\s*`)/g,
-	forms: ["object", "template"],
+	forms: [CodemodCallPatternFormTag.Object, CodemodCallPatternFormTag.Template],
 	prefix: "css(",
 	residualPatterns: [
 		{
 			name: "setup",
 			regex: /\bsetup\s*\(/g,
-			kind: "configuration",
+			kind: StyleProgramResidualKindTag.Configuration,
 			hint: "Goober setup changes runtime rendering and requires target-aware lowering",
 		},
 	],

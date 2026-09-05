@@ -1,4 +1,9 @@
-import { StyleRuleKindTag, StyleValueKindTag } from "../semantic-ir.ts";
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
+import {
+	StyleProgramResidualKindTag,
+	StyleRuleKindTag,
+	StyleValueKindTag,
+} from "../semantic-ir.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
 import type { StyleProgram, StyleValue } from "../semantic-ir.ts";
 import type { AdapterConfigContext } from "../adapter-contract.ts";
@@ -433,20 +438,20 @@ export function createMantineAdapter(
 			{
 				name: "mantine-style-props",
 				regex: /<[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?\b/g,
-				form: "jsx-style",
+				form: CodemodCallPatternFormTag.JsxStyle,
 				styleProps,
 			},
 			{
 				name: "mantine-createStyles",
 				regex: /\bcreateStyles\s*\(\s*\{/g,
-				form: "object",
+				form: CodemodCallPatternFormTag.Object,
 				sourceObjectOptions: { namedRuleObjects: true },
 				suffix: /\.classes\b/u,
 			},
 			{
 				name: "mantine-style-api",
 				regex: /\b(?:styles|classNames|vars)\s*=/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				sourceGuard: (source) => /\bfrom\s*["']@mantine\/core["']/u.test(source),
 				residual: {
 					kind: "host-framework",
@@ -456,9 +461,9 @@ export function createMantineAdapter(
 			{
 				name: "runtime-context",
 				regex: /(?:import[^;\n]*\bMantineProvider\b[^;\n]*;|<MantineProvider\b[^>]*>)/g,
-				form: "residual",
+				form: CodemodCallPatternFormTag.Residual,
 				residual: {
-					kind: "runtime-context",
+					kind: StyleProgramResidualKindTag.RuntimeContext,
 					hint: "MantineProvider requires target-aware theme and runtime-context lowering",
 				},
 			},

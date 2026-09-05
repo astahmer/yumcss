@@ -1,4 +1,8 @@
-import { StyleProgramResidualKindTag, StyleValueKindTag } from "./semantic-ir.ts";
+import {
+	StyleDynamicLoweringTag,
+	StyleProgramResidualKindTag,
+	StyleValueKindTag,
+} from "./semantic-ir.ts";
 import type { StyleProgram, StyleProgramResidual, StyleValue } from "./semantic-ir.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
 
@@ -36,7 +40,11 @@ export class PortableStyleArtifact {
 			const expression = expressions.get(value.value.slice(4, -1));
 			return expression === undefined
 				? value
-				: { kind: "dynamic", expression, lowering: "runtime" };
+				: {
+						kind: StyleValueKindTag.Dynamic,
+						expression,
+						lowering: StyleDynamicLoweringTag.Runtime,
+					};
 		};
 		const declarations = (items: readonly StyleProgram["declarations"][number][]) =>
 			items.map((declaration) => ({ ...declaration, value: restoreValue(declaration.value) }));

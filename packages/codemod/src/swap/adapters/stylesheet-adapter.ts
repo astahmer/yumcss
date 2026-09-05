@@ -13,7 +13,7 @@ import {
 	CodemodAdapterId,
 	StyleRepresentationKind,
 } from "../identifiers.ts";
-import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
 import {
 	createPreprocessorFileMigration,
 	createStylesheetFileMigration,
@@ -113,7 +113,7 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 			residuals: StyleProgramAnalysis.hasDynamic(program)
 				? [
 						{
-							kind: "dynamic",
+							kind: StyleProgramResidualKindTag.Dynamic,
 							text: "dynamic stylesheet value",
 							hint: "authored stylesheet values must be statically resolved",
 						},

@@ -1,5 +1,6 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { CodemodAdapterKit, defineCodemodAdapter } from "../external-adapters.ts";
-import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag, StyleRuleKindTag } from "../semantic-ir.ts";
 import { BuiltinHostFramework } from "../host-adapters.ts";
 import {
 	CodemodAdapterId,
@@ -40,19 +41,19 @@ export default defineCodemodAdapter({
 			name: "styled-template",
 			kind: CodemodCallPatternKindTag.Styled,
 			regex: /\bstyled\s*(?:\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 		{
 			name: "createGlobalStyle-template",
 			kind: CodemodCallPatternKindTag.Global,
 			regex: /\bcreateGlobalStyle\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 		{
 			name: "keyframes-template",
 			kind: CodemodCallPatternKindTag.Keyframes,
 			regex: /\bkeyframes\s*`(?:\\.|[^`])*`/g,
-			form: "template",
+			form: CodemodCallPatternFormTag.Template,
 		},
 		{
 			name: "createGlobalStyle",
@@ -68,9 +69,9 @@ export default defineCodemodAdapter({
 			name: "runtime-context",
 			regex:
 				/(?:import[^;\n]*\b(?:ThemeProvider|StyleSheetManager|ServerStyleSheet)\b[^;\n]*;|<(?:ThemeProvider|StyleSheetManager|ServerStyleSheet)\b[^>]*>)/g,
-			form: "residual",
+			form: CodemodCallPatternFormTag.Residual,
 			residual: {
-				kind: "runtime-context",
+				kind: StyleProgramResidualKindTag.RuntimeContext,
 				hint: "styled-components runtime providers require target-aware context lowering",
 			},
 		},

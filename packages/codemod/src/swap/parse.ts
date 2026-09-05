@@ -22,6 +22,7 @@ import { resolveDesignStyle } from "pandwind/design/resolve";
 import type { AnyTokens } from "pandwind/types/typings";
 import { SourcePass } from "../source-pass-utils.ts";
 import type { SwapIR } from "./ir.ts";
+import { SwapResidualKindTag } from "./ir.ts";
 import {
 	resolvedAuthoredToken,
 	suggestionLookup,
@@ -343,7 +344,7 @@ function walkTwEntries(
 		if (isVariantKey(meta, key)) {
 			if (typeof value !== "object" || value === null || Array.isArray(value)) {
 				ir.residuals.push({
-					kind: "dynamic",
+					kind: SwapResidualKindTag.Dynamic,
 					text: `${key}: ${formatLit(value)}`,
 					hint: `variant "${key}" must nest an object`,
 				});
@@ -354,7 +355,11 @@ function walkTwEntries(
 		}
 		const parts = Array.isArray(value) ? value : [value];
 		if (parts.some((p) => typeof p === "object")) {
-			ir.residuals.push({ kind: "dynamic", text: `${key}: [...]`, hint: "nested containers" });
+			ir.residuals.push({
+				kind: SwapResidualKindTag.Dynamic,
+				text: `${key}: [...]`,
+				hint: "nested containers",
+			});
 			continue;
 		}
 		const utility = UTILITY_SUBKEYS[key] ?? dashCase(key);
@@ -377,7 +382,7 @@ function walkTwEntries(
 					continue;
 				}
 				ir.residuals.push({
-					kind: "unknown-value",
+					kind: SwapResidualKindTag.UnknownValue,
 					text: cls,
 					hint: `tw({ ${key}: ... }) — utility "${cls}" has no bridge entry`,
 				});
@@ -419,7 +424,9 @@ export function parseTwCalls(
 				end: block.end,
 				ir: {
 					entries: [],
-					residuals: [{ kind: "dynamic", text: "tw({...})", hint: "non-literal object" }],
+					residuals: [
+						{ kind: SwapResidualKindTag.Dynamic, text: "tw({...})", hint: "non-literal object" },
+					],
 				},
 			});
 			continue;
@@ -534,7 +541,11 @@ export function parseCssLiterals(
 					ir: {
 						entries: [],
 						residuals: [
-							{ kind: "dynamic", text: `${bindingName}.class({...})`, hint: "non-literal object" },
+							{
+								kind: SwapResidualKindTag.Dynamic,
+								text: `${bindingName}.class({...})`,
+								hint: "non-literal object",
+							},
 						],
 					},
 					design: false,

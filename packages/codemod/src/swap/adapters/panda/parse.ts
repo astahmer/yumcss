@@ -20,7 +20,7 @@
  * - `textStyle: '<name>'` expands inline from the ingested theme (a
  *   textStyle is bundled utilities); unknown names are residuals.
  */
-import type { SwapEntry, SwapIR, SwapResidual } from "../../ir.ts";
+import { SwapResidualKindTag, type SwapEntry, type SwapIR, type SwapResidual } from "../../ir.ts";
 import {
 	literalValueToPlain,
 	parseObjectLiteral,
@@ -217,7 +217,7 @@ function resolveValue(
 		resolved = {
 			value: fallback,
 			residual: {
-				kind: "unknown-value",
+				kind: SwapResidualKindTag.UnknownValue,
 				text: `${prop}: '${raw}'`,
 				hint: `token "${bare}" is not in the ingested panda theme — emitted as ${fallback}; lift it via pass 1`,
 			},
@@ -284,7 +284,7 @@ function walkStyle(
 				});
 			} else {
 				ir.residuals.push({
-					kind: "unrepresentable",
+					kind: SwapResidualKindTag.Unrepresentable,
 					text: `${key}: {...}`,
 					hint: "nested selector / at-rule must contain an object",
 				});
@@ -294,7 +294,7 @@ function walkStyle(
 		if (isConditionishKey(key, theme)) {
 			if (!isPlainObject(raw)) {
 				ir.residuals.push({
-					kind: "dynamic",
+					kind: SwapResidualKindTag.Dynamic,
 					text: `${key}: ${JSON.stringify(raw)}`,
 					hint: `condition "${key}" must nest an object`,
 				});
@@ -326,7 +326,7 @@ function walkStyle(
 				});
 			} else {
 				ir.residuals.push({
-					kind: "dynamic",
+					kind: SwapResidualKindTag.Dynamic,
 					text: `${key}: {...}`,
 					hint: `${key} must use a literal breakpoint name`,
 				});
@@ -367,7 +367,7 @@ function walkStyle(
 			const textStyle = theme.textStyles.get(raw);
 			if (textStyle === undefined) {
 				ir.residuals.push({
-					kind: "unknown-value",
+					kind: SwapResidualKindTag.UnknownValue,
 					text: `textStyle: '${raw}'`,
 					hint: `textStyle "${raw}" not in ingested panda theme — lift textStyles in pass 1 or migrate manually`,
 				});
@@ -412,7 +412,7 @@ function walkStyle(
 			(typeof raw !== "string" && typeof raw !== "number" && raw !== true)
 		) {
 			ir.residuals.push({
-				kind: "dynamic",
+				kind: SwapResidualKindTag.Dynamic,
 				text: `${key}: ${isPlainObject(raw) || Array.isArray(raw) ? "{...}" : JSON.stringify(raw)}`,
 				hint: "non-literal or unsupported value shape",
 			});
@@ -489,7 +489,7 @@ function styleIrOrResidual(
 ): SwapIR {
 	if (!isPlainObject(raw)) {
 		residuals.push({
-			kind: "dynamic",
+			kind: SwapResidualKindTag.Dynamic,
 			text: `${slot || "css"}: {...}`,
 			hint: "non-literal style object",
 		});
@@ -537,7 +537,7 @@ export function pandaRecipeToIr(
 		for (const [variantName, values] of Object.entries(variants)) {
 			if (!isPlainObject(values)) {
 				recipe.residuals.push({
-					kind: "dynamic",
+					kind: SwapResidualKindTag.Dynamic,
 					text: `${variantName}: {...}`,
 					hint: "non-literal variant values",
 				});
@@ -549,7 +549,7 @@ export function pandaRecipeToIr(
 				if (kind === PandaRecipeKindTag.Sva) {
 					if (!isPlainObject(style)) {
 						recipe.residuals.push({
-							kind: "dynamic",
+							kind: SwapResidualKindTag.Dynamic,
 							text: `${variantName}.${valueName}`,
 							hint: "non-literal sva variant style",
 						});
@@ -587,7 +587,7 @@ export function pandaRecipeToIr(
 		for (const compound of compounds) {
 			if (!isPlainObject(compound)) {
 				recipe.residuals.push({
-					kind: "dynamic",
+					kind: SwapResidualKindTag.Dynamic,
 					text: "compoundVariants: [...]",
 					hint: "non-literal compound variant",
 				});
@@ -603,7 +603,7 @@ export function pandaRecipeToIr(
 					matchers[k] = v.map(String).join("|"); // array = any-of matchers
 				} else {
 					recipe.residuals.push({
-						kind: "dynamic",
+						kind: SwapResidualKindTag.Dynamic,
 						text: `compoundVariants: ${k}: {...}`,
 						hint: "non-literal compound matcher",
 					});
@@ -655,7 +655,11 @@ function dynamicRecipe(kind: "cva" | "sva"): PandaRecipeIR {
 		compoundVariants: [],
 		defaultVariants: {},
 		residuals: [
-			{ kind: "dynamic", text: `${kind}({...})`, hint: "non-literal body (spread/dynamic values)" },
+			{
+				kind: SwapResidualKindTag.Dynamic,
+				text: `${kind}({...})`,
+				hint: "non-literal body (spread/dynamic values)",
+			},
 		],
 	};
 }
@@ -705,7 +709,9 @@ export function parsePandaCalls(
 					kind: PandaCallKindTag.Css,
 					ir: {
 						entries: [],
-						residuals: [{ kind: "dynamic", text: "css({...})", hint: "non-literal object" }],
+						residuals: [
+							{ kind: SwapResidualKindTag.Dynamic, text: "css({...})", hint: "non-literal object" },
+						],
 					},
 				};
 			}

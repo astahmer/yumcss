@@ -36,8 +36,14 @@ import {
 } from "../path-utils.ts";
 import { SOURCE_SCANNER_SERVICE, SourceBindings } from "pandwind/source";
 
+const enum StylesheetSourceNodeKindTag {
+	Rule = "rule",
+	AtRule = "at-rule",
+	Statement = "statement",
+}
+
 export interface StylesheetSourceNode {
-	readonly kind: "rule" | "at-rule" | "statement";
+	readonly kind: `${StylesheetSourceNodeKindTag}`;
 	readonly prelude: string;
 	readonly start: number;
 	readonly end: number;
@@ -215,12 +221,17 @@ function parseNodes(
 			// semicolon; the remaining content is one statement.
 			const trailing = source.slice(contentStart, end).trim();
 			if (trailing !== "")
-				nodes.push({ kind: "statement", prelude: trailing, start: contentStart, end });
+				nodes.push({
+					kind: StylesheetSourceNodeKindTag.Statement,
+					prelude: trailing,
+					start: contentStart,
+					end,
+				});
 			break;
 		}
 		if (delimiter.kind === "}") {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(contentStart, delimiter.index + 1),
 				hint: "unexpected stylesheet closing brace",
 			});
@@ -233,14 +244,19 @@ function parseNodes(
 			continue;
 		}
 		if (delimiter.kind === ";") {
-			nodes.push({ kind: "statement", prelude, start: contentStart, end: delimiter.index + 1 });
+			nodes.push({
+				kind: StylesheetSourceNodeKindTag.Statement,
+				prelude,
+				start: contentStart,
+				end: delimiter.index + 1,
+			});
 			cursor = delimiter.index + 1;
 			continue;
 		}
 		const close = closingBrace(source, delimiter.index, end);
 		if (close === undefined) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: source.slice(contentStart, end),
 				hint: "stylesheet block is unbalanced",
 			});
@@ -248,7 +264,9 @@ function parseNodes(
 		}
 		const nested = parseNodes(source, delimiter.index + 1, close);
 		nodes.push({
-			kind: prelude.startsWith("@") ? "at-rule" : "rule",
+			kind: prelude.startsWith("@")
+				? StylesheetSourceNodeKindTag.AtRule
+				: StylesheetSourceNodeKindTag.Rule,
 			prelude,
 			start: contentStart,
 			end: close + 1,
@@ -277,9 +295,9 @@ function declarations(
 	const values: StyleDeclaration[] = [];
 	const residuals: StyleProgramResidual[] = [];
 	for (const child of node.body ?? []) {
-		if (child.kind !== "statement") {
+		if (child.kind !== StylesheetSourceNodeKindTag.Statement) {
 			residuals.push({
-				kind: "nesting",
+				kind: StyleProgramResidualKindTag.Nesting,
 				text: child.prelude,
 				hint: "nested stylesheet rules require selector-aware lowering",
 			});
@@ -288,7 +306,7 @@ function declarations(
 		const colon = child.prelude.indexOf(":");
 		if (colon <= 0) {
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: child.prelude,
 				hint: "stylesheet declaration requires a property and value",
 			});
@@ -303,7 +321,7 @@ function declarations(
 			value.includes("@{")
 		) {
 			residuals.push({
-				kind: "composition",
+				kind: StyleProgramResidualKindTag.Composition,
 				text: child.prelude,
 				hint: "preprocessor or CSS Modules composition needs its source context",
 			});
@@ -353,14 +371,14 @@ function styleRule(
 	const children: StyleProgram["rules"][number][] = [];
 	const residuals = [...parsed.residuals];
 	for (const child of node.body ?? []) {
-		if (child.kind === "rule") {
+		if (child.kind === StylesheetSourceNodeKindTag.Rule) {
 			if (
 				/\([^()]*\)$/u.test(child.prelude) &&
 				(context.config.adapter === CodemodAdapterId.Sass ||
 					context.config.adapter === CodemodAdapterId.Less)
 			) {
 				residuals.push({
-					kind: "composition",
+					kind: StyleProgramResidualKindTag.Composition,
 					text: child.prelude,
 					hint: "preprocessor mixins require the official compiler context",
 				});
@@ -371,13 +389,13 @@ function styleRule(
 			residuals.push(...nested.residuals);
 			continue;
 		}
-		if (child.kind === "at-rule") {
+		if (child.kind === StylesheetSourceNodeKindTag.AtRule) {
 			const nestedCondition = condition(child.prelude);
 			if (nestedCondition !== undefined) {
 				for (const nestedChild of child.body ?? []) {
-					if (nestedChild.kind !== "rule") {
+					if (nestedChild.kind !== StylesheetSourceNodeKindTag.Rule) {
 						residuals.push({
-							kind: "capability",
+							kind: StyleProgramResidualKindTag.Capability,
 							text: nestedChild.prelude,
 							hint: "nested conditional statements require a selector-aware lowering",
 						});
@@ -390,7 +408,7 @@ function styleRule(
 				continue;
 			}
 			residuals.push({
-				kind: "capability",
+				kind: StyleProgramResidualKindTag.Capability,
 				text: child.prelude,
 				hint: "nested stylesheet at-rules require selector-aware lowering",
 			});
@@ -426,7 +444,7 @@ function nodePrograms(
 	inherited: readonly StyleCondition[] = [],
 ): { programs: StyleProgram[]; residuals: StyleProgramResidual[] } {
 	const residuals: StyleProgramResidual[] = [];
-	if (node.kind === "rule") {
+	if (node.kind === StylesheetSourceNodeKindTag.Rule) {
 		const result = styleRule(node, context, inherited);
 		return result.rule === undefined
 			? { programs: [], residuals: result.residuals }
@@ -440,10 +458,10 @@ function nodePrograms(
 					residuals: [],
 				};
 	}
-	if (node.kind === "statement") {
+	if (node.kind === StylesheetSourceNodeKindTag.Statement) {
 		if (!node.prelude.startsWith("@import") && !node.prelude.startsWith("@charset"))
 			residuals.push({
-				kind: "parse",
+				kind: StyleProgramResidualKindTag.Parse,
 				text: node.prelude,
 				hint: "stylesheet statement is preserved outside the style program",
 			});
@@ -480,7 +498,7 @@ function nodePrograms(
 		const name = node.prelude.trim().split(/\s+/u)[1];
 		const keyframeResiduals: StyleProgramResidual[] = [];
 		const children = (node.body ?? [])
-			.filter((child) => child.kind === "rule")
+			.filter((child) => child.kind === StylesheetSourceNodeKindTag.Rule)
 			.map((child, order) => {
 				const parsed = declarations(child, context);
 				keyframeResiduals.push(...parsed.residuals);
@@ -616,7 +634,7 @@ function nodePrograms(
 		};
 	}
 	residuals.push({
-		kind: "capability",
+		kind: StyleProgramResidualKindTag.Capability,
 		text: node.prelude,
 		hint: "stylesheet at-rule is not safely representable by the selected style target",
 	});
@@ -763,14 +781,18 @@ export function createStylesheetFileMigration(
 				for (const match of parsed.matches) matches.push(match);
 				const document = port.parse(source);
 				for (const node of document.nodes) {
-					if (node.kind !== "statement" || !node.prelude.startsWith("@import")) continue;
+					if (
+						node.kind !== StylesheetSourceNodeKindTag.Statement ||
+						!node.prelude.startsWith("@import")
+					)
+						continue;
 					const importMatch = /^@import\s+((?:url\([^)]*\)|["'][^"']+["']))/u.exec(node.prelude);
 					const specifier = importMatch?.[1]?.trim();
 					const imported =
 						specifier === undefined ? undefined : importedFile(normalizedFile, specifier);
 					if (imported === undefined) {
 						residuals.push({
-							kind: "configuration",
+							kind: StyleProgramResidualKindTag.Configuration,
 							text: node.prelude,
 							hint: "unresolved stylesheet imports require the project's stylesheet resolver",
 						});
@@ -779,7 +801,7 @@ export function createStylesheetFileMigration(
 					const importedSource = context.readFile?.(imported);
 					if (importedSource === undefined) {
 						residuals.push({
-							kind: "configuration",
+							kind: StyleProgramResidualKindTag.Configuration,
 							text: node.prelude,
 							hint: "stylesheet import could not be read from the project workspace",
 						});
@@ -798,7 +820,7 @@ export function createStylesheetFileMigration(
 				const name = rule?.name;
 				if (rule === undefined || name === undefined || !/^[A-Za-z_$][\w$-]*$/u.test(name)) {
 					residuals.push({
-						kind: "capability",
+						kind: StyleProgramResidualKindTag.Capability,
 						text: rule?.selector ?? match.sourceText,
 						hint: "stylesheet migration requires a single local class selector",
 					});
@@ -806,7 +828,7 @@ export function createStylesheetFileMigration(
 				}
 				if (names.has(name)) {
 					residuals.push({
-						kind: "capability",
+						kind: StyleProgramResidualKindTag.Capability,
 						text: name,
 						hint: "imported stylesheet classes must have unique exported names",
 					});
@@ -1085,7 +1107,7 @@ export function createPreprocessorFileMigration(
 							marker: "pandwind:migrate-skip",
 							configurationResiduals: [
 								{
-									kind: "configuration",
+									kind: StyleProgramResidualKindTag.Configuration,
 									text: context.file,
 									hint: "the official preprocessor package is not installed in the project",
 								},
@@ -1101,7 +1123,7 @@ export function createPreprocessorFileMigration(
 					fileChanges: [],
 					residuals: [
 						{
-							kind: "configuration",
+							kind: StyleProgramResidualKindTag.Configuration,
 							text: context.file,
 							hint: "the official preprocessor package is not installed in the project",
 						},
@@ -1122,7 +1144,7 @@ export function createPreprocessorFileMigration(
 							marker: "pandwind:migrate-skip",
 							configurationResiduals: [
 								{
-									kind: "configuration",
+									kind: StyleProgramResidualKindTag.Configuration,
 									text: context.file,
 									hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
 								},
@@ -1137,7 +1159,7 @@ export function createPreprocessorFileMigration(
 					fileChanges: [],
 					residuals: [
 						{
-							kind: "configuration",
+							kind: StyleProgramResidualKindTag.Configuration,
 							text: context.file,
 							hint: `official preprocessor compilation failed: ${error instanceof Error ? error.message : String(error)}`,
 						},

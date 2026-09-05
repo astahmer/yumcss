@@ -1,3 +1,4 @@
+import { CodemodCallPatternFormTag } from "../identifiers.ts";
 import { StyleValueKindTag } from "../semantic-ir.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
@@ -106,7 +107,7 @@ const solidStyled = makeExtraAdapter({
 		/\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*\(\s*\{/g,
 	],
 	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
-	form: "template",
+	form: CodemodCallPatternFormTag.Template,
 	prefix: "styled.div(",
 	functionValues: true,
 	targetImports: ['import { styled } from "solid-styled-components";'],

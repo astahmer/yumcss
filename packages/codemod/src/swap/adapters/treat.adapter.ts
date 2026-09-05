@@ -1,4 +1,5 @@
 import { StyleRuleKindTag } from "../semantic-ir.ts";
+import { StyleProgramResidualKindTag } from "../semantic-ir.ts";
 import { AdapterDependencyKindTag } from "../adapter-contract.ts";
 import { makeExtraAdapter } from "./extra-adapter-runtime.ts";
 import {
@@ -26,7 +27,7 @@ const treat = makeExtraAdapter({
 		{
 			name: "createTheme",
 			regex: /\bcreateTheme\s*\(/g,
-			kind: "configuration",
+			kind: StyleProgramResidualKindTag.Configuration,
 			hint: "Treat createTheme requires theme-aware target lowering",
 		},
 	],
