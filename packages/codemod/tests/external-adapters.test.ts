@@ -647,6 +647,49 @@ describe("CSS-in-JS adapter contract v2", () => {
 		`);
 	});
 
+	test("does not cross statement boundaries when pairing tagged-template calls", () => {
+		// Shape from the goober reference corpus: an object-form call whose
+		// statement ends before any backtick appears, plus an unrelated later
+		// template. Neither parser may swallow the other's payload.
+		const adapter = getCodemodAdapter("goober")!;
+		const source = [
+			'import { css } from "goober";',
+			'const btn = css({ color: "red" });',
+			'const title = css`',
+			'  font-size: 12px;',
+			'`;',
+		].join("\n");
+		const parsed = adapter.parse(source, {
+			file: "app.tsx",
+			source,
+			config: { adapter: "goober", files: [], values: {} },
+		});
+		expect(parsed.matches.map((match) => match.sourceText)).toEqual([
+			'css({ color: "red" })',
+			"css`\n  font-size: 12px;\n`",
+		]);
+		expect(parsed.residuals).toEqual([]);
+		expect(parsed.matches.flatMap((match) => match.program.residuals)).toEqual([]);
+	});
+
+	test("keeps a function-valued template residual scoped to the interpolation", () => {
+		const adapter = getCodemodAdapter("goober")!;
+		const source = [
+			'import { css } from "goober";',
+			"const btn = css`color: red;`;",
+			'const themed = css`color: ${({ theme }): string => theme.fg};`;',
+		].join("\n");
+		const parsed = adapter.parse(source, {
+			file: "app.tsx",
+			source,
+			config: { adapter: "goober", files: [], values: {} },
+		});
+		const dyn = parsed.matches
+			.flatMap((match) => match.program.residuals)
+			.find((residual) => residual.kind === "dynamic");
+		expect(dyn?.text).toBe("({ theme }): string => theme.fg");
+	});
+
 	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
 		const result = runAdapterMigration(
 			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,

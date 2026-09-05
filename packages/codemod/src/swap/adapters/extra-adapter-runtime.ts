@@ -293,6 +293,11 @@ function parseObjectCalls(
 		const start = match.index ?? 0;
 		if (mask(start)) continue;
 		const open = source.indexOf("{", start);
+		// The template-form variant of the shared call regex also lands here;
+		// an object call owns an opening brace before the call head ends (;
+		// backtick). Reaching across one would wrap a template literal into a
+		// bogus empty object program.
+		if (open === -1 || callHeadEnd(source, start, open, "`") !== undefined) continue;
 		const block = balanced(source, open);
 		if (block === undefined) {
 			residuals.push({
@@ -313,6 +318,54 @@ function parseObjectCalls(
 		matches.push({ start, end, program, sourceText: source.slice(start, end) });
 	}
 	return { matches, residuals };
+}
+
+/** A call head is the callee text between the match start and the style
+ * payload (object brace or template backtick). Shared call regexes match
+ * both forms, so each parser must reject a match whose head ends first:
+ * a `;`, the opposite form's opener, or an unbalanced `(` (a plain value
+ * expression, not a style call). Strings, comments, and balanced segments
+ * of parens or angle brackets (TS generics such as `styled("div")<{...}>`)
+ * belong to the head and are skipped, not treated as terminators. */
+function callHeadEnd(
+	source: string,
+	start: number,
+	limit: number,
+	opposite: "{" | "`",
+): number | undefined {
+	let parens = 0;
+	let angles = 0;
+	for (let index = start; index < limit && index < source.length; index++) {
+		const character = source[index];
+		if (character === '"' || character === "'" || character === "`") {
+			const closing = source.indexOf(character, index + 1);
+			if (closing === -1) return index;
+			index = closing;
+			continue;
+		}
+		if (character === "/" && source[index + 1] === "/") {
+			const newline = source.indexOf("\n", index);
+			if (newline === -1) return index;
+			index = newline;
+			continue;
+		}
+		if (character === "/" && source[index + 1] === "*") {
+			const closing = source.indexOf("*/", index + 2);
+			if (closing === -1) return index;
+			index = closing + 1;
+			continue;
+		}
+		if (character === "(") parens++;
+		if (character === ")") {
+			parens--;
+			if (parens < 0) return index;
+		}
+		if (opposite === "{" && character === "<") angles++;
+		if (opposite === "{" && character === ">" && angles > 0) angles--;
+		if (character === ";" && angles === 0) return index;
+		if (character === opposite && parens === 0 && angles === 0) return index;
+	}
+	return undefined;
 }
 
 function parseResidualPatterns(
@@ -362,8 +415,13 @@ function parseTemplateCalls(
 		const start = match.index ?? 0;
 		if (mask(start)) continue;
 		const firstTick = source.indexOf("`", start);
+		// The object-form variant of the shared call regex also lands here; a
+		// template call owns a backtick before the call head ends ({ or ;).
+		// Reaching across one would swallow unrelated template literals later
+		// in the document.
+		if (firstTick === -1 || callHeadEnd(source, start, firstTick, "{") !== undefined) continue;
 		const lastTick = findTemplateLiteralEnd(source, firstTick);
-		if (firstTick === -1 || lastTick === undefined || lastTick <= firstTick) continue;
+		if (lastTick === undefined || lastTick <= firstTick) continue;
 		if (source.slice(start, firstTick).includes("=>")) {
 			if (options.functionCall !== undefined) continue;
 			residuals.push({
