@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
 import { CodemodAdapterId } from "pandwind-codemod/swap/browser";
 import { EditorPane } from "./EditorPane.tsx";
-import { GhostButton, Kbd, Pane } from "./ui.tsx";
+import {
+	GhostButton,
+	Kbd,
+	Pane,
+	ResizableSplitter,
+	type ResizableSplitterPanel,
+} from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
 import {
 	MIGRATION_LAB,
@@ -103,6 +109,30 @@ function CopyButton(props: { text: string }) {
 	);
 }
 
+const PLAIN_CODE = uiCss.class({
+	margin: "0",
+	maxHeight: "min(52vh, 34rem)",
+	overflow: "auto",
+	backgroundColor: "transparent",
+	padding: "12px",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "12px",
+	lineHeight: "20px",
+	whiteSpace: "pre-wrap",
+});
+const HIGHLIGHTED_CODE = uiCss.class({
+	"& pre": {
+		margin: "0",
+		maxHeight: "min(52vh, 34rem)",
+		overflow: "auto",
+		backgroundColor: "transparent",
+		padding: "12px",
+		fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+		fontSize: "12px",
+		lineHeight: "20px",
+	},
+});
+
 function CodeBlock(props: { code: string }) {
 	const [html, setHtml] = useState("");
 	useEffect(() => {
@@ -118,14 +148,12 @@ function CodeBlock(props: { code: string }) {
 			active = false;
 		};
 	}, [props.code]);
-	const codeStyle = { margin: "0", maxHeight: "min(52vh, 34rem)", overflow: "auto", backgroundColor: "transparent", padding: "12px", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "12px", lineHeight: "20px" } as const;
-	const base = uiCss.class({ "& pre": codeStyle });
 	return html === "" ? (
-		<pre className={uiCss.class({ ...codeStyle, whiteSpace: "pre-wrap" })}>
+		<pre className={PLAIN_CODE}>
 			<code>{props.code}</code>
 		</pre>
 	) : (
-		<div className={base} dangerouslySetInnerHTML={{ __html: html }} />
+		<div className={HIGHLIGHTED_CODE} dangerouslySetInnerHTML={{ __html: html }} />
 	);
 }
 
@@ -282,30 +310,61 @@ function ResultPane(props: {
 				</pre>
 			</Pane>
 		);
+	const panels: ResizableSplitterPanel[] = [
+		{
+			id: "migration-output",
+			initialSize: 30,
+			minSize: 15,
+			content: (
+				<Pane label={`Output · ${props.target.label}`} className={uiCss.class({ height: "100%" })} right={<CopyButton text={props.result.code} />}>
+					<CodeBlock code={props.result.code} />
+				</Pane>
+			),
+		},
+		{
+			id: "migration-summary",
+			initialSize: 13,
+			minSize: 9,
+			content: (
+				<div className={uiCss.class({ height: "100%", overflow: "auto" })}>
+					<Summary result={props.result} />
+				</div>
+			),
+		},
+		{
+			id: "target-capability",
+			initialSize: 14,
+			minSize: 9,
+			content: <Pane label="Target capability decision"><CapabilityReport result={props.result} /></Pane>,
+		},
+		{
+			id: "negotiated-outcome",
+			initialSize: 14,
+			minSize: 9,
+			content: <Pane label="Negotiated outcome"><Outcomes result={props.result} /></Pane>,
+		},
+		{
+			id: "residual-report",
+			initialSize: 16,
+			minSize: 9,
+			content: <Pane label="Residual report"><Residuals result={props.result} /></Pane>,
+		},
+		{
+			id: "canonical-validation",
+			initialSize: 8,
+			minSize: 7,
+			content: <Pane label="Canonical validation"><Validation result={props.result} /></Pane>,
+		},
+		{
+			id: "target-contract",
+			initialSize: 8,
+			minSize: 7,
+			content: <Pane label={`Target contract · ${props.target.label}`}><Contract endpoint={props.target} /></Pane>,
+		},
+	];
 	return (
-		<div className={uiCss.class({ display: "flex", minHeight: "0px", flexDirection: "column", gap: "12px", overflowY: "auto", paddingRight: "2px" })}>
-			<Pane
-				label={`Output · ${props.target.label}`}
-				right={<CopyButton text={props.result.code} />}
-			>
-				<CodeBlock code={props.result.code} />
-			</Pane>
-			<Summary result={props.result} />
-			<Pane label="Target capability decision">
-				<CapabilityReport result={props.result} />
-			</Pane>
-			<Pane label="Negotiated outcome">
-				<Outcomes result={props.result} />
-			</Pane>
-			<Pane label="Residual report">
-				<Residuals result={props.result} />
-			</Pane>
-			<Pane label="Canonical validation">
-				<Validation result={props.result} />
-			</Pane>
-			<Pane label={`Target contract · ${props.target.label}`}>
-				<Contract endpoint={props.target} />
-			</Pane>
+		<div className={uiCss.class({ display: "flex", height: "100%", minHeight: "0px", overflow: "hidden" })}>
+			<ResizableSplitter orientation="vertical" panels={panels} />
 		</div>
 	);
 }
@@ -399,15 +458,31 @@ export function MigrationLabPage() {
 					</div>
 				</div>
 			</div>
-			<div className={uiCss.class({ display: "grid", minHeight: "0px", flex: "1 1 0%", gridTemplateColumns: "1fr", gap: "12px", "@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" } })}>
-				<EditorPane
-					code={source}
-					onChange={setSource}
-					onRun={() => undefined}
-					className={uiCss.class({ minHeight: "18rem" })}
-				/>
-				<ResultPane result={result} target={targetEndpoint} />
-			</div>
+			<ResizableSplitter
+				orientation="horizontal"
+				className={uiCss.class({ flex: "1 1 0%", minHeight: "18rem" })}
+				panels={[
+					{
+						id: "source-editor",
+						initialSize: 50,
+						minSize: 25,
+						content: (
+							<EditorPane
+								code={source}
+								onChange={setSource}
+								onRun={() => undefined}
+								className={uiCss.class({ height: "100%", minHeight: "0px" })}
+							/>
+						),
+					},
+					{
+						id: "migration-result",
+						initialSize: 50,
+						minSize: 25,
+						content: <ResultPane result={result} target={targetEndpoint} />,
+					},
+				]}
+			/>
 		</div>
 	);
 }

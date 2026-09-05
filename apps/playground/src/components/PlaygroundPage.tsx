@@ -10,7 +10,7 @@ import { examplePreset } from "pandwind/preset";
 import { SANDBOX_MODULES } from "../lib/sandbox-modules.ts";
 import { EditorPane } from "./EditorPane.tsx";
 import { ResultsPane } from "./ResultsPane.tsx";
-import { GhostButton } from "./ui.tsx";
+import { GhostButton, ResizableSplitter } from "./ui.tsx";
 import { css as uiCss } from "../ui-css.ts";
 
 /** Component-like dynamics available inside evaluated code as `props`. */
@@ -278,27 +278,35 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					))}
 				</div>
 			)}
-			<div
-				className={uiCss.class({
-					display: "grid",
-					minHeight: "0px",
-					flex: "1 1 0%",
-					gridTemplateColumns: "1fr",
-					gap: "12px",
-					"@media (min-width: 1024px)": { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
-				})}
-			>
-				<EditorPane
-					code={files[activeTab] ?? ""}
-					onChange={onChange}
-					onRun={() => run(files)}
-					filePath={
-						"file:///pandwind/playground/" + (activeVariant.files[activeTab]?.name ?? "Example.tsx")
-					}
-					className={uiCss.class({ minHeight: "18rem" })}
-				/>
-				<ResultsPane result={result} />
-			</div>
+			<ResizableSplitter
+				orientation="horizontal"
+				className={uiCss.class({ flex: "1 1 0%", minHeight: "18rem" })}
+				panels={[
+					{
+						id: "editor",
+						initialSize: 50,
+						minSize: 25,
+						content: (
+							<EditorPane
+								code={files[activeTab] ?? ""}
+								onChange={onChange}
+								onRun={() => run(files)}
+								filePath={
+									"file:///pandwind/playground/" +
+									(activeVariant.files[activeTab]?.name ?? "Example.tsx")
+								}
+								className={uiCss.class({ height: "100%", minHeight: "0px" })}
+							/>
+						),
+					},
+					{
+						id: "output",
+						initialSize: 50,
+						minSize: 25,
+						content: <ResultsPane result={result} />,
+					},
+				]}
+			/>
 		</div>
 	);
 }

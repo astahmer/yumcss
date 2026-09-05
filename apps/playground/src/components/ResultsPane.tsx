@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
-import { GhostButton, Pane } from "./ui.tsx";
+import { GhostButton, Pane, ResizableSplitter, type ResizableSplitterPanel } from "./ui.tsx";
 import type {
 	PlaygroundResult,
 	PlaygroundSheetResult,
@@ -434,6 +434,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			<div
 				className={uiCss.class({
 					display: "flex",
+					height: "100%",
 					minHeight: "0px",
 					flexDirection: "column",
 					gap: "12px",
@@ -444,26 +445,76 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			</div>
 		);
 	}
+	const panels: ResizableSplitterPanel[] = [
+		{
+			id: "class-string",
+			initialSize: 14,
+			minSize: 8,
+			content: (
+				<Pane
+					label="Class string"
+					className={uiCss.class({ height: "100%" })}
+					right={<CopyButton text={r.output} />}
+				>
+					<Snippet code={r.output} lang="css" />
+				</Pane>
+			),
+		},
+		{
+			id: "build-time-fold",
+			initialSize: 11,
+			minSize: 7,
+			content: <FoldSection fold={r.fold} note={r.foldNote} />,
+		},
+		{
+			id: "tokens",
+			initialSize: 13,
+			minSize: 7,
+			content: <TokensSection survived={r.survived} killed={r.killed} />,
+		},
+	];
+	if (r.atomDeclarations.length > 0) {
+		panels.push({
+			id: "css-atoms",
+			initialSize: 15,
+			minSize: 8,
+			content: <AtomsSection atoms={r.atomDeclarations} />,
+		});
+	}
+	if (r.styleMappings.length > 0) {
+		panels.push({
+			id: "declarations-to-classes",
+			initialSize: 18,
+			minSize: 8,
+			content: <StyleMappingsSection mappings={r.styleMappings} />,
+		});
+	}
+	for (const [index, sheet] of r.sheets.entries()) {
+		panels.push({
+			id: `generated-css-${index + 1}`,
+			initialSize: 20,
+			minSize: 8,
+			content: <SheetSection sheets={[sheet]} />,
+		});
+	}
+	if (r.programs.length > 0) {
+		panels.push({
+			id: "styleprogram-ir",
+			initialSize: 20,
+			minSize: 8,
+			content: <StyleProgramSection programs={r.programs} />,
+		});
+	}
 	return (
 		<div
 			className={uiCss.class({
 				display: "flex",
+				height: "100%",
 				minHeight: "0px",
-				flexDirection: "column",
-				gap: "12px",
-				overflowY: "auto",
-				paddingRight: "2px",
+				overflow: "hidden",
 			})}
 		>
-			<Pane label="Class string" right={<CopyButton text={r.output} />}>
-				<Snippet code={r.output} lang="css" />
-			</Pane>
-			<FoldSection fold={r.fold} note={r.foldNote} />
-			<TokensSection survived={r.survived} killed={r.killed} />
-			{r.atomDeclarations.length > 0 && <AtomsSection atoms={r.atomDeclarations} />}
-			{r.styleMappings.length > 0 && <StyleMappingsSection mappings={r.styleMappings} />}
-			{r.sheets.length > 0 && <SheetSection sheets={r.sheets} />}
-			{r.programs.length > 0 && <StyleProgramSection programs={r.programs} />}
+			<ResizableSplitter orientation="vertical" panels={panels} />
 		</div>
 	);
 }
