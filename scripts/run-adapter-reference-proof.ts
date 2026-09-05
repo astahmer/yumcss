@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import {
 	CodemodAdapterId,
 	createRealRepositoryCorpus,
@@ -52,7 +53,16 @@ const harnessModuleLoader = {
 		}
 	},
 	async importFile<T>(file: string): Promise<T | undefined> {
-		return undefined;
+		try {
+			// Official-loader contract: adapters fail closed when a discovered
+			// config cannot be loaded, and the error itself must never become a
+			// guessed fallback. Node type-strips .ts (24+) and resolves bare
+			// imports from the config's own checkout, so the project's real
+			// dependency tree (including workspace configs) is honored.
+			return (await import(pathToFileURL(file).href)) as T;
+		} catch {
+			return undefined;
+		}
 	},
 };
 
