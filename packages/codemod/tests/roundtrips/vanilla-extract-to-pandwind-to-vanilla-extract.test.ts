@@ -173,15 +173,16 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const card = css.class({ padding: "1rem", color: "#f97316" });",
+		export const card = css.class({ padding: "1rem", color: theme.colors.brand });",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -196,7 +197,10 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "
+		import { pandwindPreset } from "pandwind/preset";
+		import { style } from "@vanilla-extract/css";
+		const css = createRuntimeCss(pandwindPreset);
 
 		export const card = style({ padding: "1rem", color: "#f97316" });",
 		      "converted": 1,
@@ -220,15 +224,16 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.class({ padding: "1rem", color: theme.colors.brand });",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -243,7 +248,10 @@ test("vanilla-extract -> pandwind -> vanilla-extract: preserves concrete theme a
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "
+		import { pandwindPreset } from "pandwind/preset";
+		import { style } from "@vanilla-extract/css";
+		const css = createRuntimeCss(pandwindPreset);
 
 		export const card = style({ padding: "1rem", color: "#2563eb" });",
 		      "converted": 1,

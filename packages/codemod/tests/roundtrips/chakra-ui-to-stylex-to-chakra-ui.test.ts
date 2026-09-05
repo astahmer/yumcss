@@ -276,25 +276,25 @@ test("chakra-ui -> stylex -> chakra-ui: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-		export const App = () => // pandwind:migrate-skip (route: stylex -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		stylex.create({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).style;",
-		    "converted": 0,
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => { "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.style;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

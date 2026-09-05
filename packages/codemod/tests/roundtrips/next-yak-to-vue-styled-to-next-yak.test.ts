@@ -272,27 +272,29 @@ test("next-yak -> vue-styled -> next-yak: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
+		    "code": "<script setup>
+		import { styled } from "next-yak";
+		</script>
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ "padding": "1rem", "color": "var(--colors-brand)" });
+
+		export const card = styled.div\`padding: 1rem; color: var(--colors-brand);\`;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

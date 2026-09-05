@@ -161,74 +161,98 @@ test("compiled -> vue-styled -> compiled: preserves concrete theme and project c
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "vue-styled-components";
+
+		export const card = styled.div({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "vue-styled-components";
+
+		export const card = // pandwind:migrate-skip (route: vue-styled -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic style binding 'card' has no supported host use",
-		          "kind": "dynamic-values",
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		css({ color: theme.colors.brand, padding: "1rem" });
+		      "code": "import styled from "vue-styled-components";
+
+		export const card = styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
+		      "converted": 1,
+		      "outcomes": [
+		        {
+		          "outcome": "static",
+		          "representation": "static",
+		        },
+		      ],
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
+		        {
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
+		        },
+		      ],
+		    },
+		    "reverse": {
+		      "changed": true,
+		      "code": "import styled from "vue-styled-components";
+
+		export const card = // pandwind:migrate-skip (route: vue-styled -> compiled | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
+		styled.div({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
 		          "outcome": "residual",
-		          "representation": "target-native",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "dynamic style binding 'card' has no supported host use",
-		          "kind": "dynamic-values",
+		          "hint": "components: component subject: styled.div; framework-semantics: vue",
+		          "kind": "capability",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
-		    },
-		    "reverse": {
-		      "changed": false,
-		      "code": "import { css } from "@compiled/react";
-		export const card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
-		css({ color: theme.colors.brand, padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
-		      "outcomes": [],
-		      "residuals": [],
-		      "skipped": 0,
 		      "validations": [],
 		    },
 		  },

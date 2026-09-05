@@ -168,26 +168,26 @@ test("stitches -> chakra-ui: resolves concrete token references with project con
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
+		  "code": "import { defaultSystem } from "@chakra-ui/react";
+
+		export const card = defaultSystem.css({ padding: "1rem", color: "$colors.brand" });
 		export const App = () => <div className={card()} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`);
 });

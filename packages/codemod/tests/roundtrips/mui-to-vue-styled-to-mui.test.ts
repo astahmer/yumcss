@@ -278,7 +278,7 @@ test("mui -> vue-styled -> mui: resolves token references across both concrete l
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import styled from "vue-styled-components";
-		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: theme-context: 1 theme binding(s); framework-semantics: vue | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "16px", "color": "var(--mui-primary-main)" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -289,7 +289,7 @@ test("mui -> vue-styled -> mui: resolves token references across both concrete l
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s); framework-semantics: vue",
+		        "hint": "framework-semantics: vue",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

@@ -112,13 +112,13 @@ test("tokenami -> pandwind: lowers concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={card} />;",
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
 		    "residuals": [],
@@ -136,13 +136,13 @@ test("tokenami -> pandwind: lowers concrete theme and project context variants",
 		    "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={card} />;",
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
 		    "residuals": [],

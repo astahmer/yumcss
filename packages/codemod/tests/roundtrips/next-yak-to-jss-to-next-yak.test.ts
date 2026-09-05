@@ -270,27 +270,27 @@ test("next-yak -> jss -> next-yak: resolves token references across both concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import { css } from "next-yak";
 
-		export const card = // pandwind:migrate-skip (route: jss -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		jss.createStyleSheet({ style: { padding: "1rem", color: "var(--colors-brand)" } }).attach().classes.style;
+
+		export const card = { "style": css\`padding: 1rem; color: var(--colors-brand);\` }.attach().classes.style;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

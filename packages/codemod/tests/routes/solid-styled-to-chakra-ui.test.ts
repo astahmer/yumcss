@@ -73,7 +73,7 @@ test("solid-styled -> chakra-ui: carries concrete solid-styled dynamics or edge 
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		  "converted": 0,
@@ -84,11 +84,6 @@ test("solid-styled -> chakra-ui: carries concrete solid-styled dynamics or edge 
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -118,7 +113,7 @@ test("solid-styled -> chakra-ui: lowers concrete theme and project context varia
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 0,
@@ -129,11 +124,6 @@ test("solid-styled -> chakra-ui: lowers concrete theme and project context varia
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -151,7 +141,7 @@ test("solid-styled -> chakra-ui: lowers concrete theme and project context varia
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		    "converted": 0,
@@ -162,11 +152,6 @@ test("solid-styled -> chakra-ui: lowers concrete theme and project context varia
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -193,7 +178,7 @@ test("solid-styled -> chakra-ui: resolves concrete token references with project
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <div className={Card} />;",
 		  "converted": 0,
@@ -204,11 +189,6 @@ test("solid-styled -> chakra-ui: resolves concrete token references with project
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "chakra-ui has no host representation for solid",
 		      "kind": "host-framework",

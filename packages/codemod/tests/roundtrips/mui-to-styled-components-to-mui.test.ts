@@ -298,25 +298,25 @@ test("mui -> styled-components -> mui: resolves token references across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> mui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ padding: "16px", color: "var(--mui-primary-main)" });",
-		    "converted": 0,
+		import { styled } from "@mui/system";
+
+		export const App = () => styled("div")({ padding: "16px", color: "var(--mui-primary-main)" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

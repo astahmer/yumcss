@@ -97,7 +97,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains edge semantics without sile
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.foreground, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -109,11 +109,6 @@ test("vue-styled -> chakra-ui -> vue-styled: retains edge semantics without sile
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -132,7 +127,7 @@ test("vue-styled -> chakra-ui -> vue-styled: retains edge semantics without sile
 		    "changed": false,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.foreground, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -169,7 +164,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -181,11 +176,6 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -204,7 +194,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -220,7 +210,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -232,11 +222,6 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -255,7 +240,7 @@ test("vue-styled -> chakra-ui -> vue-styled: preserves concrete theme and projec
 		      "changed": false,
 		      "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: dynamic-custom-property, host-framework | available: named-map, custom-property, residual)
 		styled.div({ color: theme.colors.brand, padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -283,7 +268,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token references across bo
 		    "changed": true,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",
@@ -295,11 +280,6 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token references across bo
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "chakra-ui has no host representation for vue",
 		        "kind": "host-framework",
@@ -313,7 +293,7 @@ test("vue-styled -> chakra-ui -> vue-styled: resolves token references across bo
 		    "changed": false,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> chakra-ui | lowering-residual: host-framework | available: static, named-map, residual)
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		</script>
 		<template><div :class="Card" /></template>",

@@ -313,26 +313,26 @@ test("tamagui -> emotion -> tamagui: resolves token references across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@emotion/css";
-		export const Card = // pandwind:migrate-skip (route: emotion -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ padding: "$4", color: "$colors.brand" });
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
 		export const App = () => <View className={Card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

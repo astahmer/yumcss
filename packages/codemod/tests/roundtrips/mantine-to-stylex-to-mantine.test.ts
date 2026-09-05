@@ -219,7 +219,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).style;",
 		      "converted": 0,
 		      "outcomes": [
@@ -230,13 +230,26 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -266,7 +279,7 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).style;",
 		      "converted": 0,
 		      "outcomes": [
@@ -277,13 +290,26 @@ test("mantine -> stylex -> mantine: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -325,7 +351,7 @@ test("mantine -> stylex -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import * as stylex from "@stylexjs/stylex";
-		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stylex -> mantine | lowering-residual: host-framework, validation)
 		stylex.create({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).style;",
 		    "converted": 0,
 		    "outcomes": [
@@ -336,13 +362,26 @@ test("mantine -> stylex -> mantine: resolves token references across both concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`);

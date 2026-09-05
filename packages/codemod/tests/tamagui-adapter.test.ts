@@ -75,9 +75,7 @@ describe("Tamagui adapter", () => {
 			  "generatedFiles": [],
 			  "loweringPlans": [
 			    {
-			      "applied": [
-			        "dynamic-and-theme",
-			      ],
+			      "applied": [],
 			      "availableRepresentations": [
 			        "named-map",
 			        "residual",
@@ -114,7 +112,7 @@ describe("Tamagui adapter", () => {
 			            "subject": "View",
 			          },
 			        ],
-			        "themes": undefined,
+			        "themes": [],
 			      },
 			      "representation": "residual",
 			      "residuals": [],

@@ -190,7 +190,7 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(1);
 		expect(
-			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Capability),
+			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.DynamicCustomProperty),
 		).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain("theme.foreground");

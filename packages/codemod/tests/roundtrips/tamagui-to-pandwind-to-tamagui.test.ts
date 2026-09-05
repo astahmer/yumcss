@@ -133,7 +133,6 @@ test("tamagui -> pandwind -> tamagui: retains edge semantics without silent loss
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
 		export const Card = css.vars({ "padding": "$4", "color": theme.foreground });
 		export const App = () => <View className={Card.class} style={Card.style} />;",
 		    "converted": 1,
@@ -207,7 +206,6 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
 		export const Card = css.vars({ "padding": "$4", "color": theme.colors.brand });
 		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 1,
@@ -260,7 +258,6 @@ test("tamagui -> pandwind -> tamagui: preserves concrete theme and project conte
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
 		export const Card = css.vars({ "padding": "$4", "color": theme.colors.brand });
 		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 1,
@@ -321,26 +318,26 @@ test("tamagui -> pandwind -> tamagui: resolves token references across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { createCss } from "pandwind/css";
-		export const Card = // pandwind:migrate-skip (route: pandwind -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css.class({ padding: "$4", color: "$colors.brand" });
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
 		export const App = () => <View className={Card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

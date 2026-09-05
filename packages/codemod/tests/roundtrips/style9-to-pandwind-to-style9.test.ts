@@ -139,8 +139,6 @@ test("style9 -> pandwind -> style9: retains edge semantics without silent loss",
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 		const cx = createCx();
-		const css = createCss();
-
 		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,

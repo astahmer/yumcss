@@ -251,7 +251,7 @@ test("jss -> tamagui -> jss: resolves token references across both concrete legs
 		  "forward": {
 		    "changed": true,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
 		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,
@@ -263,7 +263,7 @@ test("jss -> tamagui -> jss: resolves token references across both concrete legs
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: card; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: card",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -274,7 +274,7 @@ test("jss -> tamagui -> jss: resolves token references across both concrete legs
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: card | available: static, residual, named-map)
 		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		    "converted": 0,

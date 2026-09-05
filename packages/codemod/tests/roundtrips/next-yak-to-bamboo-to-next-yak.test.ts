@@ -270,27 +270,27 @@ test("next-yak -> bamboo -> next-yak: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
+		    "code": "import { css } from "next-yak";
 
-		export const card = // pandwind:migrate-skip (route: bamboo -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ padding: "1rem", color: "var(--colors-brand)" });
+
+		export const card = css\`padding: 1rem; color: var(--colors-brand);\`;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

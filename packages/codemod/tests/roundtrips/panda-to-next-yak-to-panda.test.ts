@@ -289,38 +289,50 @@ test("panda -> next-yak -> panda: resolves token references across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
+		    "code": "import { css } from "next-yak";
+
+		export const card = css\`padding: 1rem; color: $colors.brand;\`;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "styled-system/css";
-		export const card = // pandwind:migrate-skip (route: panda -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { css } from "styled-system/css";
+
+
+		export const card = css({ padding: "1rem", color: "$colors.brand" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

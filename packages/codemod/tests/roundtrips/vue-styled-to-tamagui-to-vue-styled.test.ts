@@ -281,41 +281,55 @@ test("vue-styled -> tamagui -> vue-styled: resolves token references across both
 		  "forward": {
 		    "changed": true,
 		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
+		import { View, styled } from "@tamagui/core";
+
+
+		const Card = styled(View, { padding: "1rem", color: "$colors.brand" });
 		</script>
-		<template><Card /></template>",
-		    "converted": 0,
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		</script>
-		<template><Card /></template>",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "<script setup>
+		import { View } from "@tamagui/core";
+		import styled from "vue-styled-components";
+
+
+		const Card = styled.div({ "padding": "1rem", "color": "$colors.brand" });
+		</script>
+		<template><div :class="Card" /></template>",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

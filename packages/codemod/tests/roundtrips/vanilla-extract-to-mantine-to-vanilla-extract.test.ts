@@ -253,7 +253,7 @@ test("vanilla-extract -> mantine -> vanilla-extract: resolves token references a
 		  "forward": {
 		    "changed": true,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		style({ color: "$colors.brand", padding: "1rem" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -264,18 +264,31 @@ test("vanilla-extract -> mantine -> vanilla-extract: resolves token references a
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vanilla-extract -> mantine | lowering-residual: host-framework, validation)
 		style({ color: "$colors.brand", padding: "1rem" });",
 		    "converted": 0,
 		    "outcomes": [],

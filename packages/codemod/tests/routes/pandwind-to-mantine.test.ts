@@ -176,26 +176,25 @@ test("pandwind -> mantine: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css.class({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		  "converted": 0,
+		  "code": "
+		export const card = { padding: "1rem", color: "$colors.brand" };
+		export const App = () => <div style={card} />;",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`);
 });

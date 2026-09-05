@@ -219,7 +219,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -230,13 +230,26 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -266,7 +279,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -277,13 +290,26 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -325,7 +351,7 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -336,13 +362,26 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`);

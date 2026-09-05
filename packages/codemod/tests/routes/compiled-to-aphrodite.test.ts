@@ -109,13 +109,13 @@ test("compiled -> aphrodite: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 
-		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "#f97316" } }).style);
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +132,13 @@ test("compiled -> aphrodite: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { StyleSheet, css } from "aphrodite";
 
-		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style);
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

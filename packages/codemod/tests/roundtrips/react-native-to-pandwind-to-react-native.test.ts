@@ -131,8 +131,6 @@ test("react-native -> pandwind -> react-native: retains edge semantics without s
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
-
 		export const styles = { "card": css.vars({ "padding": 16, "color": theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,

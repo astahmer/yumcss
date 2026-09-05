@@ -306,27 +306,27 @@ test("next-yak -> styled-components -> next-yak: resolves token references acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
+		    "code": "import { styled } from "next-yak";
 
-		export const card = // pandwind:migrate-skip (route: styled-components -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ padding: "1rem", color: "var(--colors-brand)" });
+
+		export const card = styled.div\`padding: 1rem; color: var(--colors-brand);\`;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

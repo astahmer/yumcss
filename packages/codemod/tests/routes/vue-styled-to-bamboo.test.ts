@@ -172,27 +172,28 @@ test("vue-styled -> bamboo: resolves concrete token references with project cont
 		{
 		  "changed": true,
 		  "code": "<script setup>
-		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
+		import { css } from "styled-system/css";
+
+
+		const Card = css({ padding: "1rem", color: "$colors.brand" });
 		</script>
-		<template><Card /></template>",
-		  "converted": 0,
+		<template><div :class="Card" /></template>",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`);
 });

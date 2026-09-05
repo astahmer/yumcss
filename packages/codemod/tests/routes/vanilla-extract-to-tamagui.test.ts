@@ -164,25 +164,25 @@ test("vanilla-extract -> tamagui: resolves concrete token references with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		style({ color: "$colors.brand", padding: "1rem" });",
-		  "converted": 0,
+		  "code": "import { View, styled } from "@tamagui/core";
+
+		export const card = styled(View, { padding: "1rem", color: "$colors.brand" });",
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "static",
 		      "representation": "static",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`);
 });

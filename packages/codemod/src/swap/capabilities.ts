@@ -217,7 +217,19 @@ export function requiredAdapterCapabilities(
 			);
 		}
 	}
-	if ((program.themes?.length ?? 0) > 0)
+	// Theme bindings are project provenance; a target only needs theme support
+	// when a declaration actually resolves through one. Incidental bindings on
+	// a program whose values are literal or statically-resolved tokens would
+	// otherwise block targets that preserve the style faithfully.
+	const referencesTheme = declarations.some((declaration) => {
+		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return false;
+		return (program.themes ?? []).some(
+			(binding) =>
+				declaration.value.expression === binding.authored ||
+				declaration.value.expression === `theme.${binding.path}`,
+		);
+	});
+	if (referencesTheme)
 		add("theme-context", `${program.themes?.length ?? 0} theme binding(s)`);
 	if ((program.compositions?.length ?? 0) > 0)
 		add("composition", `${program.compositions?.length ?? 0} composition edge(s)`);

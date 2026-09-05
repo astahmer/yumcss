@@ -184,27 +184,27 @@ test("bamboo -> stylex -> bamboo: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: stylex -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style;
+
+		export const card = { "style": css({ padding: "1rem", color: "#f97316" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -233,27 +233,27 @@ test("bamboo -> stylex -> bamboo: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import * as stylex from "@stylexjs/stylex";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: stylex -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;
+
+		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -294,27 +294,27 @@ test("bamboo -> stylex -> bamboo: resolves token references across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
+		    "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: stylex -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style;
+
+		export const card = { "style": css({ padding: "1rem", color: "$colors.brand" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

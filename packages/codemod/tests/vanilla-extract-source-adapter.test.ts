@@ -56,9 +56,7 @@ describe("Vanilla Extract source adapter", () => {
 			  "generatedFiles": [],
 			  "loweringPlans": [
 			    {
-			      "applied": [
-			        "dynamic-and-theme",
-			      ],
+			      "applied": [],
 			      "availableRepresentations": [
 			        "static",
 			        "named-map",
@@ -167,7 +165,7 @@ describe("Vanilla Extract source adapter", () => {
 			            "start": 124,
 			          },
 			        ],
-			        "themes": undefined,
+			        "themes": [],
 			      },
 			      "representation": "named-map",
 			      "residuals": [],

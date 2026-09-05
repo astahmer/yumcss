@@ -286,26 +286,26 @@ test("tamagui -> solid-styled -> tamagui: resolves token references across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		styled.div({ "padding": "$4", "color": "$colors.brand" });
-		export const App = () => <Card />;",
-		    "converted": 0,
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
+		export const App = () => <div className={Card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

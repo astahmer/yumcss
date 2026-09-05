@@ -106,13 +106,13 @@ test("compiled -> fela: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = renderer.renderRule({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -128,13 +128,13 @@ test("compiled -> fela: lowers concrete theme and project context variants", () 
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

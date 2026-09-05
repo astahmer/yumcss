@@ -106,13 +106,13 @@ test("compiled -> unocss: lowers concrete theme and project context variants", (
 		  "amber": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#f97316]";
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -128,13 +128,13 @@ test("compiled -> unocss: lowers concrete theme and project context variants", (
 		  "blue": {
 		    "changed": true,
 		    "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#2563eb]";
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

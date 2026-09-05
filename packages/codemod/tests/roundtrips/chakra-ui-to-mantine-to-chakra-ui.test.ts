@@ -187,7 +187,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		<Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -197,11 +197,6 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -237,7 +232,7 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: mantine -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		<Box  style={{ padding: "var(--chakra-spacing-4)", backgroundColor: theme.colors.brand }}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -247,11 +242,6 @@ test("chakra-ui -> mantine -> chakra-ui: preserves concrete theme and project co
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",

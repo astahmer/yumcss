@@ -262,38 +262,50 @@ test("emotion -> tamagui -> emotion: resolves token references across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
+		    "code": "import { View, styled } from "@tamagui/core";
+
+		export const card = styled(View, { padding: "1rem", color: "$colors.brand" });
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "@emotion/css";
-		export const card = // pandwind:migrate-skip (route: emotion -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View } from "@tamagui/core";
+		import styled from "@emotion/styled";
+
+		export const card = styled(View)({ padding: "1rem", color: "$colors.brand" });
+		export const App = () => <div className={card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

@@ -194,25 +194,25 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
-		      "converted": 0,
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -241,25 +241,25 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, custom-property, residual)
-		jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
-		      "converted": 0,
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -300,25 +300,25 @@ test("chakra-ui -> jss -> chakra-ui: resolves token references across both concr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).attach().classes.style}/>;",
-		    "converted": 0,
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.attach().classes.style}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

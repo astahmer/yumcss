@@ -131,8 +131,6 @@ test("stylex -> pandwind -> stylex: retains edge semantics without silent loss",
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
-
 		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
 		export const App = () => <div {...css.props(styles.card)} />;",
 		    "converted": 1,
@@ -180,12 +178,12 @@ test("stylex -> pandwind -> stylex: preserves concrete theme and project context
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "#f97316" }) };
+		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...css.props(styles.card)} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
+		          "outcome": "host-runtime",
 		          "representation": "named-map",
 		        },
 		      ],
@@ -229,12 +227,12 @@ test("stylex -> pandwind -> stylex: preserves concrete theme and project context
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "#2563eb" }) };
+		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...css.props(styles.card)} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
+		          "outcome": "host-runtime",
 		          "representation": "named-map",
 		        },
 		      ],

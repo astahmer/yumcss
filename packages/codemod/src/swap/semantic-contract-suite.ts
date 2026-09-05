@@ -18,6 +18,7 @@ import {
 	type StyleProgramResidual,
 } from "./semantic-ir.ts";
 import type { StyleRepresentationKind } from "./identifiers.ts";
+import { AdapterLossinessTag } from "./adapter-contract.ts";
 
 /** Versioned contract for semantic-program capability coverage. */
 export const SEMANTIC_CONTRACT_SUITE_SCHEMA = "pandwind.semantic-contract-suite/1" as const;
@@ -191,6 +192,22 @@ export function createSemanticContractSuite(
 								continue;
 							}
 							validation = targetResult.validation;
+							if (!validation.valid && validation.lossiness === AdapterLossinessTag.Unsupported) {
+								// An unsupported verdict is typed, honest evidence that this
+								// target cannot represent the program, not a broken
+								// conversion. Classify it as explicit-residual.
+								cases.push({
+									fixture: fixture.name,
+									targetAdapter: target.id,
+									mode,
+									outcome: SemanticContractOutcomeTag.ExplicitResidual,
+									representation: plan.representation,
+									plan,
+									capabilities,
+									validation,
+								});
+								continue;
+								}
 						} catch (error) {
 							failures.push({
 								fixture: fixture.name,

@@ -73,7 +73,7 @@ test("goober -> chakra-ui: carries concrete goober dynamics or edge syntax expli
 		{
 		  "changed": true,
 		  "code": "import { css } from "goober";
-		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		  "converted": 0,
@@ -84,11 +84,6 @@ test("goober -> chakra-ui: carries concrete goober dynamics or edge syntax expli
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -113,7 +108,7 @@ test("goober -> chakra-ui: lowers concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -124,11 +119,6 @@ test("goober -> chakra-ui: lowers concrete theme and project context variants", 
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -141,7 +131,7 @@ test("goober -> chakra-ui: lowers concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { css } from "goober";
-		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: goober -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -152,11 +142,6 @@ test("goober -> chakra-ui: lowers concrete theme and project context variants", 
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",

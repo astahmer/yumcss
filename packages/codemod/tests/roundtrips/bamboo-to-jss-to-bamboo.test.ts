@@ -196,27 +196,27 @@ test("bamboo -> jss -> bamboo: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: jss -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		jss.createStyleSheet({ style: { padding: "1rem", color: "#f97316" } }).attach().classes.style;
+
+		export const card = { "style": css({ padding: "1rem", color: "#f97316" }) }.attach().classes.style;
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -245,27 +245,27 @@ test("bamboo -> jss -> bamboo: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import jss from "jss";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: jss -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style;
+
+		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.attach().classes.style;
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -306,27 +306,27 @@ test("bamboo -> jss -> bamboo: resolves token references across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import jss from "jss";
+		    "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: jss -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		jss.createStyleSheet({ style: { padding: "1rem", color: "$colors.brand" } }).attach().classes.style;
+
+		export const card = { "style": css({ padding: "1rem", color: "$colors.brand" }) }.attach().classes.style;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

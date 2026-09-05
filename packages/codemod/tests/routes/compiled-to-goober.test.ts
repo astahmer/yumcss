@@ -109,13 +109,13 @@ test("compiled -> goober: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +132,13 @@ test("compiled -> goober: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "target-native",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

@@ -175,13 +175,13 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import style9 from "style9";
 
-		export const card = style9(style9.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = style9(style9.create({ style: { "padding": "1rem", "color": "#f97316" } }).style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,8 +199,8 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = style9({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = style9({ "style": css({ "padding": "1rem", "color": "#f97316" }) }.style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -224,13 +224,13 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import style9 from "style9";
 
-		export const card = style9(style9.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = style9(style9.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,8 +248,8 @@ test("compiled -> style9 -> compiled: preserves concrete theme and project conte
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = style9({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = style9({ "style": css({ "padding": "1rem", "color": "#2563eb" }) }.style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

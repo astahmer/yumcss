@@ -71,7 +71,7 @@ test("mui -> chakra-ui: carries concrete mui dynamics or edge syntax explicitly"
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		<Box sx={{ color: theme.foreground, p: 2 }} />;",
 		  "converted": 0,
 		  "outcomes": [
@@ -81,11 +81,6 @@ test("mui -> chakra-ui: carries concrete mui dynamics or edge syntax explicitly"
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -110,7 +105,7 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		    "converted": 0,
 		    "outcomes": [
@@ -120,11 +115,6 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -137,7 +127,7 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const App = () => // pandwind:migrate-skip (route: mui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		<Box sx={{ color: theme.palette.primary.main, p: 2 }} />;",
 		    "converted": 0,
 		    "outcomes": [
@@ -147,11 +137,6 @@ test("mui -> chakra-ui: lowers concrete theme and project context variants", () 
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-d9jp16 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",

@@ -196,27 +196,27 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> panda | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		style({ padding: "1rem", color: "#f97316" });
+
+		export const card = css({ padding: "1rem", color: "#f97316" });
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -245,27 +245,27 @@ test("panda -> vanilla-extract -> panda: preserves concrete theme and project co
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { style } from "@vanilla-extract/css";
+		      "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> panda | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		style({ padding: "1rem", color: "#2563eb" });
+
+		export const card = css({ padding: "1rem", color: "#2563eb" });
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -306,27 +306,27 @@ test("panda -> vanilla-extract -> panda: resolves token references across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
+		    "code": "import { css } from "styled-system/css";
 
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> panda | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		style({ padding: "1rem", color: "$colors.brand" });
+
+		export const card = css({ padding: "1rem", color: "$colors.brand" });
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

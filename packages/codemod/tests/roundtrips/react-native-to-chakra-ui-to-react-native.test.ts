@@ -104,7 +104,7 @@ test("react-native -> chakra-ui -> react-native: retains edge semantics without 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
@@ -115,11 +115,6 @@ test("react-native -> chakra-ui -> react-native: retains edge semantics without 
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -132,7 +127,7 @@ test("react-native -> chakra-ui -> react-native: retains edge semantics without 
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.foreground, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
@@ -167,7 +162,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
@@ -178,11 +173,6 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -195,7 +185,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
@@ -209,7 +199,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "forward": {
 		      "changed": true,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
@@ -220,11 +210,6 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -237,7 +222,7 @@ test("react-native -> chakra-ui -> react-native: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { StyleSheet, View } from "react-native";
-		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const styles = // pandwind:migrate-skip (route: react-native -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		StyleSheet.create({ card: { color: theme.colors.brand, padding: 16 } });
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,

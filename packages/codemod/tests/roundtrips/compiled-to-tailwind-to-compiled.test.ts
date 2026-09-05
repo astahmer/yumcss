@@ -176,13 +176,13 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#f97316]";
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,22 +199,16 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#f97316]";
+		export const App = () => <div  className={css({ "padding": "1rem", "color": "#f97316" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "compiled class projection will not overwrite an existing style prop",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {
@@ -229,13 +223,13 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#2563eb]";
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -252,22 +246,16 @@ test("compiled -> tailwind -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#2563eb]";
+		export const App = () => <div  className={css({ "padding": "1rem", "color": "#2563eb" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "target-native",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "compiled class projection will not overwrite an existing style prop",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		      ],
+		      "residuals": [],
 		      "skipped": 0,
 		      "validations": [
 		        {

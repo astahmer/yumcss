@@ -175,13 +175,13 @@ test("compiled -> aphrodite -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 
-		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "#f97316" } }).style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,8 +199,8 @@ test("compiled -> aphrodite -> compiled: preserves concrete theme and project co
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "style": css({ "padding": "1rem", "color": "#f97316" }) }.style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -224,13 +224,13 @@ test("compiled -> aphrodite -> compiled: preserves concrete theme and project co
 		      "changed": true,
 		      "code": "import { StyleSheet, css } from "aphrodite";
 
-		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" } }).style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "#2563eb" } }).style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,8 +248,8 @@ test("compiled -> aphrodite -> compiled: preserves concrete theme and project co
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "style": css({ "padding": "1rem", "color": "#2563eb" }) }.style);
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

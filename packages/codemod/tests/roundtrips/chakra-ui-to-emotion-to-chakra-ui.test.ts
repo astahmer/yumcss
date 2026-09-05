@@ -304,25 +304,25 @@ test("chakra-ui -> emotion -> chakra-ui: resolves token references across both c
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { css } from "@emotion/css";
-		export const App = () => // pandwind:migrate-skip (route: emotion -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" });",
-		    "converted": 0,
+		import { defaultSystem } from "@chakra-ui/react";
+
+		export const App = () => defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

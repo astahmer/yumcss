@@ -162,26 +162,26 @@ test("stylex -> tokenami: resolves concrete token references with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-		export const styles = // pandwind:migrate-skip (route: stylex -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		stylex.create({ card: { color: "$colors.brand", padding: "1rem" } });
+		  "code": "import { css } from "@tokenami/css";
+
+		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
-		  "converted": 0,
+		  "converted": 1,
 		  "outcomes": [
 		    {
-		      "outcome": "residual",
+		      "outcome": "target-native",
 		      "representation": "named-map",
 		    },
 		  ],
-		  "residuals": [
+		  "residuals": [],
+		  "skipped": 0,
+		  "validations": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
+		      "differences": [],
+		      "lossiness": "lossless",
+		      "valid": true,
 		    },
 		  ],
-		  "skipped": 1,
-		  "validations": [],
 		}
 	`);
 });

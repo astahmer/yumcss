@@ -272,7 +272,7 @@ test("tamagui -> stylex -> tamagui: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import * as stylex from "@stylexjs/stylex";
-		export const Card = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const Card = // pandwind:migrate-skip (route: stylex -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
 		stylex.create({ style: { padding: "$4", color: "$colors.brand" } }).style;
 		export const App = () => <View {...stylex.props(Card)} />;",
 		    "converted": 0,
@@ -284,7 +284,7 @@ test("tamagui -> stylex -> tamagui: resolves token references across both concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: style; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: style",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

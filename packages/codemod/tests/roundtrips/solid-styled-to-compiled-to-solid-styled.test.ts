@@ -125,27 +125,15 @@ test("solid-styled -> compiled -> solid-styled: retains edge semantics without s
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "import { styled } from "solid-styled-components";
 		export const Card = // pandwind:migrate-skip (route: solid-styled -> compiled | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		// pandwind:migrate-skip (lowering-residual: dynamic-values)
 		styled.div({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <Card />;",
 		    "converted": 0,
-		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "target-native",
-		      },
-		    ],
-		    "residuals": [
-		      {
-		        "hint": "dynamic style binding 'Card' has no supported host use",
-		        "kind": "dynamic-values",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "outcomes": [],
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

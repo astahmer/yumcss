@@ -206,7 +206,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
 		jss.createStyleSheet({ style: { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style, props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -218,7 +218,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: style; theme-context: 1 theme binding(s)",
+		          "hint": "named-rules: named style rule: style",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -259,7 +259,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		import { createCx } from "pandwind/cx";
 		import jss from "jss";
 		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
 		jss.createStyleSheet({ style: { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style, props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
 		      "converted": 0,
@@ -271,7 +271,7 @@ test("tamagui -> jss -> tamagui: preserves concrete theme and project context va
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "named-rules: named style rule: style; theme-context: 1 theme binding(s)",
+		          "hint": "named-rules: named style rule: style",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -320,7 +320,7 @@ test("tamagui -> jss -> tamagui: resolves token references across both concrete 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import jss from "jss";
-		export const Card = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style; theme-context: 1 theme binding(s) | available: static, residual, named-map)
+		export const Card = // pandwind:migrate-skip (route: jss -> tamagui | capability-blocked: named-rules: named style rule: style | available: static, residual, named-map)
 		jss.createStyleSheet({ style: { padding: "$4", color: "$colors.brand" } }).attach().classes.style;
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
@@ -332,7 +332,7 @@ test("tamagui -> jss -> tamagui: resolves token references across both concrete 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "named-rules: named style rule: style; theme-context: 1 theme binding(s)",
+		        "hint": "named-rules: named style rule: style",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

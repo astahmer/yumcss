@@ -175,13 +175,13 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
 
-		export const card = css\`padding: 1rem; color: var(--pandwind-dynamic-bbwvz3);\`;
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css\`padding: 1rem; color: #f97316;\`;
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,8 +199,8 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -224,13 +224,13 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@linaria/core";
 
-		export const card = css\`padding: 1rem; color: var(--pandwind-dynamic-bbwvz3);\`;
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css\`padding: 1rem; color: #2563eb;\`;
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,8 +248,8 @@ test("compiled -> linaria -> compiled: preserves concrete theme and project cont
 		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

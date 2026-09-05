@@ -108,15 +108,16 @@ test("vanilla-extract -> pandwind: lowers concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const card = css.class({ padding: "1rem", color: "#f97316" });",
+		export const card = css.class({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
 		    "residuals": [],
@@ -131,15 +132,16 @@ test("vanilla-extract -> pandwind: lowers concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
 
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });",
+		export const card = css.class({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
-		        "representation": "static",
+		        "outcome": "host-runtime",
+		        "representation": "target-native",
 		      },
 		    ],
 		    "residuals": [],

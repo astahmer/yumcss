@@ -104,7 +104,7 @@ test("tokenami -> chakra-ui -> tokenami: retains edge semantics without silent l
 		  "forward": {
 		    "changed": true,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -115,11 +115,6 @@ test("tokenami -> chakra-ui -> tokenami: retains edge semantics without silent l
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -132,7 +127,7 @@ test("tokenami -> chakra-ui -> tokenami: retains edge semantics without silent l
 		  "reverse": {
 		    "changed": false,
 		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.foreground, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -167,7 +162,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -178,11 +173,6 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -195,7 +185,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -209,7 +199,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "forward": {
 		      "changed": true,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -220,11 +210,6 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		        },
 		      ],
 		      "residuals": [
-		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
-		        },
 		        {
 		          "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		          "kind": "dynamic-custom-property",
@@ -237,7 +222,7 @@ test("tokenami -> chakra-ui -> tokenami: preserves concrete theme and project co
 		    "reverse": {
 		      "changed": false,
 		      "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		css({ color: theme.colors.brand, padding: "1rem" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -262,38 +247,50 @@ test("tokenami -> chakra-ui -> tokenami: resolves token references across both c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "code": "import { chakra } from "@chakra-ui/react";
+
+		export const card = { padding: "1rem", color: "$colors.brand" };
+		export const App = () => <chakra.div css={{ padding: "1rem", color: "$colors.brand" }} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { css } from "@tokenami/css";
-		export const card = // pandwind:migrate-skip (route: tokenami -> chakra-ui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <div className={card} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { chakra } from "@chakra-ui/react";
+		import { css } from "@tokenami/css";
+
+		export const card = { padding: "1rem", color: "$colors.brand" };
+		export const App = () => <chakra.div  className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

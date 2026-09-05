@@ -193,7 +193,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -204,7 +204,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -240,7 +240,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -251,7 +251,7 @@ test("mantine -> styled-components -> mantine: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
+		          "hint": "components: component subject: styled.div; framework-semantics: react",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -299,7 +299,7 @@ test("mantine -> styled-components -> mantine: resolves token references across 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import styled from "styled-components";
-		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "var(--mantine-spacing-md)", color: "brand.0" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -310,7 +310,7 @@ test("mantine -> styled-components -> mantine: resolves token references across 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: react",
+		        "hint": "components: component subject: styled.div; framework-semantics: react",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

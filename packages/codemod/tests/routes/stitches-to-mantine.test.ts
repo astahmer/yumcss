@@ -182,7 +182,7 @@ test("stitches -> mantine: resolves concrete token references with project conte
 		{
 		  "changed": true,
 		  "code": "import { css } from "@stitches/react";
-		export const card = // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		css({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <div className={card()} />;",
 		  "converted": 0,
@@ -194,13 +194,26 @@ test("stitches -> mantine: resolves concrete token references with project conte
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
+		      "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`);
 });

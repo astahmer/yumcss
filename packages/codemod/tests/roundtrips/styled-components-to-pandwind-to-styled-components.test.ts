@@ -176,13 +176,13 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={Card} />;",
+		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -199,13 +199,13 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 
-		export const Card = styled.div({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={Card} />;",
+		export const Card = styled.div({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -225,13 +225,13 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={Card} />;",
+		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -248,13 +248,13 @@ test("styled-components -> pandwind -> styled-components: preserves concrete the
 		      "changed": true,
 		      "code": "import styled from "styled-components";
 
-		export const Card = styled.div({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={Card} />;",
+		export const Card = styled.div({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],

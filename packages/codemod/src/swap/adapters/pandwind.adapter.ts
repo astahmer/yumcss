@@ -1237,6 +1237,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			"named-conditions": "exact",
 			"named-rules": "exact",
 			"function-values": "exact",
+			"theme-context": "exact",
 			"framework-semantics": "exact",
 			composition: "exact",
 			recipes: "exact",

@@ -253,36 +253,50 @@ test("vanilla-extract -> tamagui -> vanilla-extract: resolves token references a
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		style({ color: "$colors.brand", padding: "1rem" });",
-		    "converted": 0,
+		    "code": "import { View, styled } from "@tamagui/core";
+
+		export const card = styled(View, { padding: "1rem", color: "$colors.brand" });",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { style } from "@vanilla-extract/css";
-		export const card = // pandwind:migrate-skip (route: vanilla-extract -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		style({ color: "$colors.brand", padding: "1rem" });",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { View } from "@tamagui/core";
+		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
+		const cx = createCx();
+
+		export const card = (props) => <View {...props} className={cx(style({ padding: "1rem", color: "$colors.brand" }), props.className)} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

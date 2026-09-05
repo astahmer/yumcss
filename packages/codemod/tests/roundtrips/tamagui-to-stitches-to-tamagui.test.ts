@@ -307,26 +307,26 @@ test("tamagui -> stitches -> tamagui: resolves token references across both conc
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "@stitches/react";
-		export const Card = // pandwind:migrate-skip (route: stitches -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ padding: "$4", color: "$colors.brand" });
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
 		export const App = () => <Card />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

@@ -186,7 +186,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -198,7 +198,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		          "hint": "components: component subject: styled.div",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -235,7 +235,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -247,7 +247,7 @@ test("panda -> vue-styled -> panda: preserves concrete theme and project context
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		          "hint": "components: component subject: styled.div",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -296,7 +296,7 @@ test("panda -> vue-styled -> panda: resolves token references across both concre
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> panda | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "$colors.brand" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -308,7 +308,7 @@ test("panda -> vue-styled -> panda: resolves token references across both concre
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		        "hint": "components: component subject: styled.div",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

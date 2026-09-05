@@ -219,7 +219,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -230,13 +230,26 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		  "blue": {
@@ -266,7 +279,7 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" });",
 		      "converted": 0,
 		      "outcomes": [
@@ -277,13 +290,26 @@ test("mantine -> stitches -> mantine: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
+		          "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		          "kind": "host-framework",
+		          "preserved": undefined,
+		        },
+		        {
+		          "hint": "1 residual conversion(s)",
+		          "kind": "validation",
 		          "preserved": undefined,
 		        },
 		      ],
 		      "skipped": 1,
-		      "validations": [],
+		      "validations": [
+		        {
+		          "differences": [
+		            "1 residual conversion(s)",
+		          ],
+		          "lossiness": "lossy",
+		          "valid": false,
+		        },
+		      ],
 		    },
 		  },
 		}
@@ -325,7 +351,7 @@ test("mantine -> stitches -> mantine: resolves token references across both conc
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@stitches/react";
-		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const App = () => // pandwind:migrate-skip (route: stitches -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "brand.0" });",
 		    "converted": 0,
 		    "outcomes": [
@@ -336,13 +362,26 @@ test("mantine -> stitches -> mantine: resolves token references across both conc
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "Mantine standalone styles require a host style prop or a portable Pandwind artifact",
+		        "kind": "host-framework",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "1 residual conversion(s)",
+		        "kind": "validation",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [
+		          "1 residual conversion(s)",
+		        ],
+		        "lossiness": "lossy",
+		        "valid": false,
+		      },
+		    ],
 		  },
 		}
 	`);

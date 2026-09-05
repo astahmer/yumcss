@@ -714,14 +714,14 @@ export function officialApiFamilyCases(): readonly OfficialApiFamilyCase[] {
 			{
 				adapter: CodemodAdapterId.Compiled,
 				name: "cssMap",
-				expectation: "residual",
+				expectation: "converted",
 				source:
 					'import { cssMap } from "@compiled/react";\nexport const colors = cssMap({ red: { color: "red" } });',
 			},
 			{
 				adapter: CodemodAdapterId.Compiled,
 				name: "keyframes",
-				expectation: "residual",
+				expectation: "converted",
 				source:
 					'import { keyframes } from "@compiled/react";\nexport const pulse = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });',
 			},

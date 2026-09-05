@@ -109,13 +109,13 @@ test("compiled -> jss: lowers concrete theme and project context variants", () =
 		    "changed": true,
 		    "code": "import jss from "jss";
 
-		export const card = jss.createStyleSheet({ style: { padding: "1rem", color: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style;
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = jss.createStyleSheet({ style: { padding: "1rem", color: "#f97316" } }).attach().classes.style;
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],
@@ -132,13 +132,13 @@ test("compiled -> jss: lowers concrete theme and project context variants", () =
 		    "changed": true,
 		    "code": "import jss from "jss";
 
-		export const card = jss.createStyleSheet({ style: { padding: "1rem", color: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style;
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = jss.createStyleSheet({ style: { padding: "1rem", color: "#2563eb" } }).attach().classes.style;
+		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
-		        "representation": "custom-property",
+		        "outcome": "static",
+		        "representation": "static",
 		      },
 		    ],
 		    "residuals": [],

@@ -176,7 +176,7 @@ test("jss -> mantine: resolves concrete token references with project context", 
 		{
 		  "changed": true,
 		  "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const useStyles = // pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
 		export const App = () => <div className={useStyles().card} />;",
 		  "converted": 0,
@@ -188,13 +188,26 @@ test("jss -> mantine: resolves concrete token references with project context", 
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
+		      "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
+		      "kind": "host-framework",
+		      "preserved": undefined,
+		    },
+		    {
+		      "hint": "1 residual conversion(s)",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "1 residual conversion(s)",
+		      ],
+		      "lossiness": "lossy",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`);
 });

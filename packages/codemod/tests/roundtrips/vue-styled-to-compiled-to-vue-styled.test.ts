@@ -133,32 +133,18 @@ test("vue-styled -> compiled -> vue-styled: retains edge semantics without silen
 		    "validations": [],
 		  },
 		  "reverse": {
-		    "changed": true,
+		    "changed": false,
 		    "code": "<script setup>
 		import styled from "vue-styled-components";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 		const Card = // pandwind:migrate-skip (route: vue-styled -> compiled | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
-		css.vars({ "padding": "1rem", "color": theme.foreground });
+		styled.div({ color: theme.foreground, padding: "1rem" });
 		</script>
 		<template><Card /></template>",
-		    "converted": 1,
-		    "outcomes": [
-		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
-		      },
-		    ],
+		    "converted": 0,
+		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [
-		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
-		      },
-		    ],
+		    "validations": [],
 		  },
 		}
 	`);

@@ -177,13 +177,13 @@ test("compiled -> goober -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -198,18 +198,16 @@ test("compiled -> goober -> compiled: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -228,13 +226,13 @@ test("compiled -> goober -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "goober";
 
-		export const card = css({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -249,18 +247,16 @@ test("compiled -> goober -> compiled: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
+		      "code": "import { css } from "@compiled/react";
 
 
-		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],

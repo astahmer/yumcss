@@ -140,9 +140,6 @@ test("vue-styled -> pandwind -> vue-styled: retains edge semantics without silen
 		const css = createRuntimeCss(pandwindPreset);
 		<script setup>
 
-		const css = createCss();
-
-
 		const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		</script>
 		<template><div :class="Card.class" :style="Card.style" /></template>",
@@ -193,14 +190,14 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		const css = createCss();
 
 
-		const Card = css.class({ padding: "1rem", color: "#f97316" });
+		const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		</script>
-		<template><div :class="Card" /></template>",
+		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -220,7 +217,7 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 
 		const Card = styled.div({ "padding": "1rem", "color": "#f97316" });
 		</script>
-		<template><div :class="Card" /></template>",
+		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -247,14 +244,14 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 		const css = createCss();
 
 
-		const Card = css.class({ padding: "1rem", color: "#2563eb" });
+		const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		</script>
-		<template><div :class="Card" /></template>",
+		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -274,7 +271,7 @@ test("vue-styled -> pandwind -> vue-styled: preserves concrete theme and project
 
 		const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
 		</script>
-		<template><div :class="Card" /></template>",
+		<template><div :class="Card.class" :style="Card.style" /></template>",
 		      "converted": 1,
 		      "outcomes": [
 		        {

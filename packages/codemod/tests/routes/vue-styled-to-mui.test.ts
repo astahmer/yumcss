@@ -188,7 +188,7 @@ test("vue-styled -> mui: resolves concrete token references with project context
 		  "changed": true,
 		  "code": "<script setup>
 		import styled from "vue-styled-components";
-		const Card = // pandwind:migrate-skip (route: vue-styled -> mui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		const Card = // pandwind:migrate-skip (route: vue-styled -> mui | lowering-residual: validation)
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		</script>
 		<template><Card /></template>",
@@ -201,13 +201,21 @@ test("vue-styled -> mui: resolves concrete token references with project context
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`);
 });

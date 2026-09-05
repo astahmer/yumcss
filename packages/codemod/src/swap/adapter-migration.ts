@@ -1731,6 +1731,12 @@ function runAdapterMigrationInternal(
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");
+		// A residual-carrying source module keeps its original statements; the
+		// skipped code still binds `css`. Only a fully converted document has
+		// the static binding replaced by the runtime carrier, and leaving it in
+		// place would declare `css` twice.
+		if (converted > 0 && skipped === 0 && residuals.length === 0)
+			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	}
 	const targetUsesPandwindCss =
 		imports.has('import { createCss } from "pandwind/css";') ||

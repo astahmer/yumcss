@@ -131,8 +131,6 @@ test("linaria -> pandwind -> linaria: retains edge semantics without silent loss
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
-
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		    "converted": 1,

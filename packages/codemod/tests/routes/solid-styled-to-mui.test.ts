@@ -163,7 +163,7 @@ test("solid-styled -> mui: resolves concrete token references with project conte
 		{
 		  "changed": true,
 		  "code": "import { styled } from "solid-styled-components";
-		export const Card = // pandwind:migrate-skip (route: solid-styled -> mui | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const Card = // pandwind:migrate-skip (route: solid-styled -> mui | lowering-residual: validation)
 		styled.div({ color: "$colors.brand", padding: "1rem" });
 		export const App = () => <Card />;",
 		  "converted": 0,
@@ -175,13 +175,21 @@ test("solid-styled -> mui: resolves concrete token references with project conte
 		  ],
 		  "residuals": [
 		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
+		      "hint": "canonical CSS differs",
+		      "kind": "validation",
 		      "preserved": undefined,
 		    },
 		  ],
 		  "skipped": 1,
-		  "validations": [],
+		  "validations": [
+		    {
+		      "differences": [
+		        "canonical CSS differs",
+		      ],
+		      "lossiness": "unsupported",
+		      "valid": false,
+		    },
+		  ],
 		}
 	`);
 });

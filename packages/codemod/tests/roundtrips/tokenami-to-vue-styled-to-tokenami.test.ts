@@ -186,7 +186,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#f97316" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -198,7 +198,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		          "hint": "components: component subject: styled.div",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -235,7 +235,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" });
 		export const App = () => <div className={card} />;",
 		      "converted": 0,
@@ -247,7 +247,7 @@ test("tokenami -> vue-styled -> tokenami: preserves concrete theme and project c
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		          "hint": "components: component subject: styled.div",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -296,7 +296,7 @@ test("tokenami -> vue-styled -> tokenami: resolves token references across both 
 		    "changed": true,
 		    "code": "import styled from "vue-styled-components";
 
-		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s) | available: static, named-map, residual)
+		export const card = // pandwind:migrate-skip (route: vue-styled -> tokenami | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "$colors.brand" });
 		export const App = () => <div className={card} />;",
 		    "converted": 0,
@@ -308,7 +308,7 @@ test("tokenami -> vue-styled -> tokenami: resolves token references across both 
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s)",
+		        "hint": "components: component subject: styled.div",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },

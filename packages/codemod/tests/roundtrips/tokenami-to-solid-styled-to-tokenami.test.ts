@@ -191,27 +191,29 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "@tokenami/css";
+		const cx = createCx();
 
-		export const card = // pandwind:migrate-skip (route: solid-styled -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ "padding": "1rem", "color": "#f97316" });
+		export const card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "#f97316" }), props.class)} />;
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -240,27 +242,29 @@ test("tokenami -> solid-styled -> tokenami: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
+		      "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "@tokenami/css";
+		const cx = createCx();
 
-		export const card = // pandwind:migrate-skip (route: solid-styled -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ "padding": "1rem", "color": "#2563eb" });
+		export const card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "#2563eb" }), props.class)} />;
 		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -301,27 +305,29 @@ test("tokenami -> solid-styled -> tokenami: resolves token references across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
+		    "code": "
+		import { createCx } from "pandwind/cx";
+		import { css } from "@tokenami/css";
+		const cx = createCx();
 
-		export const card = // pandwind:migrate-skip (route: solid-styled -> tokenami | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ "padding": "1rem", "color": "$colors.brand" });
+		export const card = (props) => <div {...props} class={cx(css({ padding: "1rem", color: "$colors.brand" }), props.class)} />;
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

@@ -131,8 +131,6 @@ test("solid-styled -> pandwind -> solid-styled: retains edge semantics without s
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
-
 		export const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={Card.class} style={Card.style} />;",
 		    "converted": 1,
@@ -180,13 +178,13 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={Card} />;",
+		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -204,7 +202,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "import { styled } from "solid-styled-components";
 
 		export const Card = styled.div({ "padding": "1rem", "color": "#f97316" });
-		export const App = () => <div className={Card} />;",
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -229,13 +227,13 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const Card = css.class({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={Card} />;",
+		export const Card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -253,7 +251,7 @@ test("solid-styled -> pandwind -> solid-styled: preserves concrete theme and pro
 		      "code": "import { styled } from "solid-styled-components";
 
 		export const Card = styled.div({ "padding": "1rem", "color": "#2563eb" });
-		export const App = () => <div className={Card} />;",
+		export const App = () => <div className={Card.class} style={Card.style} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

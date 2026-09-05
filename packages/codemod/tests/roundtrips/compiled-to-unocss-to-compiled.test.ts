@@ -170,13 +170,13 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#f97316]";
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -193,8 +193,8 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "padding": "1rem", "color": "#f97316" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -217,13 +217,13 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "
-		export const card = "[padding:1rem] [color:var(--pandwind-dynamic-bbwvz3)]";
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = "[padding:1rem] [color:#2563eb]";
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "custom-property",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -240,8 +240,8 @@ test("compiled -> unocss -> compiled: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 
-		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
-		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
+		export const card = css({ "padding": "1rem", "color": "#2563eb" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

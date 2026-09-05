@@ -289,38 +289,50 @@ test("jss -> next-yak -> jss: resolves token references across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
+		    "code": "import { css } from "next-yak";
+
+		export const useStyles = { "card": css\`padding: 1rem; color: $colors.brand;\` };
 		export const App = () => <div className={useStyles().card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import { createUseStyles } from "react-jss";
-		export const useStyles = // pandwind:migrate-skip (route: jss -> next-yak | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		createUseStyles({ card: { color: "$colors.brand", padding: "1rem" } });
-		export const App = () => <div className={useStyles().card} />;",
-		    "converted": 0,
-		    "outcomes": [],
 		    "residuals": [],
 		    "skipped": 0,
-		    "validations": [],
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "import { createUseStyles } from "react-jss";
+
+
+		export const useStyles = { "card": createUseStyles({ padding: "1rem", color: "$colors.brand" }) };
+		export const App = () => <div className={useStyles().card} />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
 		  },
 		}
 	`);

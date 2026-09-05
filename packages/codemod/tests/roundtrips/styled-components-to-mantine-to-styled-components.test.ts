@@ -295,37 +295,52 @@ test("styled-components -> mantine -> styled-components: resolves token referenc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
+		    "code": "
+		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "$colors.brand" }, ...props.style }} />;
+		export const App = () => <Card />;",
+		    "converted": 1,
+		    "outcomes": [
+		      {
+		        "outcome": "static",
+		        "representation": "static",
+		      },
+		    ],
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
+		      {
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
+		      },
+		    ],
+		  },
+		  "reverse": {
+		    "changed": true,
+		    "code": "
+		export const Card = (props) => // pandwind:migrate-skip (route: mantine -> styled-components | parse-residual: dynamic | available: named-map, residual)
+		<div {...props} style={{ ...{ padding: "1rem", color: "$colors.brand" }, ...props.style }} />;
 		export const App = () => <Card />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
 		        "outcome": "residual",
-		        "representation": "static",
+		        "representation": "residual",
 		      },
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
+		        "preserved": undefined,
+		      },
+		      {
+		        "hint": "object spread requires a source adapter",
+		        "kind": "dynamic",
 		        "preserved": undefined,
 		      },
 		    ],
 		    "skipped": 1,
-		    "validations": [],
-		  },
-		  "reverse": {
-		    "changed": false,
-		    "code": "import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> mantine | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		styled.div({ color: "$colors.brand", padding: "1rem" });
-		export const App = () => <Card />;",
-		    "converted": 0,
-		    "outcomes": [],
-		    "residuals": [],
-		    "skipped": 0,
 		    "validations": [],
 		  },
 		}

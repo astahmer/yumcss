@@ -202,13 +202,13 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "#f97316" });
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -252,13 +252,13 @@ test("pandwind -> emotion -> pandwind: preserves concrete theme and project cont
 		const css = createCss();
 
 
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],

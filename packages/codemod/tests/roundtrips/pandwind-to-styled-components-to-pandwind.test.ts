@@ -201,18 +201,16 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
 		const css = createCss();
 
 
-		export const card = (() => { const style = css.class({ padding: "1rem", color: "#f97316" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fmduj8", props.className)} />; }; component.__pandwindClassName = "pw-1fmduj8"; return component; })();
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -253,18 +251,16 @@ test("pandwind -> styled-components -> pandwind: preserves concrete theme and pr
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { createCss } from "pandwind/css";
-		import { createCx } from "pandwind/cx";
-		const cx = createCx();
 		const css = createCss();
 
 
-		export const card = (() => { const style = css.class({ padding: "1rem", color: "#2563eb" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fmduj8", props.className)} />; }; component.__pandwindClassName = "pw-1fmduj8"; return component; })();
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],

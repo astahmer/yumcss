@@ -125,8 +125,8 @@ describe("adapter evidence contracts", () => {
 			    "id": "treat",
 			  },
 			  {
-			    "apiCount": 4,
-			    "configCount": 0,
+			    "apiCount": 5,
+			    "configCount": 1,
 			    "id": "compiled",
 			  },
 			  {

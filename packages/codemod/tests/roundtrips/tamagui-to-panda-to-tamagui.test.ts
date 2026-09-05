@@ -204,27 +204,27 @@ test("tamagui -> panda -> tamagui: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
+		import { View, styled } from "@tamagui/core";
+
 		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: panda -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -257,27 +257,27 @@ test("tamagui -> panda -> tamagui: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
-		import { css } from "styled-system/css";
+		import { View, styled } from "@tamagui/core";
+
 		const cx = createCx();
-		export const Card = (props) => <View {...props} className={cx(// pandwind:migrate-skip (route: panda -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
+		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
-		      "converted": 0,
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -319,26 +319,26 @@ test("tamagui -> panda -> tamagui: resolves token references across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import { css } from "styled-system/css";
-		export const Card = // pandwind:migrate-skip (route: panda -> tamagui | capability-blocked: theme-context: 1 theme binding(s) | available: static, residual)
-		css({ padding: "$4", color: "$colors.brand" });
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
 		export const App = () => <View className={Card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

@@ -131,8 +131,6 @@ test("bamboo -> pandwind -> bamboo: retains edge semantics without silent loss",
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 
-		const css = createCss();
-
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });
 		export const App = () => <div className={card.class}  style={card.style}/>;",
 		    "converted": 1,
@@ -180,13 +178,13 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={card} />;",
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -201,26 +199,28 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css.class({ padding: "1rem", color: "#f97316" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -229,13 +229,13 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		      "code": "import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const card = css.class({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={card} />;",
+		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
-		          "representation": "static",
+		          "outcome": "host-runtime",
+		          "representation": "target-native",
 		        },
 		      ],
 		      "residuals": [],
@@ -250,26 +250,28 @@ test("bamboo -> pandwind -> bamboo: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css.class({ padding: "1rem", color: "#2563eb" });
-		export const App = () => <div className={card} />;",
-		      "converted": 0,
+		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		import { pandwindPreset } from "pandwind/preset";
+		const css = createRuntimeCss(pandwindPreset);
+
+		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		export const App = () => <div className={card.class}  style={card.style}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
-		          "representation": "static",
+		          "outcome": "portable-artifact",
+		          "representation": "portable-artifact",
 		        },
 		      ],
-		      "residuals": [
+		      "residuals": [],
+		      "skipped": 0,
+		      "validations": [
 		        {
-		          "hint": "theme-context: 1 theme binding(s)",
-		          "kind": "capability",
-		          "preserved": undefined,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
-		      "skipped": 1,
-		      "validations": [],
 		    },
 		  },
 		}
@@ -311,26 +313,26 @@ test("bamboo -> pandwind -> bamboo: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		export const card = // pandwind:migrate-skip (route: pandwind -> bamboo | capability-blocked: theme-context: 1 theme binding(s) | available: static, named-map, residual)
-		css.class({ padding: "1rem", color: "$colors.brand" });
+		    "code": "import { css } from "styled-system/css";
+
+		export const card = css({ padding: "1rem", color: "$colors.brand" });
 		export const App = () => <div className={card} />;",
-		    "converted": 0,
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

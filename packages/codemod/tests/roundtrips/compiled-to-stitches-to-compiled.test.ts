@@ -177,13 +177,13 @@ test("compiled -> stitches -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "#f97316" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -202,7 +202,7 @@ test("compiled -> stitches -> compiled: preserves concrete theme and project con
 
 
 		export const card = css({ "padding": "1rem", "color": "#f97316" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -226,13 +226,13 @@ test("compiled -> stitches -> compiled: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { css } from "@stitches/react";
 
-		export const card = css({ padding: "1rem", color: theme.colors.brand });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const card = css({ padding: "1rem", color: "#2563eb" });
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
-		          "representation": "target-native",
+		          "outcome": "static",
+		          "representation": "static",
 		        },
 		      ],
 		      "residuals": [],
@@ -251,7 +251,7 @@ test("compiled -> stitches -> compiled: preserves concrete theme and project con
 
 
 		export const card = css({ "padding": "1rem", "color": "#2563eb" });
-		export const App = () => <div className={card.class}  style={card.style}/>;",
+		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
 		        {

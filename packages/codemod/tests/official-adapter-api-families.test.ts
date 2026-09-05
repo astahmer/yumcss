@@ -394,54 +394,59 @@ describe("official adapter API families", () => {
 			  },
 			  "compiled/cssMap": {
 			    "changed": true,
-			    "code": "import { cssMap } from "@compiled/react";
-			export const colors = // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: composition | available: named-map, residual)
-			cssMap({ red: { color: "red" } });",
-			    "converted": 0,
+			    "code": "import { createCss } from "pandwind/css";
+			const css = createCss();
+
+			export const colors = { "red": css.class({ color: "red" }) };",
+			    "converted": 1,
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "target-native",
+			        "representation": "named-map",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Compiled cssMap requires a named target map lowering",
-			        "kind": "composition",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "compiled/keyframes": {
 			    "changed": true,
-			    "code": "import { keyframes } from "@compiled/react";
-			export const pulse = // pandwind:migrate-skip (route: compiled -> pandwind | parse-residual: keyframes | available: named-map, residual)
-			keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });",
-			    "converted": 0,
+			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
+
+			export const pulse = (css.sheet.registerSemanticRules([{ kind: "keyframes", name: "pw-kf-pulse", children: [{ kind: "style", selector: "from", declarations: [{ property: "opacity", value: 0 }] }, { kind: "style", selector: "to", declarations: [{ property: "opacity", value: 1 }] }] }]), "pw-kf-pulse");",
+			    "converted": 1,
 			    "outcomes": [
 			      {
-			        "outcome": "residual",
-			        "representation": "residual",
+			        "outcome": "target-native",
+			        "representation": "named-map",
 			      },
 			    ],
-			    "residuals": [
+			    "residuals": [],
+			    "skipped": 0,
+			    "validations": [
 			      {
-			        "hint": "Compiled keyframes require rule-level target lowering",
-			        "kind": "keyframes",
-			        "preserved": undefined,
+			        "differences": [],
+			        "lossiness": "lossless",
+			        "valid": true,
 			      },
 			    ],
-			    "skipped": 1,
-			    "validations": [],
 			  },
 			  "compiled/styled component": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
 			const css = createCss();
 
-			export const Card = css.class({ color: "red" });",
+			export const Card = (() => { const style = css.class({ color: "red" }); const component = (props) => { const Component = props.as ?? "button"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {

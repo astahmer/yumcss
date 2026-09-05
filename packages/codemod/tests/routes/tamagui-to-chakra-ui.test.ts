@@ -73,7 +73,7 @@ test("tamagui -> chakra-ui: carries concrete tamagui dynamics or edge syntax exp
 		{
 		  "changed": true,
 		  "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		styled(View, { color: theme.foreground, padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		  "converted": 0,
@@ -84,11 +84,6 @@ test("tamagui -> chakra-ui: carries concrete tamagui dynamics or edge syntax exp
 		    },
 		  ],
 		  "residuals": [
-		    {
-		      "hint": "theme-context: 1 theme binding(s)",
-		      "kind": "capability",
-		      "preserved": undefined,
-		    },
 		    {
 		      "hint": "bind --pandwind-dynamic-5qa8dh at runtime for target chakra-ui",
 		      "kind": "dynamic-custom-property",
@@ -113,7 +108,7 @@ test("tamagui -> chakra-ui: lowers concrete theme and project context variants",
 		  "amber": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		styled(View, { color: theme.colors.brand, padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
@@ -124,11 +119,6 @@ test("tamagui -> chakra-ui: lowers concrete theme and project context variants",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",
@@ -141,7 +131,7 @@ test("tamagui -> chakra-ui: lowers concrete theme and project context variants",
 		  "blue": {
 		    "changed": true,
 		    "code": "import { styled, View } from "tamagui";
-		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | capability-blocked: theme-context: 1 theme binding(s) | available: named-map, custom-property, residual)
+		export const Card = // pandwind:migrate-skip (route: tamagui -> chakra-ui | lowering-residual: dynamic-custom-property | available: named-map, custom-property, residual)
 		styled(View, { color: theme.colors.brand, padding: "$4" });
 		export const App = () => <View className={Card} />;",
 		    "converted": 0,
@@ -152,11 +142,6 @@ test("tamagui -> chakra-ui: lowers concrete theme and project context variants",
 		      },
 		    ],
 		    "residuals": [
-		      {
-		        "hint": "theme-context: 1 theme binding(s)",
-		        "kind": "capability",
-		        "preserved": undefined,
-		      },
 		      {
 		        "hint": "bind --pandwind-dynamic-bbwvz3 at runtime for target chakra-ui",
 		        "kind": "dynamic-custom-property",

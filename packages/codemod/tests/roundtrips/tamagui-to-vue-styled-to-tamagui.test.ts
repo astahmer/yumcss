@@ -287,7 +287,7 @@ test("tamagui -> vue-styled -> tamagui: resolves token references across both co
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import styled from "vue-styled-components";
-		export const Card = // pandwind:migrate-skip (route: vue-styled -> tamagui | capability-blocked: components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue | available: static, residual)
+		export const Card = // pandwind:migrate-skip (route: vue-styled -> tamagui | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, residual)
 		styled.div({ "padding": "$4", "color": "$colors.brand" });
 		export const App = () => <Card />;",
 		    "converted": 0,
@@ -299,7 +299,7 @@ test("tamagui -> vue-styled -> tamagui: resolves token references across both co
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled.div; theme-context: 1 theme binding(s); framework-semantics: vue",
+		        "hint": "components: component subject: styled.div; framework-semantics: vue",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
