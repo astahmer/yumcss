@@ -128,6 +128,44 @@ function classExpressionFromEmission(emitted: string): string | undefined {
 	return expression.length === 0 ? undefined : expression;
 }
 
+function hostClassExpression(source: string, start: number, end: number, emitted: string): string {
+	const expression = emitted.trim();
+	if (!/^css\.vars\(/u.test(expression) || /\.class\s*$/u.test(expression)) return emitted;
+	const tagStart = source.lastIndexOf("<", start);
+	const tagEnd = source.indexOf(">", end);
+	if (tagStart === -1 || tagEnd === -1) return emitted;
+	const openingTag = source.slice(tagStart, tagEnd + 1);
+	const classStart = Math.max(
+		openingTag.lastIndexOf("class="),
+		openingTag.lastIndexOf("className="),
+	);
+	if (classStart === -1 || tagStart + classStart > start) return emitted;
+	return `${emitted}.class`;
+}
+
+function generatedImportBindings(imports: ReadonlySet<string>): readonly string[] {
+	const bindings = new Set<string>();
+	for (const statement of imports) {
+		const clause = /^import\s+(.+?)\s+from\s+["'][^"']+["']/u.exec(statement)?.[1];
+		if (clause === undefined) continue;
+		const defaultPart = clause.split(",")[0]?.trim();
+		if (defaultPart !== undefined && /^[A-Za-z_$][\w$]*$/u.test(defaultPart))
+			bindings.add(defaultPart);
+		const namespace = /\*\s+as\s+([A-Za-z_$][\w$]*)/u.exec(clause)?.[1];
+		if (namespace !== undefined) bindings.add(namespace);
+		const named = /\{([^}]*)\}/u.exec(clause)?.[1];
+		for (const item of named?.split(",") ?? []) {
+			const local = item
+				.trim()
+				.split(/\s+as\s+/u)
+				.pop()
+				?.trim();
+			if (local !== undefined && /^[A-Za-z_$][\w$]*$/u.test(local)) bindings.add(local);
+		}
+	}
+	return [...bindings];
+}
+
 /** Keep generated module statements inside the executable block of an SFC. */
 function ensureGeneratedStatement(code: string, statement: string, file: string): string {
 	if (SOURCE_SCANNER_SERVICE.languageForFile(file) !== "vue" || code.includes(statement))
@@ -1557,7 +1595,11 @@ function runAdapterMigrationInternal(
 			program.source?.hostOpenTag === match.sourceText &&
 			(program.source.hostStyleAttributes?.length ?? 0) > 0;
 		if (!deferSourceHostReplacement)
-			edits.push({ start: match.start, end: match.end, text: emitted.text });
+			edits.push({
+				start: match.start,
+				end: match.end,
+				text: hostClassExpression(source, match.start, match.end, emitted.text),
+			});
 		converted++;
 		const successfulRepresentation = targetRepresentationKind;
 		outcomes.push({
@@ -1770,20 +1812,47 @@ function runAdapterMigrationInternal(
 			code,
 			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
 			sourceAdapter.sourceModuleMatchers,
+			generatedImportBindings(imports),
 		);
+		code = MigrationOutput.removeNamedImportSpecifiers(
+			code,
+			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
+			["css", "createCss", "createRuntimeCss"],
+		);
+		if (
+			imports.has('import { createCss } from "pandwind/css";') ||
+			imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')
+		)
+			code = MigrationOutput.removeNamedImportSpecifiers(code, sourceAdapter.sourceModules, [
+				"css",
+			]);
 		// A demoted factory-qualified host no longer references its factory
 		// namespace; its import would make the emitted module import an API the
 		// target dialect never calls.
 		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, [...demotedFactoryHosts]);
 	}
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
-		imports.delete('import { createCss } from "pandwind/css";');
-		imports.delete("const css = createCss();");
+		const hasRenamedStaticCss =
+			/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(code) ||
+			[...imports].some((statement) =>
+				/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement),
+			);
+		const runtimeUsesSameBinding = [...imports].some((statement) =>
+			/\b(?:pandwindCss|pwCss)\s*=\s*createRuntimeCss\(/u.test(statement),
+		);
+		if (!hasRenamedStaticCss || runtimeUsesSameBinding) {
+			imports.delete('import { createCss } from "pandwind/css";');
+			if (runtimeUsesSameBinding) {
+				for (const statement of [...imports])
+					if (/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement))
+						imports.delete(statement);
+			} else imports.delete("const css = createCss();");
+		}
 		// A residual-carrying source module keeps its original statements; the
 		// skipped code still binds `css`. Only a fully converted document has
 		// the static binding replaced by the runtime carrier, and leaving it in
 		// place would declare `css` twice.
-		if (converted > 0 && skipped === 0 && residuals.length === 0)
+		if (converted > 0 && skipped === 0 && residuals.length === 0 && !hasRenamedStaticCss)
 			code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	}
 	const targetUsesPandwindCss =

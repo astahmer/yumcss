@@ -6,10 +6,10 @@ import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
 export interface DynamicClassHostContext {
 	readonly binding?: string;
 	readonly framework?: string;
-		readonly representationKind?: StyleRepresentationKind;
-		readonly residuals?: readonly StyleProgramResidual[];
-		/** Collapse source factory hosts to their canonical element; compose targets opt out. */
-		demotesFactoryHosts?: boolean;
+	readonly representationKind?: StyleRepresentationKind;
+	readonly residuals?: readonly StyleProgramResidual[];
+	/** Collapse source factory hosts to their canonical element; compose targets opt out. */
+	demotesFactoryHosts?: boolean;
 }
 
 /** Shared host projection for class compilers that support CSS custom properties. */
@@ -105,9 +105,11 @@ export class DynamicClassHost {
 			return { code, residuals: [] };
 		if (
 			context.framework !== undefined &&
-			![BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
-				context.framework as BuiltinHostFramework,
-			)
+			![
+				BuiltinHostFramework.React,
+				BuiltinHostFramework.Preact,
+				BuiltinHostFramework.Solid,
+			].includes(context.framework as BuiltinHostFramework)
 		)
 			return {
 				code,
@@ -198,9 +200,11 @@ export class DynamicClassHost {
 	} {
 		if (
 			context.framework !== undefined &&
-			![BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
-				context.framework as BuiltinHostFramework,
-			)
+			![
+				BuiltinHostFramework.React,
+				BuiltinHostFramework.Preact,
+				BuiltinHostFramework.Solid,
+			].includes(context.framework as BuiltinHostFramework)
 		)
 			return {
 				code,
@@ -241,9 +245,7 @@ export class DynamicClassHost {
 		const qualifiedTag =
 			context.demotesFactoryHosts === false
 				? undefined
-				: /^<\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)(?=[\s/>])/u.exec(
-					projected,
-				)?.[1];
+				: /^<\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)(?=[\s/>])/u.exec(projected)?.[1];
 		const canonicalTag = qualifiedTag
 			? /^<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\.([a-z][\w-]*)\b/u.exec(projected)?.[1]
 			: undefined;
@@ -284,10 +286,17 @@ export class DynamicClassHost {
 		const insertion = /\/\s*>$/u.test(projected) ? projected.length - 2 : projected.length - 1;
 		const styleExpression = DynamicClassHost.styleExpression(context.residuals);
 		const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
+		const classAttributeName =
+			context.framework === BuiltinHostFramework.Solid ? "class" : "className";
+		const classExpression =
+			context.framework === BuiltinHostFramework.Solid &&
+			/^css\.vars\(/u.test(context.emittedExpression.trim())
+				? `${context.emittedExpression}.class`
+				: context.emittedExpression;
 		// Attribute removal leaves the tag separator behind; the inserted attribute
 		// carries its own space, so trim the tag first to keep exactly one.
 		const prefix = projected.slice(0, insertion).replace(/[ \t]+$/u, "");
-		projected = `${prefix} className={${context.emittedExpression}}${style}${projected.slice(insertion)}`;
+		projected = `${prefix} ${classAttributeName}={${classExpression}}${style}${projected.slice(insertion)}`;
 		if (demoted !== undefined) {
 			const closingMatch = code
 				.slice(start + host.openingTag.length)

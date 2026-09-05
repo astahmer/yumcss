@@ -17,6 +17,7 @@ import type {
 } from "../semantic-ir.ts";
 import {
 	CodemodAdapterId,
+	CodemodPatternId,
 	StyleHostRepresentationKind,
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
@@ -311,7 +312,11 @@ export function createTokenamiAdapter(
 		tokenPolicy: TOKENAMI_TOKEN_POLICY,
 		patterns: [
 			{ name: "css", regex: /\bcss\s*\(\s*\{/g, transform: normalizeProgram },
-			{ name: "compose", regex: /\bcss\.compose\s*\(\s*\{/g, transform: normalizeProgram },
+			{
+				name: CodemodPatternId.TokenamiCompose,
+				regex: /\bcss\.compose\s*\(\s*\{/g,
+				transform: normalizeProgram,
+			},
 		],
 		migration: {
 			targetPolicy: {

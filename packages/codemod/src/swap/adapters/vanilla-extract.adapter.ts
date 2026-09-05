@@ -8,7 +8,7 @@ import {
 } from "../identifiers.ts";
 
 const runtimeFallbackVar =
-	"const fallbackVar = (variable, fallback) => `var(${variable}, ${fallback})`;";
+	"const fallbackVar = (variable: string, fallback: string) => `var(${variable}, ${fallback})`;";
 
 export default defineCodemodAdapter({
 	id: CodemodAdapterId.VanillaExtract,
@@ -69,7 +69,6 @@ export default defineCodemodAdapter({
 		{
 			name: "create-var",
 			regex: /\bcreateVar\s*\(/g,
-			sourceGuard: (source) => !/\b(?:style|globalStyle|keyframes|fontFace)\s*\(/u.test(source),
 			form: "residual",
 			residual: {
 				kind: "configuration",

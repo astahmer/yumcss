@@ -7,17 +7,70 @@ export class MigrationOutput {
 		code: string,
 		modules: readonly string[],
 		moduleMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+		reservedBindings: readonly string[] = [],
 	): string {
 		const ownedModules = new Set(modules);
+		const reserved = new Set(reservedBindings);
 		const imports = /\bimport\s+(?:[^;]*?\s+from\s+)?["']([^"']+)["']\s*;?/g;
-		return MigrationOutput.removeExcludedMatchesByPredicate(code, imports, (match) => {
+		const edits: Array<{ start: number; end: number; text: string }> = [];
+		const body = code
+			.replace(imports, "")
+			// JSX attribute names are not references to an imported binding. This
+			// matters for source `css` imports when a target owns a `css` prop.
+			.replace(/\b(?:className|class|css)\s*=/gu, "");
+		for (const match of code.matchAll(imports)) {
 			const moduleSpecifier = match[1];
-			return (
-				moduleSpecifier !== undefined &&
-				(ownedModules.has(moduleSpecifier) ||
-					moduleMatchers.some((matcher) => matcher(moduleSpecifier)))
-			);
-		});
+			if (
+				moduleSpecifier === undefined ||
+				(!ownedModules.has(moduleSpecifier) &&
+					!moduleMatchers.some((matcher) => matcher(moduleSpecifier)))
+			)
+				continue;
+			const statement = match[0];
+			const clause = /^import\s+(.+?)\s+from\s+(["'][^"']+["'])/u.exec(statement);
+			const start = match.index ?? 0;
+			if (clause === null) {
+				edits.push({ start, end: start + statement.length, text: "" });
+				continue;
+			}
+			const used = (binding: string): boolean =>
+				!reserved.has(binding) &&
+				new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\b`, "u").test(body);
+			const imported = clause[1]!.trim();
+			const namedMatch = /\{([^}]*)\}/u.exec(imported);
+			const named =
+				(namedMatch?.[1] ?? "")
+					.split(",")
+					.map((part) => part.trim())
+					.filter((part) => part !== "") ?? [];
+			const defaultPart = imported.split(",")[0]!.trim();
+			const keptDefault =
+				/^[A-Za-z_$][\w$]*$/u.test(defaultPart) && used(defaultPart) ? defaultPart : undefined;
+			const keptNamed = named.filter((part) => {
+				const binding = part
+					.split(/\s+as\s+/u)
+					.pop()!
+					.trim();
+				return used(binding);
+			});
+			const namespace = /\*\s+as\s+([A-Za-z_$][\w$]*)/u.exec(imported)?.[1];
+			if (namespace !== undefined && used(namespace)) {
+				edits.push({ start, end: start + statement.length, text: statement });
+				continue;
+			}
+			const specifier = [
+				keptDefault,
+				keptNamed.length === 0 ? undefined : `{ ${keptNamed.join(", ")} }`,
+			].filter((part): part is string => part !== undefined);
+			edits.push({
+				start,
+				end: start + statement.length,
+				text: specifier.length === 0 ? "" : `import ${specifier.join(", ")} from ${clause[2]!};`,
+			});
+		}
+		for (const edit of edits.toReversed())
+			code = code.slice(0, edit.start) + edit.text + code.slice(edit.end);
+		return code;
 	}
 	/** Remove import specifiers whose binding name no longer appears in the
 	 * module body; a statement left with no specifiers is removed with its line. */
@@ -29,10 +82,7 @@ export class MigrationOutput {
 			// so the candidate's own declaration never keeps itself alive.
 			const body = result.replace(/import\s*\{[^}]*\}\s*from\s*("[^"]+"|'[^']+')/gu, "");
 			if (new RegExp(`\\b${escaped}\\b`, "u").test(body)) continue;
-			const importPattern = new RegExp(
-				`import\\s*\\{([^}]*)\\}\\s*from\\s*("[^"]+"|'[^']+')`,
-				"g",
-			);
+			const importPattern = new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*("[^"]+"|'[^']+')`, "g");
 			const edits: Array<{ start: number; end: number; text: string }> = [];
 			for (const match of result.matchAll(importPattern)) {
 				const start = match.index ?? 0;
@@ -50,7 +100,8 @@ export class MigrationOutput {
 					kept.push(trimmed);
 				}
 				if (!removed) continue;
-				const replacement = kept.length === 0 ? "" : `import { ${kept.join(", ")} } from ${match[2]};`;
+				const replacement =
+					kept.length === 0 ? "" : `import { ${kept.join(", ")} } from ${match[2]};`;
 				const lineStart = result.lastIndexOf("\n", start) + 1;
 				let lineEnd = start + match[0].length;
 				if (result[lineEnd] === ";") lineEnd += 1;
@@ -61,6 +112,45 @@ export class MigrationOutput {
 				result = result.slice(0, edit.start) + edit.text + result.slice(edit.end);
 		}
 		return result;
+	}
+
+	static removeNamedImportSpecifiers(
+		code: string,
+		modules: readonly string[],
+		candidates: readonly string[],
+	): string {
+		const owned = new Set(modules);
+		const pattern = /import\s*\{([^}]*)\}\s*from\s*(["'])([^"']+)\2\s*;?/gu;
+		const edits: Array<{ start: number; end: number; text: string }> = [];
+		for (const match of code.matchAll(pattern)) {
+			if (match[3] === undefined || !owned.has(match[3])) continue;
+			const kept = match[1]!
+				.split(",")
+				.map((part) => part.trim())
+				.filter(
+					(part) =>
+						!candidates.includes(
+							part
+								.split(/\s+as\s+/u)
+								.pop()!
+								.trim(),
+						),
+				);
+			if (kept.length === match[1]!.split(",").filter((part) => part.trim() !== "").length)
+				continue;
+			const start = match.index ?? 0;
+			edits.push({
+				start,
+				end: start + match[0].length,
+				text:
+					kept.length === 0
+						? ""
+						: `import { ${kept.join(", ")} } from ${match[2]}${match[3]}${match[2]};`,
+			});
+		}
+		for (const edit of edits.toReversed())
+			code = code.slice(0, edit.start) + edit.text + code.slice(edit.end);
+		return code;
 	}
 
 	static consolidateImports(statements: Iterable<string>): string[] {

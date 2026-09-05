@@ -23,6 +23,28 @@ function migrate(source: string, from: CodemodAdapterId, to: CodemodAdapterId, f
 }
 
 describe("target adapter emission contract", () => {
+	test("uses Chakra's css prop instead of a fabricated className css carrier", () => {
+		const result = migrate(
+			'import { css } from "styled-system/css";\n' +
+				'const card = css({ padding: "1rem", color: "$colors.brand" });\n' +
+				"export const App = () => <div className={card} />;",
+			CodemodAdapterId.Bamboo,
+			CodemodAdapterId.ChakraUi,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("<chakra.div css={{");
+		expect(result.code).not.toContain("className={css(");
+		expect(result.code).not.toContain('from "styled-system/css"');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { chakra } from \"@chakra-ui/react\";
+
+			const card = { padding: \"1rem\", color: \"$colors.brand\" };
+			export const App = () => <chakra.div css={{ padding: \"1rem\", color: \"$colors.brand\" }} />;"
+		`);
+	});
+
 	test("emits native StyleX source when StyleX is selected as the target", () => {
 		const result = migrate(
 			'import { css } from "@emotion/css";\nconst card = css({ color: "red" });',
@@ -143,6 +165,34 @@ describe("target adapter emission contract", () => {
 		expect(result.outcomes).toMatchObject([
 			{ outcome: "portable-artifact", representation: "portable-artifact" },
 		]);
+	});
+
+	test("types runtime carriers loosely when generated styles contain raw CSS values", () => {
+		const result = runAdapterMigration(
+			'import { css } from "@linaria/core";\n' +
+				"const card = css`color: ${theme.foreground}; padding: 0.5em 1em;`;",
+			{
+				from: CodemodAdapterId.Linaria,
+				to: CodemodAdapterId.ChakraUi,
+				file: "Card.tsx",
+				mode: "safe",
+				readFile: () => undefined,
+				adapterRegistry: catalog.registry,
+				semantic: { source: { framework: BuiltinHostFramework.React } },
+			},
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain('as import("pandwind/css").CssFn');
+		expect(result.code).toContain('sheet: import("pandwind/css/runtime").RuntimeSheet');
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset) as import("pandwind/css").CssFn & { sheet: import("pandwind/css/runtime").RuntimeSheet };
+
+			const card = css.vars({ "padding": "0.5em 1em", "color": theme.foreground });"
+		`);
 	});
 
 	test.each([

@@ -9,23 +9,22 @@ import {
 } from "../identifiers.ts";
 
 function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterRewriteResult {
-	if (context.targetId !== CodemodAdapterId.Pandwind || !context.complete) {
+	if (context.targetId !== CodemodAdapterId.Pandwind) {
 		return { code: context.code, residuals: [] };
 	}
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const application =
-		/\b([A-Za-z_$][\w$]*)\.getRule\(\s*["']([A-Za-z_$][\w$]*)["']\s*\)\.applyTo\(\s*([A-Za-z_$][\w$]*)\s*\)/g;
+		/\b([A-Za-z_$][\w$]*)\.getRule\(\s*["']([A-Za-z_$][\w$]*)["']\s*\)\.applyTo\(\s*([^)]*?)\s*\)/g;
 	for (const match of context.code.matchAll(application)) {
 		const sheet = match[1];
 		const rule = match[2];
 		const element = match[3];
 		if (sheet === undefined || rule === undefined || element === undefined) continue;
-		if (!context.convertedBindings.has(sheet)) continue;
 		const start = match.index ?? 0;
 		edits.push({
 			start,
 			end: start + match[0].length,
-			text: `${element}.classList.add(${sheet}.${rule})`,
+			text: `${element}!.classList.add(css.class(${sheet}.${rule}))`,
 		});
 	}
 	for (const sheet of context.convertedBindings) {
@@ -36,6 +35,20 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 		for (const match of context.code.matchAll(attach)) {
 			const start = match.index ?? 0;
 			edits.push({ start, end: start + match[0].length, text: "" });
+		}
+		const applyTo = new RegExp(
+			`\\b${sheet.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\.applyTo\\(\\s*([^)]*?)\\s*\\)`,
+			"g",
+		);
+		for (const match of context.code.matchAll(applyTo)) {
+			const element = match[1];
+			if (element === undefined) continue;
+			const start = match.index ?? 0;
+			edits.push({
+				start,
+				end: start + match[0].length,
+				text: `${element}!.classList.add(${sheet})`,
+			});
 		}
 	}
 	return { code: SourcePass.applyEdits(context.code, edits), residuals: [] };

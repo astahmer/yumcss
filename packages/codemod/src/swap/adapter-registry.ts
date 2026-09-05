@@ -138,7 +138,7 @@ function normalizeAdapter(adapter: StyleAdapter): StyleAdapter {
 						? [
 								'import { createRuntimeCss } from "pandwind/css/runtime";',
 								'import { pandwindPreset } from "pandwind/preset";',
-								"const css = createRuntimeCss(pandwindPreset);",
+								'const css = createRuntimeCss(pandwindPreset) as import("pandwind/css").CssFn & { sheet: import("pandwind/css/runtime").RuntimeSheet };',
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,

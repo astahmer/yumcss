@@ -418,8 +418,15 @@ function addDeclaration(
 	declaration: StyleDeclaration,
 	conditions: readonly string[],
 ): void {
+	// UnoCSS uses `-Un*` marker properties while expanding utility groups. They
+	// are compiler bookkeeping, never CSS declarations; the corresponding
+	// standard property or custom property is emitted separately.
+	if (/^-Un[A-Z]/u.test(declaration.property)) return;
 	if (conditions.length === 0) {
-		node.entries.push([declaration.property, renderValue(declaration.value)]);
+		const entry: [string, string] = [declaration.property, renderValue(declaration.value)];
+		const index = node.entries.findIndex(([property]) => property === declaration.property);
+		if (index === -1) node.entries.push(entry);
+		else node.entries[index] = entry;
 		return;
 	}
 	const key = conditions[0]!;
@@ -1510,7 +1517,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 						? [
 								'import { createRuntimeCss } from "pandwind/css/runtime";',
 								'import { pandwindPreset } from "pandwind/preset";',
-								"const css = createRuntimeCss(pandwindPreset);",
+								'const css = createRuntimeCss(pandwindPreset) as import("pandwind/css").CssFn & { sheet: import("pandwind/css/runtime").RuntimeSheet };',
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 					semantic: portableProgram,

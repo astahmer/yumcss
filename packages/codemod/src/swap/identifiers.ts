@@ -75,6 +75,7 @@ export const BUILTIN_CODEMOD_ADAPTER_IDS = [
 
 export const enum CodemodPatternId {
 	CssTemplate = "css-template",
+	TokenamiCompose = "tokenami-compose",
 	StyleXCreate = "stylex-create",
 	StyleXKeyframes = "stylex-keyframes",
 	StyleXDefineVars = "stylex-define-vars",
