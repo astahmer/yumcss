@@ -106,7 +106,8 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 		const n = node as { type?: string; end?: number; expression?: { end?: number } };
 		if (n.type === NodeKind.TSAsExpression || n.type === NodeKind.TSSatisfiesExpression) {
 			const inner = n.expression;
-			if (typeof inner?.end === "number" && typeof n.end === "number") cuts.push([inner.end, n.end]);
+			if (typeof inner?.end === "number" && typeof n.end === "number")
+				cuts.push([inner.end, n.end]);
 		}
 		for (const value of Object.values(node as Record<string, unknown>)) {
 			if (value !== null && typeof value === "object") walk(value);
@@ -121,7 +122,8 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 			}
 			const source = statement.source?.value ?? "";
 			for (const spec of statement.specifiers ?? []) {
-				if (spec.type === NodeKind.ImportSpecifier && spec.importKind === ImportKindTag.Type) continue;
+				if (spec.type === NodeKind.ImportSpecifier && spec.importKind === ImportKindTag.Type)
+					continue;
 				const local = spec.local?.name;
 				if (local === undefined) continue;
 				if (spec.type === NodeKind.ImportSpecifier)
@@ -129,7 +131,10 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 				else imports.push({ local, source });
 			}
 			cuts.push([statement.start, statement.end]);
-		} else if (statement.type === NodeKind.TSExportAssignment || statement.type === NodeKind.ExportDefaultDeclaration) {
+		} else if (
+			statement.type === NodeKind.TSExportAssignment ||
+			statement.type === NodeKind.ExportDefaultDeclaration
+		) {
 			cuts.push([statement.start, statement.end]);
 		} else if (statement.type === NodeKind.ExportNamedDeclaration) {
 			const inner = statement.declaration;
@@ -139,7 +144,10 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 				for (const decl of inner.declarations ?? []) {
 					if (decl.id?.name !== undefined) exportNames.push(decl.id.name);
 				}
-				if (inner.type === NodeKind.FunctionDeclaration && (inner as { id?: { name?: string } }).id?.name)
+				if (
+					inner.type === NodeKind.FunctionDeclaration &&
+					(inner as { id?: { name?: string } }).id?.name
+				)
 					exportNames.push((inner as { id?: { name?: string } }).id!.name!);
 			}
 		}
@@ -149,7 +157,7 @@ function stripModule(code: string): Omit<Prepared, "body" | "consts" | "exprText
 	const edits: Array<[number, number, string]> = [
 		...cuts.map(([start, end]): [number, number, string] => [start, end, ""]),
 		...unwraps.map(([start, end]): [number, number, string] => [start, end, ""]),
-	].sort((left, right) => right[0] - left[0]);
+	].toSorted((left, right) => right[0] - left[0]);
 	let evalCode = code;
 	for (const [start, end] of edits) evalCode = evalCode.slice(0, start) + evalCode.slice(end);
 	return { evalCode, imports, exportNames, declaredNames: [] };
@@ -203,18 +211,21 @@ function prepare(code: string, mode: EvalMode): Prepared {
 		body =
 			base.exportNames.length === 0
 				? evalCode + "\nreturn {};"
-				: evalCode
-					+ `\nreturn { ${base.exportNames.map((name) => `${name}: ${name}`).join(", ")} };`;
+				: evalCode +
+					`\nreturn { ${base.exportNames.map((name) => `${name}: ${name}`).join(", ")} };`;
 	} else if (lastExpr === undefined) {
 		body = evalCode + '\n;throw new Error("add a final expression — nothing to output");';
 	} else {
 		const rawText = evalCode.slice(lastExpr.start, lastExpr.end);
 		exprText = rawText.replace(/;\s*$/, "");
-		body = "const __pwExports = {};\n"
-			+ evalCode.slice(0, lastExpr.start)
-			+ "__pwExports.value = (() => { return " + exprText + "; })();\n"
-			+ evalCode.slice(lastExpr.end)
-			+ "\nreturn __pwExports;";
+		body =
+			"const __pwExports = {};\n" +
+			evalCode.slice(0, lastExpr.start) +
+			"__pwExports.value = (() => { return " +
+			exprText +
+			"; })();\n" +
+			evalCode.slice(lastExpr.end) +
+			"\nreturn __pwExports;";
 	}
 	return {
 		body,
@@ -276,7 +287,10 @@ function isStaticNode(node: unknown, consts: ConstantScope): boolean {
 		}
 		case NodeKind.CallExpression: {
 			const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-			if (call.callee?.type === NodeKind.Identifier && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
+			if (
+				call.callee?.type === NodeKind.Identifier &&
+				FOLD_CALL_NAMES.has(call.callee.name ?? "")
+			) {
 				return (call.arguments ?? []).every((arg) => isStaticNode(arg, consts));
 			}
 			return false;
@@ -367,7 +381,10 @@ function classifyFold(
 			}
 			case NodeKind.CallExpression: {
 				const call = n as { callee?: { type?: string; name?: string }; arguments?: Array<unknown> };
-				if (call.callee?.type === NodeKind.Identifier && FOLD_CALL_NAMES.has(call.callee.name ?? "")) {
+				if (
+					call.callee?.type === NodeKind.Identifier &&
+					FOLD_CALL_NAMES.has(call.callee.name ?? "")
+				) {
 					sawFoldCall = true;
 					for (const arg of call.arguments ?? []) visit(arg);
 					return;
@@ -432,7 +449,10 @@ export function evalSiblingModule(input: EvalInput): Record<string, unknown> {
 	const prepared = prepare(code, "module");
 	const sandbox = buildSandbox(input, prepared, input.tw, input.css, input.cx);
 	const names = sandboxNames(prepared);
-	const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
+	const fn = new Function(
+		"__pw",
+		`"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`,
+	);
 	return (fn(sandbox) ?? {}) as Record<string, unknown>;
 }
 
@@ -496,12 +516,21 @@ function buildSandbox(
 			continue;
 		}
 		if (imp.source.startsWith("./")) {
-			throw new Error(`import "${imp.source}" — no sibling tab provides this module in the playground`);
+			throw new Error(
+				`import "${imp.source}" — no sibling tab provides this module in the playground`,
+			);
 		}
 		throw new Error(`import "${imp.source}" is not available in the playground sandbox`);
 	}
 	for (const [local, value] of Object.entries(sandbox)) {
-		if (local === "tw" || local === "css" || local === "cx" || local === "props" || local === "createCss") continue;
+		if (
+			local === "tw" ||
+			local === "css" ||
+			local === "cx" ||
+			local === "props" ||
+			local === "createCss"
+		)
+			continue;
 		if (value === undefined) {
 			throw new Error(`the import "${local}" is not available in the playground sandbox`);
 		}
@@ -561,10 +590,16 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			recordArgs(args);
 			const fn =
 				method === undefined ? input.css : (input.css[method] as (...a: Array<never>) => unknown);
-			if (typeof fn !== "function") throw new Error(`css.${method} is not available in the sandbox`);
+			if (typeof fn !== "function")
+				throw new Error(`css.${method} is not available in the sandbox`);
 			const result = fn(...(args as never[]));
 			recordTokens(result);
-			if (args.length > 0 && typeof args[0] === "object" && args[0] !== null && input.resolveCss !== undefined) {
+			if (
+				args.length > 0 &&
+				typeof args[0] === "object" &&
+				args[0] !== null &&
+				input.resolveCss !== undefined
+			) {
 				const resolved = input.resolveCss(args[0] as Record<string, unknown>);
 				if (resolved !== undefined && Object.keys(resolved).length > 0) {
 					if (typeof result === "string") {
@@ -606,7 +641,10 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	// One destructured scope for every module: builtins filtered by local
 	// shadows plus import bindings, so an example's own `const css` wins.
 	const names = sandboxNames(prepared);
-	const fn = new Function("__pw", `"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`);
+	const fn = new Function(
+		"__pw",
+		`"use strict";\nconst { ${names.join(", ")} } = __pw;\n${prepared.body}`,
+	);
 	captured = (fn(sandbox) ?? {}) as { value?: unknown };
 
 	// The final expression may be a class string, a declaration map (plain
@@ -620,7 +658,11 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		output = rawValue;
 	} else if (rawValue !== null && typeof rawValue === "object") {
 		const candidate = rawValue as Record<string, unknown>;
-		if (typeof candidate.class === "string" && candidate.style !== null && typeof candidate.style === "object") {
+		if (
+			typeof candidate.class === "string" &&
+			candidate.style !== null &&
+			typeof candidate.style === "object"
+		) {
 			const style: Record<string, string> = {};
 			for (const [key, value] of Object.entries(candidate.style as Record<string, unknown>)) {
 				style[key] = String(value);
@@ -628,7 +670,10 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 			varsOutput = { class: candidate.class, style };
 			output = candidate.class;
 		} else if (typeof candidate.className === "string") {
-			propsOutput = { className: candidate.className, style: candidate.style as Record<string, string> | undefined };
+			propsOutput = {
+				className: candidate.className,
+				style: candidate.style as Record<string, string> | undefined,
+			};
 			output = candidate.className;
 		} else if (Object.values(candidate).every((value) => typeof value !== "object")) {
 			decls = {};

@@ -32,22 +32,17 @@ function decodeCode(encoded: string): string | null {
  * the `./name` import surface the entry tab resolves against — the same
  * module graph a real bundler would see.
  */
-function evalSiblings(
-	sources: readonly string[],
-	def: ExampleDef,
-): EvalInput["moduleBindings"] {
+function evalSiblings(sources: readonly string[], def: ExampleDef): EvalInput["moduleBindings"] {
 	if (def.files.length <= 1) return undefined;
 	const bindings: Record<string, Record<string, unknown>> = {};
 	for (let index = 1; index < def.files.length; index++) {
 		const file: ExampleFile = def.files[index]!;
 		try {
-			bindings["./" + file.name] = evalSiblingModule(
-				makeInput(sources[index] ?? file.code),
-			);
+			bindings["./" + file.name] = evalSiblingModule(makeInput(sources[index] ?? file.code));
 		} catch (error) {
-			throw new Error(
-				file.name + ": " + (error instanceof Error ? error.message : String(error)),
-			);
+			throw new Error(file.name + ": " + (error instanceof Error ? error.message : String(error)), {
+				cause: error,
+			});
 		}
 	}
 	return bindings;
@@ -56,7 +51,6 @@ function evalSiblings(
 export function PlaygroundPage(props: { def: ExampleDef }) {
 	const [files, setFiles] = useState<readonly string[]>(() => {
 		const hash = window.location.hash.slice(1);
-		const entry = props.def.files[0]!.code;
 		if (hash !== "") {
 			const decoded = decodeCode(hash);
 			if (decoded !== null && decoded.trim() !== "") {
@@ -113,7 +107,9 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 	const debounceRef = useRef<number>(0);
 	useEffect(() => () => window.clearTimeout(debounceRef.current), []);
 
-	const dirty = files.some((code, index) => code.trim() !== (props.def.files[index]?.code ?? "").trim());
+	const dirty = files.some(
+		(code, index) => code.trim() !== (props.def.files[index]?.code ?? "").trim(),
+	);
 	const reset = useCallback(() => {
 		window.clearTimeout(debounceRef.current);
 		const restored = props.def.files.map((file) => file.code);
@@ -145,7 +141,9 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 							onClick={() => setActiveTab(index)}
 							className={
 								"rounded-md px-2.5 py-1 font-mono text-[12px] leading-5 transition-colors " +
-								(index === activeTab ? "bg-white/[0.07] text-zinc-100" : "text-zinc-500 hover:text-zinc-300")
+								(index === activeTab
+									? "bg-white/[0.07] text-zinc-100"
+									: "text-zinc-500 hover:text-zinc-300")
 							}
 						>
 							{file.name}
@@ -158,7 +156,9 @@ export function PlaygroundPage(props: { def: ExampleDef }) {
 					code={files[activeTab] ?? ""}
 					onChange={onChange}
 					onRun={() => run(files)}
-					filePath={"file:///pandwind/playground/" + (props.def.files[activeTab]?.name ?? "Example.tsx")}
+					filePath={
+						"file:///pandwind/playground/" + (props.def.files[activeTab]?.name ?? "Example.tsx")
+					}
 					className="min-h-72"
 				/>
 				<ResultsPane result={result} />
@@ -174,7 +174,8 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 		css: designCss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
-		moduleBindings: moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
+		moduleBindings:
+			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
 		props: SANDBOX_PROPS,
 		resolveCss: (style: Record<string, unknown>) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);

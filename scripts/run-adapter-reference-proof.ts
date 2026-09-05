@@ -41,7 +41,7 @@ const requireFromCodemod = createRequire(join(root, "packages/codemod/package.js
  * adapters still resolve from the migrated project first.
  */
 const harnessModuleLoader = {
-	async importPackage<T>(packageName: string, projectRoot: string): Promise<T | undefined> {
+	async importPackage<T>(packageName: string, _projectRoot: string): Promise<T | undefined> {
 		try {
 			return requireFromRoot(packageName) as T;
 		} catch {

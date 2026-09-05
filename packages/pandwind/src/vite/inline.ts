@@ -57,9 +57,7 @@ interface CallNode extends OxcNode {
  * candidate verification needs Set membership. Normalize at the extraction
  * boundary so the TwConfig contract always sees Sets.
  */
-function normalizeWildcardValues(
-	raw: unknown,
-): Record<string, ReadonlySet<string>> | undefined {
+function normalizeWildcardValues(raw: unknown): Record<string, ReadonlySet<string>> | undefined {
 	if (typeof raw !== "object" || raw === null) return undefined;
 	const out: Record<string, ReadonlySet<string>> = {};
 	let entries = 0;
@@ -91,7 +89,11 @@ export function extractTwConfig(source: string): TwConfig | undefined {
 	// initializer before evaluating.
 	const topLevelConsts = new Map<string, Expression>();
 	walk(result.program, (node) => {
-		if (node.type !== NodeKind.VariableDeclaration || node.kind !== VariableDeclarationKindTag.Const) return;
+		if (
+			node.type !== NodeKind.VariableDeclaration ||
+			node.kind !== VariableDeclarationKindTag.Const
+		)
+			return;
 		for (const declarator of (
 			node as unknown as {
 				declarations: Array<{

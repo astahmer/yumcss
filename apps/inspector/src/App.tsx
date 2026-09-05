@@ -978,8 +978,8 @@ function UsageView(props: { data: StudioPayload }) {
 				</table>
 				{props.data.governance !== undefined ? (
 					<p className="muted">
-						{props.data.governance.summary.unusedCandidates} unused candidate(s) per the
-						governance report — see the Governance tab ({props.data.governance.summary.safeToRemove} safe ·{" "}
+						{props.data.governance.summary.unusedCandidates} unused candidate(s) per the governance
+						report — see the Governance tab ({props.data.governance.summary.safeToRemove} safe ·{" "}
 						{props.data.governance.summary.reviewRequired} review ·{" "}
 						{props.data.governance.summary.notRemovable} not removable).
 					</p>
@@ -1120,16 +1120,17 @@ function GovernanceView(props: { data: StudioPayload }) {
 		return (
 			<div className="empty-state">
 				<p className="muted">
-					the current snapshot has no governance report — refresh to re-run the analysis
-					with the governance gather payload.
+					the current snapshot has no governance report — refresh to re-run the analysis with the
+					governance gather payload.
 				</p>
 			</div>
 		);
 	}
 	const s = g.summary;
 	const policy: TokenPolicySnapshot | null = g.policy;
-	const unused = [...g.unusedCandidates]
-		.toSorted((a, b) => SAFETY_ORDER[a.safety] - SAFETY_ORDER[b.safety] || a.tokenId.localeCompare(b.tokenId));
+	const unused = [...g.unusedCandidates].toSorted(
+		(a, b) => SAFETY_ORDER[a.safety] - SAFETY_ORDER[b.safety] || a.tokenId.localeCompare(b.tokenId),
+	);
 	const suggestions = [...g.suggestions].toSorted(
 		(a, b) => a.file.localeCompare(b.file) || a.start - b.start,
 	);
@@ -1141,8 +1142,8 @@ function GovernanceView(props: { data: StudioPayload }) {
 					<h2>configuration incomplete</h2>
 					<p className="muted">
 						the project configuration could not be fully evaluated — usage claims are
-						provenance-linked but incomplete. wording: “not observed in the scanned graph”,
-						not “unused”.
+						provenance-linked but incomplete. wording: “not observed in the scanned graph”, not
+						“unused”.
 					</p>
 				</section>
 			)}
@@ -1162,8 +1163,8 @@ function GovernanceView(props: { data: StudioPayload }) {
 				<section>
 					<h2>coverage boundaries</h2>
 					<p className="muted">
-						conditions that prevent a definitive usage claim — nothing behind these is
-						classified as safe-to-remove.
+						conditions that prevent a definitive usage claim — nothing behind these is classified as
+						safe-to-remove.
 					</p>
 					<div className="chip-row">
 						{nonZeroBoundaries.map((b) => (
@@ -1177,7 +1178,9 @@ function GovernanceView(props: { data: StudioPayload }) {
 			<section>
 				<h2>strict policy</h2>
 				{policy === null ? (
-					<p className="muted">no policy resolved — strictness is report-only/fail-open (unknown).</p>
+					<p className="muted">
+						no policy resolved — strictness is report-only/fail-open (unknown).
+					</p>
 				) : policy.resolved ? (
 					<table>
 						<tbody>
@@ -1202,14 +1205,16 @@ function GovernanceView(props: { data: StudioPayload }) {
 						</tbody>
 					</table>
 				) : (
-					<p className="muted">policy for {policy.owner} could not be resolved — all strictness is unknown.</p>
+					<p className="muted">
+						policy for {policy.owner} could not be resolved — all strictness is unknown.
+					</p>
 				)}
 			</section>
 			<section>
 				<h2>unused candidates ({unused.length})</h2>
 				<p className="muted">
-					zero reachable usage after alias/composition/generated-artifact/export analysis —
-					safety is a classification, not a deletion approval.
+					zero reachable usage after alias/composition/generated-artifact/export analysis — safety
+					is a classification, not a deletion approval.
 				</p>
 				<table>
 					<thead>
@@ -1234,8 +1239,8 @@ function GovernanceView(props: { data: StudioPayload }) {
 				<section>
 					<h2>raw value suggestions ({suggestions.length}) — exact matches only</h2>
 					<p className="muted">
-						each suggestion is an exact resolved-value match with a legal spelling for the
-						property; ambiguous matches are rejected, not ranked.
+						each suggestion is an exact resolved-value match with a legal spelling for the property;
+						ambiguous matches are rejected, not ranked.
 					</p>
 					<table>
 						<thead>
@@ -1270,7 +1275,18 @@ function GovernanceView(props: { data: StudioPayload }) {
 						<tbody>
 							{g.diagnostics.map((d, i) => (
 								<tr key={i}>
-									<td style={{ color: d.severity === "error" ? "#ef4444" : d.severity === "warning" ? "#d97706" : "#64748b" }}>{d.severity}</td>
+									<td
+										style={{
+											color:
+												d.severity === "error"
+													? "#ef4444"
+													: d.severity === "warning"
+														? "#d97706"
+														: "#64748b",
+										}}
+									>
+										{d.severity}
+									</td>
 									<td>{d.code}</td>
 									<td>{d.message}</td>
 								</tr>
@@ -1466,7 +1482,10 @@ export function App() {
 					<button className={tab === "usage" ? "active" : ""} onClick={() => setTab("usage")}>
 						Usage
 					</button>
-					<button className={tab === "governance" ? "active" : ""} onClick={() => setTab("governance")}>
+					<button
+						className={tab === "governance" ? "active" : ""}
+						onClick={() => setTab("governance")}
+					>
 						Governance
 					</button>
 					<button className={tab === "history" ? "active" : ""} onClick={() => setTab("history")}>

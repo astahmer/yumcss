@@ -424,7 +424,9 @@ function collectCallSites(program: OxcNode, bindings: readonly SourceBinding[]):
 		const assignment =
 			parent?.type === NodeKind.VariableDeclarator
 				? parent
-				: [...ancestors].toReversed().find((ancestor) => ancestor.type === NodeKind.VariableDeclarator);
+				: [...ancestors]
+						.toReversed()
+						.find((ancestor) => ancestor.type === NodeKind.VariableDeclarator);
 		sites.push({
 			kind,
 			...range,

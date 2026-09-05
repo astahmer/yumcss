@@ -9,11 +9,7 @@ import {
 	type AdapterValidationResult,
 	type StyleAdapter,
 } from "pandwind-codemod/swap/browser";
-import {
-	officialApiCases,
-	officialApiFamilyCases,
-	type OfficialApiCase,
-} from "pandwind-codemod/swap/official-api-cases";
+import { officialApiCases, officialApiFamilyCases } from "pandwind-codemod/swap/official-api-cases";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
 
 export interface MigrationLabEndpoint {
@@ -51,12 +47,7 @@ export interface MigrationLabScenario {
 	readonly name: string;
 	readonly file?: string;
 	readonly source: string;
-	readonly expectation?:
-		| "converted"
-		| "runtime"
-		| "residual"
-		| "identity"
-		| "context";
+	readonly expectation?: "converted" | "runtime" | "residual" | "identity" | "context";
 }
 
 export interface MigrationLab {

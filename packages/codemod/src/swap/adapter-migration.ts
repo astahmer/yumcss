@@ -281,7 +281,9 @@ interface LoadedAdapterConfigs {
 
 const defaultAdapterRegistry = createBrowserCodemodCatalog().registry;
 
-async function resolveNodeAdapterRegistry(moduleLoader?: ProjectModuleLoader): Promise<StyleAdapterRegistry> {
+async function resolveNodeAdapterRegistry(
+	moduleLoader?: ProjectModuleLoader,
+): Promise<StyleAdapterRegistry> {
 	// Keep this lazy so the browser catalog never pulls Node module loading into
 	// the playground. The built package must resolve the emitted JavaScript
 	// sibling; importing the source `.ts` path only works before publication.
@@ -1148,8 +1150,8 @@ function runAdapterMigrationInternal(
 					styleExpression: DynamicClassHost.styleExpression(carrierResiduals),
 				});
 			}
-		if (
-			hasTargetComponentUsage &&
+			if (
+				hasTargetComponentUsage &&
 				(!hasDynamic || targetPolicy?.handlesDynamicComponentValues === true) &&
 				!hasDynamicCarrier &&
 				!hasFunctionDynamic &&
@@ -1387,7 +1389,7 @@ function runAdapterMigrationInternal(
 			const tag = componentTagForSubject(sourceSubject);
 			const framework = hostFramework;
 			if (tag !== undefined && framework !== undefined && hostRepresentation !== undefined)
-			targetComponentRewrites.push({
+				targetComponentRewrites.push({
 					program,
 					binding: bindingBeforeMatch,
 					tag,
@@ -1433,15 +1435,15 @@ function runAdapterMigrationInternal(
 		const reparsed = portableSemanticEmission
 			? undefined
 			: targetAdapter.parse(emittedForValidation, {
-				file: options.file,
-				source: emittedForValidation,
-				root: options.root,
-				config: targetConfig,
-				readFile,
-				meta: options.meta,
-				document,
-				semantic: options.semantic,
-			});
+					file: options.file,
+					source: emittedForValidation,
+					root: options.root,
+					config: targetConfig,
+					readFile,
+					meta: options.meta,
+					document,
+					semantic: options.semantic,
+				});
 		const targetProgram = portableSemanticEmission
 			? emitted.semantic
 			: (emitted.semantic ??

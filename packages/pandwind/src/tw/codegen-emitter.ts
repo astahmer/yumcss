@@ -150,24 +150,27 @@ ${lines.toSorted((a, b) => a.localeCompare(b, "en", { ignorePunctuation: true })
 			.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 			.map(
 				([utility, values]) =>
-					`\t\t${JSON.stringify(utility)}: [${[...values].toSorted().map((value) => JSON.stringify(value)).join(", ")}],`,
+					`\t\t${JSON.stringify(utility)}: [${[...values]
+						.toSorted()
+						.map((value) => JSON.stringify(value))
+						.join(", ")}],`,
 			);
 		const valueTokenEntries = Object.entries(valueTokens)
-			.toSorted(([a], [b]) => a.localeCompare(b, 'en'))
+			.toSorted(([a], [b]) => a.localeCompare(b, "en"))
 			.map(
 				([utility, values]) =>
-					'\t\t' +
+					"\t\t" +
 					JSON.stringify(utility) +
-					': { ' +
+					": { " +
 					Object.entries(values)
-						.toSorted(([a], [b]) => a.localeCompare(b, 'en'))
-						.map(([value, token]) => JSON.stringify(value) + ': ' + JSON.stringify(token))
-						.join(', ') +
-					' },',
+						.toSorted(([a], [b]) => a.localeCompare(b, "en"))
+						.map(([value, token]) => JSON.stringify(value) + ": " + JSON.stringify(token))
+						.join(", ") +
+					" },",
 			);
 		const valueTokenBlock = valueTokenEntries.length
-			? '\tvalueTokens: {\n' + valueTokenEntries.join('\n') + '\n},'
-			: '';
+			? "\tvalueTokens: {\n" + valueTokenEntries.join("\n") + "\n},"
+			: "";
 		const wildcardBlock = wildcardEntries.length
 			? `\twildcardValues: {\n${wildcardEntries.join("\n")}\n},`
 			: "";

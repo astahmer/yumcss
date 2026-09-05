@@ -7,7 +7,10 @@ import {
 	StyleNamedRuleStrategy,
 } from "../identifiers.ts";
 
-type SerializedObject = { values: Array<[string, string]>; children: Map<string, SerializedObject> };
+type SerializedObject = {
+	values: Array<[string, string]>;
+	children: Map<string, SerializedObject>;
+};
 
 /** Compiled's authored object style quotes every key, including CSS
  * properties and condition selectors. Target emission must reproduce that
@@ -27,7 +30,11 @@ const serializedProgramText = (program: StyleProgram): string => {
 		return JSON.stringify(value.value);
 	};
 	const root: SerializedObject = { values: [], children: new Map() };
-	const add = (node: SerializedObject, index: number, declaration: StyleProgram["declarations"][number]): void => {
+	const add = (
+		node: SerializedObject,
+		index: number,
+		declaration: StyleProgram["declarations"][number],
+	): void => {
 		const condition = declaration.conditions[index];
 		if (condition === undefined) {
 			node.values.push([declaration.property, serializedValue(declaration.value)]);
@@ -116,7 +123,7 @@ export default defineCodemodAdapter({
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	detectPatterns: [
 		/from\s+["']@compiled\/(?:react|css-in-js)["']/,
-		/\b(?:css|cssMap|styled|keyframes)\s*[(\{]/,
+		/\b(?:css|cssMap|styled|keyframes)\s*[({]/,
 		/<\s*ClassNames\b/,
 	],
 	sourceModules: ["@compiled/react", "@compiled/css-in-js"],

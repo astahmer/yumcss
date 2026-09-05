@@ -10,7 +10,10 @@ import {
 	type AdapterMigrationResult,
 } from "../src/swap/index.ts";
 import { routeEvidence } from "./route-spec-support.ts";
-import { officialApiFamilyCases, type OfficialApiFamilyCase } from "../src/swap/official-api-cases.ts";
+import {
+	officialApiFamilyCases,
+	type OfficialApiFamilyCase,
+} from "../src/swap/official-api-cases.ts";
 
 const pandaProofRegistry = createStyleAdapterRegistry([
 	createPandaAdapter({

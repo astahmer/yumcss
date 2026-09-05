@@ -42,7 +42,8 @@ export const EXAMPLES: readonly ExampleDef[] = [
 		note: `The generated WindUtilities type is derived from your theme config: try changing "blue-500" to a color that does not exist and the editor will flag it. cx() merges with a conflict map, so the last background wins.`,
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 const buttons = {
 	primary: tw({ bgColor: "blue-500", textColor: "white", rounded: "lg" }),
@@ -104,7 +105,8 @@ dcss.class({
 		note: "The ternary branches are static strings, so the build folds the static halves and keeps only the runtime choice (partial). The css.vars() / css.props() calls carry dynamic values as inline custom properties instead of inventing classes.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 import { createCss } from "pandwind/css";
 
 const css = createCss();
@@ -131,7 +133,8 @@ cx(
 		note: "Breakpoint keys come from your preset conditions (sm, md, lg, smDown, ...); they join with the generated variant metadata — no variant string concatenation in user code.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 tw({
 	p: "4",
@@ -149,7 +152,8 @@ tw({
 		note: "cx() merges through the generated conflict map: the second background-color kills the first. The panel shows exactly which input tokens were removed instead of silently shipping dead classes.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 cx(
 	tw({ bgColor: "blue-500", p: "4" }),
@@ -274,7 +278,8 @@ css.props(styles.card, styles.muted, styles.banner({ tone: "blue" }))`,
 		note: "Module constants, template literals, and static ternary branches all fold at build time; values only known at runtime survive as runtime folds. The panel reports which of the three happened.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 const SIZE = "4";
 
@@ -292,7 +297,8 @@ cx(
 		note: "tw() understands Tailwind's compositional prefixes — responsive sm:, group-hover:, and nested _hover/_dark pairs join through the generated variant metadata.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 tw({
 	bgColor: "blue-500",
@@ -309,7 +315,8 @@ tw({
 		note: "tw() compiles typed style objects, not class-name strings. Passing a string treats every character as a utility name and emits per-character metadata tokens. Keep static class strings out of tw(); use cx() with plain strings when you already have classes.",
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 tw("bg-red-500 text-lg")`,
 		),
@@ -322,7 +329,8 @@ tw("bg-red-500 text-lg")`,
 		note: 'sm: "p-4" hands the variant machinery a string where a style object belongs, so it emits sm-p-4— a token with no generated CSS. The valid form is sm: { p: "4" } (see Responsive).',
 		files: oneFile(
 			"Example.tsx",
-			TW_IMPORT + `
+			TW_IMPORT +
+				`
 
 tw({ sm: "p-4" })`,
 		),

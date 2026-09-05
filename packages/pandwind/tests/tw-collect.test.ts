@@ -50,10 +50,10 @@ describe("tw scanner", () => {
 			const cxSource = join(root, "cx-dynamic.tsx");
 			const body = [
 				'import { cx } from "../../../apps/example/src/tw";',
-				'const tone = pickTone();',
-				"export const a = cx(tone === \"light\" ? \"bg-sky-600\" : \"bg-gray-900\");",
+				"const tone = pickTone();",
+				'export const a = cx(tone === "light" ? "bg-sky-600" : "bg-gray-900");',
 				'export const b = cx(flags && { underline: true, "font-bold": true });',
-				'export const c = cx(dynamicClassName());',
+				"export const c = cx(dynamicClassName());",
 			].join("\n");
 			writeFileSync(cxSource, body);
 			const classes = await collectTwClasses([cxSource], resolve(app, "src/tw.ts"));
@@ -97,8 +97,8 @@ describe("tw scanner", () => {
 				const source = join(root, "gates.tsx");
 				const body = [
 					'import { tw, cx } from "../../../apps/example/src/tw";',
-					'const size = pickSize();',
-					'const color = pickColor();',
+					"const size = pickSize();",
+					"const color = pickColor();",
 					'export const a = tw({ p: size === "1" ? "4" : "bananas" });',
 					'export const b = cx(color === "x" ? "bg-sky-600" : "bg-nope-999");',
 				].join("\n");

@@ -22,8 +22,8 @@ describe("collectTokenUsage", () => {
 				{
 					file: "src/app.tsx",
 					content: [
-						"const a = tw({ bgColor: \"$blue-500\" });",
-						"const b = tw({ hover: { color: \"$red-500\" } });",
+						'const a = tw({ bgColor: "$blue-500" });',
+						'const b = tw({ hover: { color: "$red-500" } });',
 					].join("\n"),
 				},
 			],
@@ -79,10 +79,10 @@ describe("collectTokenUsage", () => {
 	});
 
 	it("keeps an unresolved policy report-only (fail-open)", () => {
-		const result = collectTokenUsage(
-			[{ file: "a.tsx", content: 'tw({ color: "#fff" })' }],
-			{ owner: "x", resolved: false },
-		);
+		const result = collectTokenUsage([{ file: "a.tsx", content: 'tw({ color: "#fff" })' }], {
+			owner: "x",
+			resolved: false,
+		});
 		expect(result.usage[0]!.strictness).toBe("unknown");
 	});
 
@@ -113,21 +113,36 @@ describe("collectTokenUsage", () => {
 		expect(byValue["1/2"]?.strictness).toBe("token");
 		// Vocabulary ids flow into the usage fact so reachability counts them.
 		expect(byValue.red?.tokenId).toBe("colors::red");
-		expect(
-			result.usage.filter((u) => u.strictness === "raw-strict-violation"),
-		).toHaveLength(1);
+		expect(result.usage.filter((u) => u.strictness === "raw-strict-violation")).toHaveLength(1);
 	});
 });
 
 describe("resolveUsageAgainstDefinitions", () => {
 	const defs: Array<TokenDefinition> = [
-		{ id: "colors::red-500", group: "colors", name: "red-500", layer: "raw", value: "#E53E3E", provenance: [] },
+		{
+			id: "colors::red-500",
+			group: "colors",
+			name: "red-500",
+			layer: "raw",
+			value: "#E53E3E",
+			provenance: [],
+		},
 		{ id: "semantic::surface", group: "semantic", name: "surface", layer: "scope", provenance: [] },
 	];
 
 	it("resolves group-qualified references", () => {
 		const [resolved] = resolveUsageAgainstDefinitions(
-			[{ tokenId: "$colors.red-500", kind: "direct", file: "a.tsx", start: 0, end: 15, strictness: "token", confidence: "inferred" }],
+			[
+				{
+					tokenId: "$colors.red-500",
+					kind: "direct",
+					file: "a.tsx",
+					start: 0,
+					end: 15,
+					strictness: "token",
+					confidence: "inferred",
+				},
+			],
 			defs,
 		);
 		expect(resolved!.tokenId).toBe("colors::red-500");
@@ -137,8 +152,24 @@ describe("resolveUsageAgainstDefinitions", () => {
 	it("resolves unique bare names and rejects ambiguous ones", () => {
 		const [unique, ambiguous] = resolveUsageAgainstDefinitions(
 			[
-				{ tokenId: "$surface", kind: "direct", file: "a.tsx", start: 0, end: 8, strictness: "token", confidence: "inferred" },
-				{ tokenId: "$missing", kind: "direct", file: "a.tsx", start: 9, end: 16, strictness: "token", confidence: "inferred" },
+				{
+					tokenId: "$surface",
+					kind: "direct",
+					file: "a.tsx",
+					start: 0,
+					end: 8,
+					strictness: "token",
+					confidence: "inferred",
+				},
+				{
+					tokenId: "$missing",
+					kind: "direct",
+					file: "a.tsx",
+					start: 9,
+					end: 16,
+					strictness: "token",
+					confidence: "inferred",
+				},
 			],
 			defs,
 		);

@@ -14,14 +14,17 @@ describe("scanPublicExports", () => {
 		const hits = scanPublicExports([
 			{ file: "theme.ts", content: 'export const brand = "$colors.brand";\n' },
 		]);
-		expect(hits).toEqual([{ tokenId: "colors::brand", references: ["colors.brand"], file: "theme.ts", name: "brand" }]);
+		expect(hits).toEqual([
+			{ tokenId: "colors::brand", references: ["colors.brand"], file: "theme.ts", name: "brand" },
+		]);
 	});
 
 	it("collects quoted $-references from object-literal exports", () => {
 		const hits = scanPublicExports([
 			{
 				file: "shared.ts",
-				content: 'export const shared = {\n\tbg: "$colors.brand",\n\ttext: "$colors.red-500",\n};\n',
+				content:
+					'export const shared = {\n\tbg: "$colors.brand",\n\ttext: "$colors.red-500",\n};\n',
 			},
 		]);
 		expect(hits).toHaveLength(1);
@@ -33,7 +36,7 @@ describe("scanPublicExports", () => {
 	it("ignores exports without $-references", () => {
 		const hits = scanPublicExports([
 			{ file: "a.ts", content: 'export const plain = { bg: "#fff", text: "red" };\n' },
-			{ file: "b.ts", content: 'export const n = 42;\n' },
+			{ file: "b.ts", content: "export const n = 42;\n" },
 		]);
 		expect(hits).toEqual([]);
 	});
@@ -66,7 +69,9 @@ describe("deriveProjectGovernanceContext", () => {
 	});
 
 	it("returns policy=null when no export declares the strict surface", () => {
-		expect(deriveProjectGovernanceContext({ default: { tokens: { colors: { red: "#f00" } } } }).policy).toBeNull();
+		expect(
+			deriveProjectGovernanceContext({ default: { tokens: { colors: { red: "#f00" } } } }).policy,
+		).toBeNull();
 	});
 
 	it("keeps ambiguous token names as $-authored forms", () => {
@@ -130,9 +135,7 @@ describe("end-to-end official-config governance", () => {
 	it("downgrades publicly exported tokens to review-required", () => {
 		const report = analyzeTokenGovernance({
 			root: "/repo",
-			files: [
-				{ file: "design.ts", content: 'export const brand = "$colors.brand";\n' },
-			],
+			files: [{ file: "design.ts", content: 'export const brand = "$colors.brand";\n' }],
 			policy: null,
 			tokenContext: { tokenGroups: { colors: { brand: "#e11d48", legacy: "#abc123" } } },
 		});
@@ -158,7 +161,9 @@ describe("buildGovernancePruneChangeset", () => {
 		expect(changeset.content).toContain("- `$colors.a` (colors::a)");
 		expect(changeset.content).toContain("- `$colors.b` (colors::b)");
 		expect(changeset.content).toContain("- `$colors.z` (colors::z)");
-		expect(changeset.content!.indexOf("`$colors.a`")).toBeLessThan(changeset.content!.indexOf("`$colors.b`"));
+		expect(changeset.content!.indexOf("`$colors.a`")).toBeLessThan(
+			changeset.content!.indexOf("`$colors.b`"),
+		);
 	});
 
 	it("returns null content when nothing is safely removable", () => {

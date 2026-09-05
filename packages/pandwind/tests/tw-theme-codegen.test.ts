@@ -32,7 +32,6 @@ import {
 	resolvePresetConditions,
 	resolveTokenGroups,
 } from "../src/tw/generate-types.ts";
-import { loadThemeBlock } from "../src/tw/codegen-theme-input.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const srcDir = resolve(app, "src");

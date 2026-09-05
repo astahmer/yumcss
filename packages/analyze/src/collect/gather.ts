@@ -249,15 +249,15 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	// safelist file downgrades every unused candidate to review-required (its
 	// class strings cannot be attributed to token ids without guessing).
 	const presetLoad = await loadOfficialPresetModule(
-		isDogfoodApp ? 'pandwind/preset/example-preset' : `./${APP}/src/pandwind.preset.ts`,
+		isDogfoodApp ? "pandwind/preset/example-preset" : `./${APP}/src/pandwind.preset.ts`,
 		root,
 	);
 	const { tokenContext, policy } = projectGovernanceInputs(presetLoad);
 	let interopVariables: Record<string, string> = {};
 	try {
-		const interop = JSON.parse(
-			readSourceArtifact(appSrc("pandwind.interop.json")) ?? "{}",
-		) as { theme?: { variables?: Record<string, string> } };
+		const interop = JSON.parse(readSourceArtifact(appSrc("pandwind.interop.json")) ?? "{}") as {
+			theme?: { variables?: Record<string, string> };
+		};
 		if (interop.theme?.variables !== undefined) interopVariables = interop.theme.variables;
 	} catch {
 		interopVariables = {};

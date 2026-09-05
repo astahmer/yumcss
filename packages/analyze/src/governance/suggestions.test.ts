@@ -56,7 +56,10 @@ describe("suggestRawTokenReplacements", () => {
 			defs,
 		);
 		expect(suggestions).toHaveLength(0);
-		expect(diagnostics[0]).toMatchObject({ code: "governance/suggestion-ambiguous", severity: "info" });
+		expect(diagnostics[0]).toMatchObject({
+			code: "governance/suggestion-ambiguous",
+			severity: "info",
+		});
 	});
 
 	it("never suggests across incompatible property categories", () => {
@@ -69,8 +72,14 @@ describe("suggestRawTokenReplacements", () => {
 	});
 
 	it("skips dynamic and token usages", () => {
-		const dynamic: TokenUsage = { ...rawUse("a.tsx", "backgroundColor", "size"), strictness: "dynamic" as const };
-		const tokenUse: TokenUsage = { ...rawUse("a.tsx", "backgroundColor", "#e11d48"), tokenId: "colors::brand" };
+		const dynamic: TokenUsage = {
+			...rawUse("a.tsx", "backgroundColor", "size"),
+			strictness: "dynamic" as const,
+		};
+		const tokenUse: TokenUsage = {
+			...rawUse("a.tsx", "backgroundColor", "#e11d48"),
+			tokenId: "colors::brand",
+		};
 		const { suggestions } = suggestRawTokenReplacements([dynamic, tokenUse], COLOR_DEFS);
 		expect(suggestions).toHaveLength(0);
 	});
@@ -83,7 +92,10 @@ describe("suggestRawTokenReplacements", () => {
 			scopedValues: { light: "#fff", dark: "#000" },
 			provenance: [],
 		};
-		const { suggestions } = suggestRawTokenReplacements([rawUse("a.tsx", "backgroundColor", "#fff")], [scoped]);
+		const { suggestions } = suggestRawTokenReplacements(
+			[rawUse("a.tsx", "backgroundColor", "#fff")],
+			[scoped],
+		);
 		expect(suggestions).toHaveLength(0);
 	});
 });

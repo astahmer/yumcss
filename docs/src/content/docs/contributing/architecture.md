@@ -240,8 +240,8 @@ project.
 | UnoCSS    | `@unocss/config` + `@unocss/core` | project config, presets, rules, shortcuts, and generated utility CSS                                              |
 | Chakra UI | `@chakra-ui/react`                | merged system config and token variable resolution                                                                |
 | Tokenami  | `@tokenami/config`                | normalized project config and aliases                                                                             |
-| MUI       | `@mui/system` or `@mui/material`  | official `createTheme` output, palette/spacing/shape/typography values                                             |
-| Mantine   | `@mantine/core`                   | official `createTheme` output, colors/spacing/font sizes/line heights/radii                                      |
+| MUI       | `@mui/system` or `@mui/material`  | official `createTheme` output, palette/spacing/shape/typography values                                            |
+| Mantine   | `@mantine/core`                   | official `createTheme` output, colors/spacing/font sizes/line heights/radii                                       |
 
 MUI and Mantine keep a small adapter-owned map for their documented authored
 style-prop spellings (`sx`, `p`, `c`, and similar). Those maps are parser

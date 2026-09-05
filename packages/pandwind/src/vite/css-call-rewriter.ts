@@ -42,7 +42,10 @@ export class StaticCssCallRewriter implements CssCallRewriter {
 				const call = node as CallNode;
 				const callee = call.callee;
 				let kind: "map" | "class" | "group" | undefined;
-				if (callee?.type === NodeKind.Identifier && names.has((callee as { name?: string }).name ?? ""))
+				if (
+					callee?.type === NodeKind.Identifier &&
+					names.has((callee as { name?: string }).name ?? "")
+				)
 					kind = "map";
 				else if (callee?.type === NodeKind.MemberExpression) {
 					const object = (callee as { object?: OxcNode | null }).object;

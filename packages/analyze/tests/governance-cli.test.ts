@@ -59,7 +59,9 @@ describe("runCli --governance", () => {
 		expect(doc.governance.summary.strictViolations).toBe(0);
 		expect(
 			doc.governance.usage.some(
-				(u) => u.strictness === "token" && (u.tokenId === "colors::red-500" || u.tokenId === "spacing::4"),
+				(u) =>
+					u.strictness === "token" &&
+					(u.tokenId === "colors::red-500" || u.tokenId === "spacing::4"),
 			),
 		).toBe(true);
 		// $colors.brand is exported publicly -> review-required, never removed.
@@ -87,16 +89,20 @@ describe("runCli --governance", () => {
 			};
 		};
 		expect(doc.governance.policy).toBeNull();
-		expect(
-			doc.governance.diagnostics.some(
-				(d) => d.boundary === "configuration-failure",
-			),
-		).toBe(true);
+		expect(doc.governance.diagnostics.some((d) => d.boundary === "configuration-failure")).toBe(
+			true,
+		);
 	});
 
 	test("human output prints the summary without JSON", async () => {
 		seed({ "a.ts": 'export const a = tw({ color: "red-500" });' });
-		const human = await runCli(["--governance", "--preset", DEFAULT_GOVERNANCE_PRESET, "--root", root]);
+		const human = await runCli([
+			"--governance",
+			"--preset",
+			DEFAULT_GOVERNANCE_PRESET,
+			"--root",
+			root,
+		]);
 		expect(human).toContain("pandwind analyze — token governance");
 		expect(human).not.toContain('"schema"');
 		expect(human).toContain("policy:");

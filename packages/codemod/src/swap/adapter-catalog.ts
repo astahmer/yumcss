@@ -11,10 +11,7 @@ export type { CodemodAdapterCatalog } from "./adapter-catalog-core.ts";
 export function createBuiltinCodemodCatalog(
 	moduleLoader: ProjectModuleLoader = NODE_PROJECT_MODULE_LOADER,
 ): CodemodAdapterCatalog {
-	const sourcePlugin = createBuiltinAdapterPlugin(
-		moduleLoader,
-		createCrossModuleConstResolver(),
-	);
+	const sourcePlugin = createBuiltinAdapterPlugin(moduleLoader, createCrossModuleConstResolver());
 	const readFile = (file: string): string | undefined => {
 		try {
 			return readFileSync(file, "utf8");

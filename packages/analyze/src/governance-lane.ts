@@ -38,18 +38,36 @@ export function formatGovernanceSummary(
 		.filter(([, n]) => n > 0)
 		.map(([b, n]) => b + " " + n)
 		.join(" · ");
-	return [
-		"pandwind analyze — token governance",
-		"root: " + report.root,
-		policyLine,
-		"tokens: " + s.defined + " defined · " + s.used + " used · " + s.unusedCandidates + " unused candidates (" + s.safeToRemove + " safe, " + s.reviewRequired + " review)",
-		"strictness: " + s.strictViolations + " strict violations · " + s.rawAllowed + " raw-allowed · " + s.unknownStrictness + " unknown",
-		"suggestions: " + s.suggestions + " exact raw→token matches",
-		"boundaries: " + (boundaries === "" ? "none" : boundaries),
-		changeset.content === null
-			? "changeset: nothing is safely removable"
-			: "changeset: " + changeset.count + " safe-to-remove token(s) proposed (read-only preview)",
-	].join("\n") + "\n";
+	return (
+		[
+			"pandwind analyze — token governance",
+			"root: " + report.root,
+			policyLine,
+			"tokens: " +
+				s.defined +
+				" defined · " +
+				s.used +
+				" used · " +
+				s.unusedCandidates +
+				" unused candidates (" +
+				s.safeToRemove +
+				" safe, " +
+				s.reviewRequired +
+				" review)",
+			"strictness: " +
+				s.strictViolations +
+				" strict violations · " +
+				s.rawAllowed +
+				" raw-allowed · " +
+				s.unknownStrictness +
+				" unknown",
+			"suggestions: " + s.suggestions + " exact raw→token matches",
+			"boundaries: " + (boundaries === "" ? "none" : boundaries),
+			changeset.content === null
+				? "changeset: nothing is safely removable"
+				: "changeset: " + changeset.count + " safe-to-remove token(s) proposed (read-only preview)",
+		].join("\n") + "\n"
+	);
 }
 
 /** Run the governance lane and return its exact output (JSON or human). */
@@ -84,8 +102,9 @@ export async function runGovernanceLane(args: CliArgs): Promise<string> {
 	}
 	let safelistHit = false;
 	try {
-		safelistHit =
-			readFileSync(resolve(args.root, "src/pandwind.safelist.css"), "utf8").includes('@source inline("');
+		safelistHit = readFileSync(resolve(args.root, "src/pandwind.safelist.css"), "utf8").includes(
+			'@source inline("',
+		);
 	} catch {
 		safelistHit = false;
 	}

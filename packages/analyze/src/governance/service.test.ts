@@ -14,8 +14,8 @@ const FILES = [
 		file: "src/app.tsx",
 		content: [
 			'import { tw } from "pandwind";',
-			"const a = tw({ bgColor: \"$colors.brand\" });",
-			"const b = tw({ color: \"#e11d48\" });          // strict violation + suggestion",
+			'const a = tw({ bgColor: "$colors.brand" });',
+			'const b = tw({ color: "#e11d48" });          // strict violation + suggestion',
 			"const c = tw({ padding: size });               // dynamic",
 		].join("\n"),
 	},
@@ -146,7 +146,7 @@ describe("analyzeTokenGovernance", () => {
 			  ],
 			  "version": 1,
 			}
-		`.replace("\n  \"diagnosticCount\": undefined\n", ""),
+		`.replace('\n  "diagnosticCount": undefined\n', ""),
 		);
 	});
 

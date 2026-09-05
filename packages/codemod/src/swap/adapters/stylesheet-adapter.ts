@@ -107,8 +107,8 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 						: undefined,
 			},
 		},
-	emit: (program, renderers) => ({
-		text: renderers.templateCss(program),
+		emit: (program, renderers) => ({
+			text: renderers.templateCss(program),
 			semantic: program,
 			residuals: StyleProgramAnalysis.hasDynamic(program)
 				? [

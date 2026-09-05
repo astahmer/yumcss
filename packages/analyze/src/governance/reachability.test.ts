@@ -24,11 +24,18 @@ const use = (tokenId: string): TokenUsage => ({
 describe("classifyReachability", () => {
 	it("marks proven zero-use tokens as safe-to-remove", () => {
 		const { candidates } = classifyReachability({
-			definitions: [def("colors::brand", "colors", "brand", "#e11d48"), def("colors::dead", "colors", "dead", "#000")],
+			definitions: [
+				def("colors::brand", "colors", "brand", "#e11d48"),
+				def("colors::dead", "colors", "dead", "#000"),
+			],
 			usage: [use("colors::brand")],
 		});
 		expect(candidates).toHaveLength(1);
-		expect(candidates[0]).toMatchObject({ tokenId: "colors::dead", safety: "safe-to-remove", boundaries: [] });
+		expect(candidates[0]).toMatchObject({
+			tokenId: "colors::dead",
+			safety: "safe-to-remove",
+			boundaries: [],
+		});
 	});
 
 	it("downgrades boundary-hit tokens to review-required", () => {
@@ -62,6 +69,9 @@ describe("classifyReachability", () => {
 			configurationIncomplete: true,
 		});
 		expect(candidates[0]!.safety).toBe("review-required");
-		expect(diagnostics[0]).toMatchObject({ code: "governance/config-incomplete", boundary: "configuration-failure" });
+		expect(diagnostics[0]).toMatchObject({
+			code: "governance/config-incomplete",
+			boundary: "configuration-failure",
+		});
 	});
 });

@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { test } from "vitest";
 import { walk, type OxcNode } from "../src/tw/literal.ts";
 
 const makeTree = (): OxcNode => {
@@ -23,14 +23,13 @@ const recursiveWalk = (node: unknown, visit: (node: OxcNode) => void): void => {
 	for (const value of Object.values(current)) recursiveWalk(value, visit);
 };
 
-describe("AST traversal performance", () => {
-	bench("explicit depth-first stack", () => {
+test("AST traversal performance", async ({ bench }) => {
+	await bench("explicit depth-first stack", () => {
 		let count = 0;
 		walk(tree, () => count++);
-	});
-
-	bench("recursive baseline", () => {
+	}).run();
+	await bench("recursive baseline", () => {
 		let count = 0;
 		recursiveWalk(tree, () => count++);
-	});
+	}).run();
 });

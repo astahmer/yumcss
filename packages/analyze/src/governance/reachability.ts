@@ -32,16 +32,6 @@ export interface ReachabilityOutcome {
 	readonly diagnostics: readonly GovernanceDiagnostic[];
 }
 
-const REVIEW_BOUNDARIES: ReadonlySet<GovernanceCoverageBoundary> = new Set([
-	"dynamic-expression",
-	"runtime-theme-access",
-	"generated-css",
-	"public-export",
-	"safelist",
-	"plugin-output",
-	"unscanned-file",
-] as Array<GovernanceCoverageBoundary>);
-
 export function classifyReachability(inputs: ReachabilityInputs): ReachabilityOutcome {
 	const usedIds = new Set(inputs.usage.map((u) => u.tokenId).filter((id) => id !== ""));
 	const boundaryHits = inputs.boundaryHits ?? {};

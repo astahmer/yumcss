@@ -16,7 +16,8 @@ function makeInput(code: string, moduleBindings?: EvalInput["moduleBindings"]): 
 		css: designCss as unknown as ((...args: Array<unknown>) => unknown) & Record<string, unknown>,
 		cx: cx as unknown as (...inputs: Array<never>) => string,
 		createCss: createCss as unknown as (...args: Array<unknown>) => unknown,
-		moduleBindings: moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
+		moduleBindings:
+			moduleBindings === undefined ? SANDBOX_MODULES : { ...SANDBOX_MODULES, ...moduleBindings },
 		props: { active: true, tone: "red-600" },
 		resolveCss: (style: Record<string, unknown>) => {
 			const resolved = resolveDesignStyle(style, examplePreset.tokens);
@@ -51,7 +52,10 @@ describe("example catalog evaluates end to end", () => {
 		for (const def of EXAMPLES) {
 			for (let index = 1; index < def.files.length; index++) {
 				const file = def.files[index]!;
-				expect(() => evalSiblingModule(makeInput(file.code)), def.path + " sibling " + file.name).not.toThrow();
+				expect(
+					() => evalSiblingModule(makeInput(file.code)),
+					def.path + " sibling " + file.name,
+				).not.toThrow();
 			}
 		}
 	});

@@ -51,8 +51,7 @@ export function scanPublicExports(
 			if (exact !== null) {
 				const authored = exact[2] ?? "";
 				const dot = authored.indexOf(".");
-				const tokenId =
-					dot !== -1 ? authored.slice(0, dot) + "::" + authored.slice(dot + 1) : null;
+				const tokenId = dot !== -1 ? authored.slice(0, dot) + "::" + authored.slice(dot + 1) : null;
 				hits.push({ tokenId, references: [authored], file, name });
 				continue;
 			}
@@ -65,9 +64,7 @@ export function scanPublicExports(
 				bodyStart !== -1 && trimmed.endsWith("}")
 					? (matchBrace(initializer, bodyStart) ?? initializer)
 					: initializer;
-			const references = [...strings.matchAll(/(["'])\$([\w.-]+)\1/g)].map(
-				(m) => m[2] ?? "",
-			);
+			const references = [...strings.matchAll(/(["'])\$([\w.-]+)\1/g)].map((m) => m[2] ?? "");
 			if (references.length > 0) hits.push({ tokenId: null, references, file, name });
 		}
 	}

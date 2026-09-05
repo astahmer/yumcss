@@ -299,7 +299,8 @@ export function computeExcludedRanges(
 			}
 			return;
 		}
-		if (n.type === NodeKind.Literal || n.type === NodeKind.TemplateLiteral) excluded.push([n.start, n.end]);
+		if (n.type === NodeKind.Literal || n.type === NodeKind.TemplateLiteral)
+			excluded.push([n.start, n.end]);
 	});
 	const filtered = excluded
 		.filter(([start, end]) => !supportedStyleQuasis.some(([qs, qe]) => start >= qs && end <= qe))

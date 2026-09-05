@@ -74,7 +74,12 @@ function isDynamicValue(rawValue: string): boolean {
 	return /^[A-Za-z_$][\w$]*$/.test(rawValue.trim());
 }
 
-function walkObject(body: string, bodyOffset: number, condition: string, collected: Array<RawUsage>): void {
+function walkObject(
+	body: string,
+	bodyOffset: number,
+	condition: string,
+	collected: Array<RawUsage>,
+): void {
 	let segment = "";
 	let segmentStart = 0;
 	const flushTopLevel = (): void => {
@@ -82,7 +87,10 @@ function walkObject(body: string, bodyOffset: number, condition: string, collect
 		if (trimmed !== "") {
 			const colon = trimmed.indexOf(":");
 			if (colon !== -1) {
-				const key = trimmed.slice(0, colon).trim().replace(/^["']|["']$/g, "");
+				const key = trimmed
+					.slice(0, colon)
+					.trim()
+					.replace(/^["']|["']$/g, "");
 				const rawValue = trimmed.slice(colon + 1).trim();
 				if (key !== "" && rawValue !== "" && rawValue !== "{" && rawValue !== "[") {
 					const valueAt = segment.indexOf(rawValue);
@@ -295,7 +303,12 @@ export function resolveUsageAgainstDefinitions(
 		// Already-canonical ids (per-property vocabulary classification) skip
 		// re-resolution; the id is the definition identity itself.
 		if (authored.includes("::")) {
-			return { ...u, tokenId: authored, strictness: "token" as const, confidence: "verified" as const };
+			return {
+				...u,
+				tokenId: authored,
+				strictness: "token" as const,
+				confidence: "verified" as const,
+			};
 		}
 		if (dot !== -1) {
 			const group = authored.slice(0, dot);
@@ -306,7 +319,12 @@ export function resolveUsageAgainstDefinitions(
 			if (matches.length === 1) exact = matches[0];
 		}
 		if (exact !== undefined) {
-			return { ...u, tokenId: exact, strictness: "token" as const, confidence: "verified" as const };
+			return {
+				...u,
+				tokenId: exact,
+				strictness: "token" as const,
+				confidence: "verified" as const,
+			};
 		}
 		return { ...u, strictness: "unknown" as const, confidence: "unknown" as const };
 	});

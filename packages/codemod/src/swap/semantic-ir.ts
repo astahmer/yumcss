@@ -1005,7 +1005,8 @@ function looksLikePropertyValueConditions(
 	return (
 		properties.length > 0 &&
 		properties.every((property) => {
-			if (property.type !== NodeKind.Property || property.kind !== PropertyKindTag.Init) return false;
+			if (property.type !== NodeKind.Property || property.kind !== PropertyKindTag.Init)
+				return false;
 			const propertyName = sourceKey(property, body, options);
 			return (
 				propertyName === "default" ||
@@ -1076,7 +1077,10 @@ export function styleProgramFromSourceObject(
 			return;
 		}
 		for (const conditionProperty of valueNode.properties ?? []) {
-			if (conditionProperty.type !== NodeKind.Property || conditionProperty.kind !== PropertyKindTag.Init) {
+			if (
+				conditionProperty.type !== NodeKind.Property ||
+				conditionProperty.kind !== PropertyKindTag.Init
+			) {
 				addDynamicResidual(
 					sourceSlice(body, conditionProperty),
 					"conditional style values must be initialized properties",
@@ -1111,7 +1115,8 @@ export function styleProgramFromSourceObject(
 		});
 		const statement = (parsed.program as { body?: SourceNode[] }).body?.[0];
 		const expression = statement?.expression;
-		root = expression?.type === NodeKind.ParenthesizedExpression ? expression.expression : expression;
+		root =
+			expression?.type === NodeKind.ParenthesizedExpression ? expression.expression : expression;
 	} catch {
 		addDynamicResidual(body, "source style object could not be parsed");
 	}

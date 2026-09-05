@@ -284,7 +284,12 @@ const evalLiteralForCx = (node: Expression, consts?: ConstantScope): unknown => 
 	if (node.type !== NodeKind.ObjectExpression) return NOT_STATIC;
 	const result: Record<string, unknown> = {};
 	for (const property of node.properties) {
-		if (property.type !== NodeKind.Property || property.computed || property.method || property.shorthand)
+		if (
+			property.type !== NodeKind.Property ||
+			property.computed ||
+			property.method ||
+			property.shorthand
+		)
 			return NOT_STATIC;
 		const key =
 			property.key.type === NodeKind.Identifier

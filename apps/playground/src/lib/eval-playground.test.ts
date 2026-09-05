@@ -138,13 +138,7 @@ describe("evalPlayground", () => {
 
 	test("a multi-line named import is stripped whole", () => {
 		const result = run(
-			[
-				"import {",
-				"  tw,",
-				'} from "pandwind";',
-				"",
-				'tw({ display: "flex" });',
-			].join("\n"),
+			["import {", "  tw,", '} from "pandwind";', "", 'tw({ display: "flex" });'].join("\n"),
 		);
 		expect(result.ok).toBe(true);
 		if (result.ok) expect(result.output).toContain("flex");
@@ -158,7 +152,7 @@ describe("evalPlayground", () => {
 
 	test("imports resolve through moduleBindings by specifier", () => {
 		const result = run(
-			['import { tone } from "./brand.ts";', '', 'tw({ bgColor: tone });'].join("\n"),
+			['import { tone } from "./brand.ts";', "", "tw({ bgColor: tone });"].join("\n"),
 			undefined,
 			{ "./brand.ts": { tone: "blue-600" } },
 		);
@@ -177,7 +171,7 @@ describe("evalPlayground", () => {
 
 	test("namespace imports of a sibling land as the whole bindings record", () => {
 		const result = run(
-			['import * as brand from "./brand.ts";', '', 'tw({ bgColor: brand.tone });'].join("\n"),
+			['import * as brand from "./brand.ts";', "", "tw({ bgColor: brand.tone });"].join("\n"),
 			undefined,
 			{ "./brand.ts": { tone: "emerald-500" } },
 		);
@@ -216,9 +210,7 @@ describe("evalPlayground", () => {
 describe("evalSiblingModule", () => {
 	test("returns every exported binding from a sibling tab", () => {
 		const exports = evalSiblingModule({
-			code: ['export const tone = "red-500" as const;', "export const label = \"brand\";"].join(
-				"\n",
-			),
+			code: ['export const tone = "red-500" as const;', 'export const label = "brand";'].join("\n"),
 			tw: tw as EvalInput["tw"],
 			css: css as unknown as EvalInput["css"],
 			cx: cx as EvalInput["cx"],

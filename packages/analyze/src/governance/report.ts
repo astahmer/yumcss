@@ -48,7 +48,10 @@ export function buildTokenGovernanceReport(inputs: GovernanceInputs): TokenGover
 		const canonical = def.id === "" ? tokenId(def.group, def.name) : def.id;
 		const normalized: TokenDefinition = { ...def, id: canonical };
 		const existing = byId.get(canonical);
-		byId.set(canonical, existing === undefined ? normalized : mergeDefinition(existing, normalized));
+		byId.set(
+			canonical,
+			existing === undefined ? normalized : mergeDefinition(existing, normalized),
+		);
 	}
 	const definitions = [...byId.values()].toSorted(compareById);
 

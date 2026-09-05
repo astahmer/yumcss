@@ -67,7 +67,8 @@ export function createTw<T>(options: TwOptions = {}): (styles: T) => string {
 			? undefined
 			: new Set(options.compose);
 	const valueTokens = options.valueTokens;
-	return (styles) => compileStyles(styles as TwNestedStyles, variants, conflicts, compose, valueTokens);
+	return (styles) =>
+		compileStyles(styles as TwNestedStyles, variants, conflicts, compose, valueTokens);
 }
 
 /**

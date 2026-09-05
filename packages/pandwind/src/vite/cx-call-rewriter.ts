@@ -254,10 +254,7 @@ export class CxCallRewriter {
 		// Register the finite class union of a call that stays runtime so the
 		// Tailwind scanner can emit CSS for classes that never appear as
 		// static source text. Used on both abandonment paths below.
-		const registerCallCandidates = (call: {
-			arguments: readonly Expression[];
-			start?: number;
-		}) => {
+		const registerCallCandidates = (call: { arguments: readonly Expression[]; start?: number }) => {
 			for (const argument of call.arguments) {
 				for (const candidate of collectCxClassCandidates(argument, rawConsts))
 					pushVerifiedCandidate(

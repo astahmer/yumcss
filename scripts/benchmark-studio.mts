@@ -71,7 +71,7 @@ try {
 	});
 	await session.close();
 
-	const sorted = [...warmSamples].sort((left, right) => left - right);
+	const sorted = warmSamples.toSorted((left, right) => left - right);
 	const p95 = sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1)] ?? 0;
 	console.log(
 		JSON.stringify(

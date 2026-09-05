@@ -779,9 +779,7 @@ test("finite ternary members register every combination in the sheet", () => {
 		expect(generated).toContain("color:#FC8181");
 		expect(generated).toContain("color:#2b6cb0");
 		// The call itself stays the runtime selection mechanism.
-		expect(
-			relevantCss(generated, ["color:#FC8181", "color:#2b6cb0"]),
-		).toMatchInlineSnapshot(`
+		expect(relevantCss(generated, ["color:#FC8181", "color:#2b6cb0"])).toMatchInlineSnapshot(`
 			".\\31 8g83j1{color:#2b6cb0}
 			.\\31 95eees{color:#FC8181}"
 		`);
@@ -834,9 +832,9 @@ test("module constants feeding dynamic members enumerate through the const scope
 		// The call-site value is a plain identifier; only the module const
 		// scope makes it finite and provable -> the resolved rule exists.
 		expect(generated).toContain("color:#FC8181");
-		expect(
-			relevantCss(generated, ["color:#FC8181"]),
-		).toMatchInlineSnapshot(`".\\31 95eees{color:#FC8181}"`);
+		expect(relevantCss(generated, ["color:#FC8181"])).toMatchInlineSnapshot(
+			`".\\31 95eees{color:#FC8181}"`,
+		);
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
 	}

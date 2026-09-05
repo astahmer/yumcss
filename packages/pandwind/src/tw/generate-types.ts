@@ -98,7 +98,11 @@ class DefaultDesignSystemCodegen implements DesignSystemCodegen {
 		const system = await this.loader(effectiveCss, { base });
 		const functionalKeys = system.utilities.keys("functional");
 		const types = this.catalog.collect(system);
-		const { conflicts, compose, wildcardValues, valueTokens } = this.buildConflicts(system, types, functionalKeys);
+		const { conflicts, compose, wildcardValues, valueTokens } = this.buildConflicts(
+			system,
+			types,
+			functionalKeys,
+		);
 		this.catalog.expand(types, conflicts);
 		const modifierCapable = this.detectModifiers(system, types);
 		const variants: Array<{ name: string; join: ":" | "-" | "" }> = [];

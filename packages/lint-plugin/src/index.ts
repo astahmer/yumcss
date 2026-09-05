@@ -179,8 +179,10 @@ const propertyName = (property: AstNode): string | undefined => {
 
 const memberName = (member: AstNode): string | undefined => {
 	if (member.type !== NODE_KIND.MemberExpression) return undefined;
-	if (!member.computed && member.property?.type === NODE_KIND.Identifier) return member.property.name;
-	if (member.computed && member.property?.type === NODE_KIND.Literal) return String(member.property.value);
+	if (!member.computed && member.property?.type === NODE_KIND.Identifier)
+		return member.property.name;
+	if (member.computed && member.property?.type === NODE_KIND.Literal)
+		return String(member.property.value);
 	return undefined;
 };
 
@@ -333,7 +335,8 @@ const createApiResolver = () => {
 
 	const resolveFactory = (expression: unknown): string | undefined => {
 		if (!isNode(expression) || expression.type !== NODE_KIND.CallExpression) return undefined;
-		if (expression.callee?.type === NODE_KIND.Identifier) return factories.get(expression.callee.name);
+		if (expression.callee?.type === NODE_KIND.Identifier)
+			return factories.get(expression.callee.name);
 		return resolveMember(expression.callee);
 	};
 
@@ -342,7 +345,8 @@ const createApiResolver = () => {
 			if (node.type === NODE_KIND.ImportDeclaration) registerImport(node);
 		});
 		walkNode(program, (node) => {
-			if (node.type !== NODE_KIND.VariableDeclarator || node.id?.type !== NODE_KIND.Identifier) return;
+			if (node.type !== NODE_KIND.VariableDeclarator || node.id?.type !== NODE_KIND.Identifier)
+				return;
 			if (node.init !== undefined) declarations.set(node.id.name, node.init);
 			const factory = resolveFactory(node.init);
 			if (factory === API.cssFactory || factory === API.designFactory) instances.add(node.id.name);
@@ -373,7 +377,8 @@ const createApiResolver = () => {
 				const name =
 					callee?.type === NODE_KIND.Identifier
 						? callee.name
-						: callee?.type === NODE_KIND.MemberExpression && callee.object?.type === NODE_KIND.Identifier
+						: callee?.type === NODE_KIND.MemberExpression &&
+							  callee.object?.type === NODE_KIND.Identifier
 							? callee.object.name
 							: undefined;
 				if (name !== undefined && current.shadowed.has(name)) shadowedCalls.add(value);
@@ -477,7 +482,8 @@ const walkDesignValues = (root: AstValue, seen: Set<AstNode>, report: AstVisitor
 			}
 			continue;
 		}
-		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression) continue;
+		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression)
+			continue;
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
@@ -513,7 +519,11 @@ const governancePolicy = (context: RuleContext): TokenPolicySnapshotOption | und
 };
 
 /** Verified-token or declared escape hatch for one strict property literal. */
-const strictPropertyAllows = (policy: TokenPolicySnapshotOption, property: string, value: string): boolean =>
+const strictPropertyAllows = (
+	policy: TokenPolicySnapshotOption,
+	property: string,
+	value: string,
+): boolean =>
 	policy.tokenVocabulary?.[property]?.[value] !== undefined ||
 	policy.allowedRawValuesByProperty?.[property]?.includes(value) === true ||
 	policy.allowedRawValues?.includes(value) === true ||
@@ -551,7 +561,8 @@ const walkStrictPropertyLiterals = (
 			}
 			continue;
 		}
-		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression) continue;
+		if (node.type === NODE_KIND.ConditionalExpression || node.type === NODE_KIND.LogicalExpression)
+			continue;
 		const keys = Object.keys(node);
 		for (let index = keys.length - 1; index >= 0; index -= 1) {
 			const key = keys[index];
@@ -757,7 +768,7 @@ const rules: Record<string, RuleDefinition> = {
 									node: literal,
 									message:
 										'pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch',
-										data: { value: literal.value, property },
+									data: { value: literal.value, property },
 								});
 							},
 						);
@@ -769,7 +780,11 @@ const rules: Record<string, RuleDefinition> = {
 					const seen = new Set<AstNode>();
 					walkNode(arg, (inner) => {
 						const name = propertyName(inner);
-						if (inner.type !== NODE_KIND.Property || name === undefined || !DESIGN_MODULE_KEYS.has(name))
+						if (
+							inner.type !== NODE_KIND.Property ||
+							name === undefined ||
+							!DESIGN_MODULE_KEYS.has(name)
+						)
 							return;
 						walkDesignValues(inner.value, seen, (literal) => {
 							if (legacy.allows(literal.value)) return;

@@ -15,9 +15,9 @@ shape gets one of three honest outcomes:
 Routing table (from the approved design):
 
 \`\`\`
-dynamic CSS value          -> css.vars / css.props carrier (inline style)
-dynamic Tailwind token     -> finite candidate extraction -> safelist/@source inline
-unknown/unbounded expr     -> preserve runtime behavior + report missing static proof
+dynamic CSS value -> css.vars / css.props carrier (inline style)
+dynamic Tailwind token -> finite candidate extraction -> safelist/@source inline
+unknown/unbounded expr -> preserve runtime behavior + report missing static proof
 \`\`\`
 
 User-facing API note: \`css.vars\` and \`css.props\` already exist in the frozen
@@ -27,7 +27,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
 
 - [x] T1 - Finite-value evaluation layer. New evaluator API beside
       \`evalLiteral\` (\`packages/pandwind/src/tw/literal.ts\` or sibling) that
-      returns a *set* of possible values for ConditionalExpression, Logical
+      returns a _set_ of possible values for ConditionalExpression, Logical
       \`&&/||/??\`, arrays and object property values. \`evalLiteral\` semantics
       unchanged. Unit tests: ternaries, nested ternaries, \`||\`/\`??\`, arrays,
       consts scope, mixed static/dynamic.
@@ -58,8 +58,7 @@ surface; this plan adds no new public API. Compiler/codemod work only.
       arbitrary values; exact-match only, verified against the preset catalog.
 - [x] T7 - Codemod lane: migrate dynamic CSS values to \`css.vars\`/\`css.props\`
       when the host shape makes it safe (source adapters -> pandwind css
-      dialect). Issue-driven fixtures first; unbounded expressions keep source
-      + typed residual. Bounded interpolations lower through the T5 carrier
+      dialect). Issue-driven fixtures first; unbounded expressions keep source + typed residual. Bounded interpolations lower through the T5 carrier
       lanes; JS call heads (non-CSS functional notation) fail closed with a
       capability residual (\`opzlszkq\`).
 - [x] T8 - Runtime-sheet dynamic-value tests: repeated dynamic values dedupe

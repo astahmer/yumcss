@@ -290,7 +290,8 @@ const collectObjectKeys = (
 		const key = property.key?.name ?? property.key?.value;
 		if (typeof key !== "string") continue;
 		const full = prefix === "" ? key : `${prefix}__${key}`;
-		if (property.value?.type === NodeKind.ObjectExpression) collectObjectKeys(property.value, full, out);
+		if (property.value?.type === NodeKind.ObjectExpression)
+			collectObjectKeys(property.value, full, out);
 		else out.add(full);
 	}
 };
@@ -338,7 +339,10 @@ export class CssDiagnosticScanner implements CssDiagnosticReporter {
 				const call = node as CallNode;
 				if (call.callee?.type !== NodeKind.MemberExpression) return;
 				const object = (call.callee as { object?: OxcNode | null }).object;
-				if (object?.type !== NodeKind.Identifier || !names.has((object as { name?: string }).name ?? ""))
+				if (
+					object?.type !== NodeKind.Identifier ||
+					!names.has((object as { name?: string }).name ?? "")
+				)
 					return;
 				const member = memberName(call.callee);
 				const start = call.start;

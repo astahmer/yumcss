@@ -9,7 +9,10 @@ import type {
 	TokenGovernanceReport,
 	TokenPolicySnapshot,
 } from "./contracts.ts";
-import { buildEffectiveTokenContext, type EffectiveTokenContextInputs } from "./effective-token-context.ts";
+import {
+	buildEffectiveTokenContext,
+	type EffectiveTokenContextInputs,
+} from "./effective-token-context.ts";
 import { scanPublicExports } from "./public-export.ts";
 import { classifyReachability } from "./reachability.ts";
 import { suggestRawTokenReplacements } from "./suggestions.ts";

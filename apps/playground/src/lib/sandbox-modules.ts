@@ -14,5 +14,11 @@ import {
  */
 export const SANDBOX_MODULES = {
 	"pandwind/design": { createDesignCss },
-	"pandwind/preset": { definePreset, defineSemanticTokens, defineTheme, defineTokens, examplePreset },
+	"pandwind/preset": {
+		definePreset,
+		defineSemanticTokens,
+		defineTheme,
+		defineTokens,
+		examplePreset,
+	},
 } as const;

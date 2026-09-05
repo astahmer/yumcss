@@ -12,8 +12,9 @@ import { examplePreset } from "../src/preset/example-preset.ts";
  * helper); the generator is the @unocss/core dev dependency itself.
  */
 const unoGenerator = async () => {
-	type UnoPreset = NonNullable<Parameters<typeof createGenerator>[0]>["presets"] extends
-		infer P extends readonly unknown[]
+	type UnoPreset = NonNullable<
+		Parameters<typeof createGenerator>[0]
+	>["presets"] extends infer P extends readonly unknown[]
 		? P[number]
 		: never;
 	const preset = await unoPresetMini<UnoPreset>();

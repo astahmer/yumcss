@@ -14,14 +14,14 @@
 		"pandwind": "workspace:*",
 		"react": "19.2.8",
 		"react-dom": "19.2.8",
-		"react-native": "npm:react-native-web@0.21.0",
-		"react-native-web": "0.21.0"
+		"react-native": "npm:react-native-web@0.21.2",
+		"react-native-web": "0.21.2"
 	},
 	"devDependencies": {
 		"@types/react": "19.2.18",
 		"@vitejs/plugin-react-swc": "4.3.3",
-		"playwright-core": "1.61.1",
+		"playwright-core": "1.62.1",
 		"typescript": "7.0.2",
-		"vite": "8.2.1"
+		"vite": "8.2.2"
 	}
 }

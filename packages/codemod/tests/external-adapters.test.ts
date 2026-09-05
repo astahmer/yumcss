@@ -622,10 +622,10 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const source =
 			'import { styled } from "solid-styled-components";\n' +
 			'const Div = styled("div")<{ bold: boolean; border: number; color: string }>`\n' +
-			'  color: steelblue;\n' +
+			"  color: steelblue;\n" +
 			'  border: ${({ border = 1, color = "gainsboro" }): string => `${border}px solid ${color}`};\n' +
 			'  font-weight: ${({ bold = false }): string | number => (bold ? "bold" : 100)};\n' +
-			'`;\n' +
+			"`;\n" +
 			'export const App = () => <Div bold={true} border={1} color="whitesmoke" />;';
 		const result = runAdapterMigration(source, {
 			from: CodemodAdapterId.SolidStyled,
@@ -655,9 +655,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const source = [
 			'import { css } from "goober";',
 			'const btn = css({ color: "red" });',
-			'const title = css`',
-			'  font-size: 12px;',
-			'`;',
+			"const title = css`",
+			"  font-size: 12px;",
+			"`;",
 		].join("\n");
 		const parsed = adapter.parse(source, {
 			file: "app.tsx",
@@ -677,7 +677,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		const source = [
 			'import { css } from "goober";',
 			"const btn = css`color: red;`;",
-			'const themed = css`color: ${({ theme }): string => theme.fg};`;',
+			"const themed = css`color: ${({ theme }): string => theme.fg};`;",
 		].join("\n");
 		const parsed = adapter.parse(source, {
 			file: "app.tsx",
@@ -1808,21 +1808,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 			source,
 			config: { adapter: "solid-styled", files: [], values: {} },
 		});
-	expect(parsed.matches).toHaveLength(1);
-	expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
-	const borderValue = parsed.matches[0]?.program.rules[0]?.declarations.find(
-		(declaration) => declaration.property === "border",
-	)?.value;
-	expect(borderValue).toMatchObject({
-		kind: "dynamic",
-		expressionKind: "function",
-	});
-	expect(
-		borderValue?.kind === "dynamic" && borderValue.expression.startsWith("({ border = 1"),
-	).toBe(true);
-	expect(
-		parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
-	).toBe(false);
+		expect(parsed.matches).toHaveLength(1);
+		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
+		const borderValue = parsed.matches[0]?.program.rules[0]?.declarations.find(
+			(declaration) => declaration.property === "border",
+		)?.value;
+		expect(borderValue).toMatchObject({
+			kind: "dynamic",
+			expressionKind: "function",
+		});
+		expect(
+			borderValue?.kind === "dynamic" && borderValue.expression.startsWith("({ border = 1"),
+		).toBe(true);
+		expect(
+			parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
+		).toBe(false);
 	});
 
 	test("normalizes plain nested template selectors as descendants", () => {

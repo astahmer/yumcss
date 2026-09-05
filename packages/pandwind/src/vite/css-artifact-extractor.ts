@@ -13,7 +13,6 @@ import type {
 	CssFileExtraction,
 	CssPatternAdapter,
 	CssPreset,
-	CssSourceProvenance,
 	ExtractedCssStyle,
 } from "./css-extraction-contracts.ts";
 import type { CssSourceScanner } from "./css-extraction-contracts.ts";

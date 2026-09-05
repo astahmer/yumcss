@@ -32,11 +32,7 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import type { StyleLowering } from "../lowering.ts";
-import {
-	findTemplateLiteralEnd,
-	functionValueExpression,
-	parseAdapterTemplate,
-} from "../adapter-template-parser.ts";
+import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "../jsx-style-host.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";

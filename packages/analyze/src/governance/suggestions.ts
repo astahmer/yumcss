@@ -19,20 +19,29 @@ import type {
 } from "./contracts.ts";
 
 /** Property prefixes/categories -> token groups allowed to replace them. */
-const CATEGORY_GROUPS: Array<{ match: (property: string) => boolean; groups: ReadonlyArray<string> }> = [
+const CATEGORY_GROUPS: Array<{
+	match: (property: string) => boolean;
+	groups: ReadonlyArray<string>;
+}> = [
 	{
-		match: (p) => /^(bg|bgColor|backgroundColor|color|textColor|borderColor|fill|background|outlineColor|accentColor)/.test(p),
+		match: (p) =>
+			/^(bg|bgColor|backgroundColor|color|textColor|borderColor|fill|background|outlineColor|accentColor)/.test(
+				p,
+			),
 		groups: ["colors", "semantic"],
 	},
 	{
-		match: (p) => /^(padding|margin|gap|rowGap|columnGap|inset|top|right|bottom|left|width|minWidth|maxWidth|height|minHeight|maxHeight|borderWidth)/.test(p) || /^(margin|padding)[A-Z]/.test(p),
+		match: (p) =>
+			/^(padding|margin|gap|rowGap|columnGap|inset|top|right|bottom|left|width|minWidth|maxWidth|height|minHeight|maxHeight|borderWidth)/.test(
+				p,
+			) || /^(margin|padding)[A-Z]/.test(p),
 		groups: ["spacing"],
 	},
 	{ match: (p) => /^(borderRadius|rounded)/.test(p), groups: ["radii"] },
-	{ match: (p) => /^fontSize/.test(p), groups: ["fontSizes"] },
-	{ match: (p) => /^fontWeight/.test(p), groups: ["fontWeights"] },
-	{ match: (p) => /^lineHeight/.test(p), groups: ["lineHeights"] },
-	{ match: (p) => /^letterSpacing/.test(p), groups: ["letterSpacings"] },
+	{ match: (p) => p.startsWith("fontSize"), groups: ["fontSizes"] },
+	{ match: (p) => p.startsWith("fontWeight"), groups: ["fontWeights"] },
+	{ match: (p) => p.startsWith("lineHeight"), groups: ["lineHeights"] },
+	{ match: (p) => p.startsWith("letterSpacing"), groups: ["letterSpacings"] },
 	{ match: (p) => /^fontFamily|^font/.test(p), groups: ["fonts"] },
 ];
 
@@ -82,10 +91,9 @@ export function suggestRawTokenReplacements(
 			diagnostics.push({
 				severity: "info",
 				code: "governance/suggestion-ambiguous",
-				message:
-					`raw value ${literal} matches ${valueMatches.length} tokens (${valueMatches
-						.map((d) => d.id)
-						.join(", ")}) — rejected as ambiguous`,
+				message: `raw value ${literal} matches ${valueMatches.length} tokens (${valueMatches
+					.map((d) => d.id)
+					.join(", ")}) — rejected as ambiguous`,
 				file: u.file,
 			});
 			continue;
@@ -100,17 +108,13 @@ export function suggestRawTokenReplacements(
 			rawValue: u.rawValue,
 			tokenId: def.id,
 			replacement: authoredSpelling(def),
-			reason: exact
-				? `exact value match for ${def.id}`
-				: `case-folded hex match for ${def.id}`,
+			reason: exact ? `exact value match for ${def.id}` : `case-folded hex match for ${def.id}`,
 			confidence: exact ? "verified" : "inferred",
 		});
 	}
 
 	return {
-		suggestions: suggestions.toSorted(
-			(a, b) => a.file.localeCompare(b.file) || a.start - b.start,
-		),
+		suggestions: suggestions.toSorted((a, b) => a.file.localeCompare(b.file) || a.start - b.start),
 		diagnostics,
 	};
 }

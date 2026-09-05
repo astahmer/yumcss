@@ -6,7 +6,7 @@
  * service consumes authored inputs (files + tokenContext), so the bench
  * exercises collection, resolution, suggestions, and reachability.
  */
-import { bench, describe } from "vitest";
+import { test } from "vitest";
 import type { EffectiveTokenContextInputs } from "../src/governance/effective-token-context.ts";
 import { analyzeTokenGovernance } from "../src/governance/index.ts";
 
@@ -47,20 +47,21 @@ const files = Array.from({ length: FILES }, (_, f) => ({
 	file: `src/component-${f}.tsx`,
 	content:
 		`import { tw } from "pandwind";\ndeclare function spacingProp(n: number): string;\n` +
-		Array.from({ length: CALLS_PER_FILE }, (_, i) => colorBlock((f + i) % TOKENS_PER_GROUP)).join("") +
-		Array.from({ length: CALLS_PER_FILE }, (_, i) => spacingBlock((f + i) % TOKENS_PER_GROUP)).join(""),
+		Array.from({ length: CALLS_PER_FILE }, (_, i) => colorBlock((f + i) % TOKENS_PER_GROUP)).join(
+			"",
+		) +
+		Array.from({ length: CALLS_PER_FILE }, (_, i) => spacingBlock((f + i) % TOKENS_PER_GROUP)).join(
+			"",
+		),
 }));
 
-describe("token governance at repository scale", () => {
-	bench(
-		"analyzeTokenGovernance (2k definitions / 400 files / 16k usage sites)",
-		() => {
-			analyzeTokenGovernance({
-				root: "/bench",
-				files,
-				tokenContext,
-				boundaryHits: { safelist: ["colors::token-0"] },
-			});
-		},
-	);
+test("token governance at repository scale", async ({ bench }) => {
+	await bench("analyzeTokenGovernance (2k definitions / 400 files / 16k usage sites)", () => {
+		analyzeTokenGovernance({
+			root: "/bench",
+			files,
+			tokenContext,
+			boundaryHits: { safelist: ["colors::token-0"] },
+		});
+	}).run();
 });

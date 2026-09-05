@@ -19,7 +19,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 /** Candidate order mirrors the codegen theme-input loaders: default export first. */
 export const presetCandidates = (module: PresetModule): Array<Record<string, unknown>> =>
-	[module.default, ...Object.entries(module).filter(([name]) => name !== "default").map(([, v]) => v)].filter(isRecord);
+	[
+		module.default,
+		...Object.entries(module)
+			.filter(([name]) => name !== "default")
+			.map(([, v]) => v),
+	].filter(isRecord);
 
 export interface DerivedProjectContext {
 	readonly tokenGroups?: Readonly<Record<string, Readonly<Record<string, unknown>>>>;
@@ -186,9 +191,7 @@ export function projectGovernanceInputs(load: OfficialPresetLoad): ProjectGovern
 		};
 	}
 	return {
-		tokenContext: {
-			...(derived.tokenGroups === undefined ? {} : { tokenGroups: derived.tokenGroups }),
-		},
+		tokenContext: derived.tokenGroups === undefined ? {} : { tokenGroups: derived.tokenGroups },
 		policy: derived.policy,
 	};
 }

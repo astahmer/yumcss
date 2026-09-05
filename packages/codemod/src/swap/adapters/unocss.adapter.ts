@@ -174,16 +174,18 @@ function projectThemeCss(context: AdapterConfigContext): string {
 	if (context.root === undefined || context.readFile === undefined) return "";
 	const readFile = context.readFile;
 	const files = context.listFiles?.(context.root) ?? [];
-	return files
-		// Theme layers live in CSS files. package.json or uno.config.ts text
-		// that merely mentions @unocss/@theme must not enter the CSS parser.
-		.filter((file) => /\.css$/u.test(file))
-		.map((file) =>
-			readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
-		)
-		.filter((source): source is string => source !== undefined)
-		.filter((source) => /@(?:theme|unocss|apply|shortcut)\b/u.test(source))
-		.join("\n");
+	return (
+		files
+			// Theme layers live in CSS files. package.json or uno.config.ts text
+			// that merely mentions @unocss/@theme must not enter the CSS parser.
+			.filter((file) => file.endsWith(".css"))
+			.map((file) =>
+				readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
+			)
+			.filter((source): source is string => source !== undefined)
+			.filter((source) => /@(?:theme|unocss|apply|shortcut)\b/u.test(source))
+			.join("\n")
+	);
 }
 
 const literal = (property: string, value: string | number): StyleDeclaration => ({

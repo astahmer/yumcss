@@ -20,10 +20,7 @@ export {
 	type ReachabilityOutcome,
 } from "./reachability.ts";
 export { scanPublicExports, type PublicExportHit } from "./public-export.ts";
-export {
-	suggestRawTokenReplacements,
-	type SuggestionOutcome,
-} from "./suggestions.ts";
+export { suggestRawTokenReplacements, type SuggestionOutcome } from "./suggestions.ts";
 export {
 	collectTokenUsage,
 	resolveUsageAgainstDefinitions,

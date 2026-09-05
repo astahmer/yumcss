@@ -207,7 +207,7 @@ export function createSemanticContractSuite(
 									validation,
 								});
 								continue;
-								}
+							}
 						} catch (error) {
 							failures.push({
 								fixture: fixture.name,

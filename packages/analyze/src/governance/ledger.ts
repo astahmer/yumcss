@@ -54,7 +54,10 @@ export const mergeProvenance = (
 	b: TokenDefinition["provenance"],
 ): TokenDefinition["provenance"] => {
 	const seen = new Set(a.map((p) => JSON.stringify([p.source, p.file, p.origin, p.detail])));
-	return [...a, ...b.filter((p) => !seen.has(JSON.stringify([p.source, p.file, p.origin, p.detail])))];
+	return [
+		...a,
+		...b.filter((p) => !seen.has(JSON.stringify([p.source, p.file, p.origin, p.detail]))),
+	];
 };
 
 /** Fold an incoming definition into an existing ledger entry. */
@@ -65,7 +68,8 @@ export const mergeDefinition = (
 	id: existing.id,
 	group: existing.group,
 	name: existing.name,
-	layer: incoming.layer === "semantic" || existing.layer === "semantic" ? "semantic" : existing.layer,
+	layer:
+		incoming.layer === "semantic" || existing.layer === "semantic" ? "semantic" : existing.layer,
 	value: existing.value ?? incoming.value,
 	scopedValues: mergeScoped(existing.scopedValues, incoming.scopedValues),
 	aliases: mergeAliases(existing.aliases, incoming.aliases),
@@ -82,12 +86,18 @@ const mergeScoped = (
 	return { ...a, ...b };
 };
 
-const mergeAliases = (a?: readonly string[], b?: readonly string[]): readonly string[] | undefined => {
+const mergeAliases = (
+	a?: readonly string[],
+	b?: readonly string[],
+): readonly string[] | undefined => {
 	if (a === undefined && b === undefined) return undefined;
 	return mergeStrings(a ?? [], b ?? []);
 };
 
-const mergeStrings = (a?: readonly string[], b?: readonly string[]): readonly string[] | undefined => {
+const mergeStrings = (
+	a?: readonly string[],
+	b?: readonly string[],
+): readonly string[] | undefined => {
 	const set = new Set([...(a ?? []), ...(b ?? [])]);
 	if (set.size === 0) return undefined;
 	return [...set].toSorted((x, y) => x.localeCompare(y));
@@ -100,8 +110,6 @@ export const usageKey = (u: TokenUsage): string =>
 /** Deterministic suggestion identity for deduplication. */
 export const suggestionKey = (s: RawTokenSuggestion): string =>
 	[s.file, s.start, s.end, s.property ?? "", s.tokenId].join("\u0000");
-
-const byString = (a: string, b: string): number => a.localeCompare(b);
 
 export interface LedgerInputs {
 	readonly definitions: readonly TokenDefinition[];

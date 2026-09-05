@@ -27,11 +27,7 @@ import type {
 } from "./adapter-contract.ts";
 import { STYLE_LOWERING_REGISTRY, type StyleLoweringPlan } from "./lowering.ts";
 import { StyleProgramAnalysis } from "./style-program-analysis.ts";
-import {
-	CodemodAdapterId,
-	StyleMigrationOutcome,
-	StyleRepresentationKind,
-} from "./identifiers.ts";
+import { CodemodAdapterId, StyleMigrationOutcome, StyleRepresentationKind } from "./identifiers.ts";
 import {
 	dirnameDocumentPath,
 	isAbsoluteDocumentPath,
@@ -276,7 +272,7 @@ const propertyName = (value: string): string =>
 
 function declarations(
 	node: StylesheetSourceNode,
-	context: AdapterParseContext,
+	_context: AdapterParseContext,
 ): { declarations: StyleDeclaration[]; residuals: StyleProgramResidual[] } {
 	const values: StyleDeclaration[] = [];
 	const residuals: StyleProgramResidual[] = [];
@@ -318,7 +314,8 @@ function declarations(
 			// A `${...}` value is a runtime expression; keep its exact source text
 			// so host adapters can re-emit the authored interpolation.
 			const close = value.indexOf("}", expressionStart + 1);
-			const expression = close === -1 ? value.slice(expressionStart + 2) : value.slice(expressionStart + 2, close);
+			const expression =
+				close === -1 ? value.slice(expressionStart + 2) : value.slice(expressionStart + 2, close);
 			values.push({
 				conditions: [],
 				property: propertyName(property),
@@ -895,8 +892,7 @@ export function createStylesheetFileMigration(
 					program: match.program,
 					target: context.target.capabilities,
 					mode: "safe",
-					hostFramework:
-						context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
+					hostFramework: context.target.migration?.targetPolicy?.handlesFrameworkSemantics === true,
 				}),
 			}));
 			const outcomes = matches.map((match, index) => {
@@ -1031,7 +1027,9 @@ function stylesheetFamilyArtifact(
 		...match.program,
 		rules: match.program.rules.map(authoredRule),
 	});
-	const code = matches.map((match) => styleProgramToCanonicalCss(authoredProgram(match))).join("\n\n");
+	const code = matches
+		.map((match) => styleProgramToCanonicalCss(authoredProgram(match)))
+		.join("\n\n");
 	const validations: AdapterValidationResult[] = matches.map((match) => {
 		// Each match is emitted as its own canonical slice of the artifact, so
 		// the semantic round trip compares that slice, not the whole document:

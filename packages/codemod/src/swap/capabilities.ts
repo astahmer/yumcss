@@ -226,12 +226,10 @@ export function requiredAdapterCapabilities(
 		if (value.kind !== StyleValueKindTag.Dynamic) return false;
 		return (program.themes ?? []).some(
 			(binding) =>
-				value.expression === binding.authored ||
-				value.expression === `theme.${binding.path}`,
+				value.expression === binding.authored || value.expression === `theme.${binding.path}`,
 		);
 	});
-	if (referencesTheme)
-		add("theme-context", `${program.themes?.length ?? 0} theme binding(s)`);
+	if (referencesTheme) add("theme-context", `${program.themes?.length ?? 0} theme binding(s)`);
 	if ((program.compositions?.length ?? 0) > 0)
 		add("composition", `${program.compositions?.length ?? 0} composition edge(s)`);
 	if (program.runtime !== undefined) add("runtime-context", `${program.runtime.phase} runtime`);

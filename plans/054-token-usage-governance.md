@@ -401,15 +401,15 @@ snapshot.
 
 ## Decisions log
 
-| Date       | Decision                                                                 | Rationale                                                                                              |
-| ---------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| 2026-09-03 | Treat token governance as a shared tooling ledger, not a runtime feature | The frozen runtime API stays small while analyzer, Studio, lint, and codemod share one source of truth |
-| 2026-09-03 | Report unknown boundaries explicitly                                     | Dynamic lookup, plugins, exports, and generated CSS make naive zero-use claims unsafe                  |
-| 2026-09-03 | Require exact property/theme-aware token matches                         | A plausible token name is not evidence of semantic equivalence                                         |
-| 2026-09-03 | Make cleanup report-first and write-mode opt-in                          | Token deletion can affect external consumers and runtime behavior                                      |
-| 2026-09-03 | Use official project context at adapter boundaries                       | Hardcoded defaults cannot represent custom themes, presets, or strictness policy                       |
-| 2026-09-04 | Ship the ledger as one versioned report consumed by CLI, Inspector, lint, and codemod | One shared source of truth beats four independent token heuristics and keeps the runtime API frozen |
-| 2026-09-04 | Gate codemod tokenize on exact report suggestions                        | When suggestions are supplied the heuristic fallback is disabled instead of merged, so report-verified pairs only |
-| 2026-09-04 | Keep the lint policy a structural mirror without a dependency            | The plugin consumes a plain snapshot; the composition root owns governance wiring |
-| 2026-09-04 | Keep Studio exposure at the shared-report level for now                  | Paginated queries for very large catalogs and a write-mode removal command are bounded follow-ups in their owning plans |
-| 2026-09-04 | Bound repository-scale cost with a committed bench                       | 2k definitions / 400 files / ~16k sites run ~4.9s per full pass; the bench guards future regressions |
+| Date       | Decision                                                                              | Rationale                                                                                                               |
+| ---------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-03 | Treat token governance as a shared tooling ledger, not a runtime feature              | The frozen runtime API stays small while analyzer, Studio, lint, and codemod share one source of truth                  |
+| 2026-09-03 | Report unknown boundaries explicitly                                                  | Dynamic lookup, plugins, exports, and generated CSS make naive zero-use claims unsafe                                   |
+| 2026-09-03 | Require exact property/theme-aware token matches                                      | A plausible token name is not evidence of semantic equivalence                                                          |
+| 2026-09-03 | Make cleanup report-first and write-mode opt-in                                       | Token deletion can affect external consumers and runtime behavior                                                       |
+| 2026-09-03 | Use official project context at adapter boundaries                                    | Hardcoded defaults cannot represent custom themes, presets, or strictness policy                                        |
+| 2026-09-04 | Ship the ledger as one versioned report consumed by CLI, Inspector, lint, and codemod | One shared source of truth beats four independent token heuristics and keeps the runtime API frozen                     |
+| 2026-09-04 | Gate codemod tokenize on exact report suggestions                                     | When suggestions are supplied the heuristic fallback is disabled instead of merged, so report-verified pairs only       |
+| 2026-09-04 | Keep the lint policy a structural mirror without a dependency                         | The plugin consumes a plain snapshot; the composition root owns governance wiring                                       |
+| 2026-09-04 | Keep Studio exposure at the shared-report level for now                               | Paginated queries for very large catalogs and a write-mode removal command are bounded follow-ups in their owning plans |
+| 2026-09-04 | Bound repository-scale cost with a committed bench                                    | 2k definitions / 400 files / ~16k sites run ~4.9s per full pass; the bench guards future regressions                    |

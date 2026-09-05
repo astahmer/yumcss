@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { parseSync } from "oxc-parser";
-	import { evalLiteralValues, evalLiteral } from "../src/tw/literal";
+import { evalLiteralValues, evalLiteral } from "../src/tw/literal";
 
-	function evalSource(source: string) {
-		const parsed = parseSync("test.tsx", source);
-		const statement = parsed.program.body[0]!;
-		const expression = statement.type === "ExpressionStatement" ? statement.expression : undefined;
+function evalSource(source: string) {
+	const parsed = parseSync("test.tsx", source);
+	const statement = parsed.program.body[0]!;
+	const expression = statement.type === "ExpressionStatement" ? statement.expression : undefined;
 	return evalLiteralValues(expression as never);
 }
 

@@ -100,7 +100,9 @@ describe("target adapter emission contract", () => {
 		// portable lane must not invent a css.vars carrier for it; the source
 		// stays and the migration reports a capability residual.
 		const result = runAdapterMigration(
-			'import { css } from "@linaria/core";' + String.fromCharCode(10) + 'const card = css\`color: computeColor(accent);\`;',
+			'import { css } from "@linaria/core";' +
+				String.fromCharCode(10) +
+				"const card = css`color: computeColor(accent);`;",
 			{
 				from: CodemodAdapterId.Linaria,
 				to: CodemodAdapterId.Pandwind,
@@ -190,7 +192,9 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(1);
 		expect(
-			result.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.DynamicCustomProperty),
+			result.residuals.some(
+				(residual) => residual.kind === StyleProgramResidualKindTag.DynamicCustomProperty,
+			),
 		).toBe(true);
 		expect(result.code).toContain("pandwind:migrate-skip");
 		expect(result.code).toContain("theme.foreground");

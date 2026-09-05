@@ -23,7 +23,7 @@ describe("Stack renderer family", () => {
 		);
 
 		expect(output).toMatchInlineSnapshot(
-			`"<div id=\"react-stack\" class=\"flex flex-col gap-4 p-6 items-center justify-between custom\">content</div>"`,
+			`"<div id="react-stack" class="flex flex-col gap-4 p-6 items-center justify-between custom">content</div>"`,
 		);
 		expect(output).toContain('id="react-stack"');
 		expect(output).toContain('class="flex flex-col gap-4 p-6 items-center justify-between custom"');
@@ -39,7 +39,7 @@ describe("Stack renderer family", () => {
 			.replace(/\s+>/, ">");
 
 		expect(normalized).toMatchInlineSnapshot(
-			`"<div id=\"solid-stack\" class=\"flex flex-col gap-4 p-6 items-center justify-between custom\">content</div>"`,
+			`"<div id="solid-stack" class="flex flex-col gap-4 p-6 items-center justify-between custom">content</div>"`,
 		);
 		expect(normalized).toBe(
 			`<div id="solid-stack" class="flex flex-col gap-4 p-6 items-center justify-between custom">content</div>`,
@@ -88,7 +88,7 @@ describe("Stack renderer family", () => {
 		);
 
 		expect(output).toMatchInlineSnapshot(
-			`"<div id=\"preact-stack\" class=\"flex flex-col gap-4 p-6 items-center justify-between custom\">content</div>"`,
+			`"<div id="preact-stack" class="flex flex-col gap-4 p-6 items-center justify-between custom">content</div>"`,
 		);
 		expect(output).toContain('id="preact-stack"');
 		expect(output).toContain('class="flex flex-col gap-4 p-6 items-center justify-between custom"');

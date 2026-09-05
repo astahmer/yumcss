@@ -172,6 +172,7 @@ describe("pandwindWebpack", () => {
 			);
 			const changedAt = new Date(Date.now() + 1_000);
 			utimesSync(entry, changedAt, changedAt);
+			if (watching === undefined) throw new Error("Webpack watch returned no Watching handle");
 			watching.invalidate();
 			const updated = await updatedBuild;
 			expect(updated.hasErrors(), updated.toString({ errorDetails: true })).toBe(false);

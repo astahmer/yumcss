@@ -12,11 +12,7 @@
  * diagnostics that downgrade certainty; the builder never invents tokens
  * from a guessed default vocabulary.
  */
-import type {
-	GovernanceDiagnostic,
-	TokenDefinition,
-	TokenDefinitionLayer,
-} from "./contracts.ts";
+import type { GovernanceDiagnostic, TokenDefinition, TokenDefinitionLayer } from "./contracts.ts";
 import { mergeDefinition, tokenId } from "./ledger.ts";
 
 export interface EffectiveTokenContextInputs {
@@ -58,7 +54,9 @@ function definitionsFromTokenGroups(
 		const entries = tokenGroups[group] ?? {};
 		for (const name of Object.keys(entries).toSorted()) {
 			const raw = entries[name];
-			const provenance = [{ source: "official-config" as const, origin, detail: `${group}.${name}` }];
+			const provenance = [
+				{ source: "official-config" as const, origin, detail: `${group}.${name}` },
+			];
 			if (typeof raw === "string") {
 				out.push({
 					id: tokenId(group, name),
@@ -207,10 +205,7 @@ export function buildEffectiveTokenContext(
 	absorb(definitionsFromTokenGroups(inputs.tokenGroups ?? {}, origin));
 	absorb(definitionsFromThemeVars(inputs.themeVars ?? []));
 	absorb(
-		definitionsFromInterop(
-			inputs.interopVariables ?? {},
-			"pandwind.interop.json theme.variables",
-		),
+		definitionsFromInterop(inputs.interopVariables ?? {}, "pandwind.interop.json theme.variables"),
 	);
 
 	return {

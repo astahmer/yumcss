@@ -23,13 +23,6 @@ import {
 	formatAuthoredCssImports,
 	formatCssDiagnostics,
 } from "./css-diagnostics.ts";
-import {
-	analyzeTokenGovernance,
-	buildGovernancePruneChangeset,
-	loadOfficialPresetModule,
-	projectGovernanceInputs,
-} from "./governance/index.ts";
-import { parseThemeVars } from "./collect/parsers.ts";
 import { runGovernanceLane } from "./governance-lane.ts";
 
 export interface CliArgs {

@@ -714,7 +714,7 @@ describe("stylesheet source adapters", () => {
 	test("uses the installed Sass compiler through the adapter port", async () => {
 		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
 		const sass = createSassAdapter({
-			async importPackage<T>() {
+			async importPackage() {
 				return {
 					compileString: (source: string) => ({
 						css: source.replace("$tone", "red"),
@@ -849,7 +849,7 @@ describe("stylesheet source adapters", () => {
 	test("fails closed when an official Less/Sass compiler cannot be loaded", async () => {
 		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
 		const sass = createSassAdapter({
-			async importPackage<T>() {
+			async importPackage() {
 				return undefined;
 			},
 			async importFile() {

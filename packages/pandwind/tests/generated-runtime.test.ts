@@ -11,8 +11,11 @@ import { collectTwClasses } from "../src/tw/collect.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const safelistEntries = (): Array<string> =>
-	[...readFileSync(resolve(app, "src/pandwind.safelist.css"), "utf8").matchAll(/@source inline\("([^"]+)"\);/g)]
-		.map((m) => m[1] ?? "");
+	[
+		...readFileSync(resolve(app, "src/pandwind.safelist.css"), "utf8").matchAll(
+			/@source inline\("([^"]+)"\);/g,
+		),
+	].map((m) => m[1] ?? "");
 
 describe("generated tw runtime", () => {
 	test("composes class strings with the real variant metadata", () => {

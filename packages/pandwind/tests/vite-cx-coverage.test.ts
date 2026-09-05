@@ -282,20 +282,14 @@ describe("finite dynamic cx() arguments register scanner candidates", () => {
 			const tone = pickTone();
 			cx(tone === "light" ? "bg-sky-600" : "bg-gray-900");
 		`;
-		const { code, inlined, candidates } = inlineCxCalls(
-			source,
-			"app.ts",
-			config,
-			new Set(["cx"]),
-			{
-				partialFold: false,
-				importedConstants: new Map([["pickTone", { value: "pickTone", declStart: 0 }]]),
-			},
-	);
-	expect(inlined).toBe(0); // selection stays runtime
-	expect(code).toBe(source); // source preserved verbatim
-	expect(candidates).toHaveLength(2);
-	expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900"]));
+		const { code, inlined, candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]), {
+			partialFold: false,
+			importedConstants: new Map([["pickTone", { value: "pickTone", declStart: 0 }]]),
+		});
+		expect(inlined).toBe(0); // selection stays runtime
+		expect(code).toBe(source); // source preserved verbatim
+		expect(candidates).toHaveLength(2);
+		expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900"]));
 		/* prettier-ignore */
 		expect(code).toMatchInlineSnapshot(`
 			"import { cx } from "./tw";
@@ -355,9 +349,9 @@ describe("finite dynamic cx() arguments register scanner candidates", () => {
 			const tone = pickTone();
 			cx([tone === "light" ? "bg-sky-600" : "bg-gray-900", "p-6"]);
 		`;
-	const { inlined, candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
-	expect(inlined).toBe(0);
-	expect(candidates).toHaveLength(3);
-	expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900", "p-6"]));
+		const { inlined, candidates } = inlineCxCalls(source, "app.ts", config, new Set(["cx"]));
+		expect(inlined).toBe(0);
+		expect(candidates).toHaveLength(3);
+		expect(candidates).toEqual(expect.arrayContaining(["bg-sky-600", "bg-gray-900", "p-6"]));
 	});
 });

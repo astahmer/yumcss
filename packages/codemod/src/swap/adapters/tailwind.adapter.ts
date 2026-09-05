@@ -700,7 +700,7 @@ function tailwindCssFiles(
 	// to .css keeps documentation prose that quotes "@import" from becoming a
 	// false configuration entry.
 	const candidates = discovered
-		.filter((file) => /\.css$/u.test(file))
+		.filter((file) => file.endsWith(".css"))
 		.map((file) => ({
 			file,
 			text: context.readFile?.(

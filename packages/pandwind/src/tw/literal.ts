@@ -463,4 +463,9 @@ export function literalValueSetSize(set: LiteralValueSet | undefined): number {
 	return set === undefined ? 0 : set.values.length;
 }
 
-export { NodeKind, PropertyKindTag, ImportKindTag, VariableDeclarationKindTag } from "../ast-node-kind.ts";
+export {
+	NodeKind,
+	PropertyKindTag,
+	ImportKindTag,
+	VariableDeclarationKindTag,
+} from "../ast-node-kind.ts";

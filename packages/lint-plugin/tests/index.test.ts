@@ -384,9 +384,11 @@ dcss.class({
   $frame: { padding: "13px" },
   $text: { color: "chartreuse" },
 });`;
-		const unresolved = runRule("design-tokens-only", badCode, [{
-			policy: { ...policy, resolved: false },
-		}]);
+		const unresolved = runRule("design-tokens-only", badCode, [
+			{
+				policy: { ...policy, resolved: false },
+			},
+		]);
 		expect(unresolved).toEqual([]);
 
 		// unknown raw literal in a strict property is reported with property provenance
@@ -403,7 +405,7 @@ dcss.class({
 			      "property": "padding",
 			      "value": "13px",
 			    },
-			    "message": "pandwind: \"{{value}}\" is not a verified token for \"{{property}}\" (strict policy) — use a project token or an explicit escape hatch",
+			    "message": "pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
 			    "nodeType": "Literal",
 			  },
 			  {
@@ -411,7 +413,7 @@ dcss.class({
 			      "property": "color",
 			      "value": "chartreuse",
 			    },
-			    "message": "pandwind: \"{{value}}\" is not a verified token for \"{{property}}\" (strict policy) — use a project token or an explicit escape hatch",
+			    "message": "pandwind: "{{value}}" is not a verified token for "{{property}}" (strict policy) — use a project token or an explicit escape hatch",
 			    "nodeType": "Literal",
 			  },
 			]

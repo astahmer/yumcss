@@ -10,7 +10,12 @@ const provenance = (source: TokenDefinition["provenance"][number]["source"], fil
 	{ source, ...(file === undefined ? {} : { file }) },
 ];
 
-const def = (group: string, name: string, value: string, extra?: Partial<TokenDefinition>): TokenDefinition => ({
+const def = (
+	group: string,
+	name: string,
+	value: string,
+	extra?: Partial<TokenDefinition>,
+): TokenDefinition => ({
 	id: `${group}::${name}`,
 	group,
 	name,
@@ -20,7 +25,12 @@ const def = (group: string, name: string, value: string, extra?: Partial<TokenDe
 	...extra,
 });
 
-const use = (tokenIdValue: string, file: string, start: number, strictness: TokenUsage["strictness"] = "token"): TokenUsage => ({
+const use = (
+	tokenIdValue: string,
+	file: string,
+	start: number,
+	strictness: TokenUsage["strictness"] = "token",
+): TokenUsage => ({
 	tokenId: tokenIdValue,
 	kind: "direct",
 	file,
@@ -129,9 +139,7 @@ describe("buildTokenGovernanceReport", () => {
 				unusedCandidates: [
 					{ tokenId: "spacing::card", safety: "safe-to-remove", reasons: [], boundaries: [] },
 				],
-				diagnostics: [
-					{ severity: "warning", code: "test/unknown", message: "dynamic lookup" },
-				],
+				diagnostics: [{ severity: "warning", code: "test/unknown", message: "dynamic lookup" }],
 			});
 		const a = buildTokenGovernanceReport(inputs());
 		const b = buildTokenGovernanceReport(inputs());

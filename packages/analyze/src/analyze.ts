@@ -325,7 +325,9 @@ function classify(
 	}
 	// All args static: full fold — unless a css()/unknown helper call is
 	// among them without a fold context (the pass leaves those alone).
-	const hasUnknownCall = args.some((a) => (a as { type?: string })?.type === NodeKind.CallExpression);
+	const hasUnknownCall = args.some(
+		(a) => (a as { type?: string })?.type === NodeKind.CallExpression,
+	);
 	if (hasUnknownCall) {
 		return {
 			start,

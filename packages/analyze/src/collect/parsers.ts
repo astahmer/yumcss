@@ -147,10 +147,9 @@ export const parseBridgeStats = (source: string): { properties: number; mappings
 	const body = source.slice(open + 1, end);
 	// Top-level property groups = depth-1 keys; mappings = leaf string pairs.
 	const perProperty = body.split(/(?<=\}),\s*"[\w$-]+":\s*\{/);
-	const counted = perProperty
-		.map((section) => ({
-			mappings: [...section.matchAll(/"(?:[^"\\]|\\.)*":\s*"(?:[^"\\]|\\.)*"/g)].length,
-		}));
+	const counted = perProperty.map((section) => ({
+		mappings: [...section.matchAll(/"(?:[^"\\]|\\.)*":\s*"(?:[^"\\]|\\.)*"/g)].length,
+	}));
 	return {
 		properties: perProperty.length,
 		mappings: counted.reduce((sum, c) => sum + c.mappings, 0),
