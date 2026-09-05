@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, join, relative, resolve } from "node:path";
 import {
 	CodemodAdapterId,
+	StyleProgramResidualKindTag,
 	createBuiltinCodemodCatalog,
 	runAdapterMigration,
 	type AdapterMigrationResult,
@@ -187,7 +188,9 @@ function createLaneAdapter(lane: AstryxDocsLane): AstryxLaneAdapter {
 			if (lane === AstryxDocsLane.DesignDss) return { ...result, code: useDesignApi(result.code) };
 			if (
 				lane === AstryxDocsLane.RuntimeCss &&
-				result.residuals.some((residual) => residual.kind === "dynamic-values")
+				result.residuals.some(
+					(residual) => residual.kind === StyleProgramResidualKindTag.DynamicValues,
+				)
 			)
 				return { ...result, code: useRuntimeApi(result.code) };
 			return result;
@@ -519,7 +522,9 @@ export class AstryxDocsMigration {
 				...transformed,
 				code: loweredCode,
 				residuals: transformed.residuals.filter(
-					(residual) => residual.kind !== "dynamic-values" || loweredCode.includes("stylex.create"),
+					(residual) =>
+						residual.kind !== StyleProgramResidualKindTag.DynamicValues ||
+						loweredCode.includes("stylex.create"),
 				),
 			};
 			if (result.changed) changedFiles++;
@@ -530,7 +535,9 @@ export class AstryxDocsMigration {
 			staticCssCallSites += result.code.includes("createRuntimeCss") ? 0 : result.converted;
 			const needsRuntimeFallback =
 				(lane !== AstryxDocsLane.RuntimeCss && result.code.includes("createRuntimeCss")) ||
-				result.residuals.some((residual) => residual.kind === "dynamic-values") ||
+				result.residuals.some(
+					(residual) => residual.kind === StyleProgramResidualKindTag.DynamicValues,
+				) ||
 				hasAstryxDynamicHostFallback(file);
 			if (needsRuntimeFallback) {
 				runtimeFallbackFiles++;
