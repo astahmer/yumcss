@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
-import "./tailwind.css";
+import "pandwind:css";
 import { router } from "./router.tsx";
 
 const rootEl = document.getElementById("root");

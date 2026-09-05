@@ -1,11 +1,9 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import { examplePreset } from "pandwind/preset";
-import { createPandwindEngineContext, pandwindCssVite, pandwindVite } from "pandwind/vite";
+import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
-import { twAdapter } from "./src/bridge.ts";
 
 /** Cross-origin isolation: required by oxc-parser's SharedArrayBuffer workers. */
 const ISOLATION_HEADERS = {
@@ -21,15 +19,11 @@ const wasiBindingDir = dirname(
 	createRequire(import.meta.url).resolve("@oxc-parser/binding-wasm32-wasi/package.json"),
 );
 
-// Same wiring as the example app: one shared engine context so the cx pass
-// and the stylesheet agree, Tailwind compiles the shared utility sheet.
-const engine = createPandwindEngineContext({ preset: examplePreset, className: twAdapter });
-
 export default defineConfig({
 	plugins: [
-		pandwindVite({ css: { preset: examplePreset, engine } }),
-		pandwindCssVite(examplePreset, { engine }),
-		tailwindcss(),
+		pandwindCssVite(examplePreset, {
+			cssSources: ["css", "design", "ui-css"],
+		}),
 		react(),
 	],
 	resolve: {
