@@ -150,7 +150,7 @@ describe("source binding index", () => {
 	test("resolves assignments through generic call expressions", () => {
 		const source = [
 			'import { styled } from "solid-styled-components";',
-			'const Card = styled(Base)<{ color: string }>(({ color }) => ({ color }));',
+			"const Card = styled(Base)<{ color: string }>(({ color }) => ({ color }));",
 		].join("\n");
 		const index = SourceBindings.fromDocument({ file: "Card.tsx", source });
 		const call = index.callSites.find((site) => site.assignedBinding === "Card");
@@ -163,7 +163,7 @@ describe("source binding index", () => {
 			}),
 		);
 		expect(source.slice(call!.start, call!.end)).toBe(
-			' styled(Base)<{ color: string }>(({ color }) => ({ color }))'.trimStart(),
+			" styled(Base)<{ color: string }>(({ color }) => ({ color }))".trimStart(),
 		);
 	});
 

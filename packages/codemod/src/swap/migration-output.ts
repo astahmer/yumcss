@@ -41,9 +41,11 @@ export class MigrationOutput {
 			}
 			const used = (binding: string): boolean =>
 				!reserved.has(binding) &&
-				[...body.matchAll(
-					new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\b`, "gu"),
-				)].some((reference) => !excluded?.isExcluded(reference.index ?? -1));
+				[
+					...body.matchAll(
+						new RegExp(`\\b${binding.replace(/[.*+?^${}()|[\\]\\]/g, "\\\\$&")}\\b`, "gu"),
+					),
+				].some((reference) => !excluded?.isExcluded(reference.index ?? -1));
 			const imported = clause[1]!.trim();
 			const namedMatch = /\{([^}]*)\}/u.exec(imported);
 			const named =

@@ -283,18 +283,18 @@ function generatedCssBinding(
 		const clause = match[1]?.trim() ?? "";
 		const moduleSpecifier = match[2];
 		if (ownsModule(moduleSpecifier)) continue;
-		if (
-			/^css\b/u.test(clause) ||
-			/\{[^}]*\bcss\b[^}]*\}/u.test(clause)
-		)
-			return "pandwindCss";
+		if (/^css\b/u.test(clause) || /\{[^}]*\bcss\b[^}]*\}/u.test(clause)) return "pandwindCss";
 	}
-	const bindingInput = input.replace(cssImports, (statement, _clause: string, moduleSpecifier: string) =>
-		ownsModule(moduleSpecifier) ? "" : statement,
+	const bindingInput = input.replace(
+		cssImports,
+		(statement, _clause: string, moduleSpecifier: string) =>
+			ownsModule(moduleSpecifier) ? "" : statement,
 	);
 	for (const candidate of ["css", "pandwindCss", "pwCss"]) {
 		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		if (!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(bindingInput))
+		if (
+			!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(bindingInput)
+		)
 			return candidate;
 	}
 	return "pandwindCss";
@@ -669,7 +669,7 @@ function runtimeComponent(
 				"const cx = createCx();",
 				'import { createRuntimeCss } from "pandwind/css/runtime";',
 				'import { pandwindPreset } from "pandwind/preset";',
-				'const css = createRuntimeCss(pandwindPreset);',
+				"const css = createRuntimeCss(pandwindPreset);",
 			],
 		};
 	}
@@ -680,7 +680,7 @@ function runtimeComponent(
 			"const cx = createCx();",
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			'const css = createRuntimeCss(pandwindPreset);',
+			"const css = createRuntimeCss(pandwindPreset);",
 		],
 	};
 }
@@ -1010,7 +1010,7 @@ function runtimeHostTemplateExpression(
 		imports: [
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			'const css = createRuntimeCss(pandwindPreset);',
+			"const css = createRuntimeCss(pandwindPreset);",
 			...(rendered.needsCx
 				? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
 				: []),
@@ -1159,7 +1159,7 @@ function runtimeRawComponent(
 			"const cx = createCx();",
 			'import { createRuntimeCss } from "pandwind/css/runtime";',
 			'import { pandwindPreset } from "pandwind/preset";',
-			'const css = createRuntimeCss(pandwindPreset);',
+			"const css = createRuntimeCss(pandwindPreset);",
 			...(needsThemeContext ? ['import { usePandwindTheme } from "pandwind/theme";'] : []),
 		],
 	};
@@ -1345,7 +1345,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						'const css = createRuntimeCss(pandwindPreset);',
+						"const css = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -1362,7 +1362,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						'const css = createRuntimeCss(pandwindPreset);',
+						"const css = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -1410,7 +1410,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 							: 'import { createCss } from "pandwind/css";',
 						...(dynamicHost ? ['import { pandwindPreset } from "pandwind/preset";'] : []),
 						dynamicHost
-							? 'const css = createRuntimeCss(pandwindPreset);'
+							? "const css = createRuntimeCss(pandwindPreset);"
 							: "const css = createCss();",
 						...(rendered.needsCx
 							? ['import { createCx } from "pandwind/cx";', "const cx = createCx();"]
@@ -1455,7 +1455,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						'const css = createRuntimeCss(pandwindPreset);',
+						"const css = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			}
@@ -1465,7 +1465,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 					imports: [
 						'import { createRuntimeCss } from "pandwind/css/runtime";',
 						'import { pandwindPreset } from "pandwind/preset";',
-						'const css = createRuntimeCss(pandwindPreset);',
+						"const css = createRuntimeCss(pandwindPreset);",
 					],
 				});
 			const named =
@@ -1545,7 +1545,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 						? [
 								'import { createRuntimeCss } from "pandwind/css/runtime";',
 								'import { pandwindPreset } from "pandwind/preset";',
-								'const css = createRuntimeCss(pandwindPreset);',
+								"const css = createRuntimeCss(pandwindPreset);",
 							]
 						: ['import { createCss } from "pandwind/css";', "const css = createCss();"],
 			});

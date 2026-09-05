@@ -130,7 +130,7 @@ function classExpressionFromEmission(emitted: string): string | undefined {
 
 function hostClassExpression(source: string, start: number, end: number, emitted: string): string {
 	const expression = emitted.trim();
-	if (!/^css\.vars\(/u.test(expression) || /\.class\s*$/u.test(expression)) return emitted;
+	if (!expression.startsWith("css.vars(") || /\.class\s*$/u.test(expression)) return emitted;
 	const tagStart = source.lastIndexOf("<", start);
 	const tagEnd = source.indexOf(">", end);
 	if (tagStart === -1 || tagEnd === -1) return emitted;
@@ -1845,7 +1845,7 @@ function runAdapterMigrationInternal(
 		if (!hasRenamedStaticCss || runtimeUsesSameBinding) {
 			imports.delete('import { createCss } from "pandwind/css";');
 			if (runtimeUsesSameBinding) {
-				for (const statement of [...imports])
+				for (const statement of imports)
 					if (/\b(?:pandwindCss|pwCss)\s*=\s*createCss\(\)/u.test(statement))
 						imports.delete(statement);
 			} else imports.delete("const css = createCss();");

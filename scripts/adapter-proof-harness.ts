@@ -20,16 +20,21 @@ const requireFromCodemod = createRequire(
  * adapters still resolve from the migrated project first.
  */
 export const harnessModuleLoader = {
-	async importPackage<T>(packageName: string, _projectRoot: string): Promise<T | undefined> {
-		try {
-			return requireFromRoot(packageName) as T;
-		} catch {
+	async importPackage<T>(packageName: string, projectRoot: string): Promise<T | undefined> {
+		const loaders = [
+			createRequire(join(projectRoot, "package.json")),
+			requireFromRoot,
+			requireFromCodemod,
+		];
+		for (const load of loaders) {
 			try {
-				return requireFromCodemod(packageName) as T;
+				return load(packageName) as T;
 			} catch {
-				return undefined;
+				// Try the next dependency root; the caller still receives an
+				// explicit undefined when no installed package can be loaded.
 			}
 		}
+		return undefined;
 	},
 	async importFile<T>(file: string): Promise<T | undefined> {
 		try {
@@ -93,13 +98,11 @@ export function checkoutFileProvider(checkout: string): {
 	return { readFile: read, listFiles: list };
 }
 
-export function readPinnedSource(
-	reference: {
-		readonly clone: string;
-		readonly commit: string;
-		readonly path: string;
-	},
-): string {
+export function readPinnedSource(reference: {
+	readonly clone: string;
+	readonly commit: string;
+	readonly path: string;
+}): string {
 	const checkout = join(referenceWorkspaceRoot, reference.clone);
 	const actual = execFileSync("git", ["-C", checkout, "rev-parse", "HEAD"], {
 		encoding: "utf8",

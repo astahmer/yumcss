@@ -45,11 +45,10 @@ export interface RuntimeCssOptions extends CreateCssOptions {
  * neutral `StyleObject` overload used by migration output. The compile-time
  * `createCss(preset)` surface remains strict and token-aware.
  */
-export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> =
-	CssFn<TStyles> &
-		CssFn<StyleObject> & {
-	readonly sheet: RuntimeSheet;
-};
+export type RuntimeCssFn<TStyles extends StyleObject = StyleObject> = CssFn<TStyles> &
+	CssFn<StyleObject> & {
+		readonly sheet: RuntimeSheet;
+	};
 
 interface RuntimeBinding {
 	sheet: RuntimeSheet;

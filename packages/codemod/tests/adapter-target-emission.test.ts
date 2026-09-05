@@ -38,10 +38,10 @@ describe("target adapter emission contract", () => {
 		expect(result.code).not.toContain("className={css(");
 		expect(result.code).not.toContain('from "styled-system/css"');
 		expect(result.code).toMatchInlineSnapshot(`
-			"import { chakra } from \"@chakra-ui/react\";
+			"import { chakra } from "@chakra-ui/react";
 
-			const card = { padding: \"1rem\", color: \"$colors.brand\" };
-			export const App = () => <chakra.div css={{ padding: \"1rem\", color: \"$colors.brand\" }} />;"
+			const card = { padding: "1rem", color: "$colors.brand" };
+			export const App = () => <chakra.div css={{ padding: "1rem", color: "$colors.brand" }} />;"
 		`);
 	});
 

@@ -9,7 +9,6 @@ import {
 	runAdapterMigration,
 } from "pandwind-codemod/swap";
 
-const root = resolve(import.meta.dirname, "..");
 const keepArg = process.argv.indexOf("--keep");
 const sandbox = resolve(
 	keepArg === -1

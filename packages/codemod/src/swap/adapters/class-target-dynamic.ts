@@ -290,7 +290,7 @@ export class DynamicClassHost {
 			context.framework === BuiltinHostFramework.Solid ? "class" : "className";
 		const classExpression =
 			context.framework === BuiltinHostFramework.Solid &&
-			/^css\.vars\(/u.test(context.emittedExpression.trim())
+			context.emittedExpression.trim().startsWith("css.vars(")
 				? `${context.emittedExpression}.class`
 				: context.emittedExpression;
 		// Attribute removal leaves the tag separator behind; the inserted attribute

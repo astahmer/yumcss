@@ -1,6 +1,6 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { basename, dirname, join, normalize, resolve } from "node:path";
+import { dirname, join, normalize, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import {
 	BuiltinHostFramework,
@@ -152,8 +152,7 @@ function partitionImports(
 
 function collectImportSpecifiers(code: string): string[] {
 	const merged = new Set<string>();
-	for (const match of code.matchAll(/(?:from|import)\s*["|']([^"|']+)["|']/g))
-		merged.add(match[1]!);
+	for (const match of code.matchAll(/(?:from|import)\s*["']([^"']+)["']/g)) merged.add(match[1]!);
 	return [...merged];
 }
 

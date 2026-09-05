@@ -184,11 +184,11 @@ export function projectDynamicClassMigration(
 				context,
 				DynamicClassHost.rewrite(targetId, context.code, {
 					binding: context.binding,
-				framework: context.framework,
-				representationKind: context.representationKind,
-				residuals: context.residuals,
-				demotesFactoryHosts,
-			}),
+					framework: context.framework,
+					representationKind: context.representationKind,
+					residuals: context.residuals,
+					demotesFactoryHosts,
+				}),
 			);
 		},
 	};

@@ -1317,7 +1317,9 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
 		expect(result.code).toContain('import { createCss } from "pandwind/css";');
-		expect(result.code).toContain('const styles = { "card": css.class({ padding: 2, color: "red" }) };');
+		expect(result.code).toContain(
+			'const styles = { "card": css.class({ padding: 2, color: "red" }) };',
+		);
 		expect(result.code).toContain("styles.card");
 		expect(result.code).not.toContain("StyleSheet.create");
 	});
