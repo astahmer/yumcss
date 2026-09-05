@@ -43,7 +43,7 @@ test("chakra-ui -> aphrodite: migrates concrete chakra-ui syntax to aphrodite", 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("chakra-ui -> aphrodite: carries concrete chakra-ui dynamics or edge syntax
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -108,7 +108,7 @@ test("chakra-ui -> aphrodite: lowers concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,7 +130,7 @@ test("chakra-ui -> aphrodite: lowers concrete theme and project context variants
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -161,7 +161,7 @@ test("chakra-ui -> aphrodite: resolves concrete token references with project co
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -191,7 +191,7 @@ test("chakra-ui -> aphrodite: preserves malformed concrete chakra-ui input", () 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box  className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
+		export const App = () => <Box className={css(StyleSheet.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "outcomes": [

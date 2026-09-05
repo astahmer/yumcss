@@ -43,7 +43,7 @@ test("mantine -> treat: migrates concrete mantine syntax to treat", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "red" })}/>;",
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "red" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> treat: carries concrete mantine dynamics or edge syntax explici
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" })}/>;",
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> treat: lowers concrete theme and project context variants", () 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> treat: lowers concrete theme and project context variants", () 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> treat: resolves concrete token references with project context"
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "brand.0" })}/>;",
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "brand.0" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> treat: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@/styles.treat";
-		export const App = () => <Box  className={style({ "padding": "var(--mantine-spacing-md)", "color": "red" })}/>;
+		export const App = () => <Box className={style({ "padding": "var(--mantine-spacing-md)", "color": "red" })}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

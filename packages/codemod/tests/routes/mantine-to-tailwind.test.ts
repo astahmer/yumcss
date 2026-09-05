@@ -42,7 +42,7 @@ test("mantine -> tailwind: migrates concrete mantine syntax to tailwind", () => 
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -71,7 +71,7 @@ test("mantine -> tailwind: carries concrete mantine dynamics or edge syntax expl
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.foreground]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.foreground]"}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -104,7 +104,7 @@ test("mantine -> tailwind: lowers concrete theme and project context variants", 
 		  "amber": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -125,7 +125,7 @@ test("mantine -> tailwind: lowers concrete theme and project context variants", 
 		  "blue": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -155,7 +155,7 @@ test("mantine -> tailwind: resolves concrete token references with project conte
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:brand.0]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:brand.0]"}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -184,7 +184,7 @@ test("mantine -> tailwind: preserves malformed concrete mantine input", () => {
 		{
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

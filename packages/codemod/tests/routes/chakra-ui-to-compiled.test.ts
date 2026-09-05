@@ -43,7 +43,7 @@ test("chakra-ui -> compiled: migrates concrete chakra-ui syntax to compiled", ()
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;",
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("chakra-ui -> compiled: carries concrete chakra-ui dynamics or edge syntax 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -108,7 +108,7 @@ test("chakra-ui -> compiled: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,7 +130,7 @@ test("chakra-ui -> compiled: lowers concrete theme and project context variants"
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -161,7 +161,7 @@ test("chakra-ui -> compiled: resolves concrete token references with project con
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" })}/>;",
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -191,7 +191,7 @@ test("chakra-ui -> compiled: preserves malformed concrete chakra-ui input", () =
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@compiled/react";
-		export const App = () => <Box  className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;
+		export const App = () => <Box className={css({ "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" })}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "outcomes": [

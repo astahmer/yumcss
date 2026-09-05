@@ -66,11 +66,10 @@ test("bamboo -> chakra-ui -> bamboo: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
+		    "code": "import { css } from "styled-system/css";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <chakra.div  className={css({ padding: "1rem", color: "red" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -270,11 +269,10 @@ test("bamboo -> chakra-ui -> bamboo: resolves token references across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "styled-system/css";
+		    "code": "import { css } from "styled-system/css";
 
 		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <chakra.div  className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

@@ -684,6 +684,10 @@ function runAdapterMigrationInternal(
 	};
 	const residuals: StyleProgramResidual[] = [...parsed.residuals];
 	const sourceModulesToRemove = new Set<string>();
+	// Host rewrites that collapse a factory-qualified host to its canonical
+	// element leave the source factory namespace without references. The runner
+	// owns that cleanup because several rewrite batches may demote the same tag.
+	const demotedFactoryHosts = new Set<string>();
 	const loweringPlans: StyleLoweringPlan[] = [];
 	const outcomes: AdapterMigrationOutcome[] = [];
 	const convertedBindings = new Set<string>();
@@ -1587,6 +1591,11 @@ function runAdapterMigrationInternal(
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
 		for (const module of rewrite.removeSourceModules ?? []) sourceModulesToRemove.add(module);
+		for (const tag of rewrite.demotedFactoryHosts ?? []) {
+			// The host rewrite reports the qualified tag it demoted; only the
+			// factory namespace is an import specifier candidate.
+			demotedFactoryHosts.add(tag.split(".")[0] ?? tag);
+		}
 		residuals.push(...rewrite.residuals);
 	}
 	for (const request of targetComponentRewrites) {
@@ -1755,14 +1764,18 @@ function runAdapterMigrationInternal(
 	}
 	// Keep source imports whenever a skipped/residual match still depends on the
 	// source runtime. Removing them would turn a safe residual into broken code.
-	let code =
-		converted > 0 && skipped === 0 && residuals.length === 0
-			? MigrationOutput.removeSourceImports(
-					runtimeEdited,
-					[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
-					sourceAdapter.sourceModuleMatchers,
-				)
-			: runtimeEdited;
+	let code = runtimeEdited;
+	if (converted > 0 && skipped === 0 && residuals.length === 0) {
+		code = MigrationOutput.removeSourceImports(
+			code,
+			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
+			sourceAdapter.sourceModuleMatchers,
+		);
+		// A demoted factory-qualified host no longer references its factory
+		// namespace; its import would make the emitted module import an API the
+		// target dialect never calls.
+		code = MigrationOutput.removeUnreferencedImportSpecifiers(code, [...demotedFactoryHosts]);
+	}
 	if (imports.has('import { createRuntimeCss } from "pandwind/css/runtime";')) {
 		imports.delete('import { createCss } from "pandwind/css";');
 		imports.delete("const css = createCss();");

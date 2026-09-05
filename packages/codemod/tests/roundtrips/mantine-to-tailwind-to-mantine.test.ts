@@ -44,7 +44,7 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:red]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -66,7 +66,7 @@ test("mantine -> tailwind -> mantine: preserves an actionable concrete round tri
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: dynamic)
 		import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--mantine-spacing-md)", color: "red" }}/>;",
+		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "red" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -110,7 +110,7 @@ test("mantine -> tailwind -> mantine: retains edge semantics without silent loss
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.foreground]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.foreground]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -132,7 +132,7 @@ test("mantine -> tailwind -> mantine: retains edge semantics without silent loss
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: dynamic)
 		import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--mantine-spacing-md)", color: "theme.foreground" }}/>;",
+		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.foreground" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -186,7 +186,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -208,7 +208,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: dynamic)
 		import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
+		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -241,7 +241,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:theme.colors.brand]"}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -263,7 +263,7 @@ test("mantine -> tailwind -> mantine: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: dynamic)
 		import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
+		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -308,7 +308,7 @@ test("mantine -> tailwind -> mantine: resolves token references across both conc
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		export const App = () => <Box  className={"[padding:var(--mantine-spacing-md)] [color:brand.0]"}/>;",
+		export const App = () => <Box className={"[padding:var(--mantine-spacing-md)] [color:brand.0]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -330,7 +330,7 @@ test("mantine -> tailwind -> mantine: resolves token references across both conc
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> mantine | parse-residual: dynamic)
 		import { Box } from "@mantine/core";
-		export const App = () => <Box  style={{ padding: "var(--mantine-spacing-md)", color: "brand.0" }}/>;",
+		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "brand.0" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

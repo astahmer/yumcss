@@ -45,7 +45,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", () => {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -69,7 +69,7 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", () => {
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={{ "style": css.class({ padding: "16px", color: "red" }) }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "red" }) }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -104,7 +104,7 @@ test("mui -> jss -> mui: retains edge semantics without silent loss", () => {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" } }).attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" } }).attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -128,7 +128,7 @@ test("mui -> jss -> mui: retains edge semantics without silent loss", () => {
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -173,7 +173,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -197,7 +197,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -221,7 +221,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -245,7 +245,7 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -281,7 +281,7 @@ test("mui -> jss -> mui: resolves token references across both concrete legs", (
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--mui-primary-main)" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--mui-primary-main)" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -305,7 +305,7 @@ test("mui -> jss -> mui: resolves token references across both concrete legs", (
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={{ "style": css.class({ padding: "16px", color: "var(--mui-primary-main)" }) }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--mui-primary-main)" }) }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

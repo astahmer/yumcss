@@ -66,11 +66,10 @@ test("compiled -> chakra-ui -> compiled: preserves an actionable concrete round 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "@compiled/react";
+		    "code": "import { css } from "@compiled/react";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <chakra.div  className={css({ "padding": "1rem", "color": "red" })}/>;",
+		export const App = () => <div className={css({ "padding": "1rem", "color": "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -270,11 +269,10 @@ test("compiled -> chakra-ui -> compiled: resolves token references across both c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "@compiled/react";
+		    "code": "import { css } from "@compiled/react";
 
 		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <chakra.div  className={css({ "padding": "1rem", "color": "$colors.brand" })}/>;",
+		export const App = () => <div className={css({ "padding": "1rem", "color": "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

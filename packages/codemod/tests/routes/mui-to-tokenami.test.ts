@@ -43,7 +43,7 @@ test("mui -> tokenami: migrates concrete mui syntax to tokenami", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "red" })}/>;",
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mui -> tokenami: carries concrete mui dynamics or edge syntax explicitly",
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={css({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mui -> tokenami: lowers concrete theme and project context variants", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mui -> tokenami: lowers concrete theme and project context variants", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mui -> tokenami: resolves concrete token references with project context",
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "var(--mui-primary-main)" })}/>;",
+		export const App = () => <Box className={css({ padding: "16px", color: "var(--mui-primary-main)" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mui -> tokenami: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "16px", color: "red" })}/>;
+		export const App = () => <Box className={css({ padding: "16px", color: "red" })}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "outcomes": [

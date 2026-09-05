@@ -43,7 +43,7 @@ test("mantine -> jss: migrates concrete mantine syntax to jss", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> jss: carries concrete mantine dynamics or edge syntax explicitl
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> jss: lowers concrete theme and project context variants", () =>
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> jss: lowers concrete theme and project context variants", () =>
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> jss: resolves concrete token references with project context", 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> jss: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

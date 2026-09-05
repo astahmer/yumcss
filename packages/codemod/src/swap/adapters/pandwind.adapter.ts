@@ -42,6 +42,10 @@ import { dirnameDocumentPath, isAbsoluteDocumentPath, joinDocumentPath } from ".
 const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 	handlesHostRewrites: true,
 	handlesFrameworkSemantics: true,
+	// Pandwind is a compose target: any source factory host keeps styling the
+	// element it was authored on, so the shared carrier projection must not
+	// collapse it to a bare intrinsic.
+	demotesFactoryHosts: false,
 	hostRepresentation: StyleHostRepresentationKind.Class,
 	standaloneHostRepresentation: StyleHostRepresentationKind.Class,
 	resolveHostRepresentation: ({ program, hasHostContext, framework }) => {

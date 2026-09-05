@@ -43,7 +43,7 @@ test("mantine -> tokenami: migrates concrete mantine syntax to tokenami", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> tokenami: carries concrete mantine dynamics or edge syntax expl
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> tokenami: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> tokenami: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> tokenami: resolves concrete token references with project conte
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> tokenami: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@tokenami/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

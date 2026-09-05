@@ -45,7 +45,7 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -67,7 +67,7 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -116,7 +116,7 @@ test("mantine -> jss -> mantine: retains edge semantics without silent loss", ()
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -138,7 +138,7 @@ test("mantine -> jss -> mantine: retains edge semantics without silent loss", ()
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -197,7 +197,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -219,7 +219,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -257,7 +257,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -279,7 +279,7 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -329,7 +329,7 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -351,7 +351,7 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import jss from "jss";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
 		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
 		    "converted": 0,
 		    "outcomes": [

@@ -43,7 +43,7 @@ test("mui -> style9: migrates concrete mui syntax to style9", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mui -> style9: carries concrete mui dynamics or edge syntax explicitly", (
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" } }).style)} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" } }).style)} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mui -> style9: lowers concrete theme and project context variants", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mui -> style9: lowers concrete theme and project context variants", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" } }).style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mui -> style9: resolves concrete token references with project context", (
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "var(--mui-primary-main)" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "var(--mui-primary-main)" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mui -> style9: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "16px", "color": "red" } }).style)}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "outcomes": [

@@ -70,7 +70,7 @@ test("tokenami -> mui -> tokenami: preserves an actionable concrete round trip",
 		import { css } from "@tokenami/css";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <Box component="div"  className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -135,7 +135,7 @@ test("tokenami -> mui -> tokenami: retains edge semantics without silent loss", 
 		    "code": "import { css } from "@tokenami/css";
 		import { Box } from "@mui/material";
 		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <Box component="div"  className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -210,7 +210,7 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		      "code": "import { css } from "@tokenami/css";
 		import { Box } from "@mui/material";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div"  className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -264,7 +264,7 @@ test("tokenami -> mui -> tokenami: preserves concrete theme and project context 
 		      "code": "import { css } from "@tokenami/css";
 		import { Box } from "@mui/material";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <Box component="div"  className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -325,7 +325,7 @@ test("tokenami -> mui -> tokenami: resolves token references across both concret
 		import { css } from "@tokenami/css";
 
 		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <Box component="div"  className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <Box component="div" className={css({ sx: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

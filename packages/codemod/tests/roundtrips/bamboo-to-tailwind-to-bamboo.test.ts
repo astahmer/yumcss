@@ -68,7 +68,7 @@ test("bamboo -> tailwind -> bamboo: preserves an actionable concrete round trip"
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "red" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -200,7 +200,7 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		      "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:#f97316]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "#f97316" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "#f97316" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -247,7 +247,7 @@ test("bamboo -> tailwind -> bamboo: preserves concrete theme and project context
 		      "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:#2563eb]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "#2563eb" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -306,7 +306,7 @@ test("bamboo -> tailwind -> bamboo: resolves token references across both concre
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:$colors.brand]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

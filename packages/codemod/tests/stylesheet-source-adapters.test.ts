@@ -714,7 +714,7 @@ describe("stylesheet source adapters", () => {
 	test("uses the installed Sass compiler through the adapter port", async () => {
 		const pandwind = catalog.registry.get(CodemodAdapterId.Pandwind);
 		const sass = createSassAdapter({
-			async importPackage() {
+			async importPackage<T>() {
 				return {
 					compileString: (source: string) => ({
 						css: source.replace("$tone", "red"),

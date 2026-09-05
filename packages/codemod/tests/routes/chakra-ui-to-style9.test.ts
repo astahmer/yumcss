@@ -43,7 +43,7 @@ test("chakra-ui -> style9: migrates concrete chakra-ui syntax to style9", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("chakra-ui -> style9: carries concrete chakra-ui dynamics or edge syntax ex
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -108,7 +108,7 @@ test("chakra-ui -> style9: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,7 +130,7 @@ test("chakra-ui -> style9: lowers concrete theme and project context variants", 
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "var(--pandwind-dynamic-bbwvz3)" } }).style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -161,7 +161,7 @@ test("chakra-ui -> style9: resolves concrete token references with project conte
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "$colors.brand" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -191,7 +191,7 @@ test("chakra-ui -> style9: preserves malformed concrete chakra-ui input", () => 
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--chakra-spacing-4)", "backgroundColor": "tomato" } }).style)}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "outcomes": [

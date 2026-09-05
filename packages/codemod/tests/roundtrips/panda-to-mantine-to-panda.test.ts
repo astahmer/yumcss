@@ -68,7 +68,7 @@ test("panda -> mantine -> panda: preserves an actionable concrete round trip", (
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <div  className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -131,7 +131,7 @@ test("panda -> mantine -> panda: retains edge semantics without silent loss", ()
 		    "changed": true,
 		    "code": "import { css } from "styled-system/css";
 		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <div  className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -204,7 +204,7 @@ test("panda -> mantine -> panda: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <div  className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -256,7 +256,7 @@ test("panda -> mantine -> panda: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { css } from "styled-system/css";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <div  className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -315,7 +315,7 @@ test("panda -> mantine -> panda: resolves token references across both concrete 
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <div  className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ style: "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

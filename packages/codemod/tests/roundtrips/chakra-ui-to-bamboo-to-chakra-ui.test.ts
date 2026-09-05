@@ -45,7 +45,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves an actionable concrete round t
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -68,7 +68,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves an actionable concrete round t
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
+		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -103,7 +103,7 @@ test("chakra-ui -> bamboo -> chakra-ui: retains edge semantics without silent lo
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
+		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -127,7 +127,7 @@ test("chakra-ui -> bamboo -> chakra-ui: retains edge semantics without silent lo
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
+		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -173,7 +173,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -196,7 +196,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves concrete theme and project con
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -220,7 +220,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves concrete theme and project con
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -243,7 +243,7 @@ test("chakra-ui -> bamboo -> chakra-ui: preserves concrete theme and project con
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -279,7 +279,7 @@ test("chakra-ui -> bamboo -> chakra-ui: resolves token references across both co
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -302,7 +302,7 @@ test("chakra-ui -> bamboo -> chakra-ui: resolves token references across both co
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

@@ -45,7 +45,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves an actionable concrete round trip
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -68,7 +68,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves an actionable concrete round trip
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -103,7 +103,7 @@ test("chakra-ui -> jss -> chakra-ui: retains edge semantics without silent loss"
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -127,7 +127,7 @@ test("chakra-ui -> jss -> chakra-ui: retains edge semantics without silent loss"
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.attach().classes.style}/>;
+		export const App = () => <Box className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.attach().classes.style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -173,7 +173,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -196,7 +196,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -220,7 +220,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -243,7 +243,7 @@ test("chakra-ui -> jss -> chakra-ui: preserves concrete theme and project contex
 		      "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -279,7 +279,7 @@ test("chakra-ui -> jss -> chakra-ui: resolves token references across both concr
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -302,7 +302,7 @@ test("chakra-ui -> jss -> chakra-ui: resolves token references across both concr
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box  className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.attach().classes.style}/>;",
+		export const App = () => <Box className={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.attach().classes.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

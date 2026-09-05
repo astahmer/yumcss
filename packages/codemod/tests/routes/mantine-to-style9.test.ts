@@ -43,7 +43,7 @@ test("mantine -> style9: migrates concrete mantine syntax to style9", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> style9: carries concrete mantine dynamics or edge syntax explic
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> style9: lowers concrete theme and project context variants", ()
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> style9: lowers concrete theme and project context variants", ()
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> style9: resolves concrete token references with project context
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> style9: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

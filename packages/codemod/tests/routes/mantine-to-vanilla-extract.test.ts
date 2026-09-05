@@ -43,7 +43,7 @@ test("mantine -> vanilla-extract: migrates concrete mantine syntax to vanilla-ex
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> vanilla-extract: carries concrete mantine dynamics or edge synt
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> vanilla-extract: lowers concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> vanilla-extract: lowers concrete theme and project context vari
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> vanilla-extract: resolves concrete token references with projec
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> vanilla-extract: preserves malformed concrete mantine input", (
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { style } from "@vanilla-extract/css";
-		export const App = () => <Box  className={style({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;
+		export const App = () => <Box className={style({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

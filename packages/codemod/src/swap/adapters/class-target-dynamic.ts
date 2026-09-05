@@ -6,8 +6,10 @@ import type { StyleProgram, StyleProgramResidual } from "../semantic-ir.ts";
 export interface DynamicClassHostContext {
 	readonly binding?: string;
 	readonly framework?: string;
-	readonly representationKind?: StyleRepresentationKind;
-	readonly residuals?: readonly StyleProgramResidual[];
+		readonly representationKind?: StyleRepresentationKind;
+		readonly residuals?: readonly StyleProgramResidual[];
+		/** Collapse source factory hosts to their canonical element; compose targets opt out. */
+		demotesFactoryHosts?: boolean;
 }
 
 /** Shared host projection for class compilers that support CSS custom properties. */
@@ -94,7 +96,11 @@ export class DynamicClassHost {
 		target: string,
 		code: string,
 		context: DynamicClassHostContext,
-	): { code: string; residuals: readonly StyleProgramResidual[] } {
+	): {
+		code: string;
+		residuals: readonly StyleProgramResidual[];
+		demotedFactoryHosts?: readonly string[];
+	} {
 		if (context.representationKind !== StyleRepresentationKind.CustomProperty)
 			return { code, residuals: [] };
 		if (
@@ -185,7 +191,11 @@ export class DynamicClassHost {
 			readonly emittedExpression: string;
 			readonly program: StyleProgram;
 		},
-	): { code: string; residuals: readonly StyleProgramResidual[] } {
+	): {
+		code: string;
+		residuals: readonly StyleProgramResidual[];
+		demotedFactoryHosts?: readonly string[];
+	} {
 		if (
 			context.framework !== undefined &&
 			![BuiltinHostFramework.React, BuiltinHostFramework.Preact].includes(
@@ -223,6 +233,29 @@ export class DynamicClassHost {
 			const whitespace = index > 0 && /[ \t]/u.test(projected[index - 1]!) ? 1 : 0;
 			projected = `${projected.slice(0, index - whitespace)}${projected.slice(index + attribute.length)}`;
 		}
+		// A factory-qualified source host (for example a JSX namespace member) is a
+		// source-adapter wrapper, not an intrinsic element. A replacement target
+		// cannot call a foreign factory, so project onto the canonical element the
+		// member names (the lowercase segment after the last dot). Compose targets
+		// opt out through demotesFactoryHosts and keep the authored host.
+		const qualifiedTag =
+			context.demotesFactoryHosts === false
+				? undefined
+				: /^<\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)(?=[\s/>])/u.exec(
+					projected,
+				)?.[1];
+		const canonicalTag = qualifiedTag
+			? /^<\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\.([a-z][\w-]*)\b/u.exec(projected)?.[1]
+			: undefined;
+		let demoted: string | undefined;
+		if (qualifiedTag !== undefined && canonicalTag !== undefined && qualifiedTag !== canonicalTag) {
+			const escaped = qualifiedTag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			projected = projected.replace(
+				new RegExp(`^<\\s*${escaped}(?=[\\s/>])`, "u"),
+				`<${canonicalTag}`,
+			);
+			demoted = qualifiedTag;
+		}
 		if (/\bstyle\s*=\s*/u.test(projected))
 			return {
 				code,
@@ -251,9 +284,26 @@ export class DynamicClassHost {
 		const insertion = /\/\s*>$/u.test(projected) ? projected.length - 2 : projected.length - 1;
 		const styleExpression = DynamicClassHost.styleExpression(context.residuals);
 		const style = styleExpression === undefined ? "" : ` style={${styleExpression}}`;
-		projected = `${projected.slice(0, insertion)} className={${context.emittedExpression}}${style}${projected.slice(insertion)}`;
+		// Attribute removal leaves the tag separator behind; the inserted attribute
+		// carries its own space, so trim the tag first to keep exactly one.
+		const prefix = projected.slice(0, insertion).replace(/[ \t]+$/u, "");
+		projected = `${prefix} className={${context.emittedExpression}}${style}${projected.slice(insertion)}`;
+		if (demoted !== undefined) {
+			const closingMatch = code
+				.slice(start + host.openingTag.length)
+				.match(new RegExp(`</\\s*${demoted.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}>`, "u"));
+			if (closingMatch?.index !== undefined) {
+				const closingStart = start + host.openingTag.length + closingMatch.index;
+				return {
+					code: `${code.slice(0, start)}${projected}${code.slice(start + host.openingTag.length, closingStart)}</${canonicalTag}>${code.slice(closingStart + closingMatch[0].length)}`,
+					residuals: [],
+					demotedFactoryHosts: [demoted],
+				};
+			}
+		}
 		return {
 			code: `${code.slice(0, start)}${projected}${code.slice(start + host.openingTag.length)}`,
+			...(demoted === undefined ? {} : { demotedFactoryHosts: [demoted] }),
 			residuals: [],
 		};
 	}

@@ -68,7 +68,7 @@ test("panda -> tailwind -> panda: preserves an actionable concrete round trip", 
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "red" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -200,7 +200,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		      "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:#f97316]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "#f97316" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "#f97316" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -247,7 +247,7 @@ test("panda -> tailwind -> panda: preserves concrete theme and project context v
 		      "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:#2563eb]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "#2563eb" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "#2563eb" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -306,7 +306,7 @@ test("panda -> tailwind -> panda: resolves token references across both concrete
 		    "code": "import { css } from "styled-system/css";
 
 		export const card = "[padding:1rem] [color:$colors.brand]";
-		export const App = () => <div  className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
+		export const App = () => <div className={css({ padding: "1rem", color: "$colors.brand" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

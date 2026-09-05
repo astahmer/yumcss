@@ -68,7 +68,7 @@ test("linaria -> tailwind -> linaria: preserves an actionable concrete round tri
 		    "code": "import { css } from "@linaria/core";
 
 		export const card = "[padding:1rem] [color:red]";
-		export const App = () => <div  className={css\`padding: 1rem; color: red;\`}/>;",
+		export const App = () => <div className={css\`padding: 1rem; color: red;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -306,7 +306,7 @@ test("linaria -> tailwind -> linaria: resolves token references across both conc
 		    "code": "import { css } from "@linaria/core";
 
 		export const card = "[padding:1rem] [color:var(--colors-brand)]";
-		export const App = () => <div  className={css\`padding: 1rem; color: var(--colors-brand);\`}/>;",
+		export const App = () => <div className={css\`padding: 1rem; color: var(--colors-brand);\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

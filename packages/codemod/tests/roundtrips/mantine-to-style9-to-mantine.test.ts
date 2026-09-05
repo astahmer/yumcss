@@ -45,7 +45,7 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -67,7 +67,7 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
 		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -116,7 +116,7 @@ test("mantine -> style9 -> mantine: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -138,7 +138,7 @@ test("mantine -> style9 -> mantine: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
 		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -197,7 +197,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -219,7 +219,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
 		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -257,7 +257,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -279,7 +279,7 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
 		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -329,7 +329,7 @@ test("mantine -> style9 -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
+		export const App = () => <Box className={style9(style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -351,7 +351,7 @@ test("mantine -> style9 -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box  className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
 		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
 		    "converted": 0,
 		    "outcomes": [

@@ -44,7 +44,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves an actionable concrete round
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  className={"[padding:var(--chakra-spacing-4)] [background-color:tomato]"}/>;",
+		export const App = () => <Box className={"[padding:var(--chakra-spacing-4)] [background-color:tomato]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -66,7 +66,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves an actionable concrete round
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: dynamic)
 		import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;",
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -110,7 +110,7 @@ test("chakra-ui -> tailwind -> chakra-ui: retains edge semantics without silent 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  className={"[padding:var(--chakra-spacing-4)] [background-color:tomato]"}/>;
+		export const App = () => <Box className={"[padding:var(--chakra-spacing-4)] [background-color:tomato]"}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -133,7 +133,7 @@ test("chakra-ui -> tailwind -> chakra-ui: retains edge semantics without silent 
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: dynamic)
 		import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -188,7 +188,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  className={"[padding:var(--chakra-spacing-4)] [background-color:var(--pandwind-dynamic-bbwvz3)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={"[padding:var(--chakra-spacing-4)] [background-color:var(--pandwind-dynamic-bbwvz3)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -210,7 +210,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: dynamic)
 		import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
+		export const App = () => <Box style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -243,7 +243,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		    "forward": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  className={"[padding:var(--chakra-spacing-4)] [background-color:var(--pandwind-dynamic-bbwvz3)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={"[padding:var(--chakra-spacing-4)] [background-color:var(--pandwind-dynamic-bbwvz3)]"} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -265,7 +265,7 @@ test("chakra-ui -> tailwind -> chakra-ui: preserves concrete theme and project c
 		      "changed": true,
 		      "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: dynamic)
 		import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
+		export const App = () => <Box style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -310,7 +310,7 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token references across both 
 		  "forward": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  className={"[padding:var(--chakra-spacing-4)] [background-color:$colors.brand]"}/>;",
+		export const App = () => <Box className={"[padding:var(--chakra-spacing-4)] [background-color:$colors.brand]"}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -332,7 +332,7 @@ test("chakra-ui -> tailwind -> chakra-ui: resolves token references across both 
 		    "changed": true,
 		    "code": "// pandwind:migrate-skip (route: tailwind -> chakra-ui | parse-residual: dynamic)
 		import { Box } from "@chakra-ui/react";
-		export const App = () => <Box  css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }}/>;",
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

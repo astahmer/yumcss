@@ -96,6 +96,7 @@ export function projectDynamicClassMigration(
 	const preservesResidualKinds = policy.preservesResidualKindsForRepresentation;
 	const rewriteHost = policy.rewriteHost;
 	const postRewriteHost = policy.postRewriteHost;
+	const demotesFactoryHosts = policy.demotesFactoryHosts ?? true;
 	const finalize = (
 		context: Parameters<NonNullable<AdapterTargetMigrationPolicy["rewriteHost"]>>[0],
 		result: ReturnType<NonNullable<AdapterTargetMigrationPolicy["rewriteHost"]>>,
@@ -174,6 +175,7 @@ export function projectDynamicClassMigration(
 						residuals: context.residuals,
 						emittedExpression: context.emittedExpression,
 						program: context.program,
+						demotesFactoryHosts,
 					}),
 				);
 			if (context.representationKind !== StyleRepresentationKind.CustomProperty)
@@ -182,10 +184,11 @@ export function projectDynamicClassMigration(
 				context,
 				DynamicClassHost.rewrite(targetId, context.code, {
 					binding: context.binding,
-					framework: context.framework,
-					representationKind: context.representationKind,
-					residuals: context.residuals,
-				}),
+				framework: context.framework,
+				representationKind: context.representationKind,
+				residuals: context.residuals,
+				demotesFactoryHosts,
+			}),
 			);
 		},
 	};

@@ -43,7 +43,7 @@ test("chakra-ui -> linaria: migrates concrete chakra-ui syntax to linaria", () =
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("chakra-ui -> linaria: carries concrete chakra-ui dynamics or edge syntax e
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -108,7 +108,7 @@ test("chakra-ui -> linaria: lowers concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: var(--pandwind-dynamic-bbwvz3);\`} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: var(--pandwind-dynamic-bbwvz3);\`} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,7 +130,7 @@ test("chakra-ui -> linaria: lowers concrete theme and project context variants",
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: var(--pandwind-dynamic-bbwvz3);\`} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: var(--pandwind-dynamic-bbwvz3);\`} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -161,7 +161,7 @@ test("chakra-ui -> linaria: resolves concrete token references with project cont
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: $colors.brand;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: $colors.brand;\`}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -191,7 +191,7 @@ test("chakra-ui -> linaria: preserves malformed concrete chakra-ui input", () =>
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;
+		export const App = () => <Box className={css\`padding: var(--chakra-spacing-4); background-color: tomato;\`}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "outcomes": [

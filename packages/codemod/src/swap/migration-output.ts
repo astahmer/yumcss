@@ -19,6 +19,49 @@ export class MigrationOutput {
 			);
 		});
 	}
+	/** Remove import specifiers whose binding name no longer appears in the
+	 * module body; a statement left with no specifiers is removed with its line. */
+	static removeUnreferencedImportSpecifiers(code: string, candidates: readonly string[]): string {
+		let result = code;
+		for (const candidate of candidates) {
+			const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			// Judge references against the module with import statements stripped,
+			// so the candidate's own declaration never keeps itself alive.
+			const body = result.replace(/import\s*\{[^}]*\}\s*from\s*("[^"]+"|'[^']+')/gu, "");
+			if (new RegExp(`\\b${escaped}\\b`, "u").test(body)) continue;
+			const importPattern = new RegExp(
+				`import\\s*\\{([^}]*)\\}\\s*from\\s*("[^"]+"|'[^']+')`,
+				"g",
+			);
+			const edits: Array<{ start: number; end: number; text: string }> = [];
+			for (const match of result.matchAll(importPattern)) {
+				const start = match.index ?? 0;
+				const clause = match[1] ?? "";
+				let removed = false;
+				const kept: string[] = [];
+				for (const part of clause.split(",")) {
+					const trimmed = part.trim();
+					if (trimmed === "") continue;
+					const name = trimmed.split(/\s+as\s+/u).pop() ?? "";
+					if (name === candidate) {
+						removed = true;
+						continue;
+					}
+					kept.push(trimmed);
+				}
+				if (!removed) continue;
+				const replacement = kept.length === 0 ? "" : `import { ${kept.join(", ")} } from ${match[2]};`;
+				const lineStart = result.lastIndexOf("\n", start) + 1;
+				let lineEnd = start + match[0].length;
+				if (result[lineEnd] === ";") lineEnd += 1;
+				if (replacement === "" && result.slice(lineEnd).startsWith("\n")) lineEnd += 1;
+				edits.push({ start: lineStart, end: lineEnd, text: replacement });
+			}
+			for (const edit of edits.toReversed())
+				result = result.slice(0, edit.start) + edit.text + result.slice(edit.end);
+		}
+		return result;
+	}
 
 	static consolidateImports(statements: Iterable<string>): string[] {
 		const grouped = new Map<string, { defaultImport?: string; named: Set<string> }>();

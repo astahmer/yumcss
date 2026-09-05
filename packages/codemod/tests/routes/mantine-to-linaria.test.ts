@@ -43,7 +43,7 @@ test("mantine -> linaria: migrates concrete mantine syntax to linaria", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: red;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: red;\`}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mantine -> linaria: carries concrete mantine dynamics or edge syntax expli
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: theme.foreground;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: theme.foreground;\`}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mantine -> linaria: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mantine -> linaria: lowers concrete theme and project context variants", (
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: theme.colors.brand;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mantine -> linaria: resolves concrete token references with project contex
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: brand.0;\`}/>;",
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: brand.0;\`}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mantine -> linaria: preserves malformed concrete mantine input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mantine/core";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: var(--mantine-spacing-md); color: red;\`}/>;
+		export const App = () => <Box className={css\`padding: var(--mantine-spacing-md); color: red;\`}/>;
 		const unfinished = { /* unfinished mantine */",
 		  "converted": 1,
 		  "outcomes": [

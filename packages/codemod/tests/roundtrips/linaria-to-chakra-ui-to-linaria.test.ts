@@ -66,11 +66,10 @@ test("linaria -> chakra-ui -> linaria: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "@linaria/core";
+		    "code": "import { css } from "@linaria/core";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <chakra.div  className={css\`padding: 1rem; color: red;\`}/>;",
+		export const App = () => <div className={css\`padding: 1rem; color: red;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -285,11 +284,10 @@ test("linaria -> chakra-ui -> linaria: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { chakra } from "@chakra-ui/react";
-		import { css } from "@linaria/core";
+		    "code": "import { css } from "@linaria/core";
 
 		export const card = { padding: "1rem", color: "var(--colors-brand)" };
-		export const App = () => <chakra.div  className={css\`padding: 1rem; color: var(--colors-brand);\`}/>;",
+		export const App = () => <div className={css\`padding: 1rem; color: var(--colors-brand);\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

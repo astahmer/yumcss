@@ -43,7 +43,7 @@ test("mui -> jss: migrates concrete mui syntax to jss", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("mui -> jss: carries concrete mui dynamics or edge syntax explicitly", () =
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" } }).attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" } }).attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -107,7 +107,7 @@ test("mui -> jss: lowers concrete theme and project context variants", () => {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -129,7 +129,7 @@ test("mui -> jss: lowers concrete theme and project context variants", () => {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -160,7 +160,7 @@ test("mui -> jss: resolves concrete token references with project context", () =
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--mui-primary-main)" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "var(--mui-primary-main)" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -190,7 +190,7 @@ test("mui -> jss: preserves malformed concrete mui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@mui/material";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished mui */",
 		  "converted": 1,
 		  "outcomes": [

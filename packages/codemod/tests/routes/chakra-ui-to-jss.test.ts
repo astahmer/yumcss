@@ -43,7 +43,7 @@ test("chakra-ui -> jss: migrates concrete chakra-ui syntax to jss", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -73,7 +73,7 @@ test("chakra-ui -> jss: carries concrete chakra-ui dynamics or edge syntax expli
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		  "converted": 1,
 		  "outcomes": [
@@ -108,7 +108,7 @@ test("chakra-ui -> jss: lowers concrete theme and project context variants", () 
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -130,7 +130,7 @@ test("chakra-ui -> jss: lowers concrete theme and project context variants", () 
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" } }).attach().classes.style} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -161,7 +161,7 @@ test("chakra-ui -> jss: resolves concrete token references with project context"
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).attach().classes.style}/>;",
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" } }).attach().classes.style}/>;",
 		  "converted": 1,
 		  "outcomes": [
 		    {
@@ -191,7 +191,7 @@ test("chakra-ui -> jss: preserves malformed concrete chakra-ui input", () => {
 		  "changed": true,
 		  "code": "import { Box } from "@chakra-ui/react";
 		import jss from "jss";
-		export const App = () => <Box  className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
+		export const App = () => <Box className={jss.createStyleSheet({ style: { padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" } }).attach().classes.style}/>;
 		const unfinished = { /* unfinished chakra-ui */",
 		  "converted": 1,
 		  "outcomes": [

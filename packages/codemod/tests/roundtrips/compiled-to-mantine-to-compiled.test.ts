@@ -68,7 +68,7 @@ test("compiled -> mantine -> compiled: preserves an actionable concrete round tr
 		    "code": "import { css } from "@compiled/react";
 
 		export const card = { padding: "1rem", color: "red" };
-		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -131,7 +131,7 @@ test("compiled -> mantine -> compiled: retains edge semantics without silent los
 		    "changed": true,
 		    "code": "import { css } from "@compiled/react";
 		export const card = { padding: "1rem", color: theme.foreground };
-		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -204,7 +204,7 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -256,7 +256,7 @@ test("compiled -> mantine -> compiled: preserves concrete theme and project cont
 		      "changed": true,
 		      "code": "import { css } from "@compiled/react";
 		export const card = { padding: "1rem", color: theme.colors.brand };
-		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -315,7 +315,7 @@ test("compiled -> mantine -> compiled: resolves token references across both con
 		    "code": "import { css } from "@compiled/react";
 
 		export const card = { padding: "1rem", color: "$colors.brand" };
-		export const App = () => <div  className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
+		export const App = () => <div className={css({ "style": "var(--pandwind-dynamic-11s01un)" })} style={{ "--pandwind-dynamic-11s01un": String(card) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

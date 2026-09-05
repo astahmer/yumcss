@@ -45,7 +45,7 @@ test("mantine -> bamboo -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -67,7 +67,7 @@ test("mantine -> bamboo -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "red" })}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -116,7 +116,7 @@ test("mantine -> bamboo -> mantine: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -138,7 +138,7 @@ test("mantine -> bamboo -> mantine: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "theme.foreground" })}/>;",
 		    "converted": 0,
 		    "outcomes": [
@@ -197,7 +197,7 @@ test("mantine -> bamboo -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -219,7 +219,7 @@ test("mantine -> bamboo -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -257,7 +257,7 @@ test("mantine -> bamboo -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -279,7 +279,7 @@ test("mantine -> bamboo -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" })}/>;",
 		      "converted": 0,
 		      "outcomes": [
@@ -329,7 +329,7 @@ test("mantine -> bamboo -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={css({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
+		export const App = () => <Box className={css({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -351,7 +351,7 @@ test("mantine -> bamboo -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import { css } from "styled-system/css";
-		export const App = () => <Box  className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
+		export const App = () => <Box className={// pandwind:migrate-skip (route: bamboo -> mantine | lowering-residual: host-framework, validation)
 		css({ padding: "var(--mantine-spacing-md)", color: "brand.0" })}/>;",
 		    "converted": 0,
 		    "outcomes": [

@@ -45,7 +45,7 @@ test("mui -> linaria -> mui: preserves an actionable concrete round trip", () =>
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: 16px; color: red;\`}/>;",
+		export const App = () => <Box className={css\`padding: 16px; color: red;\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -69,7 +69,7 @@ test("mui -> linaria -> mui: preserves an actionable concrete round trip", () =>
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "padding": "16px", "color": "red" })}/>;",
+		export const App = () => <Box className={css.class({ "padding": "16px", "color": "red" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -104,7 +104,7 @@ test("mui -> linaria -> mui: retains edge semantics without silent loss", () => 
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: 16px; color: var(--pandwind-dynamic-5qa8dh);\`} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={css\`padding: 16px; color: var(--pandwind-dynamic-5qa8dh);\`} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -128,7 +128,7 @@ test("mui -> linaria -> mui: retains edge semantics without silent loss", () => 
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -173,7 +173,7 @@ test("mui -> linaria -> mui: preserves concrete theme and project context varian
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: 16px; color: var(--pandwind-dynamic-d9jp16);\`} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css\`padding: 16px; color: var(--pandwind-dynamic-d9jp16);\`} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -197,7 +197,7 @@ test("mui -> linaria -> mui: preserves concrete theme and project context varian
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -221,7 +221,7 @@ test("mui -> linaria -> mui: preserves concrete theme and project context varian
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: 16px; color: var(--pandwind-dynamic-d9jp16);\`} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css\`padding: 16px; color: var(--pandwind-dynamic-d9jp16);\`} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -245,7 +245,7 @@ test("mui -> linaria -> mui: preserves concrete theme and project context varian
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
 		        {
@@ -281,7 +281,7 @@ test("mui -> linaria -> mui: resolves token references across both concrete legs
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { css } from "@linaria/core";
-		export const App = () => <Box  className={css\`padding: 16px; color: var(--mui-primary-main);\`}/>;",
+		export const App = () => <Box className={css\`padding: 16px; color: var(--mui-primary-main);\`}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -305,7 +305,7 @@ test("mui -> linaria -> mui: resolves token references across both concrete legs
 		import { createCss } from "pandwind/css";
 		const css = createCss();
 
-		export const App = () => <Box  className={css.class({ "padding": "16px", "color": "var(--mui-primary-main)" })}/>;",
+		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--mui-primary-main)" })}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

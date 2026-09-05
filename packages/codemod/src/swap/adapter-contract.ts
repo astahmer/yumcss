@@ -274,6 +274,8 @@ export interface AdapterHostRewriteResult {
 	readonly imports?: readonly string[];
 	/** Modules made unreachable by a target-owned host conversion. */
 	readonly removeSourceModules?: readonly string[];
+	/** Factory-qualified host tags this rewrite collapsed to their canonical intrinsic element. */
+	readonly demotedFactoryHosts?: readonly string[];
 	readonly residuals: readonly StyleProgramResidual[];
 }
 
@@ -444,6 +446,14 @@ export interface AdapterTargetMigrationPolicy {
 	readonly handlesSourceHostAttributes?: boolean;
 	/** Whether this target can preserve scalar runtime expressions in its native style carrier. */
 	readonly handlesDynamicValues?: boolean;
+	/**
+	 * Whether a source-adapter factory host (for example a JSX factory member) may
+	 * be collapsed to its canonical element when this target owns the style
+	 * carrier. Defaults to true: a replacement target cannot call a foreign
+	 * factory. A compose target such as Pandwind wraps any source host and opts
+	 * out so the source factory keeps styling the element it was authored on.
+	 */
+	readonly demotesFactoryHosts?: boolean;
 	/** Whether its component rewrite can preserve scalar runtime expressions. */
 	readonly handlesDynamicComponentValues?: boolean;
 	/** Target-owned rewrite for representations attached to a host prop. */
