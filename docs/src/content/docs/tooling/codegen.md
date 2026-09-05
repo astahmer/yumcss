@@ -45,13 +45,11 @@ Tailwind's own design system (`@tailwindcss/node`) and writes:
 pnpm exec pandwind-tw scan [tw-entry] [src-dir] [out-file]
 ```
 
-Defaults: `src/tw.ts src src/pandwind.safelist.ts`. Statically evaluates
-every `tw({ ... })` call through the same runtime. The out-file extension
-selects the mode:
-
-- `.ts` → `export const pandwindSafelist = [...] as const`
-- `.css` → Tailwind v4 `@source inline("...")` directives (import from
-  `tailwind.css`; no generated JS lands in your source tree)
+Defaults: `src/tw.ts src src/pandwind.safelist.css`. Statically evaluates
+every `tw({ ... })` call through the same runtime and writes Tailwind v4
+`@source inline("...")` directives for every design-system-verified class.
+Import the generated file from `tailwind.css` so dynamic candidates get
+compiled CSS; no generated JS lands in your source tree.
 
 ## `pandwind-tw prune` — drop unused theme variables
 

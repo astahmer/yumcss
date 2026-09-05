@@ -44,7 +44,7 @@ Add scripts to `package.json`:
 {
 	"scripts": {
 		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	}
 }
 ```
@@ -57,8 +57,9 @@ pnpm run tw:generate
 pnpm run tw:scan
 ```
 
-This creates the typed `src/tw.ts`, declarations, and a safelist module. If
-your design tokens live in a preset, pass it to codegen with
+This creates the typed `src/tw.ts`, declarations, and a safelist stylesheet
+(`@source inline` directives — import it from `tailwind.css`). If your design
+tokens live in a preset, pass it to codegen with
 `--tokens ./src/preset.ts`; see [Build a design system](/guides/design-system/).
 
 ## 4. Configure Vite

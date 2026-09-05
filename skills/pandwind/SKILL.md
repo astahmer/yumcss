@@ -8,8 +8,8 @@ description: Work with pandwind styling in this repository. Use when writing or 
 ## Rules
 
 - Never hand-edit generated files: `types.d.ts`, `tw.ts`, `bridge.ts`, the
-  safelist (`pandwind.safelist.ts`) and `pandwind-theme.css`. They are outputs
-  of codegen. Change the preset / `tailwind.css` / call sites, then
+  safelist (`pandwind.safelist.css`) and `pandwind-theme.css`. They are
+  outputs of codegen. Change the preset / `tailwind.css` / call sites, then
   regenerate.
 - The compiler is the contract: if a value doesn't autocomplete or fails the
   typecheck, it is not part of the design system. Do not silence the error

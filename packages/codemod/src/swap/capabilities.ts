@@ -222,11 +222,12 @@ export function requiredAdapterCapabilities(
 	// a program whose values are literal or statically-resolved tokens would
 	// otherwise block targets that preserve the style faithfully.
 	const referencesTheme = declarations.some((declaration) => {
-		if (declaration.value.kind !== StyleValueKindTag.Dynamic) return false;
+		const { value } = declaration;
+		if (value.kind !== StyleValueKindTag.Dynamic) return false;
 		return (program.themes ?? []).some(
 			(binding) =>
-				declaration.value.expression === binding.authored ||
-				declaration.value.expression === `theme.${binding.path}`,
+				value.expression === binding.authored ||
+				value.expression === `theme.${binding.path}`,
 		);
 	});
 	if (referencesTheme)

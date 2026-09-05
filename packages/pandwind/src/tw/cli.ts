@@ -134,7 +134,7 @@ export function parseTwCommand(argv: readonly string[], cwd = process.cwd()): Tw
 			command,
 			twEntry: resolve(cwd, rest[0] ?? "src/tw.ts"),
 			srcDir: resolve(cwd, rest[1] ?? "src"),
-			outFile: resolve(cwd, rest[2] ?? "src/pandwind.safelist.ts"),
+			outFile: resolve(cwd, rest[2] ?? "src/pandwind.safelist.css"),
 		};
 	}
 	return {
@@ -200,7 +200,7 @@ const defaultHandlers: TwCliHandlers = {
 	async scan(command) {
 		const result = await runTwScan(command);
 		console.log(
-			`pandwind: wrote ${result.classes.length} ${result.mode === "css" ? "@source inline directives" : "classes"} to ${result.outFile}`,
+			`pandwind: wrote ${result.classes.length} @source inline directives to ${result.outFile}`,
 		);
 		const unresolved = result.unresolvedTokens ?? [];
 		if (unresolved.length > 0) {

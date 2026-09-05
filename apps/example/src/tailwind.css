@@ -7,3 +7,10 @@
  * engines — do not edit by hand; regenerate instead.
  */
 @import "./pandwind-theme.css";
+
+/*
+ * Safelist: generated @source inline directives for dynamic tw() classes by
+ * `pandwind-tw scan`. Static call sites are already visible to Tailwind's
+ * scanner through the Vite inlining; this file covers the rest.
+ */
+@import "./pandwind.safelist.css";

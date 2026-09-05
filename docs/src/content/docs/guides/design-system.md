@@ -101,7 +101,7 @@ an explicit `$raw`/escape lane so they are visible to review and analysis.
 {
 	"scripts": {
 		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/design-system/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	}
 }
 ```

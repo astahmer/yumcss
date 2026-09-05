@@ -60,7 +60,7 @@ describe("pandwind-tw command router", () => {
 			  },
 			  "scan": {
 			    "command": "scan",
-			    "outFile": "/fixture/project/src/pandwind.safelist.ts",
+			    "outFile": "/fixture/project/src/pandwind.safelist.css",
 			    "srcDir": "/fixture/project/src",
 			    "twEntry": "/fixture/project/src/tw.ts",
 			  },

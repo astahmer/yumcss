@@ -83,7 +83,7 @@ complete example (`defineTokens` / `defineTheme` / `definePreset`).
 {
 	"scripts": {
 		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
 	},
 }
 ```

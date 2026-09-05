@@ -85,7 +85,7 @@ export async function runGovernanceLane(args: CliArgs): Promise<string> {
 	let safelistHit = false;
 	try {
 		safelistHit =
-			readFileSync(resolve(args.root, "src/pandwind.safelist.ts"), "utf8").includes('"');
+			readFileSync(resolve(args.root, "src/pandwind.safelist.css"), "utf8").includes('@source inline("');
 	} catch {
 		safelistHit = false;
 	}

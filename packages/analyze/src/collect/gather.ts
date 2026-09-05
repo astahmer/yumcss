@@ -262,7 +262,7 @@ export async function gather(repoRoot?: string): Promise<CollectPayload> {
 	} catch {
 		interopVariables = {};
 	}
-	const safelistSource = readSourceArtifact(appSrc("pandwind.safelist.ts")) ?? "";
+	const safelistSource = readSourceArtifact(appSrc("pandwind.safelist.css")) ?? "";
 	const safelistEntries = [...safelistSource.matchAll(/"([^"]+)"/g)].map((m) => m[1] ?? "");
 	const governance = analyzeTokenGovernance({
 		root,

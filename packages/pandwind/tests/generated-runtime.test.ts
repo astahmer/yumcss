@@ -6,11 +6,13 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { __unstable__loadDesignSystem } from "@tailwindcss/node";
 import { describe, expect, test } from "vitest";
-import { pandwindSafelist } from "../../../apps/example/src/pandwind.safelist.ts";
 import { tw } from "../../../apps/example/src/tw.ts";
 import { collectTwClasses } from "../src/tw/collect.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
+const safelistEntries = (): Array<string> =>
+	[...readFileSync(resolve(app, "src/pandwind.safelist.css"), "utf8").matchAll(/@source inline\("([^"]+)"\);/g)]
+		.map((m) => m[1] ?? "");
 
 describe("generated tw runtime", () => {
 	test("composes class strings with the real variant metadata", () => {
@@ -42,8 +44,9 @@ describe("generated tw runtime", () => {
 			[resolve(app, "src/css-in-js-app.tsx"), resolve(app, "src/dogfood-app.tsx")],
 			resolve(app, "src/tw.ts"),
 		);
+		const safelist = safelistEntries();
 
-		expect([...scanned].toSorted()).toEqual([...pandwindSafelist].toSorted());
-		expect(system.candidatesToCss([...pandwindSafelist]).every((out) => out !== null)).toBe(true);
+		expect([...scanned].toSorted()).toEqual([...safelist].toSorted());
+		expect(system.candidatesToCss([...safelist]).every((out) => out !== null)).toBe(true);
 	});
 });

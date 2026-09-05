@@ -8,7 +8,8 @@ sidebar:
 - Dynamic values (`tw({ bg: color })` with a variable) can't be statically
   inlined or scanned — same constraint as dynamic class names in plain
   Tailwind. The safelist covers calls that are statically evaluable; fully
-  dynamic values need `@source inline` or an explicit safelist entry.
+  dynamic values need an explicit `@source inline` entry in the safelist
+  stylesheet.
 - Tailwind overloads utilities like `text-*` (size, color, alignment). One key
   per utility means you use an array for mixed concerns:
   `tw({ text: ["2xl", "gray-900"] })`. Semantic sub-keys (`textSize` /

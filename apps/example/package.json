@@ -10,7 +10,7 @@
 		"typecheck": "tsc --noEmit",
 		"tw:generate": "nub exec pandwind-tw generate ./src/tailwind.css ./src --tokens pandwind/preset/example-preset --bridge && oxfmt ./src/types.d.ts ./src/tw.ts ./src/bridge.ts ./src/pandwind-theme.css",
 		"tw:prune": "nub exec pandwind-tw prune ./src/pandwind-theme.css ./src/tw.ts ./src",
-		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts"
+		"tw:scan": "nub exec pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css"
 	},
 	"dependencies": {
 		"pandwind": "workspace:*",

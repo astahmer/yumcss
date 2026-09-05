@@ -36,7 +36,7 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 {
 	"scripts": {
 		"tw:generate": "pandwind-tw generate ./src/tailwind.css ./src --tokens ./src/preset.ts --bridge",
-		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.ts",
+		"tw:scan": "pandwind-tw scan ./src/tw.ts ./src ./src/pandwind.safelist.css",
 	},
 }
 ```
@@ -45,10 +45,10 @@ Generate the typed `tw()` runtime and `@theme` bridge from your
 pnpm run tw:generate && pnpm run tw:scan
 ```
 
-This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist, and
-`src/pandwind-theme.css` (the token bridge — import it from your
-`tailwind.css`). The `--tokens` flag feeds your preset's DTCG token groups in;
-drop it if you don't use tokens.
+This generates `src/types.d.ts`, `src/tw.ts`, `src/bridge.ts`, a safelist
+stylesheet (`@source inline` directives — import it from `tailwind.css`), and
+`src/pandwind-theme.css` (the token bridge — import it too). The `--tokens`
+flag feeds your preset's DTCG token groups in; drop it if you don't use tokens.
 
 ## 3. Vite plugins
 
