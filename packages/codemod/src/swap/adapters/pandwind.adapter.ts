@@ -60,7 +60,7 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 			return StyleHostRepresentationKind.Component;
 		return StyleHostRepresentationKind.Class;
 	},
-	rewriteComponent: ({ code, binding, framework, emittedExpression, representation }) => {
+	rewriteComponent: ({ code, binding, framework, representation }) => {
 		if (representation !== StyleHostRepresentationKind.Component)
 			return {
 				code,
@@ -89,9 +89,8 @@ const PANDWIND_TARGET_POLICY: AdapterTargetMigrationPolicy = {
 				],
 			};
 		// The Pandwind emitter owns the component wrapper for this representation.
-		// Preview calls pass the binding; the final emitted expression already has
-		// the wrapper and must not be wrapped a second time.
-		if (emittedExpression !== binding) return { code, residuals: [] };
+		// The emitter owns the component wrapper; this hook only validates that the
+		// selected representation is the component contract.
 		return { code, residuals: [] };
 	},
 	requiresHostWrapper: ({ source, binding }) => {

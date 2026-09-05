@@ -45,6 +45,22 @@ describe("target adapter emission contract", () => {
 		`);
 	});
 
+	test("preserves an exported styled component subject as a component", () => {
+		const result = migrate(
+			'import styled from "styled-components";\n' +
+				"const Link = (props: { href: string }) => <a {...props} />;\n" +
+				'export const Card = styled(Link)({ color: "red" });',
+			CodemodAdapterId.StyledComponents,
+			CodemodAdapterId.Pandwind,
+		);
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code).toContain("export const Card = (() =>");
+		expect(result.code).toContain("props.as ?? (Link)");
+		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
+	});
+
 	test("emits native StyleX source when StyleX is selected as the target", () => {
 		const result = migrate(
 			'import { css } from "@emotion/css";\nconst card = css({ color: "red" });',
