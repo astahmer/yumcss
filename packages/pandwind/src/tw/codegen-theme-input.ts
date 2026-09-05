@@ -1,5 +1,6 @@
+import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
-import { resolve } from "node:path";
+import { join, resolve } from "node:path";
 import {
 	buildComponentScopes,
 	buildThemeBlock,
@@ -118,9 +119,7 @@ export function resolveComponents(
 }
 
 export async function loadThemeBlock(modulePath: string, base: string): Promise<string> {
-	const specifier = isPackageSpecifier(modulePath)
-		? modulePath
-		: pathToFileURL(resolveModulePath(modulePath, base)).href;
+	const specifier = await resolveModuleSpecifier(modulePath, base);
 	const module = (await import(specifier)) as Record<string, unknown>;
 	const groups = resolveTokenGroups(module);
 	const conditions = resolvePresetConditions(module);
@@ -152,6 +151,24 @@ export async function loadThemeBlock(modulePath: string, base: string): Promise<
 	}
 	return themeBlock;
 }
+
+/**
+ * Resolve a tokens module to an importable specifier. Package specifiers
+ * (e.g. `pandwind/preset/example-preset`) resolve against the CLI's project
+ * root via CJS resolution, never against the importing file's own package:
+ * a stray `package.json` anywhere between the two would otherwise redirect
+ * Node's self-reference resolution and double a path segment
+ * (`dist/dist/...`), breaking generate. Relative/absolute paths resolve
+ * against `base`.
+ */
+const resolveModuleSpecifier = async (modulePath: string, base: string): Promise<string> => {
+	if (!isPackageSpecifier(modulePath)) {
+		return pathToFileURL(resolveModulePath(modulePath, base)).href;
+	}
+	const packageModule = createRequire(pathToFileURL(join(base, "package.json")).href);
+	const resolved = packageModule.resolve(modulePath);
+	return pathToFileURL(resolved).href;
+};
 
 const resolveModulePath = (modulePath: string, base: string): string =>
 	modulePath.startsWith("/") ? modulePath : resolve(base, modulePath);

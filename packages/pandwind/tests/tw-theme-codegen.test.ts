@@ -15,7 +15,9 @@
  *   while omitting it leaves generated output byte-identical to before.
  */
 import { readFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, test } from "vitest";
 import {
 	buildThemeBlock,
@@ -30,6 +32,7 @@ import {
 	resolvePresetConditions,
 	resolveTokenGroups,
 } from "../src/tw/generate-types.ts";
+import { loadThemeBlock } from "../src/tw/codegen-theme-input.ts";
 
 const app = resolve(import.meta.dirname, "../../../apps/example");
 const srcDir = resolve(app, "src");
@@ -219,6 +222,54 @@ describe("resolvePresetConditions", () => {
 
 	test("returns undefined when no object carries conditions", () => {
 		expect(resolvePresetConditions({ somethingElse: { foo: "bar" } })).toBeUndefined();
+	});
+});
+
+describe("loadThemeBlock package-specifier resolution", () => {
+	// Regression: the generate CLI resolved bare package specifiers (e.g.
+	// `pandwind/preset/example-preset`) via a bare dynamic import, so Node's
+	// self-reference resolution used the *nearest* package.json. A stray
+	// manifest inside the pandwind dist tree then redirected the specifier to
+	// a nonexistent `dist/dist/...` path and broke generate. Resolution must
+	// anchor on the CLI project root instead.
+	// The hazard only triggers when the *importing module* lives inside
+	// packages/pandwind/dist (the built CLI), because that is when Node
+	// consults a stray dist/package.json as the nearest manifest. Source-level
+	// callers are immune, so this test drives the built module. CI builds
+	// pandwind before testing; locally the test skips when dist is absent.
+	test("resolves pandwind preset through the project root despite a stray package manifest", async (ctx) => {
+		const packageRoot = resolve(import.meta.dirname, "..");
+		const distRoot = resolve(packageRoot, "dist");
+		const builtModule = resolve(distRoot, "tw/codegen-theme-input.js");
+		if (!existsSync(builtModule)) {
+			ctx.skip();
+			return;
+		}
+		const strayManifest = resolve(distRoot, "package.json");
+		// The poison: a manifest whose exports paths are relative to dist/ as
+		// package root — doubling the path to dist/dist/... — exactly what the
+		// recurring playground generate failure produced.
+		const poison = JSON.stringify({
+			name: "pandwind",
+			type: "module",
+			exports: { "./preset/example-preset": "./dist/preset/example-preset.js" },
+		});
+		mkdirSync(distRoot, { recursive: true });
+		writeFileSync(strayManifest, poison);
+		try {
+			const built = (await import(
+				pathToFileURL(builtModule).href
+			)) as typeof import("../src/tw/codegen-theme-input.ts");
+			// base = the app calling the CLI; the stray dist manifest must be
+			// irrelevant because resolution goes through createRequire(base).
+			const themeBlock = await built.loadThemeBlock(
+				"pandwind/preset/example-preset",
+				resolve(import.meta.dirname, "../../../apps/example"),
+			);
+			expect(themeBlock).toContain("--color");
+		} finally {
+			rmSync(strayManifest, { force: true });
+		}
 	});
 });
 
