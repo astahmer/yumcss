@@ -37,6 +37,12 @@
 			"import": "./dist/swap/index.js",
 			"default": "./dist/swap/index.js"
 		},
+		"./swap/semantic-ir": {
+			"pandwind": "./src/swap/semantic-ir.ts",
+			"types": "./dist/swap/semantic-ir.d.ts",
+			"import": "./dist/swap/semantic-ir.js",
+			"default": "./dist/swap/semantic-ir.js"
+		},
 		"./swap/official-api-cases": {
 			"pandwind": "./src/swap/official-api-cases.ts",
 			"types": "./dist/swap/official-api-cases.d.ts",

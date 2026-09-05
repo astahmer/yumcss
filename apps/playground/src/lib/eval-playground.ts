@@ -12,9 +12,21 @@
  * boundary and must never run third-party code.
  */
 import { parseSync } from "oxc-parser";
+import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";
 import type { ConstantScope } from "pandwind/vite/cx-inline";
 import { NodeKind, ImportKindTag } from "pandwind/tw/literal";
+
+export interface PlaygroundSheetResult {
+	/** Adapter identity supplied to the runtime CSS factory. */
+	strategy: string;
+	/** Complete stylesheet currently owned by the runtime sheet. */
+	css: string;
+	/** Token declarations kept separately for the inspector. */
+	tokens: string;
+	/** Flat rules retained by the sheet, including their stable ids. */
+	rules: Array<{ id: string; css: string; priority: number }>;
+}
 
 interface PlaygroundSuccess {
 	ok: true;
@@ -41,6 +53,10 @@ interface PlaygroundSuccess {
 	foldNote: string;
 	/** Resolved declarations per css() literal call (class -> declarations). */
 	atomDeclarations: Array<{ cls: string; decls: Record<string, string> }>;
+	/** CSS produced by Pandwind-owned runtime sheets used by the example. */
+	sheets: PlaygroundSheetResult[];
+	/** Neutral semantic programs extracted from static style-call objects. */
+	programs: StyleProgram[];
 }
 
 export type PlaygroundResult = PlaygroundSuccess | { ok: false; error: string };
@@ -402,6 +418,81 @@ function classifyFold(
 	}
 	return { fold: "runtime", note: "contains values only known at runtime" };
 }
+
+const STYLE_CALL_NAMES = new Set(["tw", "css", "class", "raw", "vars", "props"]);
+
+function staticCallName(callee: unknown): string | undefined {
+	const node = callee as {
+		type?: string;
+		name?: string;
+		computed?: boolean;
+		property?: { type?: string; name?: string; value?: string | number };
+	};
+	if (node?.type === NodeKind.Identifier) return node.name;
+	if (
+		node?.type === NodeKind.MemberExpression &&
+		node.computed !== true &&
+		node.property?.type === NodeKind.Identifier
+	)
+		return node.property.name;
+	return undefined;
+}
+
+/** Build the inspectable neutral IR from object literals in the final call. */
+function styleProgramsFromExpression(exprText: string): StyleProgram[] {
+	const programs: StyleProgram[] = [];
+	try {
+		const parsed = parseSync("playground-style-program.tsx", exprText, {
+			sourceType: "module",
+			lang: "tsx",
+		});
+		const visit = (node: unknown): void => {
+			if (Array.isArray(node)) {
+				for (const item of node) visit(item);
+				return;
+			}
+			if (node === null || typeof node !== "object") return;
+			const current = node as {
+				type?: string;
+				callee?: unknown;
+				arguments?: Array<{ type?: string; start?: number; end?: number }>;
+			};
+			if (current.type === NodeKind.CallExpression) {
+				const name = staticCallName(current.callee);
+				const argument = current.arguments?.[0];
+				if (
+					name !== undefined &&
+					STYLE_CALL_NAMES.has(name) &&
+					argument?.type === NodeKind.ObjectExpression &&
+					typeof argument.start === "number" &&
+					typeof argument.end === "number"
+				) {
+					const body = exprText.slice(argument.start + 1, argument.end - 1);
+					try {
+						programs.push(
+							styleProgramFromSourceObject(body, {
+								source: {
+									file: "playground.tsx",
+									adapter: "pandwind-playground",
+									pattern: name,
+								},
+							}),
+						);
+					} catch {
+						// The runtime result remains useful when an experimental object
+						// shape is not representable by the semantic parser yet.
+					}
+				}
+			}
+			for (const value of Object.values(node as Record<string, unknown>)) visit(value);
+		};
+		visit(parsed.program);
+	} catch {
+		// The evaluator already reports execution errors; inspection is additive.
+	}
+	return programs;
+}
+
 export interface EvalInput {
 	code: string;
 	tw: (...args: Array<unknown>) => unknown;
@@ -421,6 +512,18 @@ export interface EvalInput {
 	 * (design-layer resolution against the preset tokens).
 	 */
 	resolveCss?: (style: Record<string, unknown>) => Record<string, string>;
+}
+
+interface RuntimeCssInstance {
+	readonly strategy: string;
+	readonly sheetBacked: boolean;
+	readonly sheet: {
+		css: () => string;
+		snapshot: () => {
+			tokens: string;
+			rules: Array<{ id: string; css: string; priority: number }>;
+		};
+	};
 }
 
 /** Evaluate playground code. Throws nothing — errors come back as data. */
@@ -491,6 +594,7 @@ function buildSandbox(
 	tw: (...args: Array<unknown>) => unknown,
 	css: EvalInput["css"],
 	cx: (...inputs: Array<never>) => string,
+	onRuntimeCss?: (instance: RuntimeCssInstance) => void,
 ): Record<string, unknown> {
 	const sandbox: Record<string, unknown> = {
 		tw,
@@ -503,7 +607,71 @@ function buildSandbox(
 	for (const imp of prepared.imports) {
 		const bindings = input.moduleBindings?.[imp.source];
 		if (bindings !== undefined) {
-			sandbox[imp.local] = imp.imported === undefined ? bindings : bindings[imp.imported];
+			const imported = imp.imported === undefined ? undefined : bindings[imp.imported];
+			const resolvedImport =
+				imported ??
+				(imp.imported !== undefined && imp.source.startsWith("pandwind/")
+					? pandwindBuiltins(input)[imp.imported]
+					: undefined);
+			const isCssFactory = imp.source === "pandwind/css" && imp.imported === "createCss";
+			const isDesignFactory =
+				imp.source === "pandwind/design" && imp.imported === "createDesignCss";
+			const isRuntimeFactory =
+				typeof resolvedImport === "function" &&
+				((imp.source === "pandwind/css/runtime" &&
+					(imp.imported === "createRuntimeCss" || imp.imported === "createRuntimeDesignCss")) ||
+					isCssFactory ||
+					isDesignFactory);
+			if (isRuntimeFactory) {
+				sandbox[imp.local] = (...args: Array<unknown>) => {
+					const optionArgument = isCssFactory ? args[0] : args[1];
+					const authoredOptions =
+						optionArgument !== null && typeof optionArgument === "object"
+							? (optionArgument as Record<string, unknown>)
+							: {};
+					const authoredSheetOptions =
+						authoredOptions.sheetOptions !== null &&
+						typeof authoredOptions.sheetOptions === "object"
+							? (authoredOptions.sheetOptions as Record<string, unknown>)
+							: {};
+					const factoryArgs = isCssFactory
+						? [
+								{
+									...authoredOptions,
+									sheetOptions: { ...authoredSheetOptions, autoMount: false },
+								},
+							]
+						: [
+								args[0],
+								{
+									...authoredOptions,
+									sheetOptions: { ...authoredSheetOptions, autoMount: false },
+								},
+							];
+					const instance = (resolvedImport as (...values: Array<unknown>) => unknown)(
+						...factoryArgs,
+					) as RuntimeCssInstance | undefined;
+					if (
+						instance?.sheet !== undefined &&
+						typeof instance.sheet.css === "function" &&
+						typeof instance.sheet.snapshot === "function"
+					) {
+						const className = authoredOptions.className;
+						const classNameRecord =
+							className !== null && typeof className === "object"
+								? (className as Record<string, unknown>)
+								: undefined;
+						onRuntimeCss?.({
+							strategy: typeof classNameRecord?.name === "string" ? classNameRecord.name : "atomic",
+							sheetBacked: classNameRecord?.sheetBacked !== false,
+							sheet: instance.sheet,
+						});
+					}
+					return instance;
+				};
+			} else {
+				sandbox[imp.local] = imp.imported === undefined ? bindings : resolvedImport;
+			}
 			continue;
 		}
 		// pandwind's own public API resolves against the sandbox builtins:
@@ -581,6 +749,7 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		return result;
 	};
 	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
+	const runtimeInstances: RuntimeCssInstance[] = [];
 	/**
 	 * Instrumented css() binding. The wrapper exposes the SAME surface as the
 	 * real css() (callable plus every namespaced method the instance carries:
@@ -639,7 +808,9 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	// One sandbox record: builtins plus every import binding share a single
 	// destructured scope inside the evaluated body. Builtin defaults stay so
 	// bare-call tests and quick snippets keep working without an import.
-	const sandbox = buildSandbox(input, prepared, tw, css, cx);
+	const sandbox = buildSandbox(input, prepared, tw, css, cx, (instance) => {
+		runtimeInstances.push(instance);
+	});
 	let captured: { value?: unknown } = {};
 	// One destructured scope for every module: builtins filtered by local
 	// shadows plus import bindings, so an example's own `const css` wins.
@@ -695,6 +866,17 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	const uniqueIn = dedupe(inputs);
 	const killed = dedupe(uniqueIn.filter((token) => !survived.includes(token)));
 	const foldInfo = classifyFold(exprText, prepared.consts);
+	const sheets = runtimeInstances
+		.filter((instance) => instance.sheetBacked)
+		.map((instance) => {
+			const snapshot = instance.sheet.snapshot();
+			return {
+				strategy: instance.strategy,
+				css: instance.sheet.css(),
+				tokens: snapshot.tokens,
+				rules: snapshot.rules,
+			};
+		});
 
 	const success: PlaygroundSuccess = {
 		ok: true,
@@ -705,6 +887,8 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		fold: foldInfo.fold,
 		foldNote: foldInfo.note,
 		atomDeclarations,
+		sheets,
+		programs: styleProgramsFromExpression(prepared.evalCode),
 	};
 	if (decls !== undefined) success.decls = decls;
 	if (varsOutput !== undefined) success.varsOutput = varsOutput;

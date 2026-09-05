@@ -7,6 +7,9 @@ import { cx } from "../cx.ts";
 import { css } from "../css.ts";
 import { resolveDesignStyle } from "pandwind/design/resolve";
 import { examplePreset } from "pandwind/preset";
+import { createNamedAtomsStrategy } from "pandwind/css";
+import { createRuntimeCss } from "pandwind/css/runtime";
+import { StyleValueKindTag } from "pandwind-codemod/swap/semantic-ir";
 import { tw } from "../tw.ts";
 import { evalPlayground, evalSiblingModule, type EvalInput } from "./eval-playground.ts";
 
@@ -203,6 +206,47 @@ describe("evalPlayground", () => {
 		if (result.ok) {
 			expect(typeof result.propsOutput?.className).toBe("string");
 			expect(result.propsOutput?.className).not.toBe("");
+		}
+	});
+
+	test("exposes the neutral StyleProgram for static style calls", () => {
+		const result = run('tw({ bgColor: "red-500", _hover: { bgColor: "blue-500" } });');
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.programs).toHaveLength(1);
+			expect(result.programs[0]?.declarations.map((declaration) => declaration.property)).toEqual([
+				"bgColor",
+				"bgColor",
+			]);
+			expect(result.programs[0]?.rules[0]?.declarations[0]?.value).toMatchObject({
+				kind: StyleValueKindTag.Literal,
+				value: "red-500",
+			});
+		}
+	});
+
+	test("exposes CSS from a Pandwind-owned sheet-backed adapter", () => {
+		const result = run(
+			[
+				'import { createRuntimeCss } from "pandwind/css/runtime";',
+				'import { createNamedAtomsStrategy } from "pandwind/css";',
+				'import { examplePreset } from "pandwind/preset";',
+				"",
+				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
+				'css.class({ color: "red-500" });',
+			].join("\n"),
+			undefined,
+			{
+				"pandwind/css/runtime": { createRuntimeCss },
+				"pandwind/css": { createNamedAtomsStrategy },
+				"pandwind/preset": { examplePreset },
+			},
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.sheets).toHaveLength(1);
+			expect(result.sheets[0]?.strategy).toBe("named-atoms");
+			expect(result.sheets[0]?.css).toContain(".demo-color-red-500");
 		}
 	});
 });
