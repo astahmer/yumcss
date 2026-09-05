@@ -66,7 +66,15 @@ const workspaceResolutionRoots = [
 	),
 ];
 
-const entryExportKeys = [".", "./css", "./design", "./tw", "./cx", "./types/typings"] as const;
+const entryExportKeys = [
+	".",
+	"./css",
+	"./design",
+	"./tw",
+	"./cx",
+	"./preset",
+	"./types/typings",
+] as const;
 
 type ExportTarget = string | readonly ExportTarget[] | { [condition: string]: ExportTarget };
 

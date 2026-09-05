@@ -1,5 +1,5 @@
 import MonacoEditor, { type Monaco } from "@monaco-editor/react";
-import { EDITOR_TYPE_LIBRARIES } from "../lib/editor-types.ts";
+import { EDITOR_TYPE_LIBRARIES, PANDWIND_EDITOR_MODULE_PATHS } from "../lib/editor-types.ts";
 import { css as uiCss } from "../ui-css.ts";
 import { Kbd, Pane } from "./ui.tsx";
 
@@ -48,6 +48,10 @@ function configureTypeScript(monaco: Monaco): void {
 		jsx: typescript.JsxEmit.ReactJSX,
 		module: typescript.ModuleKind.ESNext,
 		moduleResolution: typescript.ModuleResolutionKind.NodeJs,
+		baseUrl: "file:///pandwind/playground",
+		paths: Object.fromEntries(
+			Object.entries(PANDWIND_EDITOR_MODULE_PATHS).map(([specifier, path]) => [specifier, [path]]),
+		),
 		target: typescript.ScriptTarget.ES2022,
 		noEmit: true,
 		strict: true,
@@ -64,8 +68,23 @@ function configureTypeScript(monaco: Monaco): void {
 /** Quiet stand-in while the Monaco chunk loads: a single breathing dot. */
 function EditorBooting() {
 	return (
-		<div className={uiCss.class({ display: "flex", height: "100%", alignItems: "center", justifyContent: "center" })}>
-			<span className={uiCss.class({ width: "6px", height: "6px", borderRadius: "9999px", backgroundColor: "#52525b", animation: "pulse 1.5s ease-in-out infinite" })} />
+		<div
+			className={uiCss.class({
+				display: "flex",
+				height: "100%",
+				alignItems: "center",
+				justifyContent: "center",
+			})}
+		>
+			<span
+				className={uiCss.class({
+					width: "6px",
+					height: "6px",
+					borderRadius: "9999px",
+					backgroundColor: "#52525b",
+					animation: "pulse 1.5s ease-in-out infinite",
+				})}
+			/>
 		</div>
 	);
 }
@@ -82,10 +101,27 @@ export function EditorPane(props: {
 			label="Editor"
 			className={props.className}
 			right={
-					<span className={uiCss.class({ display: "flex", alignItems: "center", gap: "6px", paddingRight: "4px", fontSize: "11px", color: "#52525b" })}>
+				<span
+					className={uiCss.class({
+						display: "flex",
+						alignItems: "center",
+						gap: "6px",
+						paddingRight: "4px",
+						fontSize: "11px",
+						color: "#52525b",
+					})}
+				>
 					<Kbd>⌘</Kbd>
 					<Kbd>↵</Kbd>
-					<span className={uiCss.class({ display: "none", marginLeft: "4px", "@media (min-width: 640px)": { display: "inline" } })}>to run</span>
+					<span
+						className={uiCss.class({
+							display: "none",
+							marginLeft: "4px",
+							"@media (min-width: 640px)": { display: "inline" },
+						})}
+					>
+						to run
+					</span>
 				</span>
 			}
 		>
@@ -118,6 +154,7 @@ export function EditorPane(props: {
 						overviewRulerBorder: false,
 						scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 },
 						guides: { indentation: false },
+						fixedOverflowWidgets: true,
 					}}
 				/>
 			</div>

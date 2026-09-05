@@ -429,7 +429,7 @@ export function evalPlayground(input: EvalInput): PlaygroundResult {
 }
 
 /** Builtins the sandbox injects; a module-local declaration shadows them. */
-const SANDBOX_BUILTINS = ["tw", "css", "cx", "props", "createCss"];
+const SANDBOX_BUILTINS = ["tw", "css", "cx", "createCx", "props", "createCss"];
 
 function sandboxNames(prepared: Prepared): string[] {
 	return dedupe([
@@ -474,6 +474,7 @@ function pandwindBuiltins(input: EvalInput): Record<string, unknown> {
 		tw: input.tw,
 		css: input.css,
 		cx: input.cx,
+		createCx: () => input.cx,
 		createCss: input.createCss,
 		props: input.props,
 	};
@@ -495,6 +496,7 @@ function buildSandbox(
 		tw,
 		css,
 		cx,
+		createCx: () => cx,
 		props: input.props ?? {},
 		createCss: input.createCss,
 	};
@@ -527,6 +529,7 @@ function buildSandbox(
 			local === "tw" ||
 			local === "css" ||
 			local === "cx" ||
+			local === "createCx" ||
 			local === "props" ||
 			local === "createCss"
 		)

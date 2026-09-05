@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { EDITOR_TYPE_LIBRARIES } from "./editor-types.ts";
+import { EDITOR_TYPE_LIBRARIES, PANDWIND_EDITOR_MODULE_PATHS } from "./editor-types.ts";
 
 describe("playground editor declarations", () => {
 	test("mounts the generated public Pandwind declaration graph", () => {
@@ -8,6 +8,12 @@ describe("playground editor declarations", () => {
 		);
 		const cxTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/cx/index.d.ts"),
+		);
+		const presetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/preset/index.d.ts"),
+		);
+		const definePresetTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
+			library.filePath.endsWith("/pandwind/types/define-preset.d.ts"),
 		);
 		const selectorTypes = EDITOR_TYPE_LIBRARIES.find((library) =>
 			library.filePath.endsWith("/pandwind/types/selectors.d.ts"),
@@ -18,9 +24,14 @@ describe("playground editor declarations", () => {
 
 		expect(cssTypes?.content).toContain('export * from "./create-css.d.ts";');
 		expect(cxTypes?.content).toContain("export interface CxFn");
+		expect(presetTypes?.content).toContain('export * from "../types/define-preset.d.ts";');
+		expect(definePresetTypes?.content).toContain("definePreset");
 		expect(selectorTypes?.content).toContain("AnySelector");
-		expect(modules?.content).toContain('declare module "pandwind/css"');
-		expect(modules?.content).toContain('export * from "./generated/pandwind/css/index.d.ts";');
+		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/css"]).toBe("generated/pandwind/css/index.d.ts");
+		expect(PANDWIND_EDITOR_MODULE_PATHS["pandwind/preset"]).toBe(
+			"generated/pandwind/preset/index.d.ts",
+		);
+		expect(modules?.content).toContain("interface PlaygroundStyledFactory");
 	});
 
 	test("does not reintroduce a hand-maintained Pandwind API shadow", () => {

@@ -37,26 +37,16 @@ const dependencyTypeLibraries = Object.entries(generatedDependencyTypes).map(([p
  * Relative imports are redirected to emitted declarations so the editor uses
  * the same `CssFn`, `CxFn`, design types, and option contracts as the package.
  */
-const pandwindModules = String.raw`
-declare module "pandwind" {
-  export * from "./generated/pandwind/index.d.ts";
-}
-declare module "pandwind/css" {
-  export * from "./generated/pandwind/css/index.d.ts";
-}
-declare module "pandwind/design" {
-  export * from "./generated/pandwind/design/index.d.ts";
-}
-declare module "pandwind/tw" {
-  export * from "./generated/pandwind/tw/index.d.ts";
-}
-declare module "pandwind/cx" {
-  export * from "./generated/pandwind/cx/index.d.ts";
-}
-declare module "pandwind/types/typings" {
-  export * from "./generated/pandwind/types/typings.d.ts";
-}
-`;
+/** TypeScript paths for every Pandwind public module used by the playground. */
+export const PANDWIND_EDITOR_MODULE_PATHS = {
+	pandwind: "generated/pandwind/index.d.ts",
+	"pandwind/css": "generated/pandwind/css/index.d.ts",
+	"pandwind/design": "generated/pandwind/design/index.d.ts",
+	"pandwind/tw": "generated/pandwind/tw/index.d.ts",
+	"pandwind/cx": "generated/pandwind/cx/index.d.ts",
+	"pandwind/preset": "generated/pandwind/preset/index.d.ts",
+	"pandwind/types/typings": "generated/pandwind/types/typings.d.ts",
+} as const;
 
 const installedEditorModules = new Set(
 	[
@@ -245,6 +235,6 @@ export const EDITOR_TYPE_LIBRARIES: readonly EditorTypeLibrary[] = [
 	},
 	{
 		filePath: "file:///pandwind/playground/modules.d.ts",
-		content: `${pandwindModules}\n${migrationExampleModules}`,
+		content: migrationExampleModules,
 	},
 ];

@@ -31,7 +31,12 @@ function oneFile(name: string, code: string): readonly ExampleFile[] {
 	return [{ name, code }];
 }
 
-const TW_IMPORT = 'import { tw, cx } from "pandwind";';
+const TW_IMPORT = [
+	'import { tw } from "pandwind";',
+	'import { createCx } from "pandwind/cx";',
+	"",
+	"const cx = createCx();",
+].join("\n");
 
 export const EXAMPLES: readonly ExampleDef[] = [
 	{
@@ -63,9 +68,10 @@ buttons.primary`,
 		files: oneFile(
 			"Example.tsx",
 			`import { createCss } from "pandwind/css";
-import { cx } from "pandwind";
+import { createCx } from "pandwind/cx";
 
 const css = createCss();
+const cx = createCx({ css });
 
 const card = css.class({
 	backgroundColor: "$blue-500",
