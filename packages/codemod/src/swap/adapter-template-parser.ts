@@ -1,4 +1,5 @@
 import { SourcePass } from "../source-pass-utils.ts";
+import { StyleDynamicExpressionKind } from "./identifiers.ts";
 import type { AdapterParseContext } from "./adapter-contract.ts";
 import {
 	styleProgramFromRules,
@@ -17,6 +18,21 @@ export function templateValueExpression(rawValue: string): string {
 		if (interpolation?.end === normalized.length) return interpolation.body.trim();
 	}
 	return `\`${rawValue.replaceAll("\\", "\\\\").replaceAll("`", "\\`")}\``;
+}
+
+/**
+ * Function interpolations are first-class dynamics for adapters whose target
+ * contract lowers `function-values`. Strip a TypeScript return annotation so
+ * the arrow is valid at runtime; the value expression is the annotated body.
+ */
+export function functionValueExpression(rawValue: string): string | undefined {
+	const expression = templateValueExpression(rawValue);
+	const annotated =
+		// The annotation must be arrow-free (`[^=>]*`); a function-typed return
+		// annotation needs a real type parser, so those stay residuals.
+		/^\(([\s\S]*?)\)\s*:\s*[^=>]*?\s*=>\s*([\s\S]*)$/.exec(expression);
+	if (annotated === null) return undefined;
+	return `(${annotated[1]}) => ${annotated[2]!.trim()}`;
 }
 
 /** Find a template's closing backtick without mistaking nested expression templates for it. */
@@ -45,6 +61,7 @@ export function parseAdapterTemplate(
 	context: AdapterParseContext,
 	adapter: string,
 	start: number,
+	options: { readonly functionValues?: boolean } = {},
 ): StyleProgram {
 	const parseBlock = (
 		input: string,
@@ -74,15 +91,28 @@ export function parseAdapterTemplate(
 			const hasInterpolation = rawValue.includes("${");
 			let value: StyleDeclaration["value"];
 			if (hasInterpolation) {
-				const expression = templateValueExpression(rawValue);
-				value = { kind: "dynamic", expression, lowering: "residual" };
-				residuals.push({
-					kind: "dynamic",
-					text: rawValue,
-					hint: rawValue.includes("=>")
-						? `${adapter} function interpolation requires a framework prop wrapper`
-						: `${adapter} template interpolation requires a runtime-aware lowering`,
-				});
+				const functionValue =
+					options.functionValues === true && rawValue.includes("=>")
+						? functionValueExpression(rawValue)
+						: undefined;
+				if (functionValue !== undefined) {
+					value = {
+						kind: "dynamic",
+						expression: functionValue,
+						expressionKind: StyleDynamicExpressionKind.Function,
+						lowering: "residual",
+					};
+				} else {
+					const expression = templateValueExpression(rawValue);
+					value = { kind: "dynamic", expression, lowering: "residual" };
+					residuals.push({
+						kind: "dynamic",
+						text: rawValue,
+						hint: rawValue.includes("=>")
+							? `${adapter} function interpolation requires a framework prop wrapper`
+							: `${adapter} template interpolation requires a runtime-aware lowering`,
+					});
+				}
 			} else {
 				value = { kind: "literal", value: rawValue };
 			}

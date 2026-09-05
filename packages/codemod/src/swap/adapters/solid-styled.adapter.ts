@@ -104,15 +104,8 @@ const solidStyled = makeExtraAdapter({
 	],
 	call: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))[^`]*`(?:\\.|[^`])*`/g,
 	form: "template",
-	residualPatterns: [
-		{
-			name: "styled-function-template",
-			regex: /\bstyled(?:\.[A-Za-z_$][\w$]*|\([^)]*\))\s*`(?=[^`]*\$\{)(?:\\.|[^`])*`/g,
-			kind: "function-values",
-			hint: "Solid styled templates with prop callbacks require reactive host lowering",
-		},
-	],
 	prefix: "styled.div(",
+	functionValues: true,
 	targetImports: ['import { styled } from "solid-styled-components";'],
 	namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
 	capabilityOverrides: {

@@ -616,6 +616,37 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 	});
 
+	test("lowers solid-styled prop callbacks with TS return annotations", () => {
+		// Source: solidjs/solid-styled-components test/test.spec.tsx — each
+		// interpolation destructures its own props with a TS return type.
+		const source =
+			'import { styled } from "solid-styled-components";\n' +
+			'const Div = styled("div")<{ bold: boolean; border: number; color: string }>`\n' +
+			'  color: steelblue;\n' +
+			'  border: ${({ border = 1, color = "gainsboro" }): string => `${border}px solid ${color}`};\n' +
+			'  font-weight: ${({ bold = false }): string | number => (bold ? "bold" : 100)};\n' +
+			'`;\n' +
+			'export const App = () => <Div bold={true} border={1} color="whitesmoke" />;';
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.SolidStyled,
+			to: CodemodAdapterId.Pandwind,
+			file: "Div.tsx",
+			mode: "safe",
+		});
+		expect(result.residuals).toEqual([]);
+		expect(result.converted).toBe(1);
+		expect(result.code).not.toContain("solid-styled-components");
+		expect(result.validations.every((validation) => validation.valid)).toBe(true);
+		expect(result.code).toMatchInlineSnapshot(`
+			"import { createRuntimeCss } from "pandwind/css/runtime";
+			import { pandwindPreset } from "pandwind/preset";
+			const css = createRuntimeCss(pandwindPreset);
+
+			const Div = css.group({ border: ({ border = 1, color = "gainsboro" }) => \`\${border}px solid \${color}\`, color: "steelblue", fontWeight: ({ bold = false }) => (bold ? "bold" : 100) });
+			export const App = () => <Div bold={true} border={1} color="whitesmoke" />;"
+		`);
+	});
+
 	test("emits a self-contained pandwind runtime binding and consolidates imports", () => {
 		const result = runAdapterMigration(
 			`import { css, keyframes } from "@emotion/css";\nconst card = css({ color: "red" });\nconst fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });`,
@@ -1734,16 +1765,21 @@ describe("CSS-in-JS adapter contract v2", () => {
 			source,
 			config: { adapter: "solid-styled", files: [], values: {} },
 		});
-		expect(parsed.matches).toHaveLength(1);
-		expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
-		expect(
-			parsed.matches[0]?.program.residuals.some(
-				(residual) => residual.kind === SwapResidualKindTag.Dynamic,
-			),
-		).toBe(true);
-		expect(
-			parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
-		).toBe(false);
+	expect(parsed.matches).toHaveLength(1);
+	expect(parsed.matches[0]?.program.rules[0]?.children).toHaveLength(1);
+	const borderValue = parsed.matches[0]?.program.rules[0]?.declarations.find(
+		(declaration) => declaration.property === "border",
+	)?.value;
+	expect(borderValue).toMatchObject({
+		kind: "dynamic",
+		expressionKind: "function",
+	});
+	expect(
+		borderValue?.kind === "dynamic" && borderValue.expression.startsWith("({ border = 1"),
+	).toBe(true);
+	expect(
+		parsed.residuals.some((residual) => residual.kind === StyleProgramResidualKindTag.Parse),
+	).toBe(false);
 	});
 
 	test("normalizes plain nested template selectors as descendants", () => {

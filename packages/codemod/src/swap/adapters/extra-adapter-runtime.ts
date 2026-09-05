@@ -32,7 +32,11 @@ import {
 	StyleRepresentationKind,
 } from "../identifiers.ts";
 import type { StyleLowering } from "../lowering.ts";
-import { findTemplateLiteralEnd, parseAdapterTemplate } from "../adapter-template-parser.ts";
+import {
+	findTemplateLiteralEnd,
+	functionValueExpression,
+	parseAdapterTemplate,
+} from "../adapter-template-parser.ts";
 import { JsxStyleHost, type JsxStyleHostMatch } from "../jsx-style-host.ts";
 import { StyleNamedRuleStrategy } from "../identifiers.ts";
 import { FunctionStyleCallParser } from "../function-style-parser.ts";
@@ -70,6 +74,12 @@ export interface ExtraAdapterOptions {
 	readonly namedObjects?: boolean;
 	/** Public source forms that the adapter recognizes but cannot safely lower. */
 	readonly residualPatterns?: readonly ExtraAdapterResidualPattern[];
+	/**
+	 * The adapter's template interpolations may pass function-valued props
+	 * through: arrow interpolations become first-class function dynamics
+	 * instead of parse residuals (targets consume them via function-values).
+	 */
+	readonly functionValues?: boolean;
 	readonly sourceObjectOptions?: Pick<
 		StyleProgramOptions,
 		"nestedObjectKind" | "namedRuleObjects" | "arrayRuleKinds" | "emissionHints"
@@ -364,7 +374,9 @@ function parseTemplateCalls(
 			continue;
 		}
 		const template = source.slice(start, lastTick + 1);
-		let program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start);
+		let program = parseAdapterTemplate(source.slice(firstTick + 1, lastTick), context, id, start, {
+			functionValues: options.functionValues === true,
+		});
 		const subject = source
 			.slice(start, firstTick)
 			.match(/^styled\s*(\.\s*[A-Za-z_$][\w$]*|\(\s*[^)]+\s*\))/)?.[1];
