@@ -393,9 +393,19 @@ export function MigrationLabPage() {
 	const [to, setTo] = useState(endpointById(targetOptions, DEFAULT_TARGET).id);
 	const [source, setSource] = useState(() => MIGRATION_LAB.sampleFor(DEFAULT_SOURCE));
 	const [scenarioKey, setScenarioKey] = useState<string | undefined>(undefined);
+	const [tailwindReady, setTailwindReady] = useState(false);
+	useEffect(() => {
+		let active = true;
+		void MIGRATION_LAB.ready.then(() => {
+			if (active) setTailwindReady(true);
+		});
+		return () => {
+			active = false;
+		};
+	}, []);
 	const sourceEndpoint = endpointById(sourceOptions, from);
 	const targetEndpoint = endpointById(targetOptions, to);
-	const result = useMemo(() => MIGRATION_LAB.migrate(from, to, source), [from, source, to]);
+	const result = useMemo(() => MIGRATION_LAB.migrate(from, to, source), [from, source, to, tailwindReady]);
 	const scenarios = useMemo(() => MIGRATION_LAB.scenariosFor(from), [from]);
 
 	const selectSource = (next: string) => {

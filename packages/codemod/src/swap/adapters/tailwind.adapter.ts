@@ -47,13 +47,21 @@ import {
 } from "../generated-css-parser.ts";
 import { GeneratedCssNodeKind } from "../generated-css-parser.ts";
 
-interface TailwindUtilityResolver {
+export interface TailwindUtilityResolver {
 	resolve(token: string): readonly StyleDeclaration[] | undefined;
 }
 
 export interface TailwindAdapterOptions {
 	readonly resolver?: TailwindUtilityResolver;
 	readonly moduleLoader?: ProjectModuleLoader | null;
+}
+
+/** Parse one candidate emitted by Tailwind's official design-system compiler. */
+export function parseTailwindCandidateCss(
+	css: string,
+	token: string,
+): readonly StyleDeclaration[] | undefined {
+	return parseEngineCss(css, token);
 }
 
 const literal = (property: string, value: string | number): StyleDeclaration => ({

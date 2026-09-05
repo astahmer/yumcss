@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import { examplePreset } from "pandwind/preset";
 import { pandwindCssVite } from "pandwind/vite";
 import { defineConfig } from "vite";
+import { tailwindDefaultCssPlugin } from "./tailwind-default-css-plugin.ts";
 
 /** Cross-origin isolation: required by oxc-parser's SharedArrayBuffer workers. */
 const ISOLATION_HEADERS = {
@@ -21,6 +22,7 @@ const wasiBindingDir = dirname(
 
 export default defineConfig({
 	plugins: [
+		tailwindDefaultCssPlugin,
 		pandwindCssVite(examplePreset, {
 			cssSources: ["css", "design", "ui-css"],
 		}),

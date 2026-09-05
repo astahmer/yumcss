@@ -5,7 +5,10 @@
  * filesystem orchestration. It still uses the same adapter catalog and
  * migration use case, with callers supplying an in-memory source document.
  */
-export { createBrowserCodemodCatalog as createBuiltinCodemodCatalog } from "./browser-adapter-catalog.ts";
+export {
+	createBrowserCodemodCatalog as createBuiltinCodemodCatalog,
+	type BrowserCodemodCatalogOptions,
+} from "./browser-adapter-catalog.ts";
 export { PANDWIND_API_DIALECTS } from "./adapters/core.adapter.ts";
 export { runAdapterMigration } from "./adapter-migration.ts";
 export type { AdapterMigrationOutcome } from "./adapter-contract.ts";
@@ -17,3 +20,6 @@ export type {
 	AdapterValidationResult,
 	StyleAdapter,
 } from "./adapter-contract.ts";
+export { parseTailwindCandidateCss } from "./adapters/tailwind.adapter.ts";
+export type { TailwindUtilityResolver } from "./adapters/tailwind.adapter.ts";
+export type { StyleDeclaration } from "./semantic-ir.ts";

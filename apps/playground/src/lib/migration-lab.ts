@@ -8,9 +8,11 @@ import {
 	type AdapterMigrationOutcome,
 	type AdapterValidationResult,
 	type StyleAdapter,
+	type TailwindUtilityResolver,
 } from "pandwind-codemod/swap/browser";
 import { officialApiCases, officialApiFamilyCases } from "pandwind-codemod/swap/official-api-cases";
 import { PLAYGROUND_MIGRATION_META } from "./migration-meta.ts";
+import { createPlaygroundTailwindResolver } from "./tailwind-default-resolver.ts";
 
 export interface MigrationLabEndpoint {
 	readonly id: string;
@@ -51,6 +53,7 @@ export interface MigrationLabScenario {
 }
 
 export interface MigrationLab {
+	readonly ready: Promise<void>;
 	readonly sources: readonly MigrationLabEndpoint[];
 	readonly targets: readonly MigrationLabEndpoint[];
 	readonly sampleFor: (id: string) => string;
@@ -60,6 +63,11 @@ export interface MigrationLab {
 		to: string,
 		source: string,
 	) => MigrationLabResult | MigrationLabError;
+}
+
+export interface MigrationLabOptions {
+	readonly tailwindResolver?: TailwindUtilityResolver;
+	readonly ready?: Promise<void>;
 }
 
 const SAMPLE_SOURCES: Readonly<Partial<Record<CodemodAdapterId, string>>> = {
@@ -309,8 +317,12 @@ function fileFor(
 }
 
 /** Browser composition root for the same registry-backed migration use case as the CLI. */
-export function createMigrationLab(): MigrationLab {
-	const catalog = createBuiltinCodemodCatalog();
+export function createMigrationLab(options: MigrationLabOptions = {}): MigrationLab {
+	const catalog = createBuiltinCodemodCatalog(
+		options.tailwindResolver === undefined
+			? undefined
+			: { tailwindResolver: options.tailwindResolver },
+	);
 	const endpoints = catalog.adapters
 		.toSorted((left, right) => labelFor(left).localeCompare(labelFor(right)))
 		.map((adapter) => ({
@@ -322,6 +334,7 @@ export function createMigrationLab(): MigrationLab {
 		pandwindApiEndpoint(catalog.systems, api),
 	);
 	return {
+		ready: options.ready ?? Promise.resolve(),
 		sources: endpoints.map(({ source }) => source),
 		targets: [...endpoints.map(({ target }) => target), ...pandwindTargets],
 		sampleFor: (id) =>
@@ -370,4 +383,9 @@ export function createMigrationLab(): MigrationLab {
 	};
 }
 
-export const MIGRATION_LAB = createMigrationLab();
+const playgroundTailwindResolver = createPlaygroundTailwindResolver();
+
+export const MIGRATION_LAB = createMigrationLab({
+	tailwindResolver: playgroundTailwindResolver,
+	ready: playgroundTailwindResolver.ready,
+});

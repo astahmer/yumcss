@@ -22,7 +22,7 @@ import stitches from "./stitches.adapter.ts";
 import style9 from "./style9.adapter.ts";
 import { createStyleXAdapter } from "./stylex.adapter.ts";
 import styledComponents from "./styled-components.adapter.ts";
-import { createTailwindAdapter } from "./tailwind.adapter.ts";
+import { createTailwindAdapter, type TailwindUtilityResolver } from "./tailwind.adapter.ts";
 import treat from "./treat.adapter.ts";
 import vanillaExtract from "./vanilla-extract.adapter.ts";
 import vueStyled from "./vue-styled.adapter.ts";
@@ -39,6 +39,7 @@ import { createTamaguiAdapter } from "./tamagui.adapter.ts";
 export function createBuiltinAdapterPlugin(
 	moduleLoader?: ProjectModuleLoader,
 	stylexResolver?: StyleXImportedReferenceResolver,
+	options?: { readonly tailwindResolver?: TailwindUtilityResolver },
 ): StyleAdapterPlugin {
 	const stylex = createStyleXAdapter({ crossModuleResolver: stylexResolver });
 	return createStyleAdapterPlugin(CodemodPluginId.BuiltinAdapters, [
@@ -61,7 +62,7 @@ export function createBuiltinAdapterPlugin(
 		nextYak,
 		createPandaAdapter({ moduleLoader: moduleLoader ?? null }),
 		moduleLoader === undefined
-			? createTailwindAdapter({ moduleLoader: null })
+			? createTailwindAdapter({ moduleLoader: null, resolver: options?.tailwindResolver })
 			: createTailwindAdapter({ moduleLoader }),
 		jss,
 		stylex,
