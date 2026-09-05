@@ -267,16 +267,34 @@ async function officialPandwindConfig(
 	return fallback;
 }
 
-function generatedCssBinding(source: string | undefined): string {
+function generatedCssBinding(
+	source: string | undefined,
+	sourceModules: readonly string[] = [],
+	sourceModuleMatchers: readonly ((moduleSpecifier: string) => boolean)[] = [],
+): string {
 	const input = source ?? "";
-	if (
-		/\bimport\s+css\s+from\b/u.test(input) ||
-		/\bimport\s*\{[^}]*\bcss\b[^}]*\}\s*from\b/u.test(input)
-	)
-		return "pandwindCss";
+	const ownedModules = new Set(sourceModules);
+	const cssImports = /\bimport\s+([^;]+?)\s+from\s+["']([^"']+)["']/gu;
+	const ownsModule = (moduleSpecifier: string | undefined): boolean =>
+		moduleSpecifier !== undefined &&
+		(ownedModules.has(moduleSpecifier) ||
+			sourceModuleMatchers.some((matcher) => matcher(moduleSpecifier)));
+	for (const match of input.matchAll(cssImports)) {
+		const clause = match[1]?.trim() ?? "";
+		const moduleSpecifier = match[2];
+		if (ownsModule(moduleSpecifier)) continue;
+		if (
+			/^css\b/u.test(clause) ||
+			/\{[^}]*\bcss\b[^}]*\}/u.test(clause)
+		)
+			return "pandwindCss";
+	}
+	const bindingInput = input.replace(cssImports, (statement, _clause: string, moduleSpecifier: string) =>
+		ownsModule(moduleSpecifier) ? "" : statement,
+	);
 	for (const candidate of ["css", "pandwindCss", "pwCss"]) {
 		const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-		if (!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(input))
+		if (!new RegExp(`\\b(?:const|let|var|import)\\s+(?:default\\s+)?${escaped}\\b`).test(bindingInput))
 			return candidate;
 	}
 	return "pandwindCss";
@@ -1268,7 +1286,11 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 		tokenPolicy: PANDWIND_TOKEN_POLICY,
 		migration: { targetPolicy: PANDWIND_TARGET_POLICY },
 		emit(program, { programObject, declarationsObject }, context) {
-			const cssBinding = generatedCssBinding(context?.document?.document.source);
+			const cssBinding = generatedCssBinding(
+				context?.document?.document.source,
+				context?.sourceModules,
+				context?.sourceModuleMatchers,
+			);
 			const hasFunctionDynamic = program.rules.some(function containsFunction(rule): boolean {
 				return (
 					rule.declarations.some(

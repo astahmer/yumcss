@@ -166,6 +166,10 @@ export interface AdapterEmitContext {
 	readonly meta?: PandwindMeta;
 	/** Optional language-neutral document view for target emitters. */
 	readonly document?: SourceScanResult;
+	/** Source-owned modules whose imports are removed after target emission. */
+	readonly sourceModules?: readonly string[];
+	/** Source-owned module patterns whose imports are removed after target emission. */
+	readonly sourceModuleMatchers?: readonly ((moduleSpecifier: string) => boolean)[];
 	/** Host binding context for adapters that emit framework wrappers. */
 	readonly host?: {
 		readonly binding?: string;

@@ -1377,6 +1377,8 @@ function runAdapterMigrationInternal(
 			loweringResiduals: carrierResiduals,
 			index,
 			document,
+			sourceModules: sourceAdapter.sourceModules,
+			sourceModuleMatchers: sourceAdapter.sourceModuleMatchers,
 			meta: options.meta,
 			host: {
 				...(bindingBeforeMatch === undefined ? {} : { binding: bindingBeforeMatch }),
