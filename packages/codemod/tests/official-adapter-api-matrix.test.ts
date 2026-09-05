@@ -488,8 +488,9 @@ describe("official primary API forms", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
+			const __pandwindSlot = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-			export const Card = (() => { const style = css.class({ padding: "1rem", color: "red" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-t6bw3o", props.className)} />; }; component.__pandwindClassName = "pw-t6bw3o"; return component; })();",
+			export const Card = __pandwindSlot("div", css.class({ padding: "1rem", color: "red" }), "pw-t6bw3o", undefined, "className", {}, cx);",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -561,8 +562,9 @@ describe("official primary API forms", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
+			const __pandwindSlot = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
 
-			export const Card = (() => { const style = css.class({ padding: "1rem", color: "red" }); const component = (props) => { const Component = props.as ?? "div"; const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			export const Card = __pandwindSlot("div", css.class({ padding: "1rem", color: "red" }), "pw-1fn70s4", undefined, "className", {}, cx);",
 			    "converted": 1,
 			    "outcomes": [
 			      {

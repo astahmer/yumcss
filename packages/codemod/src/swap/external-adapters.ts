@@ -143,7 +143,10 @@ export interface AdapterRenderers {
  * have to manufacture an empty array. The registry adds the canonical source
  * and emitted residuals together at the boundary.
  */
-export type CodemodAdapterEmission = Pick<AdapterEmitResult, "text" | "imports" | "semantic"> & {
+export type CodemodAdapterEmission = Pick<
+	AdapterEmitResult,
+	"text" | "imports" | "generatedStatements" | "semantic"
+> & {
 	readonly residuals?: readonly StyleProgramResidual[];
 	readonly generatedFiles?: readonly AdapterGeneratedFile[];
 };
@@ -1539,6 +1542,7 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 				spec.preserveNamedRules?.(context) !== true
 					? (() => {
 							const imports = new Set<string>();
+							const generatedStatements = new Set<string>();
 							const generatedFiles: AdapterGeneratedFile[] = [];
 							const semanticPrograms: StyleProgram[] = [];
 							const entries = namedRules.map((rule) => {
@@ -1548,6 +1552,8 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 									declarations: rule.declarations,
 								});
 								for (const statement of single.imports ?? []) imports.add(statement);
+								for (const statement of single.generatedStatements ?? [])
+									generatedStatements.add(statement);
 								generatedFiles.push(...(single.generatedFiles ?? []));
 								if (single.semantic !== undefined) semanticPrograms.push(single.semantic);
 								return `${JSON.stringify(rule.name)}: ${single.text}`;
@@ -1555,6 +1561,9 @@ export function defineCodemodAdapter(spec: CodemodAdapterSpec): StyleAdapter {
 							return {
 								text: `{ ${entries.join(", ")} }`,
 								imports: [...imports],
+								...(generatedStatements.size === 0
+									? {}
+									: { generatedStatements: [...generatedStatements] }),
 								...(generatedFiles.length === 0 ? {} : { generatedFiles }),
 								...(semanticPrograms.length === entries.length
 									? {

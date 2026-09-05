@@ -690,11 +690,24 @@ function runtimeComponent(
  * wrapper remains because consumers may import the styled binding from other
  * modules that are outside the current codemod file.
  */
+function generatedBinding(source: string | undefined, base: string): string {
+	const existing = source ?? "";
+	let candidate = base;
+	let suffix = 2;
+	while (new RegExp(`\\b${candidate}\\b`, "u").test(existing)) {
+		candidate = `${base}${suffix}`;
+		suffix++;
+	}
+	return candidate;
+}
+
 function staticComponent(
 	program: StyleProgram,
 	programObject: AdapterRenderers["programObject"],
 	context: AdapterEmitContext | undefined,
-): { text: string; imports: readonly string[] } | undefined {
+):
+	| { text: string; imports: readonly string[]; generatedStatements: readonly string[] }
+	| undefined {
 	const host = context?.host;
 	const subject = host?.subject ?? program.source?.subject;
 	const framework = host?.framework ?? program.source?.framework;
@@ -734,13 +747,11 @@ function staticComponent(
 			? `css.class(${programObject(loweredProgram)})`
 			: `css(${programObject(loweredProgram)})`;
 	const attrsExpression = attrs === undefined ? "{}" : `(${attrs})`;
-	const classExpression = `cx(style, ${JSON.stringify(stableClass)}${inheritedClass === undefined ? "" : `, ${JSON.stringify(inheritedClass)}`}, props.${classAttribute})`;
-	const resolvedClassExpression =
-		inheritedClass === undefined
-			? classExpression
-			: classExpression.replace(/^cx\(/, "composedCx(");
+	const sourceText = context?.document?.document.source;
 	const composedCxBinding =
-		inheritedClass === undefined ? "" : "const composedCx = createCx({ css }); ";
+		inheritedClass === undefined ? undefined : generatedBinding(sourceText, "composedCx");
+	const slotBinding = generatedBinding(sourceText, "__pandwindSlot");
+	const slotHelper = `const ${slotBinding} = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };`;
 	if (framework === BuiltinHostFramework.Vue) {
 		const tagExpression = tag === undefined ? `(${base})` : JSON.stringify(tag);
 		return {
@@ -752,15 +763,26 @@ function staticComponent(
 				"const css = createCss();",
 				"const cx = createCx();",
 			],
+			generatedStatements: [],
 		};
 	}
+	const joinClass = composedCxBinding ?? "cx";
+	const defaultComponent = tag === undefined ? `(${base})` : JSON.stringify(tag);
+	const inheritedClassExpression =
+		inheritedClass === undefined ? "undefined" : JSON.stringify(inheritedClass);
 	return {
-		text: `(() => { ${composedCxBinding}const style = ${style}; const component = (props) => { const Component = props.as ?? ${tag === undefined ? `(${base})` : JSON.stringify(tag)}; const { as: _as, ...rest } = props; const attrs = ${attrsExpression}; return <Component {...attrs} {...rest} ${classAttribute}={${resolvedClassExpression}} />; }; component.__pandwindClassName = ${JSON.stringify(stableClass)}; return component; })()`,
+		text: `${slotBinding}(${defaultComponent}, ${style}, ${JSON.stringify(stableClass)}, ${inheritedClassExpression}, ${JSON.stringify(classAttribute)}, ${attrsExpression}, ${joinClass})`,
 		imports: [
 			'import { createCss } from "pandwind/css";',
 			"const css = createCss();",
 			'import { createCx } from "pandwind/cx";',
 			"const cx = createCx();",
+		],
+		generatedStatements: [
+			slotHelper,
+			...(composedCxBinding === undefined
+				? []
+				: [`const ${composedCxBinding} = createCx({ css });`]),
 		],
 	};
 }

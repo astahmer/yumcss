@@ -886,13 +886,13 @@ describe("CSS-in-JS adapter contract v2", () => {
 			"next-yak",
 			"App.tsx",
 			'import { styled } from "next-yak";\nconst Card = styled.div`color: red; padding: 1rem;`;',
-			"className={cx(style",
+			'"className", {}, cx',
 		],
 		[
 			"solid-styled",
 			"App.tsx",
 			'import { styled } from "solid-styled-components";\nconst Card = styled.div`color: red; padding: 1rem;`;',
-			"class={cx(style",
+			'"class", {}, cx',
 		],
 	] as const)(
 		"statically extracts standalone %s subjects for Pandwind",
@@ -902,6 +902,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 			expect(result.skipped).toBe(0);
 			expect(result.residuals).toEqual([]);
 			expect(result.code).toContain("css.class");
+			expect(result.code).toContain("const __pandwindSlot =");
 			expect(result.code).toContain(marker);
 			expect(result.code).not.toContain("styled-components");
 			expect(result.code).not.toContain("createRuntimeCss");

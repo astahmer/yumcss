@@ -199,6 +199,8 @@ export interface AdapterEmitResult {
 	/** Semantic observation for opaque runtime registration or an intentional portable artifact. */
 	readonly semantic?: StyleProgram;
 	readonly imports?: readonly string[];
+	/** Module-level statements required by an emitted expression. */
+	readonly generatedStatements?: readonly string[];
 	readonly dependencies?: AdapterDependencies;
 	readonly generatedFiles?: readonly AdapterGeneratedFile[];
 	readonly residuals: readonly StyleProgramResidual[];

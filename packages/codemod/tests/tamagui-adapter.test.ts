@@ -32,8 +32,32 @@ describe("Tamagui adapter", () => {
 			import { createCx } from "pandwind/cx";
 			const cx = createCx();
 			const css = createCss();
-			export const Card = (() => { const style = css.class({ padding: 16, color: "red" }); const component = (props) => { const Component = props.as ?? (View); const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();"
+			const __pandwindSlot = (defaultComponent, style, stableClass, inheritedClass, classAttribute, attrs, joinClass) => { const component = (props) => { const Component = props.as ?? defaultComponent; const { as: _as, ...rest } = props; return <Component {...attrs} {...rest} {...{ [classAttribute]: joinClass(style, stableClass, inheritedClass, props[classAttribute]) }} />; }; component.__pandwindClassName = stableClass; return component; };
+			export const Card = __pandwindSlot((View), css.class({ padding: 16, color: "red" }), "pw-1fn70s4", undefined, "className", {}, cx);"
 		`);
+	});
+
+	test("hoists one reusable slot helper for multiple static components", () => {
+		const source = [
+			'import { View, styled } from "@tamagui/core";',
+			'export const Card = styled(View, { color: "red" });',
+			"export const Panel = styled(View, { padding: 16 });",
+		].join("\n");
+		const result = runAdapterMigration(source, {
+			from: CodemodAdapterId.Tamagui,
+			to: CodemodAdapterId.Pandwind,
+			file: "components.tsx",
+			mode: "safe",
+			adapterRegistry: catalog.registry,
+		});
+
+		expect(result.skipped).toBe(0);
+		expect(result.residuals).toEqual([]);
+		expect(result.code.match(/const __pandwindSlot\s*=/gu)).toHaveLength(1);
+		expect(result.code.match(/__pandwindSlot\(/gu)).toHaveLength(2);
+		expect(result.code).toContain("export const Card = __pandwindSlot(");
+		expect(result.code).toContain("export const Panel = __pandwindSlot(");
+		expect(result.code).not.toContain("export const Card = (() =>");
 	});
 
 	test("keeps runtime theme callbacks visible as residuals", () => {

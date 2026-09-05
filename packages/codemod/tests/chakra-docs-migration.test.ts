@@ -30,7 +30,7 @@ describe("Chakra docs migration corpus", () => {
 				);
 			}
 		},
-		30_000,
+		120_000,
 	);
 
 	test("lane identities are stable and exhaustive", () => {

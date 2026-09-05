@@ -56,8 +56,9 @@ describe("target adapter emission contract", () => {
 
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain("export const Card = (() =>");
-		expect(result.code).toContain("props.as ?? (Link)");
+		expect(result.code).toContain("const __pandwindSlot =");
+		expect(result.code).toContain("export const Card = __pandwindSlot(");
+		expect(result.code).toContain("(Link)");
 		expect(result.code).not.toMatch(/export const Card = css\.class\(/u);
 	});
 

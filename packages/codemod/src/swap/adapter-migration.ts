@@ -691,6 +691,7 @@ function runAdapterMigrationInternal(
 	const marker = options.skipMarker ?? "pandwind:migrate-skip";
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const imports = new Set<string>();
+	const generatedStatements = new Set<string>();
 	const reports: AdapterCapabilityReport[] = [];
 	const validations: AdapterValidationResult[] = [];
 	const dependencies: AdapterDependencies[] = [targetAdapter.dependencies];
@@ -1562,6 +1563,7 @@ function runAdapterMigrationInternal(
 		}
 		collectGeneratedFiles(emitted.generatedFiles);
 		for (const statement of emitted.imports ?? []) imports.add(statement);
+		for (const statement of emitted.generatedStatements ?? []) generatedStatements.add(statement);
 		if (emitted.dependencies !== undefined) dependencies.push(emitted.dependencies);
 		residuals.push(...emitted.residuals);
 		const declarationRewrite = pendingComponentDeclarationRewrites.get(index);
@@ -1902,6 +1904,8 @@ function runAdapterMigrationInternal(
 	if (!targetUsesPandwindCss)
 		code = MigrationOutput.removeGeneratedStatements(code, ["const css = createCss();"]);
 	const outputFile = fileWithExtension(options.file, outputExtension);
+	for (const statement of generatedStatements)
+		code = ensureGeneratedStatement(code, statement, outputFile);
 	for (const statement of MigrationOutput.consolidateImports(imports))
 		code = ensureGeneratedStatement(code, statement, outputFile);
 	return {
