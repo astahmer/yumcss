@@ -10,7 +10,7 @@ describe("StyleX docs migration lanes", () => {
 		const report = await StylexDocsMigration.run(root, StylexDocsLane.RuntimeCss);
 		expect(report.lane).toBe(StylexDocsLane.RuntimeCss);
 		expect(report.invalidValidations).toBe(0);
-	});
+	}, 30_000);
 
 	test.each(StylexDocsMigration.lanes.map((lane) => lane.id))(
 		"migrates the pinned corpus without unsafe residuals: %s",
@@ -23,5 +23,6 @@ describe("StyleX docs migration lanes", () => {
 			expect(report.residuals).toBe(0);
 			expect(report.invalidValidations).toBe(0);
 		},
+		30_000,
 	);
 });

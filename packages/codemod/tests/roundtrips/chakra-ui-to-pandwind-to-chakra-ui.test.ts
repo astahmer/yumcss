@@ -67,9 +67,8 @@ test("chakra-ui -> pandwind -> chakra-ui: preserves an actionable concrete round
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;",
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
@@ -127,9 +126,8 @@ test("chakra-ui -> pandwind -> chakra-ui: retains edge semantics without silent 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" })}/>;
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
@@ -287,9 +285,8 @@ test("chakra-ui -> pandwind -> chakra-ui: resolves token references across both 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
-		import { defaultSystem } from "@chakra-ui/react";
 
-		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" })}/>;",
+		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
 		      {

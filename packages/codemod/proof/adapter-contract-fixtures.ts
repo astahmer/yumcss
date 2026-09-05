@@ -147,21 +147,21 @@ export const adapterContractFixtures: readonly AdapterContractFixture[] = [
 	{
 		adapter: CodemodAdapterId.CssModules,
 		file: "card.module.css",
-		source: ".card { color: red; padding: 1rem; }",
+		source: ":root { color: red; padding: 1rem; }",
 	},
 	{
 		adapter: CodemodAdapterId.Sass,
 		file: "card.scss",
-		source: ".card { color: red; padding: 1rem; }",
+		source: ":root { color: red; padding: 1rem; }",
 	},
 	{
 		adapter: CodemodAdapterId.Less,
 		file: "card.less",
-		source: ".card { color: red; padding: 1rem; }",
+		source: ":root { color: red; padding: 1rem; }",
 	},
 	{
 		adapter: CodemodAdapterId.AuthoredCss,
 		file: "card.css",
-		source: ".card { color: red; padding: 1rem; }",
+		source: ":root { color: red; padding: 1rem; }",
 	},
 ];

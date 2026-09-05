@@ -64,28 +64,17 @@ test("mui -> unocss -> mui: preserves an actionable concrete round trip", () => 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mui | parse-residual: dynamic)
-		import { Box } from "@mui/material";
+		    "code": "import { Box } from "@mui/material";
 		export const App = () => <Box sx={{ padding: "16px", color: "red" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -130,28 +119,17 @@ test("mui -> unocss -> mui: retains edge semantics without silent loss", () => {
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mui | parse-residual: dynamic)
-		import { Box } from "@mui/material";
+		    "code": "import { Box } from "@mui/material";
 		export const App = () => <Box style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} sx={{ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -206,28 +184,17 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> mui | parse-residual: dynamic)
-		import { Box } from "@mui/material";
+		      "code": "import { Box } from "@mui/material";
 		export const App = () => <Box style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }} sx={{ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -261,28 +228,17 @@ test("mui -> unocss -> mui: preserves concrete theme and project context variant
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> mui | parse-residual: dynamic)
-		import { Box } from "@mui/material";
+		      "code": "import { Box } from "@mui/material";
 		export const App = () => <Box style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }} sx={{ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -328,28 +284,17 @@ test("mui -> unocss -> mui: resolves token references across both concrete legs"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mui | parse-residual: dynamic)
-		import { Box } from "@mui/material";
+		    "code": "import { Box } from "@mui/material";
 		export const App = () => <Box sx={{ padding: "16px", color: "var(--mui-primary-main)" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],

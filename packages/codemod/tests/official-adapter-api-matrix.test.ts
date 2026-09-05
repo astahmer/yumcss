@@ -537,7 +537,7 @@ describe("official primary API forms", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const styles = { "card": css.class({ color: "red" }) };",
+			export const styles = css.group({ card: { color: "red" } });",
 			    "converted": 1,
 			    "outcomes": [
 			      {

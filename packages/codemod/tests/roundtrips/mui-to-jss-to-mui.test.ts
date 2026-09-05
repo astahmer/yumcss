@@ -66,26 +66,25 @@ test("mui -> jss -> mui: preserves an actionable concrete round trip", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "red" }) }.attach().classes.style}/>;",
-		    "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { padding: "16px", color: "red" } }).attach().classes.style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -125,26 +124,25 @@ test("mui -> jss -> mui: retains edge semantics without silent loss", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
-		    "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" } }).attach().classes.style} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -194,26 +192,25 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		      "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -242,26 +239,25 @@ test("mui -> jss -> mui: preserves concrete theme and project context variants",
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
-		      "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" } }).attach().classes.style} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		          "kind": "host-framework",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}
@@ -302,26 +298,25 @@ test("mui -> jss -> mui: resolves token references across both concrete legs", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
-		import { createCss } from "pandwind/css";
-		const css = createCss();
-
-		export const App = () => <Box className={{ "style": css.class({ padding: "16px", color: "var(--mui-primary-main)" }) }.attach().classes.style}/>;",
-		    "converted": 1,
+		import jss from "jss";
+		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		jss.createStyleSheet({ style: { padding: "16px", color: "var(--mui-primary-main)" } }).attach().classes.style}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

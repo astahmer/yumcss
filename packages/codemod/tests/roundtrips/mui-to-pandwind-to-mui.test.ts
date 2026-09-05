@@ -68,25 +68,24 @@ test("mui -> pandwind -> mui: preserves an actionable concrete round trip", () =
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
-
-		const css = createCss();
-		export const App = () => <Box className={css.class({ "padding": "16px", "color": "red" })}/>;",
-		    "converted": 1,
+		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "red" })}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -278,25 +277,24 @@ test("mui -> pandwind -> mui: resolves token references across both concrete leg
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
 		import { createCss } from "pandwind/css";
-
-		const css = createCss();
-		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--mui-primary-main)" })}/>;",
-		    "converted": 1,
+		export const App = () => <Box className={// pandwind:migrate-skip (route: pandwind -> mui | lowering-residual: host-framework | available: static, named-map, residual)
+		css.class({ padding: "16px", color: "var(--mui-primary-main)" })}/>;",
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "MUI sx styles require a host component prop; no standalone sx() API exists",
+		        "kind": "host-framework",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);

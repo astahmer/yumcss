@@ -66,36 +66,22 @@ test("mantine -> jss -> mantine: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import jss from "jss";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }).attach().classes.style}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={{ style: { padding: "var(--mantine-spacing-md)", color: "red" } }.attach().classes.style}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -137,36 +123,22 @@ test("mantine -> jss -> mantine: retains edge semantics without silent loss", ()
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import jss from "jss";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }).attach().classes.style}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={{ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }.attach().classes.style}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -218,36 +190,22 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import jss from "jss";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
-		      "converted": 0,
+
+		export const App = () => <Box className={{ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.attach().classes.style}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -278,36 +236,22 @@ test("mantine -> jss -> mantine: preserves concrete theme and project context va
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import jss from "jss";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }).attach().classes.style}/>;",
-		      "converted": 0,
+
+		export const App = () => <Box className={{ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.attach().classes.style}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -350,36 +294,22 @@ test("mantine -> jss -> mantine: resolves token references across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import jss from "jss";
-		export const App = () => <Box className={// pandwind:migrate-skip (route: jss -> mantine | lowering-residual: host-framework, validation)
-		jss.createStyleSheet({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }).attach().classes.style}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={{ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }.attach().classes.style}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

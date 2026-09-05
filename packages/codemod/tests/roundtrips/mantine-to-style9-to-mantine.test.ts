@@ -67,35 +67,21 @@ test("mantine -> style9 -> mantine: preserves an actionable concrete round trip"
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
-		    "converted": 0,
+		export const App = () => <Box className={style9({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -138,35 +124,21 @@ test("mantine -> style9 -> mantine: retains edge semantics without silent loss",
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
-		    "converted": 0,
+		export const App = () => <Box className={style9({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -219,35 +191,21 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
-		      "converted": 0,
+		export const App = () => <Box className={style9({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.style)}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -279,35 +237,21 @@ test("mantine -> style9 -> mantine: preserves concrete theme and project context
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
-		      "converted": 0,
+		export const App = () => <Box className={style9({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.style)}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -351,35 +295,21 @@ test("mantine -> style9 -> mantine: resolves token references across both concre
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
 		import style9 from "style9";
-		export const App = () => <Box className={style9(// pandwind:migrate-skip (route: style9 -> mantine | lowering-residual: host-framework, validation)
-		style9.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
-		    "converted": 0,
+		export const App = () => <Box className={style9({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

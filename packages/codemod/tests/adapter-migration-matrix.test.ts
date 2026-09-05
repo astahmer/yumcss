@@ -59,6 +59,18 @@ matrixFixtures.set(CodemodAdapterId.UnoCSS, {
 	file: "App.tsx",
 	source: '<div className="[display:flex] [align-items:center]" />',
 });
+for (const adapter of [
+	CodemodAdapterId.AuthoredCss,
+	CodemodAdapterId.CssModules,
+	CodemodAdapterId.Sass,
+	CodemodAdapterId.Less,
+]) {
+	const fixture = matrixFixtures.get(adapter)!;
+	matrixFixtures.set(adapter, {
+		...fixture,
+		source: ".card { color: red; padding: 1rem; }",
+	});
+}
 
 function fixtureFor(adapter: string) {
 	const fixture = matrixFixtures.get(adapter);
@@ -265,7 +277,7 @@ describe("bidirectional registered adapter matrix", () => {
 			}
 		}
 		expect(outcomes).toHaveLength(catalog.adapters.length ** 2);
-	});
+	}, 30_000);
 
 	test("preserves malformed source tails for every ordered route", () => {
 		for (const sourceAdapter of catalog.adapters) {

@@ -1753,6 +1753,27 @@ function runAdapterMigrationInternal(
 		runtimeEdited = rewrite.code;
 		for (const statement of rewrite.imports ?? []) imports.add(statement);
 		residuals.push(...rewrite.residuals);
+		for (const handled of rewrite.handledResiduals ?? []) {
+			for (let index = residuals.length - 1; index >= 0; index--) {
+				const residual = residuals[index];
+				if (
+					residual?.kind === handled.kind &&
+					residual.text === handled.text &&
+					residual.hint === handled.hint
+				)
+					residuals.splice(index, 1);
+			}
+			for (let index = outcomes.length - 1; index >= 0; index--) {
+				const outcome = outcomes[index];
+				if (
+					outcome?.outcome === StyleMigrationOutcome.Residual &&
+					outcome.sourceText === handled.text
+				) {
+					outcomes.splice(index, 1);
+					skipped = Math.max(0, skipped - 1);
+				}
+			}
+		}
 	}
 	const documentProgram = parsed.matches[0]?.program;
 	const documentSourceFramework =

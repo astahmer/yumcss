@@ -100,7 +100,7 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain(" css={");
 				}
 				if (api.name === "imperative applyTo") {
-				expect(result.code).toContain("element!.classList.add(sheet.card)");
+					expect(result.code).toContain("element!.classList.add(sheet.card)");
 					expect(result.code).not.toContain("sheet.attach()");
 				}
 				if (api.name === "Global component") {
@@ -1691,7 +1691,7 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			export const styles = { "card": css.class({ color: "red" }), "muted": css.class({ opacity: 0.5 }) };",
+			export const styles = css.group({ card: { color: "red" }, muted: { opacity: 0.5 } });",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1716,7 +1716,7 @@ describe("official adapter API families", () => {
 			const cx = createCx();
 			const css = createCss();
 
-			const styles = { "card": css.class({ color: "red" }) };
+			const styles = css.group({ card: { color: "red" } });
 			export const Card = () => <div className={cx(styles.card)} />;",
 			    "converted": 1,
 			    "outcomes": [

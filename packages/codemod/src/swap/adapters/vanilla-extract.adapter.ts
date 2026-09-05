@@ -131,10 +131,17 @@ export default defineCodemodAdapter({
 				program.rules.length > 0 &&
 				program.rules.every((rule) => rule.kind === StyleRuleKindTag.Style),
 		}),
-		rewrite: ({ code, targetId, complete }) => {
-			if (targetId !== CodemodAdapterId.Pandwind || !complete) return { code, residuals: [] };
+		rewrite: ({ code, targetId }) => {
+			if (targetId !== CodemodAdapterId.Pandwind) return { code, residuals: [] };
+			if (!/\bcss\.(?:class|vars|group)\s*\(/u.test(code)) return { code, residuals: [] };
+			if (/\bfallbackVar\s*\(/u.test(code)) return { code, residuals: [] };
+			const handledResiduals = [...code.matchAll(/\bcreateVar\s*\(/g)].map((match) => ({
+				kind: StyleProgramResidualKindTag.Configuration,
+				text: match[0],
+				hint: "Vanilla Extract createVar requires contract-aware variable lowering",
+			}));
 			let rewritten = code.replace(
-				/\b(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*createVar\s*\(\s*\)\s*;/g,
+				/\b(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:\/\/[^\n]*\n\s*)?createVar\s*\(\s*\)\s*;/g,
 				(_match, declaration, name: string) => `${declaration} ${name} = "--pw-${name}";`,
 			);
 			if (
@@ -143,7 +150,7 @@ export default defineCodemodAdapter({
 			) {
 				rewritten = `${runtimeFallbackVar}\n${rewritten}`;
 			}
-			return { code: rewritten, residuals: [] };
+			return { code: rewritten, residuals: [], handledResiduals };
 		},
 	},
 	sourceObjectOptions: (source) => {

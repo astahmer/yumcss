@@ -64,28 +64,17 @@ test("mantine -> unocss -> mantine: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mantine | parse-residual: dynamic)
-		import { Box } from "@mantine/core";
+		    "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "red" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -130,28 +119,17 @@ test("mantine -> unocss -> mantine: retains edge semantics without silent loss",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mantine | parse-residual: dynamic)
-		import { Box } from "@mantine/core";
+		    "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.foreground" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -206,28 +184,17 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> mantine | parse-residual: dynamic)
-		import { Box } from "@mantine/core";
+		      "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -261,28 +228,17 @@ test("mantine -> unocss -> mantine: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> mantine | parse-residual: dynamic)
-		import { Box } from "@mantine/core";
+		      "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -328,28 +284,17 @@ test("mantine -> unocss -> mantine: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> mantine | parse-residual: dynamic)
-		import { Box } from "@mantine/core";
+		    "code": "import { Box } from "@mantine/core";
 		export const App = () => <Box style={{ padding: "var(--mantine-spacing-md)", color: "brand.0" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],

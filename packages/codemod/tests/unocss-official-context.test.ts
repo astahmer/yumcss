@@ -113,7 +113,7 @@ describe("UnoCSS official extraction context", () => {
 		expect(result.code).toMatchInlineSnapshot(`
 			"import { createCss } from "pandwind/css";
 			const css = createCss();
-			export const App = () => <div  className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { "&:hover": { color: "#fff" } } })}/>;"
+			export const App = () => <div className={css.class({ backgroundColor: "#123456", "@media (min-width: 48rem)": { "&:hover": { color: "#fff" } } })}/>;"
 		`);
 	});
 });

@@ -1611,7 +1611,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.converted).toBe(1);
 		expect(result.skipped).toBe(0);
 		expect(result.residuals).toEqual([]);
-		expect(result.code).toContain('className={css.vars({ "color": theme.foreground }).class}');
+		expect(result.code).toContain("className={css.vars({ color: theme.foreground }).class}");
 	});
 
 	test("lowers Stitches variants into the existing Pandwind recipe contract", () => {

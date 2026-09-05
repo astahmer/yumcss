@@ -317,6 +317,8 @@ export interface AdapterRewriteResult {
 	readonly code: string;
 	readonly imports?: readonly string[];
 	readonly residuals: readonly StyleProgramResidual[];
+	/** Source residuals fully handled by this target-aware whole-file rewrite. */
+	readonly handledResiduals?: readonly StyleProgramResidual[];
 }
 
 export interface AdapterMigrationHooks {

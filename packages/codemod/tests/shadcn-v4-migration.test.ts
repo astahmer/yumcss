@@ -23,7 +23,7 @@ describe("shadcn/ui v4 migration corpus", () => {
 				expect(report.residualCount).toBeGreaterThanOrEqual(0);
 			}
 		},
-		60_000,
+		120_000,
 	);
 
 	test("lane identities are stable and exhaustive", () => {

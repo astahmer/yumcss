@@ -64,28 +64,17 @@ test("chakra-ui -> unocss -> chakra-ui: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | parse-residual: dynamic)
-		import { Box } from "@chakra-ui/react";
+		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -131,29 +120,18 @@ test("chakra-ui -> unocss -> chakra-ui: retains edge semantics without silent lo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | parse-residual: dynamic)
-		import { Box } from "@chakra-ui/react";
+		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
-		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],
@@ -208,28 +186,17 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | parse-residual: dynamic)
-		import { Box } from "@chakra-ui/react";
+		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => <Box style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -263,28 +230,17 @@ test("chakra-ui -> unocss -> chakra-ui: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | parse-residual: dynamic)
-		import { Box } from "@chakra-ui/react";
+		      "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => <Box style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }}/>;",
 		      "converted": 1,
 		      "outcomes": [
-		        {
-		          "outcome": "residual",
-		          "representation": "residual",
-		        },
 		        {
 		          "outcome": "static",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
 		          "differences": [],
@@ -330,28 +286,17 @@ test("chakra-ui -> unocss -> chakra-ui: resolves token references across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "// pandwind:migrate-skip (route: unocss -> chakra-ui | parse-residual: dynamic)
-		import { Box } from "@chakra-ui/react";
+		    "code": "import { Box } from "@chakra-ui/react";
 		export const App = () => <Box css={{ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }}/>;",
 		    "converted": 1,
 		    "outcomes": [
-		      {
-		        "outcome": "residual",
-		        "representation": "residual",
-		      },
 		      {
 		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "UnoCSS dynamic class expressions require runtime-aware target lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
 		        "differences": [],

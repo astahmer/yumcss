@@ -66,36 +66,22 @@ test("mantine -> aphrodite -> mantine: preserves an actionable concrete round tr
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "red" } }).style)}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={css({ style: { padding: "var(--mantine-spacing-md)", color: "red" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -137,36 +123,22 @@ test("mantine -> aphrodite -> mantine: retains edge semantics without silent los
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.foreground" } }).style)}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={css({ style: { padding: "var(--mantine-spacing-md)", color: "theme.foreground" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },
@@ -218,36 +190,22 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
-		      "converted": 0,
+
+		export const App = () => <Box className={css({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.style)}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -278,36 +236,22 @@ test("mantine -> aphrodite -> mantine: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mantine/core";
-		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "theme.colors.brand" } }).style)}/>;",
-		      "converted": 0,
+
+		export const App = () => <Box className={css({ style: { padding: "var(--mantine-spacing-md)", color: "theme.colors.brand" } }.style)}/>;",
+		      "converted": 1,
 		      "outcomes": [
 		        {
-		          "outcome": "residual",
+		          "outcome": "target-native",
 		          "representation": "named-map",
 		        },
 		      ],
-		      "residuals": [
-		        {
-		          "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		          "kind": "host-framework",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "1 residual conversion(s)",
-		          "kind": "validation",
-		          "preserved": undefined,
-		        },
-		      ],
-		      "skipped": 1,
+		      "residuals": [],
+		      "skipped": 0,
 		      "validations": [
 		        {
-		          "differences": [
-		            "1 residual conversion(s)",
-		          ],
-		          "lossiness": "lossy",
-		          "valid": false,
+		          "differences": [],
+		          "lossiness": "lossless",
+		          "valid": true,
 		        },
 		      ],
 		    },
@@ -350,36 +294,22 @@ test("mantine -> aphrodite -> mantine: resolves token references across both con
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mantine/core";
-		import { StyleSheet, css } from "aphrodite";
-		export const App = () => <Box className={css(// pandwind:migrate-skip (route: aphrodite -> mantine | lowering-residual: host-framework, validation)
-		StyleSheet.create({ style: { "padding": "var(--mantine-spacing-md)", "color": "brand.0" } }).style)}/>;",
-		    "converted": 0,
+
+		export const App = () => <Box className={css({ style: { padding: "var(--mantine-spacing-md)", color: "brand.0" } }.style)}/>;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "target-native",
 		        "representation": "named-map",
 		      },
 		    ],
-		    "residuals": [
-		      {
-		        "hint": "Mantine style maps require a host component style prop or an explicit CSS module",
-		        "kind": "host-framework",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "1 residual conversion(s)",
-		        "kind": "validation",
-		        "preserved": undefined,
-		      },
-		    ],
-		    "skipped": 1,
+		    "residuals": [],
+		    "skipped": 0,
 		    "validations": [
 		      {
-		        "differences": [
-		          "1 residual conversion(s)",
-		        ],
-		        "lossiness": "lossy",
-		        "valid": false,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
 		  },

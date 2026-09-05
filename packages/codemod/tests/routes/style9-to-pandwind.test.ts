@@ -46,7 +46,7 @@ test("style9 -> pandwind: migrates concrete style9 syntax to pandwind", () => {
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		export const styles = css.group({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -80,7 +80,7 @@ test("style9 -> pandwind: carries concrete style9 dynamics or edge syntax explic
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.foreground }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.foreground } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -118,7 +118,7 @@ test("style9 -> pandwind: lowers concrete theme and project context variants", (
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -144,7 +144,7 @@ test("style9 -> pandwind: lowers concrete theme and project context variants", (
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -179,7 +179,7 @@ test("style9 -> pandwind: resolves concrete token references with project contex
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
+		export const styles = css.group({ card: { padding: "1rem", color: "$colors.brand" } });
 		export const App = () => <div className={styles.card} />;",
 		  "converted": 1,
 		  "outcomes": [
@@ -213,7 +213,7 @@ test("style9 -> pandwind: preserves malformed concrete style9 input", () => {
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
 		const css = createCss();
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		export const styles = css.group({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",
 		  "converted": 1,

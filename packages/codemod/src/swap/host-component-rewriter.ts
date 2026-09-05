@@ -497,6 +497,14 @@ export function rewriteDynamicExpressionCarrier(
 	framework: string,
 	file = "pandwind-dynamic.tsx",
 ): HostDynamicCarrierRewriteResult {
+	const escapedExpression = expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	if (
+		new RegExp(
+			`\\b(?:className|class)\\s*=\\s*\\{\\s*${escapedExpression}\\.class\\s*\\}`,
+			"u",
+		).test(source)
+	)
+		return { code: source, changed: false, needsCx: false, residuals: [] };
 	const edits: Array<{ start: number; end: number; text: string }> = [];
 	const jsx = getHostFrameworkAdapter(framework)?.syntax === "jsx";
 	const vue = getHostFrameworkAdapter(framework)?.id === BuiltinHostFramework.Vue;

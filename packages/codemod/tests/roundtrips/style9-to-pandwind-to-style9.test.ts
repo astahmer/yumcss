@@ -48,7 +48,7 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
+		export const styles = css.group({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -69,26 +69,34 @@ test("style9 -> pandwind -> style9: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import style9 from "style9";
 		const cx = createCx();
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "red" }) };
+		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		css.group({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div className={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },
@@ -112,7 +120,7 @@ test("style9 -> pandwind -> style9: retains edge semantics without silent loss",
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.foreground }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.foreground } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -139,7 +147,7 @@ test("style9 -> pandwind -> style9: retains edge semantics without silent loss",
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
 		const cx = createCx();
-		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
+		export const styles = css.vars({ "card": { "padding": "1rem", "color": theme.foreground } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -188,7 +196,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -209,26 +217,34 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import style9 from "style9";
 		const cx = createCx();
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#f97316" }) };
+		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -241,7 +257,7 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.vars({ padding: "1rem", color: theme.colors.brand }) };
+		export const styles = css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -262,26 +278,34 @@ test("style9 -> pandwind -> style9: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import style9 from "style9";
 		const cx = createCx();
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "#2563eb" }) };
+		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		css.group({ card: { padding: "1rem", color: theme.colors.brand } });
 		export const App = () => <div className={styles.card} />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "static",
+		          "outcome": "residual",
 		          "representation": "static",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
+		      "residuals": [
+		        {
+		          "hint": "canonical CSS differs",
+		          "kind": "validation",
+		          "preserved": undefined,
+		        },
+		      ],
+		      "skipped": 1,
 		      "validations": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "differences": [
+		            "canonical CSS differs",
+		          ],
+		          "lossiness": "unsupported",
+		          "valid": false,
 		        },
 		      ],
 		    },
@@ -306,7 +330,7 @@ test("style9 -> pandwind -> style9: resolves token references across both concre
 		const cx = createCx();
 		const css = createCss();
 
-		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
+		export const styles = css.group({ card: { padding: "1rem", color: "$colors.brand" } });
 		export const App = () => <div className={styles.card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -327,26 +351,34 @@ test("style9 -> pandwind -> style9: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createCss } from "pandwind/css";
 		import { createCx } from "pandwind/cx";
-		import style9 from "style9";
 		const cx = createCx();
-		export const styles = { "card": style9.create({ "padding": "1rem", "color": "$colors.brand" }) };
+		export const styles = // pandwind:migrate-skip (route: pandwind -> style9 | lowering-residual: validation)
+		css.group({ card: { padding: "1rem", color: "$colors.brand" } });
 		export const App = () => <div className={styles.card} />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "static",
+		        "outcome": "residual",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
+		    "residuals": [
+		      {
+		        "hint": "canonical CSS differs",
+		        "kind": "validation",
+		        "preserved": undefined,
+		      },
+		    ],
+		    "skipped": 1,
 		    "validations": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "differences": [
+		          "canonical CSS differs",
+		        ],
+		        "lossiness": "unsupported",
+		        "valid": false,
 		      },
 		    ],
 		  },

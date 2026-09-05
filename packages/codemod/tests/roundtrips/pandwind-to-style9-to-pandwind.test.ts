@@ -72,7 +72,7 @@ test("pandwind -> style9 -> pandwind: preserves an actionable concrete round tri
 		const css = createCss();
 
 
-		export const card = cx({ "style": css.class({ padding: "1rem", color: "red" }) }.style);
+		export const card = cx(css.group({ style: { padding: "1rem", color: "red" } }).style);
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -135,7 +135,7 @@ test("pandwind -> style9 -> pandwind: retains edge semantics without silent loss
 		const css = createCss();
 
 
-		export const card = cx({ "style": css.class({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" }) }.style);
+		export const card = cx(css.group({ style: { padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" } }).style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
 		    "converted": 1,
 		    "outcomes": [
@@ -208,7 +208,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		const css = createCss();
 
 
-		export const card = cx({ "style": css.class({ padding: "1rem", color: "#f97316" }) }.style);
+		export const card = cx(css.group({ style: { padding: "1rem", color: "#f97316" } }).style);
 		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -260,7 +260,7 @@ test("pandwind -> style9 -> pandwind: preserves concrete theme and project conte
 		const css = createCss();
 
 
-		export const card = cx({ "style": css.class({ padding: "1rem", color: "#2563eb" }) }.style);
+		export const card = cx(css.group({ style: { padding: "1rem", color: "#2563eb" } }).style);
 		export const App = () => <div className={card} />;",
 		      "converted": 1,
 		      "outcomes": [
@@ -324,7 +324,7 @@ test("pandwind -> style9 -> pandwind: resolves token references across both conc
 		const css = createCss();
 
 
-		export const card = cx({ "style": css.class({ padding: "1rem", color: "$colors.brand" }) }.style);
+		export const card = cx(css.group({ style: { padding: "1rem", color: "$colors.brand" } }).style);
 		export const App = () => <div className={card} />;",
 		    "converted": 1,
 		    "outcomes": [
