@@ -43,8 +43,8 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> styled-components -> react-native: preserves an actionable
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
@@ -103,8 +103,8 @@ test("react-native -> styled-components -> react-native: retains edge semantics 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -126,8 +126,8 @@ test("react-native -> styled-components -> react-native: retains edge semantics 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; dynamic-values: dynamic: theme.foreground; framework-semantics: react | available: named-map, target-native, residual)
 		styled.div({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
@@ -178,8 +178,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -201,8 +201,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
@@ -227,8 +227,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -250,8 +250,8 @@ test("react-native -> styled-components -> react-native: preserves concrete them
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
@@ -288,8 +288,8 @@ test("react-native -> styled-components -> react-native: resolves token referenc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -311,8 +311,8 @@ test("react-native -> styled-components -> react-native: resolves token referenc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",

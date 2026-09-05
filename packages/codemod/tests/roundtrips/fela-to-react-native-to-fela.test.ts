@@ -43,8 +43,8 @@ test("fela -> react-native -> fela: preserves an actionable concrete round trip"
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { createRenderer } from "fela";
+		import { StyleSheet } from "react-native";
 		const renderer = createRenderer();
 		export const card = StyleSheet.create({ "padding": 16, "color": "red" });",
 		    "converted": 1,
@@ -66,7 +66,7 @@ test("fela -> react-native -> fela: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": 16, "color": "red" });",
@@ -102,10 +102,10 @@ test("fela -> react-native -> fela: retains edge semantics without silent loss",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.foreground });",
 		    "converted": 1,
@@ -127,10 +127,10 @@ test("fela -> react-native -> fela: retains edge semantics without silent loss",
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.foreground });",
 		    "converted": 0,
@@ -164,10 +164,10 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.colors.brand });",
 		      "converted": 1,
@@ -189,10 +189,10 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.colors.brand });",
 		      "converted": 0,
@@ -205,10 +205,10 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.colors.brand });",
 		      "converted": 1,
@@ -230,10 +230,10 @@ test("fela -> react-native -> fela: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": 16, "color": theme.colors.brand });",
 		      "converted": 0,
@@ -258,8 +258,8 @@ test("fela -> react-native -> fela: resolves token references across both concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { createRenderer } from "fela";
+		import { StyleSheet } from "react-native";
 		const renderer = createRenderer();
 		export const card = StyleSheet.create({ "padding": 16, "color": "$colors.brand" });",
 		    "converted": 1,
@@ -281,7 +281,7 @@ test("fela -> react-native -> fela: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": 16, "color": "$colors.brand" });",

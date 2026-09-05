@@ -41,8 +41,8 @@ test("react-native -> styled-components: migrates concrete react-native syntax t
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("react-native -> styled-components: carries concrete react-native dynamics 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("react-native -> styled-components: lowers concrete theme and project conte
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("react-native -> styled-components: lowers concrete theme and project conte
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> styled-components: resolves concrete token references with
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> styled-components: preserves malformed concrete react-nati
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

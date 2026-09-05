@@ -43,8 +43,8 @@ test("stylex -> panda -> stylex: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -67,7 +67,6 @@ test("stylex -> panda -> stylex: preserves an actionable concrete round trip", (
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "red" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -247,8 +246,8 @@ test("stylex -> panda -> stylex: resolves token references across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -271,7 +270,6 @@ test("stylex -> panda -> stylex: resolves token references across both concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

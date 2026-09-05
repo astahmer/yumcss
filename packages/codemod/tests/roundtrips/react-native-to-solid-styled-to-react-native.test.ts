@@ -43,8 +43,8 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> solid-styled -> react-native: preserves an actionable conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
@@ -247,8 +247,8 @@ test("react-native -> solid-styled -> react-native: resolves token references ac
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,8 +270,8 @@ test("react-native -> solid-styled -> react-native: resolves token references ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> react-native | capability-blocked: components: component subject: styled.div; framework-semantics: solid | available: static, named-map, residual)
 		styled.div({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",

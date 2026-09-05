@@ -127,28 +127,26 @@ test("solid-styled -> mui -> solid-styled: retains edge semantics without silent
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.foreground });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "dynamic style binding 'Card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -199,28 +197,26 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -250,28 +246,26 @@ test("solid-styled -> mui -> solid-styled: preserves concrete theme and project 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		export const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

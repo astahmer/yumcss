@@ -43,9 +43,9 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -67,9 +67,9 @@ test("stylex -> mui -> stylex: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
@@ -93,9 +93,9 @@ test("stylex -> mui -> stylex: retains edge semantics without silent loss", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -117,9 +117,9 @@ test("stylex -> mui -> stylex: retains edge semantics without silent loss", () =
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,
@@ -153,9 +153,9 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -177,9 +177,9 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
@@ -192,9 +192,9 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -216,9 +216,9 @@ test("stylex -> mui -> stylex: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 0,
@@ -243,9 +243,9 @@ test("stylex -> mui -> stylex: resolves token references across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -267,9 +267,9 @@ test("stylex -> mui -> stylex: resolves token references across both concrete le
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 0,

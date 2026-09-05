@@ -41,7 +41,7 @@ test("stylex -> fela: migrates concrete stylex syntax to fela", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -71,7 +71,7 @@ test("stylex -> fela: carries concrete stylex dynamics or edge syntax explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -105,7 +105,7 @@ test("stylex -> fela: lowers concrete theme and project context variants", () =>
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -127,7 +127,7 @@ test("stylex -> fela: lowers concrete theme and project context variants", () =>
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -158,7 +158,7 @@ test("stylex -> fela: resolves concrete token references with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -188,7 +188,7 @@ test("stylex -> fela: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": renderer.renderRule({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

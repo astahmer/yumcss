@@ -200,7 +200,7 @@ test("vue-styled -> tailwind: preserves malformed concrete vue-styled input", ()
 		{
 		  "changed": true,
 		  "code": "<script setup>
-
+		import styled from "vue-styled-components";
 		const Card = "[padding:1rem] [color:red]";
 		</script>
 		<template><div :class="Card" /></template>

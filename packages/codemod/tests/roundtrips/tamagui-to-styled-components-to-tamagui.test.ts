@@ -67,26 +67,26 @@ test("tamagui -> styled-components -> tamagui: preserves an actionable concrete 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | capability-blocked: components: component subject: styled(View); framework-semantics: react | available: static, residual)
-		styled(View)({ padding: "$4", color: "red" });
-		export const App = () => <Card />;",
-		    "converted": 0,
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "red" });
+		export const App = () => <View className={Card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View); framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);
@@ -128,9 +128,9 @@ test("tamagui -> styled-components -> tamagui: retains edge semantics without si
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s); framework-semantics: react | available: residual)
+		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s) | available: residual)
 		styled(View)({ padding: "$4", color: theme.foreground });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
@@ -140,7 +140,7 @@ test("tamagui -> styled-components -> tamagui: retains edge semantics without si
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s); framework-semantics: react",
+		        "hint": "dynamic-values: dynamic: theme.foreground; theme-context: 1 theme binding(s)",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -203,9 +203,9 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s); framework-semantics: react | available: residual)
+		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
 		styled(View)({ padding: "$4", color: theme.colors.brand });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -215,7 +215,7 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s); framework-semantics: react",
+		          "hint": "dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -257,9 +257,9 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s); framework-semantics: react | available: residual)
+		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s) | available: residual)
 		styled(View)({ padding: "$4", color: theme.colors.brand });
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -269,7 +269,7 @@ test("tamagui -> styled-components -> tamagui: preserves concrete theme and proj
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s); framework-semantics: react",
+		          "hint": "dynamic-values: dynamic: theme.colors.brand; theme-context: 1 theme binding(s)",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -322,26 +322,26 @@ test("tamagui -> styled-components -> tamagui: resolves token references across 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
-		import styled from "styled-components";
-		export const Card = // pandwind:migrate-skip (route: styled-components -> tamagui | capability-blocked: components: component subject: styled(View); framework-semantics: react | available: static, residual)
-		styled(View)({ padding: "$4", color: "$colors.brand" });
-		export const App = () => <Card />;",
-		    "converted": 0,
+		import { View, styled } from "@tamagui/core";
+
+		export const Card = styled(View, { padding: "$4", color: "$colors.brand" });
+		export const App = () => <View className={Card} />;",
+		    "converted": 1,
 		    "outcomes": [
 		      {
-		        "outcome": "residual",
+		        "outcome": "static",
 		        "representation": "static",
 		      },
 		    ],
-		    "residuals": [
+		    "residuals": [],
+		    "skipped": 0,
+		    "validations": [
 		      {
-		        "hint": "components: component subject: styled(View); framework-semantics: react",
-		        "kind": "capability",
-		        "preserved": undefined,
+		        "differences": [],
+		        "lossiness": "lossless",
+		        "valid": true,
 		      },
 		    ],
-		    "skipped": 1,
-		    "validations": [],
 		  },
 		}
 	`);

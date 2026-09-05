@@ -208,9 +208,9 @@ describe("official primary API forms", () => {
 			  },
 			  "fela/renderer.renderRule": {
 			    "changed": true,
-			    "code": "import { createCss } from "pandwind/css";
+			    "code": "import { createRenderer } from "fela";
+			import { createCss } from "pandwind/css";
 			const css = createCss();
-
 			const renderer = createRenderer();
 			export const card = css.class({ color: "red" });",
 			    "converted": 1,

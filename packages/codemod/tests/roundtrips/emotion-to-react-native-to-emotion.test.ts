@@ -66,8 +66,8 @@ test("emotion -> react-native -> emotion: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: 16, color: "red" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -189,8 +189,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: 16, color: "#f97316" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -238,8 +238,8 @@ test("emotion -> react-native -> emotion: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: 16, color: "#2563eb" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -299,8 +299,8 @@ test("emotion -> react-native -> emotion: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: 16, color: "$colors.brand" }) }.style;
 		export const App = () => <View   style={card}/>;",

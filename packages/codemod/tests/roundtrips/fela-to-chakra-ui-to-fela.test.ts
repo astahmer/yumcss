@@ -43,8 +43,8 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { createRenderer } from "fela";
+		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = defaultSystem.css({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("fela -> chakra-ui -> fela: preserves an actionable concrete round trip", (
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { createRenderer } from "fela";
+		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -102,10 +102,10 @@ test("fela -> chakra-ui -> fela: retains edge semantics without silent loss", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -127,10 +127,10 @@ test("fela -> chakra-ui -> fela: retains edge semantics without silent loss", ()
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
@@ -164,10 +164,10 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -189,10 +189,10 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -205,10 +205,10 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -230,10 +230,10 @@ test("fela -> chakra-ui -> fela: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -258,8 +258,8 @@ test("fela -> chakra-ui -> fela: resolves token references across both concrete 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { createRenderer } from "fela";
+		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = defaultSystem.css({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
@@ -281,8 +281,8 @@ test("fela -> chakra-ui -> fela: resolves token references across both concrete 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { createRenderer } from "fela";
+		import { defaultSystem } from "@chakra-ui/react";
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,

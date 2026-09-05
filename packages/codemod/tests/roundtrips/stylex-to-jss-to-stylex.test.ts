@@ -43,8 +43,8 @@ test("stylex -> jss -> stylex: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -67,7 +67,6 @@ test("stylex -> jss -> stylex: preserves an actionable concrete round trip", () 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -161,8 +160,8 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: "1rem", color: "#f97316" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -185,7 +184,6 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "1rem", color: "#f97316" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -210,8 +208,8 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createUseStyles } from "react-jss";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: "1rem", color: "#2563eb" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -234,7 +232,6 @@ test("stylex -> jss -> stylex: preserves concrete theme and project context vari
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "1rem", color: "#2563eb" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -271,8 +268,8 @@ test("stylex -> jss -> stylex: resolves token references across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: "1rem", color: "$colors.brand" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -295,7 +292,6 @@ test("stylex -> jss -> stylex: resolves token references across both concrete le
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "1rem", color: "$colors.brand" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",

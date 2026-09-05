@@ -66,8 +66,8 @@ test("solid-styled -> react-native -> solid-styled: preserves an actionable conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 
 		export const Card = { "style": styled.div({ "padding": 16, "color": "red" }) }.style;
 		export const App = () => <View style={Card} />;",
@@ -189,8 +189,8 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 
 		export const Card = { "style": styled.div({ "padding": 16, "color": "#f97316" }) }.style;
 		export const App = () => <View style={Card} />;",
@@ -238,8 +238,8 @@ test("solid-styled -> react-native -> solid-styled: preserves concrete theme and
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 
 		export const Card = { "style": styled.div({ "padding": 16, "color": "#2563eb" }) }.style;
 		export const App = () => <View style={Card} />;",
@@ -299,8 +299,8 @@ test("solid-styled -> react-native -> solid-styled: resolves token references ac
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import { styled } from "solid-styled-components";
 
 		export const Card = { "style": styled.div({ "padding": 16, "color": "$colors.brand" }) }.style;
 		export const App = () => <View style={Card} />;",

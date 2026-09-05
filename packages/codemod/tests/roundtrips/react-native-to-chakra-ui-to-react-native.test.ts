@@ -43,8 +43,8 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "16px", color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,9 +66,9 @@ test("react-native -> chakra-ui -> react-native: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -247,8 +247,8 @@ test("react-native -> chakra-ui -> react-native: resolves token references acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "16px", color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,9 +270,9 @@ test("react-native -> chakra-ui -> react-native: resolves token references acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		import { StyleSheet } from "react-native";
-
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,

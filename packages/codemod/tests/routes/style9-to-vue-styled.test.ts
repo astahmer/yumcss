@@ -193,8 +193,8 @@ test("style9 -> vue-styled: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import style9 from "style9";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

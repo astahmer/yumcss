@@ -43,8 +43,8 @@ test("react-native -> jss -> react-native: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-
+		    "code": "import { View } from "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: 16, color: "red" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> jss -> react-native: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
@@ -247,8 +247,8 @@ test("react-native -> jss -> react-native: resolves token references across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createUseStyles } from "react-jss";
-
+		    "code": "import { View } from "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: 16, color: "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,8 +270,8 @@ test("react-native -> jss -> react-native: resolves token references across both
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",

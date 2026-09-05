@@ -66,8 +66,8 @@ test("next-yak -> react-native -> next-yak: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 
 		export const card = { "style": css\`padding: 16; color: red;\` }.style;
 		export const App = () => <View   style={card}/>;",
@@ -285,8 +285,8 @@ test("next-yak -> react-native -> next-yak: resolves token references across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 
 		export const card = { "style": css\`padding: 16; color: var(--colors-brand);\` }.style;
 		export const App = () => <View   style={card}/>;",

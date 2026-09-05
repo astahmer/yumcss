@@ -41,8 +41,8 @@ test("fela -> emotion: migrates concrete fela syntax to emotion", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: "red" });",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("fela -> emotion: carries concrete fela dynamics or edge syntax explicitly"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: theme.foreground });",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("fela -> emotion: lowers concrete theme and project context variants", () =
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("fela -> emotion: lowers concrete theme and project context variants", () =
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("fela -> emotion: resolves concrete token references with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: "$colors.brand" });",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("fela -> emotion: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "@emotion/css";
 		const renderer = createRenderer();
 		export const card = css({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished fela */",

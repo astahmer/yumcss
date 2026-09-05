@@ -72,8 +72,8 @@ test("vue-styled -> stylex -> vue-styled: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": "1rem", "color": "red" }) }.style;
 
@@ -206,8 +206,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": "1rem", "color": "#f97316" }) }.style;
 
@@ -267,8 +267,8 @@ test("vue-styled -> stylex -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style;
 
@@ -340,8 +340,8 @@ test("vue-styled -> stylex -> vue-styled: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": "1rem", "color": "$colors.brand" }) }.style;
 

@@ -43,7 +43,7 @@ test("stylex -> unocss -> stylex: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:red]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -66,7 +66,6 @@ test("stylex -> unocss -> stylex: preserves an actionable concrete round trip", 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ "card": { padding: "1rem", color: "red" } }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -159,7 +158,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:#f97316]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -182,7 +181,6 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ "card": { padding: "1rem", color: "#f97316" } }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -206,7 +204,7 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "
+		      "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -229,7 +227,6 @@ test("stylex -> unocss -> stylex: preserves concrete theme and project context v
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ "card": { padding: "1rem", color: "#2563eb" } }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -265,7 +262,7 @@ test("stylex -> unocss -> stylex: resolves token references across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:$colors.brand]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -288,7 +285,6 @@ test("stylex -> unocss -> stylex: resolves token references across both concrete
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 		export const styles = { "card": stylex.create({ "card": { padding: "1rem", color: "$colors.brand" } }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,

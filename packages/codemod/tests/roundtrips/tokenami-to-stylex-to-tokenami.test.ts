@@ -66,8 +66,8 @@ test("tokenami -> stylex -> tokenami: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@tokenami/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -184,8 +184,8 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@tokenami/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "#f97316" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -233,8 +233,8 @@ test("tokenami -> stylex -> tokenami: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@tokenami/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -294,8 +294,8 @@ test("tokenami -> stylex -> tokenami: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@tokenami/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "$colors.brand" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",

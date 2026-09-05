@@ -41,8 +41,8 @@ test("react-native -> vue-styled: migrates concrete react-native syntax to vue-s
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> vue-styled: resolves concrete token references with projec
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> vue-styled: preserves malformed concrete react-native inpu
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

@@ -193,8 +193,8 @@ test("style9 -> react-native: preserves malformed concrete style9 input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-
+		  "code": "import style9 from "style9";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

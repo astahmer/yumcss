@@ -193,8 +193,8 @@ test("styled-components -> chakra-ui: preserves malformed concrete styled-compon
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { chakra } from "@chakra-ui/react";
-
+		  "code": "import styled from "styled-components";
+		import { chakra } from "@chakra-ui/react";
 		export const Card = (props) => <chakra.div {...props} css={{ padding: "1rem", color: "red" }} />;
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished styled-components */",

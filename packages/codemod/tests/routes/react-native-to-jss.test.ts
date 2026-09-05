@@ -41,8 +41,8 @@ test("react-native -> jss: migrates concrete react-native syntax to jss", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-
+		  "code": "import { View } from "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: 16, color: "red" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> jss: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-
+		  "code": "import { View } from "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: 16, color: "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> jss: preserves malformed concrete react-native input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createUseStyles } from "react-jss";
-
+		  "code": "import { View } from "react-native";
+		import { createUseStyles } from "react-jss";
 		export const styles = createUseStyles({ card: { padding: 16, color: "red" } });
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

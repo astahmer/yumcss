@@ -190,7 +190,7 @@ test("styled-components -> unocss: preserves malformed concrete styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import styled from "styled-components";
 		export const Card = "[padding:1rem] [color:red]";
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

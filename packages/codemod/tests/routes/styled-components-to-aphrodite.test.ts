@@ -195,8 +195,8 @@ test("styled-components -> aphrodite: preserves malformed concrete styled-compon
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
-
+		  "code": "import styled from "styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		export const Card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style);
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

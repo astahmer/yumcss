@@ -41,8 +41,8 @@ test("stylex -> vanilla-extract: migrates concrete stylex syntax to vanilla-extr
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> vanilla-extract: lowers concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> vanilla-extract: lowers concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> vanilla-extract: resolves concrete token references with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> vanilla-extract: preserves malformed concrete stylex input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

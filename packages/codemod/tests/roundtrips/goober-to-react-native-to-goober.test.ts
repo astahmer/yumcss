@@ -66,8 +66,8 @@ test("goober -> react-native -> goober: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "goober";
 
 		export const card = { "style": css({ "padding": 16, "color": "red" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -285,8 +285,8 @@ test("goober -> react-native -> goober: resolves token references across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "goober";
 
 		export const card = { "style": css({ "padding": 16, "color": "$colors.brand" }) }.style;
 		export const App = () => <View   style={card}/>;",

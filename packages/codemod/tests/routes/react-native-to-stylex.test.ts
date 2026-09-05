@@ -41,8 +41,8 @@ test("react-native -> stylex: migrates concrete react-native syntax to stylex", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { View } from "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> stylex: resolves concrete token references with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { View } from "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "16px", color: "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> stylex: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { View } from "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

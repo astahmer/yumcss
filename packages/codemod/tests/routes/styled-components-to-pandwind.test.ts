@@ -198,9 +198,9 @@ test("styled-components -> pandwind: preserves malformed concrete styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import styled from "styled-components";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const Card = css.class({ padding: "1rem", color: "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

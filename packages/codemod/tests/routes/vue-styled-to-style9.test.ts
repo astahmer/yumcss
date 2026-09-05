@@ -208,9 +208,8 @@ test("vue-styled -> style9: preserves malformed concrete vue-styled input", () =
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import style9 from "style9";
-
-
 		const Card = style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style);
 		</script>
 		<template><div :class="Card" /></template>

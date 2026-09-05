@@ -41,8 +41,8 @@ test("stylex -> chakra-ui: migrates concrete stylex syntax to chakra-ui", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> chakra-ui: resolves concrete token references with project conte
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> chakra-ui: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

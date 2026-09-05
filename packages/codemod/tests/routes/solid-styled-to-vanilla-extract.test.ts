@@ -193,8 +193,8 @@ test("solid-styled -> vanilla-extract: preserves malformed concrete solid-styled
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import { style } from "@vanilla-extract/css";
 		export const Card = style({ padding: "1rem", color: "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

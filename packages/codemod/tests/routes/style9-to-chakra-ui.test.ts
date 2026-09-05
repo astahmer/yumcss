@@ -193,8 +193,8 @@ test("style9 -> chakra-ui: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		  "code": "import style9 from "style9";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

@@ -193,8 +193,8 @@ test("solid-styled -> aphrodite: preserves malformed concrete solid-styled input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, css } from "aphrodite";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import { StyleSheet, css } from "aphrodite";
 		export const Card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style);
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

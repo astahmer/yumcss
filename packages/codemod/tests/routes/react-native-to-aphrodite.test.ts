@@ -41,8 +41,8 @@ test("react-native -> aphrodite: migrates concrete react-native syntax to aphrod
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-
+		  "code": "import { View } from "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> aphrodite: resolves concrete token references with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-
+		  "code": "import { View } from "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> aphrodite: preserves malformed concrete react-native input
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-
+		  "code": "import { View } from "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

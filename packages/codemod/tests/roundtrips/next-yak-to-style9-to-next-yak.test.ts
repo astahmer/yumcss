@@ -66,8 +66,8 @@ test("next-yak -> style9 -> next-yak: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import style9 from "style9";
+		import { css } from "next-yak";
 
 		export const card = style9({ "style": css\`padding: 1rem; color: red;\` }.style);
 		export const App = () => <div className={card} />;",
@@ -270,8 +270,8 @@ test("next-yak -> style9 -> next-yak: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import style9 from "style9";
+		import { css } from "next-yak";
 
 		export const card = style9({ "style": css\`padding: 1rem; color: var(--colors-brand);\` }.style);
 		export const App = () => <div className={card} />;",

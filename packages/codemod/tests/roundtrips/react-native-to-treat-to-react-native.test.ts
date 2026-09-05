@@ -43,8 +43,8 @@ test("react-native -> treat -> react-native: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,9 +66,9 @@ test("react-native -> treat -> react-native: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@/styles.treat";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -247,8 +247,8 @@ test("react-native -> treat -> react-native: resolves token references across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,9 +270,9 @@ test("react-native -> treat -> react-native: resolves token references across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@/styles.treat";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,

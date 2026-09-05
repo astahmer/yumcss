@@ -43,8 +43,8 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("stylex -> vue-styled -> stylex: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -166,8 +166,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -189,8 +189,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -220,8 +220,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -243,8 +243,8 @@ test("stylex -> vue-styled -> stylex: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -286,8 +286,8 @@ test("stylex -> vue-styled -> stylex: resolves token references across both conc
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -309,8 +309,8 @@ test("stylex -> vue-styled -> stylex: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> stylex | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

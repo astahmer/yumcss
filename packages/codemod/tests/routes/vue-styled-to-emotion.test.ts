@@ -209,9 +209,8 @@ test("vue-styled -> emotion: preserves malformed concrete vue-styled input", () 
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import { css } from "@emotion/css";
-
-
 		const Card = css({ padding: "1rem", color: "red" });
 		</script>
 		<template><div :class="Card" /></template>

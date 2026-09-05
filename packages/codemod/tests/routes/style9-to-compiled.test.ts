@@ -193,8 +193,8 @@ test("style9 -> compiled: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-
+		  "code": "import style9 from "style9";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

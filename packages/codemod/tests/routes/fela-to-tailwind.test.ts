@@ -41,7 +41,7 @@ test("fela -> tailwind: migrates concrete fela syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = "[padding:1rem] [color:red]";",
 		  "converted": 1,
@@ -71,10 +71,10 @@ test("fela -> tailwind: carries concrete fela dynamics or edge syntax explicitly
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		  "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		  "converted": 1,
@@ -108,10 +108,10 @@ test("fela -> tailwind: lowers concrete theme and project context variants", () 
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -133,10 +133,10 @@ test("fela -> tailwind: lowers concrete theme and project context variants", () 
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -167,7 +167,7 @@ test("fela -> tailwind: resolves concrete token references with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = "[padding:1rem] [color:$colors.brand]";",
 		  "converted": 1,
@@ -197,7 +197,7 @@ test("fela -> tailwind: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { createRenderer } from "fela";
 		const renderer = createRenderer();
 		export const card = "[padding:1rem] [color:red]";
 		const unfinished = { /* unfinished fela */",

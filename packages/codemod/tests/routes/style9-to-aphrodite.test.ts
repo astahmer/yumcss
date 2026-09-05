@@ -193,8 +193,8 @@ test("style9 -> aphrodite: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "aphrodite";
-
+		  "code": "import style9 from "style9";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": "1rem", "color": "red" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

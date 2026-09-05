@@ -41,8 +41,8 @@ test("vanilla-extract -> stylex: migrates concrete vanilla-extract syntax to sty
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { style } from "@vanilla-extract/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
 		  "outcomes": [
@@ -107,8 +107,8 @@ test("vanilla-extract -> stylex: lowers concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import { style } from "@vanilla-extract/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style;",
 		    "converted": 1,
 		    "outcomes": [
@@ -129,8 +129,8 @@ test("vanilla-extract -> stylex: lowers concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import { style } from "@vanilla-extract/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style;",
 		    "converted": 1,
 		    "outcomes": [
@@ -160,8 +160,8 @@ test("vanilla-extract -> stylex: resolves concrete token references with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { style } from "@vanilla-extract/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style;",
 		  "converted": 1,
 		  "outcomes": [
@@ -190,8 +190,8 @@ test("vanilla-extract -> stylex: preserves malformed concrete vanilla-extract in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { style } from "@vanilla-extract/css";
+		import * as stylex from "@stylexjs/stylex";
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished vanilla-extract */",
 		  "converted": 1,

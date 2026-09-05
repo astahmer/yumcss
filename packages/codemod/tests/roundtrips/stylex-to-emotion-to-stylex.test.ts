@@ -43,8 +43,8 @@ test("stylex -> emotion -> stylex: preserves an actionable concrete round trip",
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -67,7 +67,6 @@ test("stylex -> emotion -> stylex: preserves an actionable concrete round trip",
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "red" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -103,8 +102,8 @@ test("stylex -> emotion -> stylex: retains edge semantics without silent loss", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -126,10 +125,10 @@ test("stylex -> emotion -> stylex: retains edge semantics without silent loss", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		export const styles = { "card": css.vars({ "padding": "1rem", "color": theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -175,8 +174,8 @@ test("stylex -> emotion -> stylex: preserves concrete theme and project context 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -199,7 +198,6 @@ test("stylex -> emotion -> stylex: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#f97316" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -224,8 +222,8 @@ test("stylex -> emotion -> stylex: preserves concrete theme and project context 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -248,7 +246,6 @@ test("stylex -> emotion -> stylex: preserves concrete theme and project context 
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "#2563eb" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -285,8 +282,8 @@ test("stylex -> emotion -> stylex: resolves token references across both concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -309,7 +306,6 @@ test("stylex -> emotion -> stylex: resolves token references across both concret
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

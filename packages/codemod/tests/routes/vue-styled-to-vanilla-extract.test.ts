@@ -208,9 +208,8 @@ test("vue-styled -> vanilla-extract: preserves malformed concrete vue-styled inp
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import { style } from "@vanilla-extract/css";
-
-
 		const Card = style({ padding: "1rem", color: "red" });
 		</script>
 		<template><div :class="Card" /></template>

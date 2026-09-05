@@ -43,8 +43,8 @@ test("react-native -> tokenami -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> tokenami -> react-native: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
@@ -247,8 +247,8 @@ test("react-native -> tokenami -> react-native: resolves token references across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@tokenami/css";
 		export const styles = { "card": css({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,8 +270,8 @@ test("react-native -> tokenami -> react-native: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",

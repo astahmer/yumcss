@@ -41,8 +41,8 @@ test("stylex -> react-native: migrates concrete stylex syntax to react-native", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> react-native: lowers concrete theme and project context variants
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#f97316" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> react-native: lowers concrete theme and project context variants
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> react-native: resolves concrete token references with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> react-native: preserves malformed concrete stylex input", () => 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet } from "react-native";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

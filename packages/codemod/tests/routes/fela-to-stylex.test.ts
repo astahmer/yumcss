@@ -41,8 +41,8 @@ test("fela -> stylex: migrates concrete fela syntax to stylex", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { createRenderer } from "fela";
+		import * as stylex from "@stylexjs/stylex";
 		const renderer = createRenderer();
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;",
 		  "converted": 1,
@@ -72,10 +72,10 @@ test("fela -> stylex: carries concrete fela dynamics or edge syntax explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		  "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		  "converted": 1,
@@ -109,10 +109,10 @@ test("fela -> stylex: lowers concrete theme and project context variants", () =>
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -134,10 +134,10 @@ test("fela -> stylex: lowers concrete theme and project context variants", () =>
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -168,8 +168,8 @@ test("fela -> stylex: resolves concrete token references with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { createRenderer } from "fela";
+		import * as stylex from "@stylexjs/stylex";
 		const renderer = createRenderer();
 		export const card = stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style;",
 		  "converted": 1,
@@ -199,8 +199,8 @@ test("fela -> stylex: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { createRenderer } from "fela";
+		import * as stylex from "@stylexjs/stylex";
 		const renderer = createRenderer();
 		export const card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		const unfinished = { /* unfinished fela */",

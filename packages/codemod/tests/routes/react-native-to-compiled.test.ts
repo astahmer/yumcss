@@ -41,8 +41,8 @@ test("react-native -> compiled: migrates concrete react-native syntax to compile
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> compiled: resolves concrete token references with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> compiled: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@compiled/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 		export const styles = { "card": css({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

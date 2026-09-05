@@ -43,8 +43,8 @@ test("react-native -> stylex -> react-native: preserves an actionable concrete r
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import { View } from "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> stylex -> react-native: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
@@ -247,8 +247,8 @@ test("react-native -> stylex -> react-native: resolves token references across b
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import { View } from "react-native";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "16px", color: "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,8 +270,8 @@ test("react-native -> stylex -> react-native: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",

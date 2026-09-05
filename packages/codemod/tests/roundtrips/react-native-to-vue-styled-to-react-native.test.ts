@@ -43,8 +43,8 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> vue-styled -> react-native: preserves an actionable concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
@@ -252,8 +252,8 @@ test("react-native -> vue-styled -> react-native: resolves token references acro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -275,8 +275,8 @@ test("react-native -> vue-styled -> react-native: resolves token references acro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: vue-styled -> react-native | lowering-residual: host-framework | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",

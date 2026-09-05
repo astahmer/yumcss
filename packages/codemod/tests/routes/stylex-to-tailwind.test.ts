@@ -41,7 +41,7 @@ test("stylex -> tailwind: migrates concrete stylex syntax to tailwind", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:red]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -106,7 +106,7 @@ test("stylex -> tailwind: lowers concrete theme and project context variants", (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:#f97316]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -128,7 +128,7 @@ test("stylex -> tailwind: lowers concrete theme and project context variants", (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "
+		    "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:#2563eb]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -159,7 +159,7 @@ test("stylex -> tailwind: resolves concrete token references with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:$colors.brand]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -189,7 +189,7 @@ test("stylex -> tailwind: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import * as stylex from "@stylexjs/stylex";
 		export const styles = { "card": "[padding:1rem] [color:red]" };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

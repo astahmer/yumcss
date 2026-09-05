@@ -41,8 +41,8 @@ test("react-native -> style9: migrates concrete react-native syntax to style9", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
-
+		  "code": "import { View } from "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> style9: resolves concrete token references with project co
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
-
+		  "code": "import { View } from "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> style9: preserves malformed concrete react-native input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
-
+		  "code": "import { View } from "react-native";
+		import style9 from "style9";
 		export const styles = { "card": style9.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

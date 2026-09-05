@@ -43,8 +43,8 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -66,9 +66,8 @@ test("stylex -> chakra-ui -> stylex: preserves an actionable concrete round trip
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "red" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -247,8 +246,8 @@ test("stylex -> chakra-ui -> stylex: resolves token references across both concr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": defaultSystem.css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -270,9 +269,8 @@ test("stylex -> chakra-ui -> stylex: resolves token references across both concr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-		import * as stylex from "@stylexjs/stylex";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const styles = { "card": stylex.create({ style: { padding: "1rem", color: "$colors.brand" } }).style };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,

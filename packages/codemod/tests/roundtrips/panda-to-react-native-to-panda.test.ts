@@ -66,8 +66,8 @@ test("panda -> react-native -> panda: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "styled-system/css";
 
 		export const card = { "style": css({ padding: 16, color: "red" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -189,8 +189,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "styled-system/css";
 
 		export const card = { "style": css({ padding: 16, color: "#f97316" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -238,8 +238,8 @@ test("panda -> react-native -> panda: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "styled-system/css";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "styled-system/css";
 
 		export const card = { "style": css({ padding: 16, color: "#2563eb" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -299,8 +299,8 @@ test("panda -> react-native -> panda: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "styled-system/css";
 
 		export const card = { "style": css({ padding: 16, color: "$colors.brand" }) }.style;
 		export const App = () => <View   style={card}/>;",

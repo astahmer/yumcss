@@ -208,9 +208,8 @@ test("vue-styled -> jss: preserves malformed concrete vue-styled input", () => {
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import jss from "jss";
-
-
 		const Card = jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style;
 		</script>
 		<template><div :class="Card" /></template>

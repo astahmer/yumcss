@@ -41,8 +41,8 @@ test("fela -> styled-components: migrates concrete fela syntax to styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: "red" });",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("fela -> styled-components: carries concrete fela dynamics or edge syntax e
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: theme.foreground });",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("fela -> styled-components: lowers concrete theme and project context varia
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("fela -> styled-components: lowers concrete theme and project context varia
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: theme.colors.brand });",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("fela -> styled-components: resolves concrete token references with project
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: "$colors.brand" });",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("fela -> styled-components: preserves malformed concrete fela input", () =>
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import { createRenderer } from "fela";
+		import styled from "styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ padding: "1rem", color: "red" });
 		const unfinished = { /* unfinished fela */",

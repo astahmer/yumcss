@@ -43,8 +43,8 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("fela -> vue-styled -> fela: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
 		export const card = // pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" });",
@@ -103,10 +103,10 @@ test("fela -> vue-styled -> fela: retains edge semantics without silent loss", (
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -128,10 +128,10 @@ test("fela -> vue-styled -> fela: retains edge semantics without silent loss", (
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
@@ -165,10 +165,10 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -190,10 +190,10 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -206,10 +206,10 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -231,10 +231,10 @@ test("fela -> vue-styled -> fela: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -259,8 +259,8 @@ test("fela -> vue-styled -> fela: resolves token references across both concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
 		export const card = styled.div({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,
@@ -282,8 +282,8 @@ test("fela -> vue-styled -> fela: resolves token references across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { createRenderer } from "fela";
+		import styled from "vue-styled-components";
 		const renderer = createRenderer();
 		export const card = // pandwind:migrate-skip (route: vue-styled -> fela | capability-blocked: components: component subject: styled.div; framework-semantics: vue | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "$colors.brand" });",

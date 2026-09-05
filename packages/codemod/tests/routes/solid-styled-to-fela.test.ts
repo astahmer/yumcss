@@ -188,7 +188,7 @@ test("solid-styled -> fela: preserves malformed concrete solid-styled input", ()
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { styled } from "solid-styled-components";
 		export const Card = renderer.renderRule({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

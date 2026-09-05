@@ -130,8 +130,8 @@ test("tamagui -> vanilla-extract -> tamagui: retains edge semantics without sile
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-5qa8dh)" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -204,8 +204,8 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -257,8 +257,8 @@ test("tamagui -> vanilla-extract -> tamagui: preserves concrete theme and projec
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",

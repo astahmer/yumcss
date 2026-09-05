@@ -43,8 +43,8 @@ test("react-native -> vanilla-extract -> react-native: preserves an actionable c
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,9 +66,9 @@ test("react-native -> vanilla-extract -> react-native: preserves an actionable c
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -247,8 +247,8 @@ test("react-native -> vanilla-extract -> react-native: resolves token references
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -270,9 +270,9 @@ test("react-native -> vanilla-extract -> react-native: resolves token references
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
-
+		    "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
+		import { StyleSheet } from "react-native";
 		export const styles = { "card": StyleSheet.create({ "padding": 16, "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,

@@ -43,8 +43,8 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -67,7 +67,6 @@ test("stylex -> react-native -> stylex: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "16px", color: "red" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -161,8 +160,8 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#f97316" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -185,7 +184,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "16px", color: "#f97316" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -210,8 +208,8 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { StyleSheet } from "react-native";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "#2563eb" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -234,7 +232,6 @@ test("stylex -> react-native -> stylex: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "16px", color: "#2563eb" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -271,8 +268,8 @@ test("stylex -> react-native -> stylex: resolves token references across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -295,7 +292,6 @@ test("stylex -> react-native -> stylex: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import * as stylex from "@stylexjs/stylex";
-
 
 		export const styles = stylex.create({ card: { padding: "16px", color: "$colors.brand" } });
 		export const App = () => <div {...stylex.props(styles.card)} />;",

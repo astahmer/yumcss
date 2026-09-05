@@ -41,8 +41,8 @@ test("stylex -> linaria: migrates concrete stylex syntax to linaria", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 1rem; color: red;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> linaria: lowers concrete theme and project context variants", ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 1rem; color: #f97316;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> linaria: lowers concrete theme and project context variants", ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 1rem; color: #2563eb;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> linaria: resolves concrete token references with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 1rem; color: $colors.brand;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> linaria: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@linaria/core";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 		export const styles = { "card": css\`padding: 1rem; color: red;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

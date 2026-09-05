@@ -66,8 +66,8 @@ test("linaria -> style9 -> linaria: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@linaria/core";
 
 		export const card = style9({ "style": css\`padding: 1rem; color: red;\` }.style);
 		export const App = () => <div className={card} />;",
@@ -270,8 +270,8 @@ test("linaria -> style9 -> linaria: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@linaria/core";
 
 		export const card = style9({ "style": css\`padding: 1rem; color: var(--colors-brand);\` }.style);
 		export const App = () => <div className={card} />;",

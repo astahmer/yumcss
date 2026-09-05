@@ -193,8 +193,8 @@ test("style9 -> panda: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import style9 from "style9";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

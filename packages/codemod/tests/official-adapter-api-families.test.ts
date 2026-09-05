@@ -100,7 +100,7 @@ describe("official adapter API families", () => {
 					expect(result.code).not.toContain(" css={");
 				}
 				if (api.name === "imperative applyTo") {
-					expect(result.code).toContain("element.classList.add(sheet.card)");
+				expect(result.code).toContain("element!.classList.add(sheet.card)");
 					expect(result.code).not.toContain("sheet.attach()");
 				}
 				if (api.name === "Global component") {
@@ -894,7 +894,7 @@ describe("official adapter API families", () => {
 
 			const sheet = { "card": css.class({ color: "red" }) };
 
-			element.classList.add(sheet.card);",
+			element!.classList.add(sheet.card);",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -1429,10 +1429,10 @@ describe("official adapter API families", () => {
 			  },
 			  "react-native/inline style array": {
 			    "changed": true,
-			    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+			    "code": "import { View } from "react-native";
+			import { createRuntimeCss } from "pandwind/css/runtime";
 			import { pandwindPreset } from "pandwind/preset";
 			const css = createRuntimeCss(pandwindPreset);
-
 			export const App = () => <View className={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).class} style={css.vars({ style: [{ padding: 8 }, { backgroundColor: "red" }] }).style}/>;",
 			    "converted": 1,
 			    "outcomes": [
@@ -1839,13 +1839,15 @@ describe("official adapter API families", () => {
 			      },
 			    ],
 			  },
-		  "styled-components/styled component subject": {
-		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
-		const css = createCss();
+			  "styled-components/styled component subject": {
+			    "changed": true,
+			    "code": "import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const cx = createCx();
+			const css = createCss();
 
-		const Link = (props: { href: string }) => <a {...props} />;
-		export const Card = (() => { const style = css.class({ color: "red" }); const component = (props) => { const Component = props.as ?? (Link); const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
+			const Link = (props: { href: string }) => <a {...props} />;
+			export const Card = (() => { const style = css.class({ color: "red" }); const component = (props) => { const Component = props.as ?? (Link); const { as: _as, ...rest } = props; const attrs = {}; return <Component {...attrs} {...rest} className={cx(style, "pw-1fn70s4", props.className)} />; }; component.__pandwindClassName = "pw-1fn70s4"; return component; })();",
 			    "converted": 1,
 			    "outcomes": [
 			      {
@@ -2193,9 +2195,11 @@ describe("official adapter API families", () => {
 			  "tokenami/css.compose": {
 			    "changed": true,
 			    "code": "import { createCss } from "pandwind/css";
+			import { createCx } from "pandwind/cx";
+			const pandwindCx = createCx();
 			const css = createCss();
 
-			export const card = css.class({ padding: "1rem", color: "red" });",
+			export const card = () => { const className = css.class({ padding: "1rem", color: "red" }); return [(value: string | undefined) => pandwindCx(className, value), (style: Record<string, unknown> | undefined) => style ?? {}] as const; };",
 			    "converted": 1,
 			    "outcomes": [
 			      {

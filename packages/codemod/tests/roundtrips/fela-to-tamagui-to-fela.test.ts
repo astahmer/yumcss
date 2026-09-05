@@ -43,8 +43,8 @@ test("fela -> tamagui -> fela: preserves an actionable concrete round trip", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-
+		    "code": "import { createRenderer } from "fela";
+		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
 		export const card = styled(View, { padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -66,10 +66,10 @@ test("fela -> tamagui -> fela: preserves an actionable concrete round trip", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import { createRenderer } from "fela";
+		import { View } from "@tamagui/core";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-
 		const renderer = createRenderer();
 		export const card = (props) => <View {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "red" }), props.className)} />;",
 		    "converted": 1,
@@ -104,10 +104,10 @@ test("fela -> tamagui -> fela: retains edge semantics without silent loss", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -129,10 +129,10 @@ test("fela -> tamagui -> fela: retains edge semantics without silent loss", () =
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
@@ -166,10 +166,10 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -191,10 +191,10 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -207,10 +207,10 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -232,10 +232,10 @@ test("fela -> tamagui -> fela: preserves concrete theme and project context vari
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -260,8 +260,8 @@ test("fela -> tamagui -> fela: resolves token references across both concrete le
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { View, styled } from "@tamagui/core";
-
+		    "code": "import { createRenderer } from "fela";
+		import { View, styled } from "@tamagui/core";
 		const renderer = createRenderer();
 		export const card = styled(View, { padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
@@ -283,10 +283,10 @@ test("fela -> tamagui -> fela: resolves token references across both concrete le
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { View } from "@tamagui/core";
+		    "code": "import { createRenderer } from "fela";
+		import { View } from "@tamagui/core";
 		import { createCx } from "pandwind/cx";
 		const cx = createCx();
-
 		const renderer = createRenderer();
 		export const card = (props) => <View {...props} className={cx(renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" }), props.className)} />;",
 		    "converted": 1,

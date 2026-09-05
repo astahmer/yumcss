@@ -208,9 +208,8 @@ test("vue-styled -> compiled: preserves malformed concrete vue-styled input", ()
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import { css } from "@compiled/react";
-
-
 		const Card = css({ "padding": "1rem", "color": "red" });
 		</script>
 		<template><div :class="Card" /></template>

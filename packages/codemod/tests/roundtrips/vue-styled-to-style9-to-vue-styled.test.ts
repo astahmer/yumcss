@@ -69,9 +69,9 @@ test("vue-styled -> style9 -> vue-styled: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		<script setup>
-
+		    "code": "<script setup>
+		import style9 from "style9";
+		import styled from "vue-styled-components";
 
 
 		const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style);
@@ -197,9 +197,9 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		<script setup>
-
+		      "code": "<script setup>
+		import style9 from "style9";
+		import styled from "vue-styled-components";
 
 
 		const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "#f97316" }) }.style);
@@ -252,9 +252,9 @@ test("vue-styled -> style9 -> vue-styled: preserves concrete theme and project c
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-		<script setup>
-
+		      "code": "<script setup>
+		import style9 from "style9";
+		import styled from "vue-styled-components";
 
 
 		const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style);
@@ -319,9 +319,9 @@ test("vue-styled -> style9 -> vue-styled: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-		<script setup>
-
+		    "code": "<script setup>
+		import style9 from "style9";
+		import styled from "vue-styled-components";
 
 
 		const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "$colors.brand" }) }.style);

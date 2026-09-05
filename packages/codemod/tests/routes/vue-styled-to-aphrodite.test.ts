@@ -208,9 +208,8 @@ test("vue-styled -> aphrodite: preserves malformed concrete vue-styled input", (
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import { StyleSheet, css } from "aphrodite";
-
-
 		const Card = css(StyleSheet.create({ style: { "padding": "1rem", "color": "red" } }).style);
 		</script>
 		<template><div :class="Card" /></template>

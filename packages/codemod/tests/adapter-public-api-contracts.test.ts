@@ -97,7 +97,7 @@ describe("installed adapter public API contracts", () => {
 			{
 				from: CodemodAdapterId.Emotion,
 				to: CodemodAdapterId.Jss,
-				file: "styles.ts",
+				file: "styles.tsx",
 				mode: "safe",
 				adapterRegistry: catalog.registry,
 			},

@@ -66,8 +66,8 @@ test("tokenami -> style9 -> tokenami: preserves an actionable concrete round tri
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@tokenami/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "red" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -126,8 +126,8 @@ test("tokenami -> style9 -> tokenami: retains edge semantics without silent loss
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@tokenami/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" }) }.style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -196,8 +196,8 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-
+		      "code": "import style9 from "style9";
+		import { css } from "@tokenami/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "#f97316" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -245,8 +245,8 @@ test("tokenami -> style9 -> tokenami: preserves concrete theme and project conte
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@tokenami/css";
-
+		      "code": "import style9 from "style9";
+		import { css } from "@tokenami/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "#2563eb" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -306,8 +306,8 @@ test("tokenami -> style9 -> tokenami: resolves token references across both conc
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@tokenami/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@tokenami/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "$colors.brand" }) }.style);
 		export const App = () => <div className={card} />;",

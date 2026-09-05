@@ -43,7 +43,7 @@ test("react-native -> tailwind -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { View } from "react-native";
 		export const styles = { "card": "[padding:16] [color:red]" };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -65,8 +65,8 @@ test("react-native -> tailwind -> react-native: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": "16", "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -245,7 +245,7 @@ test("react-native -> tailwind -> react-native: resolves token references across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { View } from "react-native";
 		export const styles = { "card": "[padding:16] [color:$colors.brand]" };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -267,8 +267,8 @@ test("react-native -> tailwind -> react-native: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 		export const styles = StyleSheet.create({ "card": { "padding": "16", "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,

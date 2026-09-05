@@ -66,9 +66,9 @@ test("mui -> style9 -> mui: preserves an actionable concrete round trip", () => 
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
+		import style9 from "style9";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={style9({ "style": css.class({ padding: "16px", color: "red" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -125,9 +125,9 @@ test("mui -> style9 -> mui: retains edge semantics without silent loss", () => {
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
+		import style9 from "style9";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={style9({ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-5qa8dh)" }) }.style)} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -194,9 +194,9 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
+		import style9 from "style9";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={style9({ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -242,9 +242,9 @@ test("mui -> style9 -> mui: preserves concrete theme and project context variant
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
+		import style9 from "style9";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={style9({ "style": css.class({ padding: "16px", color: "var(--pandwind-dynamic-d9jp16)" }) }.style)} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -302,9 +302,9 @@ test("mui -> style9 -> mui: resolves token references across both concrete legs"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
+		import style9 from "style9";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={style9({ "style": css.class({ padding: "16px", color: "var(--mui-primary-main)" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [

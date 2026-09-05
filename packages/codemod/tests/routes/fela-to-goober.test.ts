@@ -41,8 +41,8 @@ test("fela -> goober: migrates concrete fela syntax to goober", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("fela -> goober: carries concrete fela dynamics or edge syntax explicitly",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.foreground });",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("fela -> goober: lowers concrete theme and project context variants", () =>
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("fela -> goober: lowers concrete theme and project context variants", () =>
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.colors.brand });",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("fela -> goober: resolves concrete token references with project context", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": "$colors.brand" });",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("fela -> goober: preserves malformed concrete fela input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
+		  "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": "red" });
 		const unfinished = { /* unfinished fela */",

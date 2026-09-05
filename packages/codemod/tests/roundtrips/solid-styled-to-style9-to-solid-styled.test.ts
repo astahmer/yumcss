@@ -66,8 +66,8 @@ test("solid-styled -> style9 -> solid-styled: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import style9 from "style9";
+		import { styled } from "solid-styled-components";
 
 		export const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "red" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -184,8 +184,8 @@ test("solid-styled -> style9 -> solid-styled: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import style9 from "style9";
+		import { styled } from "solid-styled-components";
 
 		export const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "#f97316" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -233,8 +233,8 @@ test("solid-styled -> style9 -> solid-styled: preserves concrete theme and proje
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import style9 from "style9";
+		import { styled } from "solid-styled-components";
 
 		export const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "#2563eb" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -294,8 +294,8 @@ test("solid-styled -> style9 -> solid-styled: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import style9 from "style9";
+		import { styled } from "solid-styled-components";
 
 		export const Card = style9({ "style": styled.div({ "padding": "1rem", "color": "$colors.brand" }) }.style);
 		export const App = () => <div className={Card} />;",

@@ -126,8 +126,8 @@ test("goober -> treat -> goober: retains edge semantics without silent loss", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { style } from "@/styles.treat";
+		import { css } from "goober";
 
 		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-5qa8dh)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -196,8 +196,8 @@ test("goober -> treat -> goober: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import { style } from "@/styles.treat";
+		import { css } from "goober";
 
 		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
@@ -245,8 +245,8 @@ test("goober -> treat -> goober: preserves concrete theme and project context va
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import { style } from "@/styles.treat";
+		import { css } from "goober";
 
 		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",

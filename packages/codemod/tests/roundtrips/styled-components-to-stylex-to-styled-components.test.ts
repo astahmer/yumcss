@@ -66,8 +66,8 @@ test("styled-components -> stylex -> styled-components: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 
 		export const Card = { "style": styled.div({ padding: "1rem", color: "red" }) }.style;
 		export const App = () => <div {...stylex.props(Card)} />;",
@@ -184,8 +184,8 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 
 		export const Card = { "style": styled.div({ padding: "1rem", color: "#f97316" }) }.style;
 		export const App = () => <div {...stylex.props(Card)} />;",
@@ -233,8 +233,8 @@ test("styled-components -> stylex -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 
 		export const Card = { "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style;
 		export const App = () => <div {...stylex.props(Card)} />;",
@@ -294,8 +294,8 @@ test("styled-components -> stylex -> styled-components: resolves token reference
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 
 		export const Card = { "style": styled.div({ padding: "1rem", color: "$colors.brand" }) }.style;
 		export const App = () => <div {...stylex.props(Card)} />;",

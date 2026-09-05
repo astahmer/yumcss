@@ -41,9 +41,9 @@ test("react-native -> pandwind: migrates concrete react-native syntax to pandwin
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -73,9 +73,9 @@ test("react-native -> pandwind: carries concrete react-native dynamics or edge s
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.vars({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -109,9 +109,9 @@ test("react-native -> pandwind: lowers concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.vars({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -133,9 +133,9 @@ test("react-native -> pandwind: lowers concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.vars({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -166,9 +166,9 @@ test("react-native -> pandwind: resolves concrete token references with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -198,9 +198,9 @@ test("react-native -> pandwind: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

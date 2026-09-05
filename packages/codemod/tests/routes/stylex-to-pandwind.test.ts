@@ -198,9 +198,9 @@ test("stylex -> pandwind: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { createCss } from "pandwind/css";
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...css.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

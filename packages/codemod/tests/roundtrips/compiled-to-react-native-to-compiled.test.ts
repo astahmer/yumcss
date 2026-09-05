@@ -66,8 +66,8 @@ test("compiled -> react-native -> compiled: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 
 		export const card = { "style": css({ "padding": 16, "color": "red" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -189,8 +189,8 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 
 		export const card = { "style": css({ "padding": 16, "color": "#f97316" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -238,8 +238,8 @@ test("compiled -> react-native -> compiled: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@compiled/react";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 
 		export const card = { "style": css({ "padding": 16, "color": "#2563eb" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -299,8 +299,8 @@ test("compiled -> react-native -> compiled: resolves token references across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@compiled/react";
 
 		export const card = { "style": css({ "padding": 16, "color": "$colors.brand" }) }.style;
 		export const App = () => <View   style={card}/>;",

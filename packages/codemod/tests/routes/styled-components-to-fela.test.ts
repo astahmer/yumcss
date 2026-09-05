@@ -188,7 +188,7 @@ test("styled-components -> fela: preserves malformed concrete styled-components 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import styled from "styled-components";
 		export const Card = renderer.renderRule({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

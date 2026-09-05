@@ -193,8 +193,8 @@ test("style9 -> stylex: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import style9 from "style9";
+		import * as stylex from "@stylexjs/stylex";
 		export const styles = stylex.create({ card: { padding: "1rem", color: "red" } });
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

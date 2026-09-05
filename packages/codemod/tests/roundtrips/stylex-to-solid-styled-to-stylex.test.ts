@@ -43,8 +43,8 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("stylex -> solid-styled -> stylex: preserves an actionable concrete round t
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -161,8 +161,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -184,8 +184,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -210,8 +210,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -233,8 +233,8 @@ test("stylex -> solid-styled -> stylex: preserves concrete theme and project con
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { styled } from "solid-styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -271,8 +271,8 @@ test("stylex -> solid-styled -> stylex: resolves token references across both co
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -294,8 +294,8 @@ test("stylex -> solid-styled -> stylex: resolves token references across both co
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { styled } from "solid-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { styled } from "solid-styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: solid-styled -> stylex | capability-blocked: components: component subject: styled.div | available: static, named-map, residual)
 		styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

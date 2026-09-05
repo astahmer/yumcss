@@ -41,8 +41,8 @@ test("stylex -> emotion: migrates concrete stylex syntax to emotion", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("stylex -> emotion: carries concrete stylex dynamics or edge syntax explici
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> emotion: lowers concrete theme and project context variants", ()
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> emotion: lowers concrete theme and project context variants", ()
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> emotion: resolves concrete token references with project context
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> emotion: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@emotion/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

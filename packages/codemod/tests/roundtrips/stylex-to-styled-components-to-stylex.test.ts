@@ -43,8 +43,8 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("stylex -> styled-components -> stylex: preserves an actionable concrete ro
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -103,8 +103,8 @@ test("stylex -> styled-components -> stylex: retains edge semantics without sile
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -126,8 +126,8 @@ test("stylex -> styled-components -> stylex: retains edge semantics without sile
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; dynamic-values: dynamic: theme.foreground; framework-semantics: react | available: named-map, target-native, residual)
 		styled.div({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -173,8 +173,8 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -196,8 +196,8 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -222,8 +222,8 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		      "converted": 1,
@@ -245,8 +245,8 @@ test("stylex -> styled-components -> stylex: preserves concrete theme and projec
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
@@ -283,8 +283,8 @@ test("stylex -> styled-components -> stylex: resolves token references across bo
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -306,8 +306,8 @@ test("stylex -> styled-components -> stylex: resolves token references across bo
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": // pandwind:migrate-skip (route: styled-components -> stylex | capability-blocked: components: component subject: styled.div; framework-semantics: react | available: static, named-map, residual)
 		styled.div({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",

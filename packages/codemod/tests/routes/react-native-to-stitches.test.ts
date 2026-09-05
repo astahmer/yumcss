@@ -41,8 +41,8 @@ test("react-native -> stitches: migrates concrete react-native syntax to stitche
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("react-native -> stitches: carries concrete react-native dynamics or edge s
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("react-native -> stitches: lowers concrete theme and project context varian
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("react-native -> stitches: lowers concrete theme and project context varian
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "@stitches/react";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> stitches: resolves concrete token references with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> stitches: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import { View } from "react-native";
+		import { css } from "@stitches/react";
 		export const styles = { "card": css({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

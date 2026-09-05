@@ -188,7 +188,7 @@ test("styled-components -> mantine: preserves malformed concrete styled-componen
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import styled from "styled-components";
 		export const Card = (props) => <div {...props} style={{ ...{ padding: "1rem", color: "red" }, ...props.style }} />;
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished styled-components */",

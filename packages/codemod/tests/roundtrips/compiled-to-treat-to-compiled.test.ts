@@ -126,8 +126,8 @@ test("compiled -> treat -> compiled: retains edge semantics without silent loss"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@compiled/react";
-
+		    "code": "import { style } from "@/styles.treat";
+		import { css } from "@compiled/react";
 
 		export const card = css({ "padding": "1rem", "color": "var(--pandwind-dynamic-5qa8dh)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",

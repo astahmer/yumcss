@@ -64,8 +64,8 @@ test("chakra-ui -> react-native -> chakra-ui: preserves an actionable concrete r
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => <View    style={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -121,8 +121,8 @@ test("chakra-ui -> react-native -> chakra-ui: retains edge semantics without sil
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => <View    style={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.style}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
@@ -280,8 +280,8 @@ test("chakra-ui -> react-native -> chakra-ui: resolves token references across b
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { defaultSystem } from "@chakra-ui/react";
-
+		    "code": "import { View } from "react-native";
+		import { defaultSystem } from "@chakra-ui/react";
 		export const App = () => <View    style={{ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [

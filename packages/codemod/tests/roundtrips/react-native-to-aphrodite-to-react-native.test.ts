@@ -43,8 +43,8 @@ test("react-native -> aphrodite -> react-native: preserves an actionable concret
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> aphrodite -> react-native: preserves an actionable concret
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "red" } });
 		export const App = () => <View style={styles.card} />;",
@@ -283,8 +283,8 @@ test("react-native -> aphrodite -> react-native: resolves token references acros
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "aphrodite";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "aphrodite";
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -306,8 +306,8 @@ test("react-native -> aphrodite -> react-native: resolves token references acros
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = StyleSheet.create({ "card": { "padding": 16, "color": "$colors.brand" } });
 		export const App = () => <View style={styles.card} />;",

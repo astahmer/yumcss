@@ -195,8 +195,8 @@ test("styled-components -> jss: preserves malformed concrete styled-components i
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import jss from "jss";
-
+		  "code": "import styled from "styled-components";
+		import jss from "jss";
 		export const Card = jss.createStyleSheet({ style: { padding: "1rem", color: "red" } }).attach().classes.style;
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

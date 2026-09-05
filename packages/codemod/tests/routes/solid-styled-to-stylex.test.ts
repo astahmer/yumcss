@@ -193,8 +193,8 @@ test("solid-styled -> stylex: preserves malformed concrete solid-styled input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import * as stylex from "@stylexjs/stylex";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import * as stylex from "@stylexjs/stylex";
 		export const Card = stylex.create({ style: { padding: "1rem", color: "red" } }).style;
 		export const App = () => <div {...stylex.props(Card)} />;
 		const unfinished = { /* unfinished solid-styled */",

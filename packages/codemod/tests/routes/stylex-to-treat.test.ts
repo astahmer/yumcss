@@ -41,8 +41,8 @@ test("stylex -> treat: migrates concrete stylex syntax to treat", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> treat: lowers concrete theme and project context variants", () =
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> treat: lowers concrete theme and project context variants", () =
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { style } from "@/styles.treat";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> treat: resolves concrete token references with project context",
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> treat: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@/styles.treat";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { style } from "@/styles.treat";
 		export const styles = { "card": style({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

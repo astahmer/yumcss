@@ -127,9 +127,9 @@ test("pandwind -> vanilla-extract -> pandwind: retains edge semantics without si
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { style } from "@vanilla-extract/css";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = css.class({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",

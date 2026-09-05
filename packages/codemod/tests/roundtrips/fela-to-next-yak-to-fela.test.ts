@@ -43,8 +43,8 @@ test("fela -> next-yak -> fela: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "next-yak";
 		const renderer = createRenderer();
 		export const card = css\`padding: 1rem; color: red;\`;",
 		    "converted": 1,
@@ -66,7 +66,7 @@ test("fela -> next-yak -> fela: preserves an actionable concrete round trip", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
@@ -102,8 +102,8 @@ test("fela -> next-yak -> fela: retains edge semantics without silent loss", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "next-yak";
 		const renderer = createRenderer();
 		export const card = css\`padding: 1rem; color: \${theme.foreground};\`;",
 		    "converted": 1,
@@ -125,10 +125,10 @@ test("fela -> next-yak -> fela: retains edge semantics without silent loss", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
@@ -174,8 +174,8 @@ test("fela -> next-yak -> fela: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-
+		      "code": "import { createRenderer } from "fela";
+		import { css } from "next-yak";
 		const renderer = createRenderer();
 		export const card = css\`padding: 1rem; color: \${theme.colors.brand};\`;",
 		      "converted": 1,
@@ -197,10 +197,10 @@ test("fela -> next-yak -> fela: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
@@ -225,8 +225,8 @@ test("fela -> next-yak -> fela: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-
+		      "code": "import { createRenderer } from "fela";
+		import { css } from "next-yak";
 		const renderer = createRenderer();
 		export const card = css\`padding: 1rem; color: \${theme.colors.brand};\`;",
 		      "converted": 1,
@@ -248,10 +248,10 @@ test("fela -> next-yak -> fela: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
@@ -288,8 +288,8 @@ test("fela -> next-yak -> fela: resolves token references across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "next-yak";
 		const renderer = createRenderer();
 		export const card = css\`padding: 1rem; color: $colors.brand;\`;",
 		    "converted": 1,
@@ -311,7 +311,7 @@ test("fela -> next-yak -> fela: resolves token references across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",

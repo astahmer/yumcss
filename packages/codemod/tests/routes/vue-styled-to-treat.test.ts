@@ -208,9 +208,8 @@ test("vue-styled -> treat: preserves malformed concrete vue-styled input", () =>
 		{
 		  "changed": true,
 		  "code": "<script setup>
+		import styled from "vue-styled-components";
 		import { style } from "@/styles.treat";
-
-
 		const Card = style({ "padding": "1rem", "color": "red" });
 		</script>
 		<template><div :class="Card" /></template>

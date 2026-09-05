@@ -126,8 +126,8 @@ test("emotion -> treat -> emotion: retains edge semantics without silent loss", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import { style } from "@/styles.treat";
+		import { css } from "@emotion/css";
 
 		export const card = css({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",

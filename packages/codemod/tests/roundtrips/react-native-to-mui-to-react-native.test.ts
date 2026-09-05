@@ -43,9 +43,9 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -67,9 +67,9 @@ test("react-native -> mui -> react-native: preserves an actionable concrete roun
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
@@ -93,9 +93,9 @@ test("react-native -> mui -> react-native: retains edge semantics without silent
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -117,9 +117,9 @@ test("react-native -> mui -> react-native: retains edge semantics without silent
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,
@@ -153,9 +153,9 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -177,9 +177,9 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
@@ -192,9 +192,9 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -216,9 +216,9 @@ test("react-native -> mui -> react-native: preserves concrete theme and project 
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 0,
@@ -243,9 +243,9 @@ test("react-native -> mui -> react-native: resolves token references across both
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -267,9 +267,9 @@ test("react-native -> mui -> react-native: resolves token references across both
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const styles = { "card": css.class({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 0,

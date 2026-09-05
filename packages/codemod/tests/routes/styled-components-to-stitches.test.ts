@@ -193,8 +193,8 @@ test("styled-components -> stitches: preserves malformed concrete styled-compone
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import styled from "styled-components";
+		import { css } from "@stitches/react";
 		export const Card = css({ padding: "1rem", color: "red" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished styled-components */",

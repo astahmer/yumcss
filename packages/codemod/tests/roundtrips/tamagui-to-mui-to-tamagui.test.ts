@@ -128,27 +128,25 @@ test("tamagui -> mui -> tamagui: retains edge semantics without silent loss", ()
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const Card = css.vars({ "padding": "$4", "color": theme.foreground });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled(View)({ padding: "$4", color: theme.foreground });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "residual",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "dynamic style binding 'Card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -200,27 +198,25 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const Card = css.vars({ "padding": "$4", "color": theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled(View)({ padding: "$4", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -251,27 +247,25 @@ test("tamagui -> mui -> tamagui: preserves concrete theme and project context va
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
-		export const Card = css.vars({ "padding": "$4", "color": theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled(View)({ padding: "$4", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "residual",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

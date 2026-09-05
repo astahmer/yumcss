@@ -195,8 +195,8 @@ test("styled-components -> style9: preserves malformed concrete styled-component
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import style9 from "style9";
-
+		  "code": "import styled from "styled-components";
+		import style9 from "style9";
 		export const Card = style9(style9.create({ style: { "padding": "1rem", "color": "red" } }).style);
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",

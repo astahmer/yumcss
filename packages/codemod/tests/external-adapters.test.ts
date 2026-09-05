@@ -1715,7 +1715,7 @@ describe("CSS-in-JS adapter contract v2", () => {
 		expect(result.residuals).toEqual([]);
 		expect(result.code).not.toContain('import jss from "jss";');
 		expect(result.code).toContain('const sheet = css.group({ button: { color: "red" } })');
-		expect(result.code).toContain("button!.classList.add(css.class(sheet.button))");
+		expect(result.code).toContain("button!.classList.add(sheet.button)");
 	});
 
 	test("exposes a direct parser/emitter path for Stitches and keyframes", () => {

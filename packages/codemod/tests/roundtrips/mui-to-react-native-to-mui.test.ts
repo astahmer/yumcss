@@ -64,9 +64,9 @@ test("mui -> react-native -> mui: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "red" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -274,9 +274,9 @@ test("mui -> react-native -> mui: resolves token references across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <View   style={{ "style": css.class({ padding: 16, color: "var(--mui-primary-main)" }) }.style}/>;",
 		    "converted": 1,
 		    "outcomes": [

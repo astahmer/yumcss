@@ -41,7 +41,7 @@ test("react-native -> tailwind: migrates concrete react-native syntax to tailwin
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { View } from "react-native";
 		export const styles = { "card": "[padding:16] [color:red]" };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -161,7 +161,7 @@ test("react-native -> tailwind: resolves concrete token references with project 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { View } from "react-native";
 		export const styles = { "card": "[padding:16] [color:$colors.brand]" };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -191,7 +191,7 @@ test("react-native -> tailwind: preserves malformed concrete react-native input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { View } from "react-native";
 		export const styles = { "card": "[padding:16] [color:red]" };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

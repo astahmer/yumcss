@@ -193,8 +193,8 @@ test("solid-styled -> goober: preserves malformed concrete solid-styled input", 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "goober";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import { css } from "goober";
 		export const Card = css({ "padding": "1rem", "color": "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

@@ -66,8 +66,8 @@ test("emotion -> stylex -> emotion: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "red" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -184,8 +184,8 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "#f97316" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -233,8 +233,8 @@ test("emotion -> stylex -> emotion: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "#2563eb" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -294,8 +294,8 @@ test("emotion -> stylex -> emotion: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@emotion/css";
 
 		export const card = { "style": css({ padding: "1rem", color: "$colors.brand" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",

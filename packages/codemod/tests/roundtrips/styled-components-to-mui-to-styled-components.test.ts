@@ -127,26 +127,26 @@ test("styled-components -> mui -> styled-components: retains edge semantics with
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import styled from "styled-components";
 
-		export const Card = styled.div({ padding: "1rem", color: theme.foreground });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.foreground });
 		export const App = () => <Card />;",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "host-runtime",
+		        "outcome": "residual",
 		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "dynamic style binding 'Card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -197,26 +197,26 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import styled from "styled-components";
 
-		export const Card = styled.div({ padding: "1rem", color: theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -246,26 +246,26 @@ test("styled-components -> mui -> styled-components: preserves concrete theme an
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import styled from "styled-components";
 
-		export const Card = styled.div({ padding: "1rem", color: theme.colors.brand });
+		export const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 		export const App = () => <Card />;",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "host-runtime",
+		          "outcome": "residual",
 		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

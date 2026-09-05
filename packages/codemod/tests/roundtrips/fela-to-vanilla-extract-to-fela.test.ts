@@ -43,8 +43,8 @@ test("fela -> vanilla-extract -> fela: preserves an actionable concrete round tr
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import { createRenderer } from "fela";
+		import { style } from "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = style({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -66,7 +66,7 @@ test("fela -> vanilla-extract -> fela: preserves an actionable concrete round tr
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
@@ -102,10 +102,10 @@ test("fela -> vanilla-extract -> fela: retains edge semantics without silent los
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -127,10 +127,10 @@ test("fela -> vanilla-extract -> fela: retains edge semantics without silent los
 		  },
 		  "reverse": {
 		    "changed": false,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 0,
@@ -164,10 +164,10 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -189,10 +189,10 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -205,10 +205,10 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -230,10 +230,10 @@ test("fela -> vanilla-extract -> fela: preserves concrete theme and project cont
 		    },
 		    "reverse": {
 		      "changed": false,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { createRenderer } from "fela";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 		const renderer = createRenderer();
 		export const card = css.vars({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 0,
@@ -258,8 +258,8 @@ test("fela -> vanilla-extract -> fela: resolves token references across both con
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { style } from "@vanilla-extract/css";
-
+		    "code": "import { createRenderer } from "fela";
+		import { style } from "@vanilla-extract/css";
 		const renderer = createRenderer();
 		export const card = style({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
@@ -281,7 +281,7 @@ test("fela -> vanilla-extract -> fela: resolves token references across both con
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",

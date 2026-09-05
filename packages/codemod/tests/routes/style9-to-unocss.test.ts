@@ -191,7 +191,7 @@ test("style9 -> unocss: preserves malformed concrete style9 input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import style9 from "style9";
 		export const styles = { "card": "[padding:1rem] [color:red]" };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

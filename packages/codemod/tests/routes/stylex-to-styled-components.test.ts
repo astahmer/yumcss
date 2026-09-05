@@ -41,8 +41,8 @@ test("stylex -> styled-components: migrates concrete stylex syntax to styled-com
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("stylex -> styled-components: carries concrete stylex dynamics or edge synt
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.foreground }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> styled-components: lowers concrete theme and project context var
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> styled-components: lowers concrete theme and project context var
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: theme.colors.brand }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> styled-components: resolves concrete token references with proje
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> styled-components: preserves malformed concrete stylex input", (
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "styled-components";
 		export const styles = { "card": styled.div({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

@@ -41,8 +41,8 @@ test("stylex -> bamboo: migrates concrete stylex syntax to bamboo", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> bamboo: resolves concrete token references with project context"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> bamboo: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "styled-system/css";
 		export const styles = { "card": css({ padding: "1rem", color: "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

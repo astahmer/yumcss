@@ -41,8 +41,8 @@ test("react-native -> vanilla-extract: migrates concrete react-native syntax to 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -162,8 +162,8 @@ test("react-native -> vanilla-extract: resolves concrete token references with p
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: 16, color: "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("react-native -> vanilla-extract: preserves malformed concrete react-native
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import { View } from "react-native";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: 16, color: "red" }) };
 		export const App = () => <View style={styles.card} />;
 		const unfinished = { /* unfinished react-native */",

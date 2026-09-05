@@ -72,8 +72,8 @@ test("vue-styled -> react-native -> vue-styled: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": 16, "color": "red" }) }.style;
 
@@ -211,8 +211,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": 16, "color": "#f97316" }) }.style;
 
@@ -272,8 +272,8 @@ test("vue-styled -> react-native -> vue-styled: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "vue-styled-components";
-
+		      "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": 16, "color": "#2563eb" }) }.style;
 
@@ -345,8 +345,8 @@ test("vue-styled -> react-native -> vue-styled: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import { View } from "react-native";
+		import styled from "vue-styled-components";
 
 		const Card = { "style": styled.div({ "padding": 16, "color": "$colors.brand" }) }.style;
 

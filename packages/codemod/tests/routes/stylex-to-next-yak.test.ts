@@ -41,8 +41,8 @@ test("stylex -> next-yak: migrates concrete stylex syntax to next-yak", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: red;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -72,8 +72,8 @@ test("stylex -> next-yak: carries concrete stylex dynamics or edge syntax explic
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: \${theme.foreground};\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> next-yak: lowers concrete theme and project context variants", (
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: \${theme.colors.brand};\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> next-yak: lowers concrete theme and project context variants", (
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: \${theme.colors.brand};\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> next-yak: resolves concrete token references with project contex
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: $colors.brand;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> next-yak: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "next-yak";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 1rem; color: red;\` };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

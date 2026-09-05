@@ -41,8 +41,8 @@ test("stylex -> vue-styled: migrates concrete stylex syntax to vue-styled", () =
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -107,8 +107,8 @@ test("stylex -> vue-styled: lowers concrete theme and project context variants",
 		{
 		  "amber": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#f97316" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -130,8 +130,8 @@ test("stylex -> vue-styled: lowers concrete theme and project context variants",
 		  },
 		  "blue": {
 		    "changed": true,
-		    "code": "import styled from "vue-styled-components";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "#2563eb" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		    "converted": 1,
@@ -162,8 +162,8 @@ test("stylex -> vue-styled: resolves concrete token references with project cont
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "$colors.brand" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;",
 		  "converted": 1,
@@ -193,8 +193,8 @@ test("stylex -> vue-styled: preserves malformed concrete stylex input", () => {
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import styled from "vue-styled-components";
-
+		  "code": "import * as stylex from "@stylexjs/stylex";
+		import styled from "vue-styled-components";
 		export const styles = { "card": styled.div({ "padding": "1rem", "color": "red" }) };
 		export const App = () => <div {...stylex.props(styles.card)} />;
 		const unfinished = { /* unfinished stylex */",

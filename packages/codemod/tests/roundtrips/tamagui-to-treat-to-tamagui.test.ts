@@ -130,8 +130,8 @@ test("tamagui -> treat -> tamagui: retains edge semantics without silent loss", 
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@/styles.treat";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-5qa8dh)" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -204,8 +204,8 @@ test("tamagui -> treat -> tamagui: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@/styles.treat";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -257,8 +257,8 @@ test("tamagui -> treat -> tamagui: preserves concrete theme and project context 
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { createCx } from "pandwind/cx";
+		import { style } from "@/styles.treat";
 		import { View, styled } from "@tamagui/core";
-
 		const cx = createCx();
 		export const Card = (props) => <View {...props} className={cx(styled(View, { padding: "$4", color: "var(--pandwind-dynamic-bbwvz3)" }), props.className)} style={{ ...{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }, ...props.style }} />;
 		export const App = () => <Card />;",

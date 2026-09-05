@@ -194,8 +194,8 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import { style } from "@/styles.treat";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -241,8 +241,8 @@ test("chakra-ui -> treat -> chakra-ui: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import { style } from "@/styles.treat";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" })} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [

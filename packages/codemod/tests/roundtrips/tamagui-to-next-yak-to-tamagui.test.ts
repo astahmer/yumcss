@@ -128,9 +128,9 @@ test("tamagui -> next-yak -> tamagui: retains edge semantics without silent loss
 		    "changed": true,
 		    "code": "import { View } from "tamagui";
 		import { styled } from "next-yak";
-		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.foreground | available: residual)
+		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.foreground | available: residual)
 		styled(View)\`padding: $4; color: \${theme.foreground};\`;
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		    "converted": 0,
 		    "outcomes": [
 		      {
@@ -140,12 +140,7 @@ test("tamagui -> next-yak -> tamagui: retains edge semantics without silent loss
 		    ],
 		    "residuals": [
 		      {
-		        "hint": "template interpolation requires a runtime-aware lowering",
-		        "kind": "dynamic",
-		        "preserved": undefined,
-		      },
-		      {
-		        "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.foreground",
+		        "hint": "dynamic-values: dynamic: theme.foreground",
 		        "kind": "capability",
 		        "preserved": undefined,
 		      },
@@ -208,9 +203,9 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "next-yak";
-		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
 		styled(View)\`padding: $4; color: \${theme.colors.brand};\`;
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -220,12 +215,7 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },
@@ -267,9 +257,9 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      "changed": true,
 		      "code": "import { View } from "tamagui";
 		import { styled } from "next-yak";
-		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | parse-residual: dynamic | lowering-residual: dynamic | capability-blocked: components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand | available: residual)
+		export const Card = // pandwind:migrate-skip (route: next-yak -> tamagui | lowering-residual: dynamic | capability-blocked: dynamic-values: dynamic: theme.colors.brand | available: residual)
 		styled(View)\`padding: $4; color: \${theme.colors.brand};\`;
-		export const App = () => <Card />;",
+		export const App = () => <View className={Card.class} style={Card.style} />;",
 		      "converted": 0,
 		      "outcomes": [
 		        {
@@ -279,12 +269,7 @@ test("tamagui -> next-yak -> tamagui: preserves concrete theme and project conte
 		      ],
 		      "residuals": [
 		        {
-		          "hint": "template interpolation requires a runtime-aware lowering",
-		          "kind": "dynamic",
-		          "preserved": undefined,
-		        },
-		        {
-		          "hint": "components: component subject: styled(View); dynamic-values: dynamic: theme.colors.brand",
+		          "hint": "dynamic-values: dynamic: theme.colors.brand",
 		          "kind": "capability",
 		          "preserved": undefined,
 		        },

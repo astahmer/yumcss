@@ -145,11 +145,9 @@ test("vue-styled -> mui -> vue-styled: retains edge semantics without silent los
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		const Card = css.vars({ "padding": "1rem", "color": theme.foreground });
+		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.foreground });
 
 		export default function App() {
 			return (
@@ -157,22 +155,22 @@ test("vue-styled -> mui -> vue-styled: retains edge semantics without silent los
 			);
 		}
 		",
-		    "converted": 1,
+		    "converted": 0,
 		    "outcomes": [
 		      {
-		        "outcome": "portable-artifact",
-		        "representation": "portable-artifact",
+		        "outcome": "residual",
+		        "representation": "target-native",
 		      },
 		    ],
-		    "residuals": [],
-		    "skipped": 0,
-		    "validations": [
+		    "residuals": [
 		      {
-		        "differences": [],
-		        "lossiness": "lossless",
-		        "valid": true,
+		        "hint": "dynamic style binding 'Card' has no supported host use",
+		        "kind": "dynamic-values",
+		        "preserved": undefined,
 		      },
 		    ],
+		    "skipped": 1,
+		    "validations": [],
 		  },
 		}
 	`);
@@ -229,11 +227,9 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 
 		export default function App() {
 			return (
@@ -241,22 +237,22 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 			);
 		}
 		",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		  "blue": {
@@ -292,11 +288,9 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { styled } from "@mui/system";
-		import { createRuntimeCss } from "pandwind/css/runtime";
-		import { pandwindPreset } from "pandwind/preset";
-		const css = createRuntimeCss(pandwindPreset);
 
-		const Card = css.vars({ "padding": "1rem", "color": theme.colors.brand });
+		const Card = // pandwind:migrate-skip (lowering-residual: dynamic-values)
+		styled("div")({ padding: "1rem", color: theme.colors.brand });
 
 		export default function App() {
 			return (
@@ -304,22 +298,22 @@ test("vue-styled -> mui -> vue-styled: preserves concrete theme and project cont
 			);
 		}
 		",
-		      "converted": 1,
+		      "converted": 0,
 		      "outcomes": [
 		        {
-		          "outcome": "portable-artifact",
-		          "representation": "portable-artifact",
+		          "outcome": "residual",
+		          "representation": "target-native",
 		        },
 		      ],
-		      "residuals": [],
-		      "skipped": 0,
-		      "validations": [
+		      "residuals": [
 		        {
-		          "differences": [],
-		          "lossiness": "lossless",
-		          "valid": true,
+		          "hint": "dynamic style binding 'Card' has no supported host use",
+		          "kind": "dynamic-values",
+		          "preserved": undefined,
 		        },
 		      ],
+		      "skipped": 1,
+		      "validations": [],
 		    },
 		  },
 		}

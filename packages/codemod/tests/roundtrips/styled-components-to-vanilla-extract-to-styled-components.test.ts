@@ -130,8 +130,8 @@ test("styled-components -> vanilla-extract -> styled-components: retains edge se
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
+		import { style } from "@vanilla-extract/css";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(styled.div({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" }), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",

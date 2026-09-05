@@ -66,8 +66,8 @@ test("linaria -> react-native -> linaria: preserves an actionable concrete round
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@linaria/core";
 
 		export const card = { "style": css\`padding: 16; color: red;\` }.style;
 		export const App = () => <View   style={card}/>;",
@@ -285,8 +285,8 @@ test("linaria -> react-native -> linaria: resolves token references across both 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "@linaria/core";
 
 		export const card = { "style": css\`padding: 16; color: var(--colors-brand);\` }.style;
 		export const App = () => <View   style={card}/>;",

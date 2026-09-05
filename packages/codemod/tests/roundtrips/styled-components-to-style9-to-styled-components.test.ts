@@ -66,8 +66,8 @@ test("styled-components -> style9 -> styled-components: preserves an actionable 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import style9 from "style9";
+		import styled from "styled-components";
 
 		export const Card = style9({ "style": styled.div({ padding: "1rem", color: "red" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -130,8 +130,8 @@ test("styled-components -> style9 -> styled-components: retains edge semantics w
 		    "changed": true,
 		    "code": "
 		import { createCx } from "pandwind/cx";
+		import style9 from "style9";
 		import styled from "styled-components";
-
 		const cx = createCx();
 		export const Card = (props) => <div {...props} className={cx(style9({ "style": styled.div({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" }) }.style), props.className)} style={{ ...{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }, ...props.style }} />;
 		export const App = () => <Card />;",
@@ -200,8 +200,8 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import style9 from "style9";
+		import styled from "styled-components";
 
 		export const Card = style9({ "style": styled.div({ padding: "1rem", color: "#f97316" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -249,8 +249,8 @@ test("styled-components -> style9 -> styled-components: preserves concrete theme
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import styled from "styled-components";
-
+		      "code": "import style9 from "style9";
+		import styled from "styled-components";
 
 		export const Card = style9({ "style": styled.div({ padding: "1rem", color: "#2563eb" }) }.style);
 		export const App = () => <div className={Card} />;",
@@ -310,8 +310,8 @@ test("styled-components -> style9 -> styled-components: resolves token reference
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import styled from "styled-components";
-
+		    "code": "import style9 from "style9";
+		import styled from "styled-components";
 
 		export const Card = style9({ "style": styled.div({ padding: "1rem", color: "$colors.brand" }) }.style);
 		export const App = () => <div className={Card} />;",

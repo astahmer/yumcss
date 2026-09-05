@@ -43,8 +43,8 @@ test("react-native -> next-yak -> react-native: preserves an actionable concrete
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 16; color: red;\` };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -66,8 +66,8 @@ test("react-native -> next-yak -> react-native: preserves an actionable concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = { "card": StyleSheet.create({ "padding": "16", "color": "red" }) };
 		export const App = () => <View style={styles.card} />;",
@@ -103,8 +103,8 @@ test("react-native -> next-yak -> react-native: retains edge semantics without s
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 16; color: \${theme.foreground};\` };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -126,10 +126,10 @@ test("react-native -> next-yak -> react-native: retains edge semantics without s
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		    "code": "import { View } from "react-native";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		export const styles = { "card": css.vars({ "padding": "16", "color": theme.foreground }) };
 		export const App = () => <View style={styles.card} />;",
@@ -175,8 +175,8 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 16; color: \${theme.colors.brand};\` };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -198,10 +198,10 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { View } from "react-native";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		export const styles = { "card": css.vars({ "padding": "16", "color": theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
@@ -226,8 +226,8 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "next-yak";
-
+		      "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 16; color: \${theme.colors.brand};\` };
 		export const App = () => <View style={styles.card} />;",
 		      "converted": 1,
@@ -249,10 +249,10 @@ test("react-native -> next-yak -> react-native: preserves concrete theme and pro
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createRuntimeCss } from "pandwind/css/runtime";
+		      "code": "import { View } from "react-native";
+		import { createRuntimeCss } from "pandwind/css/runtime";
 		import { pandwindPreset } from "pandwind/preset";
 		const css = createRuntimeCss(pandwindPreset);
-
 
 		export const styles = { "card": css.vars({ "padding": "16", "color": theme.colors.brand }) };
 		export const App = () => <View style={styles.card} />;",
@@ -289,8 +289,8 @@ test("react-native -> next-yak -> react-native: resolves token references across
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "next-yak";
-
+		    "code": "import { View } from "react-native";
+		import { css } from "next-yak";
 		export const styles = { "card": css\`padding: 16; color: $colors.brand;\` };
 		export const App = () => <View style={styles.card} />;",
 		    "converted": 1,
@@ -312,8 +312,8 @@ test("react-native -> next-yak -> react-native: resolves token references across
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { StyleSheet } from "react-native";
-
+		    "code": "import { View } from "react-native";
+		import { StyleSheet } from "react-native";
 
 		export const styles = { "card": StyleSheet.create({ "padding": "16", "color": "$colors.brand" }) };
 		export const App = () => <View style={styles.card} />;",

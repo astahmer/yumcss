@@ -43,9 +43,9 @@ test("fela -> pandwind -> fela: preserves an actionable concrete round trip", ()
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		const renderer = createRenderer();
 		export const card = css.class({ padding: "1rem", color: "red" });",
 		    "converted": 1,
@@ -67,7 +67,8 @@ test("fela -> pandwind -> fela: preserves an actionable concrete round trip", ()
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
+
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -102,9 +103,9 @@ test("fela -> pandwind -> fela: retains edge semantics without silent loss", () 
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		const renderer = createRenderer();
 		export const card = css.vars({ padding: "1rem", color: theme.foreground });",
 		    "converted": 1,
@@ -126,7 +127,8 @@ test("fela -> pandwind -> fela: retains edge semantics without silent loss", () 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
+
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -171,9 +173,9 @@ test("fela -> pandwind -> fela: preserves concrete theme and project context var
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		const renderer = createRenderer();
 		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });",
 		      "converted": 1,
@@ -195,7 +197,8 @@ test("fela -> pandwind -> fela: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createRenderer } from "fela";
+
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "#f97316" });",
 		      "converted": 1,
@@ -219,9 +222,9 @@ test("fela -> pandwind -> fela: preserves concrete theme and project context var
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		const renderer = createRenderer();
 		export const card = css.vars({ padding: "1rem", color: theme.colors.brand });",
 		      "converted": 1,
@@ -243,7 +246,8 @@ test("fela -> pandwind -> fela: preserves concrete theme and project context var
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createRenderer } from "fela";
+
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "#2563eb" });",
 		      "converted": 1,
@@ -279,9 +283,9 @@ test("fela -> pandwind -> fela: resolves token references across both concrete l
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { createRenderer } from "fela";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		const renderer = createRenderer();
 		export const card = css.class({ padding: "1rem", color: "$colors.brand" });",
 		    "converted": 1,
@@ -303,7 +307,8 @@ test("fela -> pandwind -> fela: resolves token references across both concrete l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
+
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,

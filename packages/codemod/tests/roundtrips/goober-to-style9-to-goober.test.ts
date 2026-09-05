@@ -66,8 +66,8 @@ test("goober -> style9 -> goober: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import style9 from "style9";
+		import { css } from "goober";
 
 		export const card = style9({ "style": css({ "padding": "1rem", "color": "red" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -126,8 +126,8 @@ test("goober -> style9 -> goober: retains edge semantics without silent loss", (
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import style9 from "style9";
+		import { css } from "goober";
 
 		export const card = style9({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-5qa8dh)" }) }.style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -196,8 +196,8 @@ test("goober -> style9 -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import style9 from "style9";
+		import { css } from "goober";
 
 		export const card = style9({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
@@ -245,8 +245,8 @@ test("goober -> style9 -> goober: preserves concrete theme and project context v
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import style9 from "style9";
+		import { css } from "goober";
 
 		export const card = style9({ "style": css({ "padding": "1rem", "color": "var(--pandwind-dynamic-bbwvz3)" }) }.style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }} />;",
@@ -306,8 +306,8 @@ test("goober -> style9 -> goober: resolves token references across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import style9 from "style9";
+		import { css } from "goober";
 
 		export const card = style9({ "style": css({ "padding": "1rem", "color": "$colors.brand" }) }.style);
 		export const App = () => <div className={card} />;",

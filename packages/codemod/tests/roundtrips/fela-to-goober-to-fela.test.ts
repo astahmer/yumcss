@@ -43,8 +43,8 @@ test("fela -> goober -> fela: preserves an actionable concrete round trip", () =
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": "red" });",
 		    "converted": 1,
@@ -66,7 +66,7 @@ test("fela -> goober -> fela: preserves an actionable concrete round trip", () =
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "red" });",
@@ -102,8 +102,8 @@ test("fela -> goober -> fela: retains edge semantics without silent loss", () =>
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.foreground });",
 		    "converted": 1,
@@ -125,7 +125,7 @@ test("fela -> goober -> fela: retains edge semantics without silent loss", () =>
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.foreground });",
@@ -171,8 +171,8 @@ test("fela -> goober -> fela: preserves concrete theme and project context varia
 		  "amber": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -194,7 +194,7 @@ test("fela -> goober -> fela: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });",
@@ -219,8 +219,8 @@ test("fela -> goober -> fela: preserves concrete theme and project context varia
 		  "blue": {
 		    "forward": {
 		      "changed": true,
-		      "code": "import { css } from "goober";
-
+		      "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": theme.colors.brand });",
 		      "converted": 1,
@@ -242,7 +242,7 @@ test("fela -> goober -> fela: preserves concrete theme and project context varia
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "
+		      "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": theme.colors.brand });",
@@ -279,8 +279,8 @@ test("fela -> goober -> fela: resolves token references across both concrete leg
 		{
 		  "forward": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import { createRenderer } from "fela";
+		import { css } from "goober";
 		const renderer = createRenderer();
 		export const card = css({ "padding": "1rem", "color": "$colors.brand" });",
 		    "converted": 1,
@@ -302,7 +302,7 @@ test("fela -> goober -> fela: resolves token references across both concrete leg
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "
+		    "code": "import { createRenderer } from "fela";
 
 		const renderer = createRenderer();
 		export const card = renderer.renderRule({ "padding": "1rem", "color": "$colors.brand" });",

@@ -66,8 +66,8 @@ test("linaria -> stylex -> linaria: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 
 		export const card = { "style": css\`padding: 1rem; color: red;\` }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -270,8 +270,8 @@ test("linaria -> stylex -> linaria: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@linaria/core";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "@linaria/core";
 
 		export const card = { "style": css\`padding: 1rem; color: var(--colors-brand);\` }.style;
 		export const App = () => <div {...stylex.props(card)} />;",

@@ -125,9 +125,9 @@ test("mui -> vanilla-extract -> mui: retains edge semantics without silent loss"
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@mui/material";
+		import { style } from "@vanilla-extract/css";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-5qa8dh)" })} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -194,9 +194,9 @@ test("mui -> vanilla-extract -> mui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
+		import { style } from "@vanilla-extract/css";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -242,9 +242,9 @@ test("mui -> vanilla-extract -> mui: preserves concrete theme and project contex
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@mui/material";
+		import { style } from "@vanilla-extract/css";
 		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 		export const App = () => <Box className={css.class({ "padding": "16px", "color": "var(--pandwind-dynamic-d9jp16)" })} style={{ "--pandwind-dynamic-d9jp16": String(theme.palette.primary.main) }}/>;",
 		      "converted": 1,
 		      "outcomes": [

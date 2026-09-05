@@ -193,8 +193,8 @@ test("solid-styled -> stitches: preserves malformed concrete solid-styled input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "@stitches/react";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import { css } from "@stitches/react";
 		export const Card = css({ padding: "1rem", color: "red" });
 		export const App = () => <Card />;
 		const unfinished = { /* unfinished solid-styled */",

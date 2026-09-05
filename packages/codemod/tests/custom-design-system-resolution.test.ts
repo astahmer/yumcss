@@ -99,10 +99,15 @@ describe("custom design-system context resolution", () => {
 		`);
 	});
 
-	test("resolves custom Panda tokens through the official config loader", async () => {
-		const loader: ProjectModuleLoader = {
-			async importPackage(packageName) {
-				return packageName === "@pandacss/config"
+		test("resolves custom Panda tokens through the official config loader", async () => {
+			const loader: ProjectModuleLoader = {
+				async importPackage(packageName) {
+					if (packageName === "@chakra-ui/react")
+						return {
+							defaultConfig: {},
+							isValidSystem: () => false,
+						} as never;
+					return packageName === "@pandacss/config"
 					? ({
 							loadConfig: async () => ({
 								config: {

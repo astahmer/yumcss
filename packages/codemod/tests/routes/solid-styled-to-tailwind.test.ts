@@ -189,7 +189,7 @@ test("solid-styled -> tailwind: preserves malformed concrete solid-styled input"
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "
+		  "code": "import { styled } from "solid-styled-components";
 		export const Card = "[padding:1rem] [color:red]";
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

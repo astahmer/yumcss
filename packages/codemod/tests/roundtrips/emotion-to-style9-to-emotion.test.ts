@@ -66,8 +66,8 @@ test("emotion -> style9 -> emotion: preserves an actionable concrete round trip"
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@emotion/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "red" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -126,8 +126,8 @@ test("emotion -> style9 -> emotion: retains edge semantics without silent loss",
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@emotion/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" }) }.style);
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",
@@ -196,8 +196,8 @@ test("emotion -> style9 -> emotion: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import style9 from "style9";
+		import { css } from "@emotion/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "#f97316" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -245,8 +245,8 @@ test("emotion -> style9 -> emotion: preserves concrete theme and project context
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { css } from "@emotion/css";
-
+		      "code": "import style9 from "style9";
+		import { css } from "@emotion/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "#2563eb" }) }.style);
 		export const App = () => <div className={card} />;",
@@ -306,8 +306,8 @@ test("emotion -> style9 -> emotion: resolves token references across both concre
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "@emotion/css";
-
+		    "code": "import style9 from "style9";
+		import { css } from "@emotion/css";
 
 		export const card = style9({ "style": css({ padding: "1rem", color: "$colors.brand" }) }.style);
 		export const App = () => <div className={card} />;",

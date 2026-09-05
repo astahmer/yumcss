@@ -66,8 +66,8 @@ test("chakra-ui -> style9 -> chakra-ui: preserves an actionable concrete round t
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={style9({ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [
@@ -125,8 +125,8 @@ test("chakra-ui -> style9 -> chakra-ui: retains edge semantics without silent lo
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={style9({ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "tomato" }) }.style)}/>;
 		const unresolvedStyle = runtimeTheme.foreground;",
 		    "converted": 1,
@@ -194,8 +194,8 @@ test("chakra-ui -> style9 -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={style9({ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -241,8 +241,8 @@ test("chakra-ui -> style9 -> chakra-ui: preserves concrete theme and project con
 		    "reverse": {
 		      "changed": true,
 		      "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={style9({ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "var(--pandwind-dynamic-bbwvz3)" }) }.style)} style={{ "--pandwind-dynamic-bbwvz3": String(theme.colors.brand) }}/>;",
 		      "converted": 1,
 		      "outcomes": [
@@ -300,8 +300,8 @@ test("chakra-ui -> style9 -> chakra-ui: resolves token references across both co
 		  "reverse": {
 		    "changed": true,
 		    "code": "import { Box } from "@chakra-ui/react";
+		import style9 from "style9";
 		import { defaultSystem } from "@chakra-ui/react";
-
 		export const App = () => <Box className={style9({ "style": defaultSystem.css({ padding: "var(--chakra-spacing-4)", backgroundColor: "$colors.brand" }) }.style)}/>;",
 		    "converted": 1,
 		    "outcomes": [

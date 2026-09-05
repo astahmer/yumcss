@@ -66,9 +66,9 @@ test("pandwind -> react-native -> pandwind: preserves an actionable concrete rou
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = { "style": css.class({ padding: 16, color: "red" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -190,9 +190,9 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = { "style": css.class({ padding: 16, color: "#f97316" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -240,9 +240,9 @@ test("pandwind -> react-native -> pandwind: preserves concrete theme and project
 		    },
 		    "reverse": {
 		      "changed": true,
-		      "code": "import { createCss } from "pandwind/css";
+		      "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = { "style": css.class({ padding: 16, color: "#2563eb" }) }.style;
 		export const App = () => <View   style={card}/>;",
@@ -302,9 +302,9 @@ test("pandwind -> react-native -> pandwind: resolves token references across bot
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { createCss } from "pandwind/css";
+		    "code": "import { View } from "react-native";
+		import { createCss } from "pandwind/css";
 		const css = createCss();
-
 
 		export const card = { "style": css.class({ padding: 16, color: "$colors.brand" }) }.style;
 		export const App = () => <View   style={card}/>;",

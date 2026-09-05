@@ -66,8 +66,8 @@ test("goober -> stylex -> goober: preserves an actionable concrete round trip", 
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "goober";
 
 		export const card = { "style": css({ "padding": "1rem", "color": "red" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",
@@ -270,8 +270,8 @@ test("goober -> stylex -> goober: resolves token references across both concrete
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "goober";
-
+		    "code": "import * as stylex from "@stylexjs/stylex";
+		import { css } from "goober";
 
 		export const card = { "style": css({ "padding": "1rem", "color": "$colors.brand" }) }.style;
 		export const App = () => <div {...stylex.props(card)} />;",

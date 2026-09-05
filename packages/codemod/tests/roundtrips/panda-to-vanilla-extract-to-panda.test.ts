@@ -126,8 +126,8 @@ test("panda -> vanilla-extract -> panda: retains edge semantics without silent l
 		  },
 		  "reverse": {
 		    "changed": true,
-		    "code": "import { css } from "styled-system/css";
-
+		    "code": "import { style } from "@vanilla-extract/css";
+		import { css } from "styled-system/css";
 
 		export const card = css({ padding: "1rem", color: "var(--pandwind-dynamic-5qa8dh)" });
 		export const App = () => <div className={card} style={{ "--pandwind-dynamic-5qa8dh": String(theme.foreground) }} />;",

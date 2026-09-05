@@ -193,8 +193,8 @@ test("style9 -> vanilla-extract: preserves malformed concrete style9 input", () 
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { style } from "@vanilla-extract/css";
-
+		  "code": "import style9 from "style9";
+		import { style } from "@vanilla-extract/css";
 		export const styles = { "card": style({ padding: "1rem", color: "red" }) };
 		export const App = () => <div className={styles.card} />;
 		const unfinished = { /* unfinished style9 */",

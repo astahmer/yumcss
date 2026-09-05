@@ -198,8 +198,8 @@ test("solid-styled -> react-native: preserves malformed concrete solid-styled in
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { StyleSheet, View } from "react-native";
-
+		  "code": "import { styled } from "solid-styled-components";
+		import { StyleSheet, View } from "react-native";
 		export const Card = StyleSheet.create({ style: { "padding": 16, "color": "red" } }).style;
 		export const App = () => <View style={Card} />;
 		const unfinished = { /* unfinished solid-styled */",

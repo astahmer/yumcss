@@ -199,8 +199,8 @@ test("styled-components -> panda: preserves malformed concrete styled-components
 	expect(routeEvidence(result)).toMatchInlineSnapshot(`
 		{
 		  "changed": true,
-		  "code": "import { css } from "styled-system/css";
-
+		  "code": "import styled from "styled-components";
+		import { css } from "styled-system/css";
 		export const Card = css({ padding: "1rem", color: "red" });
 		export const App = () => <div className={Card} />;
 		const unfinished = { /* unfinished styled-components */",
