@@ -41,6 +41,15 @@ describe("evalPlayground", () => {
 			expect(result.output).toContain("bg-red-500");
 			expect(result.fold).toBe("full");
 			expect(result.killed).toEqual([]);
+			expect(result.styleMappings).toEqual([
+				{
+					className: "bg-red-500",
+					property: "bgColor",
+					value: "red-500",
+					conditions: [],
+					active: true,
+				},
+			]);
 		}
 	});
 
@@ -247,6 +256,43 @@ describe("evalPlayground", () => {
 			expect(result.sheets).toHaveLength(1);
 			expect(result.sheets[0]?.strategy).toBe("named-atoms");
 			expect(result.sheets[0]?.css).toContain(".demo-color-red-500");
+		}
+	});
+
+	test("maps runtime declarations to their emitted classes", () => {
+		const result = run(
+			[
+				'import { createRuntimeCss } from "pandwind/css/runtime";',
+				'import { createNamedAtomsStrategy } from "pandwind/css";',
+				'import { examplePreset } from "pandwind/preset";',
+				"",
+				'const css = createRuntimeCss(examplePreset, { className: createNamedAtomsStrategy("demo") });',
+				'css.class({ color: "red-500", _hover: { color: "blue-500" } });',
+			].join("\n"),
+			undefined,
+			{
+				"pandwind/css/runtime": { createRuntimeCss },
+				"pandwind/css": { createNamedAtomsStrategy },
+				"pandwind/preset": { examplePreset },
+			},
+		);
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			expect(result.styleMappings).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({
+						className: "demo-color-red-500",
+						property: "color",
+						value: "red-500",
+						conditions: [],
+					}),
+					expect.objectContaining({
+						property: "color",
+						value: "blue-500",
+						conditions: ["_hover"],
+					}),
+				]),
+			);
 		}
 	});
 });

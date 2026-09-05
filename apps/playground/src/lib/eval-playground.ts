@@ -13,6 +13,7 @@
  */
 import { parseSync } from "oxc-parser";
 import { styleProgramFromSourceObject, type StyleProgram } from "pandwind-codemod/swap/semantic-ir";
+import { flattenStyle } from "pandwind/lib/utils";
 import { collectModuleConstants } from "pandwind/vite/cx-inline";
 import type { ConstantScope } from "pandwind/vite/cx-inline";
 import { NodeKind, ImportKindTag } from "pandwind/tw/literal";
@@ -26,6 +27,19 @@ export interface PlaygroundSheetResult {
 	tokens: string;
 	/** Flat rules retained by the sheet, including their stable ids. */
 	rules: Array<{ id: string; css: string; priority: number }>;
+}
+
+export interface PlaygroundStyleMapping {
+	/** Class emitted for one flattened declaration. */
+	className: string;
+	/** Source property name, such as `backgroundColor`. */
+	property: string;
+	/** Authored value before it is resolved into CSS. */
+	value: string;
+	/** Nested condition path, outermost condition first. */
+	conditions: string[];
+	/** Whether this class survives into the final expression's class string. */
+	active: boolean;
 }
 
 interface PlaygroundSuccess {
@@ -55,6 +69,8 @@ interface PlaygroundSuccess {
 	atomDeclarations: Array<{ cls: string; decls: Record<string, string> }>;
 	/** CSS produced by Pandwind-owned runtime sheets used by the example. */
 	sheets: PlaygroundSheetResult[];
+	/** Source declarations paired with the class emitted for each declaration. */
+	styleMappings: PlaygroundStyleMapping[];
 	/** Neutral semantic programs extracted from static style-call objects. */
 	programs: StyleProgram[];
 }
@@ -526,6 +542,139 @@ interface RuntimeCssInstance {
 	};
 }
 
+const isStyleRecord = (value: unknown): value is Record<string, unknown> =>
+	value !== null && typeof value === "object" && !Array.isArray(value);
+
+const isCompilableStyleInput = (value: unknown): value is Record<string, unknown> => {
+	if (!isStyleRecord(value)) return false;
+	if (value["$$css"] === true || "compiled" in value || "className" in value) return false;
+	return !("style" in value && "class" in value);
+};
+
+const styleMappingsFromCompiled = (
+	styles: Array<unknown>,
+	compiled: unknown,
+	resolveStyle?: (style: Record<string, unknown>) => Record<string, string>,
+): PlaygroundStyleMapping[] => {
+	if (!isStyleRecord(compiled)) return [];
+	const flat = Object.assign(
+		{},
+		...styles.filter(isStyleRecord).map((style) => flattenStyle(style as never)),
+	);
+	const resolved = Object.assign(
+		{},
+		...(resolveStyle === undefined
+			? []
+			: styles.filter(isStyleRecord).map((style) => {
+					try {
+						return resolveStyle(style);
+					} catch {
+						return {};
+					}
+				})),
+	);
+	const mappings: PlaygroundStyleMapping[] = [];
+	for (const [path, className] of Object.entries(compiled)) {
+		const value = flat[path] ?? resolved[path];
+		if (typeof className !== "string" || value === undefined) continue;
+		const parts = path.split("__");
+		mappings.push({
+			className,
+			property: parts.at(-1) ?? path,
+			value: String(value),
+			conditions: parts.slice(0, -1),
+			active: false,
+		});
+	}
+	return mappings;
+};
+
+const dedupeStyleMappings = (mappings: PlaygroundStyleMapping[]): PlaygroundStyleMapping[] => {
+	const seen = new Set<string>();
+	return mappings.filter((mapping) => {
+		const key = [mapping.className, mapping.property, mapping.value, ...mapping.conditions].join(
+			"\u0000",
+		);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+};
+
+interface TwStyleEntry {
+	property: string;
+	value: string;
+	conditions: string[];
+}
+
+function twStyleEntries(style: Record<string, unknown>, conditions: string[] = []): TwStyleEntry[] {
+	const entries: TwStyleEntry[] = [];
+	for (const [property, value] of Object.entries(style)) {
+		if (isStyleRecord(value)) {
+			entries.push(...twStyleEntries(value, [...conditions, property]));
+			continue;
+		}
+		if (value === false || value === null || value === undefined) continue;
+		const values = Array.isArray(value) ? value : [value];
+		for (const part of values) {
+			if (part === false || part === null || part === undefined) continue;
+			entries.push({ property, value: part === true ? "" : String(part), conditions });
+		}
+	}
+	return entries;
+}
+
+function twStyleMappings(
+	style: Record<string, unknown>,
+	output: unknown,
+): PlaygroundStyleMapping[] {
+	if (typeof output !== "string") return [];
+	const entries = twStyleEntries(style);
+	const classes = splitClasses(output);
+	// Conflict merging and compound utilities can change the cardinality. Only
+	// expose a pair when the compiler gives us an unambiguous one-to-one result.
+	if (entries.length !== classes.length) return [];
+	return entries.map((entry, index) => ({
+		...entry,
+		className: classes[index]!,
+		active: false,
+	}));
+}
+
+function instrumentRuntimeCss(
+	instance: unknown,
+	onStyleMappings: (mappings: PlaygroundStyleMapping[]) => void,
+	resolveStyle?: (style: Record<string, unknown>) => Record<string, string>,
+): unknown {
+	if (typeof instance !== "function") return instance;
+	const callable = instance as (...args: Array<unknown>) => unknown;
+	const instrumented = ((...args: Array<unknown>) => {
+		const result = callable(...args);
+		if (args.every(isCompilableStyleInput))
+			onStyleMappings(styleMappingsFromCompiled(args, result, resolveStyle));
+		return result;
+	}) as ((...args: Array<unknown>) => unknown) & Record<string, unknown>;
+	for (const [key, value] of Object.entries(instance as unknown as Record<string, unknown>)) {
+		if (typeof value !== "function") {
+			instrumented[key] = value;
+			continue;
+		}
+		instrumented[key] = (...args: Array<unknown>) => {
+			const result = value(...args);
+			const styleArgs = args.filter(isCompilableStyleInput);
+			if (
+				(key === "class" || key === "vars" || key === "props") &&
+				styleArgs.length === args.length
+			) {
+				const compiled = callable(...styleArgs);
+				onStyleMappings(styleMappingsFromCompiled(styleArgs, compiled, resolveStyle));
+			}
+			return result;
+		};
+	}
+	return instrumented;
+}
+
 /** Evaluate playground code. Throws nothing — errors come back as data. */
 export function evalPlayground(input: EvalInput): PlaygroundResult {
 	return evalGuarded(input, "entry");
@@ -595,6 +744,7 @@ function buildSandbox(
 	css: EvalInput["css"],
 	cx: (...inputs: Array<never>) => string,
 	onRuntimeCss?: (instance: RuntimeCssInstance) => void,
+	onStyleMappings?: (mappings: PlaygroundStyleMapping[]) => void,
 ): Record<string, unknown> {
 	const sandbox: Record<string, unknown> = {
 		tw,
@@ -602,6 +752,14 @@ function buildSandbox(
 		cx,
 		createCx: () => cx,
 		props: input.props ?? {},
+		createCss: input.createCss,
+	};
+	const instrumentedBuiltins: Record<string, unknown> = {
+		tw,
+		css,
+		cx,
+		createCx: () => cx,
+		props: input.props,
 		createCss: input.createCss,
 	};
 	for (const imp of prepared.imports) {
@@ -651,10 +809,19 @@ function buildSandbox(
 					const instance = (resolvedImport as (...values: Array<unknown>) => unknown)(
 						...factoryArgs,
 					) as RuntimeCssInstance | undefined;
+					const instrumented = instrumentRuntimeCss(
+						instance,
+						(mappings) => {
+							onStyleMappings?.(mappings);
+						},
+						input.resolveCss,
+					);
 					if (
-						instance?.sheet !== undefined &&
-						typeof instance.sheet.css === "function" &&
-						typeof instance.sheet.snapshot === "function"
+						instrumented !== null &&
+						typeof instrumented === "function" &&
+						(instance as RuntimeCssInstance | undefined)?.sheet !== undefined &&
+						typeof (instance as RuntimeCssInstance).sheet.css === "function" &&
+						typeof (instance as RuntimeCssInstance).sheet.snapshot === "function"
 					) {
 						const className = authoredOptions.className;
 						const classNameRecord =
@@ -664,10 +831,10 @@ function buildSandbox(
 						onRuntimeCss?.({
 							strategy: typeof classNameRecord?.name === "string" ? classNameRecord.name : "atomic",
 							sheetBacked: classNameRecord?.sheetBacked !== false,
-							sheet: instance.sheet,
+							sheet: (instance as RuntimeCssInstance).sheet,
 						});
 					}
-					return instance;
+					return instrumented;
 				};
 			} else {
 				sandbox[imp.local] = imp.imported === undefined ? bindings : resolvedImport;
@@ -678,10 +845,10 @@ function buildSandbox(
 		// `import { tw } from "pandwind"` is the same tw the file already has.
 		if (imp.source === "pandwind" || imp.source.startsWith("pandwind/")) {
 			if (imp.imported !== undefined) {
-				sandbox[imp.local] = pandwindBuiltins(input)[imp.imported];
+				sandbox[imp.local] = instrumentedBuiltins[imp.imported];
 			} else {
 				// Default import: the css entry's default is the loose engine.
-				sandbox[imp.local] = imp.source === "pandwind" ? pandwindBuiltins(input) : input.createCss;
+				sandbox[imp.local] = imp.source === "pandwind" ? instrumentedBuiltins : input.createCss;
 			}
 			continue;
 		}
@@ -746,10 +913,13 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		recordArgs(args);
 		const result = input.tw(...(args as never[]));
 		recordTokens(result);
+		if (args.length === 1 && isStyleRecord(args[0]))
+			styleMappings.push(...twStyleMappings(args[0], result));
 		return result;
 	};
 	const atomDeclarations: Array<{ cls: string; decls: Record<string, string> }> = [];
 	const runtimeInstances: RuntimeCssInstance[] = [];
+	const styleMappings: PlaygroundStyleMapping[] = [];
 	/**
 	 * Instrumented css() binding. The wrapper exposes the SAME surface as the
 	 * real css() (callable plus every namespaced method the instance carries:
@@ -766,6 +936,15 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 				throw new Error(`css.${method} is not available in the sandbox`);
 			const result = fn(...(args as never[]));
 			recordTokens(result);
+			const styleArgs = args.filter(isCompilableStyleInput);
+			const compiled =
+				method === undefined
+					? result
+					: (method === "class" || method === "vars" || method === "props") &&
+						  styleArgs.length === args.length
+						? input.css(...(styleArgs as never[]))
+						: undefined;
+			styleMappings.push(...styleMappingsFromCompiled(styleArgs, compiled, input.resolveCss));
 			if (
 				args.length > 0 &&
 				typeof args[0] === "object" &&
@@ -808,9 +987,19 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 	// One sandbox record: builtins plus every import binding share a single
 	// destructured scope inside the evaluated body. Builtin defaults stay so
 	// bare-call tests and quick snippets keep working without an import.
-	const sandbox = buildSandbox(input, prepared, tw, css, cx, (instance) => {
-		runtimeInstances.push(instance);
-	});
+	const sandbox = buildSandbox(
+		input,
+		prepared,
+		tw,
+		css,
+		cx,
+		(instance) => {
+			runtimeInstances.push(instance);
+		},
+		(mappings) => {
+			styleMappings.push(...mappings);
+		},
+	);
 	let captured: { value?: unknown } = {};
 	// One destructured scope for every module: builtins filtered by local
 	// shadows plus import bindings, so an example's own `const css` wins.
@@ -888,6 +1077,10 @@ function runOnce(input: EvalInput, mode: EvalMode): PlaygroundResult {
 		foldNote: foldInfo.note,
 		atomDeclarations,
 		sheets,
+		styleMappings: dedupeStyleMappings(styleMappings).map((mapping) => ({
+			...mapping,
+			active: survived.includes(mapping.className),
+		})),
 		programs: styleProgramsFromExpression(prepared.evalCode),
 	};
 	if (decls !== undefined) success.decls = decls;

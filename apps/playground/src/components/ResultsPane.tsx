@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 import type { StyleProgram } from "pandwind-codemod/swap/semantic-ir";
 import { GhostButton, Pane } from "./ui.tsx";
-import type { PlaygroundResult, PlaygroundSheetResult } from "../lib/eval-playground.ts";
+import type {
+	PlaygroundResult,
+	PlaygroundSheetResult,
+	PlaygroundStyleMapping,
+} from "../lib/eval-playground.ts";
 import { css as uiCss } from "../ui-css.ts";
 
 function CopyButton(props: { text: string; title?: string }) {
@@ -85,6 +89,25 @@ const FOLD_CHIP: Record<string, string> = {
 		color: "#fdba74",
 	}),
 };
+
+const MAPPING_STATUS_ACTIVE = uiCss.class({ color: "rgba(52,211,153,0.9)" });
+const MAPPING_STATUS_DROPPED = uiCss.class({ color: "rgba(248,113,113,0.75)" });
+const MAPPING_CLASS_ACTIVE = uiCss.class({
+	minWidth: "0px",
+	overflowWrap: "anywhere",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11.5px",
+	color: "rgba(253,186,116,0.9)",
+	textDecoration: "none",
+});
+const MAPPING_CLASS_DROPPED = uiCss.class({
+	minWidth: "0px",
+	overflowWrap: "anywhere",
+	fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+	fontSize: "11.5px",
+	color: "#71717a",
+	textDecoration: "line-through",
+});
 
 function FoldSection(props: { fold: string; note: string }) {
 	return (
@@ -237,6 +260,72 @@ function AtomsSection(props: { atoms: Array<{ cls: string; decls: Record<string,
 	);
 }
 
+function StyleMappingsSection(props: { mappings: PlaygroundStyleMapping[] }) {
+	return (
+		<Pane
+			label="Declarations to classes"
+			right={
+				<span
+					className={uiCss.class({
+						marginRight: "4px",
+						fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+						fontSize: "10.5px",
+						color: "#71717a",
+					})}
+				>
+					{props.mappings.length} {props.mappings.length === 1 ? "declaration" : "declarations"}
+				</span>
+			}
+		>
+			<div
+				className={uiCss.class({
+					"& > * + *": { borderTop: "1px solid rgba(255,255,255,0.05)" },
+				})}
+			>
+				{props.mappings.map((mapping, index) => (
+					<div
+						key={`${mapping.className}:${mapping.property}:${mapping.value}:${index}`}
+						className={uiCss.class({
+							display: "grid",
+							gridTemplateColumns: "minmax(0, 1fr) minmax(150px, 0.8fr)",
+							gap: "12px",
+							alignItems: "center",
+							padding: "8px 12px",
+							"@media (max-width: 760px)": {
+								gridTemplateColumns: "1fr",
+							},
+						})}
+					>
+						<div
+							className={uiCss.class({
+								display: "flex",
+								minWidth: "0px",
+								flexWrap: "wrap",
+								alignItems: "baseline",
+								gap: "6px",
+								fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+								fontSize: "11.5px",
+							})}
+						>
+							<span className={uiCss.class({ color: "#fbbf24" })}>{mapping.property}</span>
+							<span className={uiCss.class({ color: "#d4d4d8" })}>: {mapping.value}</span>
+							<span className={uiCss.class({ color: "#a1a1aa" })}>
+								{mapping.conditions.length === 0 ? "base" : mapping.conditions.join(" / ")}
+							</span>
+							<span className={mapping.active ? MAPPING_STATUS_ACTIVE : MAPPING_STATUS_DROPPED}>
+								{mapping.active ? "final" : "dropped"}
+							</span>
+						</div>
+						<code className={mapping.active ? MAPPING_CLASS_ACTIVE : MAPPING_CLASS_DROPPED}>
+							.{mapping.className}
+						</code>
+					</div>
+				))}
+			</div>
+		</Pane>
+	);
+}
+
 function SheetSection(props: { sheets: PlaygroundSheetResult[] }) {
 	return (
 		<>
@@ -372,6 +461,7 @@ export function ResultsPane(props: { result: PlaygroundResult }) {
 			<FoldSection fold={r.fold} note={r.foldNote} />
 			<TokensSection survived={r.survived} killed={r.killed} />
 			{r.atomDeclarations.length > 0 && <AtomsSection atoms={r.atomDeclarations} />}
+			{r.styleMappings.length > 0 && <StyleMappingsSection mappings={r.styleMappings} />}
 			{r.sheets.length > 0 && <SheetSection sheets={r.sheets} />}
 			{r.programs.length > 0 && <StyleProgramSection programs={r.programs} />}
 		</div>
