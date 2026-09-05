@@ -157,6 +157,9 @@ importers:
       oxc-parser:
         specifier: 0.148.0
         version: 0.148.0
+      prettier:
+        specifier: 3.9.6
+        version: 3.9.6
       pandwind:
         specifier: workspace:*
         version: link:../../packages/pandwind

@@ -16,6 +16,7 @@ import {
 	type MigrationLabEndpoint,
 	type MigrationLabResult,
 } from "../lib/migration-lab.ts";
+import { formatPlaygroundCode } from "../lib/format-playground-code.ts";
 
 const DEFAULT_SOURCE = CodemodAdapterId.StyledComponents;
 const DEFAULT_TARGET = CodemodAdapterId.Pandwind;
@@ -155,6 +156,21 @@ function CodeBlock(props: { code: string }) {
 	) : (
 		<div className={HIGHLIGHTED_CODE} dangerouslySetInnerHTML={{ __html: html }} />
 	);
+}
+
+function useFormattedCode(code: string): string {
+	const [formatted, setFormatted] = useState(code);
+	useEffect(() => {
+		let active = true;
+		setFormatted(code);
+		void formatPlaygroundCode(code).then((value) => {
+			if (active) setFormatted(value);
+		});
+		return () => {
+			active = false;
+		};
+	}, [code]);
+	return formatted;
 }
 
 function Summary(props: { result: MigrationLabResult }) {
@@ -302,6 +318,7 @@ function ResultPane(props: {
 	result: ReturnType<typeof MIGRATION_LAB.migrate>;
 	target: MigrationLabEndpoint;
 }) {
+	const formattedCode = useFormattedCode(props.result.ok ? props.result.code : "");
 	if (!props.result.ok)
 		return (
 			<Pane label="Migration error" className={uiCss.class({ borderColor: "rgba(239,68,68,0.2)" })}>
@@ -316,8 +333,8 @@ function ResultPane(props: {
 			initialSize: 30,
 			minSize: 15,
 			content: (
-				<Pane label={`Output · ${props.target.label}`} className={uiCss.class({ height: "100%" })} right={<CopyButton text={props.result.code} />}>
-					<CodeBlock code={props.result.code} />
+				<Pane label={`Output · ${props.target.label}`} className={uiCss.class({ height: "100%" })} right={<CopyButton text={formattedCode} />}>
+					<CodeBlock code={formattedCode} />
 				</Pane>
 			),
 		},
