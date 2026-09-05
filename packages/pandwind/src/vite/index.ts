@@ -127,7 +127,7 @@ function findTwImports(
 		return {
 			localNames: new Set(),
 			sources: [],
-			program: { type: "Program", body: [] } as unknown as OxcNode,
+			program: { type: NodeKind.Program, body: [] } as unknown as OxcNode,
 		};
 	const result = SOURCE_SCANNER_SERVICE.parse({ file: id, source: code });
 	const program = result.program as unknown as OxcNode;

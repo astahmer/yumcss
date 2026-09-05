@@ -8,6 +8,7 @@ import { pandwindCssVite } from "../src/vite/css.ts";
 import { createCssExtractionService, createCssSourceScanner } from "../src/vite/css-extract.ts";
 import { CssSourceScannerService } from "../src/vite/css-source-scanner.ts";
 import { SOURCE_SCANNER_SERVICE } from "../src/source-scanner.ts";
+import { NodeKind } from "../src/ast-node-kind.ts";
 import type {
 	CssArtifactExtractor,
 	CssDiagnosticReporter,
@@ -263,7 +264,7 @@ test("shares one parsed document across CSS inspection operations", () => {
 test("css extraction façade accepts substituted policy ports", () => {
 	const scanner: CssSourceScanner = {
 		matches: () => true,
-		parse: () => ({ type: "Program" }),
+		parse: () => ({ type: NodeKind.Program }),
 		findImports: () => new Set(["css"]),
 		inspect: () => ({
 			authoredCss: [],
@@ -305,7 +306,7 @@ test("the shared source service composes the extraction façade", () => {
 	const service = createCssSourceService({
 		scanner: {
 			matches: () => true,
-			parse: () => ({ type: "Program" }),
+			parse: () => ({ type: NodeKind.Program }),
 			findImports: () => {
 				calls.push("scan");
 				return new Set(["css"]);

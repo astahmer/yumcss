@@ -1,11 +1,12 @@
 import { test } from "vitest";
 import { walk, type OxcNode } from "../src/tw/literal.ts";
+import { TraversalNodeKind } from "./helpers/traversal-node-kind.ts";
 
 const makeTree = (): OxcNode => {
-	const root: OxcNode = { type: "Root", children: [] };
+	const root: OxcNode = { type: TraversalNodeKind.Root, children: [] };
 	const children = root.children as OxcNode[];
 	for (let index = 0; index < 2_000; index++) {
-		children.push({ type: "Node", value: index, children: [] });
+		children.push({ type: TraversalNodeKind.Node, value: index, children: [] });
 	}
 	return root;
 };

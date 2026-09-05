@@ -15,6 +15,7 @@ import { rollup } from "rollup";
 import { describe, expect, test } from "vitest";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { pandwindRollup, pandwindUnpluginCss } from "../src/unplugin.ts";
+import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 
 const pkgRoot = resolve(import.meta.dirname, "..");
 const exampleTwModule = resolve(pkgRoot, "../../apps/example/src/tw.ts");
@@ -53,8 +54,12 @@ describe("pandwindRollup", () => {
 			const { output } = await bundle.generate({ format: "es" });
 			const code = output
 				.filter(
-					(chunkOrAsset): chunkOrAsset is Extract<typeof chunkOrAsset, { type: "chunk" }> =>
-						chunkOrAsset.type === "chunk",
+					(
+						chunkOrAsset,
+					): chunkOrAsset is Extract<
+						typeof chunkOrAsset,
+						{ type: typeof RollupOutputKind.Chunk }
+					> => chunkOrAsset.type === RollupOutputKind.Chunk,
 				)
 				.map((chunk) => chunk.code)
 				.join("\n");
@@ -86,8 +91,12 @@ describe("pandwindRollup", () => {
 			const { output } = await bundle.generate({ format: "es" });
 			const code = output
 				.filter(
-					(chunkOrAsset): chunkOrAsset is Extract<typeof chunkOrAsset, { type: "chunk" }> =>
-						chunkOrAsset.type === "chunk",
+					(
+						chunkOrAsset,
+					): chunkOrAsset is Extract<
+						typeof chunkOrAsset,
+						{ type: typeof RollupOutputKind.Chunk }
+					> => chunkOrAsset.type === RollupOutputKind.Chunk,
 				)
 				.map((chunk) => chunk.code)
 				.join("\n");

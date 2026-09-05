@@ -39,6 +39,7 @@ import { escapeIdentifier } from "../src/css/hash.ts";
 import { createCx } from "../src/cx/index.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
+import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 
 const MODES = [
 	{ name: "hash-atoms", strategy: undefined },
@@ -118,7 +119,7 @@ function rulesForClassName(root: Root, className: string): Rule[] {
 	const candidates = new Set([`.${className}`, `.${unescaped}`, `.${escapeIdentifier(className)}`]);
 	return root.nodes.filter(
 		(node): node is Rule =>
-			node.type === "rule" &&
+			node.type === PostCssNodeKind.Rule &&
 			node.selector.split(",").some((selector) => {
 				const trimmed = selector.trim();
 				return [...candidates].some((needle) => trimmed === needle || trimmed.includes(needle));
@@ -163,7 +164,7 @@ describe.each(MODES.map((m) => [m.name, m.strategy] as const))(
 			// Global duplicate check: no two rule nodes share selector+context.
 			const seenSelectors = new Set<string>();
 			for (const node of tree.nodes) {
-				if (node.type !== "rule") continue;
+				if (node.type !== PostCssNodeKind.Rule) continue;
 				const identity = `${node.parent?.type ?? ""}::${node.selector}`;
 				expect(seenSelectors.has(identity), `duplicate rule: ${node.selector}`).toBe(false);
 				seenSelectors.add(identity);

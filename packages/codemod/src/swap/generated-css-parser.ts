@@ -6,33 +6,33 @@
  * avoids importing PostCSS (and its Node-oriented source-map/path graph) into
  * the browser migration entry point.
  */
-export interface GeneratedCssDeclaration {
-	readonly type: "decl";
-	readonly prop: string;
-	readonly value: string;
-}
-
-export interface GeneratedCssRule {
-	readonly type: "rule";
-	readonly selector: string;
-	readonly nodes: readonly GeneratedCssNode[];
-}
-
-export interface GeneratedCssAtRule {
-	readonly type: "atrule";
-	readonly name: string;
-	readonly params: string;
-	readonly nodes: readonly GeneratedCssNode[];
-}
-
-export type GeneratedCssNode = GeneratedCssDeclaration | GeneratedCssRule | GeneratedCssAtRule;
-
 /** `GeneratedCssNode.type` discriminators for typed comparisons. */
 export const GeneratedCssNodeKind = {
 	Declaration: "decl",
 	Rule: "rule",
 	AtRule: "atrule",
 } as const;
+
+export interface GeneratedCssDeclaration {
+	readonly type: typeof GeneratedCssNodeKind.Declaration;
+	readonly prop: string;
+	readonly value: string;
+}
+
+export interface GeneratedCssRule {
+	readonly type: typeof GeneratedCssNodeKind.Rule;
+	readonly selector: string;
+	readonly nodes: readonly GeneratedCssNode[];
+}
+
+export interface GeneratedCssAtRule {
+	readonly type: typeof GeneratedCssNodeKind.AtRule;
+	readonly name: string;
+	readonly params: string;
+	readonly nodes: readonly GeneratedCssNode[];
+}
+
+export type GeneratedCssNode = GeneratedCssDeclaration | GeneratedCssRule | GeneratedCssAtRule;
 
 function skipTrivia(css: string, start: number): number {
 	let index = start;
@@ -91,7 +91,9 @@ function declaration(prelude: string): GeneratedCssDeclaration | undefined {
 	if (colon <= 0) return undefined;
 	const prop = prelude.slice(0, colon).trim();
 	const value = prelude.slice(colon + 1).trim();
-	return prop === "" || value === "" ? undefined : { type: "decl", prop, value };
+	return prop === "" || value === ""
+		? undefined
+		: { type: GeneratedCssNodeKind.Declaration, prop, value };
 }
 
 function atRule(
@@ -100,7 +102,12 @@ function atRule(
 ): GeneratedCssAtRule | undefined {
 	const match = /^@([^\s]+)(?:\s+([\s\S]*))?$/u.exec(prelude);
 	if (match === null || match[1] === undefined) return undefined;
-	return { type: "atrule", name: match[1], params: match[2]?.trim() ?? "", nodes };
+	return {
+		type: GeneratedCssNodeKind.AtRule,
+		name: match[1],
+		params: match[2]?.trim() ?? "",
+		nodes,
+	};
 }
 
 function parseNodes(
@@ -127,7 +134,7 @@ function parseNodes(
 			const parsed = frame.prelude?.startsWith("@")
 				? atRule(frame.prelude, frame.nodes)
 				: ({
-						type: "rule",
+						type: GeneratedCssNodeKind.Rule,
 						selector: frame.prelude ?? "",
 						nodes: frame.nodes,
 					} satisfies GeneratedCssRule);
@@ -142,7 +149,7 @@ function parseNodes(
 			const parsed = frame.prelude?.startsWith("@")
 				? atRule(frame.prelude, frame.nodes)
 				: ({
-						type: "rule",
+						type: GeneratedCssNodeKind.Rule,
 						selector: frame.prelude ?? "",
 						nodes: frame.nodes,
 					} satisfies GeneratedCssRule);
@@ -177,7 +184,7 @@ function parseNodes(
 			const completed = frame.prelude?.startsWith("@")
 				? atRule(frame.prelude, frame.nodes)
 				: ({
-						type: "rule",
+						type: GeneratedCssNodeKind.Rule,
 						selector: frame.prelude ?? "",
 						nodes: frame.nodes,
 					} satisfies GeneratedCssRule);

@@ -2,9 +2,9 @@
  * Typed identity for oxc AST node kinds, property kinds, import kinds, and
  * variable-declaration kinds.
  *
- * Comparisons against AST node data previously used raw string literals
- * (`.type === "CallExpression"`), which drift silently when a name is
- * misspelled or the parser renames a kind. These `as const` tables carry the
+ * Comparisons against AST node data previously used raw string literals,
+ * which drift silently when a name is misspelled or the parser renames a
+ * kind. These `as const` tables carry the
  * same runtime values, so behavior is identical, while TypeScript verifies
  * each comparison against the parser's own type surface (see the compile-time
  * guard below).

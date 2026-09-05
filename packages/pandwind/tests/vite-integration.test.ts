@@ -21,6 +21,7 @@ import { dirname, join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { build, createServer, type ViteDevServer } from "vite";
 import { examplePreset } from "../src/preset/example-preset.ts";
+import { RollupOutputKind } from "./helpers/rollup-output-kind.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
 import { pandwindCssVite } from "../src/vite/css.ts";
 import { pandwindVite } from "../src/vite/index.ts";
@@ -310,13 +311,13 @@ describe("build", () => {
 		const output = (
 			Array.isArray(result) ? result : "output" in result ? result.output : []
 		) as Array<{
-			type: "chunk" | "asset";
+			type: (typeof RollupOutputKind)[keyof typeof RollupOutputKind];
 			fileName: string;
 			code?: string;
 			source?: string | Uint8Array;
 		}>;
 
-		const js = output.filter((chunk) => chunk.type === "chunk");
+		const js = output.filter((chunk) => chunk.type === RollupOutputKind.Chunk);
 		expect(js.length).toBeGreaterThan(0);
 		const code = js.map((chunk) => chunk.code!).join("\n");
 		expect(code).toContain("bg-red-500 p-4 hover:bg-blue-600 sm:p-6");
@@ -327,7 +328,9 @@ describe("build", () => {
 		// must disappear with the now-unused binding.
 		expect(code).not.toContain("createDesignCss");
 
-		const css = output.find((chunk) => chunk.type === "asset" && chunk.fileName.endsWith(".css"));
+		const css = output.find(
+			(chunk) => chunk.type === RollupOutputKind.Asset && chunk.fileName.endsWith(".css"),
+		);
 		expect(css).toBeDefined();
 		expect(css!.source!.toString()).toContain("background-color:#3182ce");
 		expect(css!.source!.toString()).toContain(":root");
@@ -354,9 +357,12 @@ describe("build", () => {
 				});
 				const output = (
 					Array.isArray(result) ? result : "output" in result ? result.output : []
-				) as Array<{ type: "chunk" | "asset"; code?: string }>;
+				) as Array<{
+					type: (typeof RollupOutputKind)[keyof typeof RollupOutputKind];
+					code?: string;
+				}>;
 				return output
-					.filter((chunk) => chunk.type === "chunk")
+					.filter((chunk) => chunk.type === RollupOutputKind.Chunk)
 					.map((chunk) => chunk.code!)
 					.join("\n");
 			} finally {

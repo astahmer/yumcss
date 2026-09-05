@@ -25,6 +25,7 @@ import { createCx } from "../src/cx/index.ts";
 import { createDesignCss } from "../src/design/index.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { extractTwConfig } from "../src/vite/inline.ts";
+import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 
 const strategy = createNamedAtomsStrategy();
 
@@ -39,7 +40,7 @@ function stylesheet(styles: Array<Record<string, unknown>>): Root {
 
 function rulesFor(root: Root, className: string): Rule[] {
 	return root.nodes
-		.filter((node): node is Rule => node.type === "rule")
+		.filter((node): node is Rule => node.type === PostCssNodeKind.Rule)
 		.filter((rule) => rule.selector.split(",").some((s) => s.trim().includes(className)));
 }
 

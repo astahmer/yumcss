@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { parseSync } from "oxc-parser";
 import { evalLiteralValues, evalLiteral } from "../src/tw/literal";
+import { NodeKind } from "../src/ast-node-kind.ts";
 
 function evalSource(source: string) {
 	const parsed = parseSync("test.tsx", source);
 	const statement = parsed.program.body[0]!;
-	const expression = statement.type === "ExpressionStatement" ? statement.expression : undefined;
+	const expression = statement.type === NodeKind.ExpressionStatement ? statement.expression : undefined;
 	return evalLiteralValues(expression as never);
 }
 

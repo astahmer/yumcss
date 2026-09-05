@@ -277,7 +277,7 @@ function resolveTwArg(
 			config.conflicts,
 			config.compose,
 		);
-		return { type: "Literal", value: compiled };
+		return { type: NodeKind.Literal, value: compiled };
 	} catch {
 		return node; // Invalid style object — stays dynamic, same as inlineTwCalls.
 	}

@@ -5,19 +5,24 @@ import { SemanticRuleSerializer } from "../src/css/runtime-sheet-serializer.ts";
 import { RuntimeSemanticRuleKindTag } from "../src/css/runtime-sheet-contracts.ts";
 import type { RuntimeSemanticRule } from "../src/css/runtime-sheet-contracts.ts";
 import { resolveVar } from "../src/tw/theme.ts";
+import { TraversalNodeKind } from "./helpers/traversal-node-kind.ts";
 
 describe("iterative Oxc traversal", () => {
 	test("keeps depth-first source order and parent context", () => {
 		const root: OxcNode = {
-			type: "Program",
-			body: [{ type: "First", child: { type: "Nested" } }, { type: "Second" }],
+			type: TraversalNodeKind.Program,
+			body: [
+				{ type: TraversalNodeKind.First, child: { type: TraversalNodeKind.Nested } },
+				{ type: TraversalNodeKind.Second },
+			],
 		};
 		const order: string[] = [];
 		const parents: string[] = [];
 
 		walk(root, (node) => order.push(node.type));
 		walkWithParent(root, (node, parent) => {
-			if (node.type === "Nested") parents.push(parent?.type ?? "none");
+			if (node.type === TraversalNodeKind.Nested)
+				parents.push(parent?.type ?? TraversalNodeKind.None);
 		});
 
 		expect(order).toMatchInlineSnapshot(`
@@ -33,10 +38,10 @@ describe("iterative Oxc traversal", () => {
 
 	test("handles a deeply nested AST without consuming the JS call stack", () => {
 		const depth = 12_000;
-		const root: OxcNode = { type: "Root" };
+		const root: OxcNode = { type: TraversalNodeKind.Root };
 		let current = root;
 		for (let index = 0; index < depth; index++) {
-			const child: OxcNode = { type: "Node", index };
+			const child: OxcNode = { type: TraversalNodeKind.Node, index };
 			current.child = child;
 			current = child;
 		}

@@ -52,8 +52,9 @@ export function createStylesheetAdapter(definition: StylesheetAdapterDefinition)
 		id: definition.id,
 		patterns: [],
 		packages: definition.packages,
-		capabilities: CodemodAdapterKit.allRuleCapabilities(definition.id, "unsupported", {
-			"global-rules": "exact",
+	capabilities: CodemodAdapterKit.allRuleCapabilities(definition.id, "unsupported", {
+		"named-rules": "exact",
+		"global-rules": "exact",
 			keyframes: "exact",
 			"font-face": "exact",
 			selectors: "exact",

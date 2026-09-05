@@ -3,12 +3,17 @@ import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from "nod
 import { dirname, extname, join, resolve } from "node:path";
 import { transformSync } from "esbuild";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import { rollup, type Plugin } from "rollup";
+import { rollup, type OutputChunk, type Plugin } from "rollup";
 import { chromium } from "playwright-core";
 import { examplePreset } from "pandwind/preset/example-preset";
 import { pandwindRollupCss } from "pandwind/unplugin";
 
 const repoRoot = resolve(import.meta.dirname, "../../..");
+
+const RollupOutputKind = { Chunk: "chunk" } as const;
+
+const isOutputChunk = (entry: { type: string }): entry is OutputChunk =>
+	entry.type === RollupOutputKind.Chunk;
 
 const tsPlugin: Plugin = {
 	name: "rollup-e2e-typescript",
@@ -109,9 +114,8 @@ try {
 		plugins: [cssPlugin, authoredCssPlugin, nodeResolve({ extensions: [".js", ".ts"] }), tsPlugin],
 	});
 	const output = await bundle.generate({ format: "es" });
-	const app = output.output.find((entry) => entry.type === "chunk");
-	if (app === undefined || app.type !== "chunk")
-		throw new Error("Rollup emitted no application chunk");
+	const app = output.output.find(isOutputChunk);
+	if (app === undefined) throw new Error("Rollup emitted no application chunk");
 	writeFileSync(join(project, "app.js"), app.code);
 	const virtualId = cssPlugin.resolveId("pandwind:css");
 	if (typeof virtualId !== "string") throw new Error("Rollup CSS virtual module did not resolve");

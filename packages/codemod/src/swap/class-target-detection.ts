@@ -45,6 +45,7 @@ export function collectDynamicClassAttributes(source: string): readonly string[]
 			continue;
 		}
 		const body = block.body.trim();
+		if (/^(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')$/u.test(body)) continue;
 		const binding = /^[A-Za-z_$][\w$]*$/u.exec(body)?.[0];
 		if (
 			binding !== undefined &&

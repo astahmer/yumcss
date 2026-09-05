@@ -1,5 +1,6 @@
 import { parseSync } from "oxc-parser";
 import { describe, expect, test } from "vitest";
+import { NodeKind } from "../src/ast-node-kind.ts";
 import plugin from "../src/index.ts";
 
 type AstNode = { type: string; [key: string]: any };
@@ -51,7 +52,7 @@ const visitCalls = (program: AstValue, visit: (node: AstNode) => void): void => 
 			continue;
 		}
 		if (typeof node.type !== "string") continue;
-		if (node.type === "CallExpression") visit(node);
+		if (node.type === NodeKind.CallExpression) visit(node);
 		for (const key of Object.keys(node)) {
 			if (key !== "parent" && key !== "type") stack.push(node[key]);
 		}
@@ -421,32 +422,34 @@ dcss.class({
 	});
 
 	test("handles deeply nested generated ASTs without consuming the call stack", () => {
-		let value: AstNode = { type: "Literal", value: "w-[13px]" };
+		let value: AstNode = { type: NodeKind.Literal, value: "w-[13px]" };
 		for (let index = 0; index < 12_000; index += 1) {
 			value = {
-				type: "ObjectExpression",
-				properties: [{ type: "Property", key: { type: "Identifier", name: "value" }, value }],
+				type: NodeKind.ObjectExpression,
+				properties: [
+					{ type: NodeKind.Property, key: { type: NodeKind.Identifier, name: "value" }, value },
+				],
 			};
 		}
 		const program = {
-			type: "Program",
+			type: NodeKind.Program,
 			body: [
 				{
-					type: "ImportDeclaration",
-					source: { type: "Literal", value: "pandwind" },
+					type: NodeKind.ImportDeclaration,
+					source: { type: NodeKind.Literal, value: "pandwind" },
 					specifiers: [
 						{
-							type: "ImportSpecifier",
-							imported: { type: "Identifier", name: "tw" },
-							local: { type: "Identifier", name: "tw" },
+							type: NodeKind.ImportSpecifier,
+							imported: { type: NodeKind.Identifier, name: "tw" },
+							local: { type: NodeKind.Identifier, name: "tw" },
 						},
 					],
 				},
 				{
-					type: "ExpressionStatement",
+					type: NodeKind.ExpressionStatement,
 					expression: {
-						type: "CallExpression",
-						callee: { type: "Identifier", name: "tw" },
+						type: NodeKind.CallExpression,
+						callee: { type: NodeKind.Identifier, name: "tw" },
 						arguments: [value],
 					},
 				},

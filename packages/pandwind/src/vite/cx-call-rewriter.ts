@@ -75,7 +75,7 @@ export interface CxRewriteResult {
 }
 
 interface CallNode {
-	type: "CallExpression";
+	type: typeof NodeKind.CallExpression;
 	start: number;
 	end: number;
 	callee: { type?: string; name?: string } | null;

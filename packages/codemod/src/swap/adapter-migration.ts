@@ -119,8 +119,22 @@ function hasComponentBindingUse(
 	return binding !== undefined && bindings?.hasComponentUse(binding) === true;
 }
 
-function hasInlineHostUse(bindings: SourceBindingIndex | undefined, start: number): boolean {
-	return bindings?.hasInlineAttributeUse(start) === true;
+function hasInlineHostUse(
+	bindings: SourceBindingIndex | undefined,
+	start: number,
+	source: string,
+): boolean {
+	if (bindings?.hasInlineAttributeUse(start) === true) return true;
+	const openingStart = source.lastIndexOf("<", start);
+	const openingEnd = source.indexOf(">", start);
+	if (openingStart < 0 || openingEnd < start) return false;
+	const openingTag = source.slice(openingStart, openingEnd + 1);
+	for (const attribute of openingTag.matchAll(/\b(?:className|class)\s*=\s*\{/gu)) {
+		const open = openingStart + (attribute.index ?? 0) + attribute[0].lastIndexOf("{");
+		const block = SourcePass.matchBlock(source, open);
+		if (block !== null && start > open && start < block.end) return true;
+	}
+	return false;
 }
 
 function classExpressionFromEmission(emitted: string): string | undefined {
@@ -143,9 +157,13 @@ function hostClassExpression(source: string, start: number, end: number, emitted
 	return `${emitted}.class`;
 }
 
-function generatedImportBindings(imports: ReadonlySet<string>): readonly string[] {
+function generatedBindings(imports: ReadonlySet<string>): readonly string[] {
 	const bindings = new Set<string>();
 	for (const statement of imports) {
+		const declarations = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/gu;
+		for (const match of statement.matchAll(declarations)) {
+			if (match[1] !== undefined) bindings.add(match[1]);
+		}
 		const clause = /^import\s+(.+?)\s+from\s+["'][^"']+["']/u.exec(statement)?.[1];
 		if (clause === undefined) continue;
 		const defaultPart = clause.split(",")[0]?.trim();
@@ -824,7 +842,7 @@ function runAdapterMigrationInternal(
 		const hasHostContext =
 			program.source?.hostOpenTag !== undefined ||
 			hasHostBindingUse(bindings, bindingBeforeMatch) ||
-			hasInlineHostUse(bindings, match.start) ||
+			hasInlineHostUse(bindings, match.start, source) ||
 			hasComponentBindingUse(bindings, bindingBeforeMatch);
 		const discardableStaticSubject =
 			sourceSubject !== undefined &&
@@ -1814,7 +1832,7 @@ function runAdapterMigrationInternal(
 			code,
 			[...sourceAdapter.sourceModules, ...sourceModulesToRemove],
 			sourceAdapter.sourceModuleMatchers,
-			generatedImportBindings(imports),
+			generatedBindings(imports),
 		);
 		code = MigrationOutput.removeNamedImportSpecifiers(
 			code,

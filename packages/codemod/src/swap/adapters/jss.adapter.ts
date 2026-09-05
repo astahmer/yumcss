@@ -25,7 +25,7 @@ function rewriteImperativeApplications(context: AdapterRewriteContext): AdapterR
 		edits.push({
 			start,
 			end: start + match[0].length,
-			text: `${element}!.classList.add(css.class(${sheet}.${rule}))`,
+			text: `${element}!.classList.add(${sheet}.${rule})`,
 		});
 	}
 	for (const sheet of context.convertedBindings) {

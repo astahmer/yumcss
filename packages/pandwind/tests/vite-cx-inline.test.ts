@@ -485,6 +485,7 @@ import { createDesignCss } from "../src/design/index.ts";
 import { examplePreset } from "../src/preset/example-preset.ts";
 import { createStylesheet } from "../src/css/create-stylesheet.ts";
 import { escapeIdentifier } from "../src/css/hash.ts";
+import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 import { parse, type Root } from "postcss";
 import {
 	createPandwindEngineContext,
@@ -529,7 +530,7 @@ describe("css() atoms fold to sheet-identical classes", () => {
 		sheet.process([resolveDesign({ color: "$blue-500" })]);
 		const root: Root = parse(sheet.gen.atomic());
 		const rules = root.nodes.filter(
-			(node) => node.type === "rule" && node.selector.includes(selectorName),
+			(node) => node.type === PostCssNodeKind.Rule && node.selector.includes(selectorName),
 		);
 		expect(rules.length).toBe(1);
 		expect(rules[0]!.toString()).toContain("color:#3182ce");

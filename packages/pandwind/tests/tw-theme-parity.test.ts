@@ -29,6 +29,7 @@ import {
 	type ThemeTokenGroups,
 } from "../src/tw/generate-theme.ts";
 import { rulesForClass } from "./helpers/tailwind-proof.ts";
+import { PostCssNodeKind } from "./helpers/postcss-node-kind.ts";
 
 const CONDITIONS: ThemeConditions = {
 	dark: ".dark &",
@@ -75,9 +76,10 @@ function findVarDecls(root: Root, varName: string): VarDeclInfo[] {
 			let selector = "";
 			const atRuleChains: string[] = [];
 			let layer: string | null = null;
-			while (node && node.type !== "root") {
-				if (node.type === "rule") selector = `${(node as Rule).selector} ${selector}`.trim();
-				if (node.type === "atrule") {
+			while (node && node.type !== PostCssNodeKind.Root) {
+				if (node.type === PostCssNodeKind.Rule)
+					selector = `${(node as Rule).selector} ${selector}`.trim();
+				if (node.type === PostCssNodeKind.AtRule) {
 					const params = (node as { params?: string }).params ?? "";
 					atRuleChains.push(`${(node as { name?: string }).name} ${params}`.trim());
 					if ((node as { name?: string }).name === "layer") {
@@ -163,10 +165,12 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 		const root = await compileSheet(["bg-danger"]);
 		const media = root.nodes.find(
 			(node) =>
-				node?.type === "atrule" &&
+				node?.type === PostCssNodeKind.AtRule &&
 				(node as { name?: string }).name === "media" &&
 				(node as { params?: string }).params?.includes("max-width: 640px"),
-		) as undefined | Extract<(typeof root)["nodes"][number], { type: "atrule" }>;
+		) as
+			| undefined
+			| Extract<(typeof root)["nodes"][number], { type: typeof PostCssNodeKind.AtRule }>;
 		expect(media, "@media (max-width: 640px) block emitted").toBeDefined();
 
 		const inner: Record<string, string> = {};
@@ -188,10 +192,12 @@ describe("condition-bound tokens compile through real Tailwind", () => {
 		const root = await compileSheet(["bg-cta"]);
 		const hoverMedia = root.nodes.find(
 			(node) =>
-				node?.type === "atrule" &&
+				node?.type === PostCssNodeKind.AtRule &&
 				(node as { name?: string }).name === "media" &&
 				(node as { params?: string }).params?.includes("(hover: hover)"),
-		) as undefined | Extract<(typeof root)["nodes"][number], { type: "atrule" }>;
+		) as
+			| undefined
+			| Extract<(typeof root)["nodes"][number], { type: typeof PostCssNodeKind.AtRule }>;
 		expect(hoverMedia).toBeDefined();
 
 		const selectors: string[] = [];

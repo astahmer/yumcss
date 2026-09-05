@@ -1271,7 +1271,7 @@ export function createPandwindAdapter(options: PandwindAdapterOptions = {}) {
 			recipes: "exact",
 			components: "exact",
 		}),
-		namedRuleStrategy: StyleNamedRuleStrategy.ClassMap,
+		namedRuleStrategy: StyleNamedRuleStrategy.NativeMap,
 		detectPatterns: [/\bcss\.class\s*\(/, /\bcreateCss\s*\(/],
 		sourceModules: ["pandwind/css", "pandwind/css/runtime"],
 		configFiles: ["pandwind.config.ts", "pandwind.interop.json", "bridge.ts", "package.json"],
