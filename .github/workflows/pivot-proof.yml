@@ -1,6 +1,8 @@
 name: Pivot proof matrix
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: "17 3 * * 1"
@@ -39,6 +41,14 @@ jobs:
           PANDWIND_ADAPTER_REFERENCE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
         run: nub run references:deps && nub run pivot:proof:adapters
 
+      - name: Typecheck generated adapter output against real packages
+        env:
+          PANDWIND_ADAPTER_EXECUTABLE_PROOF_OUTPUT: ${{ runner.temp }}/pandwind-pivot-proof/adapter-executable-proof.json
+        run: nub run pivot:proof:adapter-output
+
+      - name: Verify Chakra target output against published types
+        run: nub run pivot:proof:chakra
+
       - name: Run installed promotion proofs
         run: nub run pivot:proof:installed && nub run pivot:proof:installed:emotion
 
@@ -54,4 +64,11 @@ jobs:
         with:
           name: pivot-adapter-reference-proof
           path: ${{ runner.temp }}/pandwind-pivot-proof/adapter-reference-proof.json
+          if-no-files-found: error
+
+      - name: Upload executable adapter proof report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pivot-adapter-executable-proof
+          path: ${{ runner.temp }}/pandwind-pivot-proof/adapter-executable-proof.json
           if-no-files-found: error

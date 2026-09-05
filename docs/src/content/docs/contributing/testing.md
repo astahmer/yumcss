@@ -22,6 +22,8 @@ nub run lint
 nub run format
 nub run knip
 nub run pivot:proof
+nub run pivot:proof:adapter-output
+nub run pivot:proof:chakra
 nub run test:e2e:playground
 nub run --filter pandwind-codemod test:e2e
 ```
@@ -82,6 +84,33 @@ The scheduled pivot-proof workflow also runs the installed Goober and Emotion
 promotion lanes. Installed promotion requests declare their proof dimensions
 explicitly; the runner rejects an empty or incomplete declaration instead of
 turning a source-only result into a production claim.
+
+### Executable adapter output proof
+
+`nub run pivot:proof:adapter-output` is the local and CI gate for the generated
+module itself. It installs the pinned runtime packages selected by each
+generated import, links the local Pandwind package, and runs strict TypeScript
+resolution in a disposable project. An added import with no pin fails the run,
+so a fabricated target path cannot hide behind an ambient declaration. Filters
+keep debugging fast:
+
+```sh
+nub run pivot:proof:adapter-output -- --adapter chakra-ui
+nub run pivot:proof:adapter-output -- --id compiled-vite-example --keep /tmp/pw-proof
+```
+
+Explicit source residuals remain visible and are accepted when the preserved
+source is typecheckable. A small set of pinned upstream test files records
+their published-package baseline diagnostics separately because those tests
+reach private internals that the package declarations do not expose. The
+generated adapter imports and ordinary application fixtures remain strict.
+
+`nub run pivot:proof:chakra` is a focused regression guard for target-side
+carrier syntax. It migrates a real style source to Chakra, asserts that styles
+land on Chakra's documented `css` prop, and typechecks the result against the
+published `@chakra-ui/react` package. Use `--keep <directory>` when inspecting
+the generated file after a failure. The pivot-proof workflow runs both checks
+on every push to `main`, as well as on its scheduled and manual runs.
 
 `nub run references:check` audits already-materialized checkouts and exits
 non-zero if any pinned commit drifts or is unavailable. `nub run knip:production`

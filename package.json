@@ -26,6 +26,8 @@
 		"references:check": "nub scripts/audit-real-repository-pins.ts",
 		"pivot:proof": "nub --conditions pandwind scripts/pivot-proof.ts",
 		"pivot:proof:adapters": "nub --conditions pandwind scripts/run-adapter-reference-proof.ts",
+		"pivot:proof:adapter-output": "nub --conditions pandwind scripts/verify-adapter-reference-output.ts",
+		"pivot:proof:chakra": "nub --conditions pandwind scripts/verify-chakra-target-output.ts",
 		"pivot:proof:references": "nub scripts/pivot-proof.ts --prepare",
 		"pivot:proof:installed": "nub scripts/promote-goober-fixture.ts",
 		"pivot:proof:installed:emotion": "nub scripts/promote-emotion-reference.ts",
