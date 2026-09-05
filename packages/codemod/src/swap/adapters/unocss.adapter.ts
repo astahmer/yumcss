@@ -175,6 +175,9 @@ function projectThemeCss(context: AdapterConfigContext): string {
 	const readFile = context.readFile;
 	const files = context.listFiles?.(context.root) ?? [];
 	return files
+		// Theme layers live in CSS files. package.json or uno.config.ts text
+		// that merely mentions @unocss/@theme must not enter the CSS parser.
+		.filter((file) => /\.css$/u.test(file))
 		.map((file) =>
 			readFile(file.startsWith(context.root!) ? file : joinDocumentPath(context.root!, file)),
 		)

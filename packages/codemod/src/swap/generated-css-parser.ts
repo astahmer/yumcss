@@ -154,7 +154,11 @@ function parseNodes(
 
 		const prelude = scanPrelude(css, index);
 		if (prelude.text === "") {
-			index = prelude.end + (css[prelude.end] === ";" ? 1 : 0);
+			// An empty prelude means the first character is a delimiter (`{`
+			// or `;`) or input ends here. Always advance at least one byte or
+			// the loop never makes progress on malformed input such as a
+			// truncated JSON document.
+			index = Math.max(prelude.end, index) + 1;
 			continue;
 		}
 		const delimiter = css[prelude.end];

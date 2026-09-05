@@ -48,8 +48,18 @@ describe("generated CSS parser", () => {
 				stack.push(...node.nodes);
 			} else if (node.type === "atrule") {
 				stack.push(...(node.nodes ?? []));
+				}
 			}
-		}
-		expect(rules).toBe(depth);
-	});
+			expect(rules).toBe(depth);
+		});
+
+		test("terminates on malformed non-CSS input", () => {
+			// A stray `{` with no matching brace (for example truncated JSON
+			// concatenated before generated CSS) previously spun the parser
+			// forever because the empty-prelude branch did not advance.
+			const css = '{\n  "name": "unocss-next"\n}\n@property --x{syntax:"<color>";initial-value:red}\n';
+			const nodes = parseGeneratedCss(css);
+			expect(Array.isArray(nodes)).toBe(true);
+			expect(() => parseGeneratedCss('{"name":"x"')).not.toThrow();
+		});
 });
